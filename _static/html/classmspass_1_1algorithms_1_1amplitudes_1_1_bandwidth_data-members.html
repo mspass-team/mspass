@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -93,7 +136,7 @@ $(function() {
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a5037fb7d7410bedc194135eae1894f8b">bandwidth</a>() const</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa23650e78e755f15b0aa8f6e7e398af7">bandwidth_fraction</a>() const</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>BandwidthData</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>f_range</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">f_range</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#afb68f33f07a6d38e7ebd24e0a87b7481">high_edge_snr</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">mspass::algorithms::amplitudes::BandwidthData</a></td><td class="entry"></td></tr>

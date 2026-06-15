@@ -251,12 +251,15 @@
           <declname>other</declname>
         </param>
         <briefdescription>
+<para>Add another slowness vector to this one component-wise. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="70" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="33" bodyend="37"/>
+        <references refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" compoundref="_slowness_vector_8h" startline="21">ux</references>
+        <references refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" compoundref="_slowness_vector_8h" startline="25">uy</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1a00f994c209cf2930198f56c901f94b49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
@@ -269,12 +272,15 @@
           <declname>other</declname>
         </param>
         <briefdescription>
+<para>Subtract another slowness vector from this one component-wise. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="72" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="38" bodyend="42"/>
+        <references refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" compoundref="_slowness_vector_8h" startline="21">ux</references>
+        <references refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" compoundref="_slowness_vector_8h" startline="25">uy</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1ab100906c11327f5ad6bdfb720d21a08e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref></type>
@@ -287,6 +293,7 @@
           <declname>other</declname>
         </param>
         <briefdescription>
+<para>Return the component-wise sum of two slowness vectors. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -305,6 +312,7 @@
           <declname>other</declname>
         </param>
         <briefdescription>
+<para>Return the component-wise difference of two slowness vectors. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>

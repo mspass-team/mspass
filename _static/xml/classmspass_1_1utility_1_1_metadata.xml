@@ -9,6 +9,7 @@
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_ensemble" prot="public" virt="non-virtual">mspass::seismic::Ensemble&lt; Tdata &gt;</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_power_spectrum" prot="public" virt="non-virtual">mspass::seismic::PowerSpectrum</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1utility_1_1_antelope_pf" prot="public" virt="non-virtual">mspass::utility::AntelopePf</derivedcompoundref>
+    <includes refid="_metadata_8h" local="no">Metadata.h</includes>
     <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" prot="protected" static="no" mutable="no">
         <type>std::map&lt; std::string, boost::any &gt;</type>
@@ -19,10 +20,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Map from metadata key to value stored in a boost::any container. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="409" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="409" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="473" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="473" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" prot="protected" static="no" mutable="no">
         <type>std::set&lt; std::string &gt;</type>
@@ -33,10 +35,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Keys that have been created or changed since the last clear_modified. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="411" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="411" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="475" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="475" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -53,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="94" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="94" bodyend="94"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="105" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="105" bodyend="105"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a5255fc3ae6accb650f221c9065a92eff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -80,15 +83,15 @@
 <parametername>ifs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- ifstream from which to read data </para>
+<para>ifstream from which to read data </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>format</parametername>
+<parametername>form</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- optional format specification. Currently only default of &quot;text&quot; is accepted. </para>
+<para>optional format specification. Currently only default of &quot;text&quot; is accepted. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -105,7 +108,10 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="108" column="3"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="119" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="289" bodyend="339"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" compoundref="_metadata_8h" startline="475">changed_or_set</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1afa617529be5501b6b059091118a1a51f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -126,7 +132,7 @@
 <parametername>mdold</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- parent object to be copied </para>
+<para>parent object to be copied </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -134,7 +140,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="114" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="340" bodyend="341"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="125" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="340" bodyend="341"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a6d06560c0b169240031c6a274dc7990f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -149,7 +155,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="118" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="118" bodyend="118"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="129" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="129" bodyend="129"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
@@ -169,7 +175,7 @@
 <parametername>mdold</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- parent object to copy </para>
+<para>parent object to copy </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -177,8 +183,10 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="122" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="455" bodyend="461"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="133" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="460" bodyend="466"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" compoundref="_metadata_8h" startline="475">changed_or_set</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
@@ -208,7 +216,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="138" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="463" bodyend="475"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="149" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="468" bodyend="480"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref></type>
@@ -227,8 +235,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="140" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="476" bodyend="480"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="151" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="481" bodyend="485"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
@@ -267,8 +275,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="150" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="352" bodyend="362"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="161" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="352" bodyend="362"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">int</ref></type>
@@ -307,8 +316,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="158" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="364" bodyend="377"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="169" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="364" bodyend="377"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">long</ref></type>
@@ -346,8 +356,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="166" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="379" bodyend="390"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="177" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="379" bodyend="390"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>std::string</type>
@@ -387,8 +398,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="178" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="178" bodyend="186"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="189" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="189" bodyend="197"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
@@ -427,8 +438,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="195" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="392" bodyend="402"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="206" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="392" bodyend="402"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -472,8 +484,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="211" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="413" bodyend="428"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="222" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="477" bodyend="492"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a5d6876ed25c3f5d93052239ec828a3c5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -509,8 +522,8 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="226" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="226" bodyend="234"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="237" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="237" bodyend="245"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a991516933477580b6b59dd578819df06" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>boost::any</type>
@@ -549,8 +562,9 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="245" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="245" bodyend="252"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="256" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="256" bodyend="263"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -565,10 +579,34 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Return the stored C++ type name for a metadata value.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>metadata key to inspect. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>demangled type name of the value stored for key. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if key is undefined. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="253" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="520" bodyend="527"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="270" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="525" bodyend="532"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a991516933477580b6b59dd578819df06" compoundref="_metadata_8h" startline="256" endline="263">get_any</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
         <templateparamlist>
@@ -592,10 +630,32 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a value of any boost::any-compatible C++ type.</para>
+<para>The key is marked as changed so database update logic can detect it. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>metadata key to create or replace. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>value copied into the internal boost::any map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="254" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="254" bodyend="258"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="277" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="277" bodyend="281"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" compoundref="_metadata_8h" startline="475">changed_or_set</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aec776bbbbf8528903432d9b30d1272d8" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
         <templateparamlist>
@@ -619,10 +679,32 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a value using a C string key.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>null-terminated metadata key to create or replace. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>value copied into the internal boost::any map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="259" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="259" bodyend="266"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="287" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="287" bodyend="294"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" compoundref="_metadata_8h" startline="475">changed_or_set</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aefee14db8cda9c7143a0eb7bf2d1be1f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -642,10 +724,30 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a double-valued attribute.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>metadata key to create or replace. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>value to store. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="267" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="267" bodyend="269"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="300" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="300" bodyend="302"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a11ef6cbc1adec7964e2d9c3a4ead15b1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -665,10 +767,30 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store an integer-valued attribute.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>metadata key to create or replace. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>value to store. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="270" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="270" bodyend="272"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="308" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="308" bodyend="310"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ab3989b1152e9b7b3dcce36aaec89f46d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -688,10 +810,30 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a boolean attribute.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>metadata key to create or replace. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>value to store. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="273" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="273" bodyend="275"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="316" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="316" bodyend="318"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1adc016a9bb2288f1f0a7687cfa6844ceb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -711,10 +853,30 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a string-valued attribute.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>metadata key to create or replace. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>value to store. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="276" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="276" bodyend="278"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="324" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="324" bodyend="326"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aa60d283b9eaae245294914557c723c30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -737,8 +899,8 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="283" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="283" bodyend="286"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="331" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="331" bodyend="334"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a45c295b33cdbcc297b7429235b81de9a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -757,10 +919,31 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a C string value using a std::string key.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>metadata key to create or replace. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>null-terminated string value to store. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="287" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="287" bodyend="287"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="340" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="340" bodyend="340"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a45c295b33cdbcc297b7429235b81de9a" compoundref="_metadata_8h" startline="340" endline="340">put</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aa8402af6778236df398ff0fe25911e21" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -779,10 +962,30 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a pybind11 object for Python-facing metadata.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>metadata key to create or replace. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Python object to store in the metadata map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="288" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="288" bodyend="290"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="346" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="346" bodyend="348"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a5fe91d35373564958386f08915b7ce3c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -801,10 +1004,12 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store an int through the Python-friendly typed wrapper. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="291" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="291" bodyend="293"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="350" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="350" bodyend="352"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a5efd5678db951e3517c5667fefe93ddf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -823,10 +1028,12 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a string through the Python-friendly typed wrapper. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="294" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="294" bodyend="296"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="354" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="354" bodyend="356"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1add02049febdc316d70d0fb62e96b2e36" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -845,10 +1052,12 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a bool through the Python-friendly typed wrapper. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="297" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="297" bodyend="299"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="358" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="358" bodyend="360"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aafaa017f0e16f37a81a6abdb406a1e08" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -867,10 +1076,12 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a double through the Python-friendly typed wrapper. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="300" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="300" bodyend="302"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="362" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="362" bodyend="364"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ab1ede27ae9810767832f0879ccbfd234" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -889,10 +1100,12 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Store a long through the Python-friendly typed wrapper. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="303" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="303" bodyend="305"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="366" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="366" bodyend="368"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -957,10 +1170,13 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="329" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="437" bodyend="454"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" compoundref="_metadata_8h" startline="178" endline="186">get_string</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="392" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="442" bodyend="459"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" compoundref="_metadata_8h" startline="475">changed_or_set</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" compoundref="_metadata_8h" startline="189" endline="197">get_string</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="342" endline="350">is_defined</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">put</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" compoundref="_metadata_8cc" startline="525" endline="532">type</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ad42258d0cd85b4a3e28eb1448cafe62e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::set&lt; std::string &gt;</type>
@@ -975,7 +1191,8 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="333" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="333" bodyend="333"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="396" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="396" bodyend="396"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" compoundref="_metadata_8h" startline="475">changed_or_set</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -991,7 +1208,8 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="344" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="344" bodyend="344"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="407" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="407" bodyend="407"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" compoundref="_metadata_8h" startline="475">changed_or_set</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type>std::set&lt; std::string &gt;</type>
@@ -1006,8 +1224,9 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="346" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="481" bodyend="489"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="409" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="486" bodyend="494"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
@@ -1026,7 +1245,7 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="349" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="342" bodyend="350"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="412" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="342" bodyend="350"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -1046,8 +1265,10 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="358" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="490" bodyend="500"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="421" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="495" bodyend="505"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" compoundref="_metadata_8h" startline="475">changed_or_set</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type>std::size_t</type>
@@ -1063,7 +1284,8 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="367" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="501" bodyend="501"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="430" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="506" bodyend="506"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type>std::map&lt; std::string, boost::any &gt;<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">::const_iterator</ref></type>
@@ -1078,7 +1300,8 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="369" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="502" bodyend="504"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="432" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="507" bodyend="509"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type>std::map&lt; std::string, boost::any &gt;<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">::const_iterator</ref></type>
@@ -1093,7 +1316,8 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="371" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="505" bodyend="507"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="434" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="510" bodyend="512"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -1135,8 +1359,10 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="386" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="646" bodyend="654"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">get</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="449" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="651" bodyend="659"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" compoundref="_metadata_8cc" startline="495" endline="505">erase</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a8de95c06d1c6e064e261c1cde49f0ff9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1153,10 +1379,11 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization of <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">Metadata::get</ref> for double values. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="429" column="12"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="494" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a461fa38069a9b499e6381cb4cad3b14d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1173,10 +1400,11 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization of <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">Metadata::get</ref> for int values. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="430" column="12"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="496" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a7904a74f5d29f63c92d0607c6d76d1a3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1193,10 +1421,11 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization of <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">Metadata::get</ref> for long values. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="431" column="12"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="498" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1af526cc7f00976c793f104b32539768f7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1213,10 +1442,11 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization of <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">Metadata::get</ref> for bool values. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="432" column="12"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="500" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a2ed7fd2682fe3b127ef3148c48cc9cd2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1233,10 +1463,11 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization of <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">Metadata::get</ref> for float values. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="433" column="12"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="502" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a2269c377a085fa237380ef7223016438" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1253,10 +1484,12 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization returning numeric metadata as a double. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="404" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="404" bodyend="406"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="405" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="405" bodyend="407"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" compoundref="_metadata_8cc" startline="352" endline="362">get_double</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1af6039a832c2a9174fba5138313e22af0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1273,10 +1506,12 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization returning integer-valued metadata as an int. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="408" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="408" bodyend="410"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="410" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="410" bodyend="412"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462" compoundref="_metadata_8cc" startline="364" endline="377">get_int</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a5db9d3c7df64572dbea4dcad4697af2b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1293,10 +1528,12 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization returning integer-valued metadata as a long. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="412" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="412" bodyend="414"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="415" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="415" bodyend="417"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504" compoundref="_metadata_8cc" startline="379" endline="390">get_long</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ab3c0669e8079562da593df78c9719270" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1313,10 +1550,12 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization returning boolean metadata as a bool. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="416" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="416" bodyend="418"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="420" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="420" bodyend="422"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3" compoundref="_metadata_8cc" startline="392" endline="402">get_bool</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aa417fcccd6e5ba621b5def12ab8d98ad" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1333,10 +1572,13 @@ on the string key version of this same generic function.
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Specialization returning numeric metadata as a float when in range. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="420" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="420" bodyend="435"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" line="425" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="425" bodyend="440"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">md</references>
       </memberdef>
     </sectiondef>
     <sectiondef kind="friend">
@@ -1368,7 +1610,7 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="395" column="27" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="609" bodyend="624"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="458" column="27" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="614" bodyend="629"/>
       </memberdef>
       <memberdef kind="friend" id="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref></type>
@@ -1399,7 +1641,7 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="403" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="626" bodyend="643"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="466" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="631" bodyend="648"/>
       </memberdef>
       <memberdef kind="friend" id="classmspass_1_1utility_1_1_metadata_1ab5bd5012ea08b04497a3d19e97412ab1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostringstream &amp;</type>
@@ -1420,12 +1662,14 @@ on the string key version of this same generic function.
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="405" column="10"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="468" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
+<para>Type-safe metadata container used throughout MsPASS. </para>
     </briefdescription>
     <detaileddescription>
+<para><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> stores named scalar values in a boost::any map and provides typed accessors, serialization helpers, and merge/update operations for seismic data headers and processing state. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">
@@ -1517,7 +1761,7 @@ on the string key version of this same generic function.
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="90" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="90" bodyend="412"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="101" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="101" bodyend="476"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>begin</name></member>

@@ -14,10 +14,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Frequency bin spacing for the regular spectrum grid. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="165" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="165" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="167" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="167" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" prot="protected" static="no" mutable="no">
         <type>double</type>
@@ -28,10 +29,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Frequency of component zero in the stored spectrum vector. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="166" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="166" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="169" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="169" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_spectrum_1aeba1d53ba50676257c3cb5fec2f691c8" prot="protected" static="no" mutable="no">
         <type>double</type>
@@ -42,10 +44,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Sample interval of the time series used to compute this spectrum. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="167" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="167" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="171" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="171" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" prot="protected" static="no" mutable="no">
         <type>double</type>
@@ -56,10 +59,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Number of samples in the parent time series before any zero padding. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="168" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="168" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="173" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="173" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" prot="protected" static="no" mutable="no">
         <type>bool</type>
@@ -70,10 +74,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>True when the spectrum is marked as containing valid data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="169" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="169" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="175" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="175" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -91,6 +96,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="22" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="22" bodyend="25"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" compoundref="_basic_spectrum_8h" startline="167">dfval</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" compoundref="_basic_spectrum_8h" startline="169">f0val</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1ad6606996a02b573faf65312459352bfc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -156,6 +163,11 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="35" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="35" bodyend="42"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" compoundref="_basic_spectrum_8h" startline="167">dfval</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" compoundref="_basic_spectrum_8h" startline="169">f0val</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" compoundref="_basic_spectrum_8h" startline="175">is_live</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aeba1d53ba50676257c3cb5fec2f691c8" compoundref="_basic_spectrum_8h" startline="171">parent_dt</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" compoundref="_basic_spectrum_8h" startline="173">parent_npts</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a33b44b4ba519e94e51af81a407753cf9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -175,6 +187,11 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="44" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="44" bodyend="50"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" compoundref="_basic_spectrum_8h" startline="167">dfval</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" compoundref="_basic_spectrum_8h" startline="169">f0val</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" compoundref="_basic_spectrum_8h" startline="175">is_live</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aeba1d53ba50676257c3cb5fec2f691c8" compoundref="_basic_spectrum_8h" startline="171">parent_dt</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" compoundref="_basic_spectrum_8h" startline="173">parent_npts</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1aa63e2972ed9ef383efdf76a9b6f837a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_basic_spectrum" kindref="compound">BasicSpectrum</ref> &amp;</type>
@@ -189,10 +206,16 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Standard assignment operator. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="51" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="51" bodyend="60"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="52" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="52" bodyend="61"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" compoundref="_basic_spectrum_8h" startline="167">dfval</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" compoundref="_basic_spectrum_8h" startline="169">f0val</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" compoundref="_basic_spectrum_8h" startline="175">is_live</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aeba1d53ba50676257c3cb5fec2f691c8" compoundref="_basic_spectrum_8h" startline="171">parent_dt</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" compoundref="_basic_spectrum_8h" startline="173">parent_npts</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1ac7b01555a28ce9de3630eb24f4dc9173" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -206,7 +229,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="62" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="62" bodyend="62"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="63" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="63" bodyend="63"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a2bce24e09412434ec968bed19ec9843d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -222,7 +245,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="69" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="69" bodyend="69"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="70" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="70" bodyend="70"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" compoundref="_basic_spectrum_8h" startline="175">is_live</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a331f89b8216f9717ac906e922d7c2cff" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -238,7 +262,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="77" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="77" bodyend="77"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="78" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="78" bodyend="78"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" compoundref="_basic_spectrum_8h" startline="175">is_live</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -254,7 +279,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="84" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="84" bodyend="84"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="85" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="85" bodyend="85"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" compoundref="_basic_spectrum_8h" startline="175">is_live</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a2abdea1d94e0ec8753a09eb2cf20a290" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -270,7 +296,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="91" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="91" bodyend="91"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="92" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="92" bodyend="92"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" compoundref="_basic_spectrum_8h" startline="175">is_live</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1ac01289c8a10cc1939f51d51f3c1cdb72" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -285,7 +312,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="93" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="93" bodyend="93"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="94" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="94" bodyend="94"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" compoundref="_basic_spectrum_8h" startline="167">dfval</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1adcbe20cedb4c2a1f0ed31466e8f70c13" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -300,7 +328,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="98" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="98" bodyend="98"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="99" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="99" bodyend="99"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" compoundref="_basic_spectrum_8h" startline="169">f0val</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a2155e90cad5c857f326d4399fd276755" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -316,7 +345,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="106" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="106" bodyend="106"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="107" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="107" bodyend="107"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aeba1d53ba50676257c3cb5fec2f691c8" compoundref="_basic_spectrum_8h" startline="171">parent_dt</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a61c04d4d4a98d4135d3f5e0b59cc85b3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -332,7 +362,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="114" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="114" bodyend="116"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="115" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="115" bodyend="117"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aeba1d53ba50676257c3cb5fec2f691c8" compoundref="_basic_spectrum_8h" startline="171">parent_dt</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" compoundref="_basic_spectrum_8h" startline="173">parent_npts</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a436535a1b2f05e518fc4dc884da2e512" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -347,7 +379,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="119" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="119" bodyend="119"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="120" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="120" bodyend="120"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" compoundref="_basic_spectrum_8h" startline="173">parent_npts</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a1cb29c54744c06553765a3966c8b970f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -366,7 +399,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="124" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="124" bodyend="139"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="125" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="125" bodyend="140"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" compoundref="_basic_spectrum_8h" startline="167">dfval</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" compoundref="_basic_spectrum_8h" startline="169">f0val</references>
         <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a830fc9c8135253aeae01ffd80746b413">nf</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1af690c2deac6b3c2306c15fee9c452a1b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
@@ -386,7 +421,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="141" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="141" bodyend="141"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="142" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="142" bodyend="142"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" compoundref="_basic_spectrum_8h" startline="167">dfval</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a59236bc56e298b485927defff353de70" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -405,7 +441,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="143" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="143" bodyend="143"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="144" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="144" bodyend="144"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" compoundref="_basic_spectrum_8h" startline="169">f0val</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a73a8f75cf63421c696379f57f207a93f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -424,7 +461,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="145" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="145" bodyend="145"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="146" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="146" bodyend="146"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aeba1d53ba50676257c3cb5fec2f691c8" compoundref="_basic_spectrum_8h" startline="171">parent_dt</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a85f411357320b26e22e9d116faa3abe2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -443,7 +481,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="149" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="149" bodyend="149"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="150" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="150" bodyend="150"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" compoundref="_basic_spectrum_8h" startline="173">parent_npts</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1ad0e29676af3782c4ed1efb228ef7637a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -459,7 +498,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="153" column="23"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="154" column="23"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a076bd1632ad16165c842115fd2aab6a9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>double</type>
@@ -480,7 +519,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="156" column="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="157" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a830fc9c8135253aeae01ffd80746b413" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
@@ -496,7 +535,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="158" column="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="159" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1af11c7d672337c3f89c3e063ecf1be4a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>double</type>
@@ -512,7 +551,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="162" column="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="163" column="18"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -533,7 +572,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="19" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="19" bodyend="170"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="19" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="19" bodyend="176"/>
     <listofallmembers>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1ae2c68571058526795e0424e0a76e4e76" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>BasicSpectrum</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1ad6606996a02b573faf65312459352bfc" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>BasicSpectrum</name></member>

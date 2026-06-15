@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -92,12 +135,12 @@ $(function() {
 <table class="directory">
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a76f72268273c2b16fb85dee2e60921d7">length</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>operator=</b>(const TimeWindow &amp;parent) (defined in <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a514252a31fd5d188c9ff5a1e35ad70ab">operator=</a>(const TimeWindow &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#abcfead755182b85b06a7c66b8e5e4925">shift</a>(const double tshift) const</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a47add95b4b08cb15b8bad29453a93358">TimeWindow</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#ad22bf0bb2cf5bceaa0da5c3c04f16996">TimeWindow</a>(const double ts, const double te)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>TimeWindow</b>(const TimeWindow &amp;parent) (defined in <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#ad465d08db8d7c4d173106bd6ab2b4ee6">TimeWindow</a>(const TimeWindow &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

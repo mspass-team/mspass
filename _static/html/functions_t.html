@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -83,8 +126,12 @@ $(function() {
 <div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
 
 <h3><a id="index_t" name="index_t"></a>- t -</h3><ul>
-<li>t0()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries</a></li>
+<li>t0&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#a2fa190c700e90a501cf2f31814269a46">mspass::algorithms::SegmentVectorProperties</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries</a></li>
+<li>t0shift&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ae79b68bf89b4cd4e6001bbf2c491f539">mspass::seismic::BasicTimeSeries</a></li>
+<li>t0shift_is_valid&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af749170531556c0c39ba6916057d2b17">mspass::seismic::BasicTimeSeries</a></li>
 <li>tag&#160;:&#160;<a class="el" href="structmspass_1_1utility_1_1_metadata__typedef.html#a7af59256cae2e29c493e0f93345432d2">mspass::utility::Metadata_typedef</a></li>
+<li>tail&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">mspass::algorithms::BasicTaper</a></li>
+<li>tail_is_enable()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a02092ec778f1e289956bbfde3eff7bcd">mspass::algorithms::BasicTaper</a></li>
 <li>taper_length()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">mspass::algorithms::deconvolution::MTPowerSpectrumEngine</a></li>
 <li>taper_type()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1_top_mute.html#a3e947b3a9c6098695c60bdf3b559bd18">mspass::algorithms::TopMute</a></li>
 <li>tbl_keys()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_antelope_pf.html#ada5c4a1b9407cb17a0fa953946473211">mspass::utility::AntelopePf</a></li>
@@ -93,12 +140,15 @@ $(function() {
 <li>time()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a438b4f6453a4ff2a46de53dfdf3599c2">mspass::seismic::BasicTimeSeries</a></li>
 <li>time_axis()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a8bcb6a1e85d833514d7e9bd28a04d3e8">mspass::seismic::BasicTimeSeries</a></li>
 <li>time_bandwidth_product()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">mspass::algorithms::deconvolution::MTPowerSpectrumEngine</a></li>
+<li>time_is_relative()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a858bde44fbc9801ba833970604c965d1">mspass::seismic::BasicTimeSeries</a></li>
 <li>time_is_UTC()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aaf47da6a5d44415cf8a3b70e9a0bc5d5">mspass::seismic::BasicTimeSeries</a></li>
 <li>time_reference()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a83c9a758b4a05ebddf09e17373b1e656">mspass::seismic::BasicTimeSeries</a></li>
 <li>TimeDomainGIDDecon()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon.html#aa83262f4e7ae78ba6d45e98f5fe7e9e1">mspass::algorithms::deconvolution::TimeDomainGIDDecon</a></li>
+<li>TimeDomainLeastSquareDecon()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a50472278b22bbe99722c55cccf4c1a13">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon</a></li>
 <li>TimeSeries()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_time_series.html#a518cbd17b96169fe12db31f80c82fc8c">mspass::seismic::TimeSeries</a></li>
 <li>timeseries_npts()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a436535a1b2f05e518fc4dc884da2e512">mspass::seismic::BasicSpectrum</a></li>
 <li>TimeSeriesWGaps()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_time_series_w_gaps.html#a6a4b2b0864ba62341790fc16d6aa222c">mspass::seismic::TimeSeriesWGaps</a></li>
+<li>timetype()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac0f23a3d725302665f4ff0c576b39237">mspass::seismic::BasicTimeSeries</a></li>
 <li>TimeWindow()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a47add95b4b08cb15b8bad29453a93358">mspass::algorithms::TimeWindow</a></li>
 <li>tmatrix&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882">mspass::seismic::CoreSeismogram</a></li>
 <li>TopMute()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1_top_mute.html#ac096036720ef3eeeb06510b222caca01">mspass::algorithms::TopMute</a></li>
@@ -107,7 +157,7 @@ $(function() {
 <li>transform()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae9ea31f9e36577a51660c61e0749d4a6">mspass::seismic::CoreSeismogram</a></li>
 <li>translate_origin()&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a5ae88f269425dccb3013c490e6c72295">mspass::seismic::DataGap</a></li>
 <li>tref&#160;:&#160;<a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">mspass::seismic::BasicTimeSeries</a></li>
-<li>type()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_attribute_cross_reference.html#a546084d7cd4b9369ee7db723c3629422">mspass::utility::AttributeCrossReference</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a8472df22024cde279e81c84e9129e4fd">mspass::utility::MetadataDefinitions</a>, <a class="el" href="classmspass_1_1utility_1_1_node_data.html#aa7c6f56ceca095d0af31f456d75954a4">mspass::utility::NodeData</a></li>
+<li>type()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a057dcb38c1912fe5c0a78957cd874d40">mspass::algorithms::deconvolution::ShapingWavelet</a>, <a class="el" href="classmspass_1_1utility_1_1_attribute_cross_reference.html#a546084d7cd4b9369ee7db723c3629422">mspass::utility::AttributeCrossReference</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#ad5cd3bfc81c7fccd83bbb30ef1c2774c">mspass::utility::Metadata</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a8472df22024cde279e81c84e9129e4fd">mspass::utility::MetadataDefinitions</a>, <a class="el" href="classmspass_1_1utility_1_1_node_data.html#aa7c6f56ceca095d0af31f456d75954a4">mspass::utility::NodeData</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

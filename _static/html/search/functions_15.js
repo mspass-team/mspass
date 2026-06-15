@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['wavelet_0',['wavelet',['../classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f',1,'mspass::algorithms::deconvolution::ShapingWavelet']]],
-  ['wavelet_5fnoise_5fspectrum_1',['wavelet_noise_spectrum',['../classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#ab4ec1e4c89908b92369acc64f8d95197',1,'mspass::algorithms::deconvolution::CNR3CDecon']]],
-  ['wavelet_5fspectrum_2',['wavelet_spectrum',['../classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a5615a2e7adc3f4a49e69362031aa5f83',1,'mspass::algorithms::deconvolution::CNR3CDecon']]],
-  ['what_3',['what',['../classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a1dd30086a986a3a0669cd974e65bd563',1,'mspass::utility::MsPASSError']]],
-  ['worst_5ferrors_4',['worst_errors',['../classmspass_1_1utility_1_1_error_logger.html#a78cd3444e267065b7e9858cc27a36103',1,'mspass::utility::ErrorLogger']]],
-  ['writeable_5',['writeable',['../classmspass_1_1utility_1_1_metadata_definitions.html#a2dc9424f37c2535492b34061b8c06e88',1,'mspass::utility::MetadataDefinitions']]]
+  ['validate_0',['validate',['../classmspass_1_1seismic_1_1_logging_ensemble.html#a7de59947da7bc5e8e4a4be2fbe01b93b',1,'mspass::seismic::LoggingEnsemble']]],
+  ['vectorstatistics_1',['vectorstatistics',['../classmspass_1_1utility_1_1_vector_statistics.html#ae3ddde97cedb562028c3a0343bd48e47',1,'mspass::utility::VectorStatistics::VectorStatistics(std::vector&lt; T &gt; din)'],['../classmspass_1_1utility_1_1_vector_statistics.html#aa1e96022417eb6440ea57974d8d7a51e',1,'mspass::utility::VectorStatistics::VectorStatistics(T *din, int n)']]],
+  ['vectortaper_2',['VectorTaper',['../classmspass_1_1algorithms_1_1_vector_taper.html#ab1eed64ca482959a7b370bee80edb33b',1,'mspass::algorithms::VectorTaper']]]
 ];

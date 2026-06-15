@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -99,44 +142,78 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for mspass::algorithms::deconvolution::FFTDeconOperator:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.png" usemap="#mspass::algorithms::deconvolution::FFTDeconOperator_map" alt=""/>
-  <map id="mspass::algorithms::deconvolution::FFTDeconOperator_map" name="mspass::algorithms::deconvolution::FFTDeconOperator_map">
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html" title="Colored Noise Regularized 3C Deconvolution opertor." alt="mspass::algorithms::deconvolution::CNR3CDecon" shape="rect" coords="0,56,352,80"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r_decon_engine.html" alt="mspass::algorithms::deconvolution::CNRDeconEngine" shape="rect" coords="362,56,714,80"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon.html" alt="mspass::algorithms::deconvolution::LeastSquareDecon" shape="rect" coords="724,56,1076,80"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html" title="Multitaper power-stabilized spectral-division deconvolution." alt="mspass::algorithms::deconvolution::MultiTaperSpecDivDecon" shape="rect" coords="1086,56,1438,80"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html" title="Multitaper source-power-stabilized deconvolution." alt="mspass::algorithms::deconvolution::MultiTaperXcorDecon" shape="rect" coords="1448,56,1800,80"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html" title="Noise-aware stable FFT inverse used by NS-GID." alt="mspass::algorithms::deconvolution::NoiseStableDecon" shape="rect" coords="1810,56,2162,80"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html" alt="mspass::algorithms::deconvolution::WaterLevelDecon" shape="rect" coords="2172,56,2524,80"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator__inherit__graph.png" border="0" usemap="#amspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_inherit__map" id="amspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_inherit__map">
+<area shape="rect" title="Object to hold components needed in all fft based decon algorithms." alt="" coords="5,220,256,260"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html" title="Colored Noise Regularized 3C Deconvolution opertor." alt="" coords="317,5,533,45"/>
+<area shape="poly" title=" " alt="" coords="151,207,213,130,255,90,303,55,327,43,329,48,305,60,259,94,217,134,155,210"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r_decon_engine.html" title="Colored&#45;noise regularized three&#45;component deconvolution engine." alt="" coords="304,69,547,109"/>
+<area shape="poly" title=" " alt="" coords="164,209,227,163,303,119,334,107,336,112,305,124,229,167,168,213"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon.html" title="Scalar least&#45;squares deconvolution operator." alt="" coords="320,134,531,189"/>
+<area shape="poly" title=" " alt="" coords="219,214,321,186,323,191,220,219"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html" title="Multitaper power&#45;stabilized spectral&#45;division deconvolution." alt="" coords="326,213,525,267"/>
+<area shape="poly" title=" " alt="" coords="270,237,326,237,326,243,270,243"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html" title="Multitaper source&#45;power&#45;stabilized deconvolution." alt="" coords="326,291,525,346"/>
+<area shape="poly" title=" " alt="" coords="220,261,327,290,325,295,219,266"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html" title="Noise&#45;aware stable FFT inverse used by NS&#45;GID." alt="" coords="321,370,529,425"/>
+<area shape="poly" title=" " alt="" coords="169,266,231,311,305,355,334,367,331,372,303,360,228,316,166,271"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html" title="Scalar water&#45;level deconvolution operator." alt="" coords="324,449,527,503"/>
+<area shape="poly" title=" " alt="" coords="154,270,216,352,258,396,305,434,328,446,325,451,303,438,254,400,212,355,150,273"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for mspass::algorithms::deconvolution::FFTDeconOperator:</div>
+<div class="dyncontent">
+<div class="center"><img src="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator__coll__graph.png" border="0" usemap="#amspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_coll__map" alt="Collaboration graph"/></div>
+<map name="amspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_coll__map" id="amspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_coll__map">
+<area shape="rect" title="Object to hold components needed in all fft based decon algorithms." alt="" coords="5,108,256,148"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html" title="Interfacing object to ease conversion between FORTRAN and C++ complex." alt="" coords="19,5,242,45"/>
+<area shape="poly" title=" " alt="" coords="133,59,133,108,128,108,128,59"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a1aa1a6a6bf04b24d0c76d45e73c3b421" id="r_a1aa1a6a6bf04b24d0c76d45e73c3b421"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1aa1a6a6bf04b24d0c76d45e73c3b421">FFTDeconOperator</a> ()</td></tr>
+<tr class="memdesc:a1aa1a6a6bf04b24d0c76d45e73c3b421"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty FFT operator shell.  <br /></td></tr>
+<tr class="separator:a1aa1a6a6bf04b24d0c76d45e73c3b421"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6851bec74d3f288eaf1de36cf1d7953b" id="r_a6851bec74d3f288eaf1de36cf1d7953b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a6851bec74d3f288eaf1de36cf1d7953b">FFTDeconOperator</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)</td></tr>
+<tr class="memdesc:a6851bec74d3f288eaf1de36cf1d7953b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from deconvolution Metadata.  <br /></td></tr>
 <tr class="separator:a6851bec74d3f288eaf1de36cf1d7953b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3df395f4ff5bae8b891bee33f107e46" id="r_af3df395f4ff5bae8b891bee33f107e46"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#af3df395f4ff5bae8b891bee33f107e46">FFTDeconOperator</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a> &amp;parent)</td></tr>
+<tr class="memdesc:af3df395f4ff5bae8b891bee33f107e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor.  <br /></td></tr>
 <tr class="separator:af3df395f4ff5bae8b891bee33f107e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c9a93bff093cc3f5fbb7991e2812c23" id="r_a5c9a93bff093cc3f5fbb7991e2812c23"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a5c9a93bff093cc3f5fbb7991e2812c23">~FFTDeconOperator</a> ()</td></tr>
+<tr class="memdesc:a5c9a93bff093cc3f5fbb7991e2812c23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release allocated GSL FFT work objects.  <br /></td></tr>
+<tr class="separator:a5c9a93bff093cc3f5fbb7991e2812c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1040f97ddf7bb7bd2c33ac9a7f99a79" id="r_ae1040f97ddf7bb7bd2c33ac9a7f99a79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#ae1040f97ddf7bb7bd2c33ac9a7f99a79">operator=</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a> &amp;parent)</td></tr>
+<tr class="memdesc:ae1040f97ddf7bb7bd2c33ac9a7f99a79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign FFT size and lag shift from another operator.  <br /></td></tr>
 <tr class="separator:ae1040f97ddf7bb7bd2c33ac9a7f99a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ce6831f67065f17fe7b30aa014eaaf3" id="r_a0ce6831f67065f17fe7b30aa014eaaf3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a0ce6831f67065f17fe7b30aa014eaaf3">changeparameter</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)</td></tr>
+<tr class="memdesc:a0ce6831f67065f17fe7b30aa014eaaf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconfigure the FFT operator from Metadata.  <br /></td></tr>
 <tr class="separator:a0ce6831f67065f17fe7b30aa014eaaf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeaceb977e9797e483bf3a8ba030743c6" id="r_aeaceb977e9797e483bf3a8ba030743c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aeaceb977e9797e483bf3a8ba030743c6">change_size</a> (const int nfft_new)</td></tr>
+<tr class="memdesc:aeaceb977e9797e483bf3a8ba030743c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the FFT work-buffer length.  <br /></td></tr>
 <tr class="separator:aeaceb977e9797e483bf3a8ba030743c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d3f1776e68b20fff386d4bc19e51550" id="r_a3d3f1776e68b20fff386d4bc19e51550"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3d3f1776e68b20fff386d4bc19e51550">change_shift</a> (const int shift)</td></tr>
+<tr class="memdesc:a3d3f1776e68b20fff386d4bc19e51550"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the sample offset used to unwrap deconvolution lag windows.  <br /></td></tr>
 <tr class="separator:a3d3f1776e68b20fff386d4bc19e51550"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf21bce1d1519ece5e9879d03e7f7e5a" id="r_abf21bce1d1519ece5e9879d03e7f7e5a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#abf21bce1d1519ece5e9879d03e7f7e5a">get_size</a> ()</td></tr>
+<tr class="memdesc:abf21bce1d1519ece5e9879d03e7f7e5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current FFT work-buffer length.  <br /></td></tr>
 <tr class="separator:abf21bce1d1519ece5e9879d03e7f7e5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad63458bb8ad8a04a66de1c140152fc96" id="r_ad63458bb8ad8a04a66de1c140152fc96"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#ad63458bb8ad8a04a66de1c140152fc96">get_shift</a> ()</td></tr>
+<tr class="memdesc:ad63458bb8ad8a04a66de1c140152fc96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current deconvolution lag-window sample shift.  <br /></td></tr>
 <tr class="separator:ad63458bb8ad8a04a66de1c140152fc96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a494e951fb5fceffc545e411a8932d782" id="r_a494e951fb5fceffc545e411a8932d782"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a494e951fb5fceffc545e411a8932d782">operator_size</a> ()</td></tr>
+<tr class="memdesc:a494e951fb5fceffc545e411a8932d782"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current FFT work-buffer length.  <br /></td></tr>
 <tr class="separator:a494e951fb5fceffc545e411a8932d782"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f399747b50f4f98f46b643f23af0ee1" id="r_a6f399747b50f4f98f46b643f23af0ee1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a6f399747b50f4f98f46b643f23af0ee1">operator_shift</a> ()</td></tr>
+<tr class="memdesc:a6f399747b50f4f98f46b643f23af0ee1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current deconvolution lag-window sample shift.  <br /></td></tr>
 <tr class="separator:a6f399747b50f4f98f46b643f23af0ee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf84c339f3b540543ee8c3487997908a" id="r_adf84c339f3b540543ee8c3487997908a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#adf84c339f3b540543ee8c3487997908a">df</a> (const double dt)</td></tr>
+<tr class="memdesc:adf84c339f3b540543ee8c3487997908a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return frequency spacing for the current FFT length.  <br /></td></tr>
 <tr class="separator:adf84c339f3b540543ee8c3487997908a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3473dc7f359332dbf5a685efe30a684b" id="r_a3473dc7f359332dbf5a685efe30a684b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FourierInverse</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> &amp;winv, const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> &amp;sw, const double dt, const double t0parent)</td></tr>
+<tr class="memitem:a3473dc7f359332dbf5a685efe30a684b" id="r_a3473dc7f359332dbf5a685efe30a684b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FourierInverse</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> &amp;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a>, const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> &amp;sw, const double dt, const double t0parent)</td></tr>
 <tr class="memdesc:a3473dc7f359332dbf5a685efe30a684b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return inverse wavelet for Fourier methods.  <br /></td></tr>
 <tr class="separator:a3473dc7f359332dbf5a685efe30a684b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -144,18 +221,23 @@ Public Member Functions</h2></td></tr>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:aa8619effc38e9e0f3927c73eb9b838f0" id="r_aa8619effc38e9e0f3927c73eb9b838f0"><td class="memItemLeft" align="right" valign="top"><a id="aa8619effc38e9e0f3927c73eb9b838f0" name="aa8619effc38e9e0f3927c73eb9b838f0"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>nfft</b></td></tr>
+<tr class="memdesc:aa8619effc38e9e0f3927c73eb9b838f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current FFT work-buffer length in samples. <br /></td></tr>
 <tr class="separator:aa8619effc38e9e0f3927c73eb9b838f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7034bf16dcf7ea16563a7032ce19b08e" id="r_a7034bf16dcf7ea16563a7032ce19b08e"><td class="memItemLeft" align="right" valign="top"><a id="a7034bf16dcf7ea16563a7032ce19b08e" name="a7034bf16dcf7ea16563a7032ce19b08e"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>sample_shift</b></td></tr>
+<tr class="memdesc:a7034bf16dcf7ea16563a7032ce19b08e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample offset used to place zero lag in deconvolution outputs. <br /></td></tr>
 <tr class="separator:a7034bf16dcf7ea16563a7032ce19b08e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3480b78a08228fc2b2c79809b98335d5" id="r_a3480b78a08228fc2b2c79809b98335d5"><td class="memItemLeft" align="right" valign="top"><a id="a3480b78a08228fc2b2c79809b98335d5" name="a3480b78a08228fc2b2c79809b98335d5"></a>
 gsl_fft_complex_wavetable *&#160;</td><td class="memItemRight" valign="bottom"><b>wavetable</b></td></tr>
+<tr class="memdesc:a3480b78a08228fc2b2c79809b98335d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">GSL factorization table allocated for nfft. <br /></td></tr>
 <tr class="separator:a3480b78a08228fc2b2c79809b98335d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1121967f87437c76cfbb1d8a8fb592e8" id="r_a1121967f87437c76cfbb1d8a8fb592e8"><td class="memItemLeft" align="right" valign="top"><a id="a1121967f87437c76cfbb1d8a8fb592e8" name="a1121967f87437c76cfbb1d8a8fb592e8"></a>
 gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><b>workspace</b></td></tr>
+<tr class="memdesc:a1121967f87437c76cfbb1d8a8fb592e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">GSL scratch workspace allocated for nfft. <br /></td></tr>
 <tr class="separator:a1121967f87437c76cfbb1d8a8fb592e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66026b54b517bc3797a1992ca332bc64" id="r_a66026b54b517bc3797a1992ca332bc64"><td class="memItemLeft" align="right" valign="top"><a id="a66026b54b517bc3797a1992ca332bc64" name="a66026b54b517bc3797a1992ca332bc64"></a>
 <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a>&#160;</td><td class="memItemRight" valign="bottom"><b>winv</b></td></tr>
+<tr class="memdesc:a66026b54b517bc3797a1992ca332bc64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frequency-domain inverse wavelet coefficients for derived operators. <br /></td></tr>
 <tr class="separator:a66026b54b517bc3797a1992ca332bc64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -177,13 +259,22 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Construct an empty FFT operator shell. </p>
+<p>The FFT length is initialized to zero and GSL work objects are left unallocated until change_size or changeparameter supplies an operator size. </p>
 <div class="fragment"><div class="line"><span class="lineno">   13</span>                                   {</div>
-<div class="line"><span class="lineno">   14</span>  nfft = 0;</div>
-<div class="line"><span class="lineno">   15</span>  sample_shift = 0;</div>
-<div class="line"><span class="lineno">   16</span>  wavetable = NULL;</div>
-<div class="line"><span class="lineno">   17</span>  workspace = NULL;</div>
+<div class="line"><span class="lineno">   14</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a> = 0;</div>
+<div class="line"><span class="lineno">   15</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a> = 0;</div>
+<div class="line"><span class="lineno">   16</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a> = NULL;</div>
+<div class="line"><span class="lineno">   17</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a> = NULL;</div>
 <div class="line"><span class="lineno">   18</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a1121967f87437c76cfbb1d8a8fb592e8"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">mspass::algorithms::deconvolution::FFTDeconOperator::workspace</a></div><div class="ttdeci">gsl_fft_complex_workspace * workspace</div><div class="ttdoc">GSL scratch workspace allocated for nfft.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:101</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a3480b78a08228fc2b2c79809b98335d5"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">mspass::algorithms::deconvolution::FFTDeconOperator::wavetable</a></div><div class="ttdeci">gsl_fft_complex_wavetable * wavetable</div><div class="ttdoc">GSL factorization table allocated for nfft.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:99</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a7034bf16dcf7ea16563a7032ce19b08e"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">mspass::algorithms::deconvolution::FFTDeconOperator::sample_shift</a></div><div class="ttdeci">int sample_shift</div><div class="ttdoc">Sample offset used to place zero lag in deconvolution outputs.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:97</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_aa8619effc38e9e0f3927c73eb9b838f0"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</a></div><div class="ttdeci">int nfft</div><div class="ttdoc">Current FFT work-buffer length in samples.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:95</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>.</p>
+
 </div>
 </div>
 <a id="a6851bec74d3f288eaf1de36cf1d7953b" name="a6851bec74d3f288eaf1de36cf1d7953b"></a>
@@ -201,6 +292,9 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Construct from deconvolution Metadata. </p>
+<p>Uses operator_nfft, target_sample_interval, and the deconvolution data window entries in md to choose a power-of-two FFT length, compute the standard lag-window sample shift, and allocate the GSL FFT work objects. </p>
 <div class="fragment"><div class="line"><span class="lineno">   19</span>                                                     {</div>
 <div class="line"><span class="lineno">   20</span>  <span class="keywordflow">try</span> {</div>
 <div class="line"><span class="lineno">   21</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;FFTDeconOperator Metadata constructor:  &quot;</span>);</div>
@@ -216,29 +310,31 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><span class="lineno">   31</span>                        ErrorSeverity::Fatal);</div>
 <div class="line"><span class="lineno">   32</span>    <span class="keywordtype">int</span> nfftpf = GetIntRequired(md, <span class="stringliteral">&quot;operator_nfft&quot;</span>);</div>
 <div class="line"><span class="lineno">   33</span>    <span class="comment">/* We force a power of 2 algorithm for efficiency and always round up*/</span></div>
-<div class="line"><span class="lineno">   34</span>    this-&gt;nfft = nextPowerOf2(nfftpf);</div>
+<div class="line"><span class="lineno">   34</span>    this-&gt;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a> = nextPowerOf2(nfftpf);</div>
 <div class="line"><span class="lineno">   35</span>    <span class="comment">/* We compute the sample shift from the window start time and dt.  This</span></div>
 <div class="line"><span class="lineno">   36</span><span class="comment">     * assures the output will be phase shifted so zero lag is at the zero</span></div>
 <div class="line"><span class="lineno">   37</span><span class="comment">     * position of the array.   Necessary because operators using this object</span></div>
 <div class="line"><span class="lineno">   38</span><span class="comment">     * internally only return a raw vector of samples not a child of</span></div>
 <div class="line"><span class="lineno">   39</span><span class="comment">     * BasicTimeSeries. */</span></div>
-<div class="line"><span class="lineno">   40</span>    this-&gt;sample_shift = ComputeDeconSampleShift(md);</div>
-<div class="line"><span class="lineno">   41</span>    <span class="keywordflow">if</span> (this-&gt;sample_shift &lt; 0)</div>
+<div class="line"><span class="lineno">   40</span>    this-&gt;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a> = ComputeDeconSampleShift(md);</div>
+<div class="line"><span class="lineno">   41</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a> &lt; 0)</div>
 <div class="line"><span class="lineno">   42</span>      <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
 <div class="line"><span class="lineno">   43</span>                            <span class="stringliteral">&quot;illegal sample_shift parameter - must be ge 0&quot;</span>,</div>
 <div class="line"><span class="lineno">   44</span>                        ErrorSeverity::Fatal);</div>
-<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">if</span> ((this-&gt;sample_shift) &gt; nfft)</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">if</span> ((this-&gt;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>) &gt; <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>)</div>
 <div class="line"><span class="lineno">   46</span>      <span class="keywordflow">throw</span> MsPASSError(</div>
 <div class="line"><span class="lineno">   47</span>          base_error + <span class="stringliteral">&quot;Computed shift parameter exceeds length of fft\n&quot;</span> +</div>
 <div class="line"><span class="lineno">   48</span>              <span class="stringliteral">&quot;Deconvolution data window parameters are probably nonsense&quot;</span>,</div>
 <div class="line"><span class="lineno">   49</span>          ErrorSeverity::Fatal);</div>
-<div class="line"><span class="lineno">   50</span>    wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
-<div class="line"><span class="lineno">   51</span>    workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">   50</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a> = gsl_fft_complex_wavetable_alloc(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">   51</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a> = gsl_fft_complex_workspace_alloc(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
 <div class="line"><span class="lineno">   52</span>  } <span class="keywordflow">catch</span> (...) {</div>
 <div class="line"><span class="lineno">   53</span>    <span class="keywordflow">throw</span>;</div>
 <div class="line"><span class="lineno">   54</span>  };</div>
 <div class="line"><span class="lineno">   55</span>}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>.</p>
+
 </div>
 </div>
 <a id="af3df395f4ff5bae8b891bee33f107e46" name="af3df395f4ff5bae8b891bee33f107e46"></a>
@@ -256,14 +352,19 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Copy constructor. </p>
+<p>Copies the FFT length and sample shift while allocating independent GSL work objects for the new operator. </p>
 <div class="fragment"><div class="line"><span class="lineno">   56</span>                                                                 {</div>
-<div class="line"><span class="lineno">   57</span>  nfft = parent.nfft;</div>
-<div class="line"><span class="lineno">   58</span>  sample_shift = parent.sample_shift;</div>
+<div class="line"><span class="lineno">   57</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a> = parent.nfft;</div>
+<div class="line"><span class="lineno">   58</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a> = parent.sample_shift;</div>
 <div class="line"><span class="lineno">   59</span>  <span class="comment">/* copies need their own work space */</span></div>
-<div class="line"><span class="lineno">   60</span>  wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
-<div class="line"><span class="lineno">   61</span>  workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">   60</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a> = gsl_fft_complex_wavetable_alloc(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">   61</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a> = gsl_fft_complex_workspace_alloc(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
 <div class="line"><span class="lineno">   62</span>}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>.</p>
+
 </div>
 </div>
 <a id="a5c9a93bff093cc3f5fbb7991e2812c23" name="a5c9a93bff093cc3f5fbb7991e2812c23"></a>
@@ -280,13 +381,17 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Release allocated GSL FFT work objects. </p>
 <div class="fragment"><div class="line"><span class="lineno">   63</span>                                    {</div>
-<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">if</span> (wavetable != NULL)</div>
-<div class="line"><span class="lineno">   65</span>    gsl_fft_complex_wavetable_free(wavetable);</div>
-<div class="line"><span class="lineno">   66</span>  <span class="keywordflow">if</span> (workspace != NULL)</div>
-<div class="line"><span class="lineno">   67</span>    gsl_fft_complex_workspace_free(workspace);</div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a> != NULL)</div>
+<div class="line"><span class="lineno">   65</span>    gsl_fft_complex_wavetable_free(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>);</div>
+<div class="line"><span class="lineno">   66</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a> != NULL)</div>
+<div class="line"><span class="lineno">   67</span>    gsl_fft_complex_workspace_free(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
 <div class="line"><span class="lineno">   68</span>}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -313,8 +418,12 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   30</span>{ sample_shift = shift; };</div>
+
+<p>Set the sample offset used to unwrap deconvolution lag windows. </p>
+<div class="fragment"><div class="line"><span class="lineno">   62</span>{ <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a> = shift; };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>.</p>
+
 </div>
 </div>
 <a id="aeaceb977e9797e483bf3a8ba030743c6" name="aeaceb977e9797e483bf3a8ba030743c6"></a>
@@ -332,22 +441,27 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Change the FFT work-buffer length. </p>
+<p>Frees any existing GSL FFT work objects, stores nfft_new as the operator length, and allocates new work objects for that size. </p>
 <div class="fragment"><div class="line"><span class="lineno">  120</span>                                              {</div>
 <div class="line"><span class="lineno">  121</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">if</span> (nfft != 0) {</div>
-<div class="line"><span class="lineno">  123</span>      <span class="keywordflow">if</span> (wavetable != NULL)</div>
-<div class="line"><span class="lineno">  124</span>        gsl_fft_complex_wavetable_free(wavetable);</div>
-<div class="line"><span class="lineno">  125</span>      <span class="keywordflow">if</span> (workspace != NULL)</div>
-<div class="line"><span class="lineno">  126</span>        gsl_fft_complex_workspace_free(workspace);</div>
+<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a> != 0) {</div>
+<div class="line"><span class="lineno">  123</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a> != NULL)</div>
+<div class="line"><span class="lineno">  124</span>        gsl_fft_complex_wavetable_free(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>);</div>
+<div class="line"><span class="lineno">  125</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a> != NULL)</div>
+<div class="line"><span class="lineno">  126</span>        gsl_fft_complex_workspace_free(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
 <div class="line"><span class="lineno">  127</span>    }</div>
-<div class="line"><span class="lineno">  128</span>    nfft = n;</div>
-<div class="line"><span class="lineno">  129</span>    wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
-<div class="line"><span class="lineno">  130</span>    workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">  128</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a> = n;</div>
+<div class="line"><span class="lineno">  129</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a> = gsl_fft_complex_wavetable_alloc(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">  130</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a> = gsl_fft_complex_workspace_alloc(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
 <div class="line"><span class="lineno">  131</span>  } <span class="keywordflow">catch</span> (...) {</div>
 <div class="line"><span class="lineno">  132</span>    <span class="keywordflow">throw</span>;</div>
 <div class="line"><span class="lineno">  133</span>  };</div>
 <div class="line"><span class="lineno">  134</span>}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>.</p>
+
 </div>
 </div>
 <a id="a0ce6831f67065f17fe7b30aa014eaaf3" name="a0ce6831f67065f17fe7b30aa014eaaf3"></a>
@@ -365,6 +479,9 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Reconfigure the FFT operator from Metadata. </p>
+<p>Recomputes the power-of-two FFT length and deconvolution sample shift from md. Existing GSL work objects are replaced only when the FFT length changes. </p>
 <div class="fragment"><div class="line"><span class="lineno">   79</span>                                                         {</div>
 <div class="line"><span class="lineno">   80</span>  <span class="keywordflow">try</span> {</div>
 <div class="line"><span class="lineno">   81</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;FFTDeconOperator::changeparameter:  &quot;</span>);</div>
@@ -388,25 +505,27 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><span class="lineno">   99</span>      <span class="keywordflow">throw</span> MsPASSError(</div>
 <div class="line"><span class="lineno">  100</span>          base_error + <span class="stringliteral">&quot;computed sample_shift exceeds length of fft&quot;</span>,</div>
 <div class="line"><span class="lineno">  101</span>          ErrorSeverity::Fatal);</div>
-<div class="line"><span class="lineno">  102</span>    <span class="keywordflow">if</span> (nfft_test != nfft) {</div>
+<div class="line"><span class="lineno">  102</span>    <span class="keywordflow">if</span> (nfft_test != <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>) {</div>
 <div class="line"><span class="lineno">  103</span>      gsl_fft_complex_wavetable *new_wavetable =</div>
 <div class="line"><span class="lineno">  104</span>          gsl_fft_complex_wavetable_alloc(nfft_test);</div>
 <div class="line"><span class="lineno">  105</span>      gsl_fft_complex_workspace *new_workspace =</div>
 <div class="line"><span class="lineno">  106</span>          gsl_fft_complex_workspace_alloc(nfft_test);</div>
-<div class="line"><span class="lineno">  107</span>      <span class="keywordflow">if</span> (wavetable != NULL)</div>
-<div class="line"><span class="lineno">  108</span>        gsl_fft_complex_wavetable_free(wavetable);</div>
-<div class="line"><span class="lineno">  109</span>      <span class="keywordflow">if</span> (workspace != NULL)</div>
-<div class="line"><span class="lineno">  110</span>        gsl_fft_complex_workspace_free(workspace);</div>
-<div class="line"><span class="lineno">  111</span>      wavetable = new_wavetable;</div>
-<div class="line"><span class="lineno">  112</span>      workspace = new_workspace;</div>
-<div class="line"><span class="lineno">  113</span>      nfft = nfft_test;</div>
+<div class="line"><span class="lineno">  107</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a> != NULL)</div>
+<div class="line"><span class="lineno">  108</span>        gsl_fft_complex_wavetable_free(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>);</div>
+<div class="line"><span class="lineno">  109</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a> != NULL)</div>
+<div class="line"><span class="lineno">  110</span>        gsl_fft_complex_workspace_free(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
+<div class="line"><span class="lineno">  111</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a> = new_wavetable;</div>
+<div class="line"><span class="lineno">  112</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a> = new_workspace;</div>
+<div class="line"><span class="lineno">  113</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a> = nfft_test;</div>
 <div class="line"><span class="lineno">  114</span>    }</div>
-<div class="line"><span class="lineno">  115</span>    sample_shift = sample_shift_test;</div>
+<div class="line"><span class="lineno">  115</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a> = sample_shift_test;</div>
 <div class="line"><span class="lineno">  116</span>  } <span class="keywordflow">catch</span> (...) {</div>
 <div class="line"><span class="lineno">  117</span>    <span class="keywordflow">throw</span>;</div>
 <div class="line"><span class="lineno">  118</span>  };</div>
 <div class="line"><span class="lineno">  119</span>}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>.</p>
+
 </div>
 </div>
 <a id="adf84c339f3b540543ee8c3487997908a" name="adf84c339f3b540543ee8c3487997908a"></a>
@@ -432,12 +551,23 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   35</span>                             {</div>
-<div class="line"><span class="lineno">   36</span>    <span class="keywordtype">double</span> period;</div>
-<div class="line"><span class="lineno">   37</span>    period = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nfft) * dt;</div>
-<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">return</span> 1.0 / period;</div>
-<div class="line"><span class="lineno">   39</span>  };</div>
+
+<p>Return frequency spacing for the current FFT length. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>sample interval of the time-domain signal. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 / (nfft * dt), the frequency-bin spacing for this operator. </dd></dl>
+<div class="fragment"><div class="line"><span class="lineno">   76</span>                             {</div>
+<div class="line"><span class="lineno">   77</span>    <span class="keywordtype">double</span> period;</div>
+<div class="line"><span class="lineno">   78</span>    period = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>) * dt;</div>
+<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">return</span> 1.0 / period;</div>
+<div class="line"><span class="lineno">   80</span>  };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>.</p>
+
 </div>
 </div>
 <a id="a3473dc7f359332dbf5a685efe30a684b" name="a3473dc7f359332dbf5a685efe30a684b"></a>
@@ -491,28 +621,28 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><span class="lineno">  154</span><span class="comment">     * showed they created valid results only if the filter used a</span></div>
 <div class="line"><span class="lineno">  155</span><span class="comment">     * circular shift of nfft/2.   This sets that as a requirement here. */</span></div>
 <div class="line"><span class="lineno">  156</span>    <span class="keywordtype">int</span> ntest;</div>
-<div class="line"><span class="lineno">  157</span>    ntest = winv.size();</div>
-<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">if</span> (ntest != nfft)</div>
+<div class="line"><span class="lineno">  157</span>    ntest = <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a>.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">size</a>();</div>
+<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">if</span> (ntest != <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>)</div>
 <div class="line"><span class="lineno">  159</span>      <span class="keywordflow">throw</span> MsPASSError(</div>
 <div class="line"><span class="lineno">  160</span>          base_error +</div>
 <div class="line"><span class="lineno">  161</span>              <span class="stringliteral">&quot;wavelet inverse fourier array size mismatch with operator&quot;</span>,</div>
 <div class="line"><span class="lineno">  162</span>          ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  163</span>    <span class="keywordflow">if</span> (sw.size() != nfft)</div>
+<div class="line"><span class="lineno">  163</span>    <span class="keywordflow">if</span> (sw.size() != <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>)</div>
 <div class="line"><span class="lineno">  164</span>      <span class="keywordflow">throw</span> MsPASSError(</div>
 <div class="line"><span class="lineno">  165</span>          base_error +</div>
 <div class="line"><span class="lineno">  166</span>              <span class="stringliteral">&quot;shaping wavelet fourier array size mismatch with operator&quot;</span>,</div>
 <div class="line"><span class="lineno">  167</span>          ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  168</span>    ComplexArray winv_work(winv);</div>
+<div class="line"><span class="lineno">  168</span>    ComplexArray winv_work(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a>);</div>
 <div class="line"><span class="lineno">  169</span>    <span class="comment">/* This applies the shaping wavelet*/</span></div>
 <div class="line"><span class="lineno">  170</span>    winv_work *= sw;</div>
-<div class="line"><span class="lineno">  171</span>    gsl_fft_complex_inverse(winv_work.ptr(), 1, nfft, wavetable, workspace);</div>
+<div class="line"><span class="lineno">  171</span>    gsl_fft_complex_inverse(winv_work.ptr(), 1, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
 <div class="line"><span class="lineno">  172</span>    CoreTimeSeries result;</div>
 <div class="line"><span class="lineno">  173</span>    result.set_t0(t0parent);</div>
 <div class="line"><span class="lineno">  174</span>    result.set_dt(dt);</div>
 <div class="line"><span class="lineno">  175</span>    result.set_live();</div>
 <div class="line"><span class="lineno">  176</span>    <span class="comment">/* Note this new api method initializes s all zeros so we need only set</span></div>
 <div class="line"><span class="lineno">  177</span><span class="comment">    the values not use push back below */</span></div>
-<div class="line"><span class="lineno">  178</span>    result.set_npts(nfft);</div>
+<div class="line"><span class="lineno">  178</span>    result.set_npts(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
 <div class="line"><span class="lineno">  179</span>    result.set_tref(TimeReferenceType::Relative);</div>
 <div class="line"><span class="lineno">  180</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; winv_work.size(); ++k)</div>
 <div class="line"><span class="lineno">  181</span>      result.s[k] = winv_work[k].real();</div>
@@ -521,8 +651,10 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><span class="lineno">  184</span>    <span class="keywordflow">throw</span>;</div>
 <div class="line"><span class="lineno">  185</span>  };</div>
 <div class="line"><span class="lineno">  186</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_html_a4fb1f0df8241bf1aa07ad3012464250f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">mspass::algorithms::deconvolution::ComplexArray::size</a></div><div class="ttdeci">int size() const</div><div class="ttdef"><b>Definition</b> ComplexArray.cc:275</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a66026b54b517bc3797a1992ca332bc64"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">mspass::algorithms::deconvolution::FFTDeconOperator::winv</a></div><div class="ttdeci">ComplexArray winv</div><div class="ttdoc">Frequency-domain inverse wavelet coefficients for derived operators.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:103</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries::set_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1ca7ba8bcd8337bd49d438664e74966d">mspass::seismic::BasicTimeSeries::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a9200882ac321b82d6f1471f3c5ebc8e5">mspass::algorithms::deconvolution::ComplexArray::ptr()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries::set_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1ca7ba8bcd8337bd49d438664e74966d">mspass::seismic::BasicTimeSeries::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">mspass::algorithms::deconvolution::ComplexArray::size()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>.</p>
 
 </div>
 </div>
@@ -548,8 +680,12 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   32</span>{ <span class="keywordflow">return</span> sample_shift; };</div>
+
+<p>Return the current deconvolution lag-window sample shift. </p>
+<div class="fragment"><div class="line"><span class="lineno">   66</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>; };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>.</p>
+
 </div>
 </div>
 <a id="abf21bce1d1519ece5e9879d03e7f7e5a" name="abf21bce1d1519ece5e9879d03e7f7e5a"></a>
@@ -574,8 +710,12 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   31</span>{ <span class="keywordflow">return</span> nfft; };</div>
+
+<p>Return the current FFT work-buffer length. </p>
+<div class="fragment"><div class="line"><span class="lineno">   64</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>; };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>.</p>
+
 </div>
 </div>
 <a id="ae1040f97ddf7bb7bd2c33ac9a7f99a79" name="ae1040f97ddf7bb7bd2c33ac9a7f99a79"></a>
@@ -593,17 +733,22 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Assign FFT size and lag shift from another operator. </p>
+<p>The assigned operator receives its own GSL wavetable and workspace. </p>
 <div class="fragment"><div class="line"><span class="lineno">   69</span>                                                                            {</div>
 <div class="line"><span class="lineno">   70</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;parent) {</div>
-<div class="line"><span class="lineno">   71</span>    nfft = parent.nfft;</div>
-<div class="line"><span class="lineno">   72</span>    sample_shift = parent.sample_shift;</div>
+<div class="line"><span class="lineno">   71</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a> = parent.nfft;</div>
+<div class="line"><span class="lineno">   72</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a> = parent.sample_shift;</div>
 <div class="line"><span class="lineno">   73</span>    <span class="comment">/* copies need their own work space */</span></div>
-<div class="line"><span class="lineno">   74</span>    wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
-<div class="line"><span class="lineno">   75</span>    workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">   74</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a> = gsl_fft_complex_wavetable_alloc(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">   75</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a> = gsl_fft_complex_workspace_alloc(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
 <div class="line"><span class="lineno">   76</span>  }</div>
 <div class="line"><span class="lineno">   77</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
 <div class="line"><span class="lineno">   78</span>}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>.</p>
+
 </div>
 </div>
 <a id="a6f399747b50f4f98f46b643f23af0ee1" name="a6f399747b50f4f98f46b643f23af0ee1"></a>
@@ -628,8 +773,12 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   34</span>{ <span class="keywordflow">return</span> sample_shift; };</div>
+
+<p>Return the current deconvolution lag-window sample shift. </p>
+<div class="fragment"><div class="line"><span class="lineno">   70</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>; };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>.</p>
+
 </div>
 </div>
 <a id="a494e951fb5fceffc545e411a8932d782" name="a494e951fb5fceffc545e411a8932d782"></a>
@@ -654,8 +803,12 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(nfft); };</div>
+
+<p>Return the current FFT work-buffer length. </p>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>); };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>

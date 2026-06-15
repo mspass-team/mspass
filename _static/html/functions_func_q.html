@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -85,7 +128,7 @@ $(function() {
 <h3><a id="index_q" name="index_q"></a>- q -</h3><ul>
 <li>q1_4()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_vector_statistics.html#a5f4e279cde8acf41e6f77b3e01c8ee70">mspass::utility::VectorStatistics&lt; T &gt;</a></li>
 <li>q3_4()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_vector_statistics.html#a45eb0fa880a9f72b08e9cb92c9725c92">mspass::utility::VectorStatistics&lt; T &gt;</a></li>
-<li>QCMetrics()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html#a46a3cc2e931b6d5409421237cf06356d">mspass::algorithms::deconvolution::Base3CDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a250882407c9755fc4e3f822833b93ea0">mspass::algorithms::deconvolution::CNR3CDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon.html#abe3eeab14e58abf1385eeca173cb1730">mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon.html#a9546ad7acceb273efbfff836d4e804b9">mspass::algorithms::deconvolution::LeastSquareDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html#abe73bf7bdbd568b1d2066942886aebbc">mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#ab7793863452d91d3864bff9a247d6699">mspass::algorithms::deconvolution::MultiTaperXcorDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html#a026a23ca70213ae84f7a189b3e18985a">mspass::algorithms::deconvolution::NoiseStableDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#af683c2f25e91155c2bc1f81f9b62bbb1">mspass::algorithms::deconvolution::ScalarDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon.html#a08fb15f476e429b2a93801c61ce581a3">mspass::algorithms::deconvolution::TimeDomainGIDDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a0a7439911588bbbd51df7d3171ce2ef8">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html#a4065e7b200435241ac2e80da7ba59e0a">mspass::algorithms::deconvolution::WaterLevelDecon</a></li>
+<li>QCMetrics()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html#a46a3cc2e931b6d5409421237cf06356d">mspass::algorithms::deconvolution::Base3CDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a250882407c9755fc4e3f822833b93ea0">mspass::algorithms::deconvolution::CNR3CDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r_decon_engine.html#adbaea0375ab6bf31421909243557b21b">mspass::algorithms::deconvolution::CNRDeconEngine</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon.html#abe3eeab14e58abf1385eeca173cb1730">mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon.html#a9546ad7acceb273efbfff836d4e804b9">mspass::algorithms::deconvolution::LeastSquareDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html#abe73bf7bdbd568b1d2066942886aebbc">mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#ab7793863452d91d3864bff9a247d6699">mspass::algorithms::deconvolution::MultiTaperXcorDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html#a026a23ca70213ae84f7a189b3e18985a">mspass::algorithms::deconvolution::NoiseStableDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#af683c2f25e91155c2bc1f81f9b62bbb1">mspass::algorithms::deconvolution::ScalarDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon.html#a08fb15f476e429b2a93801c61ce581a3">mspass::algorithms::deconvolution::TimeDomainGIDDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a0a7439911588bbbd51df7d3171ce2ef8">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html#a4065e7b200435241ac2e80da7ba59e0a">mspass::algorithms::deconvolution::WaterLevelDecon</a></li>
 <li>quantile()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_vector_statistics.html#a6d1e26b40cf27a90b97871b5302a55b1">mspass::utility::VectorStatistics&lt; T &gt;</a></li>
 </ul>
 </div><!-- contents -->

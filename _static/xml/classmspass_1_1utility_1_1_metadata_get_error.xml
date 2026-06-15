@@ -14,10 +14,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Stream used internally to assemble the final error message. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="24" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="24" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="25" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="25" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -30,10 +31,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Default constructor used by containers and exception mechanics. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="25" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="25" bodyend="26"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="27" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="27" bodyend="28"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_get_error_1abed3080ca93a137df98dc3586b8ac777" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -54,6 +56,14 @@
         <detaileddescription>
 <para>Constructor called when a key is not found in the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> key that could not be found. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
 <parametername>Texpected</parametername>
 </parameternamelist>
 <parameterdescription>
@@ -65,9 +75,10 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="30" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="30" bodyend="39"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="33" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="33" bodyend="42"/>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" compoundref="_ms_p_a_s_s_error_8h" startline="110">mspass::utility::MsPASSError::badness</references>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_get_error_1a07365c5fe97f19ab6d4a3d424f4ddcc6" compoundref="_metadata_8h" startline="25">ss</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_get_error_1a8e9ab0f856d4936e98fd614da5e83ff9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -99,9 +110,10 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="46" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="46" bodyend="58"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="49" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="49" bodyend="61"/>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" compoundref="_ms_p_a_s_s_error_8h" startline="110">mspass::utility::MsPASSError::badness</references>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_get_error_1a07365c5fe97f19ab6d4a3d424f4ddcc6" compoundref="_metadata_8h" startline="25">ss</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_get_error_1a49b1e071f63befe7334b3ae4b9476ddf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -133,9 +145,10 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="65" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="65" bodyend="76"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="68" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="68" bodyend="79"/>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" compoundref="_ms_p_a_s_s_error_8h" startline="110">mspass::utility::MsPASSError::badness</references>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_get_error_1a07365c5fe97f19ab6d4a3d424f4ddcc6" compoundref="_metadata_8h" startline="25">ss</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_get_error_1a127c004dbfe93ba17259ec320b34fdfd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -150,10 +163,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Copy constructor preserving the message and severity. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="77" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="77" bodyend="80"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="81" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="81" bodyend="84"/>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" compoundref="_ms_p_a_s_s_error_8h" startline="110">mspass::utility::MsPASSError::badness</references>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_get_error_1add785f65915c4f138850dbf86b0a9cd1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref></type>
@@ -168,10 +184,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Assignment operator preserving the message and severity. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="81" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="81" bodyend="87"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="86" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="86" bodyend="92"/>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" compoundref="_ms_p_a_s_s_error_8h" startline="110">mspass::utility::MsPASSError::badness</references>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -215,7 +234,7 @@
         <label>std::exception</label>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="22" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="22" bodyend="88"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="22" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="22" bodyend="93"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" prot="protected" virt="non-virtual"><scope>mspass::utility::MetadataGetError</scope><name>badness</name></member>
       <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" prot="public" virt="non-virtual"><scope>mspass::utility::MetadataGetError</scope><name>log_error</name></member>

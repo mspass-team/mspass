@@ -27,8 +27,10 @@
         <qualifiedname>mspass::algorithms::deconvolution::Base3CDecon::process</qualifiedname>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a048f73981dd0c6baf93fe4e6126672aa">process</reimplementedby>
         <briefdescription>
+<para>Apply the loaded 3C deconvolution operator. </para>
         </briefdescription>
         <detaileddescription>
+<para>Implementations process the currently loaded data and return the deconvolved three-component result. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -42,9 +44,9 @@
         <qualifiedname>mspass::algorithms::deconvolution::Base3CDecon::actual_output</qualifiedname>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0b7f51d901d32ef5a08e8d0de69f666c">actual_output</reimplementedby>
         <briefdescription>
+<para>Return the actual output of the deconvolution operator. </para>
         </briefdescription>
         <detaileddescription>
-<para>\brif Return the actual output of the deconvolution operator.</para>
 <para>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </para>
         </detaileddescription>
         <inbodydescription>

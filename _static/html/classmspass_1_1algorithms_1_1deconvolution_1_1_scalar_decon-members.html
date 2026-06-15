@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -91,31 +134,31 @@ $(function() {
 <p>This is the complete list of members for <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>, including all inherited members.</p>
 <table class="directory">
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a84f320ad48e8bfc9c292f8dde33c0593">actual_output</a>()=0</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>BasicQCMetrics</b>(const std::string &amp;operator_name, const bool processed) (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a83e9fd9e0f13b1a0a650fdb0bb805543">BasicQCMetrics</a>(const std::string &amp;operator_name, const bool processed)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a94a28202041cf426f01ef1e10032c744">change_shaping_wavelet</a>(const ShapingWavelet &amp;nsw)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>changeparameter</b>(const mspass::utility::Metadata &amp;md) (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>data</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a8cf90914fa1571e88978b0b810fad805">changeparameter</a>(const mspass::utility::Metadata &amp;md)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a051ad1d54899f0d64beb0249220c3405">get_shaping_wavelet</a>() const</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>getresult</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae27885f8cd4880c643f09dbe636396a9">getresult</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a889e54f83b86f0bb0087ba3da18db14e">ideal_output</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a078d038467a3be52d1e91e0d080d503e">inverse_wavelet</a>()=0</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>inverse_wavelet</b>(double)=0 (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0048edc8619f002ab0f66347e9a47e8e">inverse_wavelet</a>(double t0parent)=0</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a9478e366652c54b4331e14b5a0eb85ea">load</a>(const std::vector&lt; double &gt; &amp;wavelet, const std::vector&lt; double &gt; &amp;data)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ac358e4143a01c4f979f3f09e401b8e7c">loaddata</a>(const std::vector&lt; double &gt; &amp;data)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#abfb57cb76746708723cac9a860221f2e">loadwavelet</a>(const std::vector&lt; double &gt; &amp;wavelet)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>operator=</b>(const ScalarDecon &amp;parent) (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a87e82a9c95e7d55501e24e1cc95508f1">operator=</a>(const ScalarDecon &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#afdf74a0ef7db252ae472d5c21b6a4cc7">output_shaping_wavelet</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>process</b>()=0 (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a71988c8a42788bd966945d78d5fdb6b3">process</a>()=0</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#af683c2f25e91155c2bc1f81f9b62bbb1">QCMetrics</a>()=0</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a9e854bd78790f3df4114f53331b27853">resolution_kernel</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>result</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>ScalarDecon</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>ScalarDecon</b>(const mspass::utility::Metadata &amp;md) (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>ScalarDecon</b>(const std::vector&lt; double &gt; &amp;d, const std::vector&lt; double &gt; &amp;w) (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>ScalarDecon</b>(const ScalarDecon &amp;parent) (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>shapingwavelet</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>wavelet</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>~BasicDeconOperator</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html">mspass::algorithms::deconvolution::BasicDeconOperator</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html">mspass::algorithms::deconvolution::BasicDeconOperator</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a2127063af2e8d0c3b4ab56dd73e81cdd">ScalarDecon</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ab7e5ecd4bce2d9da9cb7724cf0c50690">ScalarDecon</a>(const mspass::utility::Metadata &amp;md)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a5e500a76366d00c1b1d6ebc03084668e">ScalarDecon</a>(const std::vector&lt; double &gt; &amp;d, const std::vector&lt; double &gt; &amp;w)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae2488963949a1161f7a3b4f908a78807">ScalarDecon</a>(const ScalarDecon &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">shapingwavelet</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html#aaf5d01a101bc30f52cd0a54509417ac9">~BasicDeconOperator</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html">mspass::algorithms::deconvolution::BasicDeconOperator</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
   <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>~ScalarDecon</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->

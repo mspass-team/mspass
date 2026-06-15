@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -91,7 +134,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Define properties of <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> known to mspass.  
+<p>Define properties of <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> known to mspass.  
  <a href="classmspass_1_1utility_1_1_metadata_definitions.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_metadata_definitions_8h_source.html">MetadataDefinitions.h</a>&gt;</code></p>
@@ -147,6 +190,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a80e9a750135d00f9ca1db95d3986f214"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a unique identifier for a normalized attribute.  <br /></td></tr>
 <tr class="separator:a80e9a750135d00f9ca1db95d3986f214"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad18055de8c51df811e25d2784eb0db01" id="r_ad18055de8c51df811e25d2784eb0db01"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#ad18055de8c51df811e25d2784eb0db01">collection</a> (const std::string key) const</td></tr>
+<tr class="memdesc:ad18055de8c51df811e25d2784eb0db01"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the master collection (table) for a key used as a unique id.  <br /></td></tr>
 <tr class="separator:ad18055de8c51df811e25d2784eb0db01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd20b79e7b66246e186deae88e391b94" id="r_acd20b79e7b66246e186deae88e391b94"><td class="memItemLeft" align="right" valign="top">std::pair&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#acd20b79e7b66246e186deae88e391b94">normalize_data</a> (const std::string key) const</td></tr>
 <tr class="memdesc:acd20b79e7b66246e186deae88e391b94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Special method for efficiency.  <br /></td></tr>
@@ -164,8 +208,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a71b80f9ce3024698504f06700d2d0cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Define properties of <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> known to mspass. </p>
-<p>The metadata system in mspass was designed to be infinitely flexible. However, to be maintainable and provide some stability we need a method to define the full properties of the keys that define attributes known to the system. This object does that through wwhat I hope is a simple interface. The expectation is the main use of this class is in python code that will read and write to mongo. Mongo is type sensitive but python tries hard to by loosy goosy about types. The main use is then expected that all gets and puts to <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> will be preceded by calls to the type method here. Based on the return the right get or put method can be called.</p>
+<div class="textblock"><p>Define properties of <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> known to mspass. </p>
+<p>The metadata system in mspass was designed to be infinitely flexible. However, to be maintainable and provide some stability we need a method to define the full properties of the keys that define attributes known to the system. This object does that through wwhat I hope is a simple interface. The expectation is the main use of this class is in python code that will read and write to mongo. Mongo is type sensitive but python tries hard to by loosy goosy about types. The main use is then expected that all gets and puts to <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> will be preceded by calls to the type method here. Based on the return the right get or put method can be called.</p>
 <p>The overhead of creating this thing is not small. It will likely be recommended as an initialization step for most mspass processing scripts. Ultimately it perhaps should have a database constructor, but initially we will build it only from data file. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a5cca4385b19e235ff08215a6b731dc23" name="a5cca4385b19e235ff08215a6b731dc23"></a>
@@ -281,7 +325,24 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><span class="lineno">   57</span>                                                                {</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">switch</span> (mdf) {</div>
+<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">case</span> MDDefFormat::YAML:</div>
+<div class="line"><span class="lineno">   61</span>      this-&gt;yaml_reader(fname);</div>
+<div class="line"><span class="lineno">   62</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">case</span> MDDefFormat::PF:</div>
+<div class="line"><span class="lineno">   64</span>      this-&gt;pfreader(fname);</div>
+<div class="line"><span class="lineno">   65</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   66</span>    <span class="keywordflow">default</span>:</div>
+<div class="line"><span class="lineno">   67</span>      <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;MetadataDefinitions file constructor:   illegal &quot;</span></div>
+<div class="line"><span class="lineno">   68</span>                        <span class="stringliteral">&quot;format specification&quot;</span>);</div>
+<div class="line"><span class="lineno">   69</span>    };</div>
+<div class="line"><span class="lineno">   70</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   71</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">   72</span>  };</div>
+<div class="line"><span class="lineno">   73</span>}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a04131e10864ad00fb773a7dc83129bbe" name="a04131e10864ad00fb773a7dc83129bbe"></a>
@@ -344,7 +405,7 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">key</td><td>is the key for indexing this attribute </td></tr>
     <tr><td class="paramname">concept_</td><td>is brief description saved as the concept for this key </td></tr>
-    <tr><td class="paramname">type</td><td>defines the type to be defined for this key. </td></tr>
+    <tr><td class="paramname">mdt</td><td>defines the type to be defined for this key. </td></tr>
   </table>
   </dd>
 </dl>
@@ -411,6 +472,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Return registered aliases for a definitive key. </p>
 <div class="fragment"><div class="line"><span class="lineno">  135</span>                                                                      {</div>
 <div class="line"><span class="lineno">  136</span>  list&lt;std::string&gt; result;</div>
 <div class="line"><span class="lineno">  137</span>  multimap&lt;string, string&gt;::const_iterator aptr;</div>
@@ -489,7 +551,7 @@ Public Member Functions</h2></td></tr>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a63d73a129374c69d01c9cf23bf4157ed"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a63d73a129374c69d01c9cf23bf4157ed">mspass::utility::MetadataDefinitions::is_alias</a></div><div class="ttdeci">bool is_alias(const std::string key) const</div><div class="ttdoc">Ask if a key is a registered alias.</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:158</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a7f6f48e89b074e16112475d7d620e747"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a7f6f48e89b074e16112475d7d620e747">mspass::utility::MetadataDefinitions::unique_name</a></div><div class="ttdeci">std::pair&lt; std::string, mspass::utility::MDtype &gt; unique_name(const std::string aliasname) const</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:168</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a1e96e8682297fe8b21acf09b4d399cc6"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">mspass::utility::Metadata::is_defined</a></div><div class="ttdeci">bool is_defined(const std::string key) const noexcept</div><div class="ttdef"><b>Definition</b> Metadata.cc:342</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a20c1da469f6e0a073b291a680425f9e8"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a20c1da469f6e0a073b291a680425f9e8">mspass::utility::Metadata::change_key</a></div><div class="ttdeci">void change_key(const std::string oldkey, const std::string newkey)</div><div class="ttdoc">Change the keyword to access an attribute.</div><div class="ttdef"><b>Definition</b> Metadata.cc:646</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a20c1da469f6e0a073b291a680425f9e8"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a20c1da469f6e0a073b291a680425f9e8">mspass::utility::Metadata::change_key</a></div><div class="ttdeci">void change_key(const std::string oldkey, const std::string newkey)</div><div class="ttdoc">Change the keyword to access an attribute.</div><div class="ttdef"><b>Definition</b> Metadata.cc:651</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a20c1da469f6e0a073b291a680425f9e8">mspass::utility::Metadata::change_key()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a63d73a129374c69d01c9cf23bf4157ed">is_alias()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">mspass::utility::Metadata::is_defined()</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a7f6f48e89b074e16112475d7d620e747">unique_name()</a>.</p>
 
@@ -515,17 +577,16 @@ Public Member Functions</h2></td></tr>
 <p>Aliases are needed to support legacy packages, but can cause downstream problem if left intact. This method clears any aliases and sets them to the unique_name defined by this object.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">d</td><td>is data to be altered. Normally a Seismogram of TimeSeries but can be a raw <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> object.</td></tr>
+    <tr><td class="paramname">d</td><td>is data to be altered. Normally a Seismogram of TimeSeries but can be a raw <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> object. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classmspass_1_1utility_1_1_error_logger.html" title="Container to hold error logs for a data object.">ErrorLogger</a> containing any problems encountered. This function always returns and treats any problems as nonfatal errors and posts a log entry into this returned object. Caller should test the size of the return and handle or ignore errors as appropriate. </dd></dl>
 <div class="fragment"><div class="line"><span class="lineno">  498</span>                                                   {</div>
-<div class="line"><span class="lineno">  499</span>  std::set&lt;string&gt; keys;</div>
-<div class="line"><span class="lineno">  500</span>  keys = d.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a52e2040555616a39b900aa0831c3bd10">keys</a>();</div>
+<div class="line"><span class="lineno">  499</span>  std::set&lt;string&gt; <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a147efc8e0ed9c49d83ec78e4011ce4d1">keys</a>;</div>
+<div class="line"><span class="lineno">  500</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a147efc8e0ed9c49d83ec78e4011ce4d1">keys</a> = d.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a52e2040555616a39b900aa0831c3bd10">keys</a>();</div>
 <div class="line"><span class="lineno">  501</span>  std::set&lt;string&gt;::iterator kptr;</div>
 <div class="line"><span class="lineno">  502</span>  std::pair&lt;string, MDtype&gt; nmpair;</div>
-<div class="line"><span class="lineno">  503</span>  <span class="keywordflow">for</span> (kptr = keys.begin(); kptr != keys.end(); ++kptr) {</div>
+<div class="line"><span class="lineno">  503</span>  <span class="keywordflow">for</span> (kptr = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a147efc8e0ed9c49d83ec78e4011ce4d1">keys</a>.begin(); kptr != <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a147efc8e0ed9c49d83ec78e4011ce4d1">keys</a>.end(); ++kptr) {</div>
 <div class="line"><span class="lineno">  504</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a63d73a129374c69d01c9cf23bf4157ed">is_alias</a>(*kptr)) {</div>
 <div class="line"><span class="lineno">  505</span>      nmpair = this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a7f6f48e89b074e16112475d7d620e747">unique_name</a>(*kptr);</div>
 <div class="line"><span class="lineno">  506</span>      <span class="keywordtype">string</span> ukey = nmpair.first;</div>
@@ -533,9 +594,10 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  508</span>    }</div>
 <div class="line"><span class="lineno">  509</span>  }</div>
 <div class="line"><span class="lineno">  510</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a52e2040555616a39b900aa0831c3bd10"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a52e2040555616a39b900aa0831c3bd10">mspass::utility::Metadata::keys</a></div><div class="ttdeci">std::set&lt; std::string &gt; keys() const noexcept</div><div class="ttdef"><b>Definition</b> Metadata.cc:481</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a147efc8e0ed9c49d83ec78e4011ce4d1"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a147efc8e0ed9c49d83ec78e4011ce4d1">mspass::utility::MetadataDefinitions::keys</a></div><div class="ttdeci">std::list&lt; std::string &gt; keys() const</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:190</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a52e2040555616a39b900aa0831c3bd10"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a52e2040555616a39b900aa0831c3bd10">mspass::utility::Metadata::keys</a></div><div class="ttdeci">std::set&lt; std::string &gt; keys() const noexcept</div><div class="ttdef"><b>Definition</b> Metadata.cc:486</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a20c1da469f6e0a073b291a680425f9e8">mspass::utility::Metadata::change_key()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a63d73a129374c69d01c9cf23bf4157ed">is_alias()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a52e2040555616a39b900aa0831c3bd10">mspass::utility::Metadata::keys()</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a7f6f48e89b074e16112475d7d620e747">unique_name()</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a20c1da469f6e0a073b291a680425f9e8">mspass::utility::Metadata::change_key()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a63d73a129374c69d01c9cf23bf4157ed">is_alias()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a147efc8e0ed9c49d83ec78e4011ce4d1">keys()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a52e2040555616a39b900aa0831c3bd10">mspass::utility::Metadata::keys()</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a7f6f48e89b074e16112475d7d620e747">unique_name()</a>.</p>
 
 </div>
 </div>
@@ -554,15 +616,16 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>\Brief return the master collection (table) for a key used as a unique id.</p>
-<p>Support for normalized <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> requires static tables (collection in MongoDB) that contain the data using normalization. In seismic data type examples are receiver location tables, receiver response tables, and source location data. This method should nearly always be paired with a call to unique_id_key. The idea is to first ask for the unique_id_key and then ask what collection (table) contains the key returned by unique_id_key. This provides a fast and convenient lookup for normalized data.</p>
+
+<p>return the master collection (table) for a key used as a unique id. </p>
+<p>Support for normalized <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> requires static tables (collection in MongoDB) that contain the data using normalization. In seismic data type examples are receiver location tables, receiver response tables, and source location data. This method should nearly always be paired with a call to unique_id_key. The idea is to first ask for the unique_id_key and then ask what collection (table) contains the key returned by unique_id_key. This provides a fast and convenient lookup for normalized data.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>is the normally the return from unique_id_key </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>string defining the collection(table) the key can be used for locating the unique tuple/document required to access related <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a>. String will be empty if the search fails. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>string defining the collection(table) the key can be used for locating the unique tuple/document required to access related <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a>. String will be empty if the search fails. </dd></dl>
 <div class="fragment"><div class="line"><span class="lineno">  324</span>                                                             {</div>
 <div class="line"><span class="lineno">  325</span>  map&lt;string, tuple&lt;string, string&gt;&gt;::const_iterator uidptr;</div>
 <div class="line"><span class="lineno">  326</span>  uidptr = unique_id_data.find(key);</div>
@@ -756,6 +819,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Return the set of defined metadata keys. </p>
 <div class="fragment"><div class="line"><span class="lineno">  190</span>                                                   {</div>
 <div class="line"><span class="lineno">  191</span>  <span class="comment">/* assume tmap and cmap have the same keys*/</span></div>
 <div class="line"><span class="lineno">  192</span>  std::list&lt;std::string&gt; result;</div>
@@ -785,7 +849,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Special method for efficiency. </p>
-<p>For mspass using mongodb normalization for all currently supported <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> can be reduced to a collection(table)-attribute name pair. The unique_id_key and collection methods can be called to obtained this information, but doing so requires a purely duplicate (internal map container) search. This convenience method is best used with MongoDB for efficiency.</p>
+<p>For mspass using mongodb normalization for all currently supported <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> can be reduced to a collection(table)-attribute name pair. The unique_id_key and collection methods can be called to obtained this information, but doing so requires a purely duplicate (internal map container) search. This convenience method is best used with MongoDB for efficiency.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>is the flat namespace key for which normalizing data is needed </td></tr>
@@ -869,7 +933,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  251</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
 <div class="line"><span class="lineno">  252</span>}</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a5d131b51d99fb29753295847891ff2de">concept()</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a8472df22024cde279e81c84e9129e4fd">type()</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a5d131b51d99fb29753295847891ff2de">concept()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a147efc8e0ed9c49d83ec78e4011ce4d1">keys()</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a8472df22024cde279e81c84e9129e4fd">type()</a>.</p>
 
 </div>
 </div>

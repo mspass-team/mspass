@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -92,9 +135,26 @@ $(function() {
   <div class="headertitle"><div class="title">mspass::utility::LogData Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>One error-log record with provenance and severity.  
+ <a href="classmspass_1_1utility_1_1_log_data.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_error_logger_8h_source.html">ErrorLogger.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for mspass::utility::LogData:</div>
+<div class="dyncontent">
+<div class="center"><img src="classmspass_1_1utility_1_1_log_data__coll__graph.png" border="0" usemap="#amspass_1_1utility_1_1_log_data_coll__map" alt="Collaboration graph"/></div>
+<map name="amspass_1_1utility_1_1_log_data_coll__map" id="amspass_1_1utility_1_1_log_data_coll__map">
+<area shape="rect" title="One error&#45;log record with provenance and severity." alt="" coords="5,93,184,119"/>
+<area shape="rect" title=" " alt="" coords="41,5,148,31"/>
+<area shape="poly" title=" " alt="" coords="97,45,97,93,92,93,92,45"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ad706d7c53a40a474e31712a44117534e" id="r_ad706d7c53a40a474e31712a44117534e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_log_data.html#ad706d7c53a40a474e31712a44117534e">LogData</a> ()</td></tr>
+<tr class="separator:ad706d7c53a40a474e31712a44117534e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc3c00e5dc191b90cfc32cb0b148f6bb" id="r_adc3c00e5dc191b90cfc32cb0b148f6bb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_log_data.html#adc3c00e5dc191b90cfc32cb0b148f6bb">LogData</a> (const int jid, const std::string alg, const <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a> &amp;merr)</td></tr>
 <tr class="separator:adc3c00e5dc191b90cfc32cb0b148f6bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a672a6557b891cb6b8ce736edc2b30b2b" id="r_a672a6557b891cb6b8ce736edc2b30b2b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_log_data.html#a672a6557b891cb6b8ce736edc2b30b2b">LogData</a> (const int jid, const std::string alg, const std::string msg, const mspass::utility::ErrorSeverity lvl)</td></tr>
@@ -102,29 +162,25 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a51d8dbbff398cccfa3e853fd55690cb0" id="r_a51d8dbbff398cccfa3e853fd55690cb0"><td class="memItemLeft" align="right" valign="top"><a id="a51d8dbbff398cccfa3e853fd55690cb0" name="a51d8dbbff398cccfa3e853fd55690cb0"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>job_id</b></td></tr>
+<tr class="memitem:a51d8dbbff398cccfa3e853fd55690cb0" id="r_a51d8dbbff398cccfa3e853fd55690cb0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_log_data.html#a51d8dbbff398cccfa3e853fd55690cb0">job_id</a></td></tr>
 <tr class="separator:a51d8dbbff398cccfa3e853fd55690cb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af419f98dd2dc772769bf0b71312de16f" id="r_af419f98dd2dc772769bf0b71312de16f"><td class="memItemLeft" align="right" valign="top"><a id="af419f98dd2dc772769bf0b71312de16f" name="af419f98dd2dc772769bf0b71312de16f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>p_id</b></td></tr>
+<tr class="memitem:af419f98dd2dc772769bf0b71312de16f" id="r_af419f98dd2dc772769bf0b71312de16f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_log_data.html#af419f98dd2dc772769bf0b71312de16f">p_id</a></td></tr>
 <tr class="separator:af419f98dd2dc772769bf0b71312de16f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c5ea0cf75d3d15d0152139d47dfeaa3" id="r_a5c5ea0cf75d3d15d0152139d47dfeaa3"><td class="memItemLeft" align="right" valign="top"><a id="a5c5ea0cf75d3d15d0152139d47dfeaa3" name="a5c5ea0cf75d3d15d0152139d47dfeaa3"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>algorithm</b></td></tr>
+<tr class="memitem:a5c5ea0cf75d3d15d0152139d47dfeaa3" id="r_a5c5ea0cf75d3d15d0152139d47dfeaa3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_log_data.html#a5c5ea0cf75d3d15d0152139d47dfeaa3">algorithm</a></td></tr>
 <tr class="separator:a5c5ea0cf75d3d15d0152139d47dfeaa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a1eb58388113c866f28dc76df22e154" id="r_a3a1eb58388113c866f28dc76df22e154"><td class="memItemLeft" align="right" valign="top"><a id="a3a1eb58388113c866f28dc76df22e154" name="a3a1eb58388113c866f28dc76df22e154"></a>
-mspass::utility::ErrorSeverity&#160;</td><td class="memItemRight" valign="bottom"><b>badness</b></td></tr>
+<tr class="memitem:a3a1eb58388113c866f28dc76df22e154" id="r_a3a1eb58388113c866f28dc76df22e154"><td class="memItemLeft" align="right" valign="top">mspass::utility::ErrorSeverity&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_log_data.html#a3a1eb58388113c866f28dc76df22e154">badness</a></td></tr>
 <tr class="separator:a3a1eb58388113c866f28dc76df22e154"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc4b20a2fe4c3ab0331e3a05c6c89f5e" id="r_afc4b20a2fe4c3ab0331e3a05c6c89f5e"><td class="memItemLeft" align="right" valign="top"><a id="afc4b20a2fe4c3ab0331e3a05c6c89f5e" name="afc4b20a2fe4c3ab0331e3a05c6c89f5e"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>message</b></td></tr>
+<tr class="memitem:afc4b20a2fe4c3ab0331e3a05c6c89f5e" id="r_afc4b20a2fe4c3ab0331e3a05c6c89f5e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_log_data.html#afc4b20a2fe4c3ab0331e3a05c6c89f5e">message</a></td></tr>
 <tr class="separator:afc4b20a2fe4c3ab0331e3a05c6c89f5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a3fd9226ca1936981ce2d72198181eaf1" id="r_a3fd9226ca1936981ce2d72198181eaf1"><td class="memItemLeft" align="right" valign="top"><a id="a3fd9226ca1936981ce2d72198181eaf1" name="a3fd9226ca1936981ce2d72198181eaf1"></a>
-std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;, <a class="el" href="classmspass_1_1utility_1_1_log_data.html">LogData</a> &amp;)</td></tr>
+<tr class="memitem:a3fd9226ca1936981ce2d72198181eaf1" id="r_a3fd9226ca1936981ce2d72198181eaf1"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_log_data.html#a3fd9226ca1936981ce2d72198181eaf1">operator&lt;&lt;</a> (std::ostream &amp;, <a class="el" href="classmspass_1_1utility_1_1_log_data.html">LogData</a> &amp;)</td></tr>
 <tr class="separator:a3fd9226ca1936981ce2d72198181eaf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>One error-log record with provenance and severity. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad706d7c53a40a474e31712a44117534e" name="ad706d7c53a40a474e31712a44117534e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad706d7c53a40a474e31712a44117534e">&#9670;&#160;</a></span>LogData() <span class="overload">[1/3]</span></h2>
 
@@ -147,7 +203,8 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   21</span>{};</div>
+<p>Construct an empty log record. </p>
+<div class="fragment"><div class="line"><span class="lineno">   23</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -192,16 +249,21 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
   </dd>
 </dl>
 <div class="fragment"><div class="line"><span class="lineno">    8</span>                                                       {</div>
-<div class="line"><span class="lineno">    9</span>  job_id = jid;</div>
-<div class="line"><span class="lineno">   10</span>  p_id = getpid();</div>
-<div class="line"><span class="lineno">   11</span>  algorithm = alg;</div>
-<div class="line"><span class="lineno">   12</span>  message = merr.<a class="code hl_function" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a1dd30086a986a3a0669cd974e65bd563">what</a>();</div>
-<div class="line"><span class="lineno">   13</span>  badness = merr.<a class="code hl_function" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a3393c3878bee1728628fd3e063640d94">severity</a>();</div>
+<div class="line"><span class="lineno">    9</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#a51d8dbbff398cccfa3e853fd55690cb0">job_id</a> = jid;</div>
+<div class="line"><span class="lineno">   10</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#af419f98dd2dc772769bf0b71312de16f">p_id</a> = getpid();</div>
+<div class="line"><span class="lineno">   11</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#a5c5ea0cf75d3d15d0152139d47dfeaa3">algorithm</a> = alg;</div>
+<div class="line"><span class="lineno">   12</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#afc4b20a2fe4c3ab0331e3a05c6c89f5e">message</a> = merr.<a class="code hl_function" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a1dd30086a986a3a0669cd974e65bd563">what</a>();</div>
+<div class="line"><span class="lineno">   13</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#a3a1eb58388113c866f28dc76df22e154">badness</a> = merr.<a class="code hl_function" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a3393c3878bee1728628fd3e063640d94">severity</a>();</div>
 <div class="line"><span class="lineno">   14</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_log_data_html_a3a1eb58388113c866f28dc76df22e154"><div class="ttname"><a href="classmspass_1_1utility_1_1_log_data.html#a3a1eb58388113c866f28dc76df22e154">mspass::utility::LogData::badness</a></div><div class="ttdeci">mspass::utility::ErrorSeverity badness</div><div class="ttdef"><b>Definition</b> ErrorLogger.h:20</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_log_data_html_a51d8dbbff398cccfa3e853fd55690cb0"><div class="ttname"><a href="classmspass_1_1utility_1_1_log_data.html#a51d8dbbff398cccfa3e853fd55690cb0">mspass::utility::LogData::job_id</a></div><div class="ttdeci">int job_id</div><div class="ttdef"><b>Definition</b> ErrorLogger.h:17</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_log_data_html_a5c5ea0cf75d3d15d0152139d47dfeaa3"><div class="ttname"><a href="classmspass_1_1utility_1_1_log_data.html#a5c5ea0cf75d3d15d0152139d47dfeaa3">mspass::utility::LogData::algorithm</a></div><div class="ttdeci">std::string algorithm</div><div class="ttdef"><b>Definition</b> ErrorLogger.h:19</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_log_data_html_af419f98dd2dc772769bf0b71312de16f"><div class="ttname"><a href="classmspass_1_1utility_1_1_log_data.html#af419f98dd2dc772769bf0b71312de16f">mspass::utility::LogData::p_id</a></div><div class="ttdeci">int p_id</div><div class="ttdef"><b>Definition</b> ErrorLogger.h:18</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_log_data_html_afc4b20a2fe4c3ab0331e3a05c6c89f5e"><div class="ttname"><a href="classmspass_1_1utility_1_1_log_data.html#afc4b20a2fe4c3ab0331e3a05c6c89f5e">mspass::utility::LogData::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> ErrorLogger.h:21</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a1dd30086a986a3a0669cd974e65bd563"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a1dd30086a986a3a0669cd974e65bd563">mspass::utility::MsPASSError::what</a></div><div class="ttdeci">const char * what() const noexcept</div><div class="ttdef"><b>Definition</b> MsPASSError.h:100</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a3393c3878bee1728628fd3e063640d94"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a3393c3878bee1728628fd3e063640d94">mspass::utility::MsPASSError::severity</a></div><div class="ttdeci">ErrorSeverity severity() const</div><div class="ttdef"><b>Definition</b> MsPASSError.h:102</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a3393c3878bee1728628fd3e063640d94">mspass::utility::MsPASSError::severity()</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a1dd30086a986a3a0669cd974e65bd563">mspass::utility::MsPASSError::what()</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_log_data.html#a5c5ea0cf75d3d15d0152139d47dfeaa3">algorithm</a>, <a class="el" href="classmspass_1_1utility_1_1_log_data.html#a3a1eb58388113c866f28dc76df22e154">badness</a>, <a class="el" href="classmspass_1_1utility_1_1_log_data.html#a51d8dbbff398cccfa3e853fd55690cb0">job_id</a>, <a class="el" href="classmspass_1_1utility_1_1_log_data.html#afc4b20a2fe4c3ab0331e3a05c6c89f5e">message</a>, <a class="el" href="classmspass_1_1utility_1_1_log_data.html#af419f98dd2dc772769bf0b71312de16f">p_id</a>, <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a3393c3878bee1728628fd3e063640d94">mspass::utility::MsPASSError::severity()</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a1dd30086a986a3a0669cd974e65bd563">mspass::utility::MsPASSError::what()</a>.</p>
 
 </div>
 </div>
@@ -253,13 +315,129 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
   </dd>
 </dl>
 <div class="fragment"><div class="line"><span class="lineno">   16</span>                                                       {</div>
-<div class="line"><span class="lineno">   17</span>  job_id = jid;</div>
-<div class="line"><span class="lineno">   18</span>  p_id = getpid();</div>
-<div class="line"><span class="lineno">   19</span>  algorithm = alg;</div>
-<div class="line"><span class="lineno">   20</span>  message = msg;</div>
-<div class="line"><span class="lineno">   21</span>  badness = lvl;</div>
+<div class="line"><span class="lineno">   17</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#a51d8dbbff398cccfa3e853fd55690cb0">job_id</a> = jid;</div>
+<div class="line"><span class="lineno">   18</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#af419f98dd2dc772769bf0b71312de16f">p_id</a> = getpid();</div>
+<div class="line"><span class="lineno">   19</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#a5c5ea0cf75d3d15d0152139d47dfeaa3">algorithm</a> = alg;</div>
+<div class="line"><span class="lineno">   20</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#afc4b20a2fe4c3ab0331e3a05c6c89f5e">message</a> = msg;</div>
+<div class="line"><span class="lineno">   21</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1_log_data.html#a3a1eb58388113c866f28dc76df22e154">badness</a> = lvl;</div>
 <div class="line"><span class="lineno">   22</span>}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_log_data.html#a5c5ea0cf75d3d15d0152139d47dfeaa3">algorithm</a>, <a class="el" href="classmspass_1_1utility_1_1_log_data.html#a3a1eb58388113c866f28dc76df22e154">badness</a>, <a class="el" href="classmspass_1_1utility_1_1_log_data.html#a51d8dbbff398cccfa3e853fd55690cb0">job_id</a>, <a class="el" href="classmspass_1_1utility_1_1_log_data.html#afc4b20a2fe4c3ab0331e3a05c6c89f5e">message</a>, and <a class="el" href="classmspass_1_1utility_1_1_log_data.html#af419f98dd2dc772769bf0b71312de16f">p_id</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="a3fd9226ca1936981ce2d72198181eaf1" name="a3fd9226ca1936981ce2d72198181eaf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fd9226ca1936981ce2d72198181eaf1">&#9670;&#160;</a></span>operator&lt;&lt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classmspass_1_1utility_1_1_log_data.html">LogData</a> &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Stream one log record to an output stream. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a5c5ea0cf75d3d15d0152139d47dfeaa3" name="a5c5ea0cf75d3d15d0152139d47dfeaa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c5ea0cf75d3d15d0152139d47dfeaa3">&#9670;&#160;</a></span>algorithm</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string mspass::utility::LogData::algorithm</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Algorithm or component that posted the message. </p>
+
+</div>
+</div>
+<a id="a3a1eb58388113c866f28dc76df22e154" name="a3a1eb58388113c866f28dc76df22e154"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a1eb58388113c866f28dc76df22e154">&#9670;&#160;</a></span>badness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mspass::utility::ErrorSeverity mspass::utility::LogData::badness</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Severity assigned to the message. </p>
+
+</div>
+</div>
+<a id="a51d8dbbff398cccfa3e853fd55690cb0" name="a51d8dbbff398cccfa3e853fd55690cb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d8dbbff398cccfa3e853fd55690cb0">&#9670;&#160;</a></span>job_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int mspass::utility::LogData::job_id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Processing job identifier. </p>
+
+</div>
+</div>
+<a id="afc4b20a2fe4c3ab0331e3a05c6c89f5e" name="afc4b20a2fe4c3ab0331e3a05c6c89f5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc4b20a2fe4c3ab0331e3a05c6c89f5e">&#9670;&#160;</a></span>message</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string mspass::utility::LogData::message</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Human-readable log message. </p>
+
+</div>
+</div>
+<a id="af419f98dd2dc772769bf0b71312de16f" name="af419f98dd2dc772769bf0b71312de16f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af419f98dd2dc772769bf0b71312de16f">&#9670;&#160;</a></span>p_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int mspass::utility::LogData::p_id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Process id returned by getpid(). </p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>

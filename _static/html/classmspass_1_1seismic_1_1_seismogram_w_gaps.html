@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -90,22 +133,63 @@ $(function() {
   <div class="headertitle"><div class="title">mspass::seismic::SeismogramWGaps Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Three-component <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS.">Seismogram</a> with explicit data-gap tracking.  
+ <a href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_seismogram_w_gaps_8h_source.html">SeismogramWGaps.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for mspass::seismic::SeismogramWGaps:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1seismic_1_1_seismogram_w_gaps.png" usemap="#mspass::seismic::SeismogramWGaps_map" alt=""/>
-  <map id="mspass::seismic::SeismogramWGaps_map" name="mspass::seismic::SeismogramWGaps_map">
-<area href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS." alt="mspass::seismic::Seismogram" shape="rect" coords="297,168,525,192"/>
-<area href="classmspass_1_1seismic_1_1_data_gap.html" alt="mspass::seismic::DataGap" shape="rect" coords="535,168,763,192"/>
-<area href="classmspass_1_1seismic_1_1_core_seismogram.html" title="Vector (three-component) seismogram data object." alt="mspass::seismic::CoreSeismogram" shape="rect" coords="119,112,347,136"/>
-<area href="classmspass_1_1utility_1_1_processing_history.html" title="Lightweight class to preserve procesing chain of atomic objects." alt="mspass::utility::ProcessingHistory" shape="rect" coords="476,112,704,136"/>
-<area href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects." alt="mspass::seismic::BasicTimeSeries" shape="rect" coords="0,56,228,80"/>
-<area href="classmspass_1_1utility_1_1_metadata.html" alt="mspass::utility::Metadata" shape="rect" coords="238,56,466,80"/>
-<area href="classmspass_1_1utility_1_1_basic_processing_history.html" alt="mspass::utility::BasicProcessingHistory" shape="rect" coords="476,56,704,80"/>
-<area href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept." alt="mspass::utility::BasicMetadata" shape="rect" coords="238,0,466,24"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1seismic_1_1_seismogram_w_gaps__inherit__graph.png" border="0" usemap="#amspass_1_1seismic_1_1_seismogram_w_gaps_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1seismic_1_1_seismogram_w_gaps_inherit__map" id="amspass_1_1seismic_1_1_seismogram_w_gaps_inherit__map">
+<area shape="rect" title="Three&#45;component Seismogram with explicit data&#45;gap tracking." alt="" coords="1121,116,1341,156"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS." alt="" coords="853,98,1073,123"/>
+<area shape="poly" title=" " alt="" coords="1087,120,1121,123,1121,128,1086,125"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_core_seismogram.html" title="Vector (three&#45;component) seismogram data object." alt="" coords="555,70,805,95"/>
+<area shape="poly" title=" " alt="" coords="819,94,853,97,853,102,819,99"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects." alt="" coords="288,5,495,45"/>
+<area shape="poly" title=" " alt="" coords="507,45,616,67,615,73,506,51"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_metadata.html" title="Type&#45;safe metadata container used throughout MsPASS." alt="" coords="298,70,485,95"/>
+<area shape="poly" title=" " alt="" coords="498,80,554,80,554,85,498,85"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept." alt="" coords="5,70,228,95"/>
+<area shape="poly" title=" " alt="" coords="242,80,298,80,298,85,242,85"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_processing_history.html" title="Lightweight class to preserve procesing chain of atomic objects." alt="" coords="583,120,777,160"/>
+<area shape="poly" title=" " alt="" coords="791,126,853,119,853,125,792,131"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_basic_processing_history.html" title=" " alt="" coords="276,120,507,160"/>
+<area shape="poly" title=" " alt="" coords="521,137,583,137,583,143,521,143"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_data_gap.html" title="Container defining invalid time spans for gappy seismic data." alt="" coords="866,147,1061,173"/>
+<area shape="poly" title=" " alt="" coords="1074,147,1121,143,1121,149,1075,153"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for mspass::seismic::SeismogramWGaps:</div>
+<div class="dyncontent">
+<div class="center"><img src="classmspass_1_1seismic_1_1_seismogram_w_gaps__coll__graph.png" border="0" usemap="#amspass_1_1seismic_1_1_seismogram_w_gaps_coll__map" alt="Collaboration graph"/></div>
+<map name="amspass_1_1seismic_1_1_seismogram_w_gaps_coll__map" id="amspass_1_1seismic_1_1_seismogram_w_gaps_coll__map">
+<area shape="rect" title="Three&#45;component Seismogram with explicit data&#45;gap tracking." alt="" coords="1159,171,1379,211"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS." alt="" coords="889,145,1109,170"/>
+<area shape="poly" title=" " alt="" coords="1116,169,1159,174,1158,180,1115,174"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_core_seismogram.html" title="Vector (three&#45;component) seismogram data object." alt="" coords="589,98,840,123"/>
+<area shape="poly" title=" " alt="" coords="807,123,922,142,921,147,806,128"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects." alt="" coords="289,5,496,45"/>
+<area shape="poly" title=" " alt="" coords="483,46,666,95,665,101,481,51"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_metadata.html" title="Type&#45;safe metadata container used throughout MsPASS." alt="" coords="299,70,486,95"/>
+<area shape="poly" title=" " alt="" coords="500,89,589,97,589,102,500,95"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept." alt="" coords="5,70,228,95"/>
+<area shape="poly" title=" " alt="" coords="242,80,299,80,299,85,242,85"/>
+<area shape="rect" href="classmspass_1_1utility_1_1dmatrix.html" title="Lightweight, simple matrix object." alt="" coords="305,119,481,145"/>
+<area shape="poly" title=" " alt="" coords="494,124,565,120,589,118,589,124,566,125,494,130"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_processing_history.html" title="Lightweight class to preserve procesing chain of atomic objects." alt="" coords="617,169,812,209"/>
+<area shape="poly" title=" " alt="" coords="825,174,889,167,889,172,826,180"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_basic_processing_history.html" title=" " alt="" coords="277,169,508,209"/>
+<area shape="poly" title=" " alt="" coords="522,187,617,187,617,192,522,192"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_error_logger.html" title="Container to hold error logs for a data object." alt="" coords="293,234,493,259"/>
+<area shape="poly" title=" " alt="" coords="478,229,617,204,618,209,479,234"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_data_gap.html" title="Container defining invalid time spans for gappy seismic data." alt="" coords="902,194,1097,219"/>
+<area shape="poly" title=" " alt="" coords="1111,197,1158,195,1159,200,1111,203"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -114,9 +198,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adf038f77f4e75979ed1debe1b13d2c5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0ad23d866b72dac5e854ba0a38cb08d" id="r_af0ad23d866b72dac5e854ba0a38cb08d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#af0ad23d866b72dac5e854ba0a38cb08d">SeismogramWGaps</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>)</td></tr>
 <tr class="separator:af0ad23d866b72dac5e854ba0a38cb08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8af6fce0c26b13f072582416cc5e1966" id="r_a8af6fce0c26b13f072582416cc5e1966"><td class="memItemLeft" align="right" valign="top"><a id="a8af6fce0c26b13f072582416cc5e1966" name="a8af6fce0c26b13f072582416cc5e1966"></a>
-<a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>)</td></tr>
+<tr class="memitem:a8af6fce0c26b13f072582416cc5e1966" id="r_a8af6fce0c26b13f072582416cc5e1966"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a8af6fce0c26b13f072582416cc5e1966">operator=</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>)</td></tr>
 <tr class="separator:a8af6fce0c26b13f072582416cc5e1966"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4136f6b13d9c5a4151f3efabebf10f87" id="r_a4136f6b13d9c5a4151f3efabebf10f87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a4136f6b13d9c5a4151f3efabebf10f87">~SeismogramWGaps</a> ()</td></tr>
+<tr class="separator:a4136f6b13d9c5a4151f3efabebf10f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a976c7e2ae15527497d22fa9e82fcb4ad" id="r_a976c7e2ae15527497d22fa9e82fcb4ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a976c7e2ae15527497d22fa9e82fcb4ad">zero_gaps</a> ()</td></tr>
 <tr class="separator:a976c7e2ae15527497d22fa9e82fcb4ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmspass_1_1seismic_1_1_seismogram"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1seismic_1_1_seismogram')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a></td></tr>
@@ -129,19 +214,21 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac11cc7bd179af91d62637caffbc070b0 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9ee134debc951e675eb93f94b172e40 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_ad9ee134debc951e675eb93f94b172e40"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#ad9ee134debc951e675eb93f94b172e40">Seismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a> &amp;d, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">alg</a>)</td></tr>
 <tr class="separator:ad9ee134debc951e675eb93f94b172e40 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4126ada587a52ed991ed25308a5c9cb inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_ae4126ada587a52ed991ed25308a5c9cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#ae4126ada587a52ed991ed25308a5c9cb">Seismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html">mspass::seismic::BasicTimeSeries</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">bts</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)</td></tr>
+<tr class="memitem:ae4126ada587a52ed991ed25308a5c9cb inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_ae4126ada587a52ed991ed25308a5c9cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#ae4126ada587a52ed991ed25308a5c9cb">Seismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html">mspass::seismic::BasicTimeSeries</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">bts</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>)</td></tr>
 <tr class="memdesc:ae4126ada587a52ed991ed25308a5c9cb inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="mdescLeft">&#160;</td><td class="mdescRight">Partial constructor from base classes.  <br /></td></tr>
 <tr class="separator:ae4126ada587a52ed991ed25308a5c9cb inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5705fbcf6d39464827889bc2e96dfb92 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_a5705fbcf6d39464827889bc2e96dfb92"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#a5705fbcf6d39464827889bc2e96dfb92">Seismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html">mspass::seismic::BasicTimeSeries</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">b</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">m</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_processing_history.html">mspass::utility::ProcessingHistory</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">his</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">bool</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">card</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">bool</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">ortho</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1dmatrix.html">mspass::utility::dmatrix</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">tm</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1dmatrix.html">mspass::utility::dmatrix</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">uin</a>)</td></tr>
 <tr class="memdesc:a5705fbcf6d39464827889bc2e96dfb92 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from all pieces.  <br /></td></tr>
 <tr class="separator:a5705fbcf6d39464827889bc2e96dfb92 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbb2f19850e7f5d4e9452ed3728b2b32 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_acbb2f19850e7f5d4e9452ed3728b2b32"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#acbb2f19850e7f5d4e9452ed3728b2b32">Seismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> &amp;md, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string jobname=std::string(&quot;test&quot;), <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string jobid=std::string(&quot;UNDEFINED&quot;), <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">readername</a>=std::string(&quot;load3C&quot;), <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string algid=std::string(&quot;0&quot;))</td></tr>
+<tr class="memitem:acbb2f19850e7f5d4e9452ed3728b2b32 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_acbb2f19850e7f5d4e9452ed3728b2b32"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#acbb2f19850e7f5d4e9452ed3728b2b32">Seismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a16963d48a18867fe480a276ac5d32844">jobname</a>=std::string(&quot;test&quot;), <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a42047587403f5f37567a870f23554da6">jobid</a>=std::string(&quot;UNDEFINED&quot;), <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">readername</a>=std::string(&quot;load3C&quot;), <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string algid=std::string(&quot;0&quot;))</td></tr>
 <tr class="separator:acbb2f19850e7f5d4e9452ed3728b2b32 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afaaac8777afb9a25b91b1b4b09b3652d inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_afaaac8777afb9a25b91b1b4b09b3652d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#afaaac8777afb9a25b91b1b4b09b3652d">Seismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> &amp;md, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">bool</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">load_data</a>)</td></tr>
+<tr class="memitem:afaaac8777afb9a25b91b1b4b09b3652d inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_afaaac8777afb9a25b91b1b4b09b3652d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#afaaac8777afb9a25b91b1b4b09b3652d">Seismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">bool</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">load_data</a>)</td></tr>
 <tr class="memdesc:afaaac8777afb9a25b91b1b4b09b3652d inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from Metadata definition that includes data path.  <br /></td></tr>
 <tr class="separator:afaaac8777afb9a25b91b1b4b09b3652d inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a275d43464679a4cb963fba217d9383c0 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_a275d43464679a4cb963fba217d9383c0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#a275d43464679a4cb963fba217d9383c0">Seismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">Seismogram</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>)</td></tr>
 <tr class="separator:a275d43464679a4cb963fba217d9383c0 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78a4e2bc62921e3f81a211cb8ec8f460 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_a78a4e2bc62921e3f81a211cb8ec8f460"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">virtual</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#a78a4e2bc62921e3f81a211cb8ec8f460">~Seismogram</a> ()</td></tr>
+<tr class="separator:a78a4e2bc62921e3f81a211cb8ec8f460 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68ddfc28edecdb64a007d5163adb9292 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_a68ddfc28edecdb64a007d5163adb9292"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">Seismogram</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#a68ddfc28edecdb64a007d5163adb9292">operator=</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">Seismogram</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>)</td></tr>
 <tr class="separator:a68ddfc28edecdb64a007d5163adb9292 inherit pub_methods_classmspass_1_1seismic_1_1_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afda01f1d624af58307fef617709dd3ee inherit pub_methods_classmspass_1_1seismic_1_1_seismogram" id="r_afda01f1d624af58307fef617709dd3ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">Seismogram</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html#afda01f1d624af58307fef617709dd3ee">operator+=</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">Seismogram</a> &amp;d)</td></tr>
@@ -174,7 +261,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a88d2aa5099488eb2cbdbd1188c81339e inherit pub_methods_classmspass_1_1seismic_1_1_core_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c7307434dac26ca63ac423b55ecb5ec inherit pub_methods_classmspass_1_1seismic_1_1_core_seismogram" id="r_a8c7307434dac26ca63ac423b55ecb5ec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a8c7307434dac26ca63ac423b55ecb5ec">CoreSeismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::vector&lt; <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> &gt; &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">ts</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">unsigned</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">int</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">component_to_clone</a>=0)</td></tr>
 <tr class="separator:a8c7307434dac26ca63ac423b55ecb5ec inherit pub_methods_classmspass_1_1seismic_1_1_core_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67232df3f9d1e1b5ac245f97478adee9 inherit pub_methods_classmspass_1_1seismic_1_1_core_seismogram" id="r_a67232df3f9d1e1b5ac245f97478adee9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a67232df3f9d1e1b5ac245f97478adee9">CoreSeismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">bool</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">load_data</a>=<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">true</a>)</td></tr>
+<tr class="memitem:a67232df3f9d1e1b5ac245f97478adee9 inherit pub_methods_classmspass_1_1seismic_1_1_core_seismogram" id="r_a67232df3f9d1e1b5ac245f97478adee9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a67232df3f9d1e1b5ac245f97478adee9">CoreSeismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">bool</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">load_data</a>=<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">true</a>)</td></tr>
 <tr class="memdesc:a67232df3f9d1e1b5ac245f97478adee9 inherit pub_methods_classmspass_1_1seismic_1_1_core_seismogram"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from Metadata definition that includes data path.  <br /></td></tr>
 <tr class="separator:a67232df3f9d1e1b5ac245f97478adee9 inherit pub_methods_classmspass_1_1seismic_1_1_core_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c993726c259d7a6f1c213d0d04db5ba inherit pub_methods_classmspass_1_1seismic_1_1_core_seismogram" id="r_a9c993726c259d7a6f1c213d0d04db5ba"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9c993726c259d7a6f1c213d0d04db5ba">CoreSeismogram</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html">CoreSeismogram</a> &amp;)</td></tr>
@@ -388,25 +475,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a20c1da469f6e0a073b291a680425f9e8 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a20c1da469f6e0a073b291a680425f9e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a20c1da469f6e0a073b291a680425f9e8">change_key</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">oldkey</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">newkey</a>)</td></tr>
 <tr class="memdesc:a20c1da469f6e0a073b291a680425f9e8 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the keyword to access an attribute.  <br /></td></tr>
 <tr class="separator:a20c1da469f6e0a073b291a680425f9e8 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a8de95c06d1c6e064e261c1cde49f0ff9"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a8de95c06d1c6e064e261c1cde49f0ff9"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8de95c06d1c6e064e261c1cde49f0ff9">get</a> (const std::string key) const</td></tr>
 <tr class="separator:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a461fa38069a9b499e6381cb4cad3b14d"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a461fa38069a9b499e6381cb4cad3b14d"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a461fa38069a9b499e6381cb4cad3b14d">get</a> (const std::string key) const</td></tr>
 <tr class="separator:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a7904a74f5d29f63c92d0607c6d76d1a3"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">long&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a7904a74f5d29f63c92d0607c6d76d1a3"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">long&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a7904a74f5d29f63c92d0607c6d76d1a3">get</a> (const std::string key) const</td></tr>
 <tr class="separator:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_af526cc7f00976c793f104b32539768f7"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_af526cc7f00976c793f104b32539768f7"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af526cc7f00976c793f104b32539768f7">get</a> (const std::string key) const</td></tr>
 <tr class="separator:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a2ed7fd2682fe3b127ef3148c48cc9cd2"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">float&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a2ed7fd2682fe3b127ef3148c48cc9cd2"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">float&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a2ed7fd2682fe3b127ef3148c48cc9cd2">get</a> (const std::string key) const</td></tr>
 <tr class="separator:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2269c377a085fa237380ef7223016438 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a2269c377a085fa237380ef7223016438"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
 <tr class="memitem:a2269c377a085fa237380ef7223016438 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a2269c377a085fa237380ef7223016438">get</a> (const string key) const</td></tr>
@@ -423,10 +505,13 @@ template&lt;&gt; </td></tr>
 <tr class="memitem:aa417fcccd6e5ba621b5def12ab8d98ad inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_aa417fcccd6e5ba621b5def12ab8d98ad"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
 <tr class="memitem:aa417fcccd6e5ba621b5def12ab8d98ad inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">float&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#aa417fcccd6e5ba621b5def12ab8d98ad">get</a> (const string key) const</td></tr>
 <tr class="separator:aa417fcccd6e5ba621b5def12ab8d98ad inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classmspass_1_1utility_1_1_basic_metadata"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1utility_1_1_basic_metadata')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html">mspass::utility::BasicMetadata</a></td></tr>
+<tr class="memitem:a1d7a9ab1e25e01694cc733ad2b98c6b7 inherit pub_methods_classmspass_1_1utility_1_1_basic_metadata" id="r_a1d7a9ab1e25e01694cc733ad2b98c6b7"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#a1d7a9ab1e25e01694cc733ad2b98c6b7">~BasicMetadata</a> ()</td></tr>
+<tr class="separator:a1d7a9ab1e25e01694cc733ad2b98c6b7 inherit pub_methods_classmspass_1_1utility_1_1_basic_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmspass_1_1utility_1_1_processing_history"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1utility_1_1_processing_history')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1utility_1_1_processing_history.html">mspass::utility::ProcessingHistory</a></td></tr>
 <tr class="memitem:a78c4def2e3503ba2fbdadf3c02b733a7 inherit pub_methods_classmspass_1_1utility_1_1_processing_history" id="r_a78c4def2e3503ba2fbdadf3c02b733a7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">ProcessingHistory</a> ()</td></tr>
 <tr class="separator:a78c4def2e3503ba2fbdadf3c02b733a7 inherit pub_methods_classmspass_1_1utility_1_1_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a225e2e1941f342f3764c2c27854ad2f6 inherit pub_methods_classmspass_1_1utility_1_1_processing_history" id="r_a225e2e1941f342f3764c2c27854ad2f6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a225e2e1941f342f3764c2c27854ad2f6">ProcessingHistory</a> (const std::string jobnm, const std::string jid)</td></tr>
+<tr class="memitem:a225e2e1941f342f3764c2c27854ad2f6 inherit pub_methods_classmspass_1_1utility_1_1_processing_history" id="r_a225e2e1941f342f3764c2c27854ad2f6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a225e2e1941f342f3764c2c27854ad2f6">ProcessingHistory</a> (const std::string jobnm, const std::string <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#ac3ffa201ded102104675f2daccd379d9">jid</a>)</td></tr>
 <tr class="separator:a225e2e1941f342f3764c2c27854ad2f6 inherit pub_methods_classmspass_1_1utility_1_1_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80dc3ba4e28743d0b13c105dc62428aa inherit pub_methods_classmspass_1_1utility_1_1_processing_history" id="r_a80dc3ba4e28743d0b13c105dc62428aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a80dc3ba4e28743d0b13c105dc62428aa">ProcessingHistory</a> (const <a class="el" href="classmspass_1_1utility_1_1_processing_history.html">ProcessingHistory</a> &amp;parent)</td></tr>
 <tr class="separator:a80dc3ba4e28743d0b13c105dc62428aa inherit pub_methods_classmspass_1_1utility_1_1_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -499,7 +584,7 @@ template&lt;&gt; </td></tr>
 <tr class="memitem:ab6203063df0564c57f28d76f8d5969ac inherit pub_methods_classmspass_1_1utility_1_1_processing_history" id="r_ab6203063df0564c57f28d76f8d5969ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html">ProcessingHistory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#ab6203063df0564c57f28d76f8d5969ac">operator=</a> (const <a class="el" href="classmspass_1_1utility_1_1_processing_history.html">ProcessingHistory</a> &amp;parent)</td></tr>
 <tr class="separator:ab6203063df0564c57f28d76f8d5969ac inherit pub_methods_classmspass_1_1utility_1_1_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmspass_1_1utility_1_1_basic_processing_history"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1utility_1_1_basic_processing_history')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html">mspass::utility::BasicProcessingHistory</a></td></tr>
-<tr class="memitem:a8b077e34de9e1e0a25c24e781c1d235d inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history" id="r_a8b077e34de9e1e0a25c24e781c1d235d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a8b077e34de9e1e0a25c24e781c1d235d">BasicProcessingHistory</a> (const std::string jobname, const std::string jobid)</td></tr>
+<tr class="memitem:a8b077e34de9e1e0a25c24e781c1d235d inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history" id="r_a8b077e34de9e1e0a25c24e781c1d235d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a8b077e34de9e1e0a25c24e781c1d235d">BasicProcessingHistory</a> (const std::string <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a16963d48a18867fe480a276ac5d32844">jobname</a>, const std::string <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a42047587403f5f37567a870f23554da6">jobid</a>)</td></tr>
 <tr class="separator:a8b077e34de9e1e0a25c24e781c1d235d inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50db83159f5d5fd204c2a8d74a43649a inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history" id="r_a50db83159f5d5fd204c2a8d74a43649a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a50db83159f5d5fd204c2a8d74a43649a">BasicProcessingHistory</a> (const <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html">BasicProcessingHistory</a> &amp;parent)</td></tr>
 <tr class="separator:a50db83159f5d5fd204c2a8d74a43649a inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -509,7 +594,7 @@ template&lt;&gt; </td></tr>
 <tr class="separator:abe8702f0b485cea3357b92c9f0226023 inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16963d48a18867fe480a276ac5d32844 inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history" id="r_a16963d48a18867fe480a276ac5d32844"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a16963d48a18867fe480a276ac5d32844">jobname</a> () const</td></tr>
 <tr class="separator:a16963d48a18867fe480a276ac5d32844 inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6c7149734faa2c0b4d51fa8e317db27 inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history" id="r_af6c7149734faa2c0b4d51fa8e317db27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#af6c7149734faa2c0b4d51fa8e317db27">set_jobname</a> (const std::string jobname)</td></tr>
+<tr class="memitem:af6c7149734faa2c0b4d51fa8e317db27 inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history" id="r_af6c7149734faa2c0b4d51fa8e317db27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#af6c7149734faa2c0b4d51fa8e317db27">set_jobname</a> (const std::string <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a16963d48a18867fe480a276ac5d32844">jobname</a>)</td></tr>
 <tr class="separator:af6c7149734faa2c0b4d51fa8e317db27 inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b552f2657fdad975723d9fc73e7875a inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history" id="r_a4b552f2657fdad975723d9fc73e7875a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html">BasicProcessingHistory</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a4b552f2657fdad975723d9fc73e7875a">operator=</a> (const <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html">BasicProcessingHistory</a> &amp;parent)</td></tr>
 <tr class="separator:a4b552f2657fdad975723d9fc73e7875a inherit pub_methods_classmspass_1_1utility_1_1_basic_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -520,6 +605,8 @@ template&lt;&gt; </td></tr>
 <tr class="separator:a2a6b612559664dc5634cd34eb8182227 inherit pub_methods_classmspass_1_1seismic_1_1_data_gap"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2159a919dd8a0cf438085011b97fddf inherit pub_methods_classmspass_1_1seismic_1_1_data_gap" id="r_ae2159a919dd8a0cf438085011b97fddf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#ae2159a919dd8a0cf438085011b97fddf">DataGap</a> (const <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html">DataGap</a> &amp;parent)</td></tr>
 <tr class="separator:ae2159a919dd8a0cf438085011b97fddf inherit pub_methods_classmspass_1_1seismic_1_1_data_gap"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af79b8d0091f6b5dce87cc8086b268b27 inherit pub_methods_classmspass_1_1seismic_1_1_data_gap" id="r_af79b8d0091f6b5dce87cc8086b268b27"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#af79b8d0091f6b5dce87cc8086b268b27">~DataGap</a> ()</td></tr>
+<tr class="separator:af79b8d0091f6b5dce87cc8086b268b27 inherit pub_methods_classmspass_1_1seismic_1_1_data_gap"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf3621238e5e44ac3c8fb014b24420b4 inherit pub_methods_classmspass_1_1seismic_1_1_data_gap" id="r_adf3621238e5e44ac3c8fb014b24420b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#adf3621238e5e44ac3c8fb014b24420b4">is_gap</a> (const double ttest)</td></tr>
 <tr class="separator:adf3621238e5e44ac3c8fb014b24420b4 inherit pub_methods_classmspass_1_1seismic_1_1_data_gap"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a794ed8d8f2d1e3bb3b7923bb133fa916 inherit pub_methods_classmspass_1_1seismic_1_1_data_gap" id="r_a794ed8d8f2d1e3bb3b7923bb133fa916"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a794ed8d8f2d1e3bb3b7923bb133fa916">has_gap</a> (const <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a> twin)</td></tr>
@@ -550,8 +637,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a9ac5c7c060d582b1a399fb066d06779f inherit pub_attribs_classmspass_1_1seismic_1_1_core_seismogram" id="r_a9ac5c7c060d582b1a399fb066d06779f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1dmatrix.html">mspass::utility::dmatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a></td></tr>
 <tr class="separator:a9ac5c7c060d582b1a399fb066d06779f inherit pub_attribs_classmspass_1_1seismic_1_1_core_seismogram"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classmspass_1_1utility_1_1_processing_history"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classmspass_1_1utility_1_1_processing_history')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classmspass_1_1utility_1_1_processing_history.html">mspass::utility::ProcessingHistory</a></td></tr>
-<tr class="memitem:a6e1075575bf136ef4639c6b45f9c5402 inherit pub_attribs_classmspass_1_1utility_1_1_processing_history" id="r_a6e1075575bf136ef4639c6b45f9c5402"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classmspass_1_1utility_1_1_error_logger.html">ErrorLogger</a>&#160;</td><td class="memItemRight" valign="bottom"><b>elog</b></td></tr>
+<tr class="memitem:a6e1075575bf136ef4639c6b45f9c5402 inherit pub_attribs_classmspass_1_1utility_1_1_processing_history" id="r_a6e1075575bf136ef4639c6b45f9c5402"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">ErrorLogger</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a6e1075575bf136ef4639c6b45f9c5402">elog</a></td></tr>
 <tr class="separator:a6e1075575bf136ef4639c6b45f9c5402 inherit pub_attribs_classmspass_1_1utility_1_1_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1seismic_1_1_core_seismogram"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1seismic_1_1_core_seismogram')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a></td></tr>
 <tr class="memitem:a7e983515950366013bde880ddb740b36 inherit pro_attribs_classmspass_1_1seismic_1_1_core_seismogram" id="r_a7e983515950366013bde880ddb740b36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7e983515950366013bde880ddb740b36">components_are_orthogonal</a></td></tr>
@@ -571,29 +657,22 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a0cb0afe9272567b8fd3394f79f46628a inherit pro_attribs_classmspass_1_1seismic_1_1_basic_time_series"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb88ddef3bab3b3205dfe6c6cfdb91aa inherit pro_attribs_classmspass_1_1seismic_1_1_basic_time_series" id="r_abb88ddef3bab3b3205dfe6c6cfdb91aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2">TimeReferenceType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a></td></tr>
 <tr class="separator:abb88ddef3bab3b3205dfe6c6cfdb91aa inherit pro_attribs_classmspass_1_1seismic_1_1_basic_time_series"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af749170531556c0c39ba6916057d2b17 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_time_series" id="r_af749170531556c0c39ba6916057d2b17"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift_is_valid</b></td></tr>
+<tr class="memitem:af749170531556c0c39ba6916057d2b17 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_time_series" id="r_af749170531556c0c39ba6916057d2b17"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af749170531556c0c39ba6916057d2b17">t0shift_is_valid</a></td></tr>
 <tr class="separator:af749170531556c0c39ba6916057d2b17 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_time_series"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae79b68bf89b4cd4e6001bbf2c491f539 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_time_series" id="r_ae79b68bf89b4cd4e6001bbf2c491f539"><td class="memItemLeft" align="right" valign="top">
-double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></tr>
+<tr class="memitem:ae79b68bf89b4cd4e6001bbf2c491f539 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_time_series" id="r_ae79b68bf89b4cd4e6001bbf2c491f539"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ae79b68bf89b4cd4e6001bbf2c491f539">t0shift</a></td></tr>
 <tr class="separator:ae79b68bf89b4cd4e6001bbf2c491f539 inherit pro_attribs_classmspass_1_1seismic_1_1_basic_time_series"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1utility_1_1_metadata"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1utility_1_1_metadata')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></td></tr>
-<tr class="memitem:a8be7decfdbefb7aa8c3d9e977ac26f0b inherit pro_attribs_classmspass_1_1utility_1_1_metadata" id="r_a8be7decfdbefb7aa8c3d9e977ac26f0b"><td class="memItemLeft" align="right" valign="top">
-std::map&lt; std::string, boost::any &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>md</b></td></tr>
+<tr class="memitem:a8be7decfdbefb7aa8c3d9e977ac26f0b inherit pro_attribs_classmspass_1_1utility_1_1_metadata" id="r_a8be7decfdbefb7aa8c3d9e977ac26f0b"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, boost::any &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a></td></tr>
 <tr class="separator:a8be7decfdbefb7aa8c3d9e977ac26f0b inherit pro_attribs_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaa3b11bec830a2ab4f93e79623af591 inherit pro_attribs_classmspass_1_1utility_1_1_metadata" id="r_abaa3b11bec830a2ab4f93e79623af591"><td class="memItemLeft" align="right" valign="top">
-std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>changed_or_set</b></td></tr>
+<tr class="memitem:abaa3b11bec830a2ab4f93e79623af591 inherit pro_attribs_classmspass_1_1utility_1_1_metadata" id="r_abaa3b11bec830a2ab4f93e79623af591"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#abaa3b11bec830a2ab4f93e79623af591">changed_or_set</a></td></tr>
 <tr class="separator:abaa3b11bec830a2ab4f93e79623af591 inherit pro_attribs_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1utility_1_1_processing_history"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1utility_1_1_processing_history')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1utility_1_1_processing_history.html">mspass::utility::ProcessingHistory</a></td></tr>
-<tr class="memitem:a31ee1661077d22932b4002f617b19a8f inherit pro_attribs_classmspass_1_1utility_1_1_processing_history" id="r_a31ee1661077d22932b4002f617b19a8f"><td class="memItemLeft" align="right" valign="top">
-std::multimap&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_node_data.html">mspass::utility::NodeData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>nodes</b></td></tr>
+<tr class="memitem:a31ee1661077d22932b4002f617b19a8f inherit pro_attribs_classmspass_1_1utility_1_1_processing_history" id="r_a31ee1661077d22932b4002f617b19a8f"><td class="memItemLeft" align="right" valign="top">std::multimap&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_node_data.html">mspass::utility::NodeData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a31ee1661077d22932b4002f617b19a8f">nodes</a></td></tr>
 <tr class="separator:a31ee1661077d22932b4002f617b19a8f inherit pro_attribs_classmspass_1_1utility_1_1_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1utility_1_1_basic_processing_history"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1utility_1_1_basic_processing_history')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html">mspass::utility::BasicProcessingHistory</a></td></tr>
-<tr class="memitem:ac3ffa201ded102104675f2daccd379d9 inherit pro_attribs_classmspass_1_1utility_1_1_basic_processing_history" id="r_ac3ffa201ded102104675f2daccd379d9"><td class="memItemLeft" align="right" valign="top">
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jid</b></td></tr>
+<tr class="memitem:ac3ffa201ded102104675f2daccd379d9 inherit pro_attribs_classmspass_1_1utility_1_1_basic_processing_history" id="r_ac3ffa201ded102104675f2daccd379d9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#ac3ffa201ded102104675f2daccd379d9">jid</a></td></tr>
 <tr class="separator:ac3ffa201ded102104675f2daccd379d9 inherit pro_attribs_classmspass_1_1utility_1_1_basic_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d8756ffc6b2b0a3b068d2014c2f8a6c inherit pro_attribs_classmspass_1_1utility_1_1_basic_processing_history" id="r_a6d8756ffc6b2b0a3b068d2014c2f8a6c"><td class="memItemLeft" align="right" valign="top">
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></tr>
+<tr class="memitem:a6d8756ffc6b2b0a3b068d2014c2f8a6c inherit pro_attribs_classmspass_1_1utility_1_1_basic_processing_history" id="r_a6d8756ffc6b2b0a3b068d2014c2f8a6c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#a6d8756ffc6b2b0a3b068d2014c2f8a6c">jnm</a></td></tr>
 <tr class="separator:a6d8756ffc6b2b0a3b068d2014c2f8a6c inherit pro_attribs_classmspass_1_1utility_1_1_basic_processing_history"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1seismic_1_1_data_gap"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1seismic_1_1_data_gap')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html">mspass::seismic::DataGap</a></td></tr>
 <tr class="memitem:a7cb06f3ead8475c9527c2248968a2c83 inherit pro_attribs_classmspass_1_1seismic_1_1_data_gap" id="r_a7cb06f3ead8475c9527c2248968a2c83"><td class="memItemLeft" align="right" valign="top">
@@ -601,7 +680,9 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
 <tr class="memdesc:a7cb06f3ead8475c9527c2248968a2c83 inherit pro_attribs_classmspass_1_1seismic_1_1_data_gap"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds data gap definitions. We use an STL set object to define data gaps for any time series object derived from this base class. The set is keyed by a TimeWindow which allows a simple, fast way to define a time range with invalid data. <br /></td></tr>
 <tr class="separator:a7cb06f3ead8475c9527c2248968a2c83 inherit pro_attribs_classmspass_1_1seismic_1_1_data_gap"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Three-component <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS.">Seismogram</a> with explicit data-gap tracking. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="adf038f77f4e75979ed1debe1b13d2c5b" name="adf038f77f4e75979ed1debe1b13d2c5b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adf038f77f4e75979ed1debe1b13d2c5b">&#9670;&#160;</a></span>SeismogramWGaps() <span class="overload">[1/2]</span></h2>
 
@@ -641,7 +722,44 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
 
 </div>
 </div>
+<a id="a4136f6b13d9c5a4151f3efabebf10f87" name="a4136f6b13d9c5a4151f3efabebf10f87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4136f6b13d9c5a4151f3efabebf10f87">&#9670;&#160;</a></span>~SeismogramWGaps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mspass::seismic::SeismogramWGaps::~SeismogramWGaps </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Destructor. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8af6fce0c26b13f072582416cc5e1966" name="a8af6fce0c26b13f072582416cc5e1966"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8af6fce0c26b13f072582416cc5e1966">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp; <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::seismic::SeismogramWGaps::operator</a>= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;&#160;</td>
+          <td class="paramname"><em>parent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Assignment operator. </p>
+
+</div>
+</div>
 <a id="a976c7e2ae15527497d22fa9e82fcb4ad" name="a976c7e2ae15527497d22fa9e82fcb4ad"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a976c7e2ae15527497d22fa9e82fcb4ad">&#9670;&#160;</a></span>zero_gaps()</h2>
 

@@ -111,7 +111,7 @@ Getting Started
 
 The first step to use MsPASS is to install a local copy that you can use
 for initial experimentation.
-:ref:`Click here <run_mspass_with_docker>` for installation instructions.
+:ref:`Click here <mspass_desktop>` for desktop installation instructions.
 
 We have an extensive set of tutorials based on jupyter notebooks
 found `here <https://github.com/mspass-team/mspass_tutorial>`__.

@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -90,18 +133,18 @@ $(function() {
 
 <p>This is the complete list of members for <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a>, including all inherited members.</p>
 <table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>freq_bin_size</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#aa12ffbea473e3d873dcc8d4867685ebb">freq_bin_size</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">impulse_response</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>operator=</b>(const ShapingWavelet &amp;parent) (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>sample_interval</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d6b2d33ed5b0edb387e1ea23e0817e7">operator=</a>(const ShapingWavelet &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#adf4577a4442559e6aaad9056258c2915">sample_interval</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>ShapingWavelet</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a984132ea5e40cb9d7091fd6d2df07a1c">ShapingWavelet</a>(const mspass::utility::Metadata &amp;md, int npts=0)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>ShapingWavelet</b>(mspass::seismic::CoreTimeSeries d, int nfft=0) (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a6a4542e26f576a23d7a449850f313761">ShapingWavelet</a>(mspass::seismic::CoreTimeSeries d, int nfft=0)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a1d57d2516e5463b4a8ded31427a8c3b8">ShapingWavelet</a>(const double fpeak, const double dtin, const int n)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a94f3bbb5a76609251dc7146ededa5933">ShapingWavelet</a>(const int npolelo, const double f3dblo, const int npolehi, const double f3dbhi, const double dtin, const int n)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>ShapingWavelet</b>(const ShapingWavelet &amp;parent) (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>size</b>() const (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>type</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a1acfb13ae9677db0da66947e55046b78">ShapingWavelet</a>(const ShapingWavelet &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a0ae9e28502a67f03057d8aee5c126f9c">size</a>() const</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a057dcb38c1912fe5c0a78957cd874d40">type</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">mspass::algorithms::deconvolution::ShapingWavelet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->

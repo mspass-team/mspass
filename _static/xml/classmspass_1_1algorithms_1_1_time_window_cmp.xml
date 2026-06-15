@@ -21,10 +21,32 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Return true when ti1 ends before ti2 starts. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ti1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>first window in the comparison. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ti2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>second window in the comparison. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if ti1 is strictly before ti2 with no overlap. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="83" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="83" bodyend="85"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="95" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="95" bodyend="97"/>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -35,7 +57,7 @@
 </simplesect>
 </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="81" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="81" bodyend="86"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="88" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="88" bodyend="98"/>
     <listofallmembers>
       <member refid="classmspass_1_1algorithms_1_1_time_window_cmp_1af53d9c42a7e611e473fa1d344c32519b" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindowCmp</scope><name>operator()</name></member>
     </listofallmembers>

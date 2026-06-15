@@ -4,6 +4,7 @@
     <compoundname>mspass::seismic::TimeSeriesWGaps</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_time_series" prot="public" virt="non-virtual">mspass::seismic::TimeSeries</basecompoundref>
     <basecompoundref refid="classmspass_1_1seismic_1_1_data_gap" prot="public" virt="non-virtual">mspass::seismic::DataGap</basecompoundref>
+    <includes refid="_time_series_w_gaps_8h" local="no">TimeSeriesWGaps.h</includes>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a6a4b2b0864ba62341790fc16d6aa222c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -19,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="12" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="12" bodyend="12"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="13" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="13" bodyend="13"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1af337b3275f34adc06dcb1cead3fece20" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -39,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="18" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="18" bodyend="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="19" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="19" bodyend="19"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a2499cb34652f342028785384117d2ecb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -58,7 +59,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="20" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="20" bodyend="22"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="21" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="21" bodyend="23"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a6a5883ee439c559e493a9bb00d7e1fe4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -77,10 +78,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Construct by combining a <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> with an existing <ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> container. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="24" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="24" bodyend="25"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="26" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="26" bodyend="27"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ab3e0fde691c59a13ae4220a8001e3ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref> &amp;</type>
@@ -95,10 +97,14 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Assignment operator. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="26" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="148" bodyend="154"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="29" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="148" bodyend="154"/>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">mspass::seismic::DataGap::gaps</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_time_series_1abdea57bd025f81cc00375db3a7e1c854" compoundref="_time_series_8cc" startline="78" endline="84">mspass::seismic::TimeSeries::operator=</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1a6ba0f20ec3b6d6a1b7050a1e8b73e7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -109,10 +115,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Virtual destructor. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="27" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="27" bodyend="27"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="31" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="31" bodyend="31"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ac0738e8e0441f49d3c03b504dc7e44b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -142,14 +149,16 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="40" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="15" bodyend="46"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="44" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="15" bodyend="46"/>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
-        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="110">mspass::seismic::DataGap::gaps</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="251">mspass::seismic::BasicTimeSeries::mt0</references>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">mspass::seismic::DataGap::gaps</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mspass::seismic::BasicTimeSeries::mt0</references>
         <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="265">mspass::seismic::BasicTimeSeries::tref</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" compoundref="_basic_time_series_8h" startline="274">mspass::seismic::BasicTimeSeries::t0shift</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" compoundref="_basic_time_series_8h" startline="271">mspass::seismic::BasicTimeSeries::t0shift_is_valid</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">mspass::seismic::BasicTimeSeries::tref</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a94b8dec417673158de0d68b31b353d49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -178,13 +187,14 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="58" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="47" bodyend="71"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="62" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="47" bodyend="71"/>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
-        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="110">mspass::seismic::DataGap::gaps</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="251">mspass::seismic::BasicTimeSeries::mt0</references>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">mspass::seismic::DataGap::gaps</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mspass::seismic::BasicTimeSeries::mt0</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="265">mspass::seismic::BasicTimeSeries::tref</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" compoundref="_basic_time_series_8h" startline="271">mspass::seismic::BasicTimeSeries::t0shift_is_valid</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">mspass::seismic::BasicTimeSeries::tref</references>
         <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a51eefbc8e6a034148da8f36e21870fe2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
@@ -203,14 +213,16 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="71" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="72" bodyend="108"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="75" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="72" bodyend="108"/>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
-        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="110">mspass::seismic::DataGap::gaps</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">mspass::seismic::DataGap::gaps</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="251">mspass::seismic::BasicTimeSeries::mt0</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mspass::seismic::BasicTimeSeries::mt0</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="265">mspass::seismic::BasicTimeSeries::tref</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" compoundref="_basic_time_series_8h" startline="274">mspass::seismic::BasicTimeSeries::t0shift</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" compoundref="_basic_time_series_8h" startline="271">mspass::seismic::BasicTimeSeries::t0shift_is_valid</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">mspass::seismic::BasicTimeSeries::tref</references>
         <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42f1e02964fb1b689e40bc6e4e3d2ac3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
@@ -232,12 +244,14 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="79" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="109" bodyend="125"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="83" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="109" bodyend="125"/>
         <references refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1ac0738e8e0441f49d3c03b504dc7e44b9" compoundref="_time_series_w_gaps_8cc" startline="15" endline="46">ator</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
         <references refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a51eefbc8e6a034148da8f36e21870fe2" compoundref="_time_series_w_gaps_8cc" startline="72" endline="108">rtoa</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" compoundref="_basic_time_series_8h" startline="274">mspass::seismic::BasicTimeSeries::t0shift</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" compoundref="_basic_time_series_8h" startline="271">mspass::seismic::BasicTimeSeries::t0shift_is_valid</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -252,11 +266,11 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="82" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="126" bodyend="146"/>
-        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="110">mspass::seismic::DataGap::gaps</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="251">mspass::seismic::BasicTimeSeries::mt0</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="255">mspass::seismic::BasicTimeSeries::nsamp</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="86" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="126" bodyend="146"/>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">mspass::seismic::DataGap::gaps</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mspass::seismic::BasicTimeSeries::mt0</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="257">mspass::seismic::BasicTimeSeries::nsamp</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42a8cb90831e476fdd4c8555abc5ad5a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
@@ -273,13 +287,14 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="92" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="155" bodyend="160"/>
-        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="110">mspass::seismic::DataGap::gaps</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="413" endline="428">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1seismic_1_1_time_series_1a0f62a2e87fe26a6d08a978ebdde2b114" compoundref="_time_series_8cc" startline="86" endline="100">mspass::seismic::TimeSeries::memory_use</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="96" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeriesWGaps.cc" bodystart="155" bodyend="160"/>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">mspass::seismic::DataGap::gaps</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_time_series_1a0f62a2e87fe26a6d08a978ebdde2b114" compoundref="_time_series_8cc" startline="88" endline="102">mspass::seismic::TimeSeries::memory_use</references>
       </memberdef>
     </sectiondef>
     <briefdescription>
+<para>Scalar <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> with explicit data-gap tracking. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
@@ -398,7 +413,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="6" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="6" bodyend="93"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="7" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="7" bodyend="97"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>accumulate</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1a29bd754c4f58ce811c4e6e1e4056927c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_gap</name></member>

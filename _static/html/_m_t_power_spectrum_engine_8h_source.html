@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -116,7 +159,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a8232d61152acbe74c6a890a662f89c63">~MTPowerSpectrumEngine</a>();</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html">MTPowerSpectrumEngine</a> &amp;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a51379e47b45995eb44c519c2672de77b">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html">MTPowerSpectrumEngine</a> &amp;parent);</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_power_spectrum.html">mspass::seismic::PowerSpectrum</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">apply</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1seismic_1_1_time_series.html">mspass::seismic::TimeSeries</a> &amp;d);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#ab679e58c66c0c4a332350c7f4282e806">   90</a></span>  std::vector&lt;double&gt; <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#ab679e58c66c0c4a332350c7f4282e806">apply</a>(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;d);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  std::vector&lt;double&gt; <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">apply</a>(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;d);</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#ada36c092fdc3aa128be8eb25d00349d6">   92</a></span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#ada36c092fdc3aa128be8eb25d00349d6">df</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> deltaf; };</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  std::vector&lt;double&gt; <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a626438cc21ade06cfa7053c324ae58b4">frequencies</a>();</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">   97</a></span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">taper_length</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> taperlen; };</div>
@@ -192,12 +235,11 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a1dadcf9ec587fa2d48d04066ba1d55b4"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::set_df</a></div><div class="ttdeci">double set_df(double dt)</div><div class="ttdoc">Putter equivalent of df.</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:126</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a509f3db8c91ae8e97b241bd5da67cd61"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a509f3db8c91ae8e97b241bd5da67cd61">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::MTPowerSpectrumEngine</a></div><div class="ttdeci">MTPowerSpectrumEngine()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:18</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a51379e47b45995eb44c519c2672de77b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a51379e47b45995eb44c519c2672de77b">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::operator=</a></div><div class="ttdeci">MTPowerSpectrumEngine &amp; operator=(const MTPowerSpectrumEngine &amp;parent)</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:102</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a626438cc21ade06cfa7053c324ae58b4"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a626438cc21ade06cfa7053c324ae58b4">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::frequencies</a></div><div class="ttdeci">std::vector&lt; double &gt; frequencies()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:266</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a626438cc21ade06cfa7053c324ae58b4"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a626438cc21ade06cfa7053c324ae58b4">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::frequencies</a></div><div class="ttdeci">std::vector&lt; double &gt; frequencies()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:267</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a742dcf1ea4d54af357f6cb220e2fa10d"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a742dcf1ea4d54af357f6cb220e2fa10d">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::dt</a></div><div class="ttdeci">double dt() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:106</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a8232d61152acbe74c6a890a662f89c63"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a8232d61152acbe74c6a890a662f89c63">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::~MTPowerSpectrumEngine</a></div><div class="ttdeci">~MTPowerSpectrumEngine()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:95</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a92db35500eda333738d2c650e0b6d82f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::nf</a></div><div class="ttdeci">int nf()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:135</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_aa3c10c25ea2c6b82cf8bbe2991f16bfe"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</a></div><div class="ttdeci">mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries &amp;d)</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:116</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_ab679e58c66c0c4a332350c7f4282e806"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#ab679e58c66c0c4a332350c7f4282e806">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</a></div><div class="ttdeci">std::vector&lt; double &gt; apply(const std::vector&lt; double &gt; &amp;d)</div><div class="ttdoc">Low level processing of vector of data.</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_aa3c10c25ea2c6b82cf8bbe2991f16bfe"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</a></div><div class="ttdeci">mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries &amp;d)</div><div class="ttdoc">Process a TimeSeries.</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:116</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_accf94d6d1dff859884d9c0aa1719994a"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</a></div><div class="ttdeci">double time_bandwidth_product() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:99</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_ada36c092fdc3aa128be8eb25d00349d6"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#ada36c092fdc3aa128be8eb25d00349d6">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::df</a></div><div class="ttdeci">double df() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:92</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_afaabbb574b28194bde51e45d1cfd2787"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#afaabbb574b28194bde51e45d1cfd2787">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::fftsize</a></div><div class="ttdeci">int fftsize() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:104</div></div>

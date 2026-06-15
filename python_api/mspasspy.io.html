@@ -1,84 +1,330 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mspasspy.io &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mspasspy.io &#8212; MsPASS 0.1.dev1+gb7c2adc documentation</title>
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=c1885210"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'python_api/mspasspy.io';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mspasspy.preprocessing" href="mspasspy.preprocessing.html" />
-    <link rel="prev" title="mspasspy.history" href="mspasspy.history.html" />  
-
-  <style>
-    .wy-nav-content { max-width: 1600px; }
-  </style>
+    <link rel="prev" title="mspasspy.history" href="mspasspy.history.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
-</head>
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            MsPASS
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+  <dialog id="pst-search-dialog">
     
-              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
-<ul>
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
@@ -87,8 +333,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
@@ -101,21 +347,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
@@ -123,61 +369,79 @@
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.io</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.post2metadata"><code class="docutils literal notranslate"><span class="pre">post2metadata()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.post_error_log"><code class="docutils literal notranslate"><span class="pre">post_error_log()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.pyspark_mappartition_interface"><code class="docutils literal notranslate"><span class="pre">pyspark_mappartition_interface</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc"><code class="docutils literal notranslate"><span class="pre">pyspark_mappartition_interface.partitioned_save_wfdoc()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.read_distributed_data"><code class="docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.read_ensemble_parallel"><code class="docutils literal notranslate"><span class="pre">read_ensemble_parallel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.read_to_dataframe"><code class="docutils literal notranslate"><span class="pre">read_to_dataframe()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mspasspy.io.distributed.write_distributed_data"><code class="docutils literal notranslate"><span class="pre">write_distributed_data()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
-
-    <a href= "../genindex.html">Index</a>
-  
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">MsPASS</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="index.html">Python API</a></li>
-      <li class="breadcrumb-item active">mspasspy.io</li>
-      <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/python_api/mspasspy.io.rst" class="fa fa-github"> Edit on GitHub</a>
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Python API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.io</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="module-mspasspy.io.distributed">
-<span id="mspasspy-io"></span><h1>mspasspy.io<a class="headerlink" href="#module-mspasspy.io.distributed" title="Link to this heading"></a></h1>
+<span id="mspasspy-io"></span><h1>mspasspy.io<a class="headerlink" href="#module-mspasspy.io.distributed" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.io.distributed.post2metadata">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">post2metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#post2metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.post2metadata" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">post2metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#post2metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.post2metadata" title="Link to this definition">#</a></dt>
 <dd><p>Posts content of key-value pair container doc to Metadata container
 of mspass_object.  Operation only requires that doc be iterable
 over keys and both doc and mspass_object act like associative
@@ -199,7 +463,7 @@ no safeties for efficiency.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.io.distributed.post_error_log">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">post_error_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elog_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'error_log'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#post_error_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.post_error_log" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">post_error_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elog_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'error_log'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#post_error_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.post_error_log" title="Link to this definition">#</a></dt>
 <dd><p>Posts error log data as a subdocument to arg0 datum (symbol d).</p>
 <p>write_distributed_data has a “post_elog” boolean.  By default
 elog entries for any atomic seismic datum will be posted
@@ -215,7 +479,7 @@ end up in either the abortions or cemetery collections.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.io.distributed.pyspark_mappartition_interface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">pyspark_mappartition_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#pyspark_mappartition_interface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.pyspark_mappartition_interface" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">pyspark_mappartition_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#pyspark_mappartition_interface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.pyspark_mappartition_interface" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Interface class required for pyspark mapPartition.</p>
 <p>This class is a workaround for a limitation of pyspark’s api for
@@ -235,7 +499,7 @@ the file scope function <cite>_partitioned_save_wfdoc</cite> with the parameters
 for that function defined by self content.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc">
-<span class="sig-name descname"><span class="pre">partitioned_save_wfdoc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#pyspark_mappartition_interface.partitioned_save_wfdoc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">partitioned_save_wfdoc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#pyspark_mappartition_interface.partitioned_save_wfdoc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc" title="Link to this definition">#</a></dt>
 <dd><p>Method used as a wrapper to pass on to pyspark’s mapPartitions
 operator.  iterator is assumed to be the iterator passed to
 the function per partition by mapPartitions.</p>
@@ -245,7 +509,7 @@ the function per partition by mapPartitions.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.io.distributed.read_distributed_data">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_distributed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scratchfile=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection='wf_TimeSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode='promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_ensemble=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler='dask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npartitions=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spark_context=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_clause=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_merge_function=&lt;function</span> <span class="pre">post2metadata&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_to_merge=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_distributed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_distributed_data" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_distributed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scratchfile=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection='wf_TimeSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode='promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_ensemble=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler='dask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npartitions=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spark_context=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_clause=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_merge_function=&lt;function</span> <span class="pre">post2metadata&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_to_merge=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_distributed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_distributed_data" title="Link to this definition">#</a></dt>
 <dd><p>Parallel data reader for seismic data objects.</p>
 <p>In MsPASS seismic data objects need to be loaded into a Spark RDD or
 Dask bag for parallel processing. This function abstracts that
@@ -280,7 +544,7 @@ required to be one of three things to work well within these constraints:</p>
 <blockquote>
 <div><ol class="arabic simple">
 <li><p>An instance of a mspass <cite>Database</cite> handle
-(<a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>).  Default
+(<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>).  Default
 with this input is to read an entire collection.  Use the
 query parameter to limit input.  This mode also implicitly
 implies the result will be a bag/RDD of atomic data.  Note
@@ -414,7 +678,7 @@ to be marked dead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>
+<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">dask.dataframe.DataFrame</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.sql.dataframe.DataFrame</span></code>
 for atomic data.  List of python dicts defining queries to read a
 dataset of ensembles.) – variable type arguement used to drive construction as
@@ -451,7 +715,10 @@ the schema definition for the data type.   Must be one of
 detailed description of what the modes mean.  Default is ‘promiscuous’
 which turns off all schema checks and loads all attributes defined for
 each object read.</p></li>
-<li><p><strong>normalize</strong> – List of normalizers.   This parameter is passed
+<li><p><strong>normalize</strong> (must be a python list of subclasses of
+the abstract class <a class="reference internal" href="mspasspy.db.html#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.BasicMatcher</span></code></a>
+that can be used as the normalization operator in the
+<cite>normalize</cite> function.) – List of normalizers.   This parameter is passed
 directly to the <cite>Database.read_data</cite> method internally.  See the
 docstring for that method for how this parameter is handled.
 For atomic data each component is used with the <cite>normalize</cite>
@@ -460,6 +727,26 @@ datum.   For ensembles, the same operation is done in a loop
 over all ensembles members (i.e. the member objects are atomic
 and normalized in a loop.).  Use <cite>normalize_ensemble</cite> to
 set values in the ensemble Metadata container.</p></li>
+<li><p><strong>normalize_ensemble</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code>.
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatchers</span></code> are applied sequentialy with the
+<cite>normalize</cite> function with the list of attributes loaded defined
+by the instance.) – This parameter should be used to
+apply normalization to ensemble Metadata (attributes common to
+the entire ensemble.) It will be ignored if reading
+atomic data.  Otherwise it behaves like normalize and is
+assumed to a list of subclasses of <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMatcher</span></code> objects.
+If using this option you must also specify a valid value for
+the <cite>container_to_merge</cite> argument.  The reason is that currently
+the only efficient way to post any Metadata components to
+an ensemble’s Metadata container is via the algorithm used by
+if the <cite>container_to_merge</cite> option is used.  This feature was
+designed with ids in mind where the ids would link to a collection
+that are contain defining properties for what the ensemble is.
+For example, if the ensemble is a “common-source gather”
+the <cite>container_to_merge</cite> could be a bag/RDD of ObjectIds defining
+the <cite>source_id</cite> attribute.  Then the normalize_ensemble list
+could contain an instance of <a class="reference internal" href="mspasspy.db.html#mspasspy.db.normalize.ObjectIdMatcher" title="mspasspy.db.normalize.ObjectIdMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.normalize.ObjectIdMatcher</span></code></a>
+created to match and load source data.</p></li>
 <li><p><strong>load_history</strong> – boolean (True or False) switch used to enable or
 disable object level history mechanism.   When set True each datum
 will be tagged with its origin id that defines the leaf nodes of a
@@ -536,7 +823,7 @@ is “Spark” and a dask ‘bag’ if scheduler is “dask”</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.io.distributed.read_ensemble_parallel">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_ensemble_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbname_or_handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_TimeSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_clause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_ensemble_parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_ensemble_parallel" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_ensemble_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbname_or_handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_TimeSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_clause</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_ensemble_parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_ensemble_parallel" title="Link to this definition">#</a></dt>
 <dd><p>Special function used in read_distributed_data to handle ensembles.</p>
 <p>Ensembles need to be read via a cursor which is not serializable.
 Here we query a Database class, which is serializable, and
@@ -549,7 +836,7 @@ read_distributed_data.  See that function for parameter descriptions.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.io.distributed.read_to_dataframe">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_to_dataframe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">define_as_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_history_record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_to_dataframe" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_to_dataframe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">define_as_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieve_history_record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_to_dataframe" title="Link to this definition">#</a></dt>
 <dd><p>Read the documents defined by a MongoDB cursor into a panda DataFrame.</p>
 <p>The data stucture called a panda DataFrame is heavily used by
 many python user’s.  This is convenience function for users wanting to
@@ -562,7 +849,7 @@ function is not mainstream and may be prone to issues.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – the database from which the data are to be read.</p></li>
+<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – the database from which the data are to be read.</p></li>
 <li><p><strong>object_id</strong> – MongoDB object id of the wf document to be constructed from
 data defined in the database.  The object id is guaranteed unique and provides
 a unique link to a unique document or nothing.   In the later case the
@@ -612,7 +899,7 @@ read operations.   Default turns this off by setting the tag null (None).</p></l
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.io.distributed.write_distributed_data">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">write_distributed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_are_atomic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gridfs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_TimeSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cremate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'write_distributed_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#write_distributed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.write_distributed_data" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">write_distributed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_are_atomic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gridfs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_TimeSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cremate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'write_distributed_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#write_distributed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.write_distributed_data" title="Link to this definition">#</a></dt>
 <dd><p>Parallel save function for termination of a processing script.</p>
 <p>Saving data from a parallel container (i.e. bag/rdd) is a different
 problem from a serial writer.  Bottlenecks are likely with
@@ -723,7 +1010,7 @@ output file names for a large data set.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dask.bag.Bag</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.RDD</span></code>.) – parallel container of data to be written</p></li>
-<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – database handle to manage data saved by this function.</p></li>
+<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – database handle to manage data saved by this function.</p></li>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – This parameter defines how attributes defined with
 key-value pairs in MongoDB documents are to be handled for writes.
 By “to be handled” we mean how strongly to enforce name and type
@@ -817,10 +1104,10 @@ ashes to nothing in the return.   When False (default) the
 <cite>bury</cite> method will be called instead which saves a skeleton
 (error log and Metadata content) of the results in the “cemetery”
 collection.</p></li>
-<li><p><strong>normalizing_collections</strong> – <dl class="simple">
-<dt>list of collection names dogmatically treated</dt><dd><p>as normalizing collection names.  The keywords in the list are used
+<li><p><strong>normalizing_collections</strong> (<em>list</em><em> of </em><em>strings defining collection names.</em>) – list of collection names dogmatically treated
+as normalizing collection names.  The keywords in the list are used
 to always (i.e. for all modes) erase any attribute with a key name
-of the form <cite>collection_attribute where `collection</cite> is one of the collection
+of the form <code class="docutils literal notranslate"><span class="pre">collection_attribute</span></code> where <code class="docutils literal notranslate"><span class="pre">collection</span></code> is one of the collection
 names in this list and attribute is any string.  Attribute names with the “_”
 separator are saved unless the collection field matches one one of the
 strings (e.g. “channel_vang” will be erased before saving to the
@@ -828,32 +1115,15 @@ wf collection while “foo_bar” will not be erased.)  This list should
 ONLY be changed if a different schema than the default mspass schema
 is used and different names are used for normalizing collections.
 (e.g. if one added a “shot” collection to the schema the list would need
-to be changed to at least add “shot”.)</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">type normalizing_collection<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list if strings defining collection names.</p>
-</dd>
-<dt class="field-even">param alg_name<span class="colon">:</span></dt>
-<dd class="field-even"><p>do not change</p>
-</dd>
-<dt class="field-odd">param alg_id<span class="colon">:</span></dt>
-<dd class="field-odd"><p>algorithm id for object-level history.  Normally
-assigned by global history manager.</p>
-</dd>
-<dt class="field-even">param dask_client<span class="colon">:</span></dt>
-<dd class="field-even"><p>Optional Dask distributed Client instance. When provided,
+to be changed to at least add “shot”.)</p></li>
+<li><p><strong>alg_name</strong> – do not change</p></li>
+<li><p><strong>alg_id</strong> – algorithm id for object-level history.  Normally
+assigned by global history manager.</p></li>
+<li><p><strong>dask_client</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dask.distributed.Client</span></code> or None) – Optional Dask distributed Client instance. When provided,
 this client will be used for compute() operations instead of the default
 multiprocessing scheduler. This is required when using Dask distributed
 scheduler with worker plugins (e.g., MongoDBWorker). If None (default),
-uses the default Dask scheduler.</p>
-</dd>
-<dt class="field-odd">type dask_client<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dask.distributed.Client</span></code> or None</p>
-</dd>
-</dl>
-</p></li>
+uses the default Dask scheduler.</p></li>
 </ul>
 </dd>
 </dl>
@@ -862,31 +1132,127 @@ uses the default Dask scheduler.</p>
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="mspasspy.history.html" class="btn btn-neutral float-left" title="mspasspy.history" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mspasspy.preprocessing.html" class="btn btn-neutral float-right" title="mspasspy.preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
-  </div>
-
-   
-
-</footer>
-        </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mspasspy.history.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mspasspy.history</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="mspasspy.preprocessing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mspasspy.preprocessing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.post2metadata"><code class="docutils literal notranslate"><span class="pre">post2metadata()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.post_error_log"><code class="docutils literal notranslate"><span class="pre">post_error_log()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.pyspark_mappartition_interface"><code class="docutils literal notranslate"><span class="pre">pyspark_mappartition_interface</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc"><code class="docutils literal notranslate"><span class="pre">pyspark_mappartition_interface.partitioned_save_wfdoc()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.read_distributed_data"><code class="docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.read_ensemble_parallel"><code class="docutils literal notranslate"><span class="pre">read_ensemble_parallel()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.read_to_dataframe"><code class="docutils literal notranslate"><span class="pre">read_to_dataframe()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.write_distributed_data"><code class="docutils literal notranslate"><span class="pre">write_distributed_data()</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/python_api/mspasspy.io.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/python_api/mspasspy.io.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
 </html>

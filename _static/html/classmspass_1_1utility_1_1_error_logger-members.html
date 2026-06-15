@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -92,17 +135,17 @@ $(function() {
 <table class="directory">
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#ac98f8e0c684513beb3fc8e2973f08785">clear</a>()</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>ErrorLogger</b>() (defined in <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>ErrorLogger</b>(int job) (defined in <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>ErrorLogger</b>(const ErrorLogger &amp;parent) (defined in <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>get_error_log</b>() const (defined in <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>get_job_id</b>() (defined in <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a5989e703c95cade0f3929de8f63edd10">ErrorLogger</a>(int job)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a79f494e5eaa29dd10e6089ff8f1a8e49">ErrorLogger</a>(const ErrorLogger &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a420c3a3de5bc10d0f62ab3e1b84bda9f">get_error_log</a>() const</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a38e65725d45dd26a2e39b1ddd726463a">get_job_id</a>()</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(const mspass::utility::MsPASSError &amp;merr)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a51545bad29895f7c1393ccbfed6e2aa2">log_error</a>(const std::string alg, const std::string mess, const mspass::utility::ErrorSeverity level)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a570cc3c845bd18dd0417e84a8cafe05f">log_verbose</a>(const std::string alg, const std::string mess)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a4c0ac6e0e59fa842e3ce065352edb82e">operator+=</a>(const ErrorLogger &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>operator=</b>(const ErrorLogger &amp;parent) (defined in <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>set_job_id</b>(int jid) (defined in <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>size</b>() const (defined in <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a1168408b473c80d078bfc2e8bd98bb75">operator=</a>(const ErrorLogger &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#ab61d1b8f391a571fa5660b93bad98c7d">set_job_id</a>(int jid)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a13450cb0a04da9b190832a73834fb6cf">size</a>() const</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a78cd3444e267065b7e9858cc27a36103">worst_errors</a>() const</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->

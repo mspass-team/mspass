@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -109,59 +152,59 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a5cca4385b19e235ff08215a6b731dc23">MetadataDefinitions</a>();</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a5cca4385b19e235ff08215a6b731dc23">MetadataDefinitions</a>(<span class="keyword">const</span> std::string mdname);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classmspass_1_1utility_1_1_metadata_definitions.html#a02457e4d234a24bbbbde8537963d339a">   50</a></span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a02457e4d234a24bbbbde8537963d339a">MetadataDefinitions</a>(<span class="keyword">const</span> std::string mdname,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a5cca4385b19e235ff08215a6b731dc23">MetadataDefinitions</a>(<span class="keyword">const</span> std::string mdname,</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                      <span class="keyword">const</span> mspass::utility::MDDefFormat form);</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a5cca4385b19e235ff08215a6b731dc23">MetadataDefinitions</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata_definitions.html">MetadataDefinitions</a> &amp;parent);</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#adf9c9a40eb60eebb24ec84f2fa961319">is_defined</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  std::string <span class="keyword">concept</span>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  mspass::utility::MDtype <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a8472df22024cde279e81c84e9129e4fd">type</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  std::list&lt;std::string&gt; keys() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a555a85e15897c780964a7e4f7018dca6">add</a>(<span class="keyword">const</span> std::string key, <span class="keyword">const</span> std::string concept_, <span class="keyword">const</span> MDtype mdt);</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a0debbe39d36bf46eb6ced6de89dc5bd1">has_alias</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a63d73a129374c69d01c9cf23bf4157ed">is_alias</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  std::list&lt;std::string&gt; aliases(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  std::pair&lt;std::string, mspass::utility::MDtype&gt;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a7f6f48e89b074e16112475d7d620e747">unique_name</a>(<span class="keyword">const</span> std::string aliasname) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a07447e104a6d689730d53c68a4c1f07a">add_alias</a>(<span class="keyword">const</span> std::string key, <span class="keyword">const</span> std::string aliasname);</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a2dc9424f37c2535492b34061b8c06e88">writeable</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#ac86b8ddbe4917e7748698aad348d60ec">readonly</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a434ba3fc278489639212ae2dbe46f3d8">set_readonly</a>(<span class="keyword">const</span> std::string key);</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a883e8edac3715cb830a9fe0487186cb6">set_writeable</a>(<span class="keyword">const</span> std::string key);</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#ae4d61c6559d2d239631543b40de1d46d">is_normalized</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>  std::string <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a80e9a750135d00f9ca1db95d3986f214">unique_id_key</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>  std::string <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#ad18055de8c51df811e25d2784eb0db01">collection</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>  std::pair&lt;std::string, std::string&gt;</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#acd20b79e7b66246e186deae88e391b94">normalize_data</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>  std::list&lt;std::string&gt; <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a282ac6dba59505eac6f2c9a627d89654">apply_aliases</a>(<a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;d,</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                                       <span class="keyword">const</span> std::list&lt;std::string&gt; aliaslist);</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a4f0cfa4c13b688f301e261c0c404632e">clear_aliases</a>(<a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;d);</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>  <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata_definitions.html">MetadataDefinitions</a> &amp;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a2d7987fbfff442e9375c7363b1d3fcc1">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata_definitions.html">MetadataDefinitions</a> &amp;other);</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>  <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata_definitions.html">MetadataDefinitions</a> &amp;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a71b80f9ce3024698504f06700d2d0cd8">operator+=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata_definitions.html">MetadataDefinitions</a> &amp;other);</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>  std::map&lt;std::string, MDtype&gt; tmap;</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>  std::map&lt;std::string, std::string&gt; cmap;</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  std::multimap&lt;std::string, std::string&gt; aliasmap;</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>  std::map&lt;std::string, std::string&gt; alias_xref;</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>  std::set&lt;std::string&gt; roset;</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>  <span class="comment">/* This map is used to handle normalized data in any database.   For the</span></div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span><span class="comment">  initial design the data could be a pair, but I make it a tuple because I</span></div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span><span class="comment">  can conveive extensions that would require additional information to provides</span></div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span><span class="comment">  a unique index definition.   e.g.  the antelope indexing of</span></div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span><span class="comment">  sta,chan,time:endtime.</span></div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span><span class="comment">  */</span></div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>  std::map&lt;std::string, std::tuple&lt;std::string, std::string&gt;&gt; unique_id_data;</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>  <span class="keywordtype">void</span> pfreader(<span class="keyword">const</span> std::string pfname);</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>  <span class="keywordtype">void</span> yaml_reader(<span class="keyword">const</span> std::string fname);</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>};</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  std::list&lt;std::string&gt; <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a147efc8e0ed9c49d83ec78e4011ce4d1">keys</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a555a85e15897c780964a7e4f7018dca6">add</a>(<span class="keyword">const</span> std::string key, <span class="keyword">const</span> std::string concept_, <span class="keyword">const</span> MDtype mdt);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a0debbe39d36bf46eb6ced6de89dc5bd1">has_alias</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a63d73a129374c69d01c9cf23bf4157ed">is_alias</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  std::list&lt;std::string&gt; <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a8fde4797c14a07b55818a305ef544315">aliases</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  std::pair&lt;std::string, mspass::utility::MDtype&gt;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a7f6f48e89b074e16112475d7d620e747">unique_name</a>(<span class="keyword">const</span> std::string aliasname) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a07447e104a6d689730d53c68a4c1f07a">add_alias</a>(<span class="keyword">const</span> std::string key, <span class="keyword">const</span> std::string aliasname);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a2dc9424f37c2535492b34061b8c06e88">writeable</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#ac86b8ddbe4917e7748698aad348d60ec">readonly</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a434ba3fc278489639212ae2dbe46f3d8">set_readonly</a>(<span class="keyword">const</span> std::string key);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a883e8edac3715cb830a9fe0487186cb6">set_writeable</a>(<span class="keyword">const</span> std::string key);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#ae4d61c6559d2d239631543b40de1d46d">is_normalized</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>  std::string <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a80e9a750135d00f9ca1db95d3986f214">unique_id_key</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>  std::string <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#ad18055de8c51df811e25d2784eb0db01">collection</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>  std::pair&lt;std::string, std::string&gt;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#acd20b79e7b66246e186deae88e391b94">normalize_data</a>(<span class="keyword">const</span> std::string key) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>  std::list&lt;std::string&gt; <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a282ac6dba59505eac6f2c9a627d89654">apply_aliases</a>(<a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;d,</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                                       <span class="keyword">const</span> std::list&lt;std::string&gt; aliaslist);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a4f0cfa4c13b688f301e261c0c404632e">clear_aliases</a>(<a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;d);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>  <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata_definitions.html">MetadataDefinitions</a> &amp;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a2d7987fbfff442e9375c7363b1d3fcc1">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata_definitions.html">MetadataDefinitions</a> &amp;other);</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>  <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata_definitions.html">MetadataDefinitions</a> &amp;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata_definitions.html#a71b80f9ce3024698504f06700d2d0cd8">operator+=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata_definitions.html">MetadataDefinitions</a> &amp;other);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>  std::map&lt;std::string, MDtype&gt; tmap;</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>  std::map&lt;std::string, std::string&gt; cmap;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>  std::multimap&lt;std::string, std::string&gt; aliasmap;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>  std::map&lt;std::string, std::string&gt; alias_xref;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>  std::set&lt;std::string&gt; roset;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  <span class="comment">/* This map is used to handle normalized data in any database.   For the</span></div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span><span class="comment">  initial design the data could be a pair, but I make it a tuple because I</span></div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="comment">  can conveive extensions that would require additional information to provides</span></div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="comment">  a unique index definition.   e.g.  the antelope indexing of</span></div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span><span class="comment">  sta,chan,time:endtime.</span></div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span><span class="comment">  */</span></div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>  std::map&lt;std::string, std::tuple&lt;std::string, std::string&gt;&gt; unique_id_data;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>  <span class="keywordtype">void</span> pfreader(<span class="keyword">const</span> std::string pfname);</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>  <span class="keywordtype">void</span> yaml_reader(<span class="keyword">const</span> std::string fname);</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>};</div>
 </div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>} <span class="comment">// namespace utility</span></div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>} <span class="comment">// namespace mspass</span></div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>} <span class="comment">// namespace utility</span></div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>} <span class="comment">// namespace mspass</span></div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html">mspass::utility::MetadataDefinitions</a></div><div class="ttdoc">Define properties of Metadata known to mspass.</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.h:30</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a02457e4d234a24bbbbde8537963d339a"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a02457e4d234a24bbbbde8537963d339a">mspass::utility::MetadataDefinitions::MetadataDefinitions</a></div><div class="ttdeci">MetadataDefinitions(const std::string mdname, const mspass::utility::MDDefFormat form)</div><div class="ttdoc">Construct from a file with variable formats.</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a07447e104a6d689730d53c68a4c1f07a"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a07447e104a6d689730d53c68a4c1f07a">mspass::utility::MetadataDefinitions::add_alias</a></div><div class="ttdeci">void add_alias(const std::string key, const std::string aliasname)</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:152</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a0debbe39d36bf46eb6ced6de89dc5bd1"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a0debbe39d36bf46eb6ced6de89dc5bd1">mspass::utility::MetadataDefinitions::has_alias</a></div><div class="ttdeci">bool has_alias(const std::string key) const</div><div class="ttdoc">Methods to handle aliases.</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:127</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a147efc8e0ed9c49d83ec78e4011ce4d1"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a147efc8e0ed9c49d83ec78e4011ce4d1">mspass::utility::MetadataDefinitions::keys</a></div><div class="ttdeci">std::list&lt; std::string &gt; keys() const</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:190</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a282ac6dba59505eac6f2c9a627d89654"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a282ac6dba59505eac6f2c9a627d89654">mspass::utility::MetadataDefinitions::apply_aliases</a></div><div class="ttdeci">std::list&lt; std::string &gt; apply_aliases(mspass::utility::Metadata &amp;d, const std::list&lt; std::string &gt; aliaslist)</div><div class="ttdoc">Apply a set of aliases to data.</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:478</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a2d7987fbfff442e9375c7363b1d3fcc1"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a2d7987fbfff442e9375c7363b1d3fcc1">mspass::utility::MetadataDefinitions::operator=</a></div><div class="ttdeci">MetadataDefinitions &amp; operator=(const MetadataDefinitions &amp;other)</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:200</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a2dc9424f37c2535492b34061b8c06e88"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a2dc9424f37c2535492b34061b8c06e88">mspass::utility::MetadataDefinitions::writeable</a></div><div class="ttdeci">bool writeable(const std::string key) const</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:257</div></div>
@@ -175,12 +218,13 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a80e9a750135d00f9ca1db95d3986f214"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a80e9a750135d00f9ca1db95d3986f214">mspass::utility::MetadataDefinitions::unique_id_key</a></div><div class="ttdeci">std::string unique_id_key(const std::string key) const</div><div class="ttdoc">Returns a unique identifier for a normalized attribute.</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:314</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a8472df22024cde279e81c84e9129e4fd"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a8472df22024cde279e81c84e9129e4fd">mspass::utility::MetadataDefinitions::type</a></div><div class="ttdeci">mspass::utility::MDtype type(const std::string key) const</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:108</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a883e8edac3715cb830a9fe0487186cb6"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a883e8edac3715cb830a9fe0487186cb6">mspass::utility::MetadataDefinitions::set_writeable</a></div><div class="ttdeci">void set_writeable(const std::string key)</div><div class="ttdoc">Force a key:value pair to be writeable.</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:298</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_a8fde4797c14a07b55818a305ef544315"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#a8fde4797c14a07b55818a305ef544315">mspass::utility::MetadataDefinitions::aliases</a></div><div class="ttdeci">std::list&lt; std::string &gt; aliases(const std::string key) const</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:135</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_ac86b8ddbe4917e7748698aad348d60ec"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#ac86b8ddbe4917e7748698aad348d60ec">mspass::utility::MetadataDefinitions::readonly</a></div><div class="ttdeci">bool readonly(const std::string key) const</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:289</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_acd20b79e7b66246e186deae88e391b94"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#acd20b79e7b66246e186deae88e391b94">mspass::utility::MetadataDefinitions::normalize_data</a></div><div class="ttdeci">std::pair&lt; std::string, std::string &gt; normalize_data(const std::string key) const</div><div class="ttdoc">Special method for efficiency.</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:334</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_ad18055de8c51df811e25d2784eb0db01"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#ad18055de8c51df811e25d2784eb0db01">mspass::utility::MetadataDefinitions::collection</a></div><div class="ttdeci">std::string collection(const std::string key) const</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:324</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_ad18055de8c51df811e25d2784eb0db01"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#ad18055de8c51df811e25d2784eb0db01">mspass::utility::MetadataDefinitions::collection</a></div><div class="ttdeci">std::string collection(const std::string key) const</div><div class="ttdoc">return the master collection (table) for a key used as a unique id.</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:324</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_adf9c9a40eb60eebb24ec84f2fa961319"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#adf9c9a40eb60eebb24ec84f2fa961319">mspass::utility::MetadataDefinitions::is_defined</a></div><div class="ttdeci">bool is_defined(const std::string key) const noexcept</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:78</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_definitions_html_ae4d61c6559d2d239631543b40de1d46d"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata_definitions.html#ae4d61c6559d2d239631543b40de1d46d">mspass::utility::MetadataDefinitions::is_normalized</a></div><div class="ttdeci">bool is_normalized(const std::string key) const</div><div class="ttdoc">Test if a key:value pair is set as normalized.</div><div class="ttdef"><b>Definition</b> MetadataDefinitions.cc:306</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdef"><b>Definition</b> Metadata.h:90</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdoc">Type-safe metadata container used throughout MsPASS.</div><div class="ttdef"><b>Definition</b> Metadata.h:101</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

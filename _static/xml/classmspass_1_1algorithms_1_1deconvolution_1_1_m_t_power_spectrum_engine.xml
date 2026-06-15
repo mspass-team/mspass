@@ -201,7 +201,7 @@
 <parametername>ntapers</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the number of tapers to actually use for the operator. Note the maximum ntapers is always int(tbp*2). If ntapers is more than 2*tbp a mesage will be posted to cerr and ntapers set to tbp*2. </para>
+<para>is the number of tapers to actually use for the operator. Note the maximum ntapers is always int(tbp*2). If ntapers is more than 2*tbp a message will be posted to cerr and ntapers set to tbp*2. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -292,13 +292,13 @@
           <declname>d</declname>
         </param>
         <briefdescription>
+<para>Process a TimeSeries. </para>
         </briefdescription>
         <detaileddescription>
-<para>\process a TimeSeries.</para>
 <para>This is one of two methods for applying the multiaper algorithm to data. This one uses dt and data length to set the Rayleigh bin size (df). If the input data vector length is not the same as the operator length an elog complaint is posted to parent. Short data are processed but should be considered suspect unless the sizes differ by only a tiny fraction (e.g. and off by one error from rounding). Long data will be truncated on the right (i.e. sample 0 will be the start of the window used). The data return will be scaled to psd in units if 1/Hz.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
-<parametername>parent</parametername>
+<parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>is the data to process </para>
@@ -315,9 +315,10 @@
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" compoundref="_m_t_power_spectrum_engine_8cc" startline="116" endline="182">apply</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a920cd0761252df4312168f4571165f2b" compoundref="_power_spectrum_8h" startline="26">mspass::seismic::PowerSpectrum::elog</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" compoundref="_basic_spectrum_8h" startline="84" endline="84">mspass::seismic::BasicSpectrum::kill</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" compoundref="_basic_spectrum_8h" startline="85" endline="85">mspass::seismic::BasicSpectrum::kill</references>
         <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="171" endline="171">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ab679e58c66c0c4a332350c7f4282e806" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -359,7 +360,10 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="90" column="15"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="90" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="184" bodyend="266"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ada36c092fdc3aa128be8eb25d00349d6" compoundref="_m_t_power_spectrum_engine_8h" startline="92" endline="92">df</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" compoundref="_m_t_power_spectrum_engine_8h" startline="135" endline="146">nf</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" compoundref="_metadata_8cc" startline="506" endline="506">mspass::utility::Metadata::size</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ada36c092fdc3aa128be8eb25d00349d6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -389,7 +393,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="95" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="266" bodyend="274"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="95" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="267" bodyend="275"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" compoundref="_m_t_power_spectrum_engine_8h" startline="135" endline="146">nf</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">

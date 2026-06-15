@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -90,34 +133,154 @@ $(function() {
   <div class="headertitle"><div class="title">mspass::algorithms::deconvolution::GIDAdaptivePenaltyMetrics Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Diagnostics from adaptive lag-penalty memory updates.  
+ <a href="structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_g_i_d_decon_util_8h_source.html">GIDDeconUtil.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ad247c5fa582837c53fb86172f95577cb" id="r_ad247c5fa582837c53fb86172f95577cb"><td class="memItemLeft" align="right" valign="top"><a id="ad247c5fa582837c53fb86172f95577cb" name="ad247c5fa582837c53fb86172f95577cb"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>confidence</b> = 0.0</td></tr>
+<tr class="memitem:ad247c5fa582837c53fb86172f95577cb" id="r_ad247c5fa582837c53fb86172f95577cb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html#ad247c5fa582837c53fb86172f95577cb">confidence</a> = 0.0</td></tr>
 <tr class="separator:ad247c5fa582837c53fb86172f95577cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a200a4c042811224659f6e61c2eaac9ec" id="r_a200a4c042811224659f6e61c2eaac9ec"><td class="memItemLeft" align="right" valign="top"><a id="a200a4c042811224659f6e61c2eaac9ec" name="a200a4c042811224659f6e61c2eaac9ec"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>immediate_strength</b> = 0.0</td></tr>
+<tr class="memitem:a200a4c042811224659f6e61c2eaac9ec" id="r_a200a4c042811224659f6e61c2eaac9ec"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html#a200a4c042811224659f6e61c2eaac9ec">immediate_strength</a> = 0.0</td></tr>
 <tr class="separator:a200a4c042811224659f6e61c2eaac9ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add0a5e0496ef8dc3bb28dedaec2dc47f" id="r_add0a5e0496ef8dc3bb28dedaec2dc47f"><td class="memItemLeft" align="right" valign="top"><a id="add0a5e0496ef8dc3bb28dedaec2dc47f" name="add0a5e0496ef8dc3bb28dedaec2dc47f"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>specificity</b> = 0.0</td></tr>
+<tr class="memitem:add0a5e0496ef8dc3bb28dedaec2dc47f" id="r_add0a5e0496ef8dc3bb28dedaec2dc47f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html#add0a5e0496ef8dc3bb28dedaec2dc47f">specificity</a> = 0.0</td></tr>
 <tr class="separator:add0a5e0496ef8dc3bb28dedaec2dc47f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b610b6789d25a34777fcc28011c64d6" id="r_a8b610b6789d25a34777fcc28011c64d6"><td class="memItemLeft" align="right" valign="top"><a id="a8b610b6789d25a34777fcc28011c64d6" name="a8b610b6789d25a34777fcc28011c64d6"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>decay_factor</b> = 0.0</td></tr>
+<tr class="memitem:a8b610b6789d25a34777fcc28011c64d6" id="r_a8b610b6789d25a34777fcc28011c64d6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html#a8b610b6789d25a34777fcc28011c64d6">decay_factor</a> = 0.0</td></tr>
 <tr class="separator:a8b610b6789d25a34777fcc28011c64d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6de38a77814d39aff8e71e528ac1d10a" id="r_a6de38a77814d39aff8e71e528ac1d10a"><td class="memItemLeft" align="right" valign="top"><a id="a6de38a77814d39aff8e71e528ac1d10a" name="a6de38a77814d39aff8e71e528ac1d10a"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>memory_linf</b> = 0.0</td></tr>
+<tr class="memitem:a6de38a77814d39aff8e71e528ac1d10a" id="r_a6de38a77814d39aff8e71e528ac1d10a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html#a6de38a77814d39aff8e71e528ac1d10a">memory_linf</a> = 0.0</td></tr>
 <tr class="separator:a6de38a77814d39aff8e71e528ac1d10a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f40ad39fb125a4bd8313181a0dfc688" id="r_a5f40ad39fb125a4bd8313181a0dfc688"><td class="memItemLeft" align="right" valign="top"><a id="a5f40ad39fb125a4bd8313181a0dfc688" name="a5f40ad39fb125a4bd8313181a0dfc688"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>memory_l2</b> = 0.0</td></tr>
+<tr class="memitem:a5f40ad39fb125a4bd8313181a0dfc688" id="r_a5f40ad39fb125a4bd8313181a0dfc688"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html#a5f40ad39fb125a4bd8313181a0dfc688">memory_l2</a> = 0.0</td></tr>
 <tr class="separator:a5f40ad39fb125a4bd8313181a0dfc688"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbd12566bbd0855489f821ac4f581d5c" id="r_abbd12566bbd0855489f821ac4f581d5c"><td class="memItemLeft" align="right" valign="top"><a id="abbd12566bbd0855489f821ac4f581d5c" name="abbd12566bbd0855489f821ac4f581d5c"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>noise_amplitude</b> = 0.0</td></tr>
+<tr class="memitem:abbd12566bbd0855489f821ac4f581d5c" id="r_abbd12566bbd0855489f821ac4f581d5c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html#abbd12566bbd0855489f821ac4f581d5c">noise_amplitude</a> = 0.0</td></tr>
 <tr class="separator:abbd12566bbd0855489f821ac4f581d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af51365cb4abf7439e4e8db61d89d2399" id="r_af51365cb4abf7439e4e8db61d89d2399"><td class="memItemLeft" align="right" valign="top"><a id="af51365cb4abf7439e4e8db61d89d2399" name="af51365cb4abf7439e4e8db61d89d2399"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>effective_width</b> = 1</td></tr>
+<tr class="memitem:af51365cb4abf7439e4e8db61d89d2399" id="r_af51365cb4abf7439e4e8db61d89d2399"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html#af51365cb4abf7439e4e8db61d89d2399">effective_width</a> = 1</td></tr>
 <tr class="separator:af51365cb4abf7439e4e8db61d89d2399"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Diagnostics from adaptive lag-penalty memory updates. </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="ad247c5fa582837c53fb86172f95577cb" name="ad247c5fa582837c53fb86172f95577cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad247c5fa582837c53fb86172f95577cb">&#9670;&#160;</a></span>confidence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GIDAdaptivePenaltyMetrics::confidence = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Confidence assigned to the current candidate. </p>
+
+</div>
+</div>
+<a id="a8b610b6789d25a34777fcc28011c64d6" name="a8b610b6789d25a34777fcc28011c64d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b610b6789d25a34777fcc28011c64d6">&#9670;&#160;</a></span>decay_factor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GIDAdaptivePenaltyMetrics::decay_factor = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Memory-retention decay factor. </p>
+
+</div>
+</div>
+<a id="af51365cb4abf7439e4e8db61d89d2399" name="af51365cb4abf7439e4e8db61d89d2399"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af51365cb4abf7439e4e8db61d89d2399">&#9670;&#160;</a></span>effective_width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int mspass::algorithms::deconvolution::GIDAdaptivePenaltyMetrics::effective_width = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Effective width of the adaptive kernel. </p>
+
+</div>
+</div>
+<a id="a200a4c042811224659f6e61c2eaac9ec" name="a200a4c042811224659f6e61c2eaac9ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a200a4c042811224659f6e61c2eaac9ec">&#9670;&#160;</a></span>immediate_strength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GIDAdaptivePenaltyMetrics::immediate_strength = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Immediate penalty contribution. </p>
+
+</div>
+</div>
+<a id="a5f40ad39fb125a4bd8313181a0dfc688" name="a5f40ad39fb125a4bd8313181a0dfc688"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f40ad39fb125a4bd8313181a0dfc688">&#9670;&#160;</a></span>memory_l2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GIDAdaptivePenaltyMetrics::memory_l2 = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>L2 norm of accumulated memory. </p>
+
+</div>
+</div>
+<a id="a6de38a77814d39aff8e71e528ac1d10a" name="a6de38a77814d39aff8e71e528ac1d10a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6de38a77814d39aff8e71e528ac1d10a">&#9670;&#160;</a></span>memory_linf</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GIDAdaptivePenaltyMetrics::memory_linf = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>L-infinity norm of accumulated memory. </p>
+
+</div>
+</div>
+<a id="abbd12566bbd0855489f821ac4f581d5c" name="abbd12566bbd0855489f821ac4f581d5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbd12566bbd0855489f821ac4f581d5c">&#9670;&#160;</a></span>noise_amplitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GIDAdaptivePenaltyMetrics::noise_amplitude = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Noise amplitude used for scaling. </p>
+
+</div>
+</div>
+<a id="add0a5e0496ef8dc3bb28dedaec2dc47f" name="add0a5e0496ef8dc3bb28dedaec2dc47f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add0a5e0496ef8dc3bb28dedaec2dc47f">&#9670;&#160;</a></span>specificity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GIDAdaptivePenaltyMetrics::specificity = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Concentration of the selected kernel. </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/<a class="el" href="_g_i_d_decon_util_8h_source.html">GIDDeconUtil.h</a></li>
 </ul>

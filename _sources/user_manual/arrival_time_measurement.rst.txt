@@ -170,23 +170,23 @@ steps:
 #.  The data should be shifted from UTC times to what in the
     docstrings we call the "arrival time refernence" frame.   That is,
     we expect the data have been shifted with the function
-    :py:func:`ator<mspasspy.alorithms.basic.ator` with the shift
+    :py:func:`ator <mspasspy.algorithms.basic.ator>` with the shift
     time as the initial arrival time estimate set previously.
     That means a plot using the `time_axis_method` for each atomic
     datum will have 0 as the initial arrival time estimate.
 #.  The working ensembles are
-    :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble`
+    :py:class:`TimeSeriesEnsemble <mspasspy.ccore.seismic.TimeSeriesEnsemble>`
     objects containing a component of data appropriate for the phase
     being analyzed.   For P data that can be simple vertical components
     while for S it always demands the data were processed to
     :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects
     and oriented to radial or transverse components.  For most modern
     data I would recommend all data be assembled to begin with as
-    :py:class:`SeismogramEnsemble<mspasspy.ccore.seismic.SeismogramEnsemble`
+    :py:class:`SeismogramEnsemble <mspasspy.ccore.seismic.SeismogramEnsemble>`
     objects, rotated to LQT or with the
     :py:func:`free_surface_transformation<mspasspy.algorithms.basic.free_surface_transformation>`
     operator, and then the approprate component extracted using the
-    :py:func:`ExtractComponent<mpsasspy.algorithms.basic.ExtractComponent`
+    :py:func:`ExtractComponent <mspasspy.algorithms.basic.ExtractComponent>`
     function.
 #.  The data should be passed through the algorithm called
     :py:func:`broadband_snr_QC<mspasspy.algorithms.snr.broadband_snr_QC>`.
@@ -214,7 +214,7 @@ As the name suggests, it does two distinctly different tasks:
     The algorithm name contains "MCXcor" which is shorthand for
     "Multichannel X(cross-)correlation" to contrast it with pairwise
     cross-correlation algorithms following the older work of
-    `VandeCarr and Crosson (1990)<TODO:LOOK UP DOI>`__.
+    VandeCarr and Crosson (1990).
 
 Any user who needs to use the
 :py:func:`align_and_stack <mspasspy.algorithms.MCXcorStacking.align_and_stack>`
@@ -247,7 +247,7 @@ the user to set via the graphical user interface:
 
 #.  The algorithm used for cross-correlation ultimately uses the
     array stack to correlate with each signal in an input
-    :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble`.
+    :py:class:`TimeSeriesEnsemble <mspasspy.ccore.seismic.TimeSeriesEnsemble>`.
     However, to start the interative sequence the input ensemble has
     to be time aligned to first order or the stack will be grossly distorted.
     *dbxcor* solved that issue by requiring the user to select the signal
@@ -566,7 +566,7 @@ At present the ones I know of are:
 
 #.  In the US scientists at academic institutions can obtain a license
     for the commercial package called
-    `antelope <https:www.brtt.com>`_ provided they are not the operators
+    `antelope <https://www.brtt.com>`_ provided they are not the operators
     of an operational seismic network.   Antelope has a full suite of
     network processing capabilities.  For research applications a particularly
     valuable feature is its capability to operate the real-time system on

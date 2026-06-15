@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['u_0',['u',['../classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4',1,'mspass::algorithms::deconvolution::ThreeCSpike::u'],['../classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f',1,'mspass::seismic::CoreSeismogram::u']]],
-  ['uuid_1',['uuid',['../classmspass_1_1utility_1_1_node_data.html#a0f0df95910b9712e36d3a8389c0c9f38',1,'mspass::utility::NodeData']]],
-  ['ux_2',['ux',['../classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9',1,'mspass::seismic::SlownessVector']]],
-  ['uy_3',['uy',['../classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0',1,'mspass::seismic::SlownessVector']]]
+  ['radius_0',['radius',['../structmspass_1_1utility_1_1_spherical_coordinate.html#a8f9f987e89e175fecb85c9cbe5bdbc13',1,'mspass::utility::SphericalCoordinate']]],
+  ['real_1',['real',['../structmspass_1_1algorithms_1_1deconvolution_1_1_fortran_complex32.html#acfcfc37e8123ba9cb3e22255cdd26980',1,'mspass::algorithms::deconvolution::FortranComplex32::real'],['../structmspass_1_1algorithms_1_1deconvolution_1_1_fortran_complex64.html#afe6b8fc5661ed7946f701a7d848e7c2d',1,'mspass::algorithms::deconvolution::FortranComplex64::real']]],
+  ['residual_2',['residual',['../structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#aa1a49c1e9a34c85aae1fee434827f6ad',1,'mspass::algorithms::deconvolution::GroupSparseDeconResult']]],
+  ['result_3',['result',['../classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022',1,'mspass::algorithms::deconvolution::ScalarDecon']]]
 ];

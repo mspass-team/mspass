@@ -1,83 +1,329 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MsPASS Schema &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MsPASS Schema &#8212; MsPASS 0.1.dev1+gb7c2adc documentation</title>
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=c1885210"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'mspass_schema/mspass_schema';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="mspass::seismic::Seismogram" href="../cxx_api/mspass.seismic.Seismogram.html" />  
-
-  <style>
-    .wy-nav-content { max-width: 1600px; }
-  </style>
+    <link rel="prev" title="mspass::seismic::Seismogram" href="../cxx_api/mspass.seismic.Seismogram.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
-</head>
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            MsPASS
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+  <dialog id="pst-search-dialog">
     
-              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
-<ul>
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="#">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="#">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
@@ -86,8 +332,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
@@ -100,183 +346,1156 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">MsPASS Schema</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#all-valid-attributes">All Valid Attributes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#master-documents-for-normalized-attributes">Master Documents for Normalized Attributes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#site-collection-receiver-coordinates">Site Collection (Receiver coordinates)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#source-collection-seismic-source-coordinates">Source Collection (Seismic Source coordinates)</a></li>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#attributes-with-conceptual-relationship">Attributes with Conceptual Relationship</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#obspy-trace-object">ObsPy Trace Object</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#channel-sitechan-attributes">Channel (sitechan) Attributes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#seismic-phase-related-attributes">Seismic Phase Related Attributes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#external-file-attributes">External File Attributes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indexing-attributes-for-mongodb">Indexing Attributes for MongoDb</a></li>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
-</li>
+</details></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">MsPASS Schema</a></li>
 </ul>
-</li>
-</ul>
-
-    <a href= "../genindex.html">Index</a>
-  
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">MsPASS</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">MsPASS Schema</li>
-      <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/mspass_schema/mspass_schema.rst" class="fa fa-github"> Edit on GitHub</a>
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">MsPASS Schema</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="mspass-schema">
-<span id="id1"></span><h1>MsPASS Schema<a class="headerlink" href="#mspass-schema" title="Link to this heading"></a></h1>
-<p>May seismologists think of a database schema as the specification of a set of
-tables and attributes in a relational database schema.  The standard one in
-seismology is that defined decades ago by the Center for Seismic Studies
-commonly referred to as CSS3.0 in, for example, Antelope.  In computer
-science, however, the term has a more abstract definition.  For a readable
-description follow <a class="reference external" href="https://en.wikipedia.org/wiki/Database_schema">this link</a>
-to a short article in Wikipedia.  We use schema in the broader sense defined
-in that article because MsPASS utilizes the nonSQL (not relational) database
-called MongoDB.</p>
-<p>This section addresses two key topics about the MsPaSS schema:</p>
-<p>1. The atomic object in MongoDB is a name-value pair.  This section contains
-a table of all recognized keys, the data types that we assume are associated
-with each key, and the short verbal description of the concept that the value
-associated with the key defines.  The document also contains a set of useful
-subsets of the full table that contain attributes that have an association.
-For example, one table defines attributes related to a sensors position
-on the Earth.  (Note “table” is this context is what normal people would
-understand as a table and has nothing to do with relation in a relational
-database)</p>
-<p>2. As noted above some name-value pairs have a conceptual relationship like
-sensor location attributes.  That idea plays a fundamental role in
-defining constraints on relations in a relational database.  In MsPASS
-such associations can be either conceptual or imposed as a loose a constraint.
-An example of a conceptual constrain is the table below showing attributes that
-define a transformation matrix for three-component seismic data.  The constraint
-there is conceptual because the user needs to understand what they are and how
-they are used, but the database itself simply treats them as just one of
-many possible name-value pairs.  In contrast, source and receiver
-location attributes have internal constraints in MongoDB.  In particular, some
-sets of attributes like source and receiver coordinates use what
-MongoDB calls the
-<a class="reference external" href="https://docs.mongodb.com/manual/core/data-model-design/">normalized data model</a> .
-Normalized data have a central home in a separate collection from the wf
-collection that links one-to-one with each waveform data object that defines
-your data set.  All normalized attributes are defined in separate tables below.</p>
-<p>Finish later here with a roadmap with links to tables below.</p>
+<span id="id1"></span><h1>MsPASS Schema<a class="headerlink" href="#mspass-schema" title="Link to this heading">#</a></h1>
+<p>Many seismologists think of a database schema as the specification of tables
+and attributes in a relational database.  The standard relational schema in
+seismology is CSS3.0, which is used by systems such as Antelope.  In computer
+science, however, the term has a broader meaning: it describes the structure,
+types, and constraints of data.  MsPASS uses that broader meaning because its
+primary database backend is MongoDB rather than a relational database.</p>
+<p>This section documents the metadata keys recognized by MsPASS.  Each table is
+generated from <code class="docutils literal notranslate"><span class="pre">data/yaml/mspass.yaml</span></code> during the Sphinx build, so the
+published tables track the same schema used by the Python database layer.</p>
+<p>The tables below are organized in three ways:</p>
+<ol class="arabic simple">
+<li><p>A complete alphabetical catalog of valid metadata keys and aliases.</p></li>
+<li><p>Groups of keys that are normalized into master MongoDB collections, such as
+receiver and source coordinates.</p></li>
+<li><p>Groups of keys that have a practical or conceptual relationship, such as
+ObsPy <code class="docutils literal notranslate"><span class="pre">Trace</span></code> attributes, three-component orientation metadata, and file
+storage metadata.</p></li>
+</ol>
 <section id="all-valid-attributes">
-<h2>All Valid Attributes<a class="headerlink" href="#all-valid-attributes" title="Link to this heading"></a></h2>
-<p>The table below defines all attributes MsPaSS should handle without special
+<h2>All Valid Attributes<a class="headerlink" href="#all-valid-attributes" title="Link to this heading">#</a></h2>
+<p>The table below defines all attributes MsPASS should handle without special
 treatment.  They are arranged in alphabetical order. (Note all keys are
 case sensitive.  In UTF-8 alphabetical order capitals appear before lower case.)</p>
-<p>The key in the master list above is always used the index to locate a attribute
-for a particular concept in MongoDB.   However, MsPaSS also implements a generic
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-number">Table 10 </span><span class="caption-text"><strong>All MsPASS Attributes</strong></span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 69.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mutable</p></th>
+<th class="head"><p>Concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DEPMAX</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Minimum amplitude of a signal</p></td>
+</tr>
+<tr class="row-odd"><td><p>DEPMEN</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Mean amplitude of a signal</p></td>
+</tr>
+<tr class="row-even"><td><p>DEPMIN</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Maximum amplitude of a signal</p></td>
+</tr>
+<tr class="row-odd"><td><p>IEVTYP</p></td>
+<td><p>int</p></td>
+<td><p>Yes</p></td>
+<td><p>Event type code as used in SAC</p></td>
+</tr>
+<tr class="row-even"><td><p>IZTYPE</p></td>
+<td><p>int</p></td>
+<td><p>Yes</p></td>
+<td><p>Reference time type as used by SAC</p></td>
+</tr>
+<tr class="row-odd"><td><p>KEVNM</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Event name</p></td>
+</tr>
+<tr class="row-even"><td><p>_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>No</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>calib</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Nominal conversion factor for changing sample data to ground motion units.</p></td>
+</tr>
+<tr class="row-even"><td><p>cardinal</p></td>
+<td><p>boolean</p></td>
+<td><p>Yes</p></td>
+<td><p>When true the data stored are orthogonal and in cardinal (ENZ) geographic directions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>chan</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_edepth</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>depth of a seismic station/instrument in km</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_elev</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_endtime</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Time of channel ends recording</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_hang</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Azimuth (in degree) of a seismometer component - horizontal angle</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>ObjectId used to define a particular component of data</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_lat</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>latitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_lon</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>longitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_starttime</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Time of channel starts recording</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_vang</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Inclination from +up (in degree) of a seismometer component - vertical angle</p></td>
+</tr>
+<tr class="row-odd"><td><p>delta</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Data sample interval in seconds</p></td>
+</tr>
+<tr class="row-even"><td><p>dfile</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>External data file name.</p></td>
+</tr>
+<tr class="row-odd"><td><p>dir</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Directory path to an external file (always used with dfile)</p></td>
+</tr>
+<tr class="row-even"><td><p>dist</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Source receiver distance</p></td>
+</tr>
+<tr class="row-odd"><td><p>distance_units</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Units of dist attribute</p></td>
+</tr>
+<tr class="row-even"><td><p>esaz</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Event to station azimuth</p></td>
+</tr>
+<tr class="row-odd"><td><p>foff</p></td>
+<td><p>int</p></td>
+<td><p>Yes</p></td>
+<td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
+</tr>
+<tr class="row-even"><td><p>format</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
+</tr>
+<tr class="row-odd"><td><p>gridfs_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>The _id of data file in the fs.files collection.</p></td>
+</tr>
+<tr class="row-even"><td><p>iphase</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Indicated phase (from CSS3.0) - phase name from travel time curve association</p></td>
+</tr>
+<tr class="row-odd"><td><p>jdate</p></td>
+<td><p>int</p></td>
+<td><p>Yes</p></td>
+<td><p>Julian date string as used in CSS3.0</p></td>
+</tr>
+<tr class="row-even"><td><p>loc</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>mb</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Body wave magnitude</p></td>
+</tr>
+<tr class="row-even"><td><p>ms</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Surface wave magnitude</p></td>
+</tr>
+<tr class="row-odd"><td><p>nbytes</p></td>
+<td><p>int</p></td>
+<td><p>Yes</p></td>
+<td><p>Number of bytes for storage of sample data - required for some formats</p></td>
+</tr>
+<tr class="row-even"><td><p>net</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>network code (net component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>npts</p></td>
+<td><p>int</p></td>
+<td><p>Yes</p></td>
+<td><p>Number of data samples</p></td>
+</tr>
+<tr class="row-even"><td><p>orthogonal</p></td>
+<td><p>boolean</p></td>
+<td><p>Yes</p></td>
+<td><p>When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion).</p></td>
+</tr>
+<tr class="row-odd"><td><p>phase</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Phase name assigned by an analyst to a pick</p></td>
+</tr>
+<tr class="row-even"><td><p>sampling_rate</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Data sampling frequency in Hz=1/s</p></td>
+</tr>
+<tr class="row-odd"><td><p>seaz</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Station to event azimuth</p></td>
+</tr>
+<tr class="row-even"><td><p>site_elev</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_endtime</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Time of seismic station/instrument ends recording</p></td>
+</tr>
+<tr class="row-even"><td><p>site_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>ObjectId used to define a particular instrument/seismic station</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_lat</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>latitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-even"><td><p>site_lon</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>longitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_starttime</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Time of seismic station/instrument starts recording</p></td>
+</tr>
+<tr class="row-even"><td><p>source_depth</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Depth (in km) of the hypocenter of seismic source</p></td>
+</tr>
+<tr class="row-odd"><td><p>source_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>ObjectId used to define a particular seismic source</p></td>
+</tr>
+<tr class="row-even"><td><p>source_lat</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Latitude (in degrees) of the hypocenter of seismic source</p></td>
+</tr>
+<tr class="row-odd"><td><p>source_lon</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Longitude (in degrees) of the hypocenter of seismic source</p></td>
+</tr>
+<tr class="row-even"><td><p>source_magnitude</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Generic magnitude attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p>source_time</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Origin time of the hypocenter of seismic source (epoch time)</p></td>
+</tr>
+<tr class="row-even"><td><p>sta</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>starttime</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Time of first sample of data (epoch time or relative to some other time mark)</p></td>
+</tr>
+<tr class="row-even"><td><p>storage_mode</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+</tr>
+<tr class="row-odd"><td><p>time_standard</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Defines time standard for meaning of t0 (default should be UTC)</p></td>
+</tr>
+<tr class="row-even"><td><p>tmatrix</p></td>
+<td><p>list</p></td>
+<td><p>Yes</p></td>
+<td><p>Three-component data’s transformation matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p>units</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Physical units of sample data (nm/s is normal assumed default)</p></td>
+</tr>
+<tr class="row-even"><td><p>utc_convertible</p></td>
+<td><p>boolean</p></td>
+<td><p>Yes</p></td>
+<td><p>When true starttime_shift can be used to convert relative time to UTC.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The key in the master list above is always used as the index to locate an
+attribute for a particular concept in MongoDB.  However, MsPASS also implements a generic
 alias mechanism that allows a function to fetch an attribute internally
 (i.e. when the data are in memory for processing) using an alternative name (alias).
 The table below defines all valid aliases for unique keys with the alias keys
 separated by colons:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-number">Table 11 </span><span class="caption-text"><strong>All MsPASS aliases</strong></span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Unique Key</p></th>
+<th class="head"><p>Valid Aliases</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DEPMAX</p></td>
+<td><p>depmax</p></td>
+</tr>
+<tr class="row-odd"><td><p>DEPMEN</p></td>
+<td><p>depmen</p></td>
+</tr>
+<tr class="row-even"><td><p>DEPMIN</p></td>
+<td><p>depmin</p></td>
+</tr>
+<tr class="row-odd"><td><p>IZTYPE</p></td>
+<td><p>TimeReferenceType</p></td>
+</tr>
+<tr class="row-even"><td><p>chan</p></td>
+<td><p>KCMPNM : channel : channel.chan : wfdisc.chan</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_hang</p></td>
+<td><p>CMPAZ</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_vang</p></td>
+<td><p>CMPINC</p></td>
+</tr>
+<tr class="row-odd"><td><p>delta</p></td>
+<td><p>dt</p></td>
+</tr>
+<tr class="row-even"><td><p>dfile</p></td>
+<td><p>file.dfile : wfdisc.dfile : wfprocess.dfile</p></td>
+</tr>
+<tr class="row-odd"><td><p>dir</p></td>
+<td><p>file.dir : wfdisc.dir : wfprocess.dir</p></td>
+</tr>
+<tr class="row-even"><td><p>dist</p></td>
+<td><p>GCARC : assoc.delta</p></td>
+</tr>
+<tr class="row-odd"><td><p>esaz</p></td>
+<td><p>AZ</p></td>
+</tr>
+<tr class="row-even"><td><p>foff</p></td>
+<td><p>file.foff : wfdisc.foff : wfprocess.foff</p></td>
+</tr>
+<tr class="row-odd"><td><p>loc</p></td>
+<td><p>channel.loc : location : site.loc</p></td>
+</tr>
+<tr class="row-even"><td><p>net</p></td>
+<td><p>channel.net : network : site.net : site_net : wfdisc.net</p></td>
+</tr>
+<tr class="row-odd"><td><p>npts</p></td>
+<td><p>nsamp : wfdisc.nsamp</p></td>
+</tr>
+<tr class="row-even"><td><p>seaz</p></td>
+<td><p>BAZ</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_elev</p></td>
+<td><p>STEL : site.elev : stel</p></td>
+</tr>
+<tr class="row-even"><td><p>site_endtime</p></td>
+<td><p>site.endtime</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_lat</p></td>
+<td><p>STLA : site.lat</p></td>
+</tr>
+<tr class="row-even"><td><p>site_lon</p></td>
+<td><p>STLO : site.lon : stlo</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_starttime</p></td>
+<td><p>site.starttime</p></td>
+</tr>
+<tr class="row-even"><td><p>source_depth</p></td>
+<td><p>EVDP : origin.depth : source.depth</p></td>
+</tr>
+<tr class="row-odd"><td><p>source_lat</p></td>
+<td><p>EVLA : origin.lat : source.lat</p></td>
+</tr>
+<tr class="row-even"><td><p>source_lon</p></td>
+<td><p>EVLO : origin.lon : source.lon</p></td>
+</tr>
+<tr class="row-odd"><td><p>source_magnitude</p></td>
+<td><p>MAG</p></td>
+</tr>
+<tr class="row-even"><td><p>source_time</p></td>
+<td><p>origin.time : source.time</p></td>
+</tr>
+<tr class="row-odd"><td><p>sta</p></td>
+<td><p>KSTNM : channel.sta : site.sta : station : wfdisc.sta</p></td>
+</tr>
+<tr class="row-even"><td><p>starttime</p></td>
+<td><p>t0 : time</p></td>
+</tr>
+<tr class="row-odd"><td><p>units</p></td>
+<td><p>IDEP : idep</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="master-documents-for-normalized-attributes">
-<h2>Master Documents for Normalized Attributes<a class="headerlink" href="#master-documents-for-normalized-attributes" title="Link to this heading"></a></h2>
+<h2>Master Documents for Normalized Attributes<a class="headerlink" href="#master-documents-for-normalized-attributes" title="Link to this heading">#</a></h2>
 <section id="site-collection-receiver-coordinates">
-<h3>Site Collection (Receiver coordinates)<a class="headerlink" href="#site-collection-receiver-coordinates" title="Link to this heading"></a></h3>
-<p>This set of attributes are used to define the physical location of a seismic sensor
-on the Earth.   Also listed are related attributes used for cross referencing
-with a collection with the special name ‘site’.</p>
+<h3>Site Collection (Receiver coordinates)<a class="headerlink" href="#site-collection-receiver-coordinates" title="Link to this heading">#</a></h3>
+<p>This set of attributes defines the physical location of a seismic sensor on the
+Earth.  It also lists related attributes used for cross-referencing documents
+in the <code class="docutils literal notranslate"><span class="pre">site</span></code> collection.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id4">
+<caption><span class="caption-number">Table 12 </span><span class="caption-text"><strong>Receiver coordinate (site collection) Attributes</strong></span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 69.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mutable</p></th>
+<th class="head"><p>Concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>net</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>network code (net component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>sta</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-even"><td><p>loc</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_lat</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>latitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-even"><td><p>site_lon</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>longitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_elev</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
+</tr>
+<tr class="row-even"><td><p>site_starttime</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Time of seismic station/instrument starts recording</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_endtime</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Time of seismic station/instrument ends recording</p></td>
+</tr>
+<tr class="row-even"><td><p>site_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>ObjectId used to define a particular instrument/seismic station</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="source-collection-seismic-source-coordinates">
-<h3>Source Collection (Seismic Source coordinates)<a class="headerlink" href="#source-collection-seismic-source-coordinates" title="Link to this heading"></a></h3>
-<p>This set of attributes are used to define location estimates or measured
-locations of seismic sources.   MsPASS does not support the concept of
+<h3>Source Collection (Seismic Source coordinates)<a class="headerlink" href="#source-collection-seismic-source-coordinates" title="Link to this heading">#</a></h3>
+<p>This set of attributes defines location estimates or measured locations of
+seismic sources.  MsPASS does not support the concept of
 multiple location estimates for the same seismic events that is a major
 complication in the relational database schema CSS3.0 used, for example,
-in Antelope.   Each source defined by the unique id:  source_id defined in the table below.</p>
+in Antelope.  Each source is defined by the unique id <code class="docutils literal notranslate"><span class="pre">source_id</span></code> listed in
+the table below.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id5">
+<caption><span class="caption-number">Table 13 </span><span class="caption-text"><strong>Source coordinate (source collection) Attributes</strong></span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 69.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mutable</p></th>
+<th class="head"><p>Concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>source_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>ObjectId used to define a particular seismic source</p></td>
+</tr>
+<tr class="row-odd"><td><p>source_lat</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Latitude (in degrees) of the hypocenter of seismic source</p></td>
+</tr>
+<tr class="row-even"><td><p>source_lon</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Longitude (in degrees) of the hypocenter of seismic source</p></td>
+</tr>
+<tr class="row-odd"><td><p>source_depth</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Depth (in km) of the hypocenter of seismic source</p></td>
+</tr>
+<tr class="row-even"><td><p>source_time</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Origin time of the hypocenter of seismic source (epoch time)</p></td>
+</tr>
+<tr class="row-odd"><td><p>source_magnitude</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Generic magnitude attribute</p></td>
+</tr>
+<tr class="row-even"><td><p>mb</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Body wave magnitude</p></td>
+</tr>
+<tr class="row-odd"><td><p>ms</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Surface wave magnitude</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </section>
 <section id="attributes-with-conceptual-relationship">
-<h2>Attributes with Conceptual Relationship<a class="headerlink" href="#attributes-with-conceptual-relationship" title="Link to this heading"></a></h2>
+<h2>Attributes with Conceptual Relationship<a class="headerlink" href="#attributes-with-conceptual-relationship" title="Link to this heading">#</a></h2>
 <section id="obspy-trace-object">
-<h3>ObsPy Trace Object<a class="headerlink" href="#obspy-trace-object" title="Link to this heading"></a></h3>
-<p>The obspy package on which MsPASS leans heavily defines a Trace object with
+<h3>ObsPy Trace Object<a class="headerlink" href="#obspy-trace-object" title="Link to this heading">#</a></h3>
+<p>The ObsPy package on which MsPASS leans heavily defines a <code class="docutils literal notranslate"><span class="pre">Trace</span></code> object with
 a fixed set of required parameters.  The names can be aliased but the
 unique keys of all of the attributes below are identical to the name defined
-for the obspy Trace object.</p>
+for the ObsPy <code class="docutils literal notranslate"><span class="pre">Trace</span></code> object.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id6">
+<caption><span class="caption-number">Table 14 </span><span class="caption-text"><strong>Required Attributes for obspy Trace object</strong></span><a class="headerlink" href="#id6" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 69.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mutable</p></th>
+<th class="head"><p>Concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>calib</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Nominal conversion factor for changing sample data to ground motion units.</p></td>
+</tr>
+<tr class="row-odd"><td><p>chan</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code</p></td>
+</tr>
+<tr class="row-even"><td><p>delta</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Data sample interval in seconds</p></td>
+</tr>
+<tr class="row-odd"><td><p>loc</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-even"><td><p>net</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>network code (net component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>npts</p></td>
+<td><p>int</p></td>
+<td><p>Yes</p></td>
+<td><p>Number of data samples</p></td>
+</tr>
+<tr class="row-even"><td><p>sampling_rate</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Data sampling frequency in Hz=1/s</p></td>
+</tr>
+<tr class="row-odd"><td><p>sta</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-even"><td><p>starttime</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Time of first sample of data (epoch time or relative to some other time mark)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
-<section id="channel-sitechan-attributes">
-<h3>Channel (sitechan) Attributes<a class="headerlink" href="#channel-sitechan-attributes" title="Link to this heading"></a></h3>
+<section id="channel-attributes">
+<h3>Channel Attributes<a class="headerlink" href="#channel-attributes" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id7">
+<caption><span class="caption-number">Table 15 </span><span class="caption-text"><strong>Channel attributes</strong></span><a class="headerlink" href="#id7" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 69.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mutable</p></th>
+<th class="head"><p>Concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>channel_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>ObjectId used to define a particular component of data</p></td>
+</tr>
+<tr class="row-odd"><td><p>chan</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code</p></td>
+</tr>
+<tr class="row-even"><td><p>loc</p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_lat</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>latitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_lon</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>longitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_elev</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_edepth</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>depth of a seismic station/instrument in km</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_hang</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Azimuth (in degree) of a seismometer component - horizontal angle</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_vang</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Inclination from +up (in degree) of a seismometer component - vertical angle</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_starttime</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Time of channel starts recording</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_endtime</p></td>
+<td><p>double</p></td>
+<td><p>No</p></td>
+<td><p>Time of channel ends recording</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="three-component-data-attributes">
+<h3>Three-Component Data Attributes<a class="headerlink" href="#three-component-data-attributes" title="Link to this heading">#</a></h3>
+<p>These attributes describe the orientation and transformation matrix used by
+three-component seismic data objects.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id8">
+<caption><span class="caption-number">Table 16 </span><span class="caption-text"><strong>Three-component data attributes</strong></span><a class="headerlink" href="#id8" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 69.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mutable</p></th>
+<th class="head"><p>Concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>tmatrix</p></td>
+<td><p>list</p></td>
+<td><p>Yes</p></td>
+<td><p>Three-component data’s transformation matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p>cardinal</p></td>
+<td><p>boolean</p></td>
+<td><p>Yes</p></td>
+<td><p>When true the data stored are orthogonal and in cardinal (ENZ) geographic directions.</p></td>
+</tr>
+<tr class="row-even"><td><p>orthogonal</p></td>
+<td><p>boolean</p></td>
+<td><p>Yes</p></td>
+<td><p>When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="seismic-phase-related-attributes">
-<h3>Seismic Phase Related Attributes<a class="headerlink" href="#seismic-phase-related-attributes" title="Link to this heading"></a></h3>
+<h3>Seismic Phase Related Attributes<a class="headerlink" href="#seismic-phase-related-attributes" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id9">
+<caption><span class="caption-number">Table 17 </span><span class="caption-text"><strong>Phase attributes</strong></span><a class="headerlink" href="#id9" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 69.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mutable</p></th>
+<th class="head"><p>Concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>phase</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Phase name assigned by an analyst to a pick</p></td>
+</tr>
+<tr class="row-odd"><td><p>iphase</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Indicated phase (from CSS3.0) - phase name from travel time curve association</p></td>
+</tr>
+<tr class="row-even"><td><p>esaz</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Event to station azimuth</p></td>
+</tr>
+<tr class="row-odd"><td><p>seaz</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Station to event azimuth</p></td>
+</tr>
+<tr class="row-even"><td><p>dist</p></td>
+<td><p>double</p></td>
+<td><p>Yes</p></td>
+<td><p>Source receiver distance</p></td>
+</tr>
+<tr class="row-odd"><td><p>distance_units</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Units of dist attribute</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="external-file-attributes">
-<h3>External File Attributes<a class="headerlink" href="#external-file-attributes" title="Link to this heading"></a></h3>
+<h3>External File Attributes<a class="headerlink" href="#external-file-attributes" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id10">
+<caption><span class="caption-number">Table 18 </span><span class="caption-text"><strong>File attributes</strong></span><a class="headerlink" href="#id10" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 69.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mutable</p></th>
+<th class="head"><p>Concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>dir</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Directory path to an external file (always used with dfile)</p></td>
+</tr>
+<tr class="row-odd"><td><p>dfile</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>External data file name.</p></td>
+</tr>
+<tr class="row-even"><td><p>foff</p></td>
+<td><p>int</p></td>
+<td><p>Yes</p></td>
+<td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
+</tr>
+<tr class="row-odd"><td><p>format</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
+</tr>
+<tr class="row-even"><td><p>nbytes</p></td>
+<td><p>int</p></td>
+<td><p>Yes</p></td>
+<td><p>Number of bytes for storage of sample data - required for some formats</p></td>
+</tr>
+<tr class="row-odd"><td><p>storage_mode</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+</tr>
+<tr class="row-even"><td><p>gridfs_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>The _id of data file in the fs.files collection.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="indexing-attributes-for-mongodb">
-<h3>Indexing Attributes for MongoDb<a class="headerlink" href="#indexing-attributes-for-mongodb" title="Link to this heading"></a></h3>
+<h3>Indexing Attributes for MongoDB<a class="headerlink" href="#indexing-attributes-for-mongodb" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id11">
+<caption><span class="caption-number">Table 19 </span><span class="caption-text"><strong>MongoDB attributes</strong></span><a class="headerlink" href="#id11" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 16.7%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 69.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Mutable</p></th>
+<th class="head"><p>Concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>No</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>ObjectId used to define a particular instrument/seismic station</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>ObjectId used to define a particular component of data</p></td>
+</tr>
+<tr class="row-odd"><td><p>source_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>ObjectId used to define a particular seismic source</p></td>
+</tr>
+<tr class="row-even"><td><p>gridfs_id</p></td>
+<td><p>ObjectId</p></td>
+<td><p>Yes</p></td>
+<td><p>The _id of data file in the fs.files collection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>storage_mode</p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </section>
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../cxx_api/mspass.seismic.Seismogram.html" class="btn btn-neutral float-left" title="mspass::seismic::Seismogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
-  </div>
-
-   
-
-</footer>
-        </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../cxx_api/mspass.seismic.Seismogram.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mspass::seismic::Seismogram</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#all-valid-attributes">All Valid Attributes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#master-documents-for-normalized-attributes">Master Documents for Normalized Attributes</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#site-collection-receiver-coordinates">Site Collection (Receiver coordinates)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#source-collection-seismic-source-coordinates">Source Collection (Seismic Source coordinates)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attributes-with-conceptual-relationship">Attributes with Conceptual Relationship</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#obspy-trace-object">ObsPy Trace Object</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#channel-attributes">Channel Attributes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#three-component-data-attributes">Three-Component Data Attributes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seismic-phase-related-attributes">Seismic Phase Related Attributes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#external-file-attributes">External File Attributes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#indexing-attributes-for-mongodb">Indexing Attributes for MongoDB</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/mspass_schema/mspass_schema.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/mspass_schema/mspass_schema.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
 </html>

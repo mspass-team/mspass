@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -90,20 +133,20 @@ $(function() {
 
 <p>This is the complete list of members for <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>, including all inherited members.</p>
 <table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>active_groups</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>active_threshold_floor</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>active_threshold_quantile</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>active_threshold_quantile_value</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>active_threshold_scale</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>active_threshold_used</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>converged</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>fractional_improvement_final</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>iterations</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>lambda</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>objective_final</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>objective_initial</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>residual</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>spikes</b> (defined in <a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a>)</td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a59b63b52173ab13811fa08f5786b6c35">active_groups</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a36bd3499f4035bd66af34e4161e7b4f1">active_threshold_floor</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#adc34f5764bdd0a287623038b0adb9356">active_threshold_quantile</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a8067525596b7c3385282ce2ef8859794">active_threshold_quantile_value</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a92d2eb5401b9a992d07c0e7b12eadfa9">active_threshold_scale</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a44d51f81c13b57dfc277f1f97f348c18">active_threshold_used</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#ac9737ebde5afda00b5ca1c837652b422">converged</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a319622351d1f6dea08a3adaca8852392">fractional_improvement_final</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#af4ea5eeef16c9f7926f6094b66bf4024">iterations</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a67930b8afa0b5f619eb263625c00d5c5">lambda</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#ad2229033d337af5db1eb8c1acbf271d0">objective_final</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a51fb7cf4573e7b287eaa6cc51f62e738">objective_initial</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#aa1a49c1e9a34c85aae1fee434827f6ad">residual</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a9270d562897ab545c9b4f58015dec967">spikes</a></td><td class="entry"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html">mspass::algorithms::deconvolution::GroupSparseDeconResult</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

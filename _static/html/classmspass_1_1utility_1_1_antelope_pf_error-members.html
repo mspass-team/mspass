@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -91,10 +134,10 @@ $(function() {
 <p>This is the complete list of members for <a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a>, including all inherited members.</p>
 <table class="directory">
   <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>AntelopePfError</b>() (defined in <a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>AntelopePfError</b>(std::string mess) (defined in <a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>AntelopePfError</b>(const char *mess) (defined in <a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html#a1388779feccc62e7733fbe754696e823">AntelopePfError</a>(std::string mess)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html#ad959d328f277898ab83ad5d2e2c8c93f">AntelopePfError</a>(const char *mess)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a></td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>log_error</b>() (defined in <a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a>)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html#a2a1cb5be1c340b6cf557a0debdd5a716">log_error</a>()</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_antelope_pf_error.html">mspass::utility::AntelopePfError</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a9c44cc909971a1c5f8d443f12b5d45ed">mspass::utility::MsPASSError::log_error</a>(std::ostream &amp;ofs)</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a></td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
   <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a19f527c5f3f2e761e51c9b2d478d02c6">MsPASSError</a>()</td><td class="entry"><a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>

@@ -506,7 +506,7 @@
 <para>Note this function handles the calculation correctly if the signal and noise windows have a drastically different length. A subtle feature of psd estimates of stationary processes is that the psd level scales by 1/length of the analysis window. snr estimates correct for this effect.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
-<parametername>df</parametername>
+<parametername>signal_df</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>is the expected signal frequency bin size. An error will be thrown if that does not match the power spectrem s df. </para>

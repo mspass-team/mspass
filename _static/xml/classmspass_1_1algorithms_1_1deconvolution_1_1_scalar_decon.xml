@@ -20,12 +20,13 @@
         <name>data</name>
         <qualifiedname>mspass::algorithms::deconvolution::ScalarDecon::data</qualifiedname>
         <briefdescription>
+<para>Data vector to be deconvolved by concrete scalar methods. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="110" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="110" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="140" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="140" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" prot="protected" static="no" mutable="no">
         <type>std::vector&lt; double &gt;</type>
@@ -34,12 +35,13 @@
         <name>wavelet</name>
         <qualifiedname>mspass::algorithms::deconvolution::ScalarDecon::wavelet</qualifiedname>
         <briefdescription>
+<para>Source-wavelet estimate used by concrete scalar methods. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="111" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="111" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="142" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="142" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" prot="protected" static="no" mutable="no">
         <type>std::vector&lt; double &gt;</type>
@@ -48,12 +50,13 @@
         <name>result</name>
         <qualifiedname>mspass::algorithms::deconvolution::ScalarDecon::result</qualifiedname>
         <briefdescription>
+<para>Deconvolved output vector produced by process. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="112" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="112" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="144" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="144" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" prot="protected" static="no" mutable="no">
         <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref></type>
@@ -62,12 +65,13 @@
         <name>shapingwavelet</name>
         <qualifiedname>mspass::algorithms::deconvolution::ScalarDecon::shapingwavelet</qualifiedname>
         <briefdescription>
+<para>Output shaping wavelet applied by scalar deconvolution methods. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="113" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="113" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="146" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="146" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -78,12 +82,13 @@
         <name>ScalarDecon</name>
         <qualifiedname>mspass::algorithms::deconvolution::ScalarDecon::ScalarDecon</qualifiedname>
         <briefdescription>
+<para>Construct an empty scalar deconvolution operator. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="32" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="32" bodyend="32"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="33" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="33" bodyend="33"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ab7e5ecd4bce2d9da9cb7724cf0c50690" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -96,12 +101,17 @@
           <declname>md</declname>
         </param>
         <briefdescription>
+<para>Construct from Metadata. </para>
         </briefdescription>
         <detaileddescription>
+<para>Initializes the shaping wavelet from md and reserves the data, wavelet, and result vectors using the operator_nfft value in md. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="33" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="7" bodyend="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="39" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="7" bodyend="18"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" compoundref="_scalar_decon_8h" startline="140">data</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="144">result</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="142">wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a5e500a76366d00c1b1d6ebc03084668e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -118,12 +128,33 @@
           <declname>w</declname>
         </param>
         <briefdescription>
+<para>Construct with loaded data and source-wavelet vectors. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data vector to be deconvolved. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>source-wavelet estimate used by concrete deconvolution methods. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="34" column="3"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="45" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="19" bodyend="23"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" compoundref="_scalar_decon_8h" startline="140">data</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="144">result</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae2488963949a1161f7a3b4f908a78807" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -136,12 +167,13 @@
           <declname>parent</declname>
         </param>
         <briefdescription>
+<para>Copy constructor preserving loaded vectors and shaping wavelet. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="35" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="23" bodyend="25"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="47" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="24" bodyend="26"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -168,7 +200,10 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="46" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="34" bodyend="39"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="58" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="35" bodyend="40"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" compoundref="_scalar_decon_8h" startline="140">data</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="144">result</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="142">wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ac358e4143a01c4f979f3f09e401b8e7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -187,7 +222,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="48" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="44" bodyend="48"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="60" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="45" bodyend="49"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" compoundref="_scalar_decon_8h" startline="140">data</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="144">result</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1abfb57cb76746708723cac9a860221f2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -206,7 +243,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="50" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="49" bodyend="53"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="62" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="50" bodyend="54"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="144">result</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="142">wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a71988c8a42788bd966945d78d5fdb6b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -223,12 +262,14 @@
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a6c94a11e332e4137f25576e7d2748ecf">process</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1aa6cdbf9610fb2d618fa14dc555dcd9e9">process</reimplementedby>
         <briefdescription>
+<para>Run the concrete scalar deconvolution algorithm. </para>
         </briefdescription>
         <detaileddescription>
+<para>Derived classes implement this method and store their deconvolved output in the result vector. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="51" column="16"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="68" column="16"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aef21d9897d3c427bbb70d3d795b11cb3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -242,7 +283,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="52" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="52" bodyend="52"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="69" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="69" bodyend="69"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a87e82a9c95e7d55501e24e1cc95508f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" kindref="compound">ScalarDecon</ref> &amp;</type>
@@ -255,12 +296,16 @@
           <declname>parent</declname>
         </param>
         <briefdescription>
+<para>Assign loaded wavelet, data, and result vectors from parent. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="53" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="26" bodyend="33"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="71" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="27" bodyend="34"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" compoundref="_scalar_decon_8h" startline="140">data</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="144">result</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="142">wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae27885f8cd4880c643f09dbe636396a9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -269,12 +314,14 @@
         <name>getresult</name>
         <qualifiedname>mspass::algorithms::deconvolution::ScalarDecon::getresult</qualifiedname>
         <briefdescription>
+<para>Return the current deconvolution result vector. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="54" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="54" bodyend="54"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="73" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="73" bodyend="73"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="144">result</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a8cf90914fa1571e88978b0b810fad805" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -293,10 +340,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>This method does nothing, but needs to be defined to avoid gcc compile errors in programs using children of this class. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="57" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="54" bodyend="56"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="76" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="55" bodyend="57"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" compoundref="_scalar_decon_8h" startline="146">shapingwavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a94a28202041cf426f01ef1e10032c744" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -316,7 +365,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="64" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="57" bodyend="59"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="83" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="58" bodyend="60"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" compoundref="_scalar_decon_8h" startline="146">shapingwavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a051ad1d54899f0d64beb0249220c3405" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref></type>
@@ -331,7 +381,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="66" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="66" bodyend="66"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="85" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="85" bodyend="85"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" compoundref="_scalar_decon_8h" startline="146">shapingwavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1afdf74a0ef7db252ae472d5c21b6a4cc7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
@@ -348,8 +399,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="72" column="43" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="72" bodyend="74"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="91" column="43" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="91" bodyend="93"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a5d213e187ff91de27d96e65b643bd71b" compoundref="_shaping_wavelet_8cc" startline="259" endline="293">mspass::algorithms::deconvolution::ShapingWavelet::impulse_response</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" compoundref="_scalar_decon_8h" startline="146">shapingwavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a889e54f83b86f0bb0087ba3da18db14e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
@@ -365,8 +417,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="80" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="80" bodyend="82"/>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1afdf74a0ef7db252ae472d5c21b6a4cc7" compoundref="_scalar_decon_8h" startline="72" endline="74">output_shaping_wavelet</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="99" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="99" bodyend="101"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1afdf74a0ef7db252ae472d5c21b6a4cc7" compoundref="_scalar_decon_8h" startline="91" endline="93">output_shaping_wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
@@ -390,7 +442,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="89" column="43"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="108" column="43"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9e854bd78790f3df4114f53331b27853" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
@@ -405,7 +457,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="91" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="91" bodyend="93"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="110" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="110" bodyend="112"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593">actual_output</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a078d038467a3be52d1e91e0d080d503e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
@@ -431,12 +483,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="99" column="43"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="118" column="43"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9adc0519d5435d686edb32066f9f697a" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0048edc8619f002ab0f66347e9a47e8e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
         <definition>virtual mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::ScalarDecon::inverse_wavelet</definition>
-        <argsstring>(double)=0</argsstring>
+        <argsstring>(double t0parent)=0</argsstring>
         <name>inverse_wavelet</name>
         <qualifiedname>mspass::algorithms::deconvolution::ScalarDecon::inverse_wavelet</qualifiedname>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a865a66895ee2c898a4a6514ab1afa7d5">inverse_wavelet</reimplementedby>
@@ -449,14 +501,26 @@
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a8da5b3486666d0ac326a7d23dddf0d5c">inverse_wavelet</reimplementedby>
         <param>
           <type>double</type>
+          <declname>t0parent</declname>
         </param>
         <briefdescription>
+<para>Return a FIR inverse filter with a specified parent time origin. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>t0parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>time origin assigned to the returned CoreTimeSeries. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="100" column="43"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="123" column="43"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1af683c2f25e91155c2bc1f81f9b62bbb1" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
@@ -480,7 +544,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="105" column="37"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="128" column="37"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="protected-func">
@@ -499,12 +563,22 @@
           <declname>processed</declname>
         </param>
         <briefdescription>
+<para>Build QC Metadata fields common to scalar deconvolution operators. </para>
         </briefdescription>
         <detaileddescription>
+<para>The returned Metadata records the operator name, whether processing has run, whether input vectors are loaded, the input and output vector sizes, and the shaping-wavelet type, sample interval, and FFT length. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="108" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="60" bodyend="73"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="137" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ScalarDecon.cc" bodystart="61" bodyend="74"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" compoundref="_scalar_decon_8h" startline="140">data</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="144">result</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1adf4577a4442559e6aaad9056258c2915" compoundref="_shaping_wavelet_8h" startline="86" endline="86">mspass::algorithms::deconvolution::ShapingWavelet::sample_interval</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" compoundref="_scalar_decon_8h" startline="146">shapingwavelet</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a0ae9e28502a67f03057d8aee5c126f9c" compoundref="_shaping_wavelet_8h" startline="90" endline="90">mspass::algorithms::deconvolution::ShapingWavelet::size</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a057dcb38c1912fe5c0a78957cd874d40" compoundref="_shaping_wavelet_8h" startline="88" endline="88">mspass::algorithms::deconvolution::ShapingWavelet::type</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="142">wavelet</references>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -533,7 +607,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="118" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="118" bodyend="123"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="151" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="151" bodyend="156"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -622,7 +696,7 @@
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="30" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="30" bodyend="124"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" line="30" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h" bodystart="30" bodyend="157"/>
     <listofallmembers>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>actual_output</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a83e9fd9e0f13b1a0a650fdb0bb805543" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>BasicQCMetrics</name></member>
@@ -633,7 +707,7 @@
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae27885f8cd4880c643f09dbe636396a9" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>getresult</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a889e54f83b86f0bb0087ba3da18db14e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>ideal_output</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a078d038467a3be52d1e91e0d080d503e" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>inverse_wavelet</name></member>
-      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9adc0519d5435d686edb32066f9f697a" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>inverse_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0048edc8619f002ab0f66347e9a47e8e" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>inverse_wavelet</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>load</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ac358e4143a01c4f979f3f09e401b8e7c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>loaddata</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1abfb57cb76746708723cac9a860221f2e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ScalarDecon</scope><name>loadwavelet</name></member>

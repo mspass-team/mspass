@@ -14,10 +14,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Identifier for the processing job or run that owns this history. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="93" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="93" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="105" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="105" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_basic_processing_history_1a6d8756ffc6b2b0a3b068d2014c2f8a6c" prot="protected" static="no" mutable="no">
         <type>std::string</type>
@@ -28,10 +29,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Descriptive name of the processing job that owns this history. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="94" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="94" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="107" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="107" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -80,10 +82,33 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Construct with explicit job name and job identifier.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>jobname</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>descriptive name of the processing job. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>jobid</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>identifier for the processing job or run. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="63" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="63" bodyend="66"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="68" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="68" bodyend="71"/>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1ac3ffa201ded102104675f2daccd379d9" compoundref="_processing_history_8h" startline="105">jid</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a6d8756ffc6b2b0a3b068d2014c2f8a6c" compoundref="_processing_history_8h" startline="107">jnm</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a42047587403f5f37567a870f23554da6" compoundref="_processing_history_8h" startline="87" endline="87">jobid</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a16963d48a18867fe480a276ac5d32844" compoundref="_processing_history_8h" startline="91" endline="91">jobname</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_processing_history_1a50db83159f5d5fd204c2a8d74a43649a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -98,10 +123,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Copy the job-identification fields from another history object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="67" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="67" bodyend="70"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="73" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="73" bodyend="76"/>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1ac3ffa201ded102104675f2daccd379d9" compoundref="_processing_history_8h" startline="105">jid</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a6d8756ffc6b2b0a3b068d2014c2f8a6c" compoundref="_processing_history_8h" startline="107">jnm</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_processing_history_1ac02ca16b83b616ade105d6694ffb6f7d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>size_t</type>
@@ -118,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="79" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="79" bodyend="79"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="85" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="85" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_processing_history_1a42047587403f5f37567a870f23554da6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -129,10 +157,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Return the job identifier stored with this history object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="80" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="80" bodyend="80"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="87" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="87" bodyend="87"/>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1ac3ffa201ded102104675f2daccd379d9" compoundref="_processing_history_8h" startline="105">jid</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_processing_history_1abe8702f0b485cea3357b92c9f0226023" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -147,10 +177,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Replace the job identifier stored with this history object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="81" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="81" bodyend="81"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="89" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="89" bodyend="89"/>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1ac3ffa201ded102104675f2daccd379d9" compoundref="_processing_history_8h" startline="105">jid</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_processing_history_1a16963d48a18867fe480a276ac5d32844" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -161,10 +193,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Return the descriptive job name stored with this history object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="82" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="82" bodyend="82"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="91" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="91" bodyend="91"/>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a6d8756ffc6b2b0a3b068d2014c2f8a6c" compoundref="_processing_history_8h" startline="107">jnm</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_processing_history_1af6c7149734faa2c0b4d51fa8e317db27" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -179,10 +213,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Replace the descriptive job name stored with this history object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="83" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="83" bodyend="83"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="93" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="93" bodyend="93"/>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a6d8756ffc6b2b0a3b068d2014c2f8a6c" compoundref="_processing_history_8h" startline="107">jnm</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a16963d48a18867fe480a276ac5d32844" compoundref="_processing_history_8h" startline="91" endline="91">jobname</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_processing_history_1a4b552f2657fdad975723d9fc73e7875a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref> &amp;</type>
@@ -197,10 +234,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Assign the job-identification fields from another history object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="84" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="84" bodyend="90"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="95" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="95" bodyend="101"/>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1ac3ffa201ded102104675f2daccd379d9" compoundref="_processing_history_8h" startline="105">jid</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a6d8756ffc6b2b0a3b068d2014c2f8a6c" compoundref="_processing_history_8h" startline="107">jnm</references>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -229,7 +269,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="99" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="99" bodyend="102"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="112" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="112" bodyend="115"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -274,7 +314,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="56" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="56" bodyend="103"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="56" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="56" bodyend="116"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a28dd8e5f6b22ab7b24b522cafb8f91c5" prot="public" virt="non-virtual"><scope>mspass::utility::BasicProcessingHistory</scope><name>BasicProcessingHistory</name></member>
       <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a8b077e34de9e1e0a25c24e781c1d235d" prot="public" virt="non-virtual"><scope>mspass::utility::BasicProcessingHistory</scope><name>BasicProcessingHistory</name></member>

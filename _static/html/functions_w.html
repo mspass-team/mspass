@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -83,10 +126,14 @@ $(function() {
 <div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
 
 <h3><a id="index_w" name="index_w"></a>- w -</h3><ul>
-<li>wavelet()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet</a></li>
+<li>WaterLevelDecon()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html#acdd1977764c40e89da3d3fb6417f3f37">mspass::algorithms::deconvolution::WaterLevelDecon</a></li>
+<li>wavelet&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">mspass::algorithms::deconvolution::ScalarDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet</a></li>
 <li>wavelet_noise_spectrum()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#ab4ec1e4c89908b92369acc64f8d95197">mspass::algorithms::deconvolution::CNR3CDecon</a></li>
 <li>wavelet_spectrum()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a5615a2e7adc3f4a49e69362031aa5f83">mspass::algorithms::deconvolution::CNR3CDecon</a></li>
+<li>wavetable&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">mspass::algorithms::deconvolution::FFTDeconOperator</a></li>
 <li>what()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a1dd30086a986a3a0669cd974e65bd563">mspass::utility::MsPASSError</a></li>
+<li>winv&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">mspass::algorithms::deconvolution::FFTDeconOperator</a></li>
+<li>workspace&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">mspass::algorithms::deconvolution::FFTDeconOperator</a></li>
 <li>worst_errors()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a78cd3444e267065b7e9858cc27a36103">mspass::utility::ErrorLogger</a></li>
 <li>writeable()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a2dc9424f37c2535492b34061b8c06e88">mspass::utility::MetadataDefinitions</a></li>
 </ul>

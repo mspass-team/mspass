@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -90,21 +133,21 @@ $(function() {
 
 <p>This is the complete list of members for <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>, including all inherited members.</p>
 <table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>dt</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>dt_constant</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>elog</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>endtime</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>first_live</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>has_dead_components</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>has_gaps</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>has_overlaps</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>is_sorted</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>number_live</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>SegmentVectorProperties</b>() (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>SegmentVectorProperties</b>(const std::vector&lt; TimeSeries &gt; &amp;segments) (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>SegmentVectorProperties</b>(const SegmentVectorProperties &amp;parent) (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>spliced_nsamp</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>t0</b> (defined in <a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a>)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#a2b0312aadcb6326acc13d4388025be1b">dt</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#ab2541bbec22bf326e62ccd5ce218218a">dt_constant</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#ae84e80d9ae19c01605198feed3e4baa9">elog</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#af4e8c8f8ec47c4e63f45df256b246530">endtime</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#ab6a08a067593409fc701a307b6a978df">first_live</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#a991e4f3870196d6120b832786853cbf4">has_dead_components</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#a743814df75873144d91110052625e9b1">has_gaps</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#a180e3eff3e8d5b85dbefa73a8ea12eb2">has_overlaps</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#affb1d954686717fd246d0a5e67f5d76d">is_sorted</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#aa090679005192b1d0ac6479eb4c9e5f1">number_live</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#a6b3f53aecc3c06d1ccdf4ef9f9661030">SegmentVectorProperties</a>()</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#ac375821d246ee015b58170f005dd8abe">SegmentVectorProperties</a>(const std::vector&lt; TimeSeries &gt; &amp;segments)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#ab0f2b4e03ef418a5158f12a442d74082">SegmentVectorProperties</a>(const SegmentVectorProperties &amp;parent)</td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#a0397981ece5e2617a4fa923e2a0cc8c5">spliced_nsamp</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html#a2fa190c700e90a501cf2f31814269a46">t0</a></td><td class="entry"><a class="el" href="classmspass_1_1algorithms_1_1_segment_vector_properties.html">mspass::algorithms::SegmentVectorProperties</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

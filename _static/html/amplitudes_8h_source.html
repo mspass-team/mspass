@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -325,21 +368,20 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00311" name="l00311"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">  311</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a>;</div>
 <div class="line"><a id="l00313" name="l00313"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#ae4988fbbeaab0c24bedab696ddf18270">  313</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#ae4988fbbeaab0c24bedab696ddf18270">low_edge_snr</a>;</div>
 <div class="line"><a id="l00315" name="l00315"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#afb68f33f07a6d38e7ebd24e0a87b7481">  315</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#afb68f33f07a6d38e7ebd24e0a87b7481">high_edge_snr</a>;</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>  <span class="comment">/* This is the frequency range of the original data */</span></div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>  <span class="keywordtype">double</span> f_range;</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">  317</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">f_range</a>;</div>
 <div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>  <a class="code hl_class" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html">BandwidthData</a>() {</div>
 <div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a> = 0.0;</div>
 <div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> = 0.0;</div>
 <div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#ae4988fbbeaab0c24bedab696ddf18270">low_edge_snr</a> = 0.0;</div>
 <div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#afb68f33f07a6d38e7ebd24e0a87b7481">high_edge_snr</a> = 0.0;</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    f_range = 0.0;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">f_range</a> = 0.0;</div>
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>  };</div>
 <div class="foldopen" id="foldopen00327" data-start="{" data-end="}">
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa23650e78e755f15b0aa8f6e7e398af7">  327</a></span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa23650e78e755f15b0aa8f6e7e398af7">bandwidth_fraction</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keywordflow">if</span> (f_range &lt;= 0.0)</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">f_range</a> &lt;= 0.0)</div>
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>      <span class="keywordflow">return</span> 0.0;</div>
 <div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>      <span class="keywordflow">return</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> - <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>) / f_range;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>      <span class="keywordflow">return</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> - <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>) / <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">f_range</a>;</div>
 <div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>  };</div>
 </div>
 <div class="foldopen" id="foldopen00334" data-start="{" data-end="}">
@@ -347,7 +389,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="comment">/* All these conditionals are necessary for handling unexpected</span></div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span><span class="comment">     * values.   0 is effectively and error return.  Without these</span></div>
 <div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span><span class="comment">     * the function can return NaN or generate floating point exceptions. */</span></div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <span class="keywordflow">if</span> ((f_range &lt;= 0.0) || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a>&lt;=<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>)</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <span class="keywordflow">if</span> ((<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">f_range</a> &lt;= 0.0) || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a>&lt;=<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>)</div>
 <div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>      || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> &lt; 0.0) || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a> &lt; 0.0) )</div>
 <div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>      <span class="keywordflow">return</span> 0.0;</div>
 <div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    <span class="keywordflow">else</span> {</div>
@@ -378,14 +420,15 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_html_a5037fb7d7410bedc194135eae1894f8b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a5037fb7d7410bedc194135eae1894f8b">mspass::algorithms::amplitudes::BandwidthData::bandwidth</a></div><div class="ttdeci">double bandwidth() const</div><div class="ttdef"><b>Definition</b> amplitudes.h:334</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_html_aa23650e78e755f15b0aa8f6e7e398af7"><div class="ttname"><a href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa23650e78e755f15b0aa8f6e7e398af7">mspass::algorithms::amplitudes::BandwidthData::bandwidth_fraction</a></div><div class="ttdeci">double bandwidth_fraction() const</div><div class="ttdef"><b>Definition</b> amplitudes.h:327</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_html_aa5e75df4c544e03a44cb3efc1077bc39"><div class="ttname"><a href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">mspass::algorithms::amplitudes::BandwidthData::high_edge_f</a></div><div class="ttdeci">double high_edge_f</div><div class="ttdef"><b>Definition</b> amplitudes.h:311</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_html_aac9737b8821da97155c7b3cbe6b0411e"><div class="ttname"><a href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">mspass::algorithms::amplitudes::BandwidthData::f_range</a></div><div class="ttdeci">double f_range</div><div class="ttdef"><b>Definition</b> amplitudes.h:317</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_html_ae4988fbbeaab0c24bedab696ddf18270"><div class="ttname"><a href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#ae4988fbbeaab0c24bedab696ddf18270">mspass::algorithms::amplitudes::BandwidthData::low_edge_snr</a></div><div class="ttdeci">double low_edge_snr</div><div class="ttdef"><b>Definition</b> amplitudes.h:313</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_html_afb68f33f07a6d38e7ebd24e0a87b7481"><div class="ttname"><a href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#afb68f33f07a6d38e7ebd24e0a87b7481">mspass::algorithms::amplitudes::BandwidthData::high_edge_snr</a></div><div class="ttdeci">double high_edge_snr</div><div class="ttdef"><b>Definition</b> amplitudes.h:315</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a></div><div class="ttdoc">Vector (three-component) seismogram data object.</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:39</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a></div><div class="ttdoc">Scalar time series data object.</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:17</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html">mspass::seismic::Ensemble</a></div><div class="ttdef"><b>Definition</b> Ensemble.h:9</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html_a50f9947d9209dda797f1b7fe2b4ba81f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble::member</a></div><div class="ttdeci">std::vector&lt; Tdata &gt; member</div><div class="ttdoc">Container holding data objects.</div><div class="ttdef"><b>Definition</b> Ensemble.h:20</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html">mspass::seismic::Ensemble</a></div><div class="ttdoc">Metadata-bearing container for a collection of seismic data objects.</div><div class="ttdef"><b>Definition</b> Ensemble.h:14</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html_a50f9947d9209dda797f1b7fe2b4ba81f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble::member</a></div><div class="ttdeci">std::vector&lt; Tdata &gt; member</div><div class="ttdoc">Container holding data objects.</div><div class="ttdef"><b>Definition</b> Ensemble.h:25</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html">mspass::seismic::PowerSpectrum</a></div><div class="ttdef"><b>Definition</b> PowerSpectrum.h:11</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdef"><b>Definition</b> Metadata.h:90</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdoc">Type-safe metadata container used throughout MsPASS.</div><div class="ttdef"><b>Definition</b> Metadata.h:101</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></div><div class="ttdoc">Base class for error object thrown by MsPASS library routines.</div><div class="ttdef"><b>Definition</b> MsPASSError.h:38</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_vector_statistics_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_vector_statistics.html">mspass::utility::VectorStatistics</a></div><div class="ttdoc">Generic object to compute common robust statistics from a vector container of data.</div><div class="ttdef"><b>Definition</b> VectorStatistics.h:16</div></div>
 </div><!-- fragment --></div><!-- contents -->

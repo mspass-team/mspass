@@ -1,98 +1,330 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRUD Operations in MsPASS &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CRUD Operations in MsPASS &#8212; MsPASS 0.1.dev1+gb7c2adc documentation</title>
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=c1885210"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/CRUD_operations';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />
-    <link rel="prev" title="Database Concepts" href="database_concepts.html" />  
-
-  <style>
-    .wy-nav-content { max-width: 1600px; }
-  </style>
+    <link rel="prev" title="Database Concepts" href="database_concepts.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
-</head>
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            MsPASS
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+  <dialog id="pst-search-dialog">
     
-              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
-<ul>
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="current">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">CRUD Operations in MsPASS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#read">Read</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#update">Update</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#delete">Delete</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#key-io-concepts">Key IO Concepts</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#mspass-chemistry">MsPASS Chemistry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#save-concepts">Save Concepts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#read-concepts">Read concepts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#update-concepts">Update Concepts</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
@@ -101,8 +333,8 @@
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
@@ -115,55 +347,97 @@
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
-
-    <a href= "../genindex.html">Index</a>
-  
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">MsPASS</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">CRUD Operations in MsPASS</li>
-      <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/CRUD_operations.rst" class="fa fa-github"> Edit on GitHub</a>
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">CRUD Operations in MsPASS</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="crud-operations-in-mspass">
-<span id="crud-operations"></span><h1>CRUD Operations in MsPASS<a class="headerlink" href="#crud-operations-in-mspass" title="Link to this heading"></a></h1>
+<span id="crud-operations"></span><h1>CRUD Operations in MsPASS<a class="headerlink" href="#crud-operations-in-mspass" title="Link to this heading">#</a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>The acronym CRUD is often used as a mnemonic in books and online tutorials
 teaching database concepts.  CRUD stands for Create-Read-Update-Delete.
 It is a useful mnemonic because it summarizes the four main things any database system
@@ -197,13 +471,13 @@ pass <code class="code docutils literal notranslate"><span class="pre">collectio
 where that collection is required.</p>
 </section>
 <section id="create">
-<h2>Create<a class="headerlink" href="#create" title="Link to this heading"></a></h2>
+<h2>Create<a class="headerlink" href="#create" title="Link to this heading">#</a></h2>
 <p>We tag all methods of the <code class="code docutils literal notranslate"><span class="pre">Database</span></code> class that do “Create”
 operations with the synonymous word “save”.   Here we list the most
 important save methods with a brief description of each method.  Consult
 the docstring pages for detailed and most up to date usage:</p>
 <ol class="arabic">
-<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#id71" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data()</span></code></a> is the primary
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data()</span></code></a> is the primary
 waveform writer.  The first argument can be any of the core seismic
 data objects defined in MsPASS:  <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>,
 <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>, <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>, or
@@ -240,7 +514,7 @@ single-component data into three-component seismograms before saving:</p>
 on the bundling step.  Older ensemble-specific write helpers are
 backward-compatibility wrappers; new code should use <code class="code docutils literal notranslate"><span class="pre">save_data</span></code>.</p>
 </li>
-<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#id70" title="mspasspy.db.database.Database.save_catalog"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_catalog()</span></code></a> should be
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_catalog" title="mspasspy.db.database.Database.save_catalog"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_catalog()</span></code></a> should be
 viewed mostly as a convenience method to build
 the <code class="code docutils literal notranslate"><span class="pre">source</span></code> collection from QUAKEML data downloaded from FDSN data
 centers via obspy’s web services functions.   <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> can be
@@ -272,7 +546,7 @@ our <em>getting_started</em> tutorial.</p>
 <p>This particular example pulls 11 large aftershocks of the 2011 Tohoku
 Earthquake.</p>
 </li>
-<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#id75" title="mspasspy.db.database.Database.save_inventory"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_inventory()</span></code></a> is similar
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_inventory" title="mspasspy.db.database.Database.save_inventory"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_inventory()</span></code></a> is similar
 in concept to <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code>, but instead of
 translating data for source information it translates information to
 MsPASS for station metadata.  The station information problem is slightly
@@ -334,7 +608,7 @@ behaviour or rebuild the collection as needed with web services.</p>
 </ol>
 </section>
 <section id="read">
-<h2>Read<a class="headerlink" href="#read" title="Link to this heading"></a></h2>
+<h2>Read<a class="headerlink" href="#read" title="Link to this heading">#</a></h2>
 <p>The Read operation is the inverse of save (create).  The core reader was
 designed to simplify the process of reading the core data types of MsPASS:
 <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>, <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>, and
@@ -342,7 +616,7 @@ designed to simplify the process of reading the core data types of MsPASS:
 the key methods, but refer the reader to the sphinx documentation for full
 usage.</p>
 <ol class="arabic">
-<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#id66" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data()</span></code></a> is the core
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data()</span></code></a> is the core
 waveform reader.  Its required first argument can be any of the
 following:</p>
 <ol class="arabic simple">
@@ -385,7 +659,7 @@ boxes in the right-hand (black) box illustrate that the different
 pieces of the object are normally stored in different places.
 This example shows all the components stored within MongoDB
 (the black box), but we note sample data may also be stored as
-files in a file system or in cloud containers.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+files in a file system or in cloud containers.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>The key point of this figure is that the waveform data is treated differently
@@ -483,7 +757,7 @@ complete parallel workflow examples.</p>
 </ol>
 </section>
 <section id="update">
-<h2>Update<a class="headerlink" href="#update" title="Link to this heading"></a></h2>
+<h2>Update<a class="headerlink" href="#update" title="Link to this heading">#</a></h2>
 <p>Because of the way we stored seismic data in MsPASS (see figure above)
 the concept of an update makes sense only for Metadata.
 The update concept makes no sense for ProcessingHistory and error log data.
@@ -519,7 +793,7 @@ common to all update and write methods described in more detail in a section
 below.</p>
 </section>
 <section id="delete">
-<h2>Delete<a class="headerlink" href="#delete" title="Link to this heading"></a></h2>
+<h2>Delete<a class="headerlink" href="#delete" title="Link to this heading">#</a></h2>
 <p>A delete operation is much more complicated in MsPASS than what you would
 find as a type example in any textbook on database theory.  In a
 relational system delete normally means removing a single tuple.
@@ -597,9 +871,9 @@ we strongly advise you store all your data with the
 gridfs option.</p>
 </section>
 <section id="key-io-concepts">
-<h2>Key IO Concepts<a class="headerlink" href="#key-io-concepts" title="Link to this heading"></a></h2>
+<h2>Key IO Concepts<a class="headerlink" href="#key-io-concepts" title="Link to this heading">#</a></h2>
 <section id="mspass-chemistry">
-<h3>MsPASS Chemistry<a class="headerlink" href="#mspass-chemistry" title="Link to this heading"></a></h3>
+<h3>MsPASS Chemistry<a class="headerlink" href="#mspass-chemistry" title="Link to this heading">#</a></h3>
 <p>In this section we expand on some concepts the user needs to understand
 in interacting with the io system in MsPASS.  If we repeat things it means
 they are important, not that we were careless in writing this document.</p>
@@ -694,7 +968,7 @@ bad (dead) and the waveform data will not be saved.</p></li>
 </ol>
 </section>
 <section id="save-concepts">
-<h3>Save Concepts<a class="headerlink" href="#save-concepts" title="Link to this heading"></a></h3>
+<h3>Save Concepts<a class="headerlink" href="#save-concepts" title="Link to this heading">#</a></h3>
 <p>Waveform save methods begin with this axiom:  a save operation should
 never abort for anything but a system error.   That means the definition of
 success is not black and white.  There are a range of known and probably
@@ -769,7 +1043,7 @@ a concern that history data could, in some instances, potentially cause
 a memory bloat with iterative processing.</p>
 </section>
 <section id="read-concepts">
-<h3>Read concepts<a class="headerlink" href="#read-concepts" title="Link to this heading"></a></h3>
+<h3>Read concepts<a class="headerlink" href="#read-concepts" title="Link to this heading">#</a></h3>
 <p>Reads have to construct a valid data object and are subject to different
 constraints.  We believe it is most instructive to describe these in the order
 they are handled during construction.</p>
@@ -809,7 +1083,7 @@ link back to the data just read.</p></li>
 given above and in the sphynx documentation generated from docstrings.</p>
 </section>
 <section id="update-concepts">
-<h3>Update Concepts<a class="headerlink" href="#update-concepts" title="Link to this heading"></a></h3>
+<h3>Update Concepts<a class="headerlink" href="#update-concepts" title="Link to this heading">#</a></h3>
 <p>As noted above an update is an operation that can be made only to
 Metadata.  In MsPASS Metadata map directly into MongoDB’s document concept
 of name-value pairs, while the waveform data are stored in some version of
@@ -872,31 +1146,129 @@ do nothing to any existing tag (i.e. the tag is not updated).</p></li>
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="database_concepts.html" class="btn btn-neutral float-left" title="Database Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mongodb_and_mspass.html" class="btn btn-neutral float-right" title="Using MongoDB with MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
-  </div>
-
-   
-
-</footer>
-        </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="database_concepts.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Database Concepts</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="mongodb_and_mspass.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Using MongoDB with MsPASS</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create">Create</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read">Read</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#update">Update</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delete">Delete</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-io-concepts">Key IO Concepts</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspass-chemistry">MsPASS Chemistry</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#save-concepts">Save Concepts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#read-concepts">Read concepts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#update-concepts">Update Concepts</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/CRUD_operations.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/CRUD_operations.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
 </html>

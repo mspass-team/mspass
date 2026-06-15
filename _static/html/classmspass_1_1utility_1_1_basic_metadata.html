@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -91,33 +134,47 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Abstract base class for <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> concept.  
+<p>Abstract base class for <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> concept.  
  <a href="classmspass_1_1utility_1_1_basic_metadata.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_basic_metadata_8h_source.html">BasicMetadata.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for mspass::utility::BasicMetadata:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1utility_1_1_basic_metadata.png" usemap="#mspass::utility::BasicMetadata_map" alt=""/>
-  <map id="mspass::utility::BasicMetadata_map" name="mspass::utility::BasicMetadata_map">
-<area href="classmspass_1_1utility_1_1_metadata.html" alt="mspass::utility::Metadata" shape="rect" coords="615,56,851,80"/>
-<area href="classmspass_1_1seismic_1_1_ensemble.html" alt="mspass::seismic::Ensemble&lt; T &gt;" shape="rect" coords="0,112,236,136"/>
-<area href="classmspass_1_1seismic_1_1_core_seismogram.html" title="Vector (three-component) seismogram data object." alt="mspass::seismic::CoreSeismogram" shape="rect" coords="246,112,482,136"/>
-<area href="classmspass_1_1seismic_1_1_core_time_series.html" title="Scalar time series data object." alt="mspass::seismic::CoreTimeSeries" shape="rect" coords="492,112,728,136"/>
-<area href="classmspass_1_1seismic_1_1_ensemble.html" alt="mspass::seismic::Ensemble&lt; Tdata &gt;" shape="rect" coords="738,112,974,136"/>
-<area href="classmspass_1_1seismic_1_1_power_spectrum.html" alt="mspass::seismic::PowerSpectrum" shape="rect" coords="984,112,1220,136"/>
-<area href="classmspass_1_1utility_1_1_antelope_pf.html" title="C++ object version of a parameter file." alt="mspass::utility::AntelopePf" shape="rect" coords="1230,112,1466,136"/>
-<area href="classmspass_1_1seismic_1_1_logging_ensemble.html" title="Template class that extends Ensemble to include an error log and live tests." alt="mspass::seismic::LoggingEnsemble&lt; T &gt;" shape="rect" coords="0,168,236,192"/>
-<area href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS." alt="mspass::seismic::Seismogram" shape="rect" coords="246,168,482,192"/>
-<area href="classmspass_1_1seismic_1_1_time_series.html" title="Implemntation of TimeSeries for MsPASS." alt="mspass::seismic::TimeSeries" shape="rect" coords="492,168,728,192"/>
-<area href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html" alt="mspass::seismic::SeismogramWGaps" shape="rect" coords="246,224,482,248"/>
-<area href="classmspass_1_1seismic_1_1_time_series_w_gaps.html" alt="mspass::seismic::TimeSeriesWGaps" shape="rect" coords="492,224,728,248"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1utility_1_1_basic_metadata__inherit__graph.png" border="0" usemap="#amspass_1_1utility_1_1_basic_metadata_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1utility_1_1_basic_metadata_inherit__map" id="amspass_1_1utility_1_1_basic_metadata_inherit__map">
+<area shape="rect" title="Abstract base class for Metadata concept." alt="" coords="5,159,228,185"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_metadata.html" title="Type&#45;safe metadata container used throughout MsPASS." alt="" coords="276,159,463,185"/>
+<area shape="poly" title=" " alt="" coords="242,169,276,169,276,175,242,175"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_ensemble.html" title=" " alt="" coords="516,17,756,42"/>
+<area shape="poly" title=" " alt="" coords="390,147,441,100,474,76,510,55,552,40,554,45,512,60,477,80,445,104,394,151"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_core_seismogram.html" title="Vector (three&#45;component) seismogram data object." alt="" coords="511,70,761,95"/>
+<area shape="poly" title=" " alt="" coords="405,151,454,127,510,105,558,93,559,98,511,111,456,132,407,155"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_core_time_series.html" title="Scalar time series data object." alt="" coords="535,120,737,160"/>
+<area shape="poly" title=" " alt="" coords="476,157,535,149,536,155,477,162"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_ensemble.html" title="Metadata&#45;bearing container for a collection of seismic data objects." alt="" coords="535,184,737,224"/>
+<area shape="poly" title=" " alt="" coords="477,182,535,189,534,194,476,187"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_power_spectrum.html" title=" " alt="" coords="516,249,756,274"/>
+<area shape="poly" title=" " alt="" coords="407,189,456,212,511,233,559,246,558,251,510,239,454,217,405,193"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_antelope_pf.html" title="C++ object version of a parameter file." alt="" coords="538,298,734,323"/>
+<area shape="poly" title=" " alt="" coords="393,193,444,240,477,264,512,284,543,295,541,300,510,289,474,269,441,244,389,197"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_logging_ensemble.html" title="Template class that extends Ensemble to include an error log and live tests." alt="" coords="825,5,1014,45"/>
+<area shape="poly" title=" " alt="" coords="770,25,824,24,824,29,770,30"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS." alt="" coords="809,70,1029,95"/>
+<area shape="poly" title=" " alt="" coords="775,80,809,80,809,85,775,85"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html" title="Three&#45;component Seismogram with explicit data&#45;gap tracking." alt="" coords="1077,60,1297,100"/>
+<area shape="poly" title=" " alt="" coords="1043,79,1077,78,1077,84,1043,84"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_time_series.html" title="Implemntation of TimeSeries for MsPASS." alt="" coords="814,129,1025,154"/>
+<area shape="poly" title=" " alt="" coords="750,138,814,138,814,144,750,143"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_time_series_w_gaps.html" title="Scalar TimeSeries with explicit data&#45;gap tracking." alt="" coords="1082,124,1293,164"/>
+<area shape="poly" title=" " alt="" coords="1039,140,1082,140,1082,146,1038,145"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a1d7a9ab1e25e01694cc733ad2b98c6b7" id="r_a1d7a9ab1e25e01694cc733ad2b98c6b7"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#a1d7a9ab1e25e01694cc733ad2b98c6b7">~BasicMetadata</a> ()</td></tr>
+<tr class="separator:a1d7a9ab1e25e01694cc733ad2b98c6b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1790a8b30ed7bb2f9e6b9ebffd6155ef" id="r_a1790a8b30ed7bb2f9e6b9ebffd6155ef"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#a1790a8b30ed7bb2f9e6b9ebffd6155ef">get_int</a> (const std::string key) const =0</td></tr>
 <tr class="separator:a1790a8b30ed7bb2f9e6b9ebffd6155ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9165cfdea79974e629d94d0142adf371" id="r_a9165cfdea79974e629d94d0142adf371"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#a9165cfdea79974e629d94d0142adf371">get_double</a> (const std::string key) const =0</td></tr>
@@ -126,21 +183,17 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1dac44e02436791b7bdd2a2b9f278b3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c96a06a69b18e8f1ca1897ba87ceaae" id="r_a4c96a06a69b18e8f1ca1897ba87ceaae"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#a4c96a06a69b18e8f1ca1897ba87ceaae">get_string</a> (const std::string key) const =0</td></tr>
 <tr class="separator:a4c96a06a69b18e8f1ca1897ba87ceaae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:addfa968c481e8c2d883a5ee0a8574d7e" id="r_addfa968c481e8c2d883a5ee0a8574d7e"><td class="memItemLeft" align="right" valign="top"><a id="addfa968c481e8c2d883a5ee0a8574d7e" name="addfa968c481e8c2d883a5ee0a8574d7e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>put</b> (const std::string key, const double val)=0</td></tr>
+<tr class="memitem:addfa968c481e8c2d883a5ee0a8574d7e" id="r_addfa968c481e8c2d883a5ee0a8574d7e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#addfa968c481e8c2d883a5ee0a8574d7e">put</a> (const std::string key, const double val)=0</td></tr>
 <tr class="separator:addfa968c481e8c2d883a5ee0a8574d7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1f7986dd9007cdc2615f0b7a1c542e5" id="r_ac1f7986dd9007cdc2615f0b7a1c542e5"><td class="memItemLeft" align="right" valign="top"><a id="ac1f7986dd9007cdc2615f0b7a1c542e5" name="ac1f7986dd9007cdc2615f0b7a1c542e5"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>put</b> (const std::string key, const int val)=0</td></tr>
+<tr class="memitem:ac1f7986dd9007cdc2615f0b7a1c542e5" id="r_ac1f7986dd9007cdc2615f0b7a1c542e5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#ac1f7986dd9007cdc2615f0b7a1c542e5">put</a> (const std::string key, const int val)=0</td></tr>
 <tr class="separator:ac1f7986dd9007cdc2615f0b7a1c542e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0195094122a714ac43e113083041314" id="r_aa0195094122a714ac43e113083041314"><td class="memItemLeft" align="right" valign="top"><a id="aa0195094122a714ac43e113083041314" name="aa0195094122a714ac43e113083041314"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>put</b> (const std::string key, const bool val)=0</td></tr>
+<tr class="memitem:aa0195094122a714ac43e113083041314" id="r_aa0195094122a714ac43e113083041314"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#aa0195094122a714ac43e113083041314">put</a> (const std::string key, const bool val)=0</td></tr>
 <tr class="separator:aa0195094122a714ac43e113083041314"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab777d4098cc92fa2189315a219579a30" id="r_ab777d4098cc92fa2189315a219579a30"><td class="memItemLeft" align="right" valign="top"><a id="ab777d4098cc92fa2189315a219579a30" name="ab777d4098cc92fa2189315a219579a30"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>put</b> (const std::string key, const std::string val)=0</td></tr>
+<tr class="memitem:ab777d4098cc92fa2189315a219579a30" id="r_ab777d4098cc92fa2189315a219579a30"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#ab777d4098cc92fa2189315a219579a30">put</a> (const std::string key, const std::string val)=0</td></tr>
 <tr class="separator:ab777d4098cc92fa2189315a219579a30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Abstract base class for <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> concept. </p>
+<div class="textblock"><p>Abstract base class for <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> concept. </p>
 <p>A core idea in MsPASS is the idea of a generic header that allows storage and retrieval of arbitrary attributes. This base class forces support for the standard basic data types. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a1d7a9ab1e25e01694cc733ad2b98c6b7" name="a1d7a9ab1e25e01694cc733ad2b98c6b7"></a>
@@ -165,7 +218,8 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>put</b> (cons
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   15</span>{};</div>
+<p>Virtual destructor for safe deletion through <a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept.">BasicMetadata</a> pointers. </p>
+<div class="fragment"><div class="line"><span class="lineno">   16</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -193,6 +247,19 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>put</b> (cons
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return a boolean metadata attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>metadata key to fetch. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classmspass_1_1utility_1_1_metadata_get_error.html" title="Error thrown when get operators fail.">MetadataGetError</a></td><td>or another MsPASSError-derived exception when the key is undefined or cannot be represented as a bool. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Implemented in <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a2631da9d437572ee0781ed9bd96a3ed3">mspass::utility::Metadata</a>.</p>
 
@@ -221,6 +288,19 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>put</b> (cons
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return a floating-point metadata attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>metadata key to fetch. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classmspass_1_1utility_1_1_metadata_get_error.html" title="Error thrown when get operators fail.">MetadataGetError</a></td><td>or another MsPASSError-derived exception when the key is undefined or cannot be represented as a double. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Implemented in <a class="el" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">mspass::utility::Metadata</a>.</p>
 
@@ -249,6 +329,19 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>put</b> (cons
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return an integer-valued metadata attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>metadata key to fetch. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classmspass_1_1utility_1_1_metadata_get_error.html" title="Error thrown when get operators fail.">MetadataGetError</a></td><td>or another MsPASSError-derived exception when the key is undefined or cannot be represented as an int. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Implemented in <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">mspass::utility::Metadata</a>.</p>
 
@@ -277,8 +370,205 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>put</b> (cons
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return a string metadata attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>metadata key to fetch. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classmspass_1_1utility_1_1_metadata_get_error.html" title="Error thrown when get operators fail.">MetadataGetError</a></td><td>or another MsPASSError-derived exception when the key is undefined or cannot be represented as a string. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Implemented in <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">mspass::utility::Metadata</a>.</p>
+
+</div>
+</div>
+<a id="aa0195094122a714ac43e113083041314" name="aa0195094122a714ac43e113083041314"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0195094122a714ac43e113083041314">&#9670;&#160;</a></span>put() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mspass::utility::BasicMetadata::put </td>
+          <td>(</td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Store a boolean metadata attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>metadata key to create or replace. </td></tr>
+    <tr><td class="paramname">val</td><td>value to store. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classmspass_1_1utility_1_1_metadata.html#ab3989b1152e9b7b3dcce36aaec89f46d">mspass::utility::Metadata</a>.</p>
+
+</div>
+</div>
+<a id="addfa968c481e8c2d883a5ee0a8574d7e" name="addfa968c481e8c2d883a5ee0a8574d7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addfa968c481e8c2d883a5ee0a8574d7e">&#9670;&#160;</a></span>put() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mspass::utility::BasicMetadata::put </td>
+          <td>(</td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Store a double-valued metadata attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>metadata key to create or replace. </td></tr>
+    <tr><td class="paramname">val</td><td>value to store. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aefee14db8cda9c7143a0eb7bf2d1be1f">mspass::utility::Metadata</a>.</p>
+
+</div>
+</div>
+<a id="ac1f7986dd9007cdc2615f0b7a1c542e5" name="ac1f7986dd9007cdc2615f0b7a1c542e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1f7986dd9007cdc2615f0b7a1c542e5">&#9670;&#160;</a></span>put() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mspass::utility::BasicMetadata::put </td>
+          <td>(</td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Store an integer-valued metadata attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>metadata key to create or replace. </td></tr>
+    <tr><td class="paramname">val</td><td>value to store. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a11ef6cbc1adec7964e2d9c3a4ead15b1">mspass::utility::Metadata</a>.</p>
+
+</div>
+</div>
+<a id="ab777d4098cc92fa2189315a219579a30" name="ab777d4098cc92fa2189315a219579a30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab777d4098cc92fa2189315a219579a30">&#9670;&#160;</a></span>put() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mspass::utility::BasicMetadata::put </td>
+          <td>(</td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Store a string metadata attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>metadata key to create or replace. </td></tr>
+    <tr><td class="paramname">val</td><td>value to store. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classmspass_1_1utility_1_1_metadata.html#adc016a9bb2288f1f0a7687cfa6844ceb">mspass::utility::Metadata</a>.</p>
 
 </div>
 </div>

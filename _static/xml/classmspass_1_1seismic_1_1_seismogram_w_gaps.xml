@@ -4,6 +4,7 @@
     <compoundname>mspass::seismic::SeismogramWGaps</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_seismogram" prot="public" virt="non-virtual">mspass::seismic::Seismogram</basecompoundref>
     <basecompoundref refid="classmspass_1_1seismic_1_1_data_gap" prot="public" virt="non-virtual">mspass::seismic::DataGap</basecompoundref>
+    <includes refid="_seismogram_w_gaps_8h" local="no">SeismogramWGaps.h</includes>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1adf038f77f4e75979ed1debe1b13d2c5b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -19,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="14" column="3"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="15" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1af0ad23d866b72dac5e854ba0a38cb08d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -38,7 +39,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="16" column="3"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="17" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a8af6fce0c26b13f072582416cc5e1966" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram_w_gaps" kindref="compound">SeismogramWGaps</ref> &amp;</type>
@@ -53,10 +54,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Assignment operator. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="17" column="19"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="19" column="19"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a4136f6b13d9c5a4151f3efabebf10f87" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -67,10 +69,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Destructor. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="18" column="3"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="21" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a976c7e2ae15527497d22fa9e82fcb4ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
@@ -85,10 +88,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="22" column="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="25" column="8"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
+<para>Three-component <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> with explicit data-gap tracking. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
@@ -214,7 +218,7 @@
         <link refid="classmspass_1_1utility_1_1dmatrix"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="7" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" bodystart="8" bodyend="23"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="8" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" bodystart="9" bodyend="26"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>accumulate</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1a29bd754c4f58ce811c4e6e1e4056927c" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>add_gap</name></member>

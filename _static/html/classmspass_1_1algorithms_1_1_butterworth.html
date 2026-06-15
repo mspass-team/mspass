@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -460,8 +503,8 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  192</span>  };</div>
 <div class="line"><span class="lineno">  193</span>}</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a2631da9d437572ee0781ed9bd96a3ed3"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a2631da9d437572ee0781ed9bd96a3ed3">mspass::utility::Metadata::get_bool</a></div><div class="ttdeci">bool get_bool(const std::string key) const override</div><div class="ttdef"><b>Definition</b> Metadata.cc:392</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aa56da98a52f03babd67bf9fb55c40f3a"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">mspass::utility::Metadata::get_string</a></div><div class="ttdeci">std::string get_string(const std::string key) const override</div><div class="ttdef"><b>Definition</b> Metadata.h:178</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_af2b1cac0f295d9ab5fb240b8b5e12539"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get</a></div><div class="ttdeci">T get(const std::string key) const</div><div class="ttdef"><b>Definition</b> Metadata.h:413</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aa56da98a52f03babd67bf9fb55c40f3a"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">mspass::utility::Metadata::get_string</a></div><div class="ttdeci">std::string get_string(const std::string key) const override</div><div class="ttdef"><b>Definition</b> Metadata.h:189</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_af2b1cac0f295d9ab5fb240b8b5e12539"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get</a></div><div class="ttdeci">T get(const std::string key) const</div><div class="ttdef"><b>Definition</b> Metadata.h:477</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get()</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a2631da9d437572ee0781ed9bd96a3ed3">mspass::utility::Metadata::get_bool()</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">mspass::utility::Metadata::get_string()</a>.</p>
 
@@ -639,9 +682,9 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  335</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; npts; ++i)</div>
 <div class="line"><span class="lineno">  336</span>      comp.push_back(0.0);</div>
 <div class="line"><span class="lineno">  337</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> k = 0; k &lt; 3; ++k) {</div>
-<div class="line"><span class="lineno">  338</span>      dcopy(npts, d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(k, 0), 3, &amp;(comp[0]), 1);</div>
+<div class="line"><span class="lineno">  338</span>      dcopy(npts, d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">get_address</a>(k, 0), 3, &amp;(comp[0]), 1);</div>
 <div class="line"><span class="lineno">  339</span>      this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply</a>(comp);</div>
-<div class="line"><span class="lineno">  340</span>      dcopy(npts, &amp;(comp[0]), 1, d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(k, 0), 3);</div>
+<div class="line"><span class="lineno">  340</span>      dcopy(npts, &amp;(comp[0]), 1, d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">get_address</a>(k, 0), 3);</div>
 <div class="line"><span class="lineno">  341</span>    }</div>
 <div class="line"><span class="lineno">  342</span>  } <span class="keywordflow">catch</span> (...) {</div>
 <div class="line"><span class="lineno">  343</span>    <span class="keywordflow">throw</span>;</div>
@@ -649,11 +692,12 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  345</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_butterworth_html_a94f20884465265de735d05946e1cea00"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00">mspass::algorithms::Butterworth::change_dt</a></div><div class="ttdeci">void change_dt(const double dtnew)</div><div class="ttdoc">set the sample interval assumed for input data.</div><div class="ttdef"><b>Definition</b> Butterworth.h:293</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_butterworth_html_ad8c696b150ed18bfb3c4060dd884bfe3"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">mspass::algorithms::Butterworth::apply</a></div><div class="ttdeci">void apply(mspass::seismic::CoreTimeSeries &amp;d)</div><div class="ttdoc">pply the filter to a CoreTimeSeries object.</div><div class="ttdef"><b>Definition</b> Butterworth.cc:232</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:171</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:173</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_af31c96c0e2173d7581e1c3a3f8bcfde8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt</a></div><div class="ttdeci">double dt() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:153</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:52</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_ae40ad36efea03496d79e95c91b675060"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">mspass::utility::dmatrix::get_address</a></div><div class="ttdeci">double * get_address(size_t r, size_t c) const</div><div class="ttdoc">Get a pointer to the location of a matrix component.</div><div class="ttdef"><b>Definition</b> dmatrix.cc:72</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00">change_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00">change_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt()</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">mspass::utility::dmatrix::get_address()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a>.</p>
 
 </div>
 </div>
@@ -769,7 +813,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  370</span>         &lt;&lt; <span class="stringliteral">&quot;interval=&quot;</span> &lt;&lt; this-&gt;dt &lt;&lt; endl</div>
 <div class="line"><span class="lineno">  371</span>         &lt;&lt; <span class="stringliteral">&quot;Disabling upper corner (lowpass) and applying filter anyway&quot;</span></div>
 <div class="line"><span class="lineno">  372</span>         &lt;&lt; endl;</div>
-<div class="line"><span class="lineno">  373</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;Butterworth::apply&quot;</span>), ss.str(),</div>
+<div class="line"><span class="lineno">  373</span>      d.<a class="code hl_variable" href="classmspass_1_1utility_1_1_processing_history.html#a6e1075575bf136ef4639c6b45f9c5402">elog</a>.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;Butterworth::apply&quot;</span>), ss.str(),</div>
 <div class="line"><span class="lineno">  374</span>                       ErrorSeverity::Complaint);</div>
 <div class="line"><span class="lineno">  375</span>      <span class="comment">/* With this logic we have separate return here */</span></div>
 <div class="line"><span class="lineno">  376</span>    } <span class="keywordflow">else</span> {</div>
@@ -785,15 +829,16 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  386</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; npts; ++i)</div>
 <div class="line"><span class="lineno">  387</span>    comp.push_back(0.0);</div>
 <div class="line"><span class="lineno">  388</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> k = 0; k &lt; 3; ++k) {</div>
-<div class="line"><span class="lineno">  389</span>    dcopy(npts, d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(k, 0), 3, &amp;(comp[0]), 1);</div>
+<div class="line"><span class="lineno">  389</span>    dcopy(npts, d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">get_address</a>(k, 0), 3, &amp;(comp[0]), 1);</div>
 <div class="line"><span class="lineno">  390</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply</a>(comp);</div>
-<div class="line"><span class="lineno">  391</span>    dcopy(npts, &amp;(comp[0]), 1, d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.get_address(k, 0), 3);</div>
+<div class="line"><span class="lineno">  391</span>    dcopy(npts, &amp;(comp[0]), 1, d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>.<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">get_address</a>(k, 0), 3);</div>
 <div class="line"><span class="lineno">  392</span>  }</div>
 <div class="line"><span class="lineno">  393</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_butterworth_html_acae23f17a07efa21effb10a9da730f33"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_butterworth.html#acae23f17a07efa21effb10a9da730f33">mspass::algorithms::Butterworth::high_corner</a></div><div class="ttdeci">double high_corner() const</div><div class="ttdef"><b>Definition</b> Butterworth.h:301</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition</b> ErrorLogger.cc:72</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a6e1075575bf136ef4639c6b45f9c5402"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a6e1075575bf136ef4639c6b45f9c5402">mspass::utility::ProcessingHistory::elog</a></div><div class="ttdeci">ErrorLogger elog</div><div class="ttdef"><b>Definition</b> ProcessingHistory.h:246</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00">change_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#acae23f17a07efa21effb10a9da730f33">high_corner()</a>, <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00">change_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a6e1075575bf136ef4639c6b45f9c5402">mspass::utility::ProcessingHistory::elog</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">mspass::utility::dmatrix::get_address()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#acae23f17a07efa21effb10a9da730f33">high_corner()</a>, <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a>.</p>
 
 </div>
 </div>
@@ -851,7 +896,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  274</span>         &lt;&lt; <span class="stringliteral">&quot;interval=&quot;</span> &lt;&lt; this-&gt;dt &lt;&lt; endl</div>
 <div class="line"><span class="lineno">  275</span>         &lt;&lt; <span class="stringliteral">&quot;Disabling upper corner (lowpass) and applying filter anyway&quot;</span></div>
 <div class="line"><span class="lineno">  276</span>         &lt;&lt; endl;</div>
-<div class="line"><span class="lineno">  277</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;Butterworth::apply&quot;</span>), ss.str(),</div>
+<div class="line"><span class="lineno">  277</span>      d.<a class="code hl_variable" href="classmspass_1_1utility_1_1_processing_history.html#a6e1075575bf136ef4639c6b45f9c5402">elog</a>.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;Butterworth::apply&quot;</span>), ss.str(),</div>
 <div class="line"><span class="lineno">  278</span>                       ErrorSeverity::Complaint);</div>
 <div class="line"><span class="lineno">  279</span>      <span class="comment">/* With this logic we have separate return here */</span></div>
 <div class="line"><span class="lineno">  280</span>    } <span class="keywordflow">else</span> {</div>
@@ -861,7 +906,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  284</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply</a>(d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>);</div>
 <div class="line"><span class="lineno">  285</span>}</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00">change_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#acae23f17a07efa21effb10a9da730f33">high_corner()</a>, <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00">change_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a6e1075575bf136ef4639c6b45f9c5402">mspass::utility::ProcessingHistory::elog</a>, <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#acae23f17a07efa21effb10a9da730f33">high_corner()</a>, <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>.</p>
 
 </div>
 </div>
@@ -889,7 +934,25 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><span class="lineno">  300</span>                                            {</div>
+<div class="line"><span class="lineno">  301</span>  <span class="keywordflow">if</span> (use_lo) {</div>
+<div class="line"><span class="lineno">  302</span>    this-&gt;bflowcut(npoles_hi, f3db_hi, d.size(), &amp;(d[0]), &amp;(d[0]));</div>
+<div class="line"><span class="lineno">  303</span>    <span class="keywordflow">if</span> (zerophase) {</div>
+<div class="line"><span class="lineno">  304</span>      reverse_vector(d.size(), &amp;(d[0]));</div>
+<div class="line"><span class="lineno">  305</span>      this-&gt;bflowcut(npoles_hi, f3db_hi, d.size(), &amp;(d[0]), &amp;(d[0]));</div>
+<div class="line"><span class="lineno">  306</span>      reverse_vector(d.size(), &amp;(d[0]));</div>
+<div class="line"><span class="lineno">  307</span>    }</div>
+<div class="line"><span class="lineno">  308</span>  }</div>
+<div class="line"><span class="lineno">  309</span>  <span class="keywordflow">if</span> (use_hi) {</div>
+<div class="line"><span class="lineno">  310</span>    this-&gt;bfhighcut(npoles_lo, f3db_lo, d.size(), &amp;(d[0]), &amp;(d[0]));</div>
+<div class="line"><span class="lineno">  311</span>    <span class="keywordflow">if</span> (zerophase) {</div>
+<div class="line"><span class="lineno">  312</span>      reverse_vector(d.size(), &amp;(d[0]));</div>
+<div class="line"><span class="lineno">  313</span>      this-&gt;bfhighcut(npoles_lo, f3db_lo, d.size(), &amp;(d[0]), &amp;(d[0]));</div>
+<div class="line"><span class="lineno">  314</span>      reverse_vector(d.size(), &amp;(d[0]));</div>
+<div class="line"><span class="lineno">  315</span>    }</div>
+<div class="line"><span class="lineno">  316</span>  }</div>
+<div class="line"><span class="lineno">  317</span>}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a94f20884465265de735d05946e1cea00" name="a94f20884465265de735d05946e1cea00"></a>
@@ -1225,7 +1288,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return the response of the filter in the frequency domain. </p>
-<p>The impulse response of any linear system can always be characterized by either the time domain response to spike signal or the alternative frequency domain version of the same function commonly called the transfer function. This method returns the transfer funtion as a <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">mspass::algorithms::deconvolution::ComplexArray</a> container. Use methods in that object to get amplitude and phase response functions.</p>
+<p>The impulse response of any linear system can always be characterized by either the time domain response to spike signal or the alternative frequency domain version of the same function commonly called the transfer function. This method returns the transfer funtion as a <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html" title="Interfacing object to ease conversion between FORTRAN and C++ complex.">mspass::algorithms::deconvolution::ComplexArray</a> container. Use methods in that object to get amplitude and phase response functions.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">n</td><td>is the number of points that should be used to characterize the transfer function. Note because we are dealing with strictly real valued signals the array returned will be folded at the Nyquist frequency in the standard way of all FFT implementations (current implementation uses the fft in the gnu scientific library that definitely does that). </td></tr>
@@ -1250,7 +1313,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  409</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_butterworth_html_a7b54d5d5966a85092d45ebebd0b88498"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_butterworth.html#a7b54d5d5966a85092d45ebebd0b88498">mspass::algorithms::Butterworth::impulse_response</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries impulse_response(const int n)</div><div class="ttdoc">Return the impulse response.</div><div class="ttdef"><b>Definition</b> Butterworth.cc:217</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a7b54d5d5966a85092d45ebebd0b88498">impulse_response()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number()</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a7b54d5d5966a85092d45ebebd0b88498">impulse_response()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a9200882ac321b82d6f1471f3c5ebc8e5">mspass::algorithms::deconvolution::ComplexArray::ptr()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number()</a>.</p>
 
 </div>
 </div>

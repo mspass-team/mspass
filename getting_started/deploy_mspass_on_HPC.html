@@ -1,108 +1,330 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deploying MsPASS on an HPC cluster &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Deploying MsPASS on an HPC cluster &#8212; MsPASS 0.1.dev1+gb7c2adc documentation</title>
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=c1885210"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/deploy_mspass_on_HPC';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Deploy MsPASS with Conda and Coiled" href="deploy_mspass_with_conda_and_coiled.html" />
-    <link rel="prev" title="Advanced Setup Considerations" href="advanced_setup_considerations.html" />  
-
-  <style>
-    .wy-nav-content { max-width: 1600px; }
-  </style>
+    <link rel="next" title="HPCClusterLauncher Configuration" href="HPCClusterLauncher_configuration.html" />
+    <link rel="prev" title="Advanced Setup Considerations" href="advanced_setup_considerations.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
-</head>
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            MsPASS
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+  <dialog id="pst-search-dialog">
     
-              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
-<ul>
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="#">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="#">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Deploying MsPASS on an HPC cluster</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#hpc-mspass-concepts">HPC MsPASS Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#common-requirement">Common Requirement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#launching-services">Launching Services</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#python-launcher">Python Launcher</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#prepare-a-job-script">Prepare a job script</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#job-submission">Job submission</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#understanding-the-python-submission">Understanding the python submission</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#shell-script-run-option">Shell Script Run Option</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Overview</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#get-a-copy-of-configuration-scripts">Get a Copy of Configuration Scripts</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#build-mspass-container-with-apptainer">Build MsPASS Container with Apptainer</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#edit-template-scripts">Edit template scripts</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#setting-up-configuration-files-on-a-new-cluster">Setting Up Configuration Files on a new Cluster</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
@@ -111,8 +333,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
@@ -125,56 +347,97 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
-
-    <a href= "../genindex.html">Index</a>
-  
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">MsPASS</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Deploying MsPASS on an HPC cluster</li>
-      <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/deploy_mspass_on_HPC.rst" class="fa fa-github"> Edit on GitHub</a>
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <p>APPTAINER.. _deploy_mspass_on_HPC:</p>
-<section id="deploying-mspass-on-an-hpc-cluster">
-<h1>Deploying MsPASS on an HPC cluster<a class="headerlink" href="#deploying-mspass-on-an-hpc-cluster" title="Link to this heading"></a></h1>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Deploying MsPASS on an HPC cluster</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="deploying-mspass-on-an-hpc-cluster">
+<span id="deploy-mspass-on-hpc"></span><h1>Deploying MsPASS on an HPC cluster<a class="headerlink" href="#deploying-mspass-on-an-hpc-cluster" title="Link to this heading">#</a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>First, by HPC (High-Performance Computing) we mean a cluster of multiple nodes
 linked by high speed interconnections designed for large-scale, parallel
 processing.  If you are not familiar with modern concepts of this type of
@@ -209,7 +472,7 @@ First, however, it is necessary to describe some concepts you
 will need to understand to run a job with either method.</p>
 </section>
 <section id="hpc-mspass-concepts">
-<h2>HPC MsPASS Concepts<a class="headerlink" href="#hpc-mspass-concepts" title="Link to this heading"></a></h2>
+<h2>HPC MsPASS Concepts<a class="headerlink" href="#hpc-mspass-concepts" title="Link to this heading">#</a></h2>
 <p>The block diagram in Figure <a class="reference internal" href="#hpcjobscheduler"><span class="std std-numref">Fig. 4</span></a> is an abstraction of the fundamental components
 required to run a MsPASS job on an HPC system.  These components are not
 independent and it is necessary to understand how and when the different
@@ -264,7 +527,7 @@ same node as the cluster <em>scheduler</em>.  With a jupyter notebook
 the script is executed through the <em>frontend</em> service, which
 is normally launched on the same node as the <em>scheduler</em>.</p></li>
 </ol>
-<figure class="align-center" id="id3">
+<figure class="align-center" id="id4">
 <span id="hpcjobscheduler"></span><a class="reference internal image-reference" href="../_images/HPCJobScheduler.png"><img alt="../_images/HPCJobScheduler.png" src="../_images/HPCJobScheduler.png" style="width: 600px;" />
 </a>
 <figcaption>
@@ -275,12 +538,12 @@ illustrate that the physical hardware can be thought of as
 inputs used to define the virtual cluster illustrated here
 with the box with the label “MsPASS Abstraction”.   How
 the inputs are allocated to build that cluster is the
-configuration problem that is the main topic of this section.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+configuration problem that is the main topic of this section.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="common-requirement">
-<h2>Common Requirement<a class="headerlink" href="#common-requirement" title="Link to this heading"></a></h2>
+<h2>Common Requirement<a class="headerlink" href="#common-requirement" title="Link to this heading">#</a></h2>
 <p>At the time of this writing a software package called
 <a class="reference external" href="https://apptainer.org/documentation/">apptainer</a>
 is the standard application for launching containerized applications
@@ -322,11 +585,11 @@ we called “mspass_latest.sif”, containing the data required to launch
 the container.</p>
 </section>
 <section id="launching-services">
-<h2>Launching Services<a class="headerlink" href="#launching-services" title="Link to this heading"></a></h2>
+<h2>Launching Services<a class="headerlink" href="#launching-services" title="Link to this heading">#</a></h2>
 <section id="python-launcher">
-<h3>Python Launcher<a class="headerlink" href="#python-launcher" title="Link to this heading"></a></h3>
+<h3>Python Launcher<a class="headerlink" href="#python-launcher" title="Link to this heading">#</a></h3>
 <section id="installation">
-<h4>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h4>
+<h4>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h4>
 <p>The python launcher for MsPASS is distributed as part of a separate
 python package called <code class="code docutils literal notranslate"><span class="pre">mspass_launcher</span></code>.   If you are reading this
 you have probably already used this package to install
@@ -358,7 +621,7 @@ with pip as follows</p>
 <p>If you are using a virtual environment run pip in the desired environment.</p>
 </section>
 <section id="configuration">
-<h4>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h4>
+<h4>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h4>
 <p>Running the python launcher requires editing a configuration
 file.  The normal expectation is that file has the magic
 name <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher.yaml</span></code> and an instance of that file
@@ -373,7 +636,7 @@ workflow.   Details on how to do that
 are found in <a class="reference internal" href="HPCClusterLauncher_configuration.html#hpc-cluster-configuration"><span class="std std-ref">this document</span></a>.</p>
 </section>
 <section id="prepare-a-job-script">
-<h4>Prepare a job script<a class="headerlink" href="#prepare-a-job-script" title="Link to this heading"></a></h4>
+<h4>Prepare a job script<a class="headerlink" href="#prepare-a-job-script" title="Link to this heading">#</a></h4>
 <p>We assume the MsPASS script you will use to drive your data processing
 has been debugged previously and is in the form of either a
 jupyter notebook or a python run script.   In either case it is
@@ -417,7 +680,7 @@ script to the following:</p>
 </div>
 </section>
 <section id="job-submission">
-<h4>Job submission<a class="headerlink" href="#job-submission" title="Link to this heading"></a></h4>
+<h4>Job submission<a class="headerlink" href="#job-submission" title="Link to this heading">#</a></h4>
 <p>Once you have a “job script” like the example above prepared you
 need to “submit” the job to the cluster.   The command you use to do that
 will depend on the job scheduler used on that cluster.
@@ -438,13 +701,13 @@ all other job schedulers but the command to submit the job
 will be different.</p>
 </section>
 <section id="understanding-the-python-submission">
-<h4>Understanding the python submission<a class="headerlink" href="#understanding-the-python-submission" title="Link to this heading"></a></h4>
+<h4>Understanding the python submission<a class="headerlink" href="#understanding-the-python-submission" title="Link to this heading">#</a></h4>
 <p>The way the <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> object works is
 potentially confusing because an instance of the class has to
 manage the virtual cluster it launches and submit jobs to that
 cluster.   A wiring diagram may aid your understanding is
 seen below in Figure <a class="reference internal" href="#hpclauncherconcepts"><span class="std std-numref">Fig. 5</span></a>.</p>
-<figure class="align-center" id="id4">
+<figure class="align-center" id="id5">
 <span id="hpclauncherconcepts"></span><a class="reference internal image-reference" href="../_images/HPCLauncherConcepts.png"><img alt="../_images/HPCLauncherConcepts.png" src="../_images/HPCLauncherConcepts.png" style="width: 600px;" />
 </a>
 <figcaption>
@@ -458,7 +721,7 @@ little more than an alias for python (illlustrated) because in this context when
 method is called jupyter notebooks are first passed through <code class="code docutils literal notranslate"><span class="pre">nbconvert</span></code>
 to convert the notebook to a python script
 before being run with an instance of python run on the frontend
-container.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+container.</span><a class="headerlink" href="#id5" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>Important concepts that follow from the figure above are</p>
@@ -485,9 +748,9 @@ using the <code class="code docutils literal notranslate"><span class="pre">HPCC
 </section>
 </section>
 <section id="shell-script-run-option">
-<h3>Shell Script Run Option<a class="headerlink" href="#shell-script-run-option" title="Link to this heading"></a></h3>
+<h3>Shell Script Run Option<a class="headerlink" href="#shell-script-run-option" title="Link to this heading">#</a></h3>
 <section id="id1">
-<h4>Overview<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<h4>Overview<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
 <p>Prior to the 2025 the only way to run MsPASS on any
 system was a totally command line driven method.
 That was true for both desktop and clusters.
@@ -503,7 +766,7 @@ approach if you are an expert bash programmer or have used MsPASS
 previously in this mode.</p>
 </section>
 <section id="get-a-copy-of-configuration-scripts">
-<h4>Get a Copy of Configuration Scripts<a class="headerlink" href="#get-a-copy-of-configuration-scripts" title="Link to this heading"></a></h4>
+<h4>Get a Copy of Configuration Scripts<a class="headerlink" href="#get-a-copy-of-configuration-scripts" title="Link to this heading">#</a></h4>
 <p>You may first want to search the suite of configuration scripts found
 on github <a class="reference external" href="https://github.com/mspass-team/mspass/tree/master/scripts">here</a>
 If the system you are using has a folder there you should download the
@@ -517,19 +780,20 @@ supply a README file.</p>
 <p>If the files you need are not on github and you are aware of colleagues
 using mspass you may need to contact them and ask for their working
 startup scripts.   If you are a trailblazer, then you will need to jump
-to the section below titled <span class="xref std std-ref">Setting Up Configuration Files on a new Cluster</span>.
+to the section below titled
+<a class="reference internal" href="#hpc-shell-configuration-files"><span class="std std-ref">Setting Up Configuration Files on a new Cluster</span></a>.
 You can then use the next section for reference when you are actively
 working with MsPASS on that system.</p>
 </section>
 <section id="build-mspass-container-with-apptainer">
-<h4>Build MsPASS Container with Apptainer<a class="headerlink" href="#build-mspass-container-with-apptainer" title="Link to this heading"></a></h4>
+<h4>Build MsPASS Container with Apptainer<a class="headerlink" href="#build-mspass-container-with-apptainer" title="Link to this heading">#</a></h4>
 <p>You will need to build an apptainer file.  The process for this options
 is identical to that described above.</p>
 </section>
 <section id="edit-template-scripts">
-<h4>Edit template scripts<a class="headerlink" href="#edit-template-scripts" title="Link to this heading"></a></h4>
+<h4>Edit template scripts<a class="headerlink" href="#edit-template-scripts" title="Link to this heading">#</a></h4>
 <section id="id2">
-<h5>Overview<a class="headerlink" href="#id2" title="Link to this heading"></a></h5>
+<h5>Overview<a class="headerlink" href="#id2" title="Link to this heading">#</a></h5>
 <p>HPC clusters are designed to run large jobs and are not well-suited to
 interactive work.  We reiterate that you are advised to develop
 your notebook on a desktop system using docker and a small subset of
@@ -553,7 +817,7 @@ use the names of the template files.  You can, of course
 change any of the file names provided you know how they are used.</p>
 </section>
 <section id="mspass-setup-sh">
-<h5>mspass_setup.sh<a class="headerlink" href="#mspass-setup-sh" title="Link to this heading"></a></h5>
+<h5>mspass_setup.sh<a class="headerlink" href="#mspass-setup-sh" title="Link to this heading">#</a></h5>
 <p>Before you run your first job you will almost certainly need to
 create a private copy of the template file <cite>mspass_setup.sh</cite>.
 This script does little more than define a set of shell environment
@@ -656,10 +920,13 @@ of this document describes how that file may need to be modified if
 you are the first to use mspass on a cluster.</p>
 </section>
 <section id="job-script-sh">
-<h5>job_script.sh<a class="headerlink" href="#job-script-sh" title="Link to this heading"></a></h5>
+<h5>job_script.sh<a class="headerlink" href="#job-script-sh" title="Link to this heading">#</a></h5>
 <p><cite>job_script.sh</cite> is the shell script you submit that runs your “job” on
 the cluster.   Standard usage with slurm as the workload manager to run
 the workflow in the jupyter notebook file <cite>myworkflow.ipynd</cite> is;</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sbatch</span> <span class="n">job_script</span><span class="o">.</span><span class="n">sh</span> <span class="n">myworkflow</span><span class="o">.</span><span class="n">ipynb</span>
+</pre></div>
+</div>
 <p>The template file assumes the file <cite>mspass_setup.sh</cite> defined above
 and the notebook file, <cite>myworkflow.ipynb</cite>, are present in the
 directory defined by <cite>MSPASS_WORK_DIR</cite>.</p>
@@ -669,7 +936,7 @@ of the file.  There are always cluster-dependent options you will need to
 understand before running a large job.    Consult local documentation
 before setting these directives and submitting your first job.</p>
 <section id="running-a-notebook-interactively">
-<h6>Running a notebook interactively<a class="headerlink" href="#running-a-notebook-interactively" title="Link to this heading"></a></h6>
+<h6>Running a notebook interactively<a class="headerlink" href="#running-a-notebook-interactively" title="Link to this heading">#</a></h6>
 <p>In some cases is may be necessary or helpful to develop your
 workflow, which in the MsPASS case means the code blocks in a
 jupyter notebook, on the cluster.  Even if you developed the notebook
@@ -687,7 +954,7 @@ Furthermore, the complexity of ths section should be a warning that this
 entire process is not a good idea, at least for getting strarted,
 unless you have no other option.</p>
 <p>The procedure for running MsPASS interactively is similar to that
-for running docker on a desktop system found in <a class="reference internal" href="run_mspass_with_docker.html#run-mspass-with-docker"><span class="std std-ref">Run MsPASS with Docker</span></a>.
+for running containers on a desktop system found in <a class="reference internal" href="command_line_desktop.html#command-line-docker-desktop-operation"><span class="std std-ref">Command Line Docker Desktop Operation</span></a>.
 There are two key differences:  (1) you launch MsPASS with apptainer
 (or something else) instead of docker and (2) there are a lot of
 potential network issues this manual cannot fully cover.  This subsection
@@ -801,12 +1068,10 @@ For example:</p>
 </div>
 <p>Here the primary node is MSPASS_SCHEDULER_ADDRESS, and the frontend is
 running on the node, it should be specified explicitly.</p>
-</section>
-</section>
-</section>
-</section>
 <section id="setting-up-configuration-files-on-a-new-cluster">
-<h3>Setting Up Configuration Files on a new Cluster<a class="headerlink" href="#setting-up-configuration-files-on-a-new-cluster" title="Link to this heading"></a></h3>
+<span id="hpc-shell-configuration-files"></span><h6 aria-level="7">Setting Up Configuration Files on a new Cluster<a class="headerlink" href="#setting-up-configuration-files-on-a-new-cluster" title="Link to this heading">#</a></h6>
+<section id="id3">
+<h6 aria-level="8">Overview<a class="headerlink" href="#id3" title="Link to this heading">#</a></h6>
 <p>If you are a trailblazer at your institution and need to configure MsPASS for
 your local cluster, you may want to first review the material in this
 User’s Manual found in the section <a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">MsPASS Virtual Cluster Concepts</span></a>.
@@ -820,6 +1085,9 @@ you are hardy enough you solve the problem yourself.  This section assumes
 you have a copy of the file in the mspass scripts/template directory
 called “run_mspass.sh”.  You may also find it useful to compare that file
 to the examples for specific sites.</p>
+</section>
+<section id="the-role-concept">
+<h6 aria-level="8">The “Role” Concept<a class="headerlink" href="#the-role-concept" title="Link to this heading">#</a></h6>
 <p>In the section titled <a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">MsPASS Virtual Cluster Concepts</span></a> we discuss in
 detail the abstraction we used in MsPASS to define what we call
 a “virtual cluster”.   A key idea in that abstraction is a set of
@@ -837,7 +1105,7 @@ which means it also is the home of the master python script that drives your wor
 <p>Note the configuration illustrated in <a class="reference internal" href="#hpc-config-figure1"><span class="std std-numref">Fig. 6</span></a>
 is a graphical illustration of that created with the template <cite>run_mspass.sh</cite>
 script.</p>
-<figure class="align-center" id="id5">
+<figure class="align-center" id="id6">
 <span id="hpc-config-figure1"></span><a class="reference internal image-reference" href="../_images/FiveNodeExampleComposite.jpg"><img alt="../_images/FiveNodeExampleComposite.jpg" src="../_images/FiveNodeExampleComposite.jpg" style="width: 600px;" />
 </a>
 <figcaption>
@@ -846,9 +1114,12 @@ template file.   This illustrates the geometry for five nodes, but
 the configuration is open-ended.   If more than 5 nodes are used any
 additional nodes will be set with role == “worker”.   Notice with this
 configuration all roles other than worker are run on the same node
-as the job script is executed illustrated here as “node 1”</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+as the job script is executed illustrated here as “node 1”</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
+</section>
+<section id="how-different-roles-are-run">
+<h6 aria-level="8">How Different Roles are Run<a class="headerlink" href="#how-different-roles-are-run" title="Link to this heading">#</a></h6>
 <p>Notice from <a class="reference internal" href="#hpc-config-figure1"><span class="std std-numref">Fig. 6</span></a> that all 4 roles are
 launched as separate instances of the container.   In the script
 they are all launched with variations of this following:</p>
@@ -886,6 +1157,9 @@ are similar to the scheduler example above but with different
 APPTAINERENV inputs.   The <cite>worker</cite> launching is different, however,
 and is the topic of the next section.</p></li>
 </ul>
+</section>
+<section id="launching-workers">
+<h6 aria-level="8">Launching Workers<a class="headerlink" href="#launching-workers" title="Link to this heading">#</a></h6>
 <p>Launching workers is linked to a fundamental problem you will face
 in adapting the template script to a different cluster:   node-to-node
 communications.   There are three low-level issues you will need to
@@ -944,6 +1218,9 @@ shell loop and calls to ssh.   The mpi implementation shown here, however,
 is known to work and one or more versions of mpi are universally available
 at HPC centers at the time this manual was written.  Hence, you the odds
 are high you will not need to modify this line.</p>
+</section>
+<section id="communications">
+<h6 aria-level="8">Communications<a class="headerlink" href="#communications" title="Link to this heading">#</a></h6>
 <p>Last, but far from least you may need to sort out some fundamental
 issues about how networking is implemented on your cluster.  There are
 two different issues you may need to consider:</p>
@@ -1039,33 +1316,163 @@ port 8888 and port 8787 on the compute node once the job starts.</p></li>
 </section>
 </section>
 </section>
+</section>
+</section>
+</section>
+</section>
+</section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="advanced_setup_considerations.html" class="btn btn-neutral float-left" title="Advanced Setup Considerations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="deploy_mspass_with_conda_and_coiled.html" class="btn btn-neutral float-right" title="Deploy MsPASS with Conda and Coiled" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
-  </div>
-
-   
-
-</footer>
-        </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="advanced_setup_considerations.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Advanced Setup Considerations</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="HPCClusterLauncher_configuration.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">HPCClusterLauncher Configuration</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hpc-mspass-concepts">HPC MsPASS Concepts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-requirement">Common Requirement</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launching-services">Launching Services</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-launcher">Python Launcher</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-a-job-script">Prepare a job script</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#job-submission">Job submission</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-the-python-submission">Understanding the python submission</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shell-script-run-option">Shell Script Run Option</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Overview</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#get-a-copy-of-configuration-scripts">Get a Copy of Configuration Scripts</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#build-mspass-container-with-apptainer">Build MsPASS Container with Apptainer</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#edit-template-scripts">Edit template scripts</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Overview</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#mspass-setup-sh">mspass_setup.sh</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#job-script-sh">job_script.sh</a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#running-a-notebook-interactively">Running a notebook interactively</a><ul class="nav section-nav flex-column">
+<li class="toc-h7 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-configuration-files-on-a-new-cluster">Setting Up Configuration Files on a new Cluster</a><ul class="nav section-nav flex-column">
+<li class="toc-h8 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Overview</a></li>
+<li class="toc-h8 nav-item toc-entry"><a class="reference internal nav-link" href="#the-role-concept">The “Role” Concept</a></li>
+<li class="toc-h8 nav-item toc-entry"><a class="reference internal nav-link" href="#how-different-roles-are-run">How Different Roles are Run</a></li>
+<li class="toc-h8 nav-item toc-entry"><a class="reference internal nav-link" href="#launching-workers">Launching Workers</a></li>
+<li class="toc-h8 nav-item toc-entry"><a class="reference internal nav-link" href="#communications">Communications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/getting_started/deploy_mspass_on_HPC.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/getting_started/deploy_mspass_on_HPC.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
 </html>

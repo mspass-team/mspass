@@ -1,81 +1,325 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mspasspy.db.database &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mspasspy.db.database &#8212; MsPASS 0.1.dev1+gb7c2adc documentation</title>
   
-      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=c1885210"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mspasspy/db/database';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />  
-
-  <style>
-    .wy-nav-content { max-width: 1600px; }
-  </style>
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
-</head>
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../../../index.html" class="icon icon-home">
-            MsPASS
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+  <dialog id="pst-search-dialog">
     
-              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
-<ul>
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
@@ -84,8 +328,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
@@ -98,51 +342,96 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../python_api/index.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a></li>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
-
-    <a href= "../../../genindex.html">Index</a>
-  
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">MsPASS</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">mspasspy.db.database</li>
-      <li class="wy-breadcrumbs-aside">
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.db.database</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <h1>Source code for mspasspy.db.database</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
@@ -423,9 +712,8 @@
 <span class="sd">        raised if the collection already exists.   Useful mainly for advanced users tuning</span>
 <span class="sd">        a polished workflow.</span>
 
-<span class="sd">        Parameters:</span>
 <span class="sd">          :param name: the name of the collection to create</span>
-<span class="sd">          :param codec_options` (optional): An instance of</span>
+<span class="sd">          :param codec_options: (optional): An instance of</span>
 <span class="sd">            :class:`~bson.codec_options.CodecOptions`. If ``None`` (the</span>
 <span class="sd">            default) the :attr:`codec_options` of this :class:`Database` is</span>
 <span class="sd">            used.</span>
@@ -444,22 +732,22 @@
 <span class="sd">            :class:`~pymongo.collation.Collation`.</span>
 <span class="sd">          :param session: (optional): a</span>
 <span class="sd">            :class:`~pymongo.client_session.ClientSession`.</span>
-<span class="sd">          :param **kwargs: (optional): additional keyword arguments will</span>
-<span class="sd">            be passed as options for the `create collection command`_</span>
+<span class="sd">          :param kwargs: (optional): additional keyword arguments will</span>
+<span class="sd">            be passed as options for the ``createCollection`` command.</span>
 
-<span class="sd">        All optional `create collection command`_ parameters should be passed</span>
+<span class="sd">        All optional ``createCollection`` command parameters should be passed</span>
 <span class="sd">        as keyword arguments to this method. Valid options include, but are not</span>
 <span class="sd">        limited to:</span>
 
-<span class="sd">          ``size``: desired initial size for the collection (in</span>
-<span class="sd">            bytes). For capped collections this size is the max</span>
-<span class="sd">            size of the collection.</span>
-<span class="sd">          ``capped``: if True, this is a capped collection</span>
-<span class="sd">          ``max``: maximum number of objects if capped (optional)</span>
-<span class="sd">          ``timeseries``: a document specifying configuration options for</span>
-<span class="sd">            timeseries collections</span>
-<span class="sd">          ``expireAfterSeconds``: the number of seconds after which a</span>
-<span class="sd">            document in a timeseries collection expires</span>
+<span class="sd">        - ``size``: desired initial size for the collection (in</span>
+<span class="sd">          bytes). For capped collections this size is the max</span>
+<span class="sd">          size of the collection.</span>
+<span class="sd">        - ``capped``: if True, this is a capped collection.</span>
+<span class="sd">        - ``max``: maximum number of objects if capped (optional).</span>
+<span class="sd">        - ``timeseries``: a document specifying configuration options for</span>
+<span class="sd">          timeseries collections.</span>
+<span class="sd">        - ``expireAfterSeconds``: the number of seconds after which a</span>
+<span class="sd">          document in a timeseries collection expires.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__client</span><span class="o">.</span><span class="n">_tmp_session</span><span class="p">(</span><span class="n">session</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
             <span class="c1"># Skip this check in a transaction where listCollections is not</span>
@@ -640,6 +928,7 @@
 <span class="sd">        attributes are not defined for a retrieved document they default to</span>
 <span class="sd">        &quot;storage_mode&quot;==&quot;gridfs&quot; and &quot;format&quot;==&quot;binary&quot;.  The `storage_mode`</span>
 <span class="sd">        attribute can currently be one of the following:</span>
+
 <span class="sd">        - `gridfs` is taken to mean the data are stored in the MongoDB</span>
 <span class="sd">           gridfs file system.</span>
 <span class="sd">        - &#39;files&#39; implies the data are stored in conventional computer files</span>
@@ -889,13 +1178,13 @@
 <span class="sd">          having a common net:sta:chan:loc codes.  We use obspy&#39;s</span>
 <span class="sd">          miniseed reader to crack miniseed data.  It breaks such data into</span>
 <span class="sd">          multiple &quot;segments&quot;.  We then use their</span>
-<span class="sd">          `merge&lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html&gt;`__</span>
+<span class="sd">          `Stream.merge &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html&gt;`__</span>
 <span class="sd">          method of the &quot;Stream&quot; object to glue any such segments together.</span>
 <span class="sd">          This parameter is passed as the &quot;method&quot; argument to that function.</span>
 <span class="sd">          For detail see</span>
-<span class="sd">          `__add__ &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__&gt;`</span>
+<span class="sd">          `Trace.__add__ &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__&gt;`__</span>
 <span class="sd">          for details on methods 0 and 1,</span>
-<span class="sd">          See `_cleanup &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup&gt;`</span>
+<span class="sd">          See `Stream._cleanup &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup&gt;`__</span>
 <span class="sd">          for details on method -1.  Note this argument is ignored unless</span>
 <span class="sd">          the reader is trying to read miniseed data.</span>
 <span class="sd">        :type method: :class:`int` with one of three values: -1, 0, or 1</span>
@@ -912,7 +1201,7 @@
 <span class="sd">          argument they call &quot;interpolate_samples&quot;.  See their documentation</span>
 <span class="sd">          for details, but this argument controls how &quot;overlaps&quot;, as opposed</span>
 <span class="sd">          to gaps, are handled by merge.  See the function documentation</span>
-<span class="sd">          `here&lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html&gt;`__</span>
+<span class="sd">          `Stream.merge &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html&gt;`__</span>
 <span class="sd">          for details.</span>
 <span class="sd">        :type interpolation_samples: :class:`int`</span>
 
@@ -1269,7 +1558,7 @@
 <span class="sd">        data objects in MsPASS.   That is, what we call atomic data</span>
 <span class="sd">        (:class:`mspasspy.ccore.seismic.TimeSeries` and</span>
 <span class="sd">        :class:`mspasspy.ccore.seismic.Seismogram`) and ensembles of the</span>
-<span class="sd">        two atomic types ():class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` and</span>
+<span class="sd">        two atomic types (:class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` and</span>
 <span class="sd">        :class:`mspasspy.ccore.seismic.SeismogramEnsemble`).  Handling</span>
 <span class="sd">        multiple types while simultaneously supporting multiple abstractions</span>
 <span class="sd">        of how the data are stored externally has some complexities.</span>
@@ -1345,6 +1634,7 @@
 <span class="sd">            the external representation of data, this writer has limits</span>
 <span class="sd">            on what it can and cannot do.  Key points about how formatting</span>
 <span class="sd">            is handled are:</span>
+
 <span class="sd">            -  The default save is a native format that is fast and efficient.</span>
 <span class="sd">               You can select alternative formats for data by setting a valid</span>
 <span class="sd">               value (string) for the &quot;format&quot; argument to this method.</span>
@@ -1490,6 +1780,7 @@
 <span class="sd">            any saved documents than try to enforce rules setting</span>
 <span class="sd">            mode to &quot;cautious&quot; or &quot;pedantic&quot;.   On the other hand, even</span>
 <span class="sd">            if running in &quot;promiscuous&quot; mode certain rules are enforced:</span>
+
 <span class="sd">             -  Any aliases defined in the schema are always reset to the</span>
 <span class="sd">                key defined for the schema.  e.g. if you used the alias</span>
 <span class="sd">                &quot;dt&quot; for the data sample interval this writer will always</span>
@@ -1502,10 +1793,10 @@
 <span class="sd">                with a method in the Metadata container that keeps track of</span>
 <span class="sd">                any Metadata changes.  If a readonly attribute is found to</span>
 <span class="sd">                have been changed it will be renamed with the prefix</span>
-<span class="sd">                &quot;READONLYERROR_&quot;, saved, and an error posted (e.g. if you try</span>
+<span class="sd">                ``READONLYERROR_``, saved, and an error posted (e.g. if you try</span>
 <span class="sd">                to alter site_lat (a readonly attribute) in a workflow when</span>
 <span class="sd">                you save the waveform you will find an entry with the key</span>
-<span class="sd">                READONERROR_site_lat.)  We emphasize the issue happens if</span>
+<span class="sd">                ``READONLYERROR_site_lat``.)  We emphasize the issue happens if</span>
 <span class="sd">                the value associated with such a key was altered after the</span>
 <span class="sd">                datum was constructed.  If the attribute does not</span>
 <span class="sd">                change it is ERASED and will not appear in the document.</span>
@@ -1629,7 +1920,7 @@
 <span class="sd">        :param normalizing_collections:  list of collection names dogmatically treated</span>
 <span class="sd">          as normalizing collection names.  The keywords in the list are used</span>
 <span class="sd">          to always (i.e. for all modes) erase any attribute with a key name</span>
-<span class="sd">          of the form `collection_attribute where `collection` is one of the collection</span>
+<span class="sd">          of the form ``collection_attribute`` where ``collection`` is one of the collection</span>
 <span class="sd">          names in this list and attribute is any string.  Attribute names with the &quot;_&quot;</span>
 <span class="sd">          separator are saved unless the collection field matches one one of the</span>
 <span class="sd">          strings (e.g. &quot;channel_vang&quot; will be erased before saving to the</span>
@@ -1638,7 +1929,7 @@
 <span class="sd">          is used and different names are used for normalizing collections.</span>
 <span class="sd">          (e.g. if one added a &quot;shot&quot; collection to the schema the list would need</span>
 <span class="sd">          to be changed to at least add &quot;shot&quot;.)</span>
-<span class="sd">        :type normalizing_collection:  list if strings defining collection names.</span>
+<span class="sd">        :type normalizing_collections: list of strings defining collection names.</span>
 <span class="sd">        :param save_history:   When True the optional history data will</span>
 <span class="sd">          be saved to the database if it was actually enabled in the workflow.</span>
 <span class="sd">          If the history container is empty will silently do nothing.</span>
@@ -2917,10 +3208,10 @@
 <span class="sd">        for all &quot;mode&quot; parameters if an key is defined in the schema as</span>
 <span class="sd">        readonly and it is listed as having been modified, it will</span>
 <span class="sd">        be save with a new key creating by adding the prefix</span>
-<span class="sd">        &quot;READONLYERROR_&quot; .  e.g. if we had a site_sta read as</span>
-<span class="sd">        &#39;AAK&#39; but we changed it to &#39;XYZ&#39; in a workflow, when we tried</span>
+<span class="sd">        ``READONLYERROR_``.  e.g. if we had a site_sta read as</span>
+<span class="sd">        ``AAK`` but we changed it to ``XYZ`` in a workflow, when we tried</span>
 <span class="sd">        to save the data you will find an entry in the document</span>
-<span class="sd">        of {&#39;READONLYERROR_site_sta&#39; : &#39;XYZ&#39;}</span>
+<span class="sd">        of ``{&quot;READONLYERROR_site_sta&quot;: &quot;XYZ&quot;}``.</span>
 
 <span class="sd">        :param mspass_object: the object you want to update.</span>
 <span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
@@ -3200,6 +3491,7 @@
 <span class="sd">        collections and storage methods, doing a full data update has some</span>
 <span class="sd">        complexity.   This method handles the problem differently for the</span>
 <span class="sd">        different pieces:</span>
+
 <span class="sd">            1. An update is performed on the parent wf collection document.</span>
 <span class="sd">               That update makes use of the related Database method</span>
 <span class="sd">               called update_metadata.</span>
@@ -3243,7 +3535,7 @@
 <span class="sd">        :param normalizing_collections:  list of collection names dogmatically treated</span>
 <span class="sd">          as normalizing collection names.  The keywords in the list are used</span>
 <span class="sd">          to always (i.e. for all modes) erase any attribute with a key name</span>
-<span class="sd">          of the form `collection_attribute where `collection` is one of the collection</span>
+<span class="sd">          of the form ``collection_attribute`` where ``collection`` is one of the collection</span>
 <span class="sd">          names in this list and attribute is any string.  Attribute names with the &quot;_&quot;</span>
 <span class="sd">          separator are saved unless the collection field matches one one of the</span>
 <span class="sd">          strings (e.g. &quot;channel_vang&quot; will be erased before saving to the</span>
@@ -3252,7 +3544,7 @@
 <span class="sd">          is used and different names are used for normalizing collections.</span>
 <span class="sd">          (e.g. if one added a &quot;shot&quot; collection to the schema the list would need</span>
 <span class="sd">          to be changed to at least add &quot;shot&quot;.)</span>
-<span class="sd">        :type normalizing_collection:  list if strings defining collection names.</span>
+<span class="sd">        :type normalizing_collections: list of strings defining collection names.</span>
 <span class="sd">        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
 <span class="sd">          (defaults to &#39;Database.update_data&#39; and should not normally need to be changed)</span>
 <span class="sd">        :type alg_name: :class:`str`</span>
@@ -5194,28 +5486,30 @@
 <span class="sd">        duplicates based on the following keys:</span>
 
 <span class="sd">        For site:</span>
-<span class="sd">            net</span>
-<span class="sd">            sta</span>
-<span class="sd">            chan</span>
-<span class="sd">            loc</span>
-<span class="sd">            starttime::endtime - this check is done cautiously with</span>
-<span class="sd">              a 10 s fudge factor to avoid the issue of floating point</span>
-<span class="sd">              equal tests.   Probably overly paranoid since these</span>
-<span class="sd">              fields are normally rounded to a time at the beginning</span>
-<span class="sd">              of a utc day, but small cost to pay for stabilty because</span>
-<span class="sd">              this function is not expected to be run millions of times</span>
-<span class="sd">              on a huge collection.</span>
 
-<span class="sd">        for channels:</span>
-<span class="sd">            net</span>
-<span class="sd">            sta</span>
-<span class="sd">            chan</span>
-<span class="sd">            loc</span>
-<span class="sd">            starttime::endtime - same approach as for site with same</span>
-<span class="sd">               issues - note especially 10 s fudge factor.   This is</span>
-<span class="sd">               necessary because channel metadata can change more</span>
-<span class="sd">               frequently than site metadata (e.g. with a sensor</span>
-<span class="sd">               orientation or sensor swap)</span>
+<span class="sd">        - ``net``</span>
+<span class="sd">        - ``sta``</span>
+<span class="sd">        - ``chan``</span>
+<span class="sd">        - ``loc``</span>
+<span class="sd">        - ``starttime``/``endtime`` - this check is done cautiously with</span>
+<span class="sd">          a 10 s fudge factor to avoid the issue of floating point</span>
+<span class="sd">          equal tests.   Probably overly paranoid since these</span>
+<span class="sd">          fields are normally rounded to a time at the beginning</span>
+<span class="sd">          of a utc day, but small cost to pay for stabilty because</span>
+<span class="sd">          this function is not expected to be run millions of times</span>
+<span class="sd">          on a huge collection.</span>
+
+<span class="sd">        For channels:</span>
+
+<span class="sd">        - ``net``</span>
+<span class="sd">        - ``sta``</span>
+<span class="sd">        - ``chan``</span>
+<span class="sd">        - ``loc``</span>
+<span class="sd">        - ``starttime``/``endtime`` - same approach as for site with same</span>
+<span class="sd">          issues - note especially 10 s fudge factor.   This is</span>
+<span class="sd">          necessary because channel metadata can change more</span>
+<span class="sd">          frequently than site metadata (e.g. with a sensor</span>
+<span class="sd">          orientation or sensor swap)</span>
 
 <span class="sd">        The channel collection can contain full response data</span>
 <span class="sd">        that can be obtained by extracting the data with the key</span>
@@ -6247,23 +6541,24 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import and parse a textfile into set of documents, and store them</span>
 <span class="sd">        into a mongodb collection. This function consists of two steps:</span>
+
 <span class="sd">        1. Textfile2Dataframe: Convert the input textfile into a Pandas dataframe</span>
 <span class="sd">        2. save_dataframe: Insert the documents in that dataframe into a mongodb</span>
-<span class="sd">        collection</span>
+<span class="sd">           collection</span>
 
 <span class="sd">        :param filename:  path to text file that is to be read to create the</span>
 <span class="sd">          table object that is to be processed (internally we use pandas or</span>
 <span class="sd">          dask dataframes)</span>
-<span class="sd">          :param collection:  MongoDB collection name to be used to save the</span>
+<span class="sd">        :param collection:  MongoDB collection name to be used to save the</span>
 <span class="sd">          (often subsetted) tuples of filename as documents in this collection.</span>
 <span class="sd">        :param separator: The delimiter used for seperating fields,</span>
 <span class="sd">          the default is r&quot;\\s+&quot;, which is the regular expression of &quot;one or more</span>
 <span class="sd">          spaces&quot;.</span>
-<span class="sd">              For csv file, its value should be set to &#39;,&#39;.</span>
-<span class="sd">              This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.</span>
-<span class="sd">              To learn more details about the usage, check the following links:</span>
-<span class="sd">              https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</span>
-<span class="sd">              https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</span>
+<span class="sd">          For csv file, its value should be set to &#39;,&#39;.  This parameter will</span>
+<span class="sd">          be passed into pandas.read_csv or dask.dataframe.read_csv.  To learn</span>
+<span class="sd">          more details about the usage, check the following links:</span>
+<span class="sd">          https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</span>
+<span class="sd">          https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</span>
 <span class="sd">        :param type_dict: pairs of each attribute and its type, usedd to validate</span>
 <span class="sd">          the type of each input item</span>
 <span class="sd">        :param header_line: defines the line to be used as the attribute names for</span>
@@ -6307,7 +6602,7 @@
 <span class="sd">          The default is false meaning the simpler, identical api panda</span>
 <span class="sd">          operators are used.</span>
 <span class="sd">        :param insert_column: a dictionary of new columns to add, and their value(s).</span>
-<span class="sd">          If the content is a single value, it can be passedto define a constant value</span>
+<span class="sd">          If the content is a single value, it can be passed to define a constant value</span>
 <span class="sd">          for the entire column of data. The content can also be a list, in that case,</span>
 <span class="sd">          the list should contain values that are to be set, and it must be the same</span>
 <span class="sd">          length as the number of tuples in the table.</span>
@@ -7311,6 +7606,19 @@
         <span class="n">channel</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download one day of miniSEED data from an FDSN service and index it.</span>
+
+<span class="sd">        :param provider: ObsPy FDSN provider name or URL.</span>
+<span class="sd">        :param year: four-digit year to request.</span>
+<span class="sd">        :param day_of_year: Julian day to request.</span>
+<span class="sd">        :param network: network code selector.</span>
+<span class="sd">        :param station: station code selector.</span>
+<span class="sd">        :param location: location code selector.</span>
+<span class="sd">        :param channel: channel code selector.</span>
+<span class="sd">        :param collection: database collection used for waveform index records.</span>
+<span class="sd">        :return: result of inserting the waveform index documents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbh</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
 
         <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
@@ -7930,7 +8238,7 @@
 <span class="sd">    requirements for MongDB defined by a specified schema.   It</span>
 <span class="sd">    dogmatically enforces readonly restrictions in the schema by</span>
 <span class="sd">    changing the key for any fields marked readonly and found to have</span>
-<span class="sd">    been set as changed.  Such entries change to &quot;READONLYERROR_&quot; + k</span>
+<span class="sd">    been set as changed.  Such entries change to ``&quot;READONLYERROR_&quot; + k``</span>
 <span class="sd">    where k is the original key marked readonly.  See user&#39;s manual for</span>
 <span class="sd">    a discussion of why this is done.</span>
 
@@ -7973,17 +8281,17 @@
 <span class="sd">      normal use of this function inside the Database class.</span>
 <span class="sd">      The contents of the tuple are:</span>
 
-<span class="sd">      0 - python dictionary of edited result ready to save as MongoDB document</span>
-<span class="sd">      1 - boolean equivalent of the &quot;live&quot; attribute of TimeSeries and Seismogram.</span>
-<span class="sd">          i.e. if True the result can be considered valid.  If False something</span>
-<span class="sd">          was very wrong with the input and the contents of 0 is invalid and</span>
-<span class="sd">          should not be used.  When False the error log in 2 will contain</span>
-<span class="sd">          one or more error messages.</span>
-<span class="sd">      2 - An ErrorLogger object that may or may not contain any error logging</span>
-<span class="sd">          messages.  Callers should call the size method of the this entry</span>
-<span class="sd">          and handle the list of error messages it contains if size is not zero.</span>
-<span class="sd">          Note the right way to do that for TimeSeries and Seismogram is to</span>
-<span class="sd">          use operator += for the elog attribute of the datum.</span>
+<span class="sd">      0. python dictionary of edited result ready to save as MongoDB document.</span>
+<span class="sd">      1. boolean equivalent of the &quot;live&quot; attribute of TimeSeries and Seismogram.</span>
+<span class="sd">         i.e. if True the result can be considered valid.  If False something</span>
+<span class="sd">         was very wrong with the input and the contents of 0 is invalid and</span>
+<span class="sd">         should not be used.  When False the error log in 2 will contain</span>
+<span class="sd">         one or more error messages.</span>
+<span class="sd">      2. An ErrorLogger object that may or may not contain any error logging</span>
+<span class="sd">         messages.  Callers should call the size method of the this entry</span>
+<span class="sd">         and handle the list of error messages it contains if size is not zero.</span>
+<span class="sd">         Note the right way to do that for TimeSeries and Seismogram is to</span>
+<span class="sd">         use operator += for the elog attribute of the datum.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># this is necessary in case someone uses this outside Database</span>
     <span class="c1"># it should never happen when used by Database methods</span>
@@ -8312,25 +8620,28 @@
 
 <span class="sd">    :param mode: read mode as described in detail in User&#39;s Manual.</span>
 <span class="sd">      Behavior for this function is as follows:</span>
-<span class="sd">        &quot;promiscuous&quot; - (default)  no checks are applied to any key-value</span>
-<span class="sd">           pairs and the result is a one-to-one translation of the input.</span>
-<span class="sd">        &quot;cautious&quot; - Type constraints in the schema are enforced and</span>
-<span class="sd">          automatically conveted if possible.  If conversion is needed</span>
-<span class="sd">          and fails the live/dead boolan in the return will be set to</span>
-<span class="sd">          signal this datum should be killed.  There will also be elog entries.</span>
-<span class="sd">        &quot;pedantic&quot; - type conversions are strongly enforced.  If any</span>
-<span class="sd">          type mismatch of a value occurs the live/dead boolean returned</span>
-<span class="sd">          will be set to signal a kill and there will be one or more</span>
-<span class="sd">          error messages in the elog return.</span>
-<span class="sd">    :type mode: string (must match one of the above or the function will throw</span>
-<span class="sd">        a ValueError exception.</span>
 
-<span class="sd">    :return 3-component tuple:  0 = converted Metadata container,</span>
-<span class="sd">      1 - boolean equivalent to &quot;live&quot;.  i.e. if True the results is valid</span>
-<span class="sd">      while if False constructing an object from the result is ill advised,</span>
-<span class="sd">      2 - ErrorLogger object containing in error messages.  Callers should</span>
-<span class="sd">        test if the result of the size method of the return is &gt; 0 and</span>
-<span class="sd">        handle the error messages as desired.</span>
+<span class="sd">      - ``promiscuous``: default; no checks are applied to any key-value</span>
+<span class="sd">        pairs and the result is a one-to-one translation of the input.</span>
+<span class="sd">      - ``cautious``: type constraints in the schema are enforced and</span>
+<span class="sd">        automatically conveted if possible.  If conversion is needed</span>
+<span class="sd">        and fails the live/dead boolan in the return will be set to</span>
+<span class="sd">        signal this datum should be killed.  There will also be elog entries.</span>
+<span class="sd">      - ``pedantic``: type conversions are strongly enforced.  If any</span>
+<span class="sd">        type mismatch of a value occurs the live/dead boolean returned</span>
+<span class="sd">        will be set to signal a kill and there will be one or more</span>
+<span class="sd">        error messages in the elog return.</span>
+<span class="sd">    :type mode: string (must match one of the above or the function will throw</span>
+<span class="sd">      a ValueError exception.)</span>
+
+<span class="sd">    :return: 3-component tuple:</span>
+
+<span class="sd">      0. converted Metadata container.</span>
+<span class="sd">      1. boolean equivalent to &quot;live&quot;; if True the results is valid while</span>
+<span class="sd">         if False constructing an object from the result is ill advised.</span>
+<span class="sd">      2. ErrorLogger object containing error messages.  Callers should</span>
+<span class="sd">         test if the result of the size method of the return is &gt; 0 and</span>
+<span class="sd">         handle the error messages as desired.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
@@ -8462,16 +8773,14 @@
 <span class="sd">    :type doclist:  any iterable container holding an array of dict containers</span>
 <span class="sd">      with rational content (i.e. expected to be a MongoDB document with attributes</span>
 <span class="sd">      defined for a set of seismic data objects.)</span>
+<span class="sd">    :return:  array with four components:</span>
 
-<span class="sd">    ---other here --</span>
-
-<span class="sd">    :return:  array with three components:</span>
-<span class="sd">        0 - filtered array of Metadata containers</span>
-<span class="sd">        1 - live boolean.   Set False only if conversion of all the documents</span>
-<span class="sd">            in doclist failed.</span>
-<span class="sd">        2 - ErrorLogger where warning and kill messages are posted (see above)</span>
-<span class="sd">        3 - an array of documents that could not be converted (i.e. marked</span>
-<span class="sd">            bad when processed with doc2md.)</span>
+<span class="sd">        0. filtered array of Metadata containers.</span>
+<span class="sd">        1. live boolean.   Set False only if conversion of all the documents</span>
+<span class="sd">           in doclist failed.</span>
+<span class="sd">        2. ErrorLogger where warning and kill messages are posted (see above).</span>
+<span class="sd">        3. an array of documents that could not be converted (i.e. marked</span>
+<span class="sd">           bad when processed with doc2md.)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mdlist</span> <span class="o">=</span> <span class="p">[]</span>
@@ -8700,28 +9009,57 @@
 
 </pre></div>
 
-           </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
           </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
   </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
-   
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
 
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
 
-</body>
+  </footer>
+  </body>
 </html>

@@ -20,17 +20,23 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Return true when x should sort after y in SEED net/sta/loc/chan order. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="48" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="48" bodyend="86"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="50" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="50" bodyend="88"/>
+        <references refid="namespacemspass_1_1seismic_1ae39181fd7e5305ad63c7d50bcb082d47">mspass::seismic::SEISMICMD_chan</references>
+        <references refid="namespacemspass_1_1seismic_1a9bb3e908c48498c194aad416262578f4">mspass::seismic::SEISMICMD_loc</references>
+        <references refid="namespacemspass_1_1seismic_1a8585005cd5eddd7bc658b1c1bc901aa8">mspass::seismic::SEISMICMD_net</references>
+        <references refid="namespacemspass_1_1seismic_1ab8e65fa46b1de2e84418ed22a20cf522">mspass::seismic::SEISMICMD_sta</references>
       </memberdef>
     </sectiondef>
     <briefdescription>
+<para>Sort TimeSeries objects into descending SEED channel order. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="45" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="45" bodyend="87"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="46" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="46" bodyend="89"/>
     <listofallmembers>
       <member refid="structmspass_1_1algorithms_1_1greater__seedorder_1a3be26b413cd06229c775bc212ac10b40" prot="public" virt="non-virtual"><scope>mspass::algorithms::greater_seedorder</scope><name>operator()</name></member>
     </listofallmembers>

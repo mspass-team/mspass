@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -107,59 +150,64 @@ $(document).ready(function() { init_codefold(0); });
 <div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html">   35</a></span><span class="keyword">class </span><a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html">TimeDomainLeastSquareDecon</a> : <span class="keyword">public</span> <a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">ScalarDecon</a> {</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html">TimeDomainLeastSquareDecon</a>();</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html">TimeDomainLeastSquareDecon</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html">TimeDomainLeastSquareDecon</a> &amp;parent);</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html">TimeDomainLeastSquareDecon</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md);</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html">TimeDomainLeastSquareDecon</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md,</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                             <span class="keyword">const</span> std::vector&lt;double&gt; &amp;wavelet,</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                             <span class="keyword">const</span> std::vector&lt;double&gt; &amp;data);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keywordtype">void</span> changeparameter(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keywordtype">void</span> process();</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a55cd2752989a99b6766e86650458aac7">output_shaping_wavelet</a>();</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a5c1a9906a6de26977002e63465bbc1d7">actual_output</a>();</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">inverse_wavelet</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> t0parent);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">inverse_wavelet</a>();</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a0a7439911588bbbd51df7d3171ce2ef8">QCMetrics</a>();</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <span class="keywordtype">void</span> read_metadata(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keywordtype">int</span> diagnostic_length() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  std::vector&lt;double&gt; solve_for(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;rhs_data) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  std::vector&lt;double&gt; apply_wavelet(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;model) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  std::vector&lt;double&gt; apply_shaping_wavelet(</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      <span class="keyword">const</span> std::vector&lt;double&gt; &amp;model);</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <span class="keywordtype">int</span> output_length;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  <span class="keywordtype">int</span> sample_shift;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  <span class="keywordtype">double</span> damp;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <span class="keywordtype">double</span> dt;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  <span class="keyword">mutable</span> <span class="keywordtype">double</span> residual_norm;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  <span class="keyword">mutable</span> <span class="keywordtype">double</span> data_norm;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  <span class="keyword">mutable</span> <span class="keywordtype">double</span> regularization_parameter;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  <span class="keyword">friend</span> boost::serialization::access;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  <span class="keyword">template</span> &lt;<span class="keyword">class</span> Archive&gt;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  <span class="keywordtype">void</span> serialize(Archive &amp;ar, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> version) {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    ar &amp;boost::serialization::base_object&lt;ScalarDecon&gt;(*<span class="keyword">this</span>);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    ar &amp; output_length;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    ar &amp; sample_shift;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    ar &amp; damp;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    ar &amp; dt;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    ar &amp; residual_norm;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    ar &amp; data_norm;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    ar &amp; regularization_parameter;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  }</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a50472278b22bbe99722c55cccf4c1a13">TimeDomainLeastSquareDecon</a>();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a50472278b22bbe99722c55cccf4c1a13">TimeDomainLeastSquareDecon</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html">TimeDomainLeastSquareDecon</a> &amp;parent);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a50472278b22bbe99722c55cccf4c1a13">TimeDomainLeastSquareDecon</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a50472278b22bbe99722c55cccf4c1a13">TimeDomainLeastSquareDecon</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                             <span class="keyword">const</span> std::vector&lt;double&gt; &amp;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                             <span class="keyword">const</span> std::vector&lt;double&gt; &amp;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a4c359d9b0db253b3e31e57d42e53ebcd">changeparameter</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a6c94a11e332e4137f25576e7d2748ecf">process</a>();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a55cd2752989a99b6766e86650458aac7">output_shaping_wavelet</a>();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a5c1a9906a6de26977002e63465bbc1d7">actual_output</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">inverse_wavelet</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> t0parent);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">inverse_wavelet</a>();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a0a7439911588bbbd51df7d3171ce2ef8">QCMetrics</a>();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  <span class="keywordtype">void</span> read_metadata(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  <span class="keywordtype">int</span> diagnostic_length() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  std::vector&lt;double&gt; solve_for(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;rhs_data) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  std::vector&lt;double&gt; apply_wavelet(<span class="keyword">const</span> std::vector&lt;double&gt; &amp;model) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  std::vector&lt;double&gt; apply_shaping_wavelet(</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>      <span class="keyword">const</span> std::vector&lt;double&gt; &amp;model);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  <span class="keywordtype">int</span> output_length;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <span class="keywordtype">int</span> sample_shift;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keywordtype">double</span> damp;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordtype">double</span> dt;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="keyword">mutable</span> <span class="keywordtype">double</span> residual_norm;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="keyword">mutable</span> <span class="keywordtype">double</span> data_norm;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  <span class="keyword">mutable</span> <span class="keywordtype">double</span> regularization_parameter;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <span class="keyword">friend</span> boost::serialization::access;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keyword">template</span> &lt;<span class="keyword">class</span> Archive&gt;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordtype">void</span> serialize(Archive &amp;ar, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> version) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    ar &amp;boost::serialization::base_object&lt;ScalarDecon&gt;(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    ar &amp; output_length;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    ar &amp; sample_shift;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    ar &amp; damp;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    ar &amp; dt;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    ar &amp; residual_norm;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    ar &amp; data_norm;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    ar &amp; regularization_parameter;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>};</div>
 </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>} <span class="comment">// namespace mspass::algorithms::deconvolution</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>} <span class="comment">// namespace mspass::algorithms::deconvolution</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></div><div class="ttdoc">Base class decon operator for single station 3C decon (receiver functions).</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:30</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_a3352f80170606ad4b543493a9168bc9d"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">mspass::algorithms::deconvolution::ScalarDecon::data</a></div><div class="ttdeci">std::vector&lt; double &gt; data</div><div class="ttdoc">Data vector to be deconvolved by concrete scalar methods.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:140</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_aa48f2182a7e7b1c7d63011a9c53c4ee1"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">mspass::algorithms::deconvolution::ScalarDecon::wavelet</a></div><div class="ttdeci">std::vector&lt; double &gt; wavelet</div><div class="ttdoc">Source-wavelet estimate used by concrete scalar methods.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:142</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon</a></div><div class="ttdoc">Time-domain damped least-squares deconvolution.</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.h:35</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a0a7439911588bbbd51df7d3171ce2ef8"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a0a7439911588bbbd51df7d3171ce2ef8">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::QCMetrics</a></div><div class="ttdeci">mspass::utility::Metadata QCMetrics()</div><div class="ttdoc">Return appropriate quality measures.</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:337</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a55cd2752989a99b6766e86650458aac7"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a55cd2752989a99b6766e86650458aac7">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::output_shaping_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries output_shaping_wavelet()</div><div class="ttdoc">Return the output shaping wavelet.</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:232</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a5c1a9906a6de26977002e63465bbc1d7"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a5c1a9906a6de26977002e63465bbc1d7">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::actual_output</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries actual_output()</div><div class="ttdoc">Return the actual output of the deconvolution operator.</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:275</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a72b7dfccd79cd8d8e10c7f6e6dcde718"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::inverse_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries inverse_wavelet()</div><div class="ttdoc">Return a FIR represention of the inverse filter.</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:333</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a0a7439911588bbbd51df7d3171ce2ef8"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a0a7439911588bbbd51df7d3171ce2ef8">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::QCMetrics</a></div><div class="ttdeci">mspass::utility::Metadata QCMetrics()</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:338</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a4c359d9b0db253b3e31e57d42e53ebcd"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a4c359d9b0db253b3e31e57d42e53ebcd">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::changeparameter</a></div><div class="ttdeci">void changeparameter(const mspass::utility::Metadata &amp;md)</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:136</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a50472278b22bbe99722c55cccf4c1a13"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a50472278b22bbe99722c55cccf4c1a13">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::TimeDomainLeastSquareDecon</a></div><div class="ttdeci">TimeDomainLeastSquareDecon()</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:64</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a55cd2752989a99b6766e86650458aac7"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a55cd2752989a99b6766e86650458aac7">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::output_shaping_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries output_shaping_wavelet()</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:233</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a5c1a9906a6de26977002e63465bbc1d7"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a5c1a9906a6de26977002e63465bbc1d7">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::actual_output</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries actual_output()</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:276</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a6c94a11e332e4137f25576e7d2748ecf"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a6c94a11e332e4137f25576e7d2748ecf">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::process</a></div><div class="ttdeci">void process()</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:258</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a72b7dfccd79cd8d8e10c7f6e6dcde718"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::inverse_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries inverse_wavelet()</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:334</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a></div><div class="ttdoc">Scalar time series data object.</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:17</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdef"><b>Definition</b> Metadata.h:90</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdoc">Type-safe metadata container used throughout MsPASS.</div><div class="ttdef"><b>Definition</b> Metadata.h:101</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

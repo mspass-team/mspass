@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -118,19 +161,19 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="keywordtype">size_t</span> fread_from_file(<a class="code hl_class" href="classmspass_1_1seismic_1_1_time_series.html">mspass::seismic::TimeSeries</a> &amp;d, <span class="keyword">const</span> std::string dir,</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>                       <span class="keyword">const</span> std::string dfile, <span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> foff);</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="keywordtype">size_t</span> fread_from_file(</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <a class="code hl_class" href="classmspass_1_1seismic_1_1_logging_ensemble.html">mspass::seismic::LoggingEnsemble&lt;mspass::seismic::TimeSeries&gt;</a> &amp;de,</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keyword">const</span> std::string dir, <span class="keyword">const</span> std::string dfile,</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    std::vector&lt;long int&gt; indexes);</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="keywordtype">size_t</span> fread_from_file(</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <a class="code hl_class" href="classmspass_1_1seismic_1_1_logging_ensemble.html">mspass::seismic::LoggingEnsemble&lt;mspass::seismic::Seismogram&gt;</a> &amp;de,</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keyword">const</span> std::string dir, <span class="keyword">const</span> std::string dfile,</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    std::vector&lt;long int&gt; indexes);</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>} <span class="comment">// namespace mspass::io</span></div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_logging_ensemble_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_logging_ensemble.html">mspass::seismic::LoggingEnsemble</a></div><div class="ttdoc">Template class that extends Ensemble to include an error log and live tests.</div><div class="ttdef"><b>Definition</b> Ensemble.h:135</div></div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="keywordtype">size_t</span> fread_from_file(</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <a class="code hl_class" href="classmspass_1_1seismic_1_1_logging_ensemble.html">mspass::seismic::LoggingEnsemble&lt;mspass::seismic::TimeSeries&gt;</a> &amp;de,</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keyword">const</span> std::string dir, <span class="keyword">const</span> std::string dfile,</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    std::vector&lt;long int&gt; indexes);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><span class="keywordtype">size_t</span> fread_from_file(</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <a class="code hl_class" href="classmspass_1_1seismic_1_1_logging_ensemble.html">mspass::seismic::LoggingEnsemble&lt;mspass::seismic::Seismogram&gt;</a> &amp;de,</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keyword">const</span> std::string dir, <span class="keyword">const</span> std::string dfile,</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    std::vector&lt;long int&gt; indexes);</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>} <span class="comment">// namespace mspass::io</span></div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_logging_ensemble_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_logging_ensemble.html">mspass::seismic::LoggingEnsemble</a></div><div class="ttdoc">Template class that extends Ensemble to include an error log and live tests.</div><div class="ttdef"><b>Definition</b> Ensemble.h:140</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a></div><div class="ttdoc">Implemntation of Seismogram for MsPASS.</div><div class="ttdef"><b>Definition</b> Seismogram.h:14</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_time_series_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_time_series.html">mspass::seismic::TimeSeries</a></div><div class="ttdoc">Implemntation of TimeSeries for MsPASS.</div><div class="ttdef"><b>Definition</b> TimeSeries.h:14</div></div>
 </div><!-- fragment --></div><!-- contents -->

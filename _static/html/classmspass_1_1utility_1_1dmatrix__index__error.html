@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -98,12 +141,27 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for mspass::utility::dmatrix_index_error:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1utility_1_1dmatrix__index__error.png" usemap="#mspass::utility::dmatrix_5Findex_5Ferror_map" alt=""/>
-  <map id="mspass::utility::dmatrix_5Findex_5Ferror_map" name="mspass::utility::dmatrix_5Findex_5Ferror_map">
-<area href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html" title="Base class for error object thrown by MsPASS library routines." alt="mspass::utility::MsPASSError" shape="rect" coords="0,56,207,80"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1utility_1_1dmatrix__index__error__inherit__graph.png" border="0" usemap="#amspass_1_1utility_1_1dmatrix__index__error_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1utility_1_1dmatrix__index__error_inherit__map" id="amspass_1_1utility_1_1dmatrix__index__error_inherit__map">
+<area shape="rect" title="special convenience class for matrix indexing errors." alt="" coords="21,152,197,192"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html" title="Base class for error object thrown by MsPASS library routines." alt="" coords="5,79,212,104"/>
+<area shape="poly" title=" " alt="" coords="111,118,111,152,106,152,106,118"/>
+<area shape="rect" title=" " alt="" coords="51,5,166,31"/>
+<area shape="poly" title=" " alt="" coords="111,44,111,79,106,79,106,44"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for mspass::utility::dmatrix_index_error:</div>
+<div class="dyncontent">
+<div class="center"><img src="classmspass_1_1utility_1_1dmatrix__index__error__coll__graph.png" border="0" usemap="#amspass_1_1utility_1_1dmatrix__index__error_coll__map" alt="Collaboration graph"/></div>
+<map name="amspass_1_1utility_1_1dmatrix__index__error_coll__map" id="amspass_1_1utility_1_1dmatrix__index__error_coll__map">
+<area shape="rect" title="special convenience class for matrix indexing errors." alt="" coords="21,152,197,192"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html" title="Base class for error object thrown by MsPASS library routines." alt="" coords="5,79,212,104"/>
+<area shape="poly" title=" " alt="" coords="111,118,111,152,106,152,106,118"/>
+<area shape="rect" title=" " alt="" coords="51,5,166,31"/>
+<area shape="poly" title=" " alt="" coords="111,44,111,79,106,79,106,44"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>

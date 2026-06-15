@@ -32,10 +32,21 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Construct an <ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref> from an std::string message. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>message to append to the <ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref> prefix. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="171" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="171" bodyend="173"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="174" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="174" bodyend="176"/>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_error_1ad959d328f277898ab83ad5d2e2c8c93f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -50,10 +61,21 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Construct an <ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref> from a C string message. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>message to append to the <ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref> prefix. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="174" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="174" bodyend="176"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="180" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="180" bodyend="182"/>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_error_1a2a1cb5be1c340b6cf557a0debdd5a716" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -64,10 +86,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Write the stored error message to std::cerr. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="177" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="177" bodyend="177"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="184" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="184" bodyend="184"/>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -110,7 +134,7 @@
         <label>std::exception</label>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="166" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="166" bodyend="178"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="166" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="166" bodyend="185"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_antelope_pf_error_1a3c9e1c28ebef0a70d0e8ea02f3ca451c" prot="public" virt="non-virtual"><scope>mspass::utility::AntelopePfError</scope><name>AntelopePfError</name></member>
       <member refid="classmspass_1_1utility_1_1_antelope_pf_error_1a1388779feccc62e7733fbe754696e823" prot="public" virt="non-virtual"><scope>mspass::utility::AntelopePfError</scope><name>AntelopePfError</name></member>

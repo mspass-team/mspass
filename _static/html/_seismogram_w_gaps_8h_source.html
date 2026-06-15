@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -98,23 +141,25 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;mspass/seismic/Seismogram.h&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemspass_1_1seismic.html">mspass::seismic</a> {</div>
-<div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">    7</a></span><span class="keyword">class </span><a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> : <span class="keyword">public</span> <a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a>,</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>                        <span class="keyword">public</span> <a class="code hl_class" href="classmspass_1_1seismic_1_1_data_gap.html">mspass::seismic::DataGap</a> {</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#adf038f77f4e75979ed1debe1b13d2c5b">   14</a></span>  <a class="code hl_function" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#adf038f77f4e75979ed1debe1b13d2c5b">SeismogramWGaps</a>();</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#af0ad23d866b72dac5e854ba0a38cb08d">   16</a></span>  <a class="code hl_function" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#af0ad23d866b72dac5e854ba0a38cb08d">SeismogramWGaps</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;parent);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;operator=(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;parent);</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">~SeismogramWGaps</a>();</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a976c7e2ae15527497d22fa9e82fcb4ad">   22</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a976c7e2ae15527497d22fa9e82fcb4ad">zero_gaps</a>();</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">    8</a></span><span class="keyword">class </span><a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> : <span class="keyword">public</span> <a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a>,</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>                        <span class="keyword">public</span> <a class="code hl_class" href="classmspass_1_1seismic_1_1_data_gap.html">mspass::seismic::DataGap</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#adf038f77f4e75979ed1debe1b13d2c5b">   15</a></span>  <a class="code hl_function" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#adf038f77f4e75979ed1debe1b13d2c5b">SeismogramWGaps</a>();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#af0ad23d866b72dac5e854ba0a38cb08d">   17</a></span>  <a class="code hl_function" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#af0ad23d866b72dac5e854ba0a38cb08d">SeismogramWGaps</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;parent);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a8af6fce0c26b13f072582416cc5e1966">   19</a></span>  <a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;<a class="code hl_function" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a8af6fce0c26b13f072582416cc5e1966">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">SeismogramWGaps</a> &amp;parent);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a4136f6b13d9c5a4151f3efabebf10f87">   21</a></span>  <a class="code hl_function" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a4136f6b13d9c5a4151f3efabebf10f87">~SeismogramWGaps</a>();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a976c7e2ae15527497d22fa9e82fcb4ad">   25</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a976c7e2ae15527497d22fa9e82fcb4ad">zero_gaps</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
 </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>} <span class="comment">// namespace mspass::seismic</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#endif </span><span class="comment">// end guard</span></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html">mspass::seismic::DataGap</a></div><div class="ttdef"><b>Definition</b> DataGap.h:24</div></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>} <span class="comment">// namespace mspass::seismic</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#endif </span><span class="comment">// end guard</span></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html">mspass::seismic::DataGap</a></div><div class="ttdoc">Container defining invalid time spans for gappy seismic data.</div><div class="ttdef"><b>Definition</b> DataGap.h:30</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a></div><div class="ttdoc">Implemntation of Seismogram for MsPASS.</div><div class="ttdef"><b>Definition</b> Seismogram.h:14</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_w_gaps_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">mspass::seismic::SeismogramWGaps</a></div><div class="ttdef"><b>Definition</b> SeismogramWGaps.h:8</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_w_gaps_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html">mspass::seismic::SeismogramWGaps</a></div><div class="ttdoc">Three-component Seismogram with explicit data-gap tracking.</div><div class="ttdef"><b>Definition</b> SeismogramWGaps.h:9</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_w_gaps_html_a4136f6b13d9c5a4151f3efabebf10f87"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a4136f6b13d9c5a4151f3efabebf10f87">mspass::seismic::SeismogramWGaps::~SeismogramWGaps</a></div><div class="ttdeci">~SeismogramWGaps()</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_w_gaps_html_a8af6fce0c26b13f072582416cc5e1966"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a8af6fce0c26b13f072582416cc5e1966">mspass::seismic::SeismogramWGaps::operator=</a></div><div class="ttdeci">SeismogramWGaps &amp; operator=(const SeismogramWGaps &amp;parent)</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_w_gaps_html_a976c7e2ae15527497d22fa9e82fcb4ad"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#a976c7e2ae15527497d22fa9e82fcb4ad">mspass::seismic::SeismogramWGaps::zero_gaps</a></div><div class="ttdeci">void zero_gaps()</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_w_gaps_html_adf038f77f4e75979ed1debe1b13d2c5b"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#adf038f77f4e75979ed1debe1b13d2c5b">mspass::seismic::SeismogramWGaps::SeismogramWGaps</a></div><div class="ttdeci">SeismogramWGaps()</div><div class="ttdoc">Constructor.</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_w_gaps_html_af0ad23d866b72dac5e854ba0a38cb08d"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram_w_gaps.html#af0ad23d866b72dac5e854ba0a38cb08d">mspass::seismic::SeismogramWGaps::SeismogramWGaps</a></div><div class="ttdeci">SeismogramWGaps(const SeismogramWGaps &amp;parent)</div></div>

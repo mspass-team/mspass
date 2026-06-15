@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -178,11 +221,11 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></div><div class="ttdoc">Defines a time window.</div><div class="ttdef"><b>Definition</b> TimeWindow.h:12</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a></div><div class="ttdoc">Vector (three-component) seismogram data object.</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:39</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a></div><div class="ttdoc">Scalar time series data object.</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:17</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html">mspass::seismic::Ensemble</a></div><div class="ttdef"><b>Definition</b> Ensemble.h:9</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_logging_ensemble_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_logging_ensemble.html">mspass::seismic::LoggingEnsemble</a></div><div class="ttdoc">Template class that extends Ensemble to include an error log and live tests.</div><div class="ttdef"><b>Definition</b> Ensemble.h:135</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html">mspass::seismic::Ensemble</a></div><div class="ttdoc">Metadata-bearing container for a collection of seismic data objects.</div><div class="ttdef"><b>Definition</b> Ensemble.h:14</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_logging_ensemble_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_logging_ensemble.html">mspass::seismic::LoggingEnsemble</a></div><div class="ttdoc">Template class that extends Ensemble to include an error log and live tests.</div><div class="ttdef"><b>Definition</b> Ensemble.h:140</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a></div><div class="ttdoc">Implemntation of Seismogram for MsPASS.</div><div class="ttdef"><b>Definition</b> Seismogram.h:14</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_time_series_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_time_series.html">mspass::seismic::TimeSeries</a></div><div class="ttdoc">Implemntation of TimeSeries for MsPASS.</div><div class="ttdef"><b>Definition</b> TimeSeries.h:14</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_time_series_w_gaps_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_time_series_w_gaps.html">mspass::seismic::TimeSeriesWGaps</a></div><div class="ttdef"><b>Definition</b> TimeSeriesWGaps.h:6</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_time_series_w_gaps_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_time_series_w_gaps.html">mspass::seismic::TimeSeriesWGaps</a></div><div class="ttdoc">Scalar TimeSeries with explicit data-gap tracking.</div><div class="ttdef"><b>Definition</b> TimeSeriesWGaps.h:7</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

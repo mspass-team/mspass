@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -83,11 +126,17 @@ $(function() {
 <div class="textblock">Here is a list of all documented functions with links to the class documentation for each member:</div>
 
 <h3><a id="index_n" name="index_n"></a>- n -</h3><ul>
+<li>name()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_algorithm_definition.html#a450718baca75f269b4e5305a221a6e0c">mspass::utility::AlgorithmDefinition</a></li>
 <li>new_ensemble_process()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a986da6a438099a371a0b0a9556f2c8b3">mspass::utility::ProcessingHistory</a></li>
 <li>new_map()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a75af2861c06a905968cc9c727b8cc877">mspass::utility::ProcessingHistory</a></li>
 <li>new_newid()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_process_manager.html#aa19241756ba1c486953668958fc2a21a">mspass::utility::ProcessManager</a></li>
 <li>newid()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">mspass::utility::ProcessingHistory</a></li>
 <li>nf()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">mspass::algorithms::deconvolution::MTPowerSpectrumEngine</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a830fc9c8135253aeae01ffd80746b413">mspass::seismic::BasicSpectrum</a>, <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a7675c66d7f1aa8d7b4e9437564af4beb">mspass::seismic::PowerSpectrum</a></li>
+<li>NodeData()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_node_data.html#acfbcc6b7314832aaebd18f97ff56dc88">mspass::utility::NodeData</a></li>
+<li>noise_window_end()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon.html#a41246f7c433cb2f17340298a3aa111c2">mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon.html#a3e52170e7a6c6ac5a54d995f674d0838">mspass::algorithms::deconvolution::TimeDomainGIDDecon</a></li>
+<li>noise_window_start()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon.html#aa9352c030b00b668025ba2d43db9fc4b">mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon.html#a60d1ca6c7544a4006cba29e05405b30e">mspass::algorithms::deconvolution::TimeDomainGIDDecon</a></li>
+<li>NoiseStableDecon()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html#a80029630f63c0a32eeb65d2fe5c1be43">mspass::algorithms::deconvolution::NoiseStableDecon</a></li>
+<li>norm2()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a417cab137026bb382afb6638bf7541f7">mspass::algorithms::deconvolution::ComplexArray</a></li>
 <li>normalize_data()&#160;:&#160;<a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#acd20b79e7b66246e186deae88e391b94">mspass::utility::MetadataDefinitions</a></li>
 <li>npoles_high()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a094f40b3c1d1ff857f696f19d0f85026">mspass::algorithms::Butterworth</a></li>
 <li>npoles_low()&#160;:&#160;<a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a2b528a200c2b56f9420a5f29fb706d3c">mspass::algorithms::Butterworth</a></li>

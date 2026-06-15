@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -90,52 +133,275 @@ $(function() {
   <div class="headertitle"><div class="title">mspass::algorithms::deconvolution::GroupSparseDeconResult Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Result bundle returned by group-sparse GID deconvolution.  
+ <a href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_g_i_d_decon_util_8h_source.html">GIDDeconUtil.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for mspass::algorithms::deconvolution::GroupSparseDeconResult:</div>
+<div class="dyncontent">
+<div class="center"><img src="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result__coll__graph.png" border="0" usemap="#amspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_coll__map" alt="Collaboration graph"/></div>
+<map name="amspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_coll__map" id="amspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_coll__map">
+<area shape="rect" title="Result bundle returned by group&#45;sparse GID deconvolution." alt="" coords="901,55,1115,110"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_core_seismogram.html" title="Vector (three&#45;component) seismogram data object." alt="" coords="545,70,796,95"/>
+<area shape="poly" title=" " alt="" coords="810,80,901,80,901,85,810,85"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects." alt="" coords="277,5,484,45"/>
+<area shape="poly" title=" " alt="" coords="496,45,606,67,605,73,495,51"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_metadata.html" title="Type&#45;safe metadata container used throughout MsPASS." alt="" coords="287,70,474,95"/>
+<area shape="poly" title=" " alt="" coords="488,80,545,80,545,85,488,85"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept." alt="" coords="5,70,228,95"/>
+<area shape="poly" title=" " alt="" coords="242,80,287,80,287,85,242,85"/>
+<area shape="rect" href="classmspass_1_1utility_1_1dmatrix.html" title="Lightweight, simple matrix object." alt="" coords="293,119,469,145"/>
+<area shape="poly" title=" " alt="" coords="469,114,595,93,596,98,470,120"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a9270d562897ab545c9b4f58015dec967" id="r_a9270d562897ab545c9b4f58015dec967"><td class="memItemLeft" align="right" valign="top"><a id="a9270d562897ab545c9b4f58015dec967" name="a9270d562897ab545c9b4f58015dec967"></a>
-std::list&lt; <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html">ThreeCSpike</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>spikes</b></td></tr>
+<tr class="memitem:a9270d562897ab545c9b4f58015dec967" id="r_a9270d562897ab545c9b4f58015dec967"><td class="memItemLeft" align="right" valign="top">std::list&lt; <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html">ThreeCSpike</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a9270d562897ab545c9b4f58015dec967">spikes</a></td></tr>
 <tr class="separator:a9270d562897ab545c9b4f58015dec967"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1a49c1e9a34c85aae1fee434827f6ad" id="r_aa1a49c1e9a34c85aae1fee434827f6ad"><td class="memItemLeft" align="right" valign="top"><a id="aa1a49c1e9a34c85aae1fee434827f6ad" name="aa1a49c1e9a34c85aae1fee434827f6ad"></a>
-<a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a>&#160;</td><td class="memItemRight" valign="bottom"><b>residual</b></td></tr>
+<tr class="memitem:aa1a49c1e9a34c85aae1fee434827f6ad" id="r_aa1a49c1e9a34c85aae1fee434827f6ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#aa1a49c1e9a34c85aae1fee434827f6ad">residual</a></td></tr>
 <tr class="separator:aa1a49c1e9a34c85aae1fee434827f6ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4ea5eeef16c9f7926f6094b66bf4024" id="r_af4ea5eeef16c9f7926f6094b66bf4024"><td class="memItemLeft" align="right" valign="top"><a id="af4ea5eeef16c9f7926f6094b66bf4024" name="af4ea5eeef16c9f7926f6094b66bf4024"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>iterations</b> = 0</td></tr>
+<tr class="memitem:af4ea5eeef16c9f7926f6094b66bf4024" id="r_af4ea5eeef16c9f7926f6094b66bf4024"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#af4ea5eeef16c9f7926f6094b66bf4024">iterations</a> = 0</td></tr>
 <tr class="separator:af4ea5eeef16c9f7926f6094b66bf4024"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59b63b52173ab13811fa08f5786b6c35" id="r_a59b63b52173ab13811fa08f5786b6c35"><td class="memItemLeft" align="right" valign="top"><a id="a59b63b52173ab13811fa08f5786b6c35" name="a59b63b52173ab13811fa08f5786b6c35"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>active_groups</b> = 0</td></tr>
+<tr class="memitem:a59b63b52173ab13811fa08f5786b6c35" id="r_a59b63b52173ab13811fa08f5786b6c35"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a59b63b52173ab13811fa08f5786b6c35">active_groups</a> = 0</td></tr>
 <tr class="separator:a59b63b52173ab13811fa08f5786b6c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9737ebde5afda00b5ca1c837652b422" id="r_ac9737ebde5afda00b5ca1c837652b422"><td class="memItemLeft" align="right" valign="top"><a id="ac9737ebde5afda00b5ca1c837652b422" name="ac9737ebde5afda00b5ca1c837652b422"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>converged</b> = false</td></tr>
+<tr class="memitem:ac9737ebde5afda00b5ca1c837652b422" id="r_ac9737ebde5afda00b5ca1c837652b422"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#ac9737ebde5afda00b5ca1c837652b422">converged</a> = false</td></tr>
 <tr class="separator:ac9737ebde5afda00b5ca1c837652b422"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67930b8afa0b5f619eb263625c00d5c5" id="r_a67930b8afa0b5f619eb263625c00d5c5"><td class="memItemLeft" align="right" valign="top"><a id="a67930b8afa0b5f619eb263625c00d5c5" name="a67930b8afa0b5f619eb263625c00d5c5"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>lambda</b> = 0.0</td></tr>
+<tr class="memitem:a67930b8afa0b5f619eb263625c00d5c5" id="r_a67930b8afa0b5f619eb263625c00d5c5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a67930b8afa0b5f619eb263625c00d5c5">lambda</a> = 0.0</td></tr>
 <tr class="separator:a67930b8afa0b5f619eb263625c00d5c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36bd3499f4035bd66af34e4161e7b4f1" id="r_a36bd3499f4035bd66af34e4161e7b4f1"><td class="memItemLeft" align="right" valign="top"><a id="a36bd3499f4035bd66af34e4161e7b4f1" name="a36bd3499f4035bd66af34e4161e7b4f1"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>active_threshold_floor</b> = 0.0</td></tr>
+<tr class="memitem:a36bd3499f4035bd66af34e4161e7b4f1" id="r_a36bd3499f4035bd66af34e4161e7b4f1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a36bd3499f4035bd66af34e4161e7b4f1">active_threshold_floor</a> = 0.0</td></tr>
 <tr class="separator:a36bd3499f4035bd66af34e4161e7b4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92d2eb5401b9a992d07c0e7b12eadfa9" id="r_a92d2eb5401b9a992d07c0e7b12eadfa9"><td class="memItemLeft" align="right" valign="top"><a id="a92d2eb5401b9a992d07c0e7b12eadfa9" name="a92d2eb5401b9a992d07c0e7b12eadfa9"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>active_threshold_scale</b> = 1.0</td></tr>
+<tr class="memitem:a92d2eb5401b9a992d07c0e7b12eadfa9" id="r_a92d2eb5401b9a992d07c0e7b12eadfa9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a92d2eb5401b9a992d07c0e7b12eadfa9">active_threshold_scale</a> = 1.0</td></tr>
 <tr class="separator:a92d2eb5401b9a992d07c0e7b12eadfa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc34f5764bdd0a287623038b0adb9356" id="r_adc34f5764bdd0a287623038b0adb9356"><td class="memItemLeft" align="right" valign="top"><a id="adc34f5764bdd0a287623038b0adb9356" name="adc34f5764bdd0a287623038b0adb9356"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>active_threshold_quantile</b> = 0.0</td></tr>
+<tr class="memitem:adc34f5764bdd0a287623038b0adb9356" id="r_adc34f5764bdd0a287623038b0adb9356"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#adc34f5764bdd0a287623038b0adb9356">active_threshold_quantile</a> = 0.0</td></tr>
 <tr class="separator:adc34f5764bdd0a287623038b0adb9356"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8067525596b7c3385282ce2ef8859794" id="r_a8067525596b7c3385282ce2ef8859794"><td class="memItemLeft" align="right" valign="top"><a id="a8067525596b7c3385282ce2ef8859794" name="a8067525596b7c3385282ce2ef8859794"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>active_threshold_quantile_value</b> = 0.0</td></tr>
+<tr class="memitem:a8067525596b7c3385282ce2ef8859794" id="r_a8067525596b7c3385282ce2ef8859794"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a8067525596b7c3385282ce2ef8859794">active_threshold_quantile_value</a> = 0.0</td></tr>
 <tr class="separator:a8067525596b7c3385282ce2ef8859794"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44d51f81c13b57dfc277f1f97f348c18" id="r_a44d51f81c13b57dfc277f1f97f348c18"><td class="memItemLeft" align="right" valign="top"><a id="a44d51f81c13b57dfc277f1f97f348c18" name="a44d51f81c13b57dfc277f1f97f348c18"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>active_threshold_used</b> = 0.0</td></tr>
+<tr class="memitem:a44d51f81c13b57dfc277f1f97f348c18" id="r_a44d51f81c13b57dfc277f1f97f348c18"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a44d51f81c13b57dfc277f1f97f348c18">active_threshold_used</a> = 0.0</td></tr>
 <tr class="separator:a44d51f81c13b57dfc277f1f97f348c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51fb7cf4573e7b287eaa6cc51f62e738" id="r_a51fb7cf4573e7b287eaa6cc51f62e738"><td class="memItemLeft" align="right" valign="top"><a id="a51fb7cf4573e7b287eaa6cc51f62e738" name="a51fb7cf4573e7b287eaa6cc51f62e738"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>objective_initial</b> = 0.0</td></tr>
+<tr class="memitem:a51fb7cf4573e7b287eaa6cc51f62e738" id="r_a51fb7cf4573e7b287eaa6cc51f62e738"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a51fb7cf4573e7b287eaa6cc51f62e738">objective_initial</a> = 0.0</td></tr>
 <tr class="separator:a51fb7cf4573e7b287eaa6cc51f62e738"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2229033d337af5db1eb8c1acbf271d0" id="r_ad2229033d337af5db1eb8c1acbf271d0"><td class="memItemLeft" align="right" valign="top"><a id="ad2229033d337af5db1eb8c1acbf271d0" name="ad2229033d337af5db1eb8c1acbf271d0"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>objective_final</b> = 0.0</td></tr>
+<tr class="memitem:ad2229033d337af5db1eb8c1acbf271d0" id="r_ad2229033d337af5db1eb8c1acbf271d0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#ad2229033d337af5db1eb8c1acbf271d0">objective_final</a> = 0.0</td></tr>
 <tr class="separator:ad2229033d337af5db1eb8c1acbf271d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a319622351d1f6dea08a3adaca8852392" id="r_a319622351d1f6dea08a3adaca8852392"><td class="memItemLeft" align="right" valign="top"><a id="a319622351d1f6dea08a3adaca8852392" name="a319622351d1f6dea08a3adaca8852392"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>fractional_improvement_final</b> = 0.0</td></tr>
+<tr class="memitem:a319622351d1f6dea08a3adaca8852392" id="r_a319622351d1f6dea08a3adaca8852392"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result.html#a319622351d1f6dea08a3adaca8852392">fractional_improvement_final</a> = 0.0</td></tr>
 <tr class="separator:a319622351d1f6dea08a3adaca8852392"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Result bundle returned by group-sparse GID deconvolution. </p>
+<p>The fields summarize the selected spikes, residual signal, convergence state, and objective-function diagnostics from the solver. </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a59b63b52173ab13811fa08f5786b6c35" name="a59b63b52173ab13811fa08f5786b6c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59b63b52173ab13811fa08f5786b6c35">&#9670;&#160;</a></span>active_groups</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int mspass::algorithms::deconvolution::GroupSparseDeconResult::active_groups = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of active spike groups in the solution. </p>
+
+</div>
+</div>
+<a id="a36bd3499f4035bd66af34e4161e7b4f1" name="a36bd3499f4035bd66af34e4161e7b4f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36bd3499f4035bd66af34e4161e7b4f1">&#9670;&#160;</a></span>active_threshold_floor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GroupSparseDeconResult::active_threshold_floor = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Absolute lower bound on active threshold. </p>
+
+</div>
+</div>
+<a id="adc34f5764bdd0a287623038b0adb9356" name="adc34f5764bdd0a287623038b0adb9356"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc34f5764bdd0a287623038b0adb9356">&#9670;&#160;</a></span>active_threshold_quantile</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GroupSparseDeconResult::active_threshold_quantile = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Quantile used for adaptive thresholding. </p>
+
+</div>
+</div>
+<a id="a8067525596b7c3385282ce2ef8859794" name="a8067525596b7c3385282ce2ef8859794"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8067525596b7c3385282ce2ef8859794">&#9670;&#160;</a></span>active_threshold_quantile_value</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GroupSparseDeconResult::active_threshold_quantile_value = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Value at the selected quantile. </p>
+
+</div>
+</div>
+<a id="a92d2eb5401b9a992d07c0e7b12eadfa9" name="a92d2eb5401b9a992d07c0e7b12eadfa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92d2eb5401b9a992d07c0e7b12eadfa9">&#9670;&#160;</a></span>active_threshold_scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GroupSparseDeconResult::active_threshold_scale = 1.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Scale factor applied to the active threshold. </p>
+
+</div>
+</div>
+<a id="a44d51f81c13b57dfc277f1f97f348c18" name="a44d51f81c13b57dfc277f1f97f348c18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44d51f81c13b57dfc277f1f97f348c18">&#9670;&#160;</a></span>active_threshold_used</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GroupSparseDeconResult::active_threshold_used = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Final threshold used by the solver. </p>
+
+</div>
+</div>
+<a id="ac9737ebde5afda00b5ca1c837652b422" name="ac9737ebde5afda00b5ca1c837652b422"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9737ebde5afda00b5ca1c837652b422">&#9670;&#160;</a></span>converged</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mspass::algorithms::deconvolution::GroupSparseDeconResult::converged = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>True when the solver met the stop tolerance. </p>
+
+</div>
+</div>
+<a id="a319622351d1f6dea08a3adaca8852392" name="a319622351d1f6dea08a3adaca8852392"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a319622351d1f6dea08a3adaca8852392">&#9670;&#160;</a></span>fractional_improvement_final</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GroupSparseDeconResult::fractional_improvement_final = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Final fractional objective improvement. </p>
+
+</div>
+</div>
+<a id="af4ea5eeef16c9f7926f6094b66bf4024" name="af4ea5eeef16c9f7926f6094b66bf4024"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4ea5eeef16c9f7926f6094b66bf4024">&#9670;&#160;</a></span>iterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int mspass::algorithms::deconvolution::GroupSparseDeconResult::iterations = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of solver iterations completed. </p>
+
+</div>
+</div>
+<a id="a67930b8afa0b5f619eb263625c00d5c5" name="a67930b8afa0b5f619eb263625c00d5c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67930b8afa0b5f619eb263625c00d5c5">&#9670;&#160;</a></span>lambda</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GroupSparseDeconResult::lambda = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Group-sparse penalty weight. </p>
+
+</div>
+</div>
+<a id="ad2229033d337af5db1eb8c1acbf271d0" name="ad2229033d337af5db1eb8c1acbf271d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2229033d337af5db1eb8c1acbf271d0">&#9670;&#160;</a></span>objective_final</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GroupSparseDeconResult::objective_final = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Objective value after iteration. </p>
+
+</div>
+</div>
+<a id="a51fb7cf4573e7b287eaa6cc51f62e738" name="a51fb7cf4573e7b287eaa6cc51f62e738"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51fb7cf4573e7b287eaa6cc51f62e738">&#9670;&#160;</a></span>objective_initial</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double mspass::algorithms::deconvolution::GroupSparseDeconResult::objective_initial = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Objective value before iteration. </p>
+
+</div>
+</div>
+<a id="aa1a49c1e9a34c85aae1fee434827f6ad" name="aa1a49c1e9a34c85aae1fee434827f6ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1a49c1e9a34c85aae1fee434827f6ad">&#9670;&#160;</a></span>residual</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a> mspass::algorithms::deconvolution::GroupSparseDeconResult::residual</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Final residual signal. </p>
+
+</div>
+</div>
+<a id="a9270d562897ab545c9b4f58015dec967" name="a9270d562897ab545c9b4f58015dec967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9270d562897ab545c9b4f58015dec967">&#9670;&#160;</a></span>spikes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::list&lt;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html">ThreeCSpike</a>&gt; mspass::algorithms::deconvolution::GroupSparseDeconResult::spikes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Selected three-component spikes. </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/<a class="el" href="_g_i_d_decon_util_8h_source.html">GIDDeconUtil.h</a></li>
 </ul>

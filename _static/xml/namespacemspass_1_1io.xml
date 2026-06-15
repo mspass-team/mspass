@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="90" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="90" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="110" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="110" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="var">
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="91" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="91" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="111" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="111" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -88,7 +88,16 @@
 </parameterlist>
 <simplesect kind="return"><para>file position in output file of the first byte written. the same number is saved in the &quot;foff&quot; metadata attribute.</para>
 </simplesect>
-\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block. </para>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>This function will throw for one of several common io related issues. Caller should always include the call to this function in a try block. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -145,7 +154,16 @@
 </parameterlist>
 <simplesect kind="return"><para>file position in output file of the first byte written. the same number is saved in the &quot;foff&quot; metadata attribute.</para>
 </simplesect>
-\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block. </para>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>This function will throw for one of several common io related issues. Caller should always include the call to this function in a try block. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -202,40 +220,22 @@
 </parameterlist>
 <simplesect kind="return"><para>file position in output file of the first byte written. the same number is saved in the &quot;foff&quot; metadata attribute.</para>
 </simplesect>
-\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block.</para>
-<para>Write sample data for an Ensemble of TimeSeries to a single file.</para>
-<para>Writing ensemble data with this function is more efficient than writing atomic data one at time. The reason is this function writes all the sample data for the ensemble to a single and only opens and closes the file specfied once. It returns a vector of foff values. Dead members have no sample data written and will generate a -1 entry in the foff vector returned. Caller should handle that condition in some way.</para>
-<para>If entire ensemble is marked dead it will return an empty vector container.</para>
-<para><parameterlist kind="param"><parameteritem>
+<parameterlist kind="exception"><parameteritem>
 <parameternamelist>
-<parametername>d</parametername>
+<parametername>MsPASSError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input ensemble to save sample data </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>dir</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>directory name (if entry use current directory) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>dfile</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>file name for write </para>
+<para>This function will throw for one of several common io related issues. Caller should always include the call to this function in a try block.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
+Write sample data for an Ensemble of TimeSeries to a single file.</para>
+<para>Writing ensemble data with this function is more efficient than writing atomic data one at time. The reason is this function writes all the sample data for the ensemble to a single and only opens and closes the file specfied once. It returns a vector of foff values. Dead members have no sample data written and will generate a -1 entry in the foff vector returned. Caller should handle that condition in some way.</para>
+<para>If entire ensemble is marked dead it will return an empty vector container. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="127" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="127" bodyend="185" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="108" declcolumn="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="123" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="123" bodyend="181" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="108" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1a176b9e19269b90d1fa7c42f340dbb95d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; long int &gt;</type>
@@ -288,40 +288,22 @@
 </parameterlist>
 <simplesect kind="return"><para>file position in output file of the first byte written. the same number is saved in the &quot;foff&quot; metadata attribute.</para>
 </simplesect>
-\expection This function will throw a MsPASS error for one of several common io related issues. Caller should always include the call to this function in a try block.</para>
-<para>Write sample data for an Ensemble of Seismogram objects to a single file.</para>
-<para>Writing ensemble data with this function is more efficient than writing atomic data one at time. The reason is this function writes all the sample data for the ensemble to a single and only opens and closes the file specfied once. It returns a vector of foff values. Dead members have no sample data written and will generate a -1 entry in the foff vector returned. Caller should handle that condition in some way.</para>
-<para>If entire ensemble is marked dead it will return an empty vector container.</para>
-<para><parameterlist kind="param"><parameteritem>
+<parameterlist kind="exception"><parameteritem>
 <parameternamelist>
-<parametername>d</parametername>
+<parametername>MsPASSError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>input ensemble to save sample data </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>dir</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>directory name (if entry use current directory) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>dfile</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>file name for write </para>
+<para>This function will throw for one of several common io related issues. Caller should always include the call to this function in a try block.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>
+Write sample data for an Ensemble of Seismogram objects to a single file.</para>
+<para>Writing ensemble data with this function is more efficient than writing atomic data one at time. The reason is this function writes all the sample data for the ensemble to a single and only opens and closes the file specfied once. It returns a vector of foff values. Dead members have no sample data written and will generate a -1 entry in the foff vector returned. Caller should handle that condition in some way.</para>
+<para>If entire ensemble is marked dead it will return an empty vector container. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="203" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="203" bodyend="260" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="145" declcolumn="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="195" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="195" bodyend="252" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="145" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1aa271a69b12e7c945f1779b07c3157eb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -352,10 +334,10 @@
 <para>This low level function is used in the file based reader of mspass to speed up python readers. It is intrinsically dangerous because it assumes the data object has a preconstructed size sufficient to hold the data loaded with the low-level C fread function. That buffer in this function is the the dmatrix container, u, used to hold the sample data of a Seismogram object. The reader assumes the input has been initialized on construction or with set_npts to the size matching the data file contents. If there is a mismatch the results are unpredictable.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
-<parametername>Seismogram</parametername>
+<parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>object to hold the sample data to be read from the file. Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
+<para>Seismogram object to hold the sample data to be read from the file. Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -429,10 +411,10 @@
 <para>This low level function is used in the file based reader of mspass to speed up python readers. It is intrinsically dangerous because it assumes the data object has a preconstructed size sufficient to hold the data loaded with the low-level C fread function. That buffer in this function is the std::vector container, s, used to hold the sample data of a Seismogram object. The reader assumes the input has been initialized on construction or with set_npts to the size matching the data file contents. If there is a mismatch the results are unpredictable.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
-<parametername>TimeSeries</parametername>
+<parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>object to hold the sample data to be read from the file Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
+<para>TimeSeries object to hold the sample data to be read from the file Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -506,10 +488,10 @@
 <para>This low level function is used in the file based reader of mspass to speed up python readers. It is intrinsically dangerous because it assumes the data object has a preconstructed size sufficient to hold the data loaded with the low-level C fread function. The reader assumes the input has been initialized on construction or with set_npts to the size matching the data file contents. If there is a mismatch the results are unpredictable.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
-<parametername>Ensemble&lt;TimeSeries&gt;</parametername>
+<parametername>de</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>object to hold the sample data to be read from the files. Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
+<para>Ensemble of TimeSeries objects to hold the sample data to be read from the files. Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -530,26 +512,10 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>foffs</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>is a vector of the number of bytes to seek for first byte of all TimeSeries objects to be read in the given file. </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
 <parametername>indexes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a vector of indexes of TimeSeries objects to be read to the ensemble. </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>length</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>is the size of the ensemble. It is used to resize the ensemble.</para>
+<para>is a vector of indexes of TimeSeries objects to be read to the ensemble.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -568,7 +534,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="371" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="371" bodyend="433" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="242" declcolumn="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="363" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="363" bodyend="425" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="239" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1a20caa06868a6777ab05715499e81c7c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -599,10 +565,10 @@
 <para>This low level function is used in the file based reader of mspass to speed up python readers. It is intrinsically dangerous because it assumes the data object has a preconstructed size sufficient to hold the data loaded with the low-level C fread function. The reader assumes the input has been initialized on construction or with set_npts to the size matching the data file contents. If there is a mismatch the results are unpredictable.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
-<parametername>Ensemble&lt;Seismogram&gt;</parametername>
+<parametername>de</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>object to hold the sample data to be read from the files. Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
+<para>Ensemble of Seismogram objects to hold the sample data to be read from the files. Note that this function acts like a subroutine with entire purpose being to fill the data array of this object. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -623,26 +589,10 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>foffs</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>is a vector of the number of bytes to seek for first byte of all Seismogram objects to be read in the given file. </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
 <parametername>indexes</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a vector of indexes of Seismogram objects to be read to the ensemble. </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>length</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>is the size of the ensemble. It is used to resize the ensemble.</para>
+<para>is a vector of indexes of Seismogram objects to be read to the ensemble.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -661,7 +611,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="309" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="309" bodyend="370" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="277" declcolumn="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="301" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="301" bodyend="362" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="271" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="mseed__index_8h_1a07ef379bb63d712a15b356cfc57c8622" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::pair&lt; std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;, <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &gt;</type>
@@ -710,20 +660,14 @@
 <para>is a boolean largely controlling how time tears are or are not logged. That is, at present if this parameter is true any time the logic detects a time tear it is logged in the returned error log as an informational log message. If false only reading errors for things like garbled miniseed packets are logged. </para>
 </parameterdescription>
 </parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>return</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>is an std::pair. &quot;First&quot; contains a vector of objects called <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> that contain the basic information defining an index for inputfile. See class description of <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> for more details. &quot;second&quot; contains an ErrorLogger objects. Caller should test that the contents are empty and if not save the error log or print it. </para>
-</parameterdescription>
-</parameteritem>
 </parameterlist>
+<simplesect kind="return"><para>std::pair whose first element contains a vector of objects called <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> that contain the basic information defining an index for inputfile. See class description of <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> for more details. &quot;second&quot; contains an ErrorLogger objects. Caller should test that the contents are empty and if not save the error log or print it. </para>
+</simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="102" column="1" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="102" declcolumn="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="107" column="1" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="107" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1a01039e857800708323e459f372d38d19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>long int</type>
@@ -842,7 +786,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="262" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="262" bodyend="287"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="254" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="254" bodyend="279"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1ae1f3e216145ee0c136324079ebd24b6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -872,7 +816,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="288" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="288" bodyend="298"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="280" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="280" bodyend="290"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1acf03563760e97d0c44fa7f3262264ddf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -902,7 +846,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="299" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="299" bodyend="308"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="291" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="291" bodyend="300"/>
       </memberdef>
       <memberdef kind="function" id="mseed__file__indexer_8cc_1ac470c9ed9b76ba66420a7eaf74f16bd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -921,7 +865,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="95" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="95" bodyend="129"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="115" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="115" bodyend="149"/>
       </memberdef>
       <memberdef kind="function" id="mseed__file__indexer_8cc_1afe2800b7fa24249de92f7ff6ec6db65b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>MSDINDEX_returntype</type>
@@ -958,7 +902,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="154" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="154" bodyend="383"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="174" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="174" bodyend="403"/>
       </memberdef>
       <memberdef kind="function" id="mseed__index_8cc_1a60a85760a0207ee75e54b84f6db82954" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostringstream &amp;</type>
@@ -977,6 +921,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Stream an index entry to an output string stream. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

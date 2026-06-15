@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -90,31 +133,49 @@ $(function() {
   <div class="headertitle"><div class="title">mspass::algorithms::deconvolution::BasicDeconOperator Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Abstract interface for deconvolution operators configurable by Metadata.  
+ <a href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_basic_decon_operator_8h_source.html">BasicDeconOperator.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for mspass::algorithms::deconvolution::BasicDeconOperator:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.png" usemap="#mspass::algorithms::deconvolution::BasicDeconOperator_map" alt=""/>
-  <map id="mspass::algorithms::deconvolution::BasicDeconOperator_map" name="mspass::algorithms::deconvolution::BasicDeconOperator_map">
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html" title="Base class decon operator for single station 3C decon (receiver functions)." alt="mspass::algorithms::deconvolution::ScalarDecon" shape="rect" coords="0,56,382,80"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon.html" title="Frequency-domain generalized iterative deconvolution." alt="mspass::algorithms::deconvolution::FrequencyDomainGIDDecon" shape="rect" coords="392,112,774,136"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon.html" alt="mspass::algorithms::deconvolution::LeastSquareDecon" shape="rect" coords="392,168,774,192"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html" title="Multitaper power-stabilized spectral-division deconvolution." alt="mspass::algorithms::deconvolution::MultiTaperSpecDivDecon" shape="rect" coords="392,224,774,248"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html" title="Multitaper source-power-stabilized deconvolution." alt="mspass::algorithms::deconvolution::MultiTaperXcorDecon" shape="rect" coords="392,280,774,304"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html" title="Noise-aware stable FFT inverse used by NS-GID." alt="mspass::algorithms::deconvolution::NoiseStableDecon" shape="rect" coords="392,336,774,360"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon.html" title="Three-component generalized iterative deconvolution in time." alt="mspass::algorithms::deconvolution::TimeDomainGIDDecon" shape="rect" coords="392,392,774,416"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html" title="Time-domain damped least-squares deconvolution." alt="mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon" shape="rect" coords="392,448,774,472"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html" alt="mspass::algorithms::deconvolution::WaterLevelDecon" shape="rect" coords="392,504,774,528"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator__inherit__graph.png" border="0" usemap="#amspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_inherit__map" id="amspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_inherit__map">
+<area shape="rect" title="Abstract interface for deconvolution operators configurable by Metadata." alt="" coords="5,281,212,336"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html" title="Base class decon operator for single station 3C decon (receiver functions)." alt="" coords="260,289,471,329"/>
+<area shape="poly" title=" " alt="" coords="226,306,260,306,260,311,226,311"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon.html" title="Frequency&#45;domain generalized iterative deconvolution." alt="" coords="527,5,725,60"/>
+<area shape="poly" title=" " alt="" coords="377,275,398,229,429,174,468,118,517,69,534,58,537,62,520,73,472,122,433,177,403,232,382,277"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon.html" title="Scalar least&#45;squares deconvolution operator." alt="" coords="521,84,731,139"/>
+<area shape="poly" title=" " alt="" coords="387,276,442,212,478,178,517,148,537,137,540,141,520,152,481,182,446,216,391,279"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html" title="Multitaper power&#45;stabilized spectral&#45;division deconvolution." alt="" coords="527,163,725,217"/>
+<area shape="poly" title=" " alt="" coords="412,280,518,226,544,215,546,220,520,231,414,284"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html" title="Multitaper source&#45;power&#45;stabilized deconvolution." alt="" coords="527,241,725,296"/>
+<area shape="poly" title=" " alt="" coords="484,288,526,281,527,287,485,293"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html" title="Noise&#45;aware stable FFT inverse used by NS&#45;GID." alt="" coords="522,320,730,375"/>
+<area shape="poly" title=" " alt="" coords="485,324,522,329,521,335,484,329"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon.html" title="Three&#45;component generalized iterative deconvolution in time." alt="" coords="519,399,733,453"/>
+<area shape="poly" title=" " alt="" coords="417,333,520,384,550,396,548,401,518,388,414,338"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html" title="Time&#45;domain damped least&#45;squares deconvolution." alt="" coords="519,477,733,532"/>
+<area shape="poly" title=" " alt="" coords="392,338,447,401,482,434,520,462,543,475,540,480,517,467,479,438,443,404,388,342"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html" title="Scalar water&#45;level deconvolution operator." alt="" coords="525,556,727,611"/>
+<area shape="poly" title=" " alt="" coords="382,340,403,385,434,439,473,494,520,541,539,554,536,558,517,545,469,497,429,442,399,388,377,343"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a84111e230a365037569b17b2ca693100" id="r_a84111e230a365037569b17b2ca693100"><td class="memItemLeft" align="right" valign="top"><a id="a84111e230a365037569b17b2ca693100" name="a84111e230a365037569b17b2ca693100"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>changeparameter</b> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)=0</td></tr>
+<tr class="memitem:a84111e230a365037569b17b2ca693100" id="r_a84111e230a365037569b17b2ca693100"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html#a84111e230a365037569b17b2ca693100">changeparameter</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)=0</td></tr>
+<tr class="memdesc:a84111e230a365037569b17b2ca693100"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update operator parameters from a Metadata container.  <br /></td></tr>
 <tr class="separator:a84111e230a365037569b17b2ca693100"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf5d01a101bc30f52cd0a54509417ac9" id="r_aaf5d01a101bc30f52cd0a54509417ac9"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html#aaf5d01a101bc30f52cd0a54509417ac9">~BasicDeconOperator</a> ()</td></tr>
+<tr class="separator:aaf5d01a101bc30f52cd0a54509417ac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Abstract interface for deconvolution operators configurable by Metadata. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aaf5d01a101bc30f52cd0a54509417ac9" name="aaf5d01a101bc30f52cd0a54509417ac9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaf5d01a101bc30f52cd0a54509417ac9">&#9670;&#160;</a></span>~BasicDeconOperator()</h2>
 
@@ -137,8 +198,40 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>changeparamet
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">    9</span>{};</div>
+<p>Virtual destructor for derived deconvolution operators. </p>
+<div class="fragment"><div class="line"><span class="lineno">   12</span>{};</div>
 </div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a84111e230a365037569b17b2ca693100" name="a84111e230a365037569b17b2ca693100"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84111e230a365037569b17b2ca693100">&#9670;&#160;</a></span>changeparameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mspass::algorithms::deconvolution::BasicDeconOperator::changeparameter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;&#160;</td>
+          <td class="paramname"><em>md</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update operator parameters from a Metadata container. </p>
+
+<p>Implemented in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon.html#a94e40750a8f60dfdcb6695fb74fec1ee">mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon.html#aa67cf7c3d4fee9b6a59c3bde54efceb5">mspass::algorithms::deconvolution::LeastSquareDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html#a86b91406f4bd73b8da5b6d66ac85930a">mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a9bff7dc7ae52a16530537b02a63c5c57">mspass::algorithms::deconvolution::MultiTaperXcorDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html#ae578cc62d08ce8c629999db6cccf4d76">mspass::algorithms::deconvolution::NoiseStableDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a8cf90914fa1571e88978b0b810fad805">mspass::algorithms::deconvolution::ScalarDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon.html#aec73707c1062cb14a7d0226ef045a4cb">mspass::algorithms::deconvolution::TimeDomainGIDDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a4c359d9b0db253b3e31e57d42e53ebcd">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html#ad6c091c6aed8b1c774ea40819ec30373">mspass::algorithms::deconvolution::WaterLevelDecon</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>

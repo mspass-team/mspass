@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -92,25 +135,35 @@ $(function() {
   <div class="headertitle"><div class="title">mspass::algorithms::BasicTaper Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Abstract base class for taper operators.  
+ <a href="classmspass_1_1algorithms_1_1_basic_taper.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_taper_8h_source.html">Taper.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for mspass::algorithms::BasicTaper:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1algorithms_1_1_basic_taper.png" usemap="#mspass::algorithms::BasicTaper_map" alt=""/>
-  <map id="mspass::algorithms::BasicTaper_map" name="mspass::algorithms::BasicTaper_map">
-<area href="classmspass_1_1algorithms_1_1_cosine_taper.html" title="Taper front and/or end of a time seris with a half cosine function." alt="mspass::algorithms::CosineTaper" shape="rect" coords="0,56,194,80"/>
-<area href="classmspass_1_1algorithms_1_1_linear_taper.html" title="Used to construct an operator to apply a linear taper to either end." alt="mspass::algorithms::LinearTaper" shape="rect" coords="204,56,398,80"/>
-<area href="classmspass_1_1algorithms_1_1_vector_taper.html" alt="mspass::algorithms::VectorTaper" shape="rect" coords="408,56,602,80"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1algorithms_1_1_basic_taper__inherit__graph.png" border="0" usemap="#amspass_1_1algorithms_1_1_basic_taper_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1algorithms_1_1_basic_taper_inherit__map" id="amspass_1_1algorithms_1_1_basic_taper_inherit__map">
+<area shape="rect" title="Abstract base class for taper operators." alt="" coords="5,69,156,109"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1_cosine_taper.html" title="Taper front and/or end of a time seris with a half cosine function." alt="" coords="204,5,355,45"/>
+<area shape="poly" title=" " alt="" coords="156,63,216,43,218,48,157,68"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1_linear_taper.html" title="Used to construct an operator to apply a linear taper to either end." alt="" coords="204,69,355,109"/>
+<area shape="poly" title=" " alt="" coords="169,87,204,87,204,92,169,92"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1_vector_taper.html" title=" " alt="" coords="204,133,355,173"/>
+<area shape="poly" title=" " alt="" coords="157,111,218,131,216,136,156,116"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab4399e7277aec39a56b017d156838d8b" id="r_ab4399e7277aec39a56b017d156838d8b"><td class="memItemLeft" align="right" valign="top"><a id="ab4399e7277aec39a56b017d156838d8b" name="ab4399e7277aec39a56b017d156838d8b"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>apply</b> (<a class="el" href="classmspass_1_1seismic_1_1_time_series.html">mspass::seismic::TimeSeries</a> &amp;d)=0</td></tr>
+<tr class="memitem:ac4227e073cf362b77e163faea881bb84" id="r_ac4227e073cf362b77e163faea881bb84"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#ac4227e073cf362b77e163faea881bb84">BasicTaper</a> ()</td></tr>
+<tr class="separator:ac4227e073cf362b77e163faea881bb84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac68777236f5c051c487a18ff652420ba" id="r_ac68777236f5c051c487a18ff652420ba"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#ac68777236f5c051c487a18ff652420ba">~BasicTaper</a> ()</td></tr>
+<tr class="separator:ac68777236f5c051c487a18ff652420ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4399e7277aec39a56b017d156838d8b" id="r_ab4399e7277aec39a56b017d156838d8b"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#ab4399e7277aec39a56b017d156838d8b">apply</a> (<a class="el" href="classmspass_1_1seismic_1_1_time_series.html">mspass::seismic::TimeSeries</a> &amp;d)=0</td></tr>
 <tr class="separator:ab4399e7277aec39a56b017d156838d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7be5cccae05c468002776a4fceaf77a" id="r_af7be5cccae05c468002776a4fceaf77a"><td class="memItemLeft" align="right" valign="top"><a id="af7be5cccae05c468002776a4fceaf77a" name="af7be5cccae05c468002776a4fceaf77a"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>apply</b> (<a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a> &amp;d)=0</td></tr>
+<tr class="memitem:af7be5cccae05c468002776a4fceaf77a" id="r_af7be5cccae05c468002776a4fceaf77a"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#af7be5cccae05c468002776a4fceaf77a">apply</a> (<a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a> &amp;d)=0</td></tr>
 <tr class="separator:af7be5cccae05c468002776a4fceaf77a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1aafe6a155d954150e1105bbf9b9bd66" id="r_a1aafe6a155d954150e1105bbf9b9bd66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1aafe6a155d954150e1105bbf9b9bd66">enable_head</a> ()</td></tr>
 <tr class="separator:a1aafe6a155d954150e1105bbf9b9bd66"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,23 +177,18 @@ virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>apply</b> (<a 
 <tr class="separator:a16b1f6b4866b298466e1fd388597d507"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02092ec778f1e289956bbfde3eff7bcd" id="r_a02092ec778f1e289956bbfde3eff7bcd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a02092ec778f1e289956bbfde3eff7bcd">tail_is_enable</a> ()</td></tr>
 <tr class="separator:a02092ec778f1e289956bbfde3eff7bcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55c51763d7c820c6a4595127768e8d5f" id="r_a55c51763d7c820c6a4595127768e8d5f"><td class="memItemLeft" align="right" valign="top"><a id="a55c51763d7c820c6a4595127768e8d5f" name="a55c51763d7c820c6a4595127768e8d5f"></a>
-virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>get_t0head</b> () const =0</td></tr>
+<tr class="memitem:a55c51763d7c820c6a4595127768e8d5f" id="r_a55c51763d7c820c6a4595127768e8d5f"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a55c51763d7c820c6a4595127768e8d5f">get_t0head</a> () const =0</td></tr>
 <tr class="separator:a55c51763d7c820c6a4595127768e8d5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade8769ae7f4508ff3eb71afe057035ac" id="r_ade8769ae7f4508ff3eb71afe057035ac"><td class="memItemLeft" align="right" valign="top"><a id="ade8769ae7f4508ff3eb71afe057035ac" name="ade8769ae7f4508ff3eb71afe057035ac"></a>
-virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>get_t1head</b> () const =0</td></tr>
+<tr class="memitem:ade8769ae7f4508ff3eb71afe057035ac" id="r_ade8769ae7f4508ff3eb71afe057035ac"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#ade8769ae7f4508ff3eb71afe057035ac">get_t1head</a> () const =0</td></tr>
 <tr class="separator:ade8769ae7f4508ff3eb71afe057035ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ae0f21cc36bd494b761ba5ff57eae5af1" id="r_ae0f21cc36bd494b761ba5ff57eae5af1"><td class="memItemLeft" align="right" valign="top"><a id="ae0f21cc36bd494b761ba5ff57eae5af1" name="ae0f21cc36bd494b761ba5ff57eae5af1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>head</b></td></tr>
+<tr class="memitem:ae0f21cc36bd494b761ba5ff57eae5af1" id="r_ae0f21cc36bd494b761ba5ff57eae5af1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">head</a></td></tr>
 <tr class="separator:ae0f21cc36bd494b761ba5ff57eae5af1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ed584a194b90ec12eb3d4ad5cee3486" id="r_a1ed584a194b90ec12eb3d4ad5cee3486"><td class="memItemLeft" align="right" valign="top"><a id="a1ed584a194b90ec12eb3d4ad5cee3486" name="a1ed584a194b90ec12eb3d4ad5cee3486"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>tail</b></td></tr>
+<tr class="memitem:a1ed584a194b90ec12eb3d4ad5cee3486" id="r_a1ed584a194b90ec12eb3d4ad5cee3486"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">tail</a></td></tr>
 <tr class="separator:a1ed584a194b90ec12eb3d4ad5cee3486"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35513607e1c2e9b0d714364bd8c41ea2" id="r_a35513607e1c2e9b0d714364bd8c41ea2"><td class="memItemLeft" align="right" valign="top"><a id="a35513607e1c2e9b0d714364bd8c41ea2" name="a35513607e1c2e9b0d714364bd8c41ea2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
+<tr class="memitem:a35513607e1c2e9b0d714364bd8c41ea2" id="r_a35513607e1c2e9b0d714364bd8c41ea2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a></td></tr>
 <tr class="separator:a35513607e1c2e9b0d714364bd8c41ea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
@@ -149,7 +197,10 @@ Friends</h2></td></tr>
 class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization::access</b></td></tr>
 <tr class="separator:ac98d07dd8f7b70e16ccb9a01abf56b9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Abstract base class for taper operators. </p>
+<p>Derived tapers apply amplitude weights to the head, tail, or full span of scalar and three-component seismic data. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac4227e073cf362b77e163faea881bb84" name="ac4227e073cf362b77e163faea881bb84"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac4227e073cf362b77e163faea881bb84">&#9670;&#160;</a></span>BasicTaper()</h2>
 
@@ -172,12 +223,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   20</span>               {</div>
-<div class="line"><span class="lineno">   21</span>    head = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   22</span>    tail = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   23</span>    all = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   24</span>  };</div>
+<p>Construct a taper with all regions disabled. </p>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>               {</div>
+<div class="line"><span class="lineno">   27</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">head</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   28</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">tail</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   29</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   30</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_basic_taper_html_a1ed584a194b90ec12eb3d4ad5cee3486"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">mspass::algorithms::BasicTaper::tail</a></div><div class="ttdeci">bool tail</div><div class="ttdef"><b>Definition</b> Taper.h:78</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_basic_taper_html_a35513607e1c2e9b0d714364bd8c41ea2"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">mspass::algorithms::BasicTaper::all</a></div><div class="ttdeci">bool all</div><div class="ttdef"><b>Definition</b> Taper.h:79</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_basic_taper_html_ae0f21cc36bd494b761ba5ff57eae5af1"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">mspass::algorithms::BasicTaper::head</a></div><div class="ttdeci">bool head</div><div class="ttdef"><b>Definition</b> Taper.h:77</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a>, <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">head</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">tail</a>.</p>
+
 </div>
 </div>
 <a id="ac68777236f5c051c487a18ff652420ba" name="ac68777236f5c051c487a18ff652420ba"></a>
@@ -202,11 +259,70 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   25</span>{};</div>
+<p>Virtual destructor for derived taper operators. </p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="af7be5cccae05c468002776a4fceaf77a" name="af7be5cccae05c468002776a4fceaf77a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7be5cccae05c468002776a4fceaf77a">&#9670;&#160;</a></span>apply() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int mspass::algorithms::BasicTaper::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Apply this taper to a three-component Seismogram. </p>
+
+<p>Implemented in <a class="el" href="classmspass_1_1algorithms_1_1_linear_taper.html#a08de73ccb968eee24da501b3df0a8e56">mspass::algorithms::LinearTaper</a>, <a class="el" href="classmspass_1_1algorithms_1_1_cosine_taper.html#ae1b1e4c7c196878c5e17f04c1a3adddd">mspass::algorithms::CosineTaper</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_vector_taper.html#a3f0bc37e59814ec60992825f145c0103">mspass::algorithms::VectorTaper</a>.</p>
+
+</div>
+</div>
+<a id="ab4399e7277aec39a56b017d156838d8b" name="ab4399e7277aec39a56b017d156838d8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4399e7277aec39a56b017d156838d8b">&#9670;&#160;</a></span>apply() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int mspass::algorithms::BasicTaper::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmspass_1_1seismic_1_1_time_series.html">mspass::seismic::TimeSeries</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Apply this taper to a scalar TimeSeries. </p>
+
+<p>Implemented in <a class="el" href="classmspass_1_1algorithms_1_1_linear_taper.html#a1d1f9b13b7b5d052d98771c8ac8cfafb">mspass::algorithms::LinearTaper</a>, <a class="el" href="classmspass_1_1algorithms_1_1_cosine_taper.html#ac9c6bbea89be35e99f72d987d52510d4">mspass::algorithms::CosineTaper</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_vector_taper.html#a0513879267986e1c1c52e35b3519687b">mspass::algorithms::VectorTaper</a>.</p>
+
+</div>
+</div>
 <a id="ac4cc68faa949932e653804bfc5db42ce" name="ac4cc68faa949932e653804bfc5db42ce"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac4cc68faa949932e653804bfc5db42ce">&#9670;&#160;</a></span>disable_head()</h2>
 
@@ -229,11 +345,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   29</span>                      {</div>
-<div class="line"><span class="lineno">   30</span>    head = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   31</span>    all = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   32</span>  };</div>
+<p>Disable tapering on the head of a datum. </p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>                      {</div>
+<div class="line"><span class="lineno">   41</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">head</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   42</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   43</span>  };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">head</a>.</p>
+
 </div>
 </div>
 <a id="aade23966f66e7d1b741e6e8ee2dbde90" name="aade23966f66e7d1b741e6e8ee2dbde90"></a>
@@ -258,11 +377,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   34</span>                      {</div>
-<div class="line"><span class="lineno">   35</span>    tail = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   36</span>    all = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   37</span>  };</div>
+<p>Disable tapering on the tail of a datum. </p>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>                      {</div>
+<div class="line"><span class="lineno">   48</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">tail</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   49</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   50</span>  };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">tail</a>.</p>
+
 </div>
 </div>
 <a id="a1aafe6a155d954150e1105bbf9b9bd66" name="a1aafe6a155d954150e1105bbf9b9bd66"></a>
@@ -287,8 +409,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   28</span>{ head = <span class="keyword">true</span>; };</div>
+<p>Enable tapering on the head of a datum. </p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>{ <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">head</a> = <span class="keyword">true</span>; };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">head</a>.</p>
+
 </div>
 </div>
 <a id="a04b2cdddaa30789f37be9c6346a3689b" name="a04b2cdddaa30789f37be9c6346a3689b"></a>
@@ -313,8 +438,67 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{ tail = <span class="keyword">true</span>; };</div>
+<p>Enable tapering on the tail of a datum. </p>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>{ <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">tail</a> = <span class="keyword">true</span>; };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">tail</a>.</p>
+
+</div>
+</div>
+<a id="a55c51763d7c820c6a4595127768e8d5f" name="a55c51763d7c820c6a4595127768e8d5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55c51763d7c820c6a4595127768e8d5f">&#9670;&#160;</a></span>get_t0head()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double mspass::algorithms::BasicTaper::get_t0head </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the start time of the head taper. </p>
+
+<p>Implemented in <a class="el" href="classmspass_1_1algorithms_1_1_linear_taper.html#a0b48a3c90385cff894c9c1be8c6f3436">mspass::algorithms::LinearTaper</a>, <a class="el" href="classmspass_1_1algorithms_1_1_cosine_taper.html#abab71d6fc9bf3e6413c831899f6078ef">mspass::algorithms::CosineTaper</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_vector_taper.html#af4d087c6e3af62c4279e73a843144176">mspass::algorithms::VectorTaper</a>.</p>
+
+</div>
+</div>
+<a id="ade8769ae7f4508ff3eb71afe057035ac" name="ade8769ae7f4508ff3eb71afe057035ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade8769ae7f4508ff3eb71afe057035ac">&#9670;&#160;</a></span>get_t1head()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double mspass::algorithms::BasicTaper::get_t1head </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the end time of the head taper. </p>
+
+<p>Implemented in <a class="el" href="classmspass_1_1algorithms_1_1_linear_taper.html#a56c92176f8b7c425c58f11227a216e81">mspass::algorithms::LinearTaper</a>, <a class="el" href="classmspass_1_1algorithms_1_1_cosine_taper.html#af5f878917867d868c49965e92b997664">mspass::algorithms::CosineTaper</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_vector_taper.html#a3e34ba1539ae7b1567bbe0bbb7a8ec10">mspass::algorithms::VectorTaper</a>.</p>
+
 </div>
 </div>
 <a id="a16b1f6b4866b298466e1fd388597d507" name="a16b1f6b4866b298466e1fd388597d507"></a>
@@ -339,13 +523,16 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   38</span>                         {</div>
-<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">if</span> (head || all) {</div>
-<div class="line"><span class="lineno">   40</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   41</span>    }</div>
-<div class="line"><span class="lineno">   42</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   43</span>  };</div>
+<p>Return true when head tapering is enabled directly or by full tapering. </p>
+<div class="fragment"><div class="line"><span class="lineno">   52</span>                         {</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">head</a> || <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a>) {</div>
+<div class="line"><span class="lineno">   54</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   55</span>    }</div>
+<div class="line"><span class="lineno">   56</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   57</span>  };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#ae0f21cc36bd494b761ba5ff57eae5af1">head</a>.</p>
+
 </div>
 </div>
 <a id="a02092ec778f1e289956bbfde3eff7bcd" name="a02092ec778f1e289956bbfde3eff7bcd"></a>
@@ -370,13 +557,86 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   44</span>                        {</div>
-<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">if</span> (tail || all) {</div>
-<div class="line"><span class="lineno">   46</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   47</span>    }</div>
-<div class="line"><span class="lineno">   48</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   49</span>  };</div>
+<p>Return true when tail tapering is enabled directly or by full tapering. </p>
+<div class="fragment"><div class="line"><span class="lineno">   59</span>                        {</div>
+<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">tail</a> || <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a>) {</div>
+<div class="line"><span class="lineno">   61</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   62</span>    }</div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   64</span>  };</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a35513607e1c2e9b0d714364bd8c41ea2">all</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html#a1ed584a194b90ec12eb3d4ad5cee3486">tail</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a35513607e1c2e9b0d714364bd8c41ea2" name="a35513607e1c2e9b0d714364bd8c41ea2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35513607e1c2e9b0d714364bd8c41ea2">&#9670;&#160;</a></span>all</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mspass::algorithms::BasicTaper::all</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>True when the whole datum is tapered by one vector. </p>
+
+</div>
+</div>
+<a id="ae0f21cc36bd494b761ba5ff57eae5af1" name="ae0f21cc36bd494b761ba5ff57eae5af1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0f21cc36bd494b761ba5ff57eae5af1">&#9670;&#160;</a></span>head</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mspass::algorithms::BasicTaper::head</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>True when head tapering is enabled. </p>
+
+</div>
+</div>
+<a id="a1ed584a194b90ec12eb3d4ad5cee3486" name="a1ed584a194b90ec12eb3d4ad5cee3486"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ed584a194b90ec12eb3d4ad5cee3486">&#9670;&#160;</a></span>tail</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mspass::algorithms::BasicTaper::tail</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>True when tail tapering is enabled. </p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>

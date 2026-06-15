@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -98,27 +141,51 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for mspass::algorithms::deconvolution::MultiTaperXcorDecon:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.png" usemap="#mspass::algorithms::deconvolution::MultiTaperXcorDecon_map" alt=""/>
-  <map id="mspass::algorithms::deconvolution::MultiTaperXcorDecon_map" name="mspass::algorithms::deconvolution::MultiTaperXcorDecon_map">
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html" title="Object to hold components needed in all fft based decon algorithms." alt="mspass::algorithms::deconvolution::FFTDeconOperator" shape="rect" coords="0,56,332,80"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html" title="Base class decon operator for single station 3C decon (receiver functions)." alt="mspass::algorithms::deconvolution::ScalarDecon" shape="rect" coords="342,56,674,80"/>
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html" alt="mspass::algorithms::deconvolution::BasicDeconOperator" shape="rect" coords="342,0,674,24"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon__inherit__graph.png" border="0" usemap="#amspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_inherit__map" id="amspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_inherit__map">
+<area shape="rect" title="Multitaper source&#45;power&#45;stabilized deconvolution." alt="" coords="559,30,757,85"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html" title="Object to hold components needed in all fft based decon algorithms." alt="" coords="260,5,511,45"/>
+<area shape="poly" title=" " alt="" coords="525,39,559,43,558,48,524,44"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html" title="Base class decon operator for single station 3C decon (receiver functions)." alt="" coords="280,69,491,109"/>
+<area shape="poly" title=" " alt="" coords="504,73,558,66,559,72,505,78"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html" title="Abstract interface for deconvolution operators configurable by Metadata." alt="" coords="5,62,212,117"/>
+<area shape="poly" title=" " alt="" coords="226,87,280,87,280,92,226,92"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for mspass::algorithms::deconvolution::MultiTaperXcorDecon:</div>
+<div class="dyncontent">
+<div class="center"><img src="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon__coll__graph.png" border="0" usemap="#amspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_coll__map" alt="Collaboration graph"/></div>
+<map name="amspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_coll__map" id="amspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_coll__map">
+<area shape="rect" title="Multitaper source&#45;power&#45;stabilized deconvolution." alt="" coords="696,39,895,94"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html" title="Object to hold components needed in all fft based decon algorithms." alt="" coords="396,9,647,49"/>
+<area shape="poly" title=" " alt="" coords="661,46,696,51,696,56,660,51"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html" title="Interfacing object to ease conversion between FORTRAN and C++ complex." alt="" coords="11,5,234,45"/>
+<area shape="poly" title=" " alt="" coords="248,24,396,25,396,31,248,29"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html" title="Base class decon operator for single station 3C decon (receiver functions)." alt="" coords="416,77,627,117"/>
+<area shape="poly" title=" " alt="" coords="640,81,696,75,696,80,641,87"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html" title="Abstract interface for deconvolution operators configurable by Metadata." alt="" coords="19,70,226,125"/>
+<area shape="poly" title=" " alt="" coords="240,95,416,95,416,100,240,100"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html" title="Frequency domain shaping wavelet." alt="" coords="5,149,240,189"/>
+<area shape="poly" title=" " alt="" coords="247,144,415,114,416,119,248,150"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7803e634bb1ffd2cf89e195f02d9beee" id="r_a7803e634bb1ffd2cf89e195f02d9beee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a7803e634bb1ffd2cf89e195f02d9beee">MultiTaperXcorDecon</a> ()</td></tr>
 <tr class="separator:a7803e634bb1ffd2cf89e195f02d9beee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6963341acb9045db5f9d6644c1ea740" id="r_af6963341acb9045db5f9d6644c1ea740"><td class="memItemLeft" align="right" valign="top"><a id="af6963341acb9045db5f9d6644c1ea740" name="af6963341acb9045db5f9d6644c1ea740"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MultiTaperXcorDecon</b> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md, const std::vector&lt; double &gt; &amp;noise, const std::vector&lt; double &gt; &amp;wavelet, const std::vector&lt; double &gt; &amp;data)</td></tr>
+<tr class="memitem:af6963341acb9045db5f9d6644c1ea740" id="r_af6963341acb9045db5f9d6644c1ea740"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#af6963341acb9045db5f9d6644c1ea740">MultiTaperXcorDecon</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md, const std::vector&lt; double &gt; &amp;noise, const std::vector&lt; double &gt; &amp;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>, const std::vector&lt; double &gt; &amp;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>)</td></tr>
+<tr class="memdesc:af6963341acb9045db5f9d6644c1ea740"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct and load all multitaper inputs.  <br /></td></tr>
 <tr class="separator:af6963341acb9045db5f9d6644c1ea740"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56bbced25dbde3899c987b0a2fe8b3ff" id="r_a56bbced25dbde3899c987b0a2fe8b3ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a56bbced25dbde3899c987b0a2fe8b3ff">MultiTaperXcorDecon</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)</td></tr>
+<tr class="memdesc:a56bbced25dbde3899c987b0a2fe8b3ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from metadata and reserve internal buffers.  <br /></td></tr>
 <tr class="separator:a56bbced25dbde3899c987b0a2fe8b3ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b56fa23acc422a8b088335c13f46e61" id="r_a2b56fa23acc422a8b088335c13f46e61"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a2b56fa23acc422a8b088335c13f46e61">MultiTaperXcorDecon</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html">MultiTaperXcorDecon</a> &amp;parent)</td></tr>
+<tr class="memdesc:a2b56fa23acc422a8b088335c13f46e61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor.  <br /></td></tr>
 <tr class="separator:a2b56fa23acc422a8b088335c13f46e61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bff7dc7ae52a16530537b02a63c5c57" id="r_a9bff7dc7ae52a16530537b02a63c5c57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a9bff7dc7ae52a16530537b02a63c5c57">changeparameter</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)</td></tr>
+<tr class="memdesc:a9bff7dc7ae52a16530537b02a63c5c57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update operator parameters from a Metadata container.  <br /></td></tr>
 <tr class="separator:a9bff7dc7ae52a16530537b02a63c5c57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa4de146e8f178218b170be5cf6bd55c" id="r_aaa4de146e8f178218b170be5cf6bd55c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#aaa4de146e8f178218b170be5cf6bd55c">loadnoise</a> (const std::vector&lt; double &gt; &amp;noise)</td></tr>
 <tr class="memdesc:aaa4de146e8f178218b170be5cf6bd55c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a section of pre-event noise.  <br /></td></tr>
@@ -127,6 +194,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1cda7c1dea86b2388d47af30d4d4c6ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load wavelet, data, and noise vectors.  <br /></td></tr>
 <tr class="separator:a1cda7c1dea86b2388d47af30d4d4c6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac6fc172d69975b1afe4be16658fbff6" id="r_aac6fc172d69975b1afe4be16658fbff6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#aac6fc172d69975b1afe4be16658fbff6">process</a> ()</td></tr>
+<tr class="memdesc:aac6fc172d69975b1afe4be16658fbff6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the multitaper cross-correlation deconvolution result.  <br /></td></tr>
 <tr class="separator:aac6fc172d69975b1afe4be16658fbff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9eb03c46506f2a8960a16d74d3068a5e" id="r_a9eb03c46506f2a8960a16d74d3068a5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a9eb03c46506f2a8960a16d74d3068a5e">actual_output</a> ()</td></tr>
 <tr class="memdesc:a9eb03c46506f2a8960a16d74d3068a5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the actual output of the deconvolution operator.  <br /></td></tr>
@@ -147,49 +215,73 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab88128916470a682bf49547e9a4131b7" id="r_ab88128916470a682bf49547e9a4131b7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#ab88128916470a682bf49547e9a4131b7">get_time_bandwidth_product</a> ()</td></tr>
 <tr class="separator:ab88128916470a682bf49547e9a4131b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">mspass::algorithms::deconvolution::FFTDeconOperator</a></td></tr>
+<tr class="memitem:a1aa1a6a6bf04b24d0c76d45e73c3b421 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a1aa1a6a6bf04b24d0c76d45e73c3b421"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1aa1a6a6bf04b24d0c76d45e73c3b421">FFTDeconOperator</a> ()</td></tr>
+<tr class="memdesc:a1aa1a6a6bf04b24d0c76d45e73c3b421 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty FFT operator shell.  <br /></td></tr>
+<tr class="separator:a1aa1a6a6bf04b24d0c76d45e73c3b421 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6851bec74d3f288eaf1de36cf1d7953b inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a6851bec74d3f288eaf1de36cf1d7953b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a6851bec74d3f288eaf1de36cf1d7953b">FFTDeconOperator</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)</td></tr>
+<tr class="memdesc:a6851bec74d3f288eaf1de36cf1d7953b inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from deconvolution Metadata.  <br /></td></tr>
 <tr class="separator:a6851bec74d3f288eaf1de36cf1d7953b inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3df395f4ff5bae8b891bee33f107e46 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_af3df395f4ff5bae8b891bee33f107e46"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#af3df395f4ff5bae8b891bee33f107e46">FFTDeconOperator</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a> &amp;parent)</td></tr>
+<tr class="memdesc:af3df395f4ff5bae8b891bee33f107e46 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor.  <br /></td></tr>
 <tr class="separator:af3df395f4ff5bae8b891bee33f107e46 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c9a93bff093cc3f5fbb7991e2812c23 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a5c9a93bff093cc3f5fbb7991e2812c23"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a5c9a93bff093cc3f5fbb7991e2812c23">~FFTDeconOperator</a> ()</td></tr>
+<tr class="memdesc:a5c9a93bff093cc3f5fbb7991e2812c23 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release allocated GSL FFT work objects.  <br /></td></tr>
+<tr class="separator:a5c9a93bff093cc3f5fbb7991e2812c23 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1040f97ddf7bb7bd2c33ac9a7f99a79 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_ae1040f97ddf7bb7bd2c33ac9a7f99a79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#ae1040f97ddf7bb7bd2c33ac9a7f99a79">operator=</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a> &amp;parent)</td></tr>
+<tr class="memdesc:ae1040f97ddf7bb7bd2c33ac9a7f99a79 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign FFT size and lag shift from another operator.  <br /></td></tr>
 <tr class="separator:ae1040f97ddf7bb7bd2c33ac9a7f99a79 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ce6831f67065f17fe7b30aa014eaaf3 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a0ce6831f67065f17fe7b30aa014eaaf3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a0ce6831f67065f17fe7b30aa014eaaf3">changeparameter</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)</td></tr>
+<tr class="memdesc:a0ce6831f67065f17fe7b30aa014eaaf3 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconfigure the FFT operator from Metadata.  <br /></td></tr>
 <tr class="separator:a0ce6831f67065f17fe7b30aa014eaaf3 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeaceb977e9797e483bf3a8ba030743c6 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_aeaceb977e9797e483bf3a8ba030743c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aeaceb977e9797e483bf3a8ba030743c6">change_size</a> (const int nfft_new)</td></tr>
+<tr class="memdesc:aeaceb977e9797e483bf3a8ba030743c6 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the FFT work-buffer length.  <br /></td></tr>
 <tr class="separator:aeaceb977e9797e483bf3a8ba030743c6 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d3f1776e68b20fff386d4bc19e51550 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a3d3f1776e68b20fff386d4bc19e51550"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3d3f1776e68b20fff386d4bc19e51550">change_shift</a> (const int shift)</td></tr>
+<tr class="memdesc:a3d3f1776e68b20fff386d4bc19e51550 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the sample offset used to unwrap deconvolution lag windows.  <br /></td></tr>
 <tr class="separator:a3d3f1776e68b20fff386d4bc19e51550 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf21bce1d1519ece5e9879d03e7f7e5a inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_abf21bce1d1519ece5e9879d03e7f7e5a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#abf21bce1d1519ece5e9879d03e7f7e5a">get_size</a> ()</td></tr>
+<tr class="memdesc:abf21bce1d1519ece5e9879d03e7f7e5a inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current FFT work-buffer length.  <br /></td></tr>
 <tr class="separator:abf21bce1d1519ece5e9879d03e7f7e5a inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad63458bb8ad8a04a66de1c140152fc96 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_ad63458bb8ad8a04a66de1c140152fc96"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#ad63458bb8ad8a04a66de1c140152fc96">get_shift</a> ()</td></tr>
+<tr class="memdesc:ad63458bb8ad8a04a66de1c140152fc96 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current deconvolution lag-window sample shift.  <br /></td></tr>
 <tr class="separator:ad63458bb8ad8a04a66de1c140152fc96 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a494e951fb5fceffc545e411a8932d782 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a494e951fb5fceffc545e411a8932d782"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a494e951fb5fceffc545e411a8932d782">operator_size</a> ()</td></tr>
+<tr class="memdesc:a494e951fb5fceffc545e411a8932d782 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current FFT work-buffer length.  <br /></td></tr>
 <tr class="separator:a494e951fb5fceffc545e411a8932d782 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f399747b50f4f98f46b643f23af0ee1 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a6f399747b50f4f98f46b643f23af0ee1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a6f399747b50f4f98f46b643f23af0ee1">operator_shift</a> ()</td></tr>
+<tr class="memdesc:a6f399747b50f4f98f46b643f23af0ee1 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current deconvolution lag-window sample shift.  <br /></td></tr>
 <tr class="separator:a6f399747b50f4f98f46b643f23af0ee1 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf84c339f3b540543ee8c3487997908a inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_adf84c339f3b540543ee8c3487997908a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#adf84c339f3b540543ee8c3487997908a">df</a> (const double dt)</td></tr>
+<tr class="memdesc:adf84c339f3b540543ee8c3487997908a inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return frequency spacing for the current FFT length.  <br /></td></tr>
 <tr class="separator:adf84c339f3b540543ee8c3487997908a inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3473dc7f359332dbf5a685efe30a684b inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a3473dc7f359332dbf5a685efe30a684b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FourierInverse</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> &amp;winv, const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> &amp;sw, const double dt, const double t0parent)</td></tr>
+<tr class="memitem:a3473dc7f359332dbf5a685efe30a684b inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a3473dc7f359332dbf5a685efe30a684b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FourierInverse</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> &amp;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a>, const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> &amp;sw, const double dt, const double t0parent)</td></tr>
 <tr class="memdesc:a3473dc7f359332dbf5a685efe30a684b inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return inverse wavelet for Fourier methods.  <br /></td></tr>
 <tr class="separator:a3473dc7f359332dbf5a685efe30a684b inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td></tr>
+<tr class="memitem:a2127063af2e8d0c3b4ab56dd73e81cdd inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a2127063af2e8d0c3b4ab56dd73e81cdd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a2127063af2e8d0c3b4ab56dd73e81cdd">ScalarDecon</a> ()</td></tr>
+<tr class="memdesc:a2127063af2e8d0c3b4ab56dd73e81cdd inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty scalar deconvolution operator.  <br /></td></tr>
+<tr class="separator:a2127063af2e8d0c3b4ab56dd73e81cdd inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7e5ecd4bce2d9da9cb7724cf0c50690 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_ab7e5ecd4bce2d9da9cb7724cf0c50690"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ab7e5ecd4bce2d9da9cb7724cf0c50690">ScalarDecon</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)</td></tr>
+<tr class="memdesc:ab7e5ecd4bce2d9da9cb7724cf0c50690 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from Metadata.  <br /></td></tr>
 <tr class="separator:ab7e5ecd4bce2d9da9cb7724cf0c50690 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e500a76366d00c1b1d6ebc03084668e inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a5e500a76366d00c1b1d6ebc03084668e"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>ScalarDecon</b> (const std::vector&lt; double &gt; &amp;d, const std::vector&lt; double &gt; &amp;w)</td></tr>
+<tr class="memitem:a5e500a76366d00c1b1d6ebc03084668e inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a5e500a76366d00c1b1d6ebc03084668e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a5e500a76366d00c1b1d6ebc03084668e">ScalarDecon</a> (const std::vector&lt; double &gt; &amp;d, const std::vector&lt; double &gt; &amp;w)</td></tr>
+<tr class="memdesc:a5e500a76366d00c1b1d6ebc03084668e inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct with loaded data and source-wavelet vectors.  <br /></td></tr>
 <tr class="separator:a5e500a76366d00c1b1d6ebc03084668e inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2488963949a1161f7a3b4f908a78807 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_ae2488963949a1161f7a3b4f908a78807"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae2488963949a1161f7a3b4f908a78807">ScalarDecon</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">ScalarDecon</a> &amp;parent)</td></tr>
+<tr class="memdesc:ae2488963949a1161f7a3b4f908a78807 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor preserving loaded vectors and shaping wavelet.  <br /></td></tr>
 <tr class="separator:ae2488963949a1161f7a3b4f908a78807 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9478e366652c54b4331e14b5a0eb85ea inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a9478e366652c54b4331e14b5a0eb85ea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a9478e366652c54b4331e14b5a0eb85ea">load</a> (const std::vector&lt; double &gt; &amp;wavelet, const std::vector&lt; double &gt; &amp;data)</td></tr>
+<tr class="memitem:a9478e366652c54b4331e14b5a0eb85ea inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a9478e366652c54b4331e14b5a0eb85ea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a9478e366652c54b4331e14b5a0eb85ea">load</a> (const std::vector&lt; double &gt; &amp;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>, const std::vector&lt; double &gt; &amp;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>)</td></tr>
 <tr class="memdesc:a9478e366652c54b4331e14b5a0eb85ea inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load all data required for decon.  <br /></td></tr>
 <tr class="separator:a9478e366652c54b4331e14b5a0eb85ea inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac358e4143a01c4f979f3f09e401b8e7c inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_ac358e4143a01c4f979f3f09e401b8e7c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ac358e4143a01c4f979f3f09e401b8e7c">loaddata</a> (const std::vector&lt; double &gt; &amp;data)</td></tr>
+<tr class="memitem:ac358e4143a01c4f979f3f09e401b8e7c inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_ac358e4143a01c4f979f3f09e401b8e7c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ac358e4143a01c4f979f3f09e401b8e7c">loaddata</a> (const std::vector&lt; double &gt; &amp;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>)</td></tr>
 <tr class="separator:ac358e4143a01c4f979f3f09e401b8e7c inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfb57cb76746708723cac9a860221f2e inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_abfb57cb76746708723cac9a860221f2e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#abfb57cb76746708723cac9a860221f2e">loadwavelet</a> (const std::vector&lt; double &gt; &amp;wavelet)</td></tr>
+<tr class="memitem:abfb57cb76746708723cac9a860221f2e inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_abfb57cb76746708723cac9a860221f2e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#abfb57cb76746708723cac9a860221f2e">loadwavelet</a> (const std::vector&lt; double &gt; &amp;<a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>)</td></tr>
 <tr class="separator:abfb57cb76746708723cac9a860221f2e inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87e82a9c95e7d55501e24e1cc95508f1 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a87e82a9c95e7d55501e24e1cc95508f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">ScalarDecon</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a87e82a9c95e7d55501e24e1cc95508f1">operator=</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">ScalarDecon</a> &amp;parent)</td></tr>
+<tr class="memdesc:a87e82a9c95e7d55501e24e1cc95508f1 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign loaded wavelet, data, and result vectors from parent.  <br /></td></tr>
 <tr class="separator:a87e82a9c95e7d55501e24e1cc95508f1 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae27885f8cd4880c643f09dbe636396a9 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_ae27885f8cd4880c643f09dbe636396a9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae27885f8cd4880c643f09dbe636396a9">getresult</a> ()</td></tr>
+<tr class="memdesc:ae27885f8cd4880c643f09dbe636396a9 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current deconvolution result vector.  <br /></td></tr>
 <tr class="separator:ae27885f8cd4880c643f09dbe636396a9 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cf90914fa1571e88978b0b810fad805 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a8cf90914fa1571e88978b0b810fad805"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a8cf90914fa1571e88978b0b810fad805">changeparameter</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md)</td></tr>
 <tr class="separator:a8cf90914fa1571e88978b0b810fad805 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -206,40 +298,53 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9e854bd78790f3df4114f53331b27853 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a9e854bd78790f3df4114f53331b27853"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a9e854bd78790f3df4114f53331b27853">resolution_kernel</a> ()</td></tr>
 <tr class="memdesc:a9e854bd78790f3df4114f53331b27853 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alias for actual_output using inverse-theory terminology.  <br /></td></tr>
 <tr class="separator:a9e854bd78790f3df4114f53331b27853 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html">mspass::algorithms::deconvolution::BasicDeconOperator</a></td></tr>
+<tr class="memitem:aaf5d01a101bc30f52cd0a54509417ac9 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator" id="r_aaf5d01a101bc30f52cd0a54509417ac9"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html#aaf5d01a101bc30f52cd0a54509417ac9">~BasicDeconOperator</a> ()</td></tr>
+<tr class="separator:aaf5d01a101bc30f52cd0a54509417ac9 inherit pub_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td></tr>
 <tr class="memitem:a83e9fd9e0f13b1a0a650fdb0bb805543 inherit pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a83e9fd9e0f13b1a0a650fdb0bb805543"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a83e9fd9e0f13b1a0a650fdb0bb805543">BasicQCMetrics</a> (const std::string &amp;operator_name, const bool processed)</td></tr>
+<tr class="memdesc:a83e9fd9e0f13b1a0a650fdb0bb805543 inherit pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build QC Metadata fields common to scalar deconvolution operators.  <br /></td></tr>
 <tr class="separator:a83e9fd9e0f13b1a0a650fdb0bb805543 inherit pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">mspass::algorithms::deconvolution::FFTDeconOperator</a></td></tr>
 <tr class="memitem:aa8619effc38e9e0f3927c73eb9b838f0 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_aa8619effc38e9e0f3927c73eb9b838f0"><td class="memItemLeft" align="right" valign="top">
 int&#160;</td><td class="memItemRight" valign="bottom"><b>nfft</b></td></tr>
+<tr class="memdesc:aa8619effc38e9e0f3927c73eb9b838f0 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current FFT work-buffer length in samples. <br /></td></tr>
 <tr class="separator:aa8619effc38e9e0f3927c73eb9b838f0 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7034bf16dcf7ea16563a7032ce19b08e inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a7034bf16dcf7ea16563a7032ce19b08e"><td class="memItemLeft" align="right" valign="top">
 int&#160;</td><td class="memItemRight" valign="bottom"><b>sample_shift</b></td></tr>
+<tr class="memdesc:a7034bf16dcf7ea16563a7032ce19b08e inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample offset used to place zero lag in deconvolution outputs. <br /></td></tr>
 <tr class="separator:a7034bf16dcf7ea16563a7032ce19b08e inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3480b78a08228fc2b2c79809b98335d5 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a3480b78a08228fc2b2c79809b98335d5"><td class="memItemLeft" align="right" valign="top">
 gsl_fft_complex_wavetable *&#160;</td><td class="memItemRight" valign="bottom"><b>wavetable</b></td></tr>
+<tr class="memdesc:a3480b78a08228fc2b2c79809b98335d5 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">GSL factorization table allocated for nfft. <br /></td></tr>
 <tr class="separator:a3480b78a08228fc2b2c79809b98335d5 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1121967f87437c76cfbb1d8a8fb592e8 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a1121967f87437c76cfbb1d8a8fb592e8"><td class="memItemLeft" align="right" valign="top">
 gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><b>workspace</b></td></tr>
+<tr class="memdesc:a1121967f87437c76cfbb1d8a8fb592e8 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">GSL scratch workspace allocated for nfft. <br /></td></tr>
 <tr class="separator:a1121967f87437c76cfbb1d8a8fb592e8 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66026b54b517bc3797a1992ca332bc64 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_a66026b54b517bc3797a1992ca332bc64"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a>&#160;</td><td class="memItemRight" valign="bottom"><b>winv</b></td></tr>
+<tr class="memdesc:a66026b54b517bc3797a1992ca332bc64 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frequency-domain inverse wavelet coefficients for derived operators. <br /></td></tr>
 <tr class="separator:a66026b54b517bc3797a1992ca332bc64 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td></tr>
 <tr class="memitem:a3352f80170606ad4b543493a9168bc9d inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a3352f80170606ad4b543493a9168bc9d"><td class="memItemLeft" align="right" valign="top">
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
+<tr class="memdesc:a3352f80170606ad4b543493a9168bc9d inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data vector to be deconvolved by concrete scalar methods. <br /></td></tr>
 <tr class="separator:a3352f80170606ad4b543493a9168bc9d inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa48f2182a7e7b1c7d63011a9c53c4ee1 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_aa48f2182a7e7b1c7d63011a9c53c4ee1"><td class="memItemLeft" align="right" valign="top">
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>wavelet</b></td></tr>
+<tr class="memdesc:aa48f2182a7e7b1c7d63011a9c53c4ee1 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Source-wavelet estimate used by concrete scalar methods. <br /></td></tr>
 <tr class="separator:aa48f2182a7e7b1c7d63011a9c53c4ee1 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0be7fa5b5fcf4928874f0e4c3c6a2022 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a0be7fa5b5fcf4928874f0e4c3c6a2022"><td class="memItemLeft" align="right" valign="top">
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>result</b></td></tr>
+<tr class="memdesc:a0be7fa5b5fcf4928874f0e4c3c6a2022 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deconvolved output vector produced by process. <br /></td></tr>
 <tr class="separator:a0be7fa5b5fcf4928874f0e4c3c6a2022 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0fe50f72e9cea048e1fa13061c26010 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_ae0fe50f72e9cea048e1fa13061c26010"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">ShapingWavelet</a>&#160;</td><td class="memItemRight" valign="bottom"><b>shapingwavelet</b></td></tr>
+<tr class="memdesc:ae0fe50f72e9cea048e1fa13061c26010 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output shaping wavelet applied by scalar deconvolution methods. <br /></td></tr>
 <tr class="separator:ae0fe50f72e9cea048e1fa13061c26010 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -247,7 +352,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>This legacy class name is retained for source and ABI compatibility. The current implementation is not a paper-faithful Park-Levin MTC estimator: it uses untapered source/data phase for the final inverse and uses multitaper source/noise spectra only to stabilize the power denominator. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a7803e634bb1ffd2cf89e195f02d9beee" name="a7803e634bb1ffd2cf89e195f02d9beee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7803e634bb1ffd2cf89e195f02d9beee">&#9670;&#160;</a></span>MultiTaperXcorDecon() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7803e634bb1ffd2cf89e195f02d9beee">&#9670;&#160;</a></span>MultiTaperXcorDecon() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -269,12 +374,78 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>Default constructor. Do not use except for declarations. </p>
-<div class="fragment"><div class="line"><span class="lineno">   25</span>: FFTDeconOperator(), ScalarDecon() {};</div>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>: <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1aa1a6a6bf04b24d0c76d45e73c3b421">FFTDeconOperator</a>(), <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a2127063af2e8d0c3b4ab56dd73e81cdd">ScalarDecon</a>() {};</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a1aa1a6a6bf04b24d0c76d45e73c3b421"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1aa1a6a6bf04b24d0c76d45e73c3b421">mspass::algorithms::deconvolution::FFTDeconOperator::FFTDeconOperator</a></div><div class="ttdeci">FFTDeconOperator()</div><div class="ttdoc">Construct an empty FFT operator shell.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.cc:13</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_a2127063af2e8d0c3b4ab56dd73e81cdd"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a2127063af2e8d0c3b4ab56dd73e81cdd">mspass::algorithms::deconvolution::ScalarDecon::ScalarDecon</a></div><div class="ttdeci">ScalarDecon()</div><div class="ttdoc">Construct an empty scalar deconvolution operator.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:33</div></div>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="af6963341acb9045db5f9d6644c1ea740" name="af6963341acb9045db5f9d6644c1ea740"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6963341acb9045db5f9d6644c1ea740">&#9670;&#160;</a></span>MultiTaperXcorDecon() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mspass::algorithms::deconvolution::MultiTaperXcorDecon::MultiTaperXcorDecon </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;&#160;</td>
+          <td class="paramname"><em>md</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>noise</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>wavelet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct and load all multitaper inputs. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">md</td><td>metadata defining FFT, shaping-wavelet, and DPSS taper parameters. </td></tr>
+    <tr><td class="paramname">noise</td><td>pre-event noise samples used for denominator stabilization. </td></tr>
+    <tr><td class="paramname">wavelet</td><td>source wavelet samples. </td></tr>
+    <tr><td class="paramname">data</td><td>data samples to deconvolve with the source wavelet. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="fragment"><div class="line"><span class="lineno">  176</span>                                                                     {</div>
+<div class="line"><span class="lineno">  177</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  178</span>    this-&gt;read_metadata(md, <span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  179</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  180</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  181</span>  }</div>
+<div class="line"><span class="lineno">  182</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a1cda7c1dea86b2388d47af30d4d4c6ee">load</a>(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>, noise);</div>
+<div class="line"><span class="lineno">  183</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_html_a1cda7c1dea86b2388d47af30d4d4c6ee"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a1cda7c1dea86b2388d47af30d4d4c6ee">mspass::algorithms::deconvolution::MultiTaperXcorDecon::load</a></div><div class="ttdeci">int load(const std::vector&lt; double &gt; &amp;w, const std::vector&lt; double &gt; &amp;d, const std::vector&lt; double &gt; &amp;n)</div><div class="ttdoc">Load wavelet, data, and noise vectors.</div><div class="ttdef"><b>Definition</b> MultiTaperXcorDecon.cc:156</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_a3352f80170606ad4b543493a9168bc9d"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">mspass::algorithms::deconvolution::ScalarDecon::data</a></div><div class="ttdeci">std::vector&lt; double &gt; data</div><div class="ttdoc">Data vector to be deconvolved by concrete scalar methods.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:140</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_aa48f2182a7e7b1c7d63011a9c53c4ee1"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">mspass::algorithms::deconvolution::ScalarDecon::wavelet</a></div><div class="ttdeci">std::vector&lt; double &gt; wavelet</div><div class="ttdoc">Source-wavelet estimate used by concrete scalar methods.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:142</div></div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">mspass::algorithms::deconvolution::ScalarDecon::data</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a1cda7c1dea86b2388d47af30d4d4c6ee">load()</a>.</p>
+
+</div>
+</div>
 <a id="a56bbced25dbde3899c987b0a2fe8b3ff" name="a56bbced25dbde3899c987b0a2fe8b3ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a56bbced25dbde3899c987b0a2fe8b3ff">&#9670;&#160;</a></span>MultiTaperXcorDecon() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a56bbced25dbde3899c987b0a2fe8b3ff">&#9670;&#160;</a></span>MultiTaperXcorDecon() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -288,7 +459,15 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   22</span>    : FFTDeconOperator(md) {</div>
+
+<p>Construct from metadata and reserve internal buffers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">md</td><td>metadata defining FFT, shaping-wavelet, and DPSS taper parameters. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="fragment"><div class="line"><span class="lineno">   22</span>    : <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1aa1a6a6bf04b24d0c76d45e73c3b421">FFTDeconOperator</a>(md) {</div>
 <div class="line"><span class="lineno">   23</span> </div>
 <div class="line"><span class="lineno">   24</span>  <span class="keywordflow">try</span> {</div>
 <div class="line"><span class="lineno">   25</span>    this-&gt;read_metadata(md, <span class="keyword">false</span>);</div>
@@ -297,15 +476,18 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><span class="lineno">   28</span>  };</div>
 <div class="line"><span class="lineno">   29</span>  <span class="comment">/* assume tapers matrix is created in read_metadata.   We call reserve</span></div>
 <div class="line"><span class="lineno">   30</span><span class="comment">  on the three stl vector containers for efficiency. */</span></div>
-<div class="line"><span class="lineno">   31</span>  data.reserve(nfft);</div>
-<div class="line"><span class="lineno">   32</span>  wavelet.reserve(nfft);</div>
-<div class="line"><span class="lineno">   33</span>  noise.reserve(nfft);</div>
+<div class="line"><span class="lineno">   31</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>.reserve(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">   32</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>.reserve(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">   33</span>  noise.reserve(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
 <div class="line"><span class="lineno">   34</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_aa8619effc38e9e0f3927c73eb9b838f0"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</a></div><div class="ttdeci">int nfft</div><div class="ttdoc">Current FFT work-buffer length in samples.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:95</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">mspass::algorithms::deconvolution::ScalarDecon::data</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">mspass::algorithms::deconvolution::ScalarDecon::wavelet</a>.</p>
+
 </div>
 </div>
 <a id="a2b56fa23acc422a8b088335c13f46e61" name="a2b56fa23acc422a8b088335c13f46e61"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b56fa23acc422a8b088335c13f46e61">&#9670;&#160;</a></span>MultiTaperXcorDecon() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b56fa23acc422a8b088335c13f46e61">&#9670;&#160;</a></span>MultiTaperXcorDecon() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -319,7 +501,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   37</span>    : FFTDeconOperator(parent), ScalarDecon(parent), noise(parent.noise),</div>
+
+<p>Copy constructor. </p>
+<p>Copies the configured taper set, loaded noise, and cached actual-output spectrum. </p>
+<div class="fragment"><div class="line"><span class="lineno">   37</span>    : <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1aa1a6a6bf04b24d0c76d45e73c3b421">FFTDeconOperator</a>(parent), <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a2127063af2e8d0c3b4ab56dd73e81cdd">ScalarDecon</a>(parent), noise(parent.noise),</div>
 <div class="line"><span class="lineno">   38</span>      tapers(parent.tapers), ao_fft(parent.ao_fft) {</div>
 <div class="line"><span class="lineno">   39</span>  <span class="comment">/* multitaper parameters to copy */</span></div>
 <div class="line"><span class="lineno">   40</span>  nw = parent.nw;</div>
@@ -352,7 +537,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   32</span>{};</div>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -384,46 +569,52 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>The actual output/resolution kernel is defined as G(f)W0(f), where G is the untapered-phase inverse and W0 is the untapered wavelet spectrum. The denominator of G is stabilized by multitaper source power and damped multitaper noise power. </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a84f320ad48e8bfc9c292f8dde33c0593">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  334</span>                                                  {</div>
-<div class="line"><span class="lineno">  335</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  336</span>    <span class="keywordflow">if</span> (ao_fft.size() &lt;= 0)</div>
-<div class="line"><span class="lineno">  337</span>      <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;MultiTaperXcorDecon::actual_output: process must &quot;</span></div>
-<div class="line"><span class="lineno">  338</span>                        <span class="stringliteral">&quot;be called before actual_output&quot;</span>,</div>
-<div class="line"><span class="lineno">  339</span>                        ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  340</span>    <span class="comment">/* The ao_fft array contains the fft of the actual output/resolution kernel.</span></div>
-<div class="line"><span class="lineno">  341</span><span class="comment">     * We do need to appy the shaping wavelet for consistency before</span></div>
-<div class="line"><span class="lineno">  342</span><span class="comment">     * converting it to the time domain.*/</span></div>
-<div class="line"><span class="lineno">  343</span>    ComplexArray work(ao_fft);</div>
-<div class="line"><span class="lineno">  344</span>    work = (*shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * work;</div>
-<div class="line"><span class="lineno">  345</span>    gsl_fft_complex_inverse(work.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  346</span>    vector&lt;double&gt; ao;</div>
-<div class="line"><span class="lineno">  347</span>    ao.reserve(nfft);</div>
-<div class="line"><span class="lineno">  348</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; work.size(); ++k)</div>
-<div class="line"><span class="lineno">  349</span>      ao.push_back(work[k].real());</div>
-<div class="line"><span class="lineno">  350</span>    <span class="comment">/* We always shift this wavelet to the center of the data vector.</span></div>
-<div class="line"><span class="lineno">  351</span><span class="comment">    We handle the time through the CoreTimeSeries object. */</span></div>
-<div class="line"><span class="lineno">  352</span>    <span class="keywordtype">int</span> i0 = nfft / 2;</div>
-<div class="line"><span class="lineno">  353</span>    ao = circular_shift(ao, i0);</div>
-<div class="line"><span class="lineno">  354</span>    ao = normalize&lt;double&gt;(ao);</div>
-<div class="line"><span class="lineno">  355</span>    CoreTimeSeries result(nfft);</div>
-<div class="line"><span class="lineno">  356</span>    <span class="comment">/* Getting dt from here is unquestionably a flaw in the api, but will</span></div>
-<div class="line"><span class="lineno">  357</span><span class="comment">    retain for now.   Perhaps should a copy of dt in the ScalarDecon object. */</span></div>
-<div class="line"><span class="lineno">  358</span>    <span class="keywordtype">double</span> dt = this-&gt;shapingwavelet.sample_interval();</div>
-<div class="line"><span class="lineno">  359</span>    result.set_t0(dt * (-(<span class="keywordtype">double</span>)i0));</div>
-<div class="line"><span class="lineno">  360</span>    result.set_dt(dt);</div>
-<div class="line"><span class="lineno">  361</span>    result.set_live();</div>
-<div class="line"><span class="lineno">  362</span>    result.set_tref(TimeReferenceType::Relative);</div>
-<div class="line"><span class="lineno">  363</span>    result.set_npts(nfft);</div>
-<div class="line"><span class="lineno">  364</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; nfft; ++k)</div>
-<div class="line"><span class="lineno">  365</span>      result.s[k] = ao[k];</div>
-<div class="line"><span class="lineno">  366</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  367</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  368</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  369</span>  };</div>
-<div class="line"><span class="lineno">  370</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_ac922b603ff03a691075724bcd53e396f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</a></div><div class="ttdeci">ComplexArray * wavelet()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.h:75</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  333</span>                                                  {</div>
+<div class="line"><span class="lineno">  334</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  335</span>    <span class="keywordflow">if</span> (ao_fft.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">size</a>() &lt;= 0)</div>
+<div class="line"><span class="lineno">  336</span>      <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;MultiTaperXcorDecon::actual_output: process must &quot;</span></div>
+<div class="line"><span class="lineno">  337</span>                        <span class="stringliteral">&quot;be called before actual_output&quot;</span>,</div>
+<div class="line"><span class="lineno">  338</span>                        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  339</span>    <span class="comment">/* The ao_fft array contains the fft of the actual output/resolution kernel.</span></div>
+<div class="line"><span class="lineno">  340</span><span class="comment">     * We do need to appy the shaping wavelet for consistency before</span></div>
+<div class="line"><span class="lineno">  341</span><span class="comment">     * converting it to the time domain.*/</span></div>
+<div class="line"><span class="lineno">  342</span>    ComplexArray work(ao_fft);</div>
+<div class="line"><span class="lineno">  343</span>    work = (*<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">shapingwavelet</a>.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * work;</div>
+<div class="line"><span class="lineno">  344</span>    gsl_fft_complex_inverse(work.ptr(), 1, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
+<div class="line"><span class="lineno">  345</span>    vector&lt;double&gt; ao;</div>
+<div class="line"><span class="lineno">  346</span>    ao.reserve(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">  347</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; work.size(); ++k)</div>
+<div class="line"><span class="lineno">  348</span>      ao.push_back(work[k].real());</div>
+<div class="line"><span class="lineno">  349</span>    <span class="comment">/* We always shift this wavelet to the center of the data vector.</span></div>
+<div class="line"><span class="lineno">  350</span><span class="comment">    We handle the time through the CoreTimeSeries object. */</span></div>
+<div class="line"><span class="lineno">  351</span>    <span class="keywordtype">int</span> i0 = <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a> / 2;</div>
+<div class="line"><span class="lineno">  352</span>    ao = circular_shift(ao, i0);</div>
+<div class="line"><span class="lineno">  353</span>    ao = normalize&lt;double&gt;(ao);</div>
+<div class="line"><span class="lineno">  354</span>    CoreTimeSeries <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">  355</span>    <span class="comment">/* Getting dt from here is unquestionably a flaw in the api, but will</span></div>
+<div class="line"><span class="lineno">  356</span><span class="comment">    retain for now.   Perhaps should a copy of dt in the ScalarDecon object. */</span></div>
+<div class="line"><span class="lineno">  357</span>    <span class="keywordtype">double</span> dt = this-&gt;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">shapingwavelet</a>.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#adf4577a4442559e6aaad9056258c2915">sample_interval</a>();</div>
+<div class="line"><span class="lineno">  358</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>.set_t0(dt * (-(<span class="keywordtype">double</span>)i0));</div>
+<div class="line"><span class="lineno">  359</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>.set_dt(dt);</div>
+<div class="line"><span class="lineno">  360</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>.set_live();</div>
+<div class="line"><span class="lineno">  361</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>.set_tref(TimeReferenceType::Relative);</div>
+<div class="line"><span class="lineno">  362</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>.set_npts(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">  363</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>; ++k)</div>
+<div class="line"><span class="lineno">  364</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>.s[k] = ao[k];</div>
+<div class="line"><span class="lineno">  365</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>;</div>
+<div class="line"><span class="lineno">  366</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  367</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  368</span>  };</div>
+<div class="line"><span class="lineno">  369</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_html_a4fb1f0df8241bf1aa07ad3012464250f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">mspass::algorithms::deconvolution::ComplexArray::size</a></div><div class="ttdeci">int size() const</div><div class="ttdef"><b>Definition</b> ComplexArray.cc:275</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a1121967f87437c76cfbb1d8a8fb592e8"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">mspass::algorithms::deconvolution::FFTDeconOperator::workspace</a></div><div class="ttdeci">gsl_fft_complex_workspace * workspace</div><div class="ttdoc">GSL scratch workspace allocated for nfft.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:101</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a3480b78a08228fc2b2c79809b98335d5"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">mspass::algorithms::deconvolution::FFTDeconOperator::wavetable</a></div><div class="ttdeci">gsl_fft_complex_wavetable * wavetable</div><div class="ttdoc">GSL factorization table allocated for nfft.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:99</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_a0be7fa5b5fcf4928874f0e4c3c6a2022"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">mspass::algorithms::deconvolution::ScalarDecon::result</a></div><div class="ttdeci">std::vector&lt; double &gt; result</div><div class="ttdoc">Deconvolved output vector produced by process.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:144</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_ae0fe50f72e9cea048e1fa13061c26010"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">mspass::algorithms::deconvolution::ScalarDecon::shapingwavelet</a></div><div class="ttdeci">ShapingWavelet shapingwavelet</div><div class="ttdoc">Output shaping wavelet applied by scalar deconvolution methods.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:146</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_ac922b603ff03a691075724bcd53e396f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</a></div><div class="ttdeci">ComplexArray * wavelet()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.h:79</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_adf4577a4442559e6aaad9056258c2915"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#adf4577a4442559e6aaad9056258c2915">mspass::algorithms::deconvolution::ShapingWavelet::sample_interval</a></div><div class="ttdeci">double sample_interval()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.h:86</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries::set_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1ca7ba8bcd8337bd49d438664e74966d">mspass::seismic::BasicTimeSeries::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a9200882ac321b82d6f1471f3c5ebc8e5">mspass::algorithms::deconvolution::ComplexArray::ptr()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">mspass::algorithms::deconvolution::ScalarDecon::result</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#adf4577a4442559e6aaad9056258c2915">mspass::algorithms::deconvolution::ShapingWavelet::sample_interval()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">mspass::algorithms::deconvolution::ScalarDecon::shapingwavelet</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">mspass::algorithms::deconvolution::ComplexArray::size()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">mspass::algorithms::deconvolution::FFTDeconOperator::wavetable</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">mspass::algorithms::deconvolution::FFTDeconOperator::workspace</a>.</p>
 
 </div>
 </div>
@@ -451,14 +642,19 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html">mspass::algorithms::deconvolution::BasicDeconOperator</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   33</span>                                                        {</div>
-<div class="line"><span class="lineno">   34</span>    this-&gt;read_metadata(md, <span class="keyword">true</span>);</div>
-<div class="line"><span class="lineno">   35</span>    this-&gt;result.clear();</div>
-<div class="line"><span class="lineno">   36</span>    this-&gt;winv = ComplexArray();</div>
-<div class="line"><span class="lineno">   37</span>    this-&gt;ao_fft = ComplexArray();</div>
-<div class="line"><span class="lineno">   38</span>  };</div>
+<p>Update operator parameters from a Metadata container. </p>
+
+<p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html#a84111e230a365037569b17b2ca693100">mspass::algorithms::deconvolution::BasicDeconOperator</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   49</span>                                                        {</div>
+<div class="line"><span class="lineno">   50</span>    this-&gt;read_metadata(md, <span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">   51</span>    this-&gt;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>.clear();</div>
+<div class="line"><span class="lineno">   52</span>    this-&gt;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a> = ComplexArray();</div>
+<div class="line"><span class="lineno">   53</span>    this-&gt;ao_fft = ComplexArray();</div>
+<div class="line"><span class="lineno">   54</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a66026b54b517bc3797a1992ca332bc64"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">mspass::algorithms::deconvolution::FFTDeconOperator::winv</a></div><div class="ttdeci">ComplexArray winv</div><div class="ttdoc">Frequency-domain inverse wavelet coefficients for derived operators.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:103</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">mspass::algorithms::deconvolution::ScalarDecon::result</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">mspass::algorithms::deconvolution::FFTDeconOperator::winv</a>.</p>
+
 </div>
 </div>
 <a id="a9486e726db34873cdb083362d6747d5b" name="a9486e726db34873cdb083362d6747d5b"></a>
@@ -483,7 +679,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   98</span>{ <span class="keywordflow">return</span> nseq; };</div>
+<p>Return the number of DPSS tapers used by the operator. </p>
+<div class="fragment"><div class="line"><span class="lineno">  121</span>{ <span class="keywordflow">return</span> nseq; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -509,7 +706,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   97</span>{ <span class="keywordflow">return</span> taperlen; };</div>
+<p>Return the configured DPSS taper length in samples. </p>
+<div class="fragment"><div class="line"><span class="lineno">  119</span>{ <span class="keywordflow">return</span> taperlen; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -535,7 +733,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   99</span>{ <span class="keywordflow">return</span> nw; };</div>
+<p>Return the DPSS time-bandwidth product used to generate tapers. </p>
+<div class="fragment"><div class="line"><span class="lineno">  123</span>{ <span class="keywordflow">return</span> nw; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -566,15 +765,17 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>This is an overloaded version of the parameterized method. It is equivalent to this-&gt;inverse_wavelet(0.0); </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a078d038467a3be52d1e91e0d080d503e">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  388</span>                                                    {</div>
-<div class="line"><span class="lineno">  389</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  390</span>    <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a7457a141f5eb2ba694989ee248dc29cd">inverse_wavelet</a>(0.0);</div>
-<div class="line"><span class="lineno">  391</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  392</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  393</span>  };</div>
-<div class="line"><span class="lineno">  394</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_html_a7457a141f5eb2ba694989ee248dc29cd"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a7457a141f5eb2ba694989ee248dc29cd">mspass::algorithms::deconvolution::MultiTaperXcorDecon::inverse_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries inverse_wavelet()</div><div class="ttdoc">Return default FIR representation of the inverse filter.</div><div class="ttdef"><b>Definition</b> MultiTaperXcorDecon.cc:388</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  387</span>                                                    {</div>
+<div class="line"><span class="lineno">  388</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  389</span>    <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a7457a141f5eb2ba694989ee248dc29cd">inverse_wavelet</a>(0.0);</div>
+<div class="line"><span class="lineno">  390</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  391</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  392</span>  };</div>
+<div class="line"><span class="lineno">  393</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_html_a7457a141f5eb2ba694989ee248dc29cd"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a7457a141f5eb2ba694989ee248dc29cd">mspass::algorithms::deconvolution::MultiTaperXcorDecon::inverse_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries inverse_wavelet()</div><div class="ttdoc">Return default FIR representation of the inverse filter.</div><div class="ttdef"><b>Definition</b> MultiTaperXcorDecon.cc:387</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a7457a141f5eb2ba694989ee248dc29cd">inverse_wavelet()</a>.</p>
+
 </div>
 </div>
 <a id="a9b75632d27ed2db87a108d11f68f9d44" name="a9b75632d27ed2db87a108d11f68f9d44"></a>
@@ -611,25 +812,27 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  372</span>                                                                         {</div>
-<div class="line"><span class="lineno">  373</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  374</span>    <span class="keywordflow">if</span> (winv.size() &lt;= 0)</div>
-<div class="line"><span class="lineno">  375</span>      <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;MultiTaperXcorDecon::inverse_wavelet: process must &quot;</span></div>
-<div class="line"><span class="lineno">  376</span>                        <span class="stringliteral">&quot;be called before inverse_wavelet&quot;</span>,</div>
-<div class="line"><span class="lineno">  377</span>                        ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  378</span>    <span class="comment">/* Getting dt from here is unquestionably a flaw in the api, but will</span></div>
-<div class="line"><span class="lineno">  379</span><span class="comment">     *         retain for now.   Perhaps should a copy of dt in the ScalarDecon</span></div>
-<div class="line"><span class="lineno">  380</span><span class="comment">     * object. */</span></div>
-<div class="line"><span class="lineno">  381</span>    <span class="keywordtype">double</span> dt = this-&gt;shapingwavelet.sample_interval();</div>
-<div class="line"><span class="lineno">  382</span>    <span class="keywordflow">return</span> (this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FFTDeconOperator::FourierInverse</a>(</div>
-<div class="line"><span class="lineno">  383</span>        this-&gt;winv, *shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>(), dt, t0parent));</div>
-<div class="line"><span class="lineno">  384</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  385</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  386</span>  };</div>
-<div class="line"><span class="lineno">  387</span>}</div>
+<p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0048edc8619f002ab0f66347e9a47e8e">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  371</span>                                                                         {</div>
+<div class="line"><span class="lineno">  372</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  373</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a>.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">size</a>() &lt;= 0)</div>
+<div class="line"><span class="lineno">  374</span>      <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;MultiTaperXcorDecon::inverse_wavelet: process must &quot;</span></div>
+<div class="line"><span class="lineno">  375</span>                        <span class="stringliteral">&quot;be called before inverse_wavelet&quot;</span>,</div>
+<div class="line"><span class="lineno">  376</span>                        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  377</span>    <span class="comment">/* Getting dt from here is unquestionably a flaw in the api, but will</span></div>
+<div class="line"><span class="lineno">  378</span><span class="comment">     *         retain for now.   Perhaps should a copy of dt in the ScalarDecon</span></div>
+<div class="line"><span class="lineno">  379</span><span class="comment">     * object. */</span></div>
+<div class="line"><span class="lineno">  380</span>    <span class="keywordtype">double</span> dt = this-&gt;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">shapingwavelet</a>.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#adf4577a4442559e6aaad9056258c2915">sample_interval</a>();</div>
+<div class="line"><span class="lineno">  381</span>    <span class="keywordflow">return</span> (this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FFTDeconOperator::FourierInverse</a>(</div>
+<div class="line"><span class="lineno">  382</span>        this-&gt;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a>, *<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">shapingwavelet</a>.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>(), dt, t0parent));</div>
+<div class="line"><span class="lineno">  383</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  384</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  385</span>  };</div>
+<div class="line"><span class="lineno">  386</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a3473dc7f359332dbf5a685efe30a684b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries FourierInverse(const ComplexArray &amp;winv, const ComplexArray &amp;sw, const double dt, const double t0parent)</div><div class="ttdoc">Return inverse wavelet for Fourier methods.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.cc:144</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#adf4577a4442559e6aaad9056258c2915">mspass::algorithms::deconvolution::ShapingWavelet::sample_interval()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">mspass::algorithms::deconvolution::ScalarDecon::shapingwavelet</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">mspass::algorithms::deconvolution::ComplexArray::size()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">mspass::algorithms::deconvolution::FFTDeconOperator::winv</a>.</p>
+
 </div>
 </div>
 <a id="a1cda7c1dea86b2388d47af30d4d4c6ee" name="a1cda7c1dea86b2388d47af30d4d4c6ee"></a>
@@ -691,8 +894,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><span class="lineno">  172</span>  };</div>
 <div class="line"><span class="lineno">  173</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_html_aaa4de146e8f178218b170be5cf6bd55c"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#aaa4de146e8f178218b170be5cf6bd55c">mspass::algorithms::deconvolution::MultiTaperXcorDecon::loadnoise</a></div><div class="ttdeci">int loadnoise(const std::vector&lt; double &gt; &amp;noise)</div><div class="ttdoc">Load a section of pre-event noise.</div><div class="ttdef"><b>Definition</b> MultiTaperXcorDecon.cc:130</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_a9478e366652c54b4331e14b5a0eb85ea"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a9478e366652c54b4331e14b5a0eb85ea">mspass::algorithms::deconvolution::ScalarDecon::load</a></div><div class="ttdeci">int load(const std::vector&lt; double &gt; &amp;wavelet, const std::vector&lt; double &gt; &amp;data)</div><div class="ttdoc">Load all data required for decon.</div><div class="ttdef"><b>Definition</b> ScalarDecon.cc:34</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_a9478e366652c54b4331e14b5a0eb85ea"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a9478e366652c54b4331e14b5a0eb85ea">mspass::algorithms::deconvolution::ScalarDecon::load</a></div><div class="ttdeci">int load(const std::vector&lt; double &gt; &amp;wavelet, const std::vector&lt; double &gt; &amp;data)</div><div class="ttdoc">Load all data required for decon.</div><div class="ttdef"><b>Definition</b> ScalarDecon.cc:35</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a9478e366652c54b4331e14b5a0eb85ea">mspass::algorithms::deconvolution::ScalarDecon::load()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#aaa4de146e8f178218b170be5cf6bd55c">loadnoise()</a>.</p>
+
 </div>
 </div>
 <a id="aaa4de146e8f178218b170be5cf6bd55c" name="aaa4de146e8f178218b170be5cf6bd55c"></a>
@@ -765,126 +970,132 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  216</span>                                  {</div>
-<div class="line"><span class="lineno">  217</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;MultiTaperXcorDecon::process():  &quot;</span>);</div>
-<div class="line"><span class="lineno">  218</span>  result.clear();</div>
-<div class="line"><span class="lineno">  219</span>  winv = ComplexArray();</div>
-<div class="line"><span class="lineno">  220</span>  ao_fft = ComplexArray();</div>
-<div class="line"><span class="lineno">  221</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> output_length = data.size();</div>
-<div class="line"><span class="lineno">  222</span>  <span class="keywordflow">if</span> (output_length &gt; nfft)</div>
-<div class="line"><span class="lineno">  223</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;data vector exceeds padded fft length&quot;</span>,</div>
-<div class="line"><span class="lineno">  224</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  225</span>  <span class="comment">/* WARNING about this algorithm. At present there is nothing to stop</span></div>
-<div class="line"><span class="lineno">  226</span><span class="comment">  a coding error of calling the algorithm with inconsistent signal and</span></div>
-<div class="line"><span class="lineno">  227</span><span class="comment">  noise data vectors. */</span></div>
-<div class="line"><span class="lineno">  228</span>  <span class="keywordflow">if</span> (noise.size() &lt;= 0) {</div>
-<div class="line"><span class="lineno">  229</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;noise data is empty.&quot;</span>,</div>
-<div class="line"><span class="lineno">  230</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  231</span>  }</div>
-<div class="line"><span class="lineno">  232</span>  <span class="keywordflow">if</span> (wavelet.size() &gt; taperlen || data.size() &gt; taperlen ||</div>
-<div class="line"><span class="lineno">  233</span>      noise.size() &gt; taperlen)</div>
-<div class="line"><span class="lineno">  234</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
-<div class="line"><span class="lineno">  235</span>                          <span class="stringliteral">&quot;wavelet, data, and noise vectors must not exceed &quot;</span></div>
-<div class="line"><span class="lineno">  236</span>                          <span class="stringliteral">&quot;the configured taper length&quot;</span>,</div>
-<div class="line"><span class="lineno">  237</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  238</span>  <span class="keywordtype">int</span> i, j;</div>
-<div class="line"><span class="lineno">  239</span>  <span class="comment">/* The final inverse is applied to the untapered wavelet/data spectra.  DPSS</span></div>
-<div class="line"><span class="lineno">  240</span><span class="comment">  tapers are used only to estimate stable source and noise power terms. */</span></div>
-<div class="line"><span class="lineno">  241</span>  vector&lt;ComplexArray&gt; wdata;</div>
-<div class="line"><span class="lineno">  242</span>  wdata = taper_data(wavelet);</div>
-<div class="line"><span class="lineno">  243</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nseq; ++i) {</div>
-<div class="line"><span class="lineno">  244</span>    gsl_fft_complex_forward(wdata[i].ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  245</span>  }</div>
-<div class="line"><span class="lineno">  246</span>  vector&lt;ComplexArray&gt; ndata;</div>
-<div class="line"><span class="lineno">  247</span>  ndata = taper_data(noise);</div>
-<div class="line"><span class="lineno">  248</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nseq; ++i) {</div>
-<div class="line"><span class="lineno">  249</span>    gsl_fft_complex_forward(ndata[i].ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  250</span>  }</div>
-<div class="line"><span class="lineno">  251</span>  vector&lt;double&gt; source_power_denominator(nfft, 0.0);</div>
-<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nseq; ++i) {</div>
-<div class="line"><span class="lineno">  253</span>    <span class="keywordflow">for</span> (j = 0; j &lt; nfft; ++j) {</div>
-<div class="line"><span class="lineno">  254</span>      <span class="keywordtype">double</span> *zw = wdata[i].ptr(j);</div>
-<div class="line"><span class="lineno">  255</span>      source_power_denominator[j] +=</div>
-<div class="line"><span class="lineno">  256</span>          ((*zw) * (*zw) + (*(zw + 1)) * (*(zw + 1))) /</div>
-<div class="line"><span class="lineno">  257</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nseq);</div>
-<div class="line"><span class="lineno">  258</span>    }</div>
-<div class="line"><span class="lineno">  259</span>  }</div>
-<div class="line"><span class="lineno">  260</span>  vector&lt;double&gt; noise_power_spectrum(ndata[0].abs());</div>
-<div class="line"><span class="lineno">  261</span>  <span class="keywordflow">for</span> (j = 0; j &lt; static_cast&lt;int&gt;(noise_power_spectrum.size()); ++j)</div>
-<div class="line"><span class="lineno">  262</span>    noise_power_spectrum[j] *= noise_power_spectrum[j];</div>
-<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">for</span> (i = 1; i &lt; nseq; ++i) {</div>
-<div class="line"><span class="lineno">  264</span>    vector&lt;double&gt; nwork(ndata[i].abs());</div>
-<div class="line"><span class="lineno">  265</span>    <span class="keywordflow">for</span> (j = 0; j &lt; static_cast&lt;int&gt;(noise_power_spectrum.size()); ++j) {</div>
-<div class="line"><span class="lineno">  266</span>      noise_power_spectrum[j] += nwork[j] * nwork[j];</div>
-<div class="line"><span class="lineno">  267</span>    }</div>
-<div class="line"><span class="lineno">  268</span>  }</div>
-<div class="line"><span class="lineno">  269</span>  <span class="keywordflow">for</span> (j = 0; j &lt; static_cast&lt;int&gt;(noise_power_spectrum.size()); ++j)</div>
-<div class="line"><span class="lineno">  270</span>    noise_power_spectrum[j] =</div>
-<div class="line"><span class="lineno">  271</span>        damp * noise_power_spectrum[j] / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nseq);</div>
-<div class="line"><span class="lineno">  272</span>  vector&lt;double&gt; padded_wavelet(nfft, 0.0);</div>
-<div class="line"><span class="lineno">  273</span>  vector&lt;double&gt; padded_data(nfft, 0.0);</div>
-<div class="line"><span class="lineno">  274</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nwcopy = std::min(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(wavelet.size()), nfft);</div>
-<div class="line"><span class="lineno">  275</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> ndcopy = std::min(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(data.size()), nfft);</div>
-<div class="line"><span class="lineno">  276</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nwcopy; ++i)</div>
-<div class="line"><span class="lineno">  277</span>    padded_wavelet[i] = wavelet[i];</div>
-<div class="line"><span class="lineno">  278</span>  <span class="keywordflow">for</span> (i = 0; i &lt; ndcopy; ++i)</div>
-<div class="line"><span class="lineno">  279</span>    padded_data[i] = data[i];</div>
-<div class="line"><span class="lineno">  280</span>  ComplexArray wuntapered(nfft, padded_wavelet);</div>
-<div class="line"><span class="lineno">  281</span>  ComplexArray duntapered(nfft, padded_data);</div>
-<div class="line"><span class="lineno">  282</span>  gsl_fft_complex_forward(wuntapered.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  283</span>  gsl_fft_complex_forward(duntapered.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  284</span> </div>
-<div class="line"><span class="lineno">  285</span>  <span class="keywordtype">double</span> max_source_power =</div>
-<div class="line"><span class="lineno">  286</span>      *max_element(source_power_denominator.begin(), source_power_denominator.end());</div>
-<div class="line"><span class="lineno">  287</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> relative_floor = max(DBL_EPSILON, 1.0e-12 * max_source_power);</div>
-<div class="line"><span class="lineno">  288</span>  ComplexArray winv_work(wuntapered);</div>
-<div class="line"><span class="lineno">  289</span>  winv_work.conj();</div>
-<div class="line"><span class="lineno">  290</span>  <span class="keywordflow">for</span> (j = 0; j &lt; nfft; ++j) {</div>
-<div class="line"><span class="lineno">  291</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> den =</div>
-<div class="line"><span class="lineno">  292</span>        source_power_denominator[j] + noise_power_spectrum[j] + relative_floor;</div>
-<div class="line"><span class="lineno">  293</span>    <span class="keywordtype">double</span> *zw = winv_work.ptr(j);</div>
-<div class="line"><span class="lineno">  294</span>    (*zw) /= den;</div>
-<div class="line"><span class="lineno">  295</span>    (*(zw + 1)) /= den;</div>
-<div class="line"><span class="lineno">  296</span>  }</div>
-<div class="line"><span class="lineno">  297</span>  ComplexArray rf_fft = winv_work * duntapered;</div>
-<div class="line"><span class="lineno">  298</span>  ComplexArray ao_fft_work = winv_work * wuntapered;</div>
-<div class="line"><span class="lineno">  299</span>  ComplexArray ao_scale_test(ao_fft_work);</div>
-<div class="line"><span class="lineno">  300</span>  ao_scale_test = (*shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * ao_scale_test;</div>
-<div class="line"><span class="lineno">  301</span>  gsl_fft_complex_inverse(ao_scale_test.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  302</span>  vector&lt;double&gt; ao_lag =</div>
-<div class="line"><span class="lineno">  303</span>      ExtractLagWindow(ao_scale_test, output_length, sample_shift);</div>
-<div class="line"><span class="lineno">  304</span>  <span class="keywordflow">if</span> (sample_shift &lt; 0 || sample_shift &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(ao_lag.size()))</div>
-<div class="line"><span class="lineno">  305</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
-<div class="line"><span class="lineno">  306</span>                          <span class="stringliteral">&quot;zero-lag sample is outside extracted lag window&quot;</span>,</div>
-<div class="line"><span class="lineno">  307</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  308</span>  <span class="keywordtype">double</span> ao_peak = ao_lag[sample_shift];</div>
-<div class="line"><span class="lineno">  309</span>  <span class="keywordflow">if</span> (fabs(ao_peak) &lt;= 0.0)</div>
-<div class="line"><span class="lineno">  310</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;actual output has zero peak&quot;</span>,</div>
-<div class="line"><span class="lineno">  311</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  312</span>  <span class="keywordflow">for</span> (j = 0; j &lt; nfft; ++j) {</div>
-<div class="line"><span class="lineno">  313</span>    <span class="keywordtype">double</span> *zrf = rf_fft.ptr(j);</div>
-<div class="line"><span class="lineno">  314</span>    (*zrf) /= ao_peak;</div>
-<div class="line"><span class="lineno">  315</span>    (*(zrf + 1)) /= ao_peak;</div>
-<div class="line"><span class="lineno">  316</span>    <span class="keywordtype">double</span> *zw = winv_work.ptr(j);</div>
-<div class="line"><span class="lineno">  317</span>    (*zw) /= ao_peak;</div>
-<div class="line"><span class="lineno">  318</span>    (*(zw + 1)) /= ao_peak;</div>
-<div class="line"><span class="lineno">  319</span>    <span class="keywordtype">double</span> *zao = ao_fft_work.ptr(j);</div>
-<div class="line"><span class="lineno">  320</span>    (*zao) /= ao_peak;</div>
-<div class="line"><span class="lineno">  321</span>    (*(zao + 1)) /= ao_peak;</div>
-<div class="line"><span class="lineno">  322</span>  }</div>
-<div class="line"><span class="lineno">  323</span>  winv = winv_work;</div>
-<div class="line"><span class="lineno">  324</span>  ao_fft = ao_fft_work;</div>
-<div class="line"><span class="lineno">  325</span>  <span class="comment">/* this applies the shaping wavelet.  NOTE we intentionally do NOT</span></div>
-<div class="line"><span class="lineno">  326</span><span class="comment">   * apply this to winv and ao_fft as a bow to some efficiency */</span></div>
-<div class="line"><span class="lineno">  327</span>  rf_fft = (*shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * rf_fft;</div>
-<div class="line"><span class="lineno">  328</span>  <span class="comment">/* Next compute inverse fft, save real part, and apply the time shift.</span></div>
-<div class="line"><span class="lineno">  329</span><span class="comment">  The time shift formula assumes wrapping in the form used by the gsl</span></div>
-<div class="line"><span class="lineno">  330</span><span class="comment">  algorithm. */</span></div>
-<div class="line"><span class="lineno">  331</span>  gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  332</span>  result = ExtractLagWindow(rf_fft, output_length, sample_shift);</div>
-<div class="line"><span class="lineno">  333</span>}</div>
+<p>Compute the multitaper cross-correlation deconvolution result. </p>
+<p>The method uses DPSS-stabilized source and noise powers for the denominator and the untapered wavelet/data phase for the final inverse. </p>
+
+<p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a71988c8a42788bd966945d78d5fdb6b3">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  215</span>                                  {</div>
+<div class="line"><span class="lineno">  216</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;MultiTaperXcorDecon::process():  &quot;</span>);</div>
+<div class="line"><span class="lineno">  217</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a>.clear();</div>
+<div class="line"><span class="lineno">  218</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a> = ComplexArray();</div>
+<div class="line"><span class="lineno">  219</span>  ao_fft = ComplexArray();</div>
+<div class="line"><span class="lineno">  220</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> output_length = <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>.size();</div>
+<div class="line"><span class="lineno">  221</span>  <span class="keywordflow">if</span> (output_length &gt; <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>)</div>
+<div class="line"><span class="lineno">  222</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;data vector exceeds padded fft length&quot;</span>,</div>
+<div class="line"><span class="lineno">  223</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  224</span>  <span class="comment">/* WARNING about this algorithm. At present there is nothing to stop</span></div>
+<div class="line"><span class="lineno">  225</span><span class="comment">  a coding error of calling the algorithm with inconsistent signal and</span></div>
+<div class="line"><span class="lineno">  226</span><span class="comment">  noise data vectors. */</span></div>
+<div class="line"><span class="lineno">  227</span>  <span class="keywordflow">if</span> (noise.size() &lt;= 0) {</div>
+<div class="line"><span class="lineno">  228</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;noise data is empty.&quot;</span>,</div>
+<div class="line"><span class="lineno">  229</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  230</span>  }</div>
+<div class="line"><span class="lineno">  231</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>.size() &gt; taperlen || <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>.size() &gt; taperlen ||</div>
+<div class="line"><span class="lineno">  232</span>      noise.size() &gt; taperlen)</div>
+<div class="line"><span class="lineno">  233</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
+<div class="line"><span class="lineno">  234</span>                          <span class="stringliteral">&quot;wavelet, data, and noise vectors must not exceed &quot;</span></div>
+<div class="line"><span class="lineno">  235</span>                          <span class="stringliteral">&quot;the configured taper length&quot;</span>,</div>
+<div class="line"><span class="lineno">  236</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  237</span>  <span class="keywordtype">int</span> i, j;</div>
+<div class="line"><span class="lineno">  238</span>  <span class="comment">/* The final inverse is applied to the untapered wavelet/data spectra.  DPSS</span></div>
+<div class="line"><span class="lineno">  239</span><span class="comment">  tapers are used only to estimate stable source and noise power terms. */</span></div>
+<div class="line"><span class="lineno">  240</span>  vector&lt;ComplexArray&gt; wdata;</div>
+<div class="line"><span class="lineno">  241</span>  wdata = taper_data(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>);</div>
+<div class="line"><span class="lineno">  242</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nseq; ++i) {</div>
+<div class="line"><span class="lineno">  243</span>    gsl_fft_complex_forward(wdata[i].ptr(), 1, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
+<div class="line"><span class="lineno">  244</span>  }</div>
+<div class="line"><span class="lineno">  245</span>  vector&lt;ComplexArray&gt; ndata;</div>
+<div class="line"><span class="lineno">  246</span>  ndata = taper_data(noise);</div>
+<div class="line"><span class="lineno">  247</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nseq; ++i) {</div>
+<div class="line"><span class="lineno">  248</span>    gsl_fft_complex_forward(ndata[i].ptr(), 1, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
+<div class="line"><span class="lineno">  249</span>  }</div>
+<div class="line"><span class="lineno">  250</span>  vector&lt;double&gt; source_power_denominator(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, 0.0);</div>
+<div class="line"><span class="lineno">  251</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nseq; ++i) {</div>
+<div class="line"><span class="lineno">  252</span>    <span class="keywordflow">for</span> (j = 0; j &lt; <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>; ++j) {</div>
+<div class="line"><span class="lineno">  253</span>      <span class="keywordtype">double</span> *zw = wdata[i].ptr(j);</div>
+<div class="line"><span class="lineno">  254</span>      source_power_denominator[j] +=</div>
+<div class="line"><span class="lineno">  255</span>          ((*zw) * (*zw) + (*(zw + 1)) * (*(zw + 1))) /</div>
+<div class="line"><span class="lineno">  256</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nseq);</div>
+<div class="line"><span class="lineno">  257</span>    }</div>
+<div class="line"><span class="lineno">  258</span>  }</div>
+<div class="line"><span class="lineno">  259</span>  vector&lt;double&gt; noise_power_spectrum(ndata[0].abs());</div>
+<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">for</span> (j = 0; j &lt; static_cast&lt;int&gt;(noise_power_spectrum.size()); ++j)</div>
+<div class="line"><span class="lineno">  261</span>    noise_power_spectrum[j] *= noise_power_spectrum[j];</div>
+<div class="line"><span class="lineno">  262</span>  <span class="keywordflow">for</span> (i = 1; i &lt; nseq; ++i) {</div>
+<div class="line"><span class="lineno">  263</span>    vector&lt;double&gt; nwork(ndata[i].abs());</div>
+<div class="line"><span class="lineno">  264</span>    <span class="keywordflow">for</span> (j = 0; j &lt; static_cast&lt;int&gt;(noise_power_spectrum.size()); ++j) {</div>
+<div class="line"><span class="lineno">  265</span>      noise_power_spectrum[j] += nwork[j] * nwork[j];</div>
+<div class="line"><span class="lineno">  266</span>    }</div>
+<div class="line"><span class="lineno">  267</span>  }</div>
+<div class="line"><span class="lineno">  268</span>  <span class="keywordflow">for</span> (j = 0; j &lt; static_cast&lt;int&gt;(noise_power_spectrum.size()); ++j)</div>
+<div class="line"><span class="lineno">  269</span>    noise_power_spectrum[j] =</div>
+<div class="line"><span class="lineno">  270</span>        damp * noise_power_spectrum[j] / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nseq);</div>
+<div class="line"><span class="lineno">  271</span>  vector&lt;double&gt; padded_wavelet(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, 0.0);</div>
+<div class="line"><span class="lineno">  272</span>  vector&lt;double&gt; padded_data(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, 0.0);</div>
+<div class="line"><span class="lineno">  273</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nwcopy = std::min(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>.size()), <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">  274</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> ndcopy = std::min(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>.size()), <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">  275</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nwcopy; ++i)</div>
+<div class="line"><span class="lineno">  276</span>    padded_wavelet[i] = <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">wavelet</a>[i];</div>
+<div class="line"><span class="lineno">  277</span>  <span class="keywordflow">for</span> (i = 0; i &lt; ndcopy; ++i)</div>
+<div class="line"><span class="lineno">  278</span>    padded_data[i] = <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">data</a>[i];</div>
+<div class="line"><span class="lineno">  279</span>  ComplexArray wuntapered(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, padded_wavelet);</div>
+<div class="line"><span class="lineno">  280</span>  ComplexArray duntapered(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, padded_data);</div>
+<div class="line"><span class="lineno">  281</span>  gsl_fft_complex_forward(wuntapered.ptr(), 1, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
+<div class="line"><span class="lineno">  282</span>  gsl_fft_complex_forward(duntapered.ptr(), 1, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
+<div class="line"><span class="lineno">  283</span> </div>
+<div class="line"><span class="lineno">  284</span>  <span class="keywordtype">double</span> max_source_power =</div>
+<div class="line"><span class="lineno">  285</span>      *max_element(source_power_denominator.begin(), source_power_denominator.end());</div>
+<div class="line"><span class="lineno">  286</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> relative_floor = max(DBL_EPSILON, 1.0e-12 * max_source_power);</div>
+<div class="line"><span class="lineno">  287</span>  ComplexArray winv_work(wuntapered);</div>
+<div class="line"><span class="lineno">  288</span>  winv_work.conj();</div>
+<div class="line"><span class="lineno">  289</span>  <span class="keywordflow">for</span> (j = 0; j &lt; <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>; ++j) {</div>
+<div class="line"><span class="lineno">  290</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> den =</div>
+<div class="line"><span class="lineno">  291</span>        source_power_denominator[j] + noise_power_spectrum[j] + relative_floor;</div>
+<div class="line"><span class="lineno">  292</span>    <span class="keywordtype">double</span> *zw = winv_work.ptr(j);</div>
+<div class="line"><span class="lineno">  293</span>    (*zw) /= den;</div>
+<div class="line"><span class="lineno">  294</span>    (*(zw + 1)) /= den;</div>
+<div class="line"><span class="lineno">  295</span>  }</div>
+<div class="line"><span class="lineno">  296</span>  ComplexArray rf_fft = winv_work * duntapered;</div>
+<div class="line"><span class="lineno">  297</span>  ComplexArray ao_fft_work = winv_work * wuntapered;</div>
+<div class="line"><span class="lineno">  298</span>  ComplexArray ao_scale_test(ao_fft_work);</div>
+<div class="line"><span class="lineno">  299</span>  ao_scale_test = (*<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">shapingwavelet</a>.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * ao_scale_test;</div>
+<div class="line"><span class="lineno">  300</span>  gsl_fft_complex_inverse(ao_scale_test.ptr(), 1, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
+<div class="line"><span class="lineno">  301</span>  vector&lt;double&gt; ao_lag =</div>
+<div class="line"><span class="lineno">  302</span>      ExtractLagWindow(ao_scale_test, output_length, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>);</div>
+<div class="line"><span class="lineno">  303</span>  <span class="keywordflow">if</span> (sample_shift &lt; 0 || sample_shift &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(ao_lag.size()))</div>
+<div class="line"><span class="lineno">  304</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
+<div class="line"><span class="lineno">  305</span>                          <span class="stringliteral">&quot;zero-lag sample is outside extracted lag window&quot;</span>,</div>
+<div class="line"><span class="lineno">  306</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  307</span>  <span class="keywordtype">double</span> ao_peak = ao_lag[<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>];</div>
+<div class="line"><span class="lineno">  308</span>  <span class="keywordflow">if</span> (fabs(ao_peak) &lt;= 0.0)</div>
+<div class="line"><span class="lineno">  309</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;actual output has zero peak&quot;</span>,</div>
+<div class="line"><span class="lineno">  310</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  311</span>  <span class="keywordflow">for</span> (j = 0; j &lt; <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>; ++j) {</div>
+<div class="line"><span class="lineno">  312</span>    <span class="keywordtype">double</span> *zrf = rf_fft.ptr(j);</div>
+<div class="line"><span class="lineno">  313</span>    (*zrf) /= ao_peak;</div>
+<div class="line"><span class="lineno">  314</span>    (*(zrf + 1)) /= ao_peak;</div>
+<div class="line"><span class="lineno">  315</span>    <span class="keywordtype">double</span> *zw = winv_work.ptr(j);</div>
+<div class="line"><span class="lineno">  316</span>    (*zw) /= ao_peak;</div>
+<div class="line"><span class="lineno">  317</span>    (*(zw + 1)) /= ao_peak;</div>
+<div class="line"><span class="lineno">  318</span>    <span class="keywordtype">double</span> *zao = ao_fft_work.ptr(j);</div>
+<div class="line"><span class="lineno">  319</span>    (*zao) /= ao_peak;</div>
+<div class="line"><span class="lineno">  320</span>    (*(zao + 1)) /= ao_peak;</div>
+<div class="line"><span class="lineno">  321</span>  }</div>
+<div class="line"><span class="lineno">  322</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">winv</a> = winv_work;</div>
+<div class="line"><span class="lineno">  323</span>  ao_fft = ao_fft_work;</div>
+<div class="line"><span class="lineno">  324</span>  <span class="comment">/* this applies the shaping wavelet.  NOTE we intentionally do NOT</span></div>
+<div class="line"><span class="lineno">  325</span><span class="comment">   * apply this to winv and ao_fft as a bow to some efficiency */</span></div>
+<div class="line"><span class="lineno">  326</span>  rf_fft = (*<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">shapingwavelet</a>.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * rf_fft;</div>
+<div class="line"><span class="lineno">  327</span>  <span class="comment">/* Next compute inverse fft, save real part, and apply the time shift.</span></div>
+<div class="line"><span class="lineno">  328</span><span class="comment">  The time shift formula assumes wrapping in the form used by the gsl</span></div>
+<div class="line"><span class="lineno">  329</span><span class="comment">  algorithm. */</span></div>
+<div class="line"><span class="lineno">  330</span>  gsl_fft_complex_inverse(rf_fft.ptr(), 1, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">wavetable</a>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">workspace</a>);</div>
+<div class="line"><span class="lineno">  331</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">result</a> = ExtractLagWindow(rf_fft, output_length, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>);</div>
+<div class="line"><span class="lineno">  332</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a7034bf16dcf7ea16563a7032ce19b08e"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">mspass::algorithms::deconvolution::FFTDeconOperator::sample_shift</a></div><div class="ttdeci">int sample_shift</div><div class="ttdoc">Sample offset used to place zero lag in deconvolution outputs.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.h:97</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a716eaf78570884c6c3da20468ac044eb">mspass::algorithms::deconvolution::ComplexArray::conj()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a3352f80170606ad4b543493a9168bc9d">mspass::algorithms::deconvolution::ScalarDecon::data</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a9200882ac321b82d6f1471f3c5ebc8e5">mspass::algorithms::deconvolution::ComplexArray::ptr()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a0be7fa5b5fcf4928874f0e4c3c6a2022">mspass::algorithms::deconvolution::ScalarDecon::result</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">mspass::algorithms::deconvolution::FFTDeconOperator::sample_shift</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#ae0fe50f72e9cea048e1fa13061c26010">mspass::algorithms::deconvolution::ScalarDecon::shapingwavelet</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#aa48f2182a7e7b1c7d63011a9c53c4ee1">mspass::algorithms::deconvolution::ScalarDecon::wavelet</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3480b78a08228fc2b2c79809b98335d5">mspass::algorithms::deconvolution::FFTDeconOperator::wavetable</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a66026b54b517bc3797a1992ca332bc64">mspass::algorithms::deconvolution::FFTDeconOperator::winv</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a1121967f87437c76cfbb1d8a8fb592e8">mspass::algorithms::deconvolution::FFTDeconOperator::workspace</a>.</p>
+
 </div>
 </div>
 <a id="ab7793863452d91d3864bff9a247d6699" name="ab7793863452d91d3864bff9a247d6699"></a>
@@ -914,22 +1125,25 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>Each operator commonly has different ways to measure the quality of the result. This method should return these in a generic Metadata object. </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#af683c2f25e91155c2bc1f81f9b62bbb1">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  396</span>                                        {</div>
-<div class="line"><span class="lineno">  397</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> did_process(ao_fft.size() &gt; 0);</div>
-<div class="line"><span class="lineno">  398</span>  Metadata md(this-&gt;BasicQCMetrics(<span class="stringliteral">&quot;MultiTaperXcorDecon&quot;</span>, did_process));</div>
-<div class="line"><span class="lineno">  399</span>  md.put(<span class="stringliteral">&quot;multitaper_operator_type&quot;</span>, <span class="keywordtype">string</span>(<span class="stringliteral">&quot;xcor_power_stabilized&quot;</span>));</div>
-<div class="line"><span class="lineno">  400</span>  md.put(<span class="stringliteral">&quot;multitaper_operator_nfft&quot;</span>, nfft);</div>
-<div class="line"><span class="lineno">  401</span>  md.put(<span class="stringliteral">&quot;decon_operator_nfft&quot;</span>, nfft);</div>
-<div class="line"><span class="lineno">  402</span>  md.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, sample_shift);</div>
-<div class="line"><span class="lineno">  403</span>  md.put(<span class="stringliteral">&quot;multitaper_taper_length&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(taperlen));</div>
-<div class="line"><span class="lineno">  404</span>  md.put(<span class="stringliteral">&quot;multitaper_number_tapers&quot;</span>, nseq);</div>
-<div class="line"><span class="lineno">  405</span>  md.put(<span class="stringliteral">&quot;multitaper_time_bandwidth_product&quot;</span>, nw);</div>
-<div class="line"><span class="lineno">  406</span>  md.put(<span class="stringliteral">&quot;multitaper_damping_factor&quot;</span>, damp);</div>
-<div class="line"><span class="lineno">  407</span>  md.put(<span class="stringliteral">&quot;multitaper_processed&quot;</span>, did_process);</div>
-<div class="line"><span class="lineno">  408</span>  md.put(<span class="stringliteral">&quot;multitaper_number_outputs&quot;</span>, did_process ? 1 : 0);</div>
-<div class="line"><span class="lineno">  409</span>  <span class="keywordflow">return</span> md;</div>
-<div class="line"><span class="lineno">  410</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  395</span>                                        {</div>
+<div class="line"><span class="lineno">  396</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> did_process(ao_fft.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">size</a>() &gt; 0);</div>
+<div class="line"><span class="lineno">  397</span>  Metadata md(this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a83e9fd9e0f13b1a0a650fdb0bb805543">BasicQCMetrics</a>(<span class="stringliteral">&quot;MultiTaperXcorDecon&quot;</span>, did_process));</div>
+<div class="line"><span class="lineno">  398</span>  md.put(<span class="stringliteral">&quot;multitaper_operator_type&quot;</span>, <span class="keywordtype">string</span>(<span class="stringliteral">&quot;xcor_power_stabilized&quot;</span>));</div>
+<div class="line"><span class="lineno">  399</span>  md.put(<span class="stringliteral">&quot;multitaper_operator_nfft&quot;</span>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">  400</span>  md.put(<span class="stringliteral">&quot;decon_operator_nfft&quot;</span>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">nfft</a>);</div>
+<div class="line"><span class="lineno">  401</span>  md.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">sample_shift</a>);</div>
+<div class="line"><span class="lineno">  402</span>  md.put(<span class="stringliteral">&quot;multitaper_taper_length&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(taperlen));</div>
+<div class="line"><span class="lineno">  403</span>  md.put(<span class="stringliteral">&quot;multitaper_number_tapers&quot;</span>, nseq);</div>
+<div class="line"><span class="lineno">  404</span>  md.put(<span class="stringliteral">&quot;multitaper_time_bandwidth_product&quot;</span>, nw);</div>
+<div class="line"><span class="lineno">  405</span>  md.put(<span class="stringliteral">&quot;multitaper_damping_factor&quot;</span>, damp);</div>
+<div class="line"><span class="lineno">  406</span>  md.put(<span class="stringliteral">&quot;multitaper_processed&quot;</span>, did_process);</div>
+<div class="line"><span class="lineno">  407</span>  md.put(<span class="stringliteral">&quot;multitaper_number_outputs&quot;</span>, did_process ? 1 : 0);</div>
+<div class="line"><span class="lineno">  408</span>  <span class="keywordflow">return</span> md;</div>
+<div class="line"><span class="lineno">  409</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_a83e9fd9e0f13b1a0a650fdb0bb805543"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a83e9fd9e0f13b1a0a650fdb0bb805543">mspass::algorithms::deconvolution::ScalarDecon::BasicQCMetrics</a></div><div class="ttdeci">mspass::utility::Metadata BasicQCMetrics(const std::string &amp;operator_name, const bool processed)</div><div class="ttdoc">Build QC Metadata fields common to scalar deconvolution operators.</div><div class="ttdef"><b>Definition</b> ScalarDecon.cc:61</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a83e9fd9e0f13b1a0a650fdb0bb805543">mspass::algorithms::deconvolution::ScalarDecon::BasicQCMetrics()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#aa8619effc38e9e0f3927c73eb9b838f0">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#ab2162ed3e7349998ee06ace77645bf77">mspass::utility::Metadata::put()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a7034bf16dcf7ea16563a7032ce19b08e">mspass::algorithms::deconvolution::FFTDeconOperator::sample_shift</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a4fb1f0df8241bf1aa07ad3012464250f">mspass::algorithms::deconvolution::ComplexArray::size()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>

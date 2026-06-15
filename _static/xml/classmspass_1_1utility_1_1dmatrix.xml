@@ -14,10 +14,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Contiguous Fortran-order storage for all matrix elements. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="253" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="253" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="267" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="267" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -28,10 +29,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Number of scalar values in ary that represent this matrix. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="254" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="254" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="269" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="269" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -42,10 +44,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Number of rows in this matrix. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="255" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="255" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="271" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="271" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -56,10 +59,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Number of columns in this matrix. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="255" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="255" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="273" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="273" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="friend">
@@ -78,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="258" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="258" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="276" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="276" bodyend="-1"/>
       </memberdef>
       <memberdef kind="friend" id="classmspass_1_1utility_1_1dmatrix_1aa4dc8326b91ab817ed3ca4c757c51eb3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
@@ -130,7 +134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="190" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="140" bodyend="158"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="197" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="140" bodyend="158"/>
       </memberdef>
       <memberdef kind="friend" id="classmspass_1_1utility_1_1dmatrix_1a1235b36bd8ed567716baccd72745e250" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
@@ -168,13 +172,13 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>sA </para>
+<simplesect kind="return"><para>s*A </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="203" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="160" bodyend="173"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="210" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="160" bodyend="173"/>
       </memberdef>
       <memberdef kind="friend" id="classmspass_1_1utility_1_1dmatrix_1ac8bd8f853d25a05e32f9e4c152d6af61" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
@@ -206,7 +210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="213" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="183" bodyend="191"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="226" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="183" bodyend="191"/>
       </memberdef>
       <memberdef kind="friend" id="classmspass_1_1utility_1_1dmatrix_1a5bee7f511e4293fed78596d41c2dbd81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostream &amp;</type>
@@ -247,7 +251,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="238" column="10"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="251" column="10"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -265,6 +269,10 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="107" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="8" bodyend="13"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" compoundref="dmatrix_8h" startline="269">length</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1aea80185e12adfb47dbe177c4dc23d206" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -306,6 +314,10 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="114" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="14" bodyend="26"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" compoundref="dmatrix_8h" startline="269">length</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
         <references refid="classmspass_1_1utility_1_1dmatrix_1ab9e34acc9b193854c5148e8c3d9650c2" compoundref="dmatrix_8cc" startline="203" endline="206">zero</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a46f1bdcaccfa8ae6dee639498864a8cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -327,6 +339,10 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="116" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="28" bodyend="33"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" compoundref="dmatrix_8h" startline="269">length</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1aef2e20478c6d9adb649e37b59812cb42" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -395,6 +411,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="128" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="39" bodyend="53"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a6a83c5587d0da1e9acc1a74e097171e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double &amp;</type>
@@ -413,10 +432,43 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Mutable indexing operator to fetch or modify an array element.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>row index to fetch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>c</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column index to fetch. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to matrix element at position (r,c). </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classmspass_1_1utility_1_1dmatrix__index__error" kindref="compound">dmatrix_index_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is thrown if request is out of range. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="129" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="54" bodyend="67"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="136" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="54" bodyend="67"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a05d02bb630bf3a4b9180f81aca0f835e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
@@ -435,7 +487,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="131" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="93" bodyend="101"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="138" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="93" bodyend="101"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" compoundref="dmatrix_8h" startline="269">length</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a2cdc2349f9f027d6caa41379ac7c8a3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
@@ -454,7 +510,7 @@
 <para>Matrix addition is a standard operation but demands the two matrices to be added are the same size. Hence, an exception will happen if you use this operator with a size mismatch.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
-<parametername>A</parametername>
+<parametername>other</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>is the matrix to be added to this. </para>
@@ -474,7 +530,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="142" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="103" bodyend="110"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="149" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="103" bodyend="110"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" compoundref="dmatrix_8h" startline="269">length</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a2b2f4889e00cd1d42e7100cfb8791fcc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
@@ -513,7 +573,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="153" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="112" bodyend="119"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="160" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="112" bodyend="119"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" compoundref="dmatrix_8h" startline="269">length</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ab96bc752b9fb5a1d33a628d8fbae8953" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
@@ -552,7 +616,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="164" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="121" bodyend="129"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="171" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="121" bodyend="129"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ac5c5bfbf8873f0deeea6143b07c09574" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
@@ -591,7 +655,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="175" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="130" bodyend="138"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="182" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="130" bodyend="138"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a29b6eb66bce64a8a2a0102e3bbb4c83a" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
@@ -606,10 +670,24 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Scale this matrix by a constant.</para>
+<para>Multiplies every element in this matrix by s and returns the scaled copy. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>scaling factor. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>this matrix multiplied by s. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="204" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="175" bodyend="181"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="217" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="175" bodyend="181"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">get_address</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>double *</type>
@@ -626,12 +704,46 @@
           <declname>c</declname>
         </param>
         <briefdescription>
+<para>Get a pointer to the location of a matrix component. </para>
         </briefdescription>
         <detaileddescription>
+<para>Although a sharp knife it is useful at times to get a raw pointer to the data in a dmatrix. A common one is using the BLAS to do vector operations for speed. Users of this method must note that the data for a dmatrix is stored as a single rowXcolumn std::vector container. The matrix is stored in Fortran order (column1, column2, ...). The contiguous memory guarantee of std::vector allows vector operations with the BLAS to work by rows or columns.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the row index of the desired address </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>c</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the column index of the desired memory address. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>pointer to component at row r and column c. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classmspass_1_1utility_1_1dmatrix__size__error" kindref="compound">dmatrix_size_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para>will be throw if r or c are outside matrix dimensions. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="230" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="72" bodyend="91"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="243" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="72" bodyend="91"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a178f65f7f0efb2c99980c8c81cf71bca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -646,7 +758,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="240" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="215" bodyend="215"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="253" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="215" bodyend="215"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ac32006f0dff7ca1b59fa8f3889deb9e5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -661,7 +774,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="242" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="216" bodyend="216"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="255" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="216" bodyend="216"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; size_t &gt;</type>
@@ -677,7 +791,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="248" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="207" bodyend="212"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="261" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="207" bodyend="212"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" compoundref="dmatrix_8h" startline="273">ncc</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" compoundref="dmatrix_8h" startline="271">nrr</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ab9e34acc9b193854c5148e8c3d9650c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -692,7 +808,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="250" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="203" bodyend="206"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="263" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="203" bodyend="206"/>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" compoundref="dmatrix_8h" startline="267">ary</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" compoundref="dmatrix_8h" startline="269">length</references>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -721,7 +839,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="260" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="260" bodyend="263"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="278" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="278" bodyend="281"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -745,7 +863,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="104" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="104" bodyend="264"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="104" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="104" bodyend="282"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" prot="protected" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>ary</name></member>
       <member refid="classmspass_1_1utility_1_1dmatrix_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>boost::serialization::access</name></member>

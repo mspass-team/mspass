@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['validate_0',['validate',['../classmspass_1_1seismic_1_1_logging_ensemble.html#a7de59947da7bc5e8e4a4be2fbe01b93b',1,'mspass::seismic::LoggingEnsemble']]],
-  ['vectorstatistics_1',['vectorstatistics',['../classmspass_1_1utility_1_1_vector_statistics.html#ae3ddde97cedb562028c3a0343bd48e47',1,'mspass::utility::VectorStatistics::VectorStatistics(std::vector&lt; T &gt; din)'],['../classmspass_1_1utility_1_1_vector_statistics.html#aa1e96022417eb6440ea57974d8d7a51e',1,'mspass::utility::VectorStatistics::VectorStatistics(T *din, int n)']]]
+  ['unique_5fid_5fkey_0',['unique_id_key',['../classmspass_1_1utility_1_1_metadata_definitions.html#a80e9a750135d00f9ca1db95d3986f214',1,'mspass::utility::MetadataDefinitions']]],
+  ['unique_5fname_1',['unique_name',['../classmspass_1_1utility_1_1_metadata_definitions.html#a7f6f48e89b074e16112475d7d620e747',1,'mspass::utility::MetadataDefinitions']]],
+  ['update_5fmetadata_2',['update_metadata',['../classmspass_1_1seismic_1_1_ensemble.html#ae4fafdd7d141fcb519571e24bd803478',1,'mspass::seismic::Ensemble']]],
+  ['upper_5fbound_3',['upper_bound',['../classmspass_1_1utility_1_1_vector_statistics.html#adf7ccfac2a3d89a8c39a3a260a244dc7',1,'mspass::utility::VectorStatistics']]]
 ];

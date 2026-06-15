@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -98,19 +141,21 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for mspass::algorithms::deconvolution::Base3CDecon:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.png" usemap="#mspass::algorithms::deconvolution::Base3CDecon_map" alt=""/>
-  <map id="mspass::algorithms::deconvolution::Base3CDecon_map" name="mspass::algorithms::deconvolution::Base3CDecon_map">
-<area href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html" title="Colored Noise Regularized 3C Deconvolution opertor." alt="mspass::algorithms::deconvolution::CNR3CDecon" shape="rect" coords="0,56,288,80"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon__inherit__graph.png" border="0" usemap="#amspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_inherit__map" id="amspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_inherit__map">
+<area shape="rect" title="Absract base class for algorithms handling full 3C data." alt="" coords="5,5,225,45"/>
+<area shape="rect" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html" title="Colored Noise Regularized 3C Deconvolution opertor." alt="" coords="7,93,223,133"/>
+<area shape="poly" title=" " alt="" coords="118,59,118,93,113,93,113,59"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a27c19849be8b17f85d1d6807786da11c" id="r_a27c19849be8b17f85d1d6807786da11c"><td class="memItemLeft" align="right" valign="top"><a id="a27c19849be8b17f85d1d6807786da11c" name="a27c19849be8b17f85d1d6807786da11c"></a>
-virtual <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a>&#160;</td><td class="memItemRight" valign="bottom"><b>process</b> ()=0</td></tr>
+<tr class="memitem:a27c19849be8b17f85d1d6807786da11c" id="r_a27c19849be8b17f85d1d6807786da11c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html#a27c19849be8b17f85d1d6807786da11c">process</a> ()=0</td></tr>
+<tr class="memdesc:a27c19849be8b17f85d1d6807786da11c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the loaded 3C deconvolution operator.  <br /></td></tr>
 <tr class="separator:a27c19849be8b17f85d1d6807786da11c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7d5bfc6e1adfc1bd7af1606bebddf86" id="r_aa7d5bfc6e1adfc1bd7af1606bebddf86"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classmspass_1_1seismic_1_1_time_series.html">mspass::seismic::TimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html#aa7d5bfc6e1adfc1bd7af1606bebddf86">actual_output</a> ()=0</td></tr>
+<tr class="memdesc:aa7d5bfc6e1adfc1bd7af1606bebddf86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the actual output of the deconvolution operator.  <br /></td></tr>
 <tr class="separator:aa7d5bfc6e1adfc1bd7af1606bebddf86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c73971b2670ad41a345a917abb5ef09" id="r_a8c73971b2670ad41a345a917abb5ef09"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classmspass_1_1seismic_1_1_time_series.html">mspass::seismic::TimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html#a8c73971b2670ad41a345a917abb5ef09">inverse_wavelet</a> (double)=0</td></tr>
 <tr class="memdesc:a8c73971b2670ad41a345a917abb5ef09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a FIR represention of the inverse filter.  <br /></td></tr>
@@ -171,7 +216,8 @@ virtual <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::
   </tr>
 </table>
 </div><div class="memdoc">
-<p>\brif Return the actual output of the deconvolution operator.</p>
+
+<p>Return the actual output of the deconvolution operator. </p>
 <p>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </p>
 
 <p>Implemented in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a0b7f51d901d32ef5a08e8d0de69f666c">mspass::algorithms::deconvolution::CNR3CDecon</a>.</p>
@@ -207,6 +253,36 @@ virtual <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::
  </p>
 
 <p>Implemented in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a1b2f893beb6c678f31d42ca579d539f3">mspass::algorithms::deconvolution::CNR3CDecon</a>.</p>
+
+</div>
+</div>
+<a id="a27c19849be8b17f85d1d6807786da11c" name="a27c19849be8b17f85d1d6807786da11c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27c19849be8b17f85d1d6807786da11c">&#9670;&#160;</a></span>process()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a> mspass::algorithms::deconvolution::Base3CDecon::process </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply the loaded 3C deconvolution operator. </p>
+<p>Implementations process the currently loaded data and return the deconvolved three-component result. </p>
+
+<p>Implemented in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a048f73981dd0c6baf93fe4e6126672aa">mspass::algorithms::deconvolution::CNR3CDecon</a>.</p>
 
 </div>
 </div>

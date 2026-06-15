@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -92,21 +135,40 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Template class that extends <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html">Ensemble</a> to include an error log and live tests.  
+<p>Template class that extends <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html" title="Metadata-bearing container for a collection of seismic data objects.">Ensemble</a> to include an error log and live tests.  
  <a href="classmspass_1_1seismic_1_1_logging_ensemble.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_ensemble_8h_source.html">Ensemble.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for mspass::seismic::LoggingEnsemble&lt; T &gt;:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1seismic_1_1_logging_ensemble.png" usemap="#mspass::seismic::LoggingEnsemble_3C_20T_20_3E_map" alt=""/>
-  <map id="mspass::seismic::LoggingEnsemble_3C_20T_20_3E_map" name="mspass::seismic::LoggingEnsemble_3C_20T_20_3E_map">
-<area href="classmspass_1_1seismic_1_1_ensemble.html" alt="mspass::seismic::Ensemble&lt; T &gt;" shape="rect" coords="0,112,236,136"/>
-<area href="classmspass_1_1utility_1_1_metadata.html" alt="mspass::utility::Metadata" shape="rect" coords="0,56,236,80"/>
-<area href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept." alt="mspass::utility::BasicMetadata" shape="rect" coords="0,0,236,24"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1seismic_1_1_logging_ensemble__inherit__graph.png" border="0" usemap="#amspass_1_1seismic_1_1_logging_ensemble_3_01_t_01_4_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1seismic_1_1_logging_ensemble_3_01_t_01_4_inherit__map" id="amspass_1_1seismic_1_1_logging_ensemble_3_01_t_01_4_inherit__map">
+<area shape="rect" title="Template class that extends Ensemble to include an error log and live tests." alt="" coords="31,225,220,265"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_ensemble.html" title=" " alt="" coords="5,152,245,177"/>
+<area shape="poly" title=" " alt="" coords="128,191,128,225,123,225,123,191"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_metadata.html" title="Type&#45;safe metadata container used throughout MsPASS." alt="" coords="32,79,219,104"/>
+<area shape="poly" title=" " alt="" coords="128,118,128,152,123,152,123,118"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept." alt="" coords="14,5,237,31"/>
+<area shape="poly" title=" " alt="" coords="128,44,128,79,123,79,123,44"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for mspass::seismic::LoggingEnsemble&lt; T &gt;:</div>
+<div class="dyncontent">
+<div class="center"><img src="classmspass_1_1seismic_1_1_logging_ensemble__coll__graph.png" border="0" usemap="#amspass_1_1seismic_1_1_logging_ensemble_3_01_t_01_4_coll__map" alt="Collaboration graph"/></div>
+<map name="amspass_1_1seismic_1_1_logging_ensemble_3_01_t_01_4_coll__map" id="amspass_1_1seismic_1_1_logging_ensemble_3_01_t_01_4_coll__map">
+<area shape="rect" title="Template class that extends Ensemble to include an error log and live tests." alt="" coords="213,243,403,283"/>
+<area shape="rect" href="classmspass_1_1seismic_1_1_ensemble.html" title=" " alt="" coords="5,155,245,180"/>
+<area shape="poly" title=" " alt="" coords="161,184,272,240,270,245,159,189"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_metadata.html" title="Type&#45;safe metadata container used throughout MsPASS." alt="" coords="32,80,219,105"/>
+<area shape="poly" title=" " alt="" coords="128,120,128,154,123,154,123,120"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_basic_metadata.html" title="Abstract base class for Metadata concept." alt="" coords="14,5,237,31"/>
+<area shape="poly" title=" " alt="" coords="128,45,128,80,123,80,123,45"/>
+<area shape="rect" href="classmspass_1_1utility_1_1_error_logger.html" title="Container to hold error logs for a data object." alt="" coords="269,155,469,180"/>
+<area shape="poly" title=" " alt="" coords="357,193,323,244,318,241,352,190"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -114,9 +176,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3bb4144f662b8a7e3f3d077c10d0d643"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab587f8981a828a4fbfefb2a7f6c61f8d" id="r_ab587f8981a828a4fbfefb2a7f6c61f8d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#ab587f8981a828a4fbfefb2a7f6c61f8d">LoggingEnsemble</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">size_t</a> n)</td></tr>
 <tr class="separator:ab587f8981a828a4fbfefb2a7f6c61f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37b14e0de1410d987f651d91a5a028b8" id="r_a37b14e0de1410d987f651d91a5a028b8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a37b14e0de1410d987f651d91a5a028b8">LoggingEnsemble</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">size_t</a> n)</td></tr>
+<tr class="memitem:a37b14e0de1410d987f651d91a5a028b8" id="r_a37b14e0de1410d987f651d91a5a028b8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a37b14e0de1410d987f651d91a5a028b8">LoggingEnsemble</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">size_t</a> n)</td></tr>
 <tr class="separator:a37b14e0de1410d987f651d91a5a028b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3095395112d63700e473ef4e6afa00f8" id="r_a3095395112d63700e473ef4e6afa00f8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a3095395112d63700e473ef4e6afa00f8">LoggingEnsemble</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;md, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">elogin</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">size_t</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">ndata</a>)</td></tr>
+<tr class="memitem:a3095395112d63700e473ef4e6afa00f8" id="r_a3095395112d63700e473ef4e6afa00f8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a3095395112d63700e473ef4e6afa00f8">LoggingEnsemble</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a> &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">elogin</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">size_t</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">ndata</a>)</td></tr>
 <tr class="separator:a3095395112d63700e473ef4e6afa00f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada03de0d9a3e1b1168ee0b77738fc023" id="r_ada03de0d9a3e1b1168ee0b77738fc023"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#ada03de0d9a3e1b1168ee0b77738fc023">LoggingEnsemble</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html">LoggingEnsemble</a>&lt; <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">T</a> &gt; &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>)</td></tr>
 <tr class="separator:ada03de0d9a3e1b1168ee0b77738fc023"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,6 +197,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a323e7e7d940babd54e9536952f7fe985" id="r_a323e7e7d940babd54e9536952f7fe985"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html">LoggingEnsemble</a>&lt; <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">T</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a323e7e7d940babd54e9536952f7fe985">operator=</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> <a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html">LoggingEnsemble</a>&lt; <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">T</a> &gt; &amp;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>)</td></tr>
 <tr class="separator:a323e7e7d940babd54e9536952f7fe985"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f88e04c5ded5bf7e5225f2d99ce7267" id="r_a3f88e04c5ded5bf7e5225f2d99ce7267"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">size_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a3f88e04c5ded5bf7e5225f2d99ce7267">memory_use</a> () <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a></td></tr>
+<tr class="memdesc:a3f88e04c5ded5bf7e5225f2d99ce7267"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimate memory used by this ensemble.  <br /></td></tr>
 <tr class="separator:a3f88e04c5ded5bf7e5225f2d99ce7267"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmspass_1_1seismic_1_1_ensemble"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1seismic_1_1_ensemble')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html">mspass::seismic::Ensemble&lt; T &gt;</a></td></tr>
 <tr class="memitem:a12693d17a307b72ee3263b34eaa49a41 inherit pub_methods_classmspass_1_1seismic_1_1_ensemble" id="r_a12693d17a307b72ee3263b34eaa49a41"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_ensemble.html#a12693d17a307b72ee3263b34eaa49a41">Ensemble</a> ()</td></tr>
@@ -149,6 +212,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afb7a281036e2cf5e79203495bda54ea6 inherit pub_methods_classmspass_1_1seismic_1_1_ensemble" id="r_afb7a281036e2cf5e79203495bda54ea6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_ensemble.html">Ensemble</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_ensemble.html#afb7a281036e2cf5e79203495bda54ea6">operator=</a> (const <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html">Ensemble</a> &amp;parent)</td></tr>
 <tr class="separator:afb7a281036e2cf5e79203495bda54ea6 inherit pub_methods_classmspass_1_1seismic_1_1_ensemble"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc2865503398025520f34034ec5d1b66 inherit pub_methods_classmspass_1_1seismic_1_1_ensemble" id="r_afc2865503398025520f34034ec5d1b66"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_ensemble.html#afc2865503398025520f34034ec5d1b66">operator[]</a> (const size_t n) const</td></tr>
+<tr class="memdesc:afc2865503398025520f34034ec5d1b66 inherit pub_methods_classmspass_1_1seismic_1_1_ensemble"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indexing operator.  <br /></td></tr>
 <tr class="separator:afc2865503398025520f34034ec5d1b66 inherit pub_methods_classmspass_1_1seismic_1_1_ensemble"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4fafdd7d141fcb519571e24bd803478 inherit pub_methods_classmspass_1_1seismic_1_1_ensemble" id="r_ae4fafdd7d141fcb519571e24bd803478"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_ensemble.html#ae4fafdd7d141fcb519571e24bd803478">update_metadata</a> (const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a> &amp;newmd)</td></tr>
 <tr class="memdesc:ae4fafdd7d141fcb519571e24bd803478 inherit pub_methods_classmspass_1_1seismic_1_1_ensemble"><td class="mdescLeft">&#160;</td><td class="mdescRight">updates ensemble header (Metadata).  <br /></td></tr>
@@ -247,25 +311,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a20c1da469f6e0a073b291a680425f9e8 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a20c1da469f6e0a073b291a680425f9e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a20c1da469f6e0a073b291a680425f9e8">change_key</a> (<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">oldkey</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">const</a> std::string <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">newkey</a>)</td></tr>
 <tr class="memdesc:a20c1da469f6e0a073b291a680425f9e8 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the keyword to access an attribute.  <br /></td></tr>
 <tr class="separator:a20c1da469f6e0a073b291a680425f9e8 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a8de95c06d1c6e064e261c1cde49f0ff9"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a8de95c06d1c6e064e261c1cde49f0ff9"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8de95c06d1c6e064e261c1cde49f0ff9">get</a> (const std::string key) const</td></tr>
 <tr class="separator:a8de95c06d1c6e064e261c1cde49f0ff9 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a461fa38069a9b499e6381cb4cad3b14d"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a461fa38069a9b499e6381cb4cad3b14d"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a461fa38069a9b499e6381cb4cad3b14d">get</a> (const std::string key) const</td></tr>
 <tr class="separator:a461fa38069a9b499e6381cb4cad3b14d inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a7904a74f5d29f63c92d0607c6d76d1a3"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">long&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a7904a74f5d29f63c92d0607c6d76d1a3"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">long&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a7904a74f5d29f63c92d0607c6d76d1a3">get</a> (const std::string key) const</td></tr>
 <tr class="separator:a7904a74f5d29f63c92d0607c6d76d1a3 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_af526cc7f00976c793f104b32539768f7"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_af526cc7f00976c793f104b32539768f7"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af526cc7f00976c793f104b32539768f7">get</a> (const std::string key) const</td></tr>
 <tr class="separator:af526cc7f00976c793f104b32539768f7 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a2ed7fd2682fe3b127ef3148c48cc9cd2"><td class="memItemLeft" align="right" valign="top">
-template&lt;&gt; </td></tr>
-<tr class="memitem:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">float&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> (const std::string key) const</td></tr>
+<tr class="memitem:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a2ed7fd2682fe3b127ef3148c48cc9cd2"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">float&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a2ed7fd2682fe3b127ef3148c48cc9cd2">get</a> (const std::string key) const</td></tr>
 <tr class="separator:a2ed7fd2682fe3b127ef3148c48cc9cd2 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2269c377a085fa237380ef7223016438 inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_a2269c377a085fa237380ef7223016438"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
 <tr class="memitem:a2269c377a085fa237380ef7223016438 inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a2269c377a085fa237380ef7223016438">get</a> (const string key) const</td></tr>
@@ -282,6 +341,9 @@ template&lt;&gt; </td></tr>
 <tr class="memitem:aa417fcccd6e5ba621b5def12ab8d98ad inherit pub_methods_classmspass_1_1utility_1_1_metadata" id="r_aa417fcccd6e5ba621b5def12ab8d98ad"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
 <tr class="memitem:aa417fcccd6e5ba621b5def12ab8d98ad inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memTemplItemLeft" align="right" valign="top">float&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#aa417fcccd6e5ba621b5def12ab8d98ad">get</a> (const string key) const</td></tr>
 <tr class="separator:aa417fcccd6e5ba621b5def12ab8d98ad inherit pub_methods_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classmspass_1_1utility_1_1_basic_metadata"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmspass_1_1utility_1_1_basic_metadata')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html">mspass::utility::BasicMetadata</a></td></tr>
+<tr class="memitem:a1d7a9ab1e25e01694cc733ad2b98c6b7 inherit pub_methods_classmspass_1_1utility_1_1_basic_metadata" id="r_a1d7a9ab1e25e01694cc733ad2b98c6b7"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html#a1d7a9ab1e25e01694cc733ad2b98c6b7">~BasicMetadata</a> ()</td></tr>
+<tr class="separator:a1d7a9ab1e25e01694cc733ad2b98c6b7 inherit pub_methods_classmspass_1_1utility_1_1_basic_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -295,17 +357,15 @@ Public Attributes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1utility_1_1_metadata"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1utility_1_1_metadata')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></td></tr>
-<tr class="memitem:a8be7decfdbefb7aa8c3d9e977ac26f0b inherit pro_attribs_classmspass_1_1utility_1_1_metadata" id="r_a8be7decfdbefb7aa8c3d9e977ac26f0b"><td class="memItemLeft" align="right" valign="top">
-std::map&lt; std::string, boost::any &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>md</b></td></tr>
+<tr class="memitem:a8be7decfdbefb7aa8c3d9e977ac26f0b inherit pro_attribs_classmspass_1_1utility_1_1_metadata" id="r_a8be7decfdbefb7aa8c3d9e977ac26f0b"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, boost::any &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a></td></tr>
 <tr class="separator:a8be7decfdbefb7aa8c3d9e977ac26f0b inherit pro_attribs_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaa3b11bec830a2ab4f93e79623af591 inherit pro_attribs_classmspass_1_1utility_1_1_metadata" id="r_abaa3b11bec830a2ab4f93e79623af591"><td class="memItemLeft" align="right" valign="top">
-std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>changed_or_set</b></td></tr>
+<tr class="memitem:abaa3b11bec830a2ab4f93e79623af591 inherit pro_attribs_classmspass_1_1utility_1_1_metadata" id="r_abaa3b11bec830a2ab4f93e79623af591"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#abaa3b11bec830a2ab4f93e79623af591">changed_or_set</a></td></tr>
 <tr class="separator:abaa3b11bec830a2ab4f93e79623af591 inherit pro_attribs_classmspass_1_1utility_1_1_metadata"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">typename</a> <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">T</a>&gt;<br />
-class mspass::seismic::LoggingEnsemble&lt; T &gt;</div><p>Template class that extends <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html">Ensemble</a> to include an error log and live tests. </p>
-<p>This class extends the <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html">Ensemble</a> class defined in MsPASS for bundling collections of data that can be pushed to an std::vector container. The class is actually very generic, but mspass defines it for <a class="el" href="classmspass_1_1seismic_1_1_time_series.html" title="Implemntation of TimeSeries for MsPASS.">TimeSeries</a> and <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS.">Seismogram</a> objects. This class is a necessary extension for an algorithm that take ensembles in and emits a different ensemble. In that situation we need a way to indicate the entire ensemble is invalid and not be to used and post error messages that give an explanation of why the output is invalid. This class provides that mechanism by adding a <a class="el" href="classmspass_1_1utility_1_1_error_logger.html" title="Container to hold error logs for a data object.">mspass::utility::ErrorLogger</a> and a (private) boolean defining if the ensemble has valid data. That makes the API to a <a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html" title="Template class that extends Ensemble to include an error log and live tests.">LoggingEnsemble</a> a hybrid with the atomic <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS.">Seismogram</a> and <a class="el" href="classmspass_1_1seismic_1_1_time_series.html" title="Implemntation of TimeSeries for MsPASS.">TimeSeries</a> objects (adds the dna of ErrorLogger and live/dead concept).</p>
+class mspass::seismic::LoggingEnsemble&lt; T &gt;</div><p>Template class that extends <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html" title="Metadata-bearing container for a collection of seismic data objects.">Ensemble</a> to include an error log and live tests. </p>
+<p>This class extends the <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html" title="Metadata-bearing container for a collection of seismic data objects.">Ensemble</a> class defined in MsPASS for bundling collections of data that can be pushed to an std::vector container. The class is actually very generic, but mspass defines it for <a class="el" href="classmspass_1_1seismic_1_1_time_series.html" title="Implemntation of TimeSeries for MsPASS.">TimeSeries</a> and <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS.">Seismogram</a> objects. This class is a necessary extension for an algorithm that take ensembles in and emits a different ensemble. In that situation we need a way to indicate the entire ensemble is invalid and not be to used and post error messages that give an explanation of why the output is invalid. This class provides that mechanism by adding a <a class="el" href="classmspass_1_1utility_1_1_error_logger.html" title="Container to hold error logs for a data object.">mspass::utility::ErrorLogger</a> and a (private) boolean defining if the ensemble has valid data. That makes the API to a <a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html" title="Template class that extends Ensemble to include an error log and live tests.">LoggingEnsemble</a> a hybrid with the atomic <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS.">Seismogram</a> and <a class="el" href="classmspass_1_1seismic_1_1_time_series.html" title="Implemntation of TimeSeries for MsPASS.">TimeSeries</a> objects (adds the dna of ErrorLogger and live/dead concept).</p>
 <p>A secondary fundamental reason this class can be needed is to parallelize algorithms that emit an ensemble (regardless of inputs). The live/dead tests and error logger make the handlers consistent with the atomic objects of mspass. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a3bb4144f662b8a7e3f3d077c10d0d643" name="a3bb4144f662b8a7e3f3d077c10d0d643"></a>
@@ -333,8 +393,8 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </table>
 </div><div class="memdoc">
 <p>Default constructor. Initializes all pieces with default constructor and marks the ensemble dead. </p>
-<div class="fragment"><div class="line"><span class="lineno">  141</span>: Ensemble&lt;T&gt;(), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>() { ensemble_is_live = <span class="keyword">false</span>; };</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_logging_ensemble_html_a805180a6091e44e3ccb1e53c8576ea5a"><div class="ttname"><a href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">mspass::seismic::LoggingEnsemble::elog</a></div><div class="ttdeci">mspass::utility::ErrorLogger elog</div><div class="ttdef"><b>Definition</b> Ensemble.h:138</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  146</span>: Ensemble&lt;T&gt;(), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>() { ensemble_is_live = <span class="keyword">false</span>; };</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_logging_ensemble_html_a805180a6091e44e3ccb1e53c8576ea5a"><div class="ttname"><a href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">mspass::seismic::LoggingEnsemble::elog</a></div><div class="ttdeci">mspass::utility::ErrorLogger elog</div><div class="ttdef"><b>Definition</b> Ensemble.h:143</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -365,9 +425,9 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </div><div class="memdoc">
 <p>Reserve slots but otherwise create and empty ensemble marked dead.</p>
 <p>This constructor is a minor variant from the default constructor that calls reserve to set aside n slotes for the data. Use this one when you know the size of the ensemble you want to create. Note after the ensemble, like the default constructor, is marked initially as dead. The user must call the set_live method of this ensemble after loading data or downstream processors may drop the data. </p>
-<div class="fragment"><div class="line"><span class="lineno">  154</span>                                  : Ensemble&lt;T&gt;(n), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>() {</div>
-<div class="line"><span class="lineno">  155</span>    ensemble_is_live = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  156</span>  }</div>
+<div class="fragment"><div class="line"><span class="lineno">  159</span>                                  : Ensemble&lt;T&gt;(n), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>() {</div>
+<div class="line"><span class="lineno">  160</span>    ensemble_is_live = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  161</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -408,11 +468,12 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </div><div class="memdoc">
 <p>Construct a framework for the ensemble with metadata.</p>
 <p>This constructor loads the metadata received into the ensmeble area and reserves n slots to be added. Be warned it marks the ensemble dead. Once valid data are loaded the user should call the set_live method for the ensemble to prevent the data from being ignored downstream. </p>
-<div class="fragment"><div class="line"><span class="lineno">  164</span>      : Ensemble&lt;T&gt;(md, n), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>() {</div>
-<div class="line"><span class="lineno">  165</span>    <span class="comment">/* Might be advised to set this true, but since an object created by</span></div>
-<div class="line"><span class="lineno">  166</span><span class="comment">    this method has only slots but no data validate would return false.*/</span></div>
-<div class="line"><span class="lineno">  167</span>    ensemble_is_live = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  168</span>  }</div>
+<div class="fragment"><div class="line"><span class="lineno">  169</span>      : Ensemble&lt;T&gt;(<a class="code hl_variable" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>, n), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>() {</div>
+<div class="line"><span class="lineno">  170</span>    <span class="comment">/* Might be advised to set this true, but since an object created by</span></div>
+<div class="line"><span class="lineno">  171</span><span class="comment">    this method has only slots but no data validate would return false.*/</span></div>
+<div class="line"><span class="lineno">  172</span>    ensemble_is_live = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  173</span>  }</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a8be7decfdbefb7aa8c3d9e977ac26f0b"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">mspass::utility::Metadata::md</a></div><div class="ttdeci">std::map&lt; std::string, boost::any &gt; md</div><div class="ttdef"><b>Definition</b> Metadata.h:473</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -459,8 +520,8 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </div><div class="memdoc">
 <p>Construct from all pieces.</p>
 <p>This constructor was added for the python interface. It is a helpful construct for the pickle interface. It is unlikely to be of interest in a C++ application. Calls reserve only for member vector but but does not insert data - detail of the pickle implementation </p>
-<div class="fragment"><div class="line"><span class="lineno">  178</span>      : Ensemble&lt;T&gt;(md, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">ndata</a>), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">elogin</a>) {};</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_af2b1cac0f295d9ab5fb240b8b5e12539"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get</a></div><div class="ttdeci">T get(const std::string key) const</div><div class="ttdef"><b>Definition</b> Metadata.h:413</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  183</span>      : Ensemble&lt;T&gt;(<a class="code hl_variable" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">ndata</a>), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">elogin</a>) {};</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_af2b1cac0f295d9ab5fb240b8b5e12539"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get</a></div><div class="ttdeci">T get(const std::string key) const</div><div class="ttdef"><b>Definition</b> Metadata.h:477</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -491,9 +552,9 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </div><div class="memdoc">
 <p>Standard copy constructor. <br  />
  </p>
-<div class="fragment"><div class="line"><span class="lineno">  181</span>      : Ensemble&lt;T&gt;(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.elog) {</div>
-<div class="line"><span class="lineno">  182</span>    ensemble_is_live = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.ensemble_is_live;</div>
-<div class="line"><span class="lineno">  183</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  186</span>      : Ensemble&lt;T&gt;(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.elog) {</div>
+<div class="line"><span class="lineno">  187</span>    ensemble_is_live = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.ensemble_is_live;</div>
+<div class="line"><span class="lineno">  188</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -522,10 +583,10 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Clone from a base class <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html">Ensemble</a>. Initializes error null and sets live. </p>
-<div class="fragment"><div class="line"><span class="lineno">  186</span>                                             : Ensemble&lt;T&gt;(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>() {</div>
-<div class="line"><span class="lineno">  187</span>    ensemble_is_live = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  188</span>  };</div>
+<p>Clone from a base class <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html" title="Metadata-bearing container for a collection of seismic data objects.">Ensemble</a>. Initializes error null and sets live. </p>
+<div class="fragment"><div class="line"><span class="lineno">  191</span>                                             : Ensemble&lt;T&gt;(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>() {</div>
+<div class="line"><span class="lineno">  192</span>    ensemble_is_live = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  193</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -555,7 +616,7 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </table>
 </div><div class="memdoc">
 <p>Complement to live method - returns true if there are no valid data members. </p>
-<div class="fragment"><div class="line"><span class="lineno">  195</span>{ <span class="keywordflow">return</span> !ensemble_is_live; };</div>
+<div class="fragment"><div class="line"><span class="lineno">  200</span>{ <span class="keywordflow">return</span> !ensemble_is_live; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -584,7 +645,7 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </table>
 </div><div class="memdoc">
 <p>Markt the entire ensemble bad. </p>
-<div class="fragment"><div class="line"><span class="lineno">  190</span>{ ensemble_is_live = <span class="keyword">false</span>; };</div>
+<div class="fragment"><div class="line"><span class="lineno">  195</span>{ ensemble_is_live = <span class="keyword">false</span>; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -613,7 +674,7 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </table>
 </div><div class="memdoc">
 <p>Getter to test if the ensemble has any valid data. </p>
-<div class="fragment"><div class="line"><span class="lineno">  192</span>{ <span class="keywordflow">return</span> ensemble_is_live; };</div>
+<div class="fragment"><div class="line"><span class="lineno">  197</span>{ <span class="keywordflow">return</span> ensemble_is_live; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -641,26 +702,33 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  230</span>                            {</div>
-<div class="line"><span class="lineno">  231</span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a>;</div>
-<div class="line"><span class="lineno">  232</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a> = <span class="keyword">sizeof</span>(*this);</div>
-<div class="line"><span class="lineno">  233</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">p</a> = this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">p</a> != this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">p</a>) {</div>
-<div class="line"><span class="lineno">  234</span>      memuse += <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">p</a>-&gt;memory_use();</div>
-<div class="line"><span class="lineno">  235</span>    }</div>
-<div class="line"><span class="lineno">  236</span>    <span class="comment">/* Account for ensemble metadata */</span></div>
-<div class="line"><span class="lineno">  237</span>    <span class="comment">/* We can only estimate the size of the Metadata container.</span></div>
-<div class="line"><span class="lineno">  238</span><span class="comment">    These constants are defined in memory_constants.h */</span></div>
-<div class="line"><span class="lineno">  239</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a> +=</div>
-<div class="line"><span class="lineno">  240</span>        mspass::utility::memory_constants::MD_AVERAGE_SIZE * this-&gt;md.size();</div>
-<div class="line"><span class="lineno">  241</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a> += mspass::utility::memory_constants::KEY_AVERAGE_SIZE *</div>
-<div class="line"><span class="lineno">  242</span>              this-&gt;changed_or_set.size();</div>
-<div class="line"><span class="lineno">  243</span>    <span class="comment">/* Account for error log size */</span></div>
-<div class="line"><span class="lineno">  244</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a> += mspass::utility::memory_constants::ELOG_AVERAGE_SIZE *</div>
-<div class="line"><span class="lineno">  245</span>              this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>.size();</div>
-<div class="line"><span class="lineno">  246</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a>;</div>
-<div class="line"><span class="lineno">  247</span>  };</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html_a50f9947d9209dda797f1b7fe2b4ba81f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble&lt; T &gt;::member</a></div><div class="ttdeci">std::vector&lt; T &gt; member</div><div class="ttdoc">Container holding data objects.</div><div class="ttdef"><b>Definition</b> Ensemble.h:20</div></div>
+
+<p>Estimate memory used by this ensemble. </p>
+<p>The estimate includes the object itself, each member object's memory_use estimate, ensemble Metadata storage, changed-or-set keys, and the ensemble error log. </p>
+<div class="fragment"><div class="line"><span class="lineno">  241</span>                            {</div>
+<div class="line"><span class="lineno">  242</span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a>;</div>
+<div class="line"><span class="lineno">  243</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a> = <span class="keyword">sizeof</span>(*this);</div>
+<div class="line"><span class="lineno">  244</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">p</a> = this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">p</a> != this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">p</a>) {</div>
+<div class="line"><span class="lineno">  245</span>      memuse += <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">p</a>-&gt;memory_use();</div>
+<div class="line"><span class="lineno">  246</span>    }</div>
+<div class="line"><span class="lineno">  247</span>    <span class="comment">/* Account for ensemble metadata */</span></div>
+<div class="line"><span class="lineno">  248</span>    <span class="comment">/* We can only estimate the size of the Metadata container.</span></div>
+<div class="line"><span class="lineno">  249</span><span class="comment">    These constants are defined in memory_constants.h */</span></div>
+<div class="line"><span class="lineno">  250</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a> +=</div>
+<div class="line"><span class="lineno">  251</span>        mspass::utility::memory_constants::MD_AVERAGE_SIZE * this-&gt;<a class="code hl_variable" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>.size();</div>
+<div class="line"><span class="lineno">  252</span>    memuse += mspass::utility::memory_constants::KEY_AVERAGE_SIZE *</div>
+<div class="line"><span class="lineno">  253</span>              this-&gt;<a class="code hl_variable" href="classmspass_1_1utility_1_1_metadata.html#abaa3b11bec830a2ab4f93e79623af591">changed_or_set</a>.size();</div>
+<div class="line"><span class="lineno">  254</span>    <span class="comment">/* Account for error log size */</span></div>
+<div class="line"><span class="lineno">  255</span>    memuse += mspass::utility::memory_constants::ELOG_AVERAGE_SIZE *</div>
+<div class="line"><span class="lineno">  256</span>              this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#a13450cb0a04da9b190832a73834fb6cf">size</a>();</div>
+<div class="line"><span class="lineno">  257</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">memuse</a>;</div>
+<div class="line"><span class="lineno">  258</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_ensemble_html_a50f9947d9209dda797f1b7fe2b4ba81f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble&lt; T &gt;::member</a></div><div class="ttdeci">std::vector&lt; T &gt; member</div><div class="ttdoc">Container holding data objects.</div><div class="ttdef"><b>Definition</b> Ensemble.h:25</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_a13450cb0a04da9b190832a73834fb6cf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#a13450cb0a04da9b190832a73834fb6cf">mspass::utility::ErrorLogger::size</a></div><div class="ttdeci">int size() const</div><div class="ttdef"><b>Definition</b> ErrorLogger.h:115</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_abaa3b11bec830a2ab4f93e79623af591"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#abaa3b11bec830a2ab4f93e79623af591">mspass::utility::Metadata::changed_or_set</a></div><div class="ttdeci">std::set&lt; std::string &gt; changed_or_set</div><div class="ttdef"><b>Definition</b> Metadata.h:475</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#abaa3b11bec830a2ab4f93e79623af591">mspass::utility::Metadata::changed_or_set</a>, <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">mspass::utility::Metadata::md</a>, and <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#a13450cb0a04da9b190832a73834fb6cf">mspass::utility::ErrorLogger::size()</a>.</p>
+
 </div>
 </div>
 <a id="a323e7e7d940babd54e9536952f7fe985" name="a323e7e7d940babd54e9536952f7fe985"></a>
@@ -689,17 +757,17 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><span class="lineno">  220</span>                                                                  {</div>
-<div class="line"><span class="lineno">  221</span>    <span class="keywordflow">if</span> (&amp;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a> != <span class="keyword">this</span>) {</div>
-<div class="line"><span class="lineno">  222</span>      this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>);</div>
-<div class="line"><span class="lineno">  223</span>      this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.reserve(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.member.size());</div>
-<div class="line"><span class="lineno">  224</span>      this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a> = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.member;</div>
-<div class="line"><span class="lineno">  225</span>      <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a> = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.elog;</div>
-<div class="line"><span class="lineno">  226</span>      ensemble_is_live = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.ensemble_is_live;</div>
-<div class="line"><span class="lineno">  227</span>    }</div>
-<div class="line"><span class="lineno">  228</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  229</span>  };</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aadbae283dfdb87a82832519a9955fdfa"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=</a></div><div class="ttdeci">Metadata &amp; operator=(const Metadata &amp;mdold)</div><div class="ttdef"><b>Definition</b> Metadata.cc:455</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  225</span>                                                                  {</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">if</span> (&amp;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a> != <span class="keyword">this</span>) {</div>
+<div class="line"><span class="lineno">  227</span>      this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>);</div>
+<div class="line"><span class="lineno">  228</span>      this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.reserve(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.member.size());</div>
+<div class="line"><span class="lineno">  229</span>      this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a> = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.member;</div>
+<div class="line"><span class="lineno">  230</span>      <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a> = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.elog;</div>
+<div class="line"><span class="lineno">  231</span>      ensemble_is_live = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.ensemble_is_live;</div>
+<div class="line"><span class="lineno">  232</span>    }</div>
+<div class="line"><span class="lineno">  233</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  234</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aadbae283dfdb87a82832519a9955fdfa"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=</a></div><div class="ttdeci">Metadata &amp; operator=(const Metadata &amp;mdold)</div><div class="ttdef"><b>Definition</b> Metadata.cc:460</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">mspass::seismic::LoggingEnsemble&lt; T &gt;::elog</a>, <a class="el" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">mspass::seismic::Ensemble&lt; Tdata &gt;::member</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=()</a>.</p>
 
@@ -731,14 +799,14 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </div><div class="memdoc">
 <p>Force, with care, the ensemble to be marked live.</p>
 <p>This extension of CoreEnsemble adds a boolean that is used to test if an entire ensemble should be treated as dead or alive. It first runs the validate method. If validate is false it refuses to set the state live and returns false. If validate returns true it will return true. </p>
-<div class="fragment"><div class="line"><span class="lineno">  211</span>                  {</div>
-<div class="line"><span class="lineno">  212</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a7de59947da7bc5e8e4a4be2fbe01b93b">validate</a>()) {</div>
-<div class="line"><span class="lineno">  213</span>      ensemble_is_live = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  214</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  215</span>    } <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  216</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  217</span>  };</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_logging_ensemble_html_a7de59947da7bc5e8e4a4be2fbe01b93b"><div class="ttname"><a href="classmspass_1_1seismic_1_1_logging_ensemble.html#a7de59947da7bc5e8e4a4be2fbe01b93b">mspass::seismic::LoggingEnsemble::validate</a></div><div class="ttdeci">bool validate()</div><div class="ttdef"><b>Definition</b> Ensemble.h:253</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  216</span>                  {</div>
+<div class="line"><span class="lineno">  217</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a7de59947da7bc5e8e4a4be2fbe01b93b">validate</a>()) {</div>
+<div class="line"><span class="lineno">  218</span>      ensemble_is_live = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  219</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  220</span>    } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  221</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  222</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_logging_ensemble_html_a7de59947da7bc5e8e4a4be2fbe01b93b"><div class="ttname"><a href="classmspass_1_1seismic_1_1_logging_ensemble.html#a7de59947da7bc5e8e4a4be2fbe01b93b">mspass::seismic::LoggingEnsemble::validate</a></div><div class="ttdeci">bool validate()</div><div class="ttdef"><b>Definition</b> Ensemble.h:264</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a7de59947da7bc5e8e4a4be2fbe01b93b">mspass::seismic::LoggingEnsemble&lt; T &gt;::validate()</a>.</p>
 
@@ -762,13 +830,13 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </div><div class="memdoc">
 <p>Check to see if ensemble has any live data.</p>
 <p>In processing one can occasionally (not rare but not common either) end up with enemble full of data marked dead. This is a convenience method to check all members. If it finds any live member it will immediately return true (ok). If after a search of the entire ensemble no live members are found it will return false AND then mark the entire ensemble bad. </p>
-<div class="fragment"><div class="line"><span class="lineno">  253</span>                                                        {</div>
-<div class="line"><span class="lineno">  254</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">dptr</a> = this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">dptr</a> != this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">dptr</a>) {</div>
-<div class="line"><span class="lineno">  255</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">dptr</a>-&gt;live())</div>
-<div class="line"><span class="lineno">  256</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  257</span>  }</div>
-<div class="line"><span class="lineno">  258</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  259</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  264</span>                                                        {</div>
+<div class="line"><span class="lineno">  265</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">dptr</a> = this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">dptr</a> != this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_ensemble.html#a50f9947d9209dda797f1b7fe2b4ba81f">member</a>.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">dptr</a>) {</div>
+<div class="line"><span class="lineno">  266</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">dptr</a>-&gt;live())</div>
+<div class="line"><span class="lineno">  267</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  268</span>  }</div>
+<div class="line"><span class="lineno">  269</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  270</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

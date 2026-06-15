@@ -72,36 +72,6 @@
 <parametername>tw</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>defines the data range to be extracted from parent.</para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
-<para>This function differs from the CoreSeismogram version in error handling. It follows the MsPASS model of posting errors to elog and returning a dead object for unrecoverable errors.</para>
-<para><simplesect kind="return"><para>new Seismogram object derived from parent but windowed by input time window range.</para>
-</simplesect>
-<parameterlist kind="exception"><parameteritem>
-<parameternamelist>
-<parametername>MsPASSError</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>object if the requested time window is not inside data range</para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>parent</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>is the larger Seismogram object to be windowed </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>tw</parametername>
-</parameternamelist>
-<parameterdescription>
 <para>defines the data range to be extracted from parent. </para>
 </parameterdescription>
 </parameteritem>
@@ -130,7 +100,6 @@ It is common to need to extract a smaller segment of data from a larger time win
 <para>Extracts a requested time window of data from a parent CoreSeismogram object. </para>
         </briefdescription>
         <detaileddescription>
-<para>Extracts a requested time window of data from a parent coreSeismogram object.</para>
 <para>It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time. Differs from the overloaded Seismogram version because it will throw an exception if given an invalid window.</para>
 <para><simplesect kind="return"><para>new CoreSeismgram object derived from parent but windowed by input time window range.</para>
 </simplesect>
@@ -149,35 +118,6 @@ It is common to need to extract a smaller segment of data from a larger time win
 </parameternamelist>
 <parameterdescription>
 <para>is the larger Seismogram object to be windowed </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>tw</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>defines the data range to be extracted from parent.</para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
-<para><simplesect kind="return"><para>new CoreSeismogram object derived from parent but windowed by input time window range.</para>
-</simplesect>
-<parameterlist kind="exception"><parameteritem>
-<parameternamelist>
-<parametername>MsPASSError</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>object if the requested time window is not inside data range</para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>parent</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>is the larger CoreSeismogram object to be windowed </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -230,35 +170,6 @@ It is common to need to extract a smaller segment of data from a larger time win
 <parametername>tw</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>defines the data range to be extracted from parent.</para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
-<para><simplesect kind="return"><para>new Seismgram object derived from parent but windowed by input time window range.</para>
-</simplesect>
-<parameterlist kind="exception"><parameteritem>
-<parameternamelist>
-<parametername>MsPASSError</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>object if the requested time window is not inside data range</para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>parent</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>is the larger TimeSeries object to be windowed </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>tw</parametername>
-</parameternamelist>
-<parameterdescription>
 <para>defines the data range to be extracted from parent. </para>
 </parameterdescription>
 </parameteritem>
@@ -289,35 +200,6 @@ It is common to need to extract a smaller segment of data from a larger time win
         <detaileddescription>
 <para>It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
 <para><simplesect kind="return"><para>new CoreTimeSeries object derived from parent but windowed by input time window range.</para>
-</simplesect>
-<parameterlist kind="exception"><parameteritem>
-<parameternamelist>
-<parametername>MsPASSError</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>object if the requested time window is not inside data range</para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>parent</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>is the larger CoreTimeSeries object to be windowed </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>tw</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>defines the data range to be extracted from parent.</para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicCoreTimeSeries object for handling time.</para>
-<para><simplesect kind="return"><para>new Seismgram object derived from parent but windowed by input time window range.</para>
 </simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
@@ -741,7 +623,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="369" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="369" bodyend="558" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="339" declcolumn="34"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="371" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="371" bodyend="560" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="339" declcolumn="34"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a307e1b2136eb6f253ef95b980c433db4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -773,7 +655,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="561" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="561" bodyend="567" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="365" declcolumn="6"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="563" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="563" bodyend="569" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="365" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1ae6f459805aed9f8e1012cf999ee3513e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">mspass::seismic::TimeSeriesWGaps</ref></type>
@@ -857,7 +739,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="92" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="92" bodyend="108"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="94" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="94" bodyend="110"/>
       </memberdef>
       <memberdef kind="function" id="bundle_8cc_1a1fbb4b5c74c1f7e015c64ac807d5e254" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref></type>
@@ -883,7 +765,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="113" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="113" bodyend="345"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="115" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="115" bodyend="347"/>
       </memberdef>
       <memberdef kind="function" id="bundle_8cc_1a0f7b4afe613826168cc0f50349995f89" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -901,7 +783,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="350" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="350" bodyend="358"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="352" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="352" bodyend="360"/>
       </memberdef>
       <memberdef kind="function" id="_butterworth_8cc_1a65fd8522810064ed52a8b0eecbfec871" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const double</type>
@@ -1057,7 +939,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="195" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="195" bodyend="224"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="210" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="210" bodyend="239"/>
       </memberdef>
       <memberdef kind="function" id="splicing_8cc_1ae512ac20f0a5fd8185dc8e9efac3503a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref></type>
@@ -1079,7 +961,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="246" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="246" bodyend="386"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="261" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="261" bodyend="401"/>
       </memberdef>
       <memberdef kind="function" id="splicing_8cc_1a6b792528a77eac3ed19d8159fde853ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1101,7 +983,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="388" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="388" bodyend="409"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="403" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="403" bodyend="424"/>
       </memberdef>
       <memberdef kind="function" id="splicing_8cc_1a5b003662eca0792f1553fbf6eaf91360" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt;</type>
@@ -1122,7 +1004,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="430" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="430" bodyend="547"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="445" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="445" bodyend="562"/>
       </memberdef>
       <memberdef kind="function" id="_taper_8cc_1ab043d6b598f13edb61af41804bf6e9ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>

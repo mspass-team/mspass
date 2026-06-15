@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['keys_0',['keys',['../classmspass_1_1utility_1_1_metadata.html#a52e2040555616a39b900aa0831c3bd10',1,'mspass::utility::Metadata']]],
-  ['kill_1',['kill',['../classmspass_1_1seismic_1_1_basic_spectrum.html#a7400b002f21460fece1d5519dfbc26c7',1,'mspass::seismic::BasicSpectrum::kill()'],['../classmspass_1_1seismic_1_1_basic_time_series.html#acc56784b2aaadf8223a9e189830ae3dc',1,'mspass::seismic::BasicTimeSeries::kill()'],['../classmspass_1_1seismic_1_1_logging_ensemble.html#a41768cde10b3097bf91e69014d90a3c5',1,'mspass::seismic::LoggingEnsemble::kill()']]]
+  ['jobid_0',['jobid',['../classmspass_1_1utility_1_1_basic_processing_history.html#a42047587403f5f37567a870f23554da6',1,'mspass::utility::BasicProcessingHistory::jobid()'],['../classmspass_1_1utility_1_1_process_manager.html#a65e084c97224c230593b9e64b6afcf47',1,'mspass::utility::ProcessManager::jobid()']]],
+  ['jobname_1',['jobname',['../classmspass_1_1utility_1_1_basic_processing_history.html#a16963d48a18867fe480a276ac5d32844',1,'mspass::utility::BasicProcessingHistory::jobname()'],['../classmspass_1_1utility_1_1_process_manager.html#a4a05c8dd5ce8dd62b907a85a4e93c77e',1,'mspass::utility::ProcessManager::jobname()']]]
 ];

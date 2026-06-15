@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -153,7 +196,7 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   62</span>{ job_id = 0; };</div>
+<div class="fragment"><div class="line"><span class="lineno">   65</span>{ job_id = 0; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -180,7 +223,13 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   63</span>{ job_id = job; };</div>
+<p>Construct an empty log tied to a processing job id. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">job</td><td>processing job identifier to store in future log records. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="fragment"><div class="line"><span class="lineno">   69</span>{ job_id = job; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -199,6 +248,12 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Standard copy constructor. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>logger whose job id and messages are copied. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="fragment"><div class="line"><span class="lineno">   48</span>                                                  {</div>
 <div class="line"><span class="lineno">   49</span>  job_id = parent.job_id;</div>
 <div class="line"><span class="lineno">   50</span>  <span class="comment">/* Just copy this.  Could call getpid every time, but the only way I can</span></div>
@@ -234,7 +289,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Reset error log container to make it empty. </p>
-<div class="fragment"><div class="line"><span class="lineno">  102</span>{ allmessages.clear(); };</div>
+<div class="fragment"><div class="line"><span class="lineno">  117</span>{ allmessages.clear(); };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -260,7 +315,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   99</span>{ <span class="keywordflow">return</span> allmessages; };</div>
+<p>Return a copy of all log records stored by this logger. </p>
+<div class="fragment"><div class="line"><span class="lineno">  113</span>{ <span class="keywordflow">return</span> allmessages; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -286,7 +342,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   66</span>{ <span class="keywordflow">return</span> job_id; };</div>
+<p>Return the processing job id associated with this logger. </p>
+<div class="fragment"><div class="line"><span class="lineno">   79</span>{ <span class="keywordflow">return</span> job_id; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -318,7 +375,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">   74</span>  allmessages.push_back(thislog);</div>
 <div class="line"><span class="lineno">   75</span>  <span class="keywordflow">return</span> allmessages.size();</div>
 <div class="line"><span class="lineno">   76</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_log_data_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_log_data.html">mspass::utility::LogData</a></div><div class="ttdef"><b>Definition</b> ErrorLogger.h:14</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_log_data_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_log_data.html">mspass::utility::LogData</a></div><div class="ttdoc">One error-log record with provenance and severity.</div><div class="ttdef"><b>Definition</b> ErrorLogger.h:15</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -454,6 +511,13 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Standard assignment operator. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>logger whose job id and messages are copied. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>reference to this logger after assignment. </dd></dl>
 <div class="fragment"><div class="line"><span class="lineno">   56</span>                                                             {</div>
 <div class="line"><span class="lineno">   57</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;parent) {</div>
 <div class="line"><span class="lineno">   58</span>    job_id = parent.job_id;</div>
@@ -487,7 +551,13 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   65</span>{ job_id = jid; };</div>
+<p>Set the job id stored with subsequently posted messages. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">jid</td><td>processing job identifier. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>{ job_id = jid; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -513,7 +583,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  100</span>{ <span class="keywordflow">return</span> allmessages.size(); };</div>
+<p>Return the number of log records currently stored. </p>
+<div class="fragment"><div class="line"><span class="lineno">  115</span>{ <span class="keywordflow">return</span> allmessages.size(); };</div>
 </div><!-- fragment -->
 </div>
 </div>

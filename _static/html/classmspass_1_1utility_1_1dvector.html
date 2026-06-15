@@ -1,4 +1,4 @@
-<!-- HTML header for doxygen 1.8.13-->
+<!-- HTML header for Doxygen with MsPASS iframe navigation bridge. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -22,6 +22,49 @@ MathJax.Hub.Config({
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+(function () {
+  function systemTheme() {
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  }
+  function applyTheme(theme) {
+    var normalized = theme === "dark" || theme === "light" ? theme : systemTheme();
+    document.documentElement.setAttribute("data-theme", normalized);
+  }
+  function notifyParentOfLocation() {
+    if (window.parent === window) {
+      return;
+    }
+    var path = window.location.pathname.split("/").pop() || "index.html";
+    path += window.location.search + window.location.hash;
+    window.parent.postMessage(
+      { type: "mspass-doxygen-location", path: path },
+      "*"
+    );
+  }
+  applyTheme("auto");
+  if (window.matchMedia) {
+    var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var updateSystemTheme = function () { applyTheme("auto"); };
+    if (colorSchemeQuery.addEventListener) {
+      colorSchemeQuery.addEventListener("change", updateSystemTheme);
+    } else if (colorSchemeQuery.addListener) {
+      colorSchemeQuery.addListener(updateSystemTheme);
+    }
+  }
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "mspass-doc-theme") {
+      return;
+    }
+    applyTheme(event.data.theme);
+  });
+  window.addEventListener("load", notifyParentOfLocation);
+  window.addEventListener("hashchange", notifyParentOfLocation);
+})();
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -30,8 +73,8 @@ MathJax.Hub.Config({
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname"> version
-   &#160;<span id="projectnumber">0.0.1</span>
+   <div id="projectname">MsPASS C++ API
+   &#160;<span id="projectnumber">0.1.dev1+gb7c2adc</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -99,12 +142,23 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for mspass::utility::dvector:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="classmspass_1_1utility_1_1dvector.png" usemap="#mspass::utility::dvector_map" alt=""/>
-  <map id="mspass::utility::dvector_map" name="mspass::utility::dvector_map">
-<area href="classmspass_1_1utility_1_1dmatrix.html" title="Lightweight, simple matrix object." alt="mspass::utility::dmatrix" shape="rect" coords="0,0,137,24"/>
-  </map>
-</div></div>
+<div class="center"><img src="classmspass_1_1utility_1_1dvector__inherit__graph.png" border="0" usemap="#amspass_1_1utility_1_1dvector_inherit__map" alt="Inheritance graph"/></div>
+<map name="amspass_1_1utility_1_1dvector_inherit__map" id="amspass_1_1utility_1_1dvector_inherit__map">
+<area shape="rect" title="A vector compatible with dmatrix objects." alt="" coords="6,79,181,104"/>
+<area shape="rect" href="classmspass_1_1utility_1_1dmatrix.html" title="Lightweight, simple matrix object." alt="" coords="5,5,181,31"/>
+<area shape="poly" title=" " alt="" coords="96,44,96,79,91,79,91,44"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for mspass::utility::dvector:</div>
+<div class="dyncontent">
+<div class="center"><img src="classmspass_1_1utility_1_1dvector__coll__graph.png" border="0" usemap="#amspass_1_1utility_1_1dvector_coll__map" alt="Collaboration graph"/></div>
+<map name="amspass_1_1utility_1_1dvector_coll__map" id="amspass_1_1utility_1_1dvector_coll__map">
+<area shape="rect" title="A vector compatible with dmatrix objects." alt="" coords="6,79,181,104"/>
+<area shape="rect" href="classmspass_1_1utility_1_1dmatrix.html" title="Lightweight, simple matrix object." alt="" coords="5,5,181,31"/>
+<area shape="poly" title=" " alt="" coords="96,44,96,79,91,79,91,44"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -146,6 +200,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a29b6eb66bce64a8a2a0102e3bbb4c83a inherit pub_methods_classmspass_1_1utility_1_1dmatrix" id="r_a29b6eb66bce64a8a2a0102e3bbb4c83a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1dmatrix.html">dmatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1dmatrix.html#a29b6eb66bce64a8a2a0102e3bbb4c83a">operator*</a> (double s) const noexcept</td></tr>
 <tr class="separator:a29b6eb66bce64a8a2a0102e3bbb4c83a inherit pub_methods_classmspass_1_1utility_1_1dmatrix"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae40ad36efea03496d79e95c91b675060 inherit pub_methods_classmspass_1_1utility_1_1dmatrix" id="r_ae40ad36efea03496d79e95c91b675060"><td class="memItemLeft" align="right" valign="top">double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">get_address</a> (size_t r, size_t c) const</td></tr>
+<tr class="memdesc:ae40ad36efea03496d79e95c91b675060 inherit pub_methods_classmspass_1_1utility_1_1dmatrix"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the location of a matrix component.  <br /></td></tr>
 <tr class="separator:ae40ad36efea03496d79e95c91b675060 inherit pub_methods_classmspass_1_1utility_1_1dmatrix"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a178f65f7f0efb2c99980c8c81cf71bca inherit pub_methods_classmspass_1_1utility_1_1dmatrix" id="r_a178f65f7f0efb2c99980c8c81cf71bca"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">rows</a> () const</td></tr>
 <tr class="separator:a178f65f7f0efb2c99980c8c81cf71bca inherit pub_methods_classmspass_1_1utility_1_1dmatrix"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,17 +220,13 @@ Friends</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1utility_1_1dmatrix"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1utility_1_1dmatrix')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1utility_1_1dmatrix.html">mspass::utility::dmatrix</a></td></tr>
-<tr class="memitem:af195802dbdd085947b290aaf6c73ce02 inherit pro_attribs_classmspass_1_1utility_1_1dmatrix" id="r_af195802dbdd085947b290aaf6c73ce02"><td class="memItemLeft" align="right" valign="top">
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ary</b></td></tr>
+<tr class="memitem:af195802dbdd085947b290aaf6c73ce02 inherit pro_attribs_classmspass_1_1utility_1_1dmatrix" id="r_af195802dbdd085947b290aaf6c73ce02"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1dmatrix.html#af195802dbdd085947b290aaf6c73ce02">ary</a></td></tr>
 <tr class="separator:af195802dbdd085947b290aaf6c73ce02 inherit pro_attribs_classmspass_1_1utility_1_1dmatrix"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe5aed11a5f0456ccc0ffd0f79d61a43 inherit pro_attribs_classmspass_1_1utility_1_1dmatrix" id="r_afe5aed11a5f0456ccc0ffd0f79d61a43"><td class="memItemLeft" align="right" valign="top">
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>length</b></td></tr>
+<tr class="memitem:afe5aed11a5f0456ccc0ffd0f79d61a43 inherit pro_attribs_classmspass_1_1utility_1_1dmatrix" id="r_afe5aed11a5f0456ccc0ffd0f79d61a43"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1dmatrix.html#afe5aed11a5f0456ccc0ffd0f79d61a43">length</a></td></tr>
 <tr class="separator:afe5aed11a5f0456ccc0ffd0f79d61a43 inherit pro_attribs_classmspass_1_1utility_1_1dmatrix"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89c689d30cb1543bd4b1a7d6104a8d6d inherit pro_attribs_classmspass_1_1utility_1_1dmatrix" id="r_a89c689d30cb1543bd4b1a7d6104a8d6d"><td class="memItemLeft" align="right" valign="top">
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>nrr</b></td></tr>
+<tr class="memitem:a89c689d30cb1543bd4b1a7d6104a8d6d inherit pro_attribs_classmspass_1_1utility_1_1dmatrix" id="r_a89c689d30cb1543bd4b1a7d6104a8d6d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1dmatrix.html#a89c689d30cb1543bd4b1a7d6104a8d6d">nrr</a></td></tr>
 <tr class="separator:a89c689d30cb1543bd4b1a7d6104a8d6d inherit pro_attribs_classmspass_1_1utility_1_1dmatrix"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba0bb81f3c3ed1b9c86efd4229c2f557 inherit pro_attribs_classmspass_1_1utility_1_1dmatrix" id="r_aba0bb81f3c3ed1b9c86efd4229c2f557"><td class="memItemLeft" align="right" valign="top">
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
+<tr class="memitem:aba0bb81f3c3ed1b9c86efd4229c2f557 inherit pro_attribs_classmspass_1_1utility_1_1dmatrix" id="r_aba0bb81f3c3ed1b9c86efd4229c2f557"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1dmatrix.html#aba0bb81f3c3ed1b9c86efd4229c2f557">ncc</a></td></tr>
 <tr class="separator:aba0bb81f3c3ed1b9c86efd4229c2f557 inherit pro_attribs_classmspass_1_1utility_1_1dmatrix"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -205,7 +256,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Default constructor creates an empty vector. </p>
-<div class="fragment"><div class="line"><span class="lineno">  276</span>: <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>() {};</div>
+<div class="fragment"><div class="line"><span class="lineno">  294</span>: <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>() {};</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_ae6bfdbc8f954f4d5340baa7e02975fb1"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">mspass::utility::dmatrix::dmatrix</a></div><div class="ttdeci">dmatrix()</div><div class="ttdef"><b>Definition</b> dmatrix.cc:8</div></div>
 </div><!-- fragment -->
 </div>
@@ -234,7 +285,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Create a (zero initialized) vector of length nrv. </p>
-<div class="fragment"><div class="line"><span class="lineno">  278</span>: <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>(nrv, 1) {};</div>
+<div class="fragment"><div class="line"><span class="lineno">  296</span>: <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>(nrv, 1) {};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -255,12 +306,18 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </div><div class="memdoc">
 <p>Copy constructor. </p>
 <div class="fragment"><div class="line"><span class="lineno">  228</span>                                     {</div>
-<div class="line"><span class="lineno">  229</span>  ncc = 1;</div>
-<div class="line"><span class="lineno">  230</span>  nrr = other.nrr;</div>
-<div class="line"><span class="lineno">  231</span>  length = other.length;</div>
-<div class="line"><span class="lineno">  232</span>  ary = other.ary;</div>
+<div class="line"><span class="lineno">  229</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#aba0bb81f3c3ed1b9c86efd4229c2f557">ncc</a> = 1;</div>
+<div class="line"><span class="lineno">  230</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#a89c689d30cb1543bd4b1a7d6104a8d6d">nrr</a> = other.nrr;</div>
+<div class="line"><span class="lineno">  231</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#afe5aed11a5f0456ccc0ffd0f79d61a43">length</a> = other.length;</div>
+<div class="line"><span class="lineno">  232</span>  <a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#af195802dbdd085947b290aaf6c73ce02">ary</a> = other.ary;</div>
 <div class="line"><span class="lineno">  233</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_a89c689d30cb1543bd4b1a7d6104a8d6d"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#a89c689d30cb1543bd4b1a7d6104a8d6d">mspass::utility::dmatrix::nrr</a></div><div class="ttdeci">size_t nrr</div><div class="ttdef"><b>Definition</b> dmatrix.h:271</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_aba0bb81f3c3ed1b9c86efd4229c2f557"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#aba0bb81f3c3ed1b9c86efd4229c2f557">mspass::utility::dmatrix::ncc</a></div><div class="ttdeci">size_t ncc</div><div class="ttdef"><b>Definition</b> dmatrix.h:273</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_af195802dbdd085947b290aaf6c73ce02"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#af195802dbdd085947b290aaf6c73ce02">mspass::utility::dmatrix::ary</a></div><div class="ttdeci">std::vector&lt; double &gt; ary</div><div class="ttdef"><b>Definition</b> dmatrix.h:267</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_afe5aed11a5f0456ccc0ffd0f79d61a43"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#afe5aed11a5f0456ccc0ffd0f79d61a43">mspass::utility::dmatrix::length</a></div><div class="ttdeci">size_t length</div><div class="ttdef"><b>Definition</b> dmatrix.h:269</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#af195802dbdd085947b290aaf6c73ce02">mspass::utility::dmatrix::ary</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#afe5aed11a5f0456ccc0ffd0f79d61a43">mspass::utility::dmatrix::length</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#aba0bb81f3c3ed1b9c86efd4229c2f557">mspass::utility::dmatrix::ncc</a>, and <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#a89c689d30cb1543bd4b1a7d6104a8d6d">mspass::utility::dmatrix::nrr</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -281,11 +338,13 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </div><div class="memdoc">
 <p>Extract component rowindex. </p>
 <div class="fragment"><div class="line"><span class="lineno">  234</span>                                                 {</div>
-<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (rowindex &gt;= nrr)</div>
-<div class="line"><span class="lineno">  236</span>    <span class="keywordflow">throw</span> dmatrix_index_error(nrr, 1, rowindex, 1);</div>
-<div class="line"><span class="lineno">  237</span>  <span class="keywordflow">return</span> (ary[rowindex]);</div>
+<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (rowindex &gt;= <a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#a89c689d30cb1543bd4b1a7d6104a8d6d">nrr</a>)</div>
+<div class="line"><span class="lineno">  236</span>    <span class="keywordflow">throw</span> dmatrix_index_error(<a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#a89c689d30cb1543bd4b1a7d6104a8d6d">nrr</a>, 1, rowindex, 1);</div>
+<div class="line"><span class="lineno">  237</span>  <span class="keywordflow">return</span> (<a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#af195802dbdd085947b290aaf6c73ce02">ary</a>[rowindex]);</div>
 <div class="line"><span class="lineno">  238</span>}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#af195802dbdd085947b290aaf6c73ce02">mspass::utility::dmatrix::ary</a>, and <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#a89c689d30cb1543bd4b1a7d6104a8d6d">mspass::utility::dmatrix::nrr</a>.</p>
+
 </div>
 </div>
 <a id="a64bc0a75cb80e934fd48ea9879482907" name="a64bc0a75cb80e934fd48ea9879482907"></a>
@@ -306,14 +365,16 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 <p>Standard assignment operator. </p>
 <div class="fragment"><div class="line"><span class="lineno">  219</span>                                                {</div>
 <div class="line"><span class="lineno">  220</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;other) {</div>
-<div class="line"><span class="lineno">  221</span>    ncc = 1;</div>
-<div class="line"><span class="lineno">  222</span>    nrr = other.nrr;</div>
-<div class="line"><span class="lineno">  223</span>    length = other.length;</div>
-<div class="line"><span class="lineno">  224</span>    ary = other.ary;</div>
+<div class="line"><span class="lineno">  221</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#aba0bb81f3c3ed1b9c86efd4229c2f557">ncc</a> = 1;</div>
+<div class="line"><span class="lineno">  222</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#a89c689d30cb1543bd4b1a7d6104a8d6d">nrr</a> = other.nrr;</div>
+<div class="line"><span class="lineno">  223</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#afe5aed11a5f0456ccc0ffd0f79d61a43">length</a> = other.length;</div>
+<div class="line"><span class="lineno">  224</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1dmatrix.html#af195802dbdd085947b290aaf6c73ce02">ary</a> = other.ary;</div>
 <div class="line"><span class="lineno">  225</span>  }</div>
 <div class="line"><span class="lineno">  226</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
 <div class="line"><span class="lineno">  227</span>}</div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#af195802dbdd085947b290aaf6c73ce02">mspass::utility::dmatrix::ary</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#afe5aed11a5f0456ccc0ffd0f79d61a43">mspass::utility::dmatrix::length</a>, <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#aba0bb81f3c3ed1b9c86efd4229c2f557">mspass::utility::dmatrix::ncc</a>, and <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#a89c689d30cb1543bd4b1a7d6104a8d6d">mspass::utility::dmatrix::nrr</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Symbol Documentation</h2>
@@ -353,8 +414,8 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 <p>Matrix vector multiple operator.</p>
 <p>This operator is used for constructs like y=Ax where x is a vector and A is a matrix. y is the returned vector. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">A</td><td>- matrix on right in multiply </td></tr>
-    <tr><td class="paramname">x</td><td>- vector on left of multiply operation</td></tr>
+    <tr><td class="paramname">A</td><td>- matrix on left in multiply </td></tr>
+    <tr><td class="paramname">x</td><td>- vector on right of multiply operation</td></tr>
   </table>
   </dd>
 </dl>
@@ -365,21 +426,22 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  239</span>                                                       {</div>
+<div class="fragment"><div class="line"><span class="lineno">  239</span>                                                      {</div>
 <div class="line"><span class="lineno">  240</span>  <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><span class="lineno">  241</span>  <span class="keywordtype">size_t</span> nrx1 = x1.rows();</div>
-<div class="line"><span class="lineno">  242</span>  <span class="keywordtype">size_t</span> ncx1 = x1.columns();</div>
-<div class="line"><span class="lineno">  243</span>  <span class="keywordtype">size_t</span> nrb = <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> &amp;<span class="keyword">&gt;</span>(b).<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">rows</a>();</div>
+<div class="line"><span class="lineno">  241</span>  <span class="keywordtype">size_t</span> nrx1 = A.rows();</div>
+<div class="line"><span class="lineno">  242</span>  <span class="keywordtype">size_t</span> ncx1 = A.columns();</div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordtype">size_t</span> nrb = <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> &amp;<span class="keyword">&gt;</span>(x).<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">rows</a>();</div>
 <div class="line"><span class="lineno">  244</span>  <span class="keywordflow">if</span> (ncx1 != nrb)</div>
 <div class="line"><span class="lineno">  245</span>    <span class="keywordflow">throw</span> dmatrix_size_error(nrx1, ncx1, nrb, 1);</div>
 <div class="line"><span class="lineno">  246</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> prod(nrx1);</div>
 <div class="line"><span class="lineno">  247</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nrx1; i++)</div>
-<div class="line"><span class="lineno">  248</span>    prod(i) = ddot(nrb, <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> &amp;<span class="keyword">&gt;</span>(x1).get_address(i, 0), nrx1,</div>
-<div class="line"><span class="lineno">  249</span>                   <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> &amp;<span class="keyword">&gt;</span>(b).get_address(0, 0), 1);</div>
+<div class="line"><span class="lineno">  248</span>    prod(i) = ddot(nrb, <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> &amp;<span class="keyword">&gt;</span>(A).<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">get_address</a>(i, 0), nrx1,</div>
+<div class="line"><span class="lineno">  249</span>                   <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> &amp;<span class="keyword">&gt;</span>(x).<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">get_address</a>(0, 0), 1);</div>
 <div class="line"><span class="lineno">  250</span>  <span class="keywordflow">return</span> prod;</div>
 <div class="line"><span class="lineno">  251</span>}</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_a178f65f7f0efb2c99980c8c81cf71bca"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">mspass::utility::dmatrix::rows</a></div><div class="ttdeci">size_t rows() const</div><div class="ttdef"><b>Definition</b> dmatrix.cc:215</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1dvector_html_a8d6c8cc42ead0feea6d195ac689aed54"><div class="ttname"><a href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">mspass::utility::dvector::dvector</a></div><div class="ttdeci">dvector()</div><div class="ttdef"><b>Definition</b> dmatrix.h:276</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_ae40ad36efea03496d79e95c91b675060"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#ae40ad36efea03496d79e95c91b675060">mspass::utility::dmatrix::get_address</a></div><div class="ttdeci">double * get_address(size_t r, size_t c) const</div><div class="ttdoc">Get a pointer to the location of a matrix component.</div><div class="ttdef"><b>Definition</b> dmatrix.cc:72</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dvector_html_a8d6c8cc42ead0feea6d195ac689aed54"><div class="ttname"><a href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">mspass::utility::dvector::dvector</a></div><div class="ttdeci">dvector()</div><div class="ttdef"><b>Definition</b> dmatrix.h:294</div></div>
 </div><!-- fragment -->
 </div>
 </div>

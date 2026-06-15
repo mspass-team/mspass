@@ -3,6 +3,7 @@
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>mspass::algorithms::deconvolution::BasicDeconOperator</compoundname>
     <derivedcompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</derivedcompoundref>
+    <includes refid="_basic_decon_operator_8h" local="no">BasicDeconOperator.h</includes>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1a84111e230a365037569b17b2ca693100" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -24,12 +25,13 @@
           <declname>md</declname>
         </param>
         <briefdescription>
+<para>Update operator parameters from a Metadata container. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="8" column="16"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="10" column="16"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1aaf5d01a101bc30f52cd0a54509417ac9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -40,13 +42,15 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Virtual destructor for derived deconvolution operators. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="9" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" bodystart="9" bodyend="9"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="12" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" bodystart="12" bodyend="12"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
+<para>Abstract interface for deconvolution operators configurable by Metadata. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
@@ -110,7 +114,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="6" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" bodystart="6" bodyend="10"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="7" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" bodystart="7" bodyend="13"/>
     <listofallmembers>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1a84111e230a365037569b17b2ca693100" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::BasicDeconOperator</scope><name>changeparameter</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1aaf5d01a101bc30f52cd0a54509417ac9" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::BasicDeconOperator</scope><name>~BasicDeconOperator</name></member>

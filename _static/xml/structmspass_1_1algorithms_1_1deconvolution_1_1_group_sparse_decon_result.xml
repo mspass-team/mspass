@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result" kind="struct" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::GroupSparseDeconResult</compoundname>
+    <includes refid="_g_i_d_decon_util_8h" local="no">GIDDeconUtil.h</includes>
     <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a9270d562897ab545c9b4f58015dec967" prot="public" static="no" mutable="no">
         <type>std::list&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &gt;</type>
@@ -12,10 +13,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Selected three-component spikes. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="17" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="17" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="22" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="22" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1aa1a49c1e9a34c85aae1fee434827f6ad" prot="public" static="no" mutable="no">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
@@ -26,10 +28,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Final residual signal. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="18" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="18" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="23" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1af4ea5eeef16c9f7926f6094b66bf4024" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -41,10 +44,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Number of solver iterations completed. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="19" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="19" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="24" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="24" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a59b63b52173ab13811fa08f5786b6c35" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -56,10 +60,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Number of active spike groups in the solution. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="20" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="20" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="25" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="25" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1ac9737ebde5afda00b5ca1c837652b422" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -71,10 +76,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>True when the solver met the stop tolerance. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="21" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="21" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="26" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a67930b8afa0b5f619eb263625c00d5c5" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -86,10 +92,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Group-sparse penalty weight. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="22" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="22" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="27" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a36bd3499f4035bd66af34e4161e7b4f1" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -101,10 +108,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Absolute lower bound on active threshold. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="23" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="23" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="28" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a92d2eb5401b9a992d07c0e7b12eadfa9" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -116,10 +124,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Scale factor applied to the active threshold. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="24" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="24" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="29" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1adc34f5764bdd0a287623038b0adb9356" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -131,10 +140,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Quantile used for adaptive thresholding. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="25" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="25" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="30" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a8067525596b7c3385282ce2ef8859794" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -146,10 +156,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Value at the selected quantile. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="26" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="26" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="31" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a44d51f81c13b57dfc277f1f97f348c18" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -161,10 +172,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Final threshold used by the solver. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="27" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="27" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="32" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a51fb7cf4573e7b287eaa6cc51f62e738" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -176,10 +188,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Objective value before iteration. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="28" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="28" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="33" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1ad2229033d337af5db1eb8c1acbf271d0" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -191,10 +204,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Objective value after iteration. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="29" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="29" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="34" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a319622351d1f6dea08a3adaca8852392" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -206,15 +220,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Final fractional objective improvement. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="30" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="30" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="35" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="35" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
+<para>Result bundle returned by group-sparse GID deconvolution. </para>
     </briefdescription>
     <detaileddescription>
+<para>The fields summarize the selected spikes, residual signal, convergence state, and objective-function diagnostics from the solver. </para>
     </detaileddescription>
     <collaborationgraph>
       <node id="1">
@@ -254,7 +271,7 @@
         <link refid="classmspass_1_1utility_1_1dmatrix"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="16" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="16" bodyend="31"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" line="21" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GIDDeconUtil.h" bodystart="21" bodyend="36"/>
     <listofallmembers>
       <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a59b63b52173ab13811fa08f5786b6c35" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GroupSparseDeconResult</scope><name>active_groups</name></member>
       <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a36bd3499f4035bd66af34e4161e7b4f1" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GroupSparseDeconResult</scope><name>active_threshold_floor</name></member>

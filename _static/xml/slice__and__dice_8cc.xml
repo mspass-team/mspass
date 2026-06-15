@@ -327,6 +327,23 @@
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>\brief<sp/>Extracts<sp/>a<sp/>requested<sp/>time<sp/>window<sp/>of<sp/>data<sp/>from<sp/>a<sp/>parent<sp/>coreSeismogram</highlight></codeline>
+<codeline lineno="14"><highlight class="comment">object.</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"></highlight></codeline>
+<codeline lineno="16"><highlight class="comment">It<sp/>is<sp/>common<sp/>to<sp/>need<sp/>to<sp/>extract<sp/>a<sp/>smaller<sp/>segment<sp/>of<sp/>data<sp/>from<sp/>a<sp/>larger</highlight></codeline>
+<codeline lineno="17"><highlight class="comment">time<sp/>window<sp/>of<sp/>data.<sp/><sp/>This<sp/>function<sp/>accomplishes<sp/>this<sp/>in<sp/>a<sp/>nifty<sp/>method<sp/>that</highlight></codeline>
+<codeline lineno="18"><highlight class="comment">takes<sp/>advantage<sp/>of<sp/>the<sp/>methods<sp/>contained<sp/>in<sp/>the<sp/>BasicTimeSeries<sp/>object<sp/>for</highlight></codeline>
+<codeline lineno="19"><highlight class="comment">handling<sp/>time.</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"></highlight></codeline>
+<codeline lineno="21"><highlight class="comment">\return<sp/>new<sp/>CoreSeismogram<sp/>object<sp/>derived<sp/>from<sp/><sp/>parent<sp/>but<sp/>windowed<sp/>by<sp/>input</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>time<sp/>window<sp/>range.</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"></highlight></codeline>
+<codeline lineno="24"><highlight class="comment">\exception<sp/>MsPASSError<sp/>object<sp/>if<sp/>the<sp/>requested<sp/>time<sp/>window<sp/>is<sp/>not<sp/>inside<sp/>data</highlight></codeline>
+<codeline lineno="25"><highlight class="comment">range</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"></highlight></codeline>
+<codeline lineno="27"><highlight class="comment">\param<sp/>parent<sp/>is<sp/>the<sp/>larger<sp/>CoreSeismogram<sp/>object<sp/>to<sp/>be<sp/>windowed</highlight></codeline>
+<codeline lineno="28"><highlight class="comment">\param<sp/>tw<sp/>defines<sp/>the<sp/>data<sp/>range<sp/>to<sp/>be<sp/>extracted<sp/>from<sp/>parent.</highlight></codeline>
+<codeline lineno="29"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref><sp/>WindowData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref><sp/>&amp;parent,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>&amp;tw)<sp/>{</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Always<sp/>silently<sp/>do<sp/>nothing<sp/>if<sp/>marked<sp/>dead</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(parent.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" kindref="member">dead</ref>())<sp/>{</highlight></codeline>
@@ -369,6 +386,23 @@
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(result);</highlight></codeline>
 <codeline lineno="71"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>\brief<sp/>Extracts<sp/>a<sp/>requested<sp/>time<sp/>window<sp/>of<sp/>data<sp/>from<sp/>a<sp/>parent<sp/>CoreTimeSeries</highlight></codeline>
+<codeline lineno="73"><highlight class="comment">object.</highlight></codeline>
+<codeline lineno="74"><highlight class="comment"></highlight></codeline>
+<codeline lineno="75"><highlight class="comment">It<sp/>is<sp/>common<sp/>to<sp/>need<sp/>to<sp/>extract<sp/>a<sp/>smaller<sp/>segment<sp/>of<sp/>data<sp/>from<sp/>a<sp/>larger</highlight></codeline>
+<codeline lineno="76"><highlight class="comment">time<sp/>window<sp/>of<sp/>data.<sp/><sp/>This<sp/>function<sp/>accomplishes<sp/>this<sp/>in<sp/>a<sp/>nifty<sp/>method<sp/>that</highlight></codeline>
+<codeline lineno="77"><highlight class="comment">takes<sp/>advantage<sp/>of<sp/>the<sp/>methods<sp/>contained<sp/>in<sp/>the<sp/>BasicCoreTimeSeries<sp/>object<sp/>for</highlight></codeline>
+<codeline lineno="78"><highlight class="comment">handling<sp/>time.</highlight></codeline>
+<codeline lineno="79"><highlight class="comment"></highlight></codeline>
+<codeline lineno="80"><highlight class="comment">\return<sp/>new<sp/>Seismgram<sp/>object<sp/>derived<sp/>from<sp/><sp/>parent<sp/>but<sp/>windowed<sp/>by<sp/>input</highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>time<sp/>window<sp/>range.</highlight></codeline>
+<codeline lineno="82"><highlight class="comment"></highlight></codeline>
+<codeline lineno="83"><highlight class="comment">\exception<sp/>MsPASSError<sp/>object<sp/>if<sp/>the<sp/>requested<sp/>time<sp/>window<sp/>is<sp/>not<sp/>inside<sp/>data</highlight></codeline>
+<codeline lineno="84"><highlight class="comment">range</highlight></codeline>
+<codeline lineno="85"><highlight class="comment"></highlight></codeline>
+<codeline lineno="86"><highlight class="comment">\param<sp/>parent<sp/>is<sp/>the<sp/>larger<sp/>CoreTimeSeries<sp/>object<sp/>to<sp/>be<sp/>windowed</highlight></codeline>
+<codeline lineno="87"><highlight class="comment">\param<sp/>tw<sp/>defines<sp/>the<sp/>data<sp/>range<sp/>to<sp/>be<sp/>extracted<sp/>from<sp/>parent.</highlight></codeline>
+<codeline lineno="88"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="89"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/>WindowData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/>&amp;parent,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>&amp;tw)<sp/>{</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Always<sp/>silently<sp/>do<sp/>nothing<sp/>if<sp/>marked<sp/>dead</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(parent.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" kindref="member">dead</ref>())<sp/>{</highlight></codeline>
@@ -412,6 +446,27 @@
 <codeline lineno="129"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(result);</highlight></codeline>
 <codeline lineno="130"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>\brief<sp/>Extracts<sp/>a<sp/>requested<sp/>time<sp/>window<sp/>of<sp/>data<sp/>from<sp/>a<sp/>parent<sp/>Seismogram</highlight></codeline>
+<codeline lineno="133"><highlight class="comment">object.</highlight></codeline>
+<codeline lineno="134"><highlight class="comment"></highlight></codeline>
+<codeline lineno="135"><highlight class="comment">It<sp/>is<sp/>common<sp/>to<sp/>need<sp/>to<sp/>extract<sp/>a<sp/>smaller<sp/>segment<sp/>of<sp/>data<sp/>from<sp/>a<sp/>larger</highlight></codeline>
+<codeline lineno="136"><highlight class="comment">time<sp/>window<sp/>of<sp/>data.<sp/><sp/>This<sp/>function<sp/>accomplishes<sp/>this<sp/>in<sp/>a<sp/>nifty<sp/>method<sp/>that</highlight></codeline>
+<codeline lineno="137"><highlight class="comment">takes<sp/>advantage<sp/>of<sp/>the<sp/>methods<sp/>contained<sp/>in<sp/>the<sp/>BasicTimeSeries<sp/>object<sp/>for</highlight></codeline>
+<codeline lineno="138"><highlight class="comment">handling<sp/>time.</highlight></codeline>
+<codeline lineno="139"><highlight class="comment"></highlight></codeline>
+<codeline lineno="140"><highlight class="comment">This<sp/>function<sp/>differs<sp/>from<sp/>the<sp/>CoreSeismogram<sp/>version<sp/>in<sp/>error<sp/>handling.</highlight></codeline>
+<codeline lineno="141"><highlight class="comment">It<sp/>follows<sp/>the<sp/>MsPASS<sp/>model<sp/>of<sp/>posting<sp/>errors<sp/>to<sp/>elog<sp/>and<sp/>returning<sp/>a</highlight></codeline>
+<codeline lineno="142"><highlight class="comment">dead<sp/>object<sp/>for<sp/>unrecoverable<sp/>errors.</highlight></codeline>
+<codeline lineno="143"><highlight class="comment"></highlight></codeline>
+<codeline lineno="144"><highlight class="comment">\return<sp/>new<sp/>Seismogram<sp/>object<sp/>derived<sp/>from<sp/><sp/>parent<sp/>but<sp/>windowed<sp/>by<sp/>input</highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>time<sp/>window<sp/>range.</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"></highlight></codeline>
+<codeline lineno="147"><highlight class="comment">\exception<sp/>MsPASSError<sp/>object<sp/>if<sp/>the<sp/>requested<sp/>time<sp/>window<sp/>is<sp/>not<sp/>inside<sp/>data</highlight></codeline>
+<codeline lineno="148"><highlight class="comment">range</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"></highlight></codeline>
+<codeline lineno="150"><highlight class="comment">\param<sp/>parent<sp/>is<sp/>the<sp/>larger<sp/>Seismogram<sp/>object<sp/>to<sp/>be<sp/>windowed</highlight></codeline>
+<codeline lineno="151"><highlight class="comment">\param<sp/>tw<sp/>defines<sp/>the<sp/>data<sp/>range<sp/>to<sp/>be<sp/>extracted<sp/>from<sp/>parent.</highlight></codeline>
+<codeline lineno="152"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="153"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref><sp/>WindowData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref><sp/>&amp;parent,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>&amp;tw)<sp/>{</highlight></codeline>
 <codeline lineno="154"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Always<sp/>silently<sp/>do<sp/>nothing<sp/>if<sp/>marked<sp/>dead</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="155"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(parent.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" kindref="member">dead</ref>())<sp/>{</highlight></codeline>
@@ -489,6 +544,23 @@
 <codeline lineno="227"><highlight class="normal"><sp/><sp/>result.load_history(</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref><sp/>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(parent));</highlight></codeline>
 <codeline lineno="228"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="229"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>\brief<sp/>Extracts<sp/>a<sp/>requested<sp/>time<sp/>window<sp/>of<sp/>data<sp/>from<sp/>a<sp/>parent<sp/>TimeSeries</highlight></codeline>
+<codeline lineno="231"><highlight class="comment">object.</highlight></codeline>
+<codeline lineno="232"><highlight class="comment"></highlight></codeline>
+<codeline lineno="233"><highlight class="comment">It<sp/>is<sp/>common<sp/>to<sp/>need<sp/>to<sp/>extract<sp/>a<sp/>smaller<sp/>segment<sp/>of<sp/>data<sp/>from<sp/>a<sp/>larger</highlight></codeline>
+<codeline lineno="234"><highlight class="comment">time<sp/>window<sp/>of<sp/>data.<sp/><sp/>This<sp/>function<sp/>accomplishes<sp/>this<sp/>in<sp/>a<sp/>nifty<sp/>method<sp/>that</highlight></codeline>
+<codeline lineno="235"><highlight class="comment">takes<sp/>advantage<sp/>of<sp/>the<sp/>methods<sp/>contained<sp/>in<sp/>the<sp/>BasicTimeSeries<sp/>object<sp/>for</highlight></codeline>
+<codeline lineno="236"><highlight class="comment">handling<sp/>time.</highlight></codeline>
+<codeline lineno="237"><highlight class="comment"></highlight></codeline>
+<codeline lineno="238"><highlight class="comment">\return<sp/>new<sp/>Seismgram<sp/>object<sp/>derived<sp/>from<sp/><sp/>parent<sp/>but<sp/>windowed<sp/>by<sp/>input</highlight></codeline>
+<codeline lineno="239"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>time<sp/>window<sp/>range.</highlight></codeline>
+<codeline lineno="240"><highlight class="comment"></highlight></codeline>
+<codeline lineno="241"><highlight class="comment">\exception<sp/>MsPASSError<sp/>object<sp/>if<sp/>the<sp/>requested<sp/>time<sp/>window<sp/>is<sp/>not<sp/>inside<sp/>data</highlight></codeline>
+<codeline lineno="242"><highlight class="comment">range</highlight></codeline>
+<codeline lineno="243"><highlight class="comment"></highlight></codeline>
+<codeline lineno="244"><highlight class="comment">\param<sp/>parent<sp/>is<sp/>the<sp/>larger<sp/>TimeSeries<sp/>object<sp/>to<sp/>be<sp/>windowed</highlight></codeline>
+<codeline lineno="245"><highlight class="comment">\param<sp/>tw<sp/>defines<sp/>the<sp/>data<sp/>range<sp/>to<sp/>be<sp/>extracted<sp/>from<sp/>parent.</highlight></codeline>
+<codeline lineno="246"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="247"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref><sp/>WindowData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref><sp/>&amp;parent,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>&amp;tw)<sp/>{</highlight></codeline>
 <codeline lineno="248"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Always<sp/>silently<sp/>do<sp/>nothing<sp/>if<sp/>marked<sp/>dead</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="249"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(parent.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" kindref="member">dead</ref>())<sp/>{</highlight></codeline>

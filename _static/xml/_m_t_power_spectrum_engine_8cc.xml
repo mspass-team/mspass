@@ -556,106 +556,107 @@
 <codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>=<sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref>(</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(d),<sp/>spec,<sp/>deltaf,</highlight></codeline>
 <codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;Multitaper&quot;</highlight><highlight class="normal">),<sp/>0.0,<sp/>d.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" kindref="member">dt</ref>(),<sp/>d.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>());</highlight></codeline>
 <codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>post<sp/>these<sp/>to<sp/>metadata<sp/>for<sp/>the<sp/>generic<sp/>PowerSpectrum<sp/>object.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;time_bandwidth_product&quot;</highlight><highlight class="normal">,<sp/>tbp);</highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put&lt;</highlight><highlight class="keywordtype">long</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;number_tapers&quot;</highlight><highlight class="normal">,<sp/>ntapers);</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/>result.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;time_bandwidth_product&quot;</highlight><highlight class="normal">,<sp/>tbp);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>result.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>&lt;</highlight><highlight class="keywordtype">long</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;number_tapers&quot;</highlight><highlight class="normal">,<sp/>ntapers);</highlight></codeline>
 <codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="179"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(...)<sp/>{</highlight></codeline>
 <codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="181"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="182"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="183"><highlight class="normal">vector&lt;double&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" kindref="member">MTPowerSpectrumEngine::apply</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;double&gt;<sp/>&amp;d)<sp/>{</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>function<sp/>must<sp/>be<sp/>dogmatic<sp/>about<sp/>d<sp/>size<sp/>=<sp/>taperlen*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(d.size()<sp/>!=<sp/>this-&gt;taperlen)<sp/>{</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/>stringstream<sp/>ss;</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;MTPowerSpectrumEngine::apply<sp/>method:<sp/><sp/>input<sp/>data<sp/>vector<sp/>length<sp/>of<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>d.<ref refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" kindref="member">size</ref>()<sp/>&lt;&lt;<sp/>endl</highlight></codeline>
-<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;does<sp/>not<sp/>match<sp/>operator<sp/>taper<sp/>length<sp/>length=&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>this-&gt;taperlen</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>endl</highlight></codeline>
-<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Sizes<sp/>must<sp/>match<sp/>to<sp/>use<sp/>this<sp/>implementation<sp/>of<sp/>this<sp/>algorithm&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>endl;</highlight></codeline>
-<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(ss.str(),<sp/>ErrorSeverity::Invalid);</highlight></codeline>
-<codeline lineno="194"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="195"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Need<sp/>this<sp/>for<sp/>parseval<sp/>theorem<sp/>scaling<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="196"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ssq(0.0);</highlight></codeline>
-<codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ptr<sp/>=<sp/>d.begin();<sp/>ptr<sp/>!=<sp/>d.end();<sp/>++ptr)</highlight></codeline>
-<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/>ssq<sp/>+=<sp/>(*ptr)<sp/>*<sp/>(*ptr);</highlight></codeline>
-<codeline lineno="199"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>only<sp/>function<sp/>in<sp/>this<sp/>entire<sp/>object<sp/>that<sp/>does<sp/>anything</highlight></codeline>
-<codeline lineno="200"><highlight class="comment"><sp/><sp/>but<sp/>housework.<sp/><sp/><sp/>Computes<sp/>the<sp/>power<sp/>spectrum<sp/>by<sp/>average<sp/>DFT<sp/>of<sp/>d^*d<sp/>where</highlight></codeline>
-<codeline lineno="201"><highlight class="comment"><sp/><sp/>the<sp/>average<sp/>is<sp/>over<sp/>the<sp/>tapes.<sp/>First<sp/>taper<sp/>data<sp/>and<sp/>store<sp/>tapered<sp/>data<sp/>in</highlight></codeline>
-<codeline lineno="202"><highlight class="comment"><sp/><sp/>tdata<sp/>container*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="203"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/>j;</highlight></codeline>
-<codeline lineno="204"><highlight class="normal"><sp/><sp/>vector&lt;ComplexArray&gt;<sp/>tdata;</highlight></codeline>
-<codeline lineno="205"><highlight class="normal"><sp/><sp/>tdata.reserve(ntapers);</highlight></codeline>
-<codeline lineno="206"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>work;</highlight></codeline>
-<codeline lineno="207"><highlight class="normal"><sp/><sp/>work.reserve(nfft);</highlight></codeline>
-<codeline lineno="208"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>ntapers;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/>work.clear();</highlight></codeline>
-<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>will<sp/>assure<sp/>part<sp/>of<sp/>vector<sp/>between<sp/>end<sp/>of</highlight></codeline>
-<codeline lineno="211"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>data<sp/>and<sp/>nfft<sp/>is<sp/>zero<sp/>padded<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>taperlen;<sp/>++j)</highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>work.push_back(tapers(i,<sp/>j)<sp/>*<sp/>d[j]);</highlight></codeline>
-<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>taperlen;<sp/>j<sp/>&lt;<sp/>nfft;<sp/>++j)</highlight></codeline>
-<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>work.push_back(0.0);</highlight></codeline>
-<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>cwork(nfft,<sp/>&amp;(work[0]));</highlight></codeline>
-<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/>tdata.push_back(cwork);</highlight></codeline>
-<codeline lineno="218"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="219"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Now<sp/>apply<sp/>DFT<sp/>to<sp/>each<sp/>of<sp/>tapered<sp/>arrays<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="220"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>ntapers;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/>gsl_fft_complex_forward(tdata[i].ptr(),<sp/>1,<sp/>nfft,<sp/>wavetable,<sp/>workspace);</highlight></codeline>
-<codeline lineno="222"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="223"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>New<sp/>version<sp/>-<sp/>delete<sp/>this<sp/>comment<sp/>if<sp/>it<sp/>works*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="224"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>result;</highlight></codeline>
-<codeline lineno="225"><highlight class="normal"><sp/><sp/>result.reserve(this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>());</highlight></codeline>
-<codeline lineno="226"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>();<sp/>++j)</highlight></codeline>
-<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/>result.push_back(0.0);</highlight></codeline>
-<codeline lineno="228"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>ntapers;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>();<sp/>++j)<sp/>{</highlight></codeline>
-<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>mspass::algorithms::deconvolution::Complex64<sp/>z;</highlight></codeline>
-<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>rp,<sp/>ip;</highlight></codeline>
-<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>z<sp/>=<sp/>tdata[i][j];</highlight></codeline>
-<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>rp<sp/>=<sp/>z.real();</highlight></codeline>
-<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ip<sp/>=<sp/>z.imag();</highlight></codeline>
-<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>result[j]<sp/>+=<sp/>rp<sp/>*<sp/>rp<sp/>+<sp/>ip<sp/>*<sp/>ip;</highlight></codeline>
-<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="237"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="238"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Scale<sp/>using<sp/>Parseval&apos;s<sp/>theorem<sp/>-<sp/>this<sp/>is<sp/>adapted<sp/>from<sp/>Prieto&apos;s</highlight></codeline>
-<codeline lineno="239"><highlight class="comment"><sp/><sp/>multitaper<sp/>python<sp/>implementation.<sp/><sp/><sp/>We<sp/>have<sp/>to<sp/>explicitly<sp/>add<sp/>the</highlight></codeline>
-<codeline lineno="240"><highlight class="comment"><sp/><sp/>divide<sp/>by<sp/>nfft<sp/>that<sp/>is<sp/>implicit<sp/>in<sp/>Prieto&apos;s<sp/>code<sp/>because<sp/>he<sp/>uses</highlight></codeline>
-<codeline lineno="241"><highlight class="comment"><sp/><sp/>numpy&apos;s<sp/>var<sp/>function<sp/>to<sp/>compoute<sp/>sum<sp/>of<sp/>squares<sp/>of<sp/>data<sp/>that<sp/>includes<sp/>a</highlight></codeline>
-<codeline lineno="242"><highlight class="comment"><sp/><sp/>divide<sp/>by<sp/>data<sp/>vector<sp/>length.<sp/><sp/>Not<sp/>sure<sp/>his<sp/>formula<sp/>is<sp/>right<sp/>as<sp/>seems<sp/>to</highlight></codeline>
-<codeline lineno="243"><highlight class="comment"><sp/><sp/>me<sp/>it<sp/>shouild<sp/>be<sp/>nfft<sp/>not<sp/>npts.</highlight></codeline>
-<codeline lineno="244"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="245"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>specssq(0.0),<sp/>scale;</highlight></codeline>
-<codeline lineno="246"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>p<sp/>=<sp/>result.begin();<sp/>p<sp/>!=<sp/>result.end();<sp/>++p)</highlight></codeline>
-<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/>specssq<sp/>+=<sp/>(*p);</highlight></codeline>
-<codeline lineno="248"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>test<sp/>for<sp/>zeros<sp/>to<sp/>avoid<sp/>divide<sp/>by<sp/>zero<sp/>or<sp/>a<sp/>NaN.<sp/></highlight></codeline>
-<codeline lineno="249"><highlight class="comment"><sp/><sp/><sp/>*<sp/>result<sp/>will<sp/>be<sp/>all<sp/>zeros<sp/>this<sp/>way.<sp/><sp/>Without<sp/>we<sp/>get<sp/>all<sp/>NaNs</highlight></codeline>
-<codeline lineno="250"><highlight class="comment"><sp/><sp/><sp/>*<sp/>in<sp/>the<sp/>spectrum*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="251"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">((ssq&lt;=0.0)<sp/>||<sp/>(specssq&lt;=0.0))</highlight></codeline>
-<codeline lineno="252"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/>scale<sp/>=<sp/>1.0;</highlight></codeline>
-<codeline lineno="254"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="255"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="256"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/>scale<sp/>=<sp/>ssq<sp/>/<sp/>(specssq<sp/>*<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ada36c092fdc3aa128be8eb25d00349d6" kindref="member">df</ref>());</highlight></codeline>
-<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Scaling<sp/>for<sp/>fft<sp/>implementation<sp/>-<sp/>Established<sp/>from<sp/>zero<sp/>pad<sp/>tests<sp/>it<sp/>has</highlight></codeline>
-<codeline lineno="259"><highlight class="comment"><sp/><sp/><sp/><sp/>to<sp/>be<sp/>this<sp/>factor.<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/>scale<sp/>/=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(d.size());</highlight></codeline>
-<codeline lineno="261"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="262"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>();<sp/>++j)</highlight></codeline>
-<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/>result[j]<sp/>*=<sp/>scale;</highlight></codeline>
-<codeline lineno="264"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
-<codeline lineno="265"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="266" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a626438cc21ade06cfa7053c324ae58b4" refkind="member"><highlight class="normal">vector&lt;double&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a626438cc21ade06cfa7053c324ae58b4" kindref="member">MTPowerSpectrumEngine::frequencies</ref>()<sp/>{</highlight></codeline>
-<codeline lineno="267"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>f;</highlight></codeline>
-<codeline lineno="268"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>If<sp/>taperlen<sp/>is<sp/>odd<sp/>this<sp/>still<sp/>works<sp/>according<sp/>to<sp/>gsl<sp/>documentation.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="269"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>();<sp/>++i)<sp/>{</highlight></codeline>
-<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Here<sp/>we<sp/>assume<sp/>i=0<sp/>frequency<sp/>is<sp/>0<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/>f.push_back(deltaf<sp/>*<sp/>((</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)i));</highlight></codeline>
-<codeline lineno="272"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="273"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>f;</highlight></codeline>
-<codeline lineno="274"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="275"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal">std::vector&lt;double&gt;</highlight></codeline>
+<codeline lineno="184" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ab679e58c66c0c4a332350c7f4282e806" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" kindref="member">MTPowerSpectrumEngine::apply</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>&amp;d)<sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>function<sp/>must<sp/>be<sp/>dogmatic<sp/>about<sp/>d<sp/>size<sp/>=<sp/>taperlen*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(d.size()<sp/>!=<sp/>this-&gt;taperlen)<sp/>{</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/>stringstream<sp/>ss;</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;MTPowerSpectrumEngine::apply<sp/>method:<sp/><sp/>input<sp/>data<sp/>vector<sp/>length<sp/>of<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>d.<ref refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" kindref="member">size</ref>()<sp/>&lt;&lt;<sp/>endl</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;does<sp/>not<sp/>match<sp/>operator<sp/>taper<sp/>length<sp/>length=&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>this-&gt;taperlen</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>endl</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Sizes<sp/>must<sp/>match<sp/>to<sp/>use<sp/>this<sp/>implementation<sp/>of<sp/>this<sp/>algorithm&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>endl;</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(ss.str(),<sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Need<sp/>this<sp/>for<sp/>parseval<sp/>theorem<sp/>scaling<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ssq(0.0);</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ptr<sp/>=<sp/>d.begin();<sp/>ptr<sp/>!=<sp/>d.end();<sp/>++ptr)</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/>ssq<sp/>+=<sp/>(*ptr)<sp/>*<sp/>(*ptr);</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>only<sp/>function<sp/>in<sp/>this<sp/>entire<sp/>object<sp/>that<sp/>does<sp/>anything</highlight></codeline>
+<codeline lineno="201"><highlight class="comment"><sp/><sp/>but<sp/>housework.<sp/><sp/><sp/>Computes<sp/>the<sp/>power<sp/>spectrum<sp/>by<sp/>average<sp/>DFT<sp/>of<sp/>d^*d<sp/>where</highlight></codeline>
+<codeline lineno="202"><highlight class="comment"><sp/><sp/>the<sp/>average<sp/>is<sp/>over<sp/>the<sp/>tapes.<sp/>First<sp/>taper<sp/>data<sp/>and<sp/>store<sp/>tapered<sp/>data<sp/>in</highlight></codeline>
+<codeline lineno="203"><highlight class="comment"><sp/><sp/>tdata<sp/>container*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/>j;</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/>vector&lt;ComplexArray&gt;<sp/>tdata;</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/>tdata.reserve(ntapers);</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>work;</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/>work.reserve(nfft);</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>ntapers;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/>work.clear();</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>will<sp/>assure<sp/>part<sp/>of<sp/>vector<sp/>between<sp/>end<sp/>of</highlight></codeline>
+<codeline lineno="212"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>data<sp/>and<sp/>nfft<sp/>is<sp/>zero<sp/>padded<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>taperlen;<sp/>++j)</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>work.push_back(tapers(i,<sp/>j)<sp/>*<sp/>d[j]);</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>taperlen;<sp/>j<sp/>&lt;<sp/>nfft;<sp/>++j)</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>work.push_back(0.0);</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>cwork(nfft,<sp/>&amp;(work[0]));</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/>tdata.push_back(cwork);</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Now<sp/>apply<sp/>DFT<sp/>to<sp/>each<sp/>of<sp/>tapered<sp/>arrays<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>ntapers;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/>gsl_fft_complex_forward(tdata[i].ptr(),<sp/>1,<sp/>nfft,<sp/>wavetable,<sp/>workspace);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>New<sp/>version<sp/>-<sp/>delete<sp/>this<sp/>comment<sp/>if<sp/>it<sp/>works*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>result;</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/>result.reserve(this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>());</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>();<sp/>++j)</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/>result.push_back(0.0);</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>ntapers;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>();<sp/>++j)<sp/>{</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>mspass::algorithms::deconvolution::Complex64<sp/>z;</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>rp,<sp/>ip;</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>z<sp/>=<sp/>tdata[i][j];</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>rp<sp/>=<sp/>z.real();</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ip<sp/>=<sp/>z.imag();</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>result[j]<sp/>+=<sp/>rp<sp/>*<sp/>rp<sp/>+<sp/>ip<sp/>*<sp/>ip;</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Scale<sp/>using<sp/>Parseval&apos;s<sp/>theorem<sp/>-<sp/>this<sp/>is<sp/>adapted<sp/>from<sp/>Prieto&apos;s</highlight></codeline>
+<codeline lineno="240"><highlight class="comment"><sp/><sp/>multitaper<sp/>python<sp/>implementation.<sp/><sp/><sp/>We<sp/>have<sp/>to<sp/>explicitly<sp/>add<sp/>the</highlight></codeline>
+<codeline lineno="241"><highlight class="comment"><sp/><sp/>divide<sp/>by<sp/>nfft<sp/>that<sp/>is<sp/>implicit<sp/>in<sp/>Prieto&apos;s<sp/>code<sp/>because<sp/>he<sp/>uses</highlight></codeline>
+<codeline lineno="242"><highlight class="comment"><sp/><sp/>numpy&apos;s<sp/>var<sp/>function<sp/>to<sp/>compoute<sp/>sum<sp/>of<sp/>squares<sp/>of<sp/>data<sp/>that<sp/>includes<sp/>a</highlight></codeline>
+<codeline lineno="243"><highlight class="comment"><sp/><sp/>divide<sp/>by<sp/>data<sp/>vector<sp/>length.<sp/><sp/>Not<sp/>sure<sp/>his<sp/>formula<sp/>is<sp/>right<sp/>as<sp/>seems<sp/>to</highlight></codeline>
+<codeline lineno="244"><highlight class="comment"><sp/><sp/>me<sp/>it<sp/>shouild<sp/>be<sp/>nfft<sp/>not<sp/>npts.</highlight></codeline>
+<codeline lineno="245"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>specssq(0.0),<sp/>scale;</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>p<sp/>=<sp/>result.begin();<sp/>p<sp/>!=<sp/>result.end();<sp/>++p)</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/>specssq<sp/>+=<sp/>(*p);</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>test<sp/>for<sp/>zeros<sp/>to<sp/>avoid<sp/>divide<sp/>by<sp/>zero<sp/>or<sp/>a<sp/>NaN.<sp/></highlight></codeline>
+<codeline lineno="250"><highlight class="comment"><sp/><sp/><sp/>*<sp/>result<sp/>will<sp/>be<sp/>all<sp/>zeros<sp/>this<sp/>way.<sp/><sp/>Without<sp/>we<sp/>get<sp/>all<sp/>NaNs</highlight></codeline>
+<codeline lineno="251"><highlight class="comment"><sp/><sp/><sp/>*<sp/>in<sp/>the<sp/>spectrum*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">((ssq&lt;=0.0)<sp/>||<sp/>(specssq&lt;=0.0))</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/>scale<sp/>=<sp/>1.0;</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/>scale<sp/>=<sp/>ssq<sp/>/<sp/>(specssq<sp/>*<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ada36c092fdc3aa128be8eb25d00349d6" kindref="member">df</ref>());</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Scaling<sp/>for<sp/>fft<sp/>implementation<sp/>-<sp/>Established<sp/>from<sp/>zero<sp/>pad<sp/>tests<sp/>it<sp/>has</highlight></codeline>
+<codeline lineno="260"><highlight class="comment"><sp/><sp/><sp/><sp/>to<sp/>be<sp/>this<sp/>factor.<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/>scale<sp/>/=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(d.size());</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>();<sp/>++j)</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/>result[j]<sp/>*=<sp/>scale;</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="266"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="267" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a626438cc21ade06cfa7053c324ae58b4" refkind="member"><highlight class="normal">vector&lt;double&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a626438cc21ade06cfa7053c324ae58b4" kindref="member">MTPowerSpectrumEngine::frequencies</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>f;</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>If<sp/>taperlen<sp/>is<sp/>odd<sp/>this<sp/>still<sp/>works<sp/>according<sp/>to<sp/>gsl<sp/>documentation.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" kindref="member">nf</ref>();<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Here<sp/>we<sp/>assume<sp/>i=0<sp/>frequency<sp/>is<sp/>0<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/>f.push_back(deltaf<sp/>*<sp/>((</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)i));</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>f;</highlight></codeline>
+<codeline lineno="275"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="276"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc"/>
   </compounddef>

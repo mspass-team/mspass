@@ -1,85 +1,331 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deconvolution Operators &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Deconvolution Operators &#8212; MsPASS 0.1.dev1+gb7c2adc documentation</title>
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../_static/copybutton.js?v=f281be69"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=c1885210"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/deconvolution';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Importing Data" href="importing_data.html" />
-    <link rel="prev" title="Algorithms" href="algorithms.html" />  
-
-  <style>
-    .wy-nav-content { max-width: 1600px; }
-  </style>
+    <link rel="prev" title="Algorithms" href="algorithms.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
-</head>
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            MsPASS
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+  <dialog id="pst-search-dialog">
     
-              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
-<ul>
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
@@ -88,56 +334,10 @@
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
-<ul class="current">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Deconvolution Operators</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#essential-terms">Essential terms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#wrappers-and-engines">Wrappers and engines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#common-conventions">Common conventions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#windows-and-noise">Windows and noise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#choosing-an-operator">Choosing an operator</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#switching-gid-methods-safely">Switching GID methods safely</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#scalar-inverse-operators">Scalar inverse operators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#three-component-cnr-operators">Three-component CNR operators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#generalized-iterative-deconvolution-gid">Generalized iterative deconvolution (GID)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#greedy-gid-workflow">Greedy GID workflow</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#time-domain-and-frequency-domain-engines">Time-domain and frequency-domain engines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ns-gid-inverse-mode"><code class="docutils literal notranslate"><span class="pre">NS-GID</span></code> inverse mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#convergence-and-stopping">Convergence and stopping</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#qc-metadata">QC metadata</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#lag-weight-penalty-framework">Lag-weight penalty framework</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#recommended-use">Recommended use</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#how-the-greedy-penalty-enters-gid">How the greedy penalty enters GID</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#current-lag-weight-penalty-methods">Current lag-weight penalty methods</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#adaptive-memory-theory">Adaptive memory theory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#benchmark-interpretation">Benchmark interpretation</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#serialization-and-distributed-use">Serialization and distributed use</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#group-sparse-regularized-gid">Group-sparse regularized GID</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#relation-to-classic-greedy-gid">Relation to classic greedy GID</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#model-and-solver">Model and solver</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#regularization-and-support-reporting">Regularization and support reporting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#qc-and-interpretation">QC and interpretation</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#validation-and-qc-workflow">Validation and QC workflow</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#run-the-optional-validation-plots">Run the optional validation plots</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#what-the-figures-show">What the figures show</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reading-noise-scale-plots">Reading noise-scale plots</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reading-sparse-support-plots">Reading sparse-support plots</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reading-penalty-comparison-plots">Reading penalty comparison plots</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#inspecting-qc-metadata-after-deconvolution">Inspecting QC metadata after deconvolution</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#implementation-and-compatibility-notes">Implementation and compatibility notes</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
@@ -148,53 +348,95 @@
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
-
-    <a href= "../genindex.html">Index</a>
-  
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">MsPASS</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Deconvolution Operators</li>
-      <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/deconvolution.rst" class="fa fa-github"> Edit on GitHub</a>
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Deconvolution Operators</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="deconvolution-operators">
-<h1>Deconvolution Operators<a class="headerlink" href="#deconvolution-operators" title="Link to this heading"></a></h1>
+<h1>Deconvolution Operators<a class="headerlink" href="#deconvolution-operators" title="Link to this heading">#</a></h1>
 <p>This page describes the receiver-function deconvolution operators available in
 MsPASS.  Deconvolution estimates an Earth response from an observed component
 and an estimated source wavelet.  In simplified form,</p>
@@ -214,7 +456,7 @@ spectral division.</p>
 <li><p>Use <a class="reference internal" href="#validation-and-qc-workflow">Validation and QC workflow</a> to inspect plots and saved metadata.</p></li>
 </ol>
 <section id="essential-terms">
-<h2>Essential terms<a class="headerlink" href="#essential-terms" title="Link to this heading"></a></h2>
+<h2>Essential terms<a class="headerlink" href="#essential-terms" title="Link to this heading">#</a></h2>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">target</span> <span class="pre">component</span></code> or <code class="docutils literal notranslate"><span class="pre">target</span> <span class="pre">trace</span></code></dt><dd><p>The observed component being deconvolved.</p>
 </dd>
@@ -298,7 +540,7 @@ settings, support thresholds, and inverse-stability diagnostics.</p>
 </dl>
 </section>
 <section id="wrappers-and-engines">
-<h2>Wrappers and engines<a class="headerlink" href="#wrappers-and-engines" title="Link to this heading"></a></h2>
+<h2>Wrappers and engines<a class="headerlink" href="#wrappers-and-engines" title="Link to this heading">#</a></h2>
 <p>MsPASS separates data handling from numerical deconvolution.</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor</span></code> and <code class="docutils literal notranslate"><span class="pre">RFdecon</span></code></dt><dd><p>General receiver-function wrappers.  They operate on MsPASS data objects,
@@ -327,7 +569,7 @@ diagnostics, and specialized processing tools, but they expect the caller to
 load the correct data, wavelet, and noise estimates.</p>
 </section>
 <section id="common-conventions">
-<h2>Common conventions<a class="headerlink" href="#common-conventions" title="Link to this heading"></a></h2>
+<h2>Common conventions<a class="headerlink" href="#common-conventions" title="Link to this heading">#</a></h2>
 <p>MsPASS treats receiver-function deconvolution as a linear convolution problem.
 FFT-based operators use zero padding internally, but the returned receiver
 function is the requested linear lag window, not a wrapped circular-convolution
@@ -342,7 +584,7 @@ applied to the source wavelet, while <code class="docutils literal notranslate">
 itself.  The returned receiver function is the cropped seismic result.</p>
 </section>
 <section id="windows-and-noise">
-<h2>Windows and noise<a class="headerlink" href="#windows-and-noise" title="Link to this heading"></a></h2>
+<h2>Windows and noise<a class="headerlink" href="#windows-and-noise" title="Link to this heading">#</a></h2>
 <p>Three window concepts appear throughout the deconvolution APIs:</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">signal_window</span></code></dt><dd><p>The target time interval to analyze and normally the output interval to
@@ -378,10 +620,10 @@ residual-domain noise window or time-domain noise estimate is still needed for
 sparse iteration stopping or group-sparse support decisions.</p>
 </section>
 <section id="choosing-an-operator">
-<h2>Choosing an operator<a class="headerlink" href="#choosing-an-operator" title="Link to this heading"></a></h2>
+<h2>Choosing an operator<a class="headerlink" href="#choosing-an-operator" title="Link to this heading">#</a></h2>
 <p>No deconvolution operator is best for every receiver-function problem.  Start
 with the failure mode you need to control:</p>
-<table class="docutils align-default">
+<div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Goal or data condition</p></th>
 <th class="head"><p>Recommended starting point</p></th>
@@ -408,6 +650,7 @@ with the failure mode you need to control:</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>The distributed GID parameter files use <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code> with the
 <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> lag penalty.  Validation sweeps selected that combination
 because it is more resistant to noise-driven false picks than the legacy
@@ -415,7 +658,7 @@ because it is more resistant to noise-driven false picks than the legacy
 prior matches the problem, and reserve <code class="docutils literal notranslate"><span class="pre">least_square</span></code> for explicit legacy
 comparisons or diagnostics.</p>
 <section id="switching-gid-methods-safely">
-<h3>Switching GID methods safely<a class="headerlink" href="#switching-gid-methods-safely" title="Link to this heading"></a></h3>
+<h3>Switching GID methods safely<a class="headerlink" href="#switching-gid-methods-safely" title="Link to this heading">#</a></h3>
 <p>The shipped GID defaults changed from <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">least_square</span></code> to
 <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code> with <code class="docutils literal notranslate"><span class="pre">lag_weight_penalty_function</span>
 <span class="pre">adaptive_memory</span></code>.  New code should switch GID modes through the public Python
@@ -510,7 +753,7 @@ and the <code class="docutils literal notranslate"><span class="pre">group_lasso
 </section>
 </section>
 <section id="scalar-inverse-operators">
-<h2>Scalar inverse operators<a class="headerlink" href="#scalar-inverse-operators" title="Link to this heading"></a></h2>
+<h2>Scalar inverse operators<a class="headerlink" href="#scalar-inverse-operators" title="Link to this heading">#</a></h2>
 <p>Scalar operators load one source wavelet and one target trace.  They return a
 regularized inverse-filter receiver function, not a sparse impulse response.
 Their default parameter files do not apply a GID-style output shaping wavelet
@@ -557,7 +800,7 @@ normal equations.  It does not build a circular convolution matrix.</p>
 </dl>
 </section>
 <section id="three-component-cnr-operators">
-<h2>Three-component CNR operators<a class="headerlink" href="#three-component-cnr-operators" title="Link to this heading"></a></h2>
+<h2>Three-component CNR operators<a class="headerlink" href="#three-component-cnr-operators" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine</span></code> and <code class="docutils literal notranslate"><span class="pre">CNR3CDecon</span></code> implement colored-noise-ratio
 receiver-function deconvolution.  They estimate or load a noise spectrum and
 regularize the source spectrum as a function of colored noise level and SNR.
@@ -569,14 +812,14 @@ CNR inverse mode inside GID.  <code class="docutils literal notranslate"><span c
 prototype kept for compatibility.</p>
 </section>
 <section id="generalized-iterative-deconvolution-gid">
-<h2>Generalized iterative deconvolution (GID)<a class="headerlink" href="#generalized-iterative-deconvolution-gid" title="Link to this heading"></a></h2>
+<h2>Generalized iterative deconvolution (GID)<a class="headerlink" href="#generalized-iterative-deconvolution-gid" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon</span></code> and <code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon</span></code> estimate a sparse
 three-component impulse response.  Accepted spikes are convolved with the
 configured output shaping wavelet to produce the shaped receiver function
 returned by <code class="docutils literal notranslate"><span class="pre">getresult</span></code>.  The raw sparse impulse response is available
 through <code class="docutils literal notranslate"><span class="pre">sparse_output</span></code> for diagnostics and validation.</p>
 <section id="greedy-gid-workflow">
-<h3>Greedy GID workflow<a class="headerlink" href="#greedy-gid-workflow" title="Link to this heading"></a></h3>
+<h3>Greedy GID workflow<a class="headerlink" href="#greedy-gid-workflow" title="Link to this heading">#</a></h3>
 <p>Greedy GID is the classic one-spike-at-a-time sparse method.  At each
 iteration the engine applies a configured inverse operator to the current
 residual to form a detection function,</p>
@@ -593,7 +836,7 @@ reported GID receiver function is the sparse impulse response convolved with
 the output shaping wavelet.</p>
 </section>
 <section id="time-domain-and-frequency-domain-engines">
-<h3>Time-domain and frequency-domain engines<a class="headerlink" href="#time-domain-and-frequency-domain-engines" title="Link to this heading"></a></h3>
+<h3>Time-domain and frequency-domain engines<a class="headerlink" href="#time-domain-and-frequency-domain-engines" title="Link to this heading">#</a></h3>
 <p>The two GID engines implement the same sparse model with different internal
 machinery.  The time-domain engine performs the iterative residual update in
 the time domain.  The frequency-domain engine builds inverse and resolution
@@ -608,7 +851,7 @@ describes the sparse iteration and residual update, not the spectral method
 used by the inverse operator.</p>
 </section>
 <section id="ns-gid-inverse-mode">
-<h3><code class="docutils literal notranslate"><span class="pre">NS-GID</span></code> inverse mode<a class="headerlink" href="#ns-gid-inverse-mode" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">NS-GID</span></code> inverse mode<a class="headerlink" href="#ns-gid-inverse-mode" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">NS-GID</span></code> is selected with <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code> in either GID engine.
 It is a noise-stable inverse mode used inside the GID iteration, not a separate
 preprocessing workflow.  The inverse operator is</p>
@@ -630,7 +873,7 @@ change the automatically selected <code class="docutils literal notranslate"><sp
 lambda uses the NS-GID inverse-filtered noise threshold when it is available.</p>
 </section>
 <section id="convergence-and-stopping">
-<h3>Convergence and stopping<a class="headerlink" href="#convergence-and-stopping" title="Link to this heading"></a></h3>
+<h3>Convergence and stopping<a class="headerlink" href="#convergence-and-stopping" title="Link to this heading">#</a></h3>
 <p>GID stops when the configured iteration limit is reached or when a stopping
 test says another spike is not useful.  Common stopping tests include small
 fractional residual improvement, residual energy reaching a noise floor, no
@@ -645,7 +888,7 @@ by residual or lag-weight floors are reported as converged because the engine
 found a configured reason not to add more spikes.</p>
 </section>
 <section id="qc-metadata">
-<h3>QC metadata<a class="headerlink" href="#qc-metadata" title="Link to this heading"></a></h3>
+<h3>QC metadata<a class="headerlink" href="#qc-metadata" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">QCMetrics</span></code> records both processing status and diagnostic context.  Useful
 first-pass GID fields include <code class="docutils literal notranslate"><span class="pre">decon_operator</span></code>, <code class="docutils literal notranslate"><span class="pre">decon_processed</span></code>,
 <code class="docutils literal notranslate"><span class="pre">gid_converged</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_stop_reason</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_iterations</span></code>,
@@ -668,7 +911,7 @@ normal database records.</p>
 database save, see <a class="reference internal" href="#validation-and-qc-workflow">Validation and QC workflow</a>.</p>
 </section>
 <section id="lag-weight-penalty-framework">
-<h3>Lag-weight penalty framework<a class="headerlink" href="#lag-weight-penalty-framework" title="Link to this heading"></a></h3>
+<h3>Lag-weight penalty framework<a class="headerlink" href="#lag-weight-penalty-framework" title="Link to this heading">#</a></h3>
 <p>Lag-weight penalties apply only to greedy GID.  They modify the score used to
 choose the next candidate lag after a spike has
 already been accepted.  They do not shrink accepted amplitudes, and they are
@@ -676,9 +919,9 @@ separate from the grouped-sparsity solve used by <code class="docutils literal n
 <span class="pre">group_sparse</span></code> (see <a class="reference internal" href="#group-sparse-regularized-gid">Group-sparse regularized GID</a>).  In all greedy modes the
 data-domain residual decrease test remains the final acceptance rule.</p>
 <section id="recommended-use">
-<h4>Recommended use<a class="headerlink" href="#recommended-use" title="Link to this heading"></a></h4>
+<h4>Recommended use<a class="headerlink" href="#recommended-use" title="Link to this heading">#</a></h4>
 <p>The easiest way to choose a penalty is by failure mode:</p>
-<table class="docutils align-default">
+<div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Situation</p></th>
 <th class="head"><p>Suggested setting</p></th>
@@ -703,6 +946,7 @@ data-domain residual decrease test remains the final acceptance rule.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>The shipped GID parameter files set <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code>,
 <code class="docutils literal notranslate"><span class="pre">lag_weight_penalty_function</span> <span class="pre">adaptive_memory</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">lag_weight_penalty_scale_factor=0.35</span></code>.  Validation sweeps across moderate and
@@ -711,7 +955,7 @@ large noise levels selected this as the default because the legacy
 same lag penalty.  Treat it as a robust starting point, not a universal optimum.</p>
 </section>
 <section id="how-the-greedy-penalty-enters-gid">
-<h4>How the greedy penalty enters GID<a class="headerlink" href="#how-the-greedy-penalty-enters-gid" title="Link to this heading"></a></h4>
+<h4>How the greedy penalty enters GID<a class="headerlink" href="#how-the-greedy-penalty-enters-gid" title="Link to this heading">#</a></h4>
 <p>At iteration <span class="math notranslate nohighlight">\(k\)</span>, let <span class="math notranslate nohighlight">\(\mathbf{a}^{(k)}_j\)</span> be the
 three-component detection-function vector at lag sample <span class="math notranslate nohighlight">\(j\)</span>, and let
 <span class="math notranslate nohighlight">\(\ell^{(k)}_j \in [0, 1]\)</span> be the accumulated lag weight.  The implemented
@@ -733,7 +977,7 @@ data-domain residual decrease test still decides whether the candidate is
 accepted.</p>
 </section>
 <section id="current-lag-weight-penalty-methods">
-<h4>Current lag-weight penalty methods<a class="headerlink" href="#current-lag-weight-penalty-methods" title="Link to this heading"></a></h4>
+<h4>Current lag-weight penalty methods<a class="headerlink" href="#current-lag-weight-penalty-methods" title="Link to this heading">#</a></h4>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">none</span></code></dt><dd><p>Leaves the greedy selector unchanged.  It is the safest support-recovery
 choice when real arrivals may be tightly clustered.</p>
@@ -760,7 +1004,7 @@ create weaker memory that decays quickly.</p>
 </dl>
 </section>
 <section id="adaptive-memory-theory">
-<h4>Adaptive memory theory<a class="headerlink" href="#adaptive-memory-theory" title="Link to this heading"></a></h4>
+<h4>Adaptive memory theory<a class="headerlink" href="#adaptive-memory-theory" title="Link to this heading">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> implements a finite-memory local penalty.  After each
 accepted spike it asks three questions:</p>
 <ol class="arabic simple">
@@ -825,7 +1069,7 @@ is <span class="math notranslate nohighlight">\(\gamma_s=B_sS_s\)</span>.  Conce
 temporary local penalty, not a permanent exclusion rule.</p>
 </section>
 <section id="benchmark-interpretation">
-<h4>Benchmark interpretation<a class="headerlink" href="#benchmark-interpretation" title="Link to this heading"></a></h4>
+<h4>Benchmark interpretation<a class="headerlink" href="#benchmark-interpretation" title="Link to this heading">#</a></h4>
 <p>The validation results should be read as evidence for guarded anti-cycling
 behavior, not as proof that <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> is universally best.  In the
 moderate-noise synthetic sweep, <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> reduced some repeated-pick
@@ -840,7 +1084,7 @@ specific data and noise setting being processed.</p>
 </section>
 </section>
 <section id="serialization-and-distributed-use">
-<h3>Serialization and distributed use<a class="headerlink" href="#serialization-and-distributed-use" title="Link to this heading"></a></h3>
+<h3>Serialization and distributed use<a class="headerlink" href="#serialization-and-distributed-use" title="Link to this heading">#</a></h3>
 <p>Direct <code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon</span></code> and <code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon</span></code> engine objects
 are pickleable for distributed wrapper use.  Their pickle state preserves the
 parameter-file configuration, successful <code class="docutils literal notranslate"><span class="pre">changeparameter()</span></code> updates to the
@@ -856,7 +1100,7 @@ input vectors for post-processing diagnostics.</p>
 </section>
 </section>
 <section id="group-sparse-regularized-gid">
-<h2>Group-sparse regularized GID<a class="headerlink" href="#group-sparse-regularized-gid" title="Link to this heading"></a></h2>
+<h2>Group-sparse regularized GID<a class="headerlink" href="#group-sparse-regularized-gid" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">group_sparse</span></code> is a separate GID mode from the greedy lag-weight penalties
 described above.  Lag-weight penalties modify which candidate lag the greedy
 iteration tries next.  <code class="docutils literal notranslate"><span class="pre">group_sparse</span></code> instead solves one regularized model
@@ -865,7 +1109,7 @@ for the full sparse impulse response, the lag-indexed spike train returned by
 same nonzero lag samples, across the three components while still allowing
 different component amplitudes.</p>
 <section id="relation-to-classic-greedy-gid">
-<h3>Relation to classic greedy GID<a class="headerlink" href="#relation-to-classic-greedy-gid" title="Link to this heading"></a></h3>
+<h3>Relation to classic greedy GID<a class="headerlink" href="#relation-to-classic-greedy-gid" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">group_sparse</span></code> estimates the full sparse impulse response by solving an
 explicit regularized objective instead of selecting one spike per iteration.
 This makes it a different estimator, not a strict upgrade.  Classic greedy GID
@@ -880,7 +1124,7 @@ After those quantities are built, the two engines use the same group-sparse
 objective.</p>
 </section>
 <section id="model-and-solver">
-<h3>Model and solver<a class="headerlink" href="#model-and-solver" title="Link to this heading"></a></h3>
+<h3>Model and solver<a class="headerlink" href="#model-and-solver" title="Link to this heading">#</a></h3>
 <p>Let <span class="math notranslate nohighlight">\(\mathbf{y}_c\)</span> be component <span class="math notranslate nohighlight">\(c\)</span> of the inverse-filtered data,
 and let <span class="math notranslate nohighlight">\(R\)</span> be the compact, peak-normalized resolution-kernel convolution
 operator used by GID residual updates.  The unknown sparse impulse response is
@@ -931,33 +1175,38 @@ objective.  It is not, by itself, the threshold used to decide which nonzero
 coefficients are exported as sparse arrivals.</p>
 </section>
 <section id="regularization-and-support-reporting">
-<h3>Regularization and support reporting<a class="headerlink" href="#regularization-and-support-reporting" title="Link to this heading"></a></h3>
+<h3>Regularization and support reporting<a class="headerlink" href="#regularization-and-support-reporting" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">group_sparse_lambda</span></code> controls shrinkage inside the objective.  A positive
 value is used directly.  The default value <code class="docutils literal notranslate"><span class="pre">0.0</span></code> selects an automatic
-noise-scaled value:</p>
+noise-scaled value.  Let <span class="math notranslate nohighlight">\(\lambda_{\mathrm{scale}}\)</span> denote
+<code class="docutils literal notranslate"><span class="pre">group_sparse_lambda_scale</span></code> and let <span class="math notranslate nohighlight">\(\eta\)</span> denote the automatic noise
+reference.  Then</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\lambda =
-\texttt{group\_sparse\_lambda\_scale}
-\times
+\lambda_{\mathrm{scale}}\eta,
+\qquad
+\eta =
 \begin{cases}
-   \text{NS-GID inverse-filtered noise threshold},
-      &amp; \text{if available}, \\
+   \eta_{\mathrm{noise}}, &amp; \mathrm{available}, \\
    0.02\,\|\mathbf{y}\|_\infty,
-      &amp; \text{otherwise}.
+      &amp; \mathrm{otherwise}.
 \end{cases}\end{split}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(\eta_{\mathrm{noise}}\)</span> is the NS-GID inverse-filtered noise
+threshold when that estimate is available.</p>
 <p>The exported sparse support has a second adaptive decision rule.  The
 regularized coefficient field can contain tiny numerical coefficients or small
-clustered sidelobe coefficients.  The default support threshold is</p>
+clustered sidelobe coefficients.  Let <span class="math notranslate nohighlight">\(a_0\)</span> denote
+<code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold</span></code>, <span class="math notranslate nohighlight">\(s_a\)</span> denote
+<code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold_scale</span></code>, and <span class="math notranslate nohighlight">\(q\)</span> denote
+<code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold_quantile</span></code>.  The default support threshold is</p>
 <div class="math notranslate nohighlight">
-\[\tau_\text{support}
+\[\tau_{\mathrm{support}}
    =
    \max\left(
-     \texttt{group\_sparse\_active\_threshold},
-     \texttt{group\_sparse\_active\_threshold\_scale}
-     \;Q_q\left(\left\{\|\hat{\mathbf{h}}_j\|_2\right\}\right)
+     a_0,
+     s_a Q_q\left(\left\{\|\hat{\mathbf{h}}_j\|_2\right\}\right)
    \right),\]</div>
-<p>where <span class="math notranslate nohighlight">\(q=\texttt{group\_sparse\_active\_threshold\_quantile}\)</span>.  The
-distributed defaults are <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold=0.02</span></code>,
+<p>with distributed defaults <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold=0.02</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold_scale=1.0</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold_quantile=0.90</span></code>.</p>
 <p>This threshold is the group-sparse analogue of the adaptive part of
@@ -975,7 +1224,7 @@ adaptive upper-tail cutoff can leave many retained coefficients, while an
 overly large fixed floor can remove weak converted phases.</p>
 </section>
 <section id="qc-and-interpretation">
-<h3>QC and interpretation<a class="headerlink" href="#qc-and-interpretation" title="Link to this heading"></a></h3>
+<h3>QC and interpretation<a class="headerlink" href="#qc-and-interpretation" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">QCMetrics</span></code> records <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda_requested</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda_scale</span></code>, <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda_used</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold_scale</span></code>,
@@ -1013,13 +1262,13 @@ norm or preserve dense close arrivals better.</p>
 </section>
 </section>
 <section id="validation-and-qc-workflow">
-<h2>Validation and QC workflow<a class="headerlink" href="#validation-and-qc-workflow" title="Link to this heading"></a></h2>
+<h2>Validation and QC workflow<a class="headerlink" href="#validation-and-qc-workflow" title="Link to this heading">#</a></h2>
 <p>The validation tests can write optional figures that are useful for learning
 how the deconvolution operators behave on controlled synthetic examples.  These
 figures are an audit aid, not a field-data benchmark.  The pytest assertions
 remain the source of pass/fail behavior.</p>
 <section id="run-the-optional-validation-plots">
-<h3>Run the optional validation plots<a class="headerlink" href="#run-the-optional-validation-plots" title="Link to this heading"></a></h3>
+<h3>Run the optional validation plots<a class="headerlink" href="#run-the-optional-validation-plots" title="Link to this heading">#</a></h3>
 <p>To write the default diagnostic figures, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>python/tests/algorithms/test_decon_algorithm_validation.py<span class="w"> </span><span class="se">\</span>
@@ -1042,33 +1291,29 @@ setting.  Changing it changes the optional figures used for visual inspection;
 the core numerical checks still use fixed reproducible validation cases.</p>
 </section>
 <section id="what-the-figures-show">
-<h3>What the figures show<a class="headerlink" href="#what-the-figures-show" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">complex_colored_validation_wavelet.png</span></code></dt><dd><p>Shows the notched source wavelet, the noisy convolved three-component data,
-and the known sparse impulse response used as synthetic truth.</p>
-</dd>
-</dl>
-<p><code class="docutils literal notranslate"><span class="pre">complex_colored_scalar_methods.png</span></code> and
-<code class="docutils literal notranslate"><span class="pre">scalar_noise_&lt;scale&gt;_stress_spike_results.png</span></code></p>
-<blockquote>
-<div><p>Compare scalar and CNR receiver-function outputs.  These traces are shaped
-receiver functions, not sparse impulse responses.</p>
-</div></blockquote>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon_*</span></code> and <code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon_*</span></code> overlays</dt><dd><p>Compare GID outputs for the time-domain and frequency-domain engines.  Files
-ending in <code class="docutils literal notranslate"><span class="pre">_sparse_results.png</span></code> show raw sparse impulse responses from
+<h3>What the figures show<a class="headerlink" href="#what-the-figures-show" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">complex_colored_validation_wavelet.png</span></code> shows the notched source wavelet,
+the noisy convolved three-component data, and the known sparse impulse
+response used as synthetic truth.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">complex_colored_scalar_methods.png</span></code> and
+<code class="docutils literal notranslate"><span class="pre">scalar_noise_&lt;scale&gt;_stress_spike_results.png</span></code> compare scalar and CNR
+receiver-function outputs.  These traces are shaped receiver functions, not
+sparse impulse responses.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon_*</span></code> and <code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon_*</span></code> overlays compare
+GID outputs for the time-domain and frequency-domain engines.  Files ending
+in <code class="docutils literal notranslate"><span class="pre">_sparse_results.png</span></code> show raw sparse impulse responses from
 <code class="docutils literal notranslate"><span class="pre">sparse_output</span></code> and are the most direct visual comparison to the known
-sparse truth.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">external_wavelet_all_methods.png</span></code></dt><dd><p>Compares methods when a prepared external wavelet is supplied.  The
-companion <code class="docutils literal notranslate"><span class="pre">external_wavelet_all_methods_display_filtered.png</span></code> applies a
-common plotting-only display filter; that filter is not part of the
-algorithms or the pass/fail assertions.</p>
-</dd>
-</dl>
+sparse truth.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">external_wavelet_all_methods.png</span></code> compares methods when a prepared
+external wavelet is supplied.  The companion
+<code class="docutils literal notranslate"><span class="pre">external_wavelet_all_methods_display_filtered.png</span></code> applies a common
+plotting-only display filter; that filter is not part of the algorithms or
+the pass/fail assertions.</p></li>
+</ul>
 </section>
 <section id="reading-noise-scale-plots">
-<h3>Reading noise-scale plots<a class="headerlink" href="#reading-noise-scale-plots" title="Link to this heading"></a></h3>
+<h3>Reading noise-scale plots<a class="headerlink" href="#reading-noise-scale-plots" title="Link to this heading">#</a></h3>
 <p>Start with the setup figure.  The data panel is normalized for display, so use
 the noise-scale label, pre-event RMS, signal RMS, and waveform shape together.
 A larger noise scale should make pre-event and inter-arrival fluctuations more
@@ -1079,7 +1324,7 @@ output trace, treat that as stress-run context.  It is a reason to inspect the
 matching QC metadata, not by itself a benchmark result.</p>
 </section>
 <section id="reading-sparse-support-plots">
-<h3>Reading sparse-support plots<a class="headerlink" href="#reading-sparse-support-plots" title="Link to this heading"></a></h3>
+<h3>Reading sparse-support plots<a class="headerlink" href="#reading-sparse-support-plots" title="Link to this heading">#</a></h3>
 <p>For GID methods, compare the raw sparse plots to the true impulse response.  The
 main questions are whether expected arrivals are present near the correct lag,
 whether signs are plausible, and whether the result contains many extra
@@ -1091,7 +1336,7 @@ the number of proximal iterations.  <code class="docutils literal notranslate"><
 arrival count.</p>
 </section>
 <section id="reading-penalty-comparison-plots">
-<h3>Reading penalty comparison plots<a class="headerlink" href="#reading-penalty-comparison-plots" title="Link to this heading"></a></h3>
+<h3>Reading penalty comparison plots<a class="headerlink" href="#reading-penalty-comparison-plots" title="Link to this heading">#</a></h3>
 <p>The penalty comparison figures should be read as a three-part diagnostic:</p>
 <ul class="simple">
 <li><p>The shaped-result plot shows the receiver-function traces users would
@@ -1110,71 +1355,54 @@ wording such as “in this synthetic stress case” or “for this configured no
 level.”</p>
 </section>
 <section id="inspecting-qc-metadata-after-deconvolution">
-<h3>Inspecting QC metadata after deconvolution<a class="headerlink" href="#inspecting-qc-metadata-after-deconvolution" title="Link to this heading"></a></h3>
+<h3>Inspecting QC metadata after deconvolution<a class="headerlink" href="#inspecting-qc-metadata-after-deconvolution" title="Link to this heading">#</a></h3>
 <p>After running deconvolution, inspect the QC subdocument saved on the output
 datum.  <code class="docutils literal notranslate"><span class="pre">RFdecon</span></code> uses <code class="docutils literal notranslate"><span class="pre">RFdecon_properties</span></code> by default.  The direct GID
 wrappers use <code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon_properties</span></code> and
 <code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon_properties</span></code> by default.  If you set a custom
 <code class="docutils literal notranslate"><span class="pre">QCdocument_key</span></code> or <code class="docutils literal notranslate"><span class="pre">QCdata_key</span></code>, inspect that key instead.</p>
 <p>Useful first-pass fields are:</p>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">decon_operator</span></code> and <code class="docutils literal notranslate"><span class="pre">decon_processed</span></code></dt><dd><p>Confirm which engine ran and whether it processed the datum.</p>
-</dd>
-</dl>
-<p><code class="docutils literal notranslate"><span class="pre">decon_window_start</span></code>, <code class="docutils literal notranslate"><span class="pre">decon_window_end</span></code>, <code class="docutils literal notranslate"><span class="pre">noise_window_start</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">noise_window_end</span></code></p>
-<blockquote>
-<div><p>Confirm that the analysis and noise windows match the intended workflow.</p>
-</div></blockquote>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">residual_L2_initial</span></code> and <code class="docutils literal notranslate"><span class="pre">residual_L2_final</span></code></dt><dd><p>Check whether the fitted model reduced residual energy.  Smaller is not
-automatically better if the sparse support becomes physically implausible.</p>
-</dd>
-</dl>
-<p><code class="docutils literal notranslate"><span class="pre">gid_converged</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_stop_reason</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_iterations</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">gid_number_spikes</span></code></p>
-<blockquote>
-<div><p>Summarize the GID iteration outcome.</p>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">gid_penalty_function</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_effective_width</span></code>,
-<code class="docutils literal notranslate"><span class="pre">lag_weight_L2_final</span></code>, and the <code class="docutils literal notranslate"><span class="pre">gid_penalty_*</span></code> adaptive-memory fields</p>
-<blockquote>
-<div><p>Explain how the lag-weight penalty affected candidate selection.  These
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">decon_operator</span></code> and <code class="docutils literal notranslate"><span class="pre">decon_processed</span></code> confirm which engine ran and
+whether it processed the datum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decon_window_start</span></code>, <code class="docutils literal notranslate"><span class="pre">decon_window_end</span></code>, <code class="docutils literal notranslate"><span class="pre">noise_window_start</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">noise_window_end</span></code> confirm that the analysis and noise windows match the
+intended workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">residual_L2_initial</span></code> and <code class="docutils literal notranslate"><span class="pre">residual_L2_final</span></code> check whether the fitted
+model reduced residual energy.  Smaller is not automatically better if the
+sparse support becomes physically implausible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gid_converged</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_stop_reason</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_iterations</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">gid_number_spikes</span></code> summarize the GID iteration outcome.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gid_penalty_function</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_effective_width</span></code>,
+<code class="docutils literal notranslate"><span class="pre">lag_weight_L2_final</span></code>, and the <code class="docutils literal notranslate"><span class="pre">gid_penalty_*</span></code> adaptive-memory fields
+explain how the lag-weight penalty affected candidate selection.  These
 fields are present for greedy GID modes, not for
-<code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">group_sparse</span></code>.</p>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">group_sparse_enabled</span></code>, <code class="docutils literal notranslate"><span class="pre">group_sparse_converged</span></code>,
+<code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">group_sparse</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group_sparse_enabled</span></code>, <code class="docutils literal notranslate"><span class="pre">group_sparse_converged</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_iterations</span></code>, <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda_used</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold_used</span></code>, <code class="docutils literal notranslate"><span class="pre">group_sparse_active_groups</span></code>,
-<code class="docutils literal notranslate"><span class="pre">group_sparse_objective_initial</span></code>, and <code class="docutils literal notranslate"><span class="pre">group_sparse_objective_final</span></code></p>
-<blockquote>
-<div><p>Summarize the regularized group-sparse solve and the exported sparse
-support decision.  <code class="docutils literal notranslate"><span class="pre">group_sparse_objective_final</span></code> is the solver’s final
-regularized objective after thresholding the proximal solution.  The
-amplitude refit is reported separately as
-<code class="docutils literal notranslate"><span class="pre">group_sparse_debiased_objective_final</span></code> and
-<code class="docutils literal notranslate"><span class="pre">group_sparse_debiased_fractional_improvement_final</span></code> because it is the
-same regularized objective evaluated after the debiased amplitude update on
-the selected support.  These fields are present only for
-<code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">group_sparse</span></code>.</p>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">ns_gid_gain_max_actual</span></code>, <code class="docutils literal notranslate"><span class="pre">ns_gid_noise_amplification</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">ns_gid_effective_bandwidth_fraction</span></code></p>
-<blockquote>
-<div><p>Help audit inverse-operator stability for <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code>.</p>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">group_sparse_inverse_gain_max_actual</span></code>,
+<code class="docutils literal notranslate"><span class="pre">group_sparse_objective_initial</span></code>, and <code class="docutils literal notranslate"><span class="pre">group_sparse_objective_final</span></code>
+summarize the regularized group-sparse solve and the exported sparse support
+decision.  <code class="docutils literal notranslate"><span class="pre">group_sparse_objective_final</span></code> is the solver’s final regularized
+objective after thresholding the proximal solution.  The amplitude refit is
+reported separately as <code class="docutils literal notranslate"><span class="pre">group_sparse_debiased_objective_final</span></code> and
+<code class="docutils literal notranslate"><span class="pre">group_sparse_debiased_fractional_improvement_final</span></code> because it is the same
+regularized objective evaluated after the debiased amplitude update on the
+selected support.  These fields are present only for
+<code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">group_sparse</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ns_gid_gain_max_actual</span></code>, <code class="docutils literal notranslate"><span class="pre">ns_gid_noise_amplification</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_effective_bandwidth_fraction</span></code> help audit inverse-operator stability
+for <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group_sparse_inverse_gain_max_actual</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_inverse_noise_amplification</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">group_sparse_inverse_effective_bandwidth_fraction</span></code></p>
-<blockquote>
-<div><p>Help audit the NS-GID inverse branch used internally by
-<code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">group_sparse</span></code>.  These fields are absent for other
-GID modes.</p>
-</div></blockquote>
+<code class="docutils literal notranslate"><span class="pre">group_sparse_inverse_effective_bandwidth_fraction</span></code> help audit the NS-GID
+inverse branch used internally by <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">group_sparse</span></code>.  These
+fields are absent for other GID modes.</p></li>
+</ul>
 </section>
 </section>
 <section id="implementation-and-compatibility-notes">
-<h2>Implementation and compatibility notes<a class="headerlink" href="#implementation-and-compatibility-notes" title="Link to this heading"></a></h2>
+<h2>Implementation and compatibility notes<a class="headerlink" href="#implementation-and-compatibility-notes" title="Link to this heading">#</a></h2>
 <p>The C++/pybind multitaper classes are still registered as
 <code class="docutils literal notranslate"><span class="pre">MultiTaperXcorDecon</span></code> and <code class="docutils literal notranslate"><span class="pre">MultiTaperSpecDivDecon</span></code> for ABI and pickle
 compatibility.  <code class="docutils literal notranslate"><span class="pre">MultiTaperPowerXcorDecon</span></code> and
@@ -1194,31 +1422,161 @@ equivalent to historical Park-Levin-style implementations.</p>
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="algorithms.html" class="btn btn-neutral float-left" title="Algorithms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="importing_data.html" class="btn btn-neutral float-right" title="Importing Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
-  </div>
-
-   
-
-</footer>
-        </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="algorithms.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Algorithms</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="importing_data.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Importing Data</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#essential-terms">Essential terms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrappers-and-engines">Wrappers and engines</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-conventions">Common conventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-and-noise">Windows and noise</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-an-operator">Choosing an operator</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switching-gid-methods-safely">Switching GID methods safely</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scalar-inverse-operators">Scalar inverse operators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#three-component-cnr-operators">Three-component CNR operators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generalized-iterative-deconvolution-gid">Generalized iterative deconvolution (GID)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#greedy-gid-workflow">Greedy GID workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-domain-and-frequency-domain-engines">Time-domain and frequency-domain engines</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ns-gid-inverse-mode"><code class="docutils literal notranslate"><span class="pre">NS-GID</span></code> inverse mode</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convergence-and-stopping">Convergence and stopping</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qc-metadata">QC metadata</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lag-weight-penalty-framework">Lag-weight penalty framework</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#recommended-use">Recommended use</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-greedy-penalty-enters-gid">How the greedy penalty enters GID</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#current-lag-weight-penalty-methods">Current lag-weight penalty methods</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#adaptive-memory-theory">Adaptive memory theory</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmark-interpretation">Benchmark interpretation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization-and-distributed-use">Serialization and distributed use</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#group-sparse-regularized-gid">Group-sparse regularized GID</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relation-to-classic-greedy-gid">Relation to classic greedy GID</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-and-solver">Model and solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization-and-support-reporting">Regularization and support reporting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qc-and-interpretation">QC and interpretation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validation-and-qc-workflow">Validation and QC workflow</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-optional-validation-plots">Run the optional validation plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-figures-show">What the figures show</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-noise-scale-plots">Reading noise-scale plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-sparse-support-plots">Reading sparse-support plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-penalty-comparison-plots">Reading penalty comparison plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspecting-qc-metadata-after-deconvolution">Inspecting QC metadata after deconvolution</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-and-compatibility-notes">Implementation and compatibility notes</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/deconvolution.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/deconvolution.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
 </html>

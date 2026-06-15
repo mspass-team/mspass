@@ -1,85 +1,331 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parallel IO in MsPASS &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Parallel IO in MsPASS &#8212; MsPASS 0.1.dev1+gb7c2adc documentation</title>
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../_static/copybutton.js?v=f281be69"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=c1885210"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/parallel_io';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Frequency Asked Questions (FAQ)" href="FAQ.html" />
-    <link rel="prev" title="I/O in MsPASS" href="io.html" />  
-
-  <style>
-    .wy-nav-content { max-width: 1600px; }
-  </style>
+    <link rel="prev" title="I/O in MsPASS" href="io.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.dev1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
-</head>
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            MsPASS
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  
+  <dialog id="pst-search-dialog">
     
-              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
-<ul>
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
@@ -88,8 +334,8 @@
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
@@ -102,82 +348,100 @@
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
-<ul class="current">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Parallel IO in MsPASS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#gary-l-pavlis"><em>Gary L. Pavlis</em></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#what-is-parallel-io-and-why-is-it-needed">What is parallel IO and why is it needed?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#read-distributed-data-mspass-parallel-reader">read_distributed_data - MsPASS parallel reader</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#atomic-data">Atomic data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ensemble-data">Ensemble data</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Parallel IO in MsPASS</a></li>
 </ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#write-distributed-data-mspass-parallel-writer">write_distributed_data - MsPASS parallel writer</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Atomic data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ensembles">Ensembles</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#handling-storage-mode-file">Handling storage_mode==”file”</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#example-1-default-read-write">Example 1:  Default read/write</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-2-atomic-writes-to-file-storage">Example 2:  atomic writes to file storage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-3-parallel-read-write-of-ensembles">Example 3:   Parallel read/write of ensembles</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-4-intermediate-processing-result-save">Example 4: Intermediate processing result save</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
-<ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
-
-    <a href= "../genindex.html">Index</a>
-  
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">MsPASS</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Parallel IO in MsPASS</li>
-      <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/parallel_io.rst" class="fa fa-github"> Edit on GitHub</a>
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Parallel IO in MsPASS</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="parallel-io-in-mspass">
-<span id="parallel-io"></span><h1>Parallel IO in MsPASS<a class="headerlink" href="#parallel-io-in-mspass" title="Link to this heading"></a></h1>
+<span id="parallel-io"></span><h1>Parallel IO in MsPASS<a class="headerlink" href="#parallel-io-in-mspass" title="Link to this heading">#</a></h1>
 <section id="gary-l-pavlis">
-<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Link to this heading"></a></h2>
+<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Link to this heading">#</a></h2>
 </section>
 <section id="what-is-parallel-io-and-why-is-it-needed">
-<h2>What is parallel IO and why is it needed?<a class="headerlink" href="#what-is-parallel-io-and-why-is-it-needed" title="Link to this heading"></a></h2>
+<h2>What is parallel IO and why is it needed?<a class="headerlink" href="#what-is-parallel-io-and-why-is-it-needed" title="Link to this heading">#</a></h2>
 <p>There is an old adage in higher performance computing that a supercomputer
 is a machine that turns CPU-bound jobs into IO-bound jobs.   Any user of
 MsPASS who runs the framework on a sufficiently large number of nodes will
@@ -307,9 +571,9 @@ the reader and writer descriptions below for atomic (TimeSeries
 and Seismogram data) and ensemble (TimeSeriesEnsemble and SeismogramEnsemble data).</p>
 </section>
 <section id="read-distributed-data-mspass-parallel-reader">
-<h2>read_distributed_data - MsPASS parallel reader<a class="headerlink" href="#read-distributed-data-mspass-parallel-reader" title="Link to this heading"></a></h2>
+<h2>read_distributed_data - MsPASS parallel reader<a class="headerlink" href="#read-distributed-data-mspass-parallel-reader" title="Link to this heading">#</a></h2>
 <section id="overview">
-<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h3>
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h3>
 <p>The <a class="reference external" href="https://www.mspass.org/python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data">docstring</a>
 for this function is an important sidebar to this section.   As usual it gives
 details about usage, but also discusses a bit of an oddity of this function
@@ -323,7 +587,7 @@ when the lazy(spark)/delayed(dask) operations are initiated
 The docstring for the <cite>read_distibuted_data</cite> function gives more details,
 but a key point is that
 arg0 (<cite>data</cite> in the function definition) can be one of three things:
-(1) a <a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> object, (2) an implementation of
+(1) a <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> object, (2) an implementation of
 a <cite>Dataframe</cite> (dask, pyspark, or pandas), or (3) a list of python
 dictionaries that define valid MongoDB queries.  The first two options
 can be used to create a parallel dataset of atomic seismic objects.
@@ -332,10 +596,10 @@ ensembles.  I describe how that works in the two sections below on atomic and
 ensemble data.</p>
 </section>
 <section id="atomic-data">
-<h3>Atomic data<a class="headerlink" href="#atomic-data" title="Link to this heading"></a></h3>
+<h3>Atomic data<a class="headerlink" href="#atomic-data" title="Link to this heading">#</a></h3>
 <p>A bag/RDD of atomic data can be constructed by <cite>read_distributed_data</cite>
 from one of two possible inputs:  (1) MongoDB documents retrieved through
-a <a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> handle driven by an optional
+a <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> handle driven by an optional
 query, or (2) an implementation of a Dataframe.   It is
 important to realize that both cases set the initial
 content the bag/RDD as the same thing:  a sequence of python dictionaries
@@ -400,7 +664,7 @@ attribute with the key <cite>is_abortion</cite> set True.  The name is
 appropriate since objects that fail on constructor a “unborn”.</p>
 </section>
 <section id="ensemble-data">
-<h3>Ensemble data<a class="headerlink" href="#ensemble-data" title="Link to this heading"></a></h3>
+<h3>Ensemble data<a class="headerlink" href="#ensemble-data" title="Link to this heading">#</a></h3>
 <p>Building a bag/RDD of ensembles is a very different problem than building
 a bag/RDD of atomic objects.   The reason is that ensembles are more-or-less
 grouped bundles of atomic data.   In earlier versions of MsPASS we
@@ -448,7 +712,7 @@ down the processing chain.</p>
 <p>There is one other important bit of magic in the <cite>read_distributed_data</cite>
 that is important to recognize if you need to maximize input speed.
 <cite>read_distributed_data</cite> can exploit a feature of
-<a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> that can dramatically reduce
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> that can dramatically reduce
 reading time for large ensembles.   When reading ensembles if the
 <cite>storage_mode</cite> argument is set to “file”, the data were originally
 written with the (default) format of “binary”, and the file grouping
@@ -461,16 +725,16 @@ C function <cite>fread</cite>.   That algorithm can be very fast as buffering
 creates minimal delays in successive reads and, more importantly,
 reduces the number of file open/close pairs compared to
 a simpler iterative loop with atomic readers.
-See the docstring of <a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> for details.</p>
+See the docstring of <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> for details.</p>
 </section>
 </section>
 <section id="write-distributed-data-mspass-parallel-writer">
-<h2>write_distributed_data - MsPASS parallel writer<a class="headerlink" href="#write-distributed-data-mspass-parallel-writer" title="Link to this heading"></a></h2>
+<h2>write_distributed_data - MsPASS parallel writer<a class="headerlink" href="#write-distributed-data-mspass-parallel-writer" title="Link to this heading">#</a></h2>
 <section id="id1">
-<h3>Overview<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<h3>Overview<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <p>Parallel writes present a different problem from reading.
 The simplest, but not fastest, approach to writing data is to use the
-<cite>save_data</cite> method of <a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> in a loop.
+<cite>save_data</cite> method of <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> in a loop.
 Here is a (not recommended) way to terminate a workflow in that way
 for a container of <cite>TimeSeries</cite> objects:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>  <span class="n">Processing</span> <span class="n">workflow</span> <span class="n">above</span> <span class="k">with</span> <span class="nb">map</span><span class="o">/</span><span class="n">reduce</span> <span class="n">operations</span> <span class="o">...</span>
@@ -551,7 +815,7 @@ sample data will be written.   Below I describe how to set these two
 attributes in each datum of a parallel dataset.</p>
 </section>
 <section id="id2">
-<h3>Atomic data<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<h3>Atomic data<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <p>Atomic data are handled in three stages by <cite>write_distributed_data</cite>.
 These three stages are a pipeline with a bag/RDD entering the top of the
 pipeline and a list of ObjectIds flowing out the bottom.</p>
@@ -587,7 +851,7 @@ in the above that can produce large variances in the performance of a write oper
 with <cite>write_distributed_data</cite>.</p>
 </section>
 <section id="ensembles">
-<h3>Ensembles<a class="headerlink" href="#ensembles" title="Link to this heading"></a></h3>
+<h3>Ensembles<a class="headerlink" href="#ensembles" title="Link to this heading">#</a></h3>
 <p>Ensembles, in many respects, are simpler to deal with than atomic data.
 The grouping that is implicit in the concept of what defines
 an ensemble may, if properly exploited, add a level of
@@ -644,7 +908,7 @@ in the data set.</p></li>
 </ol>
 </section>
 <section id="handling-storage-mode-file">
-<h3>Handling storage_mode==”file”<a class="headerlink" href="#handling-storage-mode-file" title="Link to this heading"></a></h3>
+<h3>Handling storage_mode==”file”<a class="headerlink" href="#handling-storage-mode-file" title="Link to this heading">#</a></h3>
 <p>There are major complication in handling any data where the output is
 to be stored as a set of files. There are two technical issues
 users may need to consider if tuning performance is essential:</p>
@@ -759,9 +1023,9 @@ one file name per datum.</p>
 </section>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
 <section id="example-1-default-read-write">
-<h3>Example 1:  Default read/write<a class="headerlink" href="#example-1-default-read-write" title="Link to this heading"></a></h3>
+<h3>Example 1:  Default read/write<a class="headerlink" href="#example-1-default-read-write" title="Link to this heading">#</a></h3>
 <p>This example illustrates the simplest example for initiating a workflow
 with <cite>read_distributed_data</cite> and terminating it with <cite>write_distributed_data</cite>.
 It also illustrates a couple of useful generic tests to verify
@@ -793,7 +1057,7 @@ but with a <cite>data_tag</cite> used to separate data being written from the
 input indexed in the same collection.</p>
 </section>
 <section id="example-2-atomic-writes-to-file-storage">
-<h3>Example 2:  atomic writes to file storage<a class="headerlink" href="#example-2-atomic-writes-to-file-storage" title="Link to this heading"></a></h3>
+<h3>Example 2:  atomic writes to file storage<a class="headerlink" href="#example-2-atomic-writes-to-file-storage" title="Link to this heading">#</a></h3>
 <p>This example is a minor variant of the example in the section discussing
 how <cite>dir</cite> and <cite>dfile</cite> are used with file IO above.  There are three differences:</p>
 <ol class="arabic simple">
@@ -878,7 +1142,7 @@ see in this example.</p></li>
 </div>
 </section>
 <section id="example-3-parallel-read-write-of-ensembles">
-<h3>Example 3:   Parallel read/write of ensembles<a class="headerlink" href="#example-3-parallel-read-write-of-ensembles" title="Link to this heading"></a></h3>
+<h3>Example 3:   Parallel read/write of ensembles<a class="headerlink" href="#example-3-parallel-read-write-of-ensembles" title="Link to this heading">#</a></h3>
 <p>This example illustrates some special considerations needed to handle
 ensembles.  Features this illustrate are:</p>
 <ol class="arabic simple">
@@ -993,7 +1257,7 @@ the same file defined by the ensemble <cite>dir</cite> and <cite>dfile</cite>.</
 </div>
 </section>
 <section id="example-4-intermediate-processing-result-save">
-<h3>Example 4: Intermediate processing result save<a class="headerlink" href="#example-4-intermediate-processing-result-save" title="Link to this heading"></a></h3>
+<h3>Example 4: Intermediate processing result save<a class="headerlink" href="#example-4-intermediate-processing-result-save" title="Link to this heading">#</a></h3>
 <p>It is sometimes necessary, particularly in a research context,
 to have a workflow save an intermediate result.   In the context of
 a parallel workflow, that means one needs to do a save
@@ -1061,31 +1325,139 @@ above, it may actually be faster to do the following instead:</p>
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="io.html" class="btn btn-neutral float-left" title="I/O in MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="FAQ.html" class="btn btn-neutral float-right" title="Frequency Asked Questions (FAQ)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
-  </div>
-
-   
-
-</footer>
-        </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="io.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">I/O in MsPASS</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="FAQ.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Frequency Asked Questions (FAQ)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gary-l-pavlis"><em>Gary L. Pavlis</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-parallel-io-and-why-is-it-needed">What is parallel IO and why is it needed?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-distributed-data-mspass-parallel-reader">read_distributed_data - MsPASS parallel reader</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#atomic-data">Atomic data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ensemble-data">Ensemble data</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#write-distributed-data-mspass-parallel-writer">write_distributed_data - MsPASS parallel writer</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Overview</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Atomic data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ensembles">Ensembles</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-storage-mode-file">Handling storage_mode==”file”</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-default-read-write">Example 1:  Default read/write</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-atomic-writes-to-file-storage">Example 2:  atomic writes to file storage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3-parallel-read-write-of-ensembles">Example 3:   Parallel read/write of ensembles</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-4-intermediate-processing-result-save">Example 4: Intermediate processing result save</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/parallel_io.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/parallel_io.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
 </html>

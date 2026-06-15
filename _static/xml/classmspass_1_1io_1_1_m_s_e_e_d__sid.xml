@@ -12,10 +12,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>SEED network code. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="40" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="40" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="44" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6cc4090cfe00a64df96f4b2abe5e1473" prot="public" static="no" mutable="no">
         <type>string</type>
@@ -26,10 +27,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>SEED station code. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="41" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="41" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="46" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="46" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a11db25870debc12cb89aaea4facecc1b" prot="public" static="no" mutable="no">
         <type>string</type>
@@ -40,10 +42,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>SEED channel code. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="42" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="42" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="48" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="48" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a9dc1f9b4c1c1b2ef16f0edca5ec86b12" prot="public" static="no" mutable="no">
         <type>string</type>
@@ -54,10 +57,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>SEED location code. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="43" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="43" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="50" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="50" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -93,7 +97,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="33" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="67" bodyend="79"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="33" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="87" bodyend="99"/>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a11db25870debc12cb89aaea4facecc1b" compoundref="mseed__file__indexer_8cc" startline="48">chan</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a9dc1f9b4c1c1b2ef16f0edca5ec86b12" compoundref="mseed__file__indexer_8cc" startline="50">loc</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a0dc305a3ce20c48250896d1072b2e7c1" compoundref="mseed__file__indexer_8cc" startline="44">net</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6cc4090cfe00a64df96f4b2abe5e1473" compoundref="mseed__file__indexer_8cc" startline="46">sta</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1io_1_1_m_s_e_e_d__sid_1abedb90d9a61a4991ef9eb36fff65301d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -108,10 +116,24 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Standard copy constructor. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>source station id to copy. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="34" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="34" bodyend="39"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="37" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="37" bodyend="42"/>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a11db25870debc12cb89aaea4facecc1b" compoundref="mseed__file__indexer_8cc" startline="48">chan</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a9dc1f9b4c1c1b2ef16f0edca5ec86b12" compoundref="mseed__file__indexer_8cc" startline="50">loc</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a0dc305a3ce20c48250896d1072b2e7c1" compoundref="mseed__file__indexer_8cc" startline="44">net</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6cc4090cfe00a64df96f4b2abe5e1473" compoundref="mseed__file__indexer_8cc" startline="46">sta</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1io_1_1_m_s_e_e_d__sid_1ab1347d1f7347e363358ecdd0395bcc7b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid" kindref="compound">MSEED_sid</ref> &amp;</type>
@@ -126,10 +148,26 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Standard assignment operator. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>source station id to assign from. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to this station id after assignment. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="44" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="44" bodyend="52"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="55" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="55" bodyend="63"/>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a11db25870debc12cb89aaea4facecc1b" compoundref="mseed__file__indexer_8cc" startline="48">chan</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a9dc1f9b4c1c1b2ef16f0edca5ec86b12" compoundref="mseed__file__indexer_8cc" startline="50">loc</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a0dc305a3ce20c48250896d1072b2e7c1" compoundref="mseed__file__indexer_8cc" startline="44">net</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6cc4090cfe00a64df96f4b2abe5e1473" compoundref="mseed__file__indexer_8cc" startline="46">sta</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6bd91f63cdb13d2814582dbf4d7823ad" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -144,10 +182,26 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Test whether any network, station, channel, or location code differs. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>station id to compare with this object. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true when at least one sid component is different. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="53" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="80" bodyend="86"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="68" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="100" bodyend="106"/>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a11db25870debc12cb89aaea4facecc1b" compoundref="mseed__file__indexer_8cc" startline="48">chan</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a9dc1f9b4c1c1b2ef16f0edca5ec86b12" compoundref="mseed__file__indexer_8cc" startline="50">loc</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a0dc305a3ce20c48250896d1072b2e7c1" compoundref="mseed__file__indexer_8cc" startline="44">net</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6cc4090cfe00a64df96f4b2abe5e1473" compoundref="mseed__file__indexer_8cc" startline="46">sta</references>
       </memberdef>
     </sectiondef>
     <sectiondef kind="friend">
@@ -168,10 +222,30 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Write this station id as net:sta:chan:loc. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>os</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output stream to receive the station id. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>self</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>station id to write. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>output stream after writing self. </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="54" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="54" bodyend="58"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="74" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="74" bodyend="78"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -179,7 +253,7 @@
     <detaileddescription>
 <para>Inline class used to make a cleaner interface the ugly libmseed function for dealing with what they call an &quot;sid&quot;. </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="24" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="24" bodyend="59"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="24" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="24" bodyend="79"/>
     <listofallmembers>
       <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a11db25870debc12cb89aaea4facecc1b" prot="public" virt="non-virtual"><scope>mspass::io::MSEED_sid</scope><name>chan</name></member>
       <member refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a9dc1f9b4c1c1b2ef16f0edca5ec86b12" prot="public" virt="non-virtual"><scope>mspass::io::MSEED_sid</scope><name>loc</name></member>
