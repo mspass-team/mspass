@@ -50,48 +50,85 @@ public:
   output shaping wavelet, signal/noise windows, and optional NS-GID stability
   parameters. */
   TimeDomainGIDDecon(const mspass::utility::AntelopePf &md);
+  /*! Copy construction is disabled because the engine owns reusable operators. */
   TimeDomainGIDDecon(const TimeDomainGIDDecon &parent) = delete;
+  /*! Assignment is disabled because the engine owns reusable operators. */
   TimeDomainGIDDecon &operator=(const TimeDomainGIDDecon &parent) = delete;
+  /*! Change parameters on the current leaf inverse operator.
+   *
+   * GID-level parameters that affect engine topology or windows are rejected;
+   * construct a new engine to change those values.
+   */
   void changeparameter(const mspass::utility::Metadata &md);
+  /*! Load the signal window to be deconvolved.
+   *
+   * \param d three-component data containing the requested signal window.
+   * \param dwin time window to extract for deconvolution.
+   */
   int load(const mspass::seismic::CoreSeismogram &d,
            mspass::algorithms::TimeWindow dwin);
+  /*! Load residual-domain noise from a three-component window.
+   *
+   * \param d data containing the requested noise window.
+   * \param nwin time window used to estimate stopping thresholds.
+   */
   int loadnoise(const mspass::seismic::CoreSeismogram &d,
                 mspass::algorithms::TimeWindow nwin);
+  /*! Load an externally prepared output-shaping wavelet. */
   int loadwavelet(const mspass::seismic::TimeSeries &wavelet);
+  /*! Load an externally prepared output-shaping wavelet from core samples. */
   int loadwavelet(const mspass::seismic::CoreTimeSeries &wavelet);
+  /*! Load an external TimeSeries noise estimate for the inverse operator. */
   int loadnoise(const mspass::seismic::TimeSeries &noise);
+  /*! Load an external core TimeSeries noise estimate for the inverse operator. */
   int loadnoise(const mspass::seismic::CoreTimeSeries &noise);
+  /*! Load an external PowerSpectrum noise estimate for NS-GID operators. */
   int loadnoise(const mspass::seismic::PowerSpectrum &noise_spectrum);
+  /*! Discard any externally loaded shaping wavelet. */
   void clear_external_wavelet();
+  /*! Discard any externally loaded TimeSeries or PowerSpectrum noise estimate. */
   void clear_external_noise();
+  /*! Return the start time of the configured deconvolution window. */
   double deconvolution_window_start() const { return this->fftwin.start; };
+  /*! Return the end time of the configured deconvolution window. */
   double deconvolution_window_end() const { return this->fftwin.end; };
+  /*! Return the start time of the configured residual-noise window. */
   double noise_window_start() const { return this->nwin.start; };
+  /*! Return the end time of the configured residual-noise window. */
   double noise_window_end() const { return this->nwin.end; };
+  /*! Return the serialized parameter text used to configure this engine. */
   std::string configuration_pf_text() const { return this->config_pf_text; };
+  /*! Return true when changeparameter has altered leaf inverse parameters. */
   bool leaf_parameters_have_changed() const {
     return this->leaf_parameters_changed;
   };
+  /*! Return metadata describing leaf parameters changed after construction. */
   mspass::utility::Metadata changed_leaf_parameters() const {
     return this->changed_leaf_metadata;
   };
+  /*! Return true when an external shaping wavelet is loaded. */
   bool external_wavelet_is_loaded() const {
     return this->external_wavelet_loaded;
   };
+  /*! Return true when an external TimeSeries noise estimate is loaded. */
   bool external_noise_is_loaded() const { return this->external_noise_loaded; };
+  /*! Return true when an external PowerSpectrum noise estimate is loaded. */
   bool external_noise_spectrum_is_loaded() const {
     return this->external_noise_spectrum_loaded;
   };
+  /*! Return the loaded external wavelet or a default TimeSeries when absent. */
   mspass::seismic::TimeSeries loaded_external_wavelet() const {
     if (!this->external_wavelet_loaded)
       return mspass::seismic::TimeSeries();
     return this->external_wavelet;
   };
+  /*! Return the loaded external TimeSeries noise or a default TimeSeries. */
   mspass::seismic::TimeSeries loaded_external_noise() const {
     if (!this->external_noise_loaded)
       return mspass::seismic::TimeSeries();
     return this->external_noise;
   };
+  /*! Return the loaded external PowerSpectrum noise or a default spectrum. */
   mspass::seismic::PowerSpectrum loaded_external_noise_spectrum() const {
     if (!this->external_noise_spectrum_loaded)
       return mspass::seismic::PowerSpectrum();
@@ -105,16 +142,25 @@ public:
   int load(const mspass::seismic::CoreSeismogram &d,
            mspass::algorithms::TimeWindow dwin,
            mspass::algorithms::TimeWindow nwin);
+  /*! Run the configured GID iteration on the loaded signal and noise windows. */
   void process();
+  /*! Release owned inverse operators and cached work arrays. */
   ~TimeDomainGIDDecon();
+  /*! Return the shaped receiver-function estimate from the last process call. */
   mspass::seismic::CoreSeismogram getresult();
+  /*! Return the sparse three-component spike train before output shaping. */
   mspass::seismic::CoreSeismogram sparse_output();
+  /*! Return the final lag-weight vector used for QC diagnostics. */
   std::vector<double> lag_weight_vector() const;
   /*! Legacy alias for output_shaping_wavelet inherited from ScalarDecon. */
   mspass::seismic::CoreTimeSeries ideal_output();
+  /*! Return the actual output or resolution kernel of the inverse operator. */
   mspass::seismic::CoreTimeSeries actual_output();
+  /*! Return the inverse wavelet used by the leaf operator. */
   mspass::seismic::CoreTimeSeries inverse_wavelet();
+  /*! Return the inverse wavelet shifted to a parent time origin. */
   mspass::seismic::CoreTimeSeries inverse_wavelet(double t0parent);
+  /*! Return QC metrics from the most recent processing run. */
   mspass::utility::Metadata QCMetrics();
 
 private:

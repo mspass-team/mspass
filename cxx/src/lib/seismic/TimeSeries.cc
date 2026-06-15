@@ -19,9 +19,11 @@ TimeSeries::TimeSeries(const CoreTimeSeries &d, const std::string alg)
 /* this is kind of a weird construct because the pieces are assembled
 out of the regular order of an object created by inheritance.  I hope
 that does not cause problems. */
-TimeSeries::TimeSeries(const BasicTimeSeries &b, const Metadata &m,
-                       const ProcessingHistory &his, const vector<double> &d)
-    : CoreTimeSeries(b, m), ProcessingHistory(his) {
+TimeSeries::TimeSeries(const mspass::seismic::BasicTimeSeries &b,
+                       const mspass::utility::Metadata &m,
+                       const mspass::utility::ProcessingHistory &mcts,
+                       const std::vector<double> &d)
+    : CoreTimeSeries(b, m), ProcessingHistory(mcts) {
   this->s = d;
 }
 TimeSeries::TimeSeries(const Metadata &md) : ProcessingHistory() {

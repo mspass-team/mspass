@@ -5,21 +5,23 @@
 #include <vector>
 namespace mspass::io {
 
+/*! \brief Index entry describing one contiguous MiniSEED data segment. */
 class mseed_index {
 public:
-  std::string net;
-  std::string sta;
-  std::string loc;
-  std::string chan;
-  size_t foff;
-  size_t nbytes;
-  size_t npts;
-  double samprate;
-  double starttime;
-  double endtime;
-  double last_packet_time;
+  std::string net; /*!< Network code. */
+  std::string sta; /*!< Station code. */
+  std::string loc; /*!< Location code. */
+  std::string chan; /*!< Channel code. */
+  size_t foff; /*!< File offset of the first packet in this segment. */
+  size_t nbytes; /*!< Number of bytes in this segment. */
+  size_t npts; /*!< Number of samples represented by this segment. */
+  double samprate; /*!< Sample rate in samples per second. */
+  double starttime; /*!< Segment start time as epoch seconds. */
+  double endtime; /*!< Segment end time as epoch seconds. */
+  double last_packet_time; /*!< Start time of the last packet in the segment. */
   /* These aren't really essential because the compiler should automatically
   generate them, but better to be explicit since the std::vector demands them*/
+  /*! Construct an empty index entry. */
   mseed_index() {
     net = "";
     sta = "";
@@ -33,6 +35,7 @@ public:
     endtime = 0.0;
     last_packet_time = 0.0;
   };
+  /*! Copy constructor. */
   mseed_index(const mseed_index &parent)
       : net(parent.net), sta(parent.sta), loc(parent.loc), chan(parent.chan) {
     foff = parent.foff;
@@ -43,6 +46,7 @@ public:
     endtime = parent.endtime;
     last_packet_time = parent.last_packet_time;
   };
+  /*! Assignment operator. */
   mseed_index &operator=(const mseed_index &parent) {
     if (&parent != this) {
       net = parent.net;
@@ -59,6 +63,7 @@ public:
     }
     return *this;
   };
+  /*! Stream an index entry to an output string stream. */
   friend std::ostringstream &operator<<(std::ostringstream &ss,
                                         const mseed_index &ind);
 };
@@ -92,7 +97,7 @@ of interest only if something breaks.
   detects a time tear it is logged in the returned error log as an informational
   log message.   If false only reading errors for things like garbled miniseed
   packets are logged.
-\param return is an std::pair.  "First" contains a vector of objects
+\return std::pair whose first element contains a vector of objects
   called mseed_index that contain the basic information defining an index for
   inputfile.  See class description of mseed_index for more details. "second"
   contains an ErrorLogger objects.  Caller should test that the contents are

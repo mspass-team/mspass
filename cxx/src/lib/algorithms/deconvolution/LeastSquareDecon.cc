@@ -61,8 +61,9 @@ void LeastSquareDecon::changeparameter(const Metadata &md) {
     throw;
   };
 }
-LeastSquareDecon::LeastSquareDecon(const Metadata &md, const vector<double> &w,
-                                   const vector<double> &d) {
+LeastSquareDecon::LeastSquareDecon(
+    const mspass::utility::Metadata &md, const std::vector<double> &w,
+    const std::vector<double> &d) {
   try {
     this->read_metadata(md);
   } catch (...) {

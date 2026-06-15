@@ -11,13 +11,15 @@
 #include <unistd.h>
 namespace mspass {
 namespace utility {
+/*! \brief One error-log record with provenance and severity. */
 class LogData {
 public:
-  int job_id;
-  int p_id; // output of getpid()
-  std::string algorithm;
-  mspass::utility::ErrorSeverity badness;
-  std::string message;
+  int job_id; /*!< Processing job identifier. */
+  int p_id; /*!< Process id returned by getpid(). */
+  std::string algorithm; /*!< Algorithm or component that posted the message. */
+  mspass::utility::ErrorSeverity badness; /*!< Severity assigned to the message. */
+  std::string message; /*!< Human-readable log message. */
+  /*! Construct an empty log record. */
   LogData() {};
   /*! Normal constuctor from a MsPASSError or child of same.
 
@@ -36,6 +38,7 @@ public:
   Note p_id is always fetched with the system call getpid in the constructor.*/
   LogData(const int jid, const std::string alg, const std::string msg,
           const mspass::utility::ErrorSeverity lvl);
+  /*! Stream one log record to an output stream. */
   friend std::ostream &operator<<(std::ostream &, LogData &);
 
 private:

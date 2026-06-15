@@ -3,6 +3,7 @@
 #include "mspass/seismic/DataGap.h"
 #include "mspass/seismic/TimeSeries.h"
 namespace mspass::seismic {
+/*! \brief Scalar TimeSeries with explicit data-gap tracking. */
 class TimeSeriesWGaps : public TimeSeries, public DataGap {
 public:
   /*! \brief Constructor.
@@ -21,9 +22,12 @@ public:
       : TimeSeries(dynamic_cast<const TimeSeries &>(parent)),
         DataGap(dynamic_cast<const DataGap &>(parent)) {};
   ;
+  /*! Construct by combining a TimeSeries with an existing DataGap container. */
   TimeSeriesWGaps(const TimeSeries &tsp, const DataGap &dgp)
       : TimeSeries(tsp), DataGap(dgp) {};
+  /*! Assignment operator. */
   TimeSeriesWGaps &operator=(const TimeSeriesWGaps &parent);
+  /*! Virtual destructor. */
   virtual ~TimeSeriesWGaps() {};
   /*!
   Absolute to relative time conversion.

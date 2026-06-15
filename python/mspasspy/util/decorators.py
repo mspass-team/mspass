@@ -740,6 +740,13 @@ def timeseries_copy_helper(ts1, ts2):
 
 
 def timeseries_ensemble_copy_helper(es1, es2):
+    """
+    Copy converted time-series ensemble state back to the original object.
+
+    :param es1: destination ensemble originally supplied by the caller.
+    :param es2: source ensemble reconstructed after conversion.
+    :return: ``None``; ``es1`` is modified in place.
+    """
     for i in range(len(es1.member)):
         timeseries_copy_helper(es1.member[i], es2.member[i])
     # fixme: not sure in what algorithm the length of es1 and es2 would be different
@@ -791,6 +798,13 @@ def timeseries_as_trace(func, *args, **kwargs):
 
 
 def seismogram_copy_helper(seis1, seis2):
+    """
+    Copy converted seismogram state back to the original object.
+
+    :param seis1: destination seismogram originally supplied by the caller.
+    :param seis2: source seismogram reconstructed after conversion.
+    :return: ``None``; ``seis1`` is modified in place.
+    """
     # keys in this list are ignored - for now only one but made a list
     # to simplify additions later
     metadata_to_ignore = ["CONVERTER_ENSEMBLE_KEYS"]
@@ -813,6 +827,13 @@ def seismogram_copy_helper(seis1, seis2):
 
 
 def seismogram_ensemble_copy_helper(es1, es2):
+    """
+    Copy converted seismogram ensemble state back to the original object.
+
+    :param es1: destination ensemble originally supplied by the caller.
+    :param es2: source ensemble reconstructed after conversion.
+    :return: ``None``; ``es1`` is modified in place.
+    """
     for i in range(len(es1.member)):
         seismogram_copy_helper(es1.member[i], es2.member[i])
     if len(es2.member) > len(es1.member):

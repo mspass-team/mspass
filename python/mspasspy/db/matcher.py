@@ -70,10 +70,24 @@ class NMF(ABC):
 
     @abstractmethod
     def get_document(self, d):
+        """
+        Fetch the database document matching the input datum.
+
+        :param d: MsPASS data object used to build the match query.
+        :return: matching MongoDB document, or ``None`` when no match is found.
+        :rtype: dict or None
+        """
         pass
 
     @abstractmethod
     def normalize(self, d):
+        """
+        Copy selected fields from the matching database document to a datum.
+
+        :param d: MsPASS data object to normalize.
+        :return: normalized input datum.  Failed matches may log errors and
+            kill the datum depending on matcher configuration.
+        """
         pass
 
     def log_error(
@@ -96,14 +110,14 @@ class NMF(ABC):
         :param d:  MsPASS data object to which elog message is to be
           written.
         :param matchername: is the string assigned to the "algorithm" field
-        of the message posted to d.elog.
+          of the message posted to d.elog.
         :param message:  specialized message to post - this string is added
-        to an internal generic message.
+          to an internal generic message.
         :param kill:  boolean controlling if the message should cause the
-        datum to be killed.   Default False meaning only the message
-        is posted.
+          datum to be killed.   Default False meaning only the message
+          is posted.
         :param severity:  ErrorSeverity to assign to elog message
-        (See ErrorLogger docstring).  Default is Informational
+          (See ErrorLogger docstring).  Default is Informational
         """
         if _input_is_valid(d):
             fullmessage = message
@@ -139,6 +153,13 @@ class ID_matcher(NMF):
             )
 
     def get_document(self, d):
+        """
+        Fetch the database document matching the input datum.
+
+        :param d: MsPASS data object used to build the match query.
+        :return: matching MongoDB document, or ``None`` when no match is found.
+        :rtype: dict or None
+        """
         if d.is_defined(self.mdkey):
             query = {"_id": d[self.mdkey]}
             # Note this will return None if the query fails - callers should handle that condition
@@ -156,6 +177,13 @@ class ID_matcher(NMF):
             return None
 
     def normalize(self, d):
+        """
+        Copy selected fields from the matching database document to a datum.
+
+        :param d: MsPASS data object to normalize.
+        :return: normalized input datum.  Failed matches may log errors and
+            kill the datum depending on matcher configuration.
+        """
         if _input_is_valid(d):
             if d.dead():
                 return d
@@ -205,9 +233,10 @@ class mseed_channel_matcher(NMF):
     This class is used to match wf_miniseed to the channel collection using
     the mseed standard channel string tags net, sta, chan, and (optionally) loc.
     It can also be used to data saved in wf_TimeSeries where the mseed tags
-    are often altered by MsPASS to change fields like "net" to "READONLYERROR_net".
+    are often altered by MsPASS to change fields like ``net`` to
+    ``READONLYERROR_net``.
     There is an automatic fallback for each of the tags where if the proper
-    name is not found we alway try to use the READONLYERROR_ version before
+    name is not found we alway try to use the ``READONLYERROR_`` version before
     giving up.
 
     An issue with this matcher is that it is very common to have redundant
@@ -236,6 +265,14 @@ class mseed_channel_matcher(NMF):
         self.prepend_collection_name = prepend_collection_name
 
     def get_document(self, d, time=None):
+        """
+        Fetch the channel/site document matching net, station, location, and time.
+
+        :param d: atomic MsPASS data object used to build the match query.
+        :param time: optional match time; defaults to ``d.t0``.
+        :return: matching MongoDB document, or ``None`` when no match is found.
+        :rtype: dict or None
+        """
         if not _input_is_atomic(d):
             raise TypeError(
                 "mseed_channel_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"
@@ -326,6 +363,13 @@ class mseed_channel_matcher(NMF):
         return self.dbhandle.find_one(query)
 
     def normalize(self, d, time=None):
+        """
+        Normalize a datum with fields from the matching channel/site document.
+
+        :param d: atomic MsPASS data object to normalize.
+        :param time: optional match time; defaults to ``d.t0``.
+        :return: normalized input datum.
+        """
         if d.dead():
             return d
         if _input_is_atomic(d):
@@ -376,9 +420,10 @@ class mseed_site_matcher(NMF):
     This class is used to match derived from seed data to the site collection using
     the mseed standard site string tags net, sta, and (optionally) loc.
     It can also be used to data saved in wf_TimeSeries or wf_Seismogram where the mseed tags
-    are often altered by MsPASS to change fields like "net" to "READONLYERROR_net".
+    are often altered by MsPASS to change fields like ``net`` to
+    ``READONLYERROR_net``.
     There is an automatic fallback for each of the tags where if the proper
-    name is not found we alway try to use the READONLYERROR_ version before
+    name is not found we alway try to use the ``READONLYERROR_`` version before
     giving up.
 
     An issue with this matcher is that it is very common to have redundant
@@ -407,6 +452,14 @@ class mseed_site_matcher(NMF):
         self.prepend_collection_name = prepend_collection_name
 
     def get_document(self, d, time=None):
+        """
+        Fetch the channel/site document matching net, station, location, and time.
+
+        :param d: atomic MsPASS data object used to build the match query.
+        :param time: optional match time; defaults to ``d.t0``.
+        :return: matching MongoDB document, or ``None`` when no match is found.
+        :rtype: dict or None
+        """
         if not _input_is_atomic(d):
             raise TypeError(
                 "mseed_site_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"
@@ -481,6 +534,13 @@ class mseed_site_matcher(NMF):
         return self.dbhandle.find_one(query)
 
     def normalize(self, d, time=None):
+        """
+        Normalize a datum with fields from the matching channel/site document.
+
+        :param d: atomic MsPASS data object to normalize.
+        :param time: optional match time; defaults to ``d.t0``.
+        :return: normalized input datum.
+        """
         if d.dead():
             return d
         if _input_is_atomic(d):
@@ -585,6 +645,13 @@ class origin_time_source_matcher(NMF):
             return None
 
     def normalize(self, d, time=None):
+        """
+        Normalize a datum with source fields matched by origin time.
+
+        :param d: MsPASS data object to normalize.
+        :param time: optional origin time override.
+        :return: normalized input datum.
+        """
         if d.dead():
             return d
         if _input_is_valid(d):
@@ -678,6 +745,13 @@ class css30_arrival_interval_matcher(NMF):
         self.dbhandle = db[arrival_collection_name]
 
     def get_document(self, d):
+        """
+        Fetch the database document matching the input datum.
+
+        :param d: MsPASS data object used to build the match query.
+        :return: matching MongoDB document, or ``None`` when no match is found.
+        :rtype: dict or None
+        """
         stime = d.t0
         etime = d.endtime()
         query = {self.phasename_key: self.phasename}
@@ -724,6 +798,13 @@ class css30_arrival_interval_matcher(NMF):
                 return matchlist[imin][1]
 
     def normalize(self, d):
+        """
+        Copy selected fields from the matching database document to a datum.
+
+        :param d: MsPASS data object to normalize.
+        :return: normalized input datum.  Failed matches may log errors and
+            kill the datum depending on matcher configuration.
+        """
         if d.dead():
             return d
         if _input_is_atomic(d):

@@ -53,6 +53,36 @@ def FrequencyDomainGIDRFDecon(
     ``external_wavelet`` or ``external_noise`` arguments leave any external
     state already loaded into ``engine`` unchanged; call the engine's
     ``clear_external_*`` methods to force internal wavelet/noise selection.
+
+    :param seis: input `Seismogram` containing signal and noise windows.
+    :param engine: configured `FrequencyDomainGIDDecon` instance.  The engine
+        parameter file controls the inverse-operator mode, deconvolution
+        window, convergence limits, and output shaping wavelet.
+    :param signal_window: optional `TimeWindow` defining the full output and
+        iterative analysis window.  When omitted the input datum time range is
+        used.  The window must contain the engine's configured deconvolution
+        window.
+    :param noise_window: optional `TimeWindow` defining pre-event noise.  When
+        omitted the engine's parameter-file noise window is used.
+    :param external_wavelet: optional prepared wavelet passed directly to the
+        GID engine.  If omitted, any external wavelet already loaded into
+        ``engine`` is preserved; otherwise the engine preserves RF
+        compatibility and derives the wavelet from component 2 of the input
+        seismogram.  Use ``engine.clear_external_wavelet()`` to force
+        component-derived wavelets after loading an external one.
+    :param external_noise: optional scalar noise `TimeSeries`, `CoreTimeSeries`,
+        or `PowerSpectrum` passed to inverse-operator stabilization.  If
+        omitted, any external noise already loaded into ``engine`` is preserved.
+        Use ``engine.clear_external_noise()`` to force the configured noise
+        window only.
+    :param QCdata_key: metadata key used to store the engine's QC metrics on
+        the returned receiver function.
+    :param return_wavelet: when True return
+        `[rf, actual_output, output_shaping_wavelet]`.
+    :return: deconvolved `Seismogram`, or the list described above when
+        ``return_wavelet`` is True.  Dead inputs and recoverable processing
+        failures return a dead `Seismogram`; with ``return_wavelet`` True the
+        auxiliary outputs are returned as ``None``.
     """
     return _run_gid_rf_decon(
         seis,

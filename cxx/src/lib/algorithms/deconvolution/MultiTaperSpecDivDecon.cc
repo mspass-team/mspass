@@ -174,16 +174,15 @@ int MultiTaperSpecDivDecon::load(const vector<double> &w,
     throw;
   };
 }
-MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(const Metadata &md,
-                                               const vector<double> &n,
-                                               const vector<double> &w,
-                                               const vector<double> &d) {
+MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(
+    const Metadata &md, const std::vector<double> &noise,
+    const std::vector<double> &wavelet, const std::vector<double> &data) {
   try {
     this->read_metadata(md, false);
   } catch (...) {
     throw;
   }
-  this->load(w, d, n);
+  this->load(wavelet, data, noise);
 }
 vector<ComplexArray>
 MultiTaperSpecDivDecon::taper_data(const vector<double> &signal) {

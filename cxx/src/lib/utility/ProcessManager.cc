@@ -8,7 +8,7 @@
 using namespace std;
 namespace mspass::utility {
 ProcessManager::ProcessManager() : jobnm() { job_uuid = gen(); };
-ProcessManager::ProcessManager(string fname) {
+ProcessManager::ProcessManager(std::string fname) {
   const string base_error("ProcessManager file constructor:  ");
   try {
     job_uuid = gen();

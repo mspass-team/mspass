@@ -780,6 +780,19 @@ class RFdeconProcessor:
         self.dvector = np.array(dvector)
 
     def loadwavelet(self, w, dtype="Seismogram", component=2, window=False):
+        """
+        Load the source wavelet used by the wrapped deconvolution engine.
+
+        :param w: wavelet data to load.
+        :param dtype: input representation; one of ``"Seismogram"``,
+            ``"TimeSeries"``, or ``"raw_vector"``.
+        :param component: component index used when ``dtype`` is
+            ``"Seismogram"``.
+        :param window: when True extract the configured deconvolution window
+            before loading the wavelet.
+        :raises RuntimeError: if ``dtype`` or the ``dtype``/``window``
+            combination is invalid.
+        """
         # This code is painfully similar to loaddata. To reduce errors
         # only the names have been changed to protect the innocent
         if dtype == "raw_vector" and window:
@@ -835,6 +848,19 @@ class RFdeconProcessor:
                 del self.wtimeseries
 
     def loadnoise(self, n, dtype="Seismogram", component=2, window=False):
+        """
+        Load noise data used by deconvolution methods that require it.
+
+        :param n: noise data to load.
+        :param dtype: input representation; one of ``"Seismogram"``,
+            ``"TimeSeries"``, or ``"raw_vector"``.
+        :param component: component index used when ``dtype`` is
+            ``"Seismogram"``.
+        :param window: when True extract the configured noise window before
+            loading the noise vector.
+        :raises RuntimeError: if ``dtype`` or the ``dtype``/``window``
+            combination is invalid.
+        """
         # First basic sanity checks
         # Return immediately for methods that ignore noise.
         # Note we do this silently assuming the function wrapper below
@@ -1103,20 +1129,43 @@ class RFdeconProcessor:
 
     @property
     def uses_noise(self):
+        """
+        Return True when the configured deconvolution engine requires noise data.
+
+        :rtype: bool
+        """
         return self.__uses_noise
 
     @property
     def is_3c_engine(self):
+        """
+        Return True when the wrapped engine processes three-component data.
+
+        :rtype: bool
+        """
         return self.__is_3c_engine
 
     @property
     def dwin(self):
+        """
+        Return the configured deconvolution data window.
+
+        :rtype: :class:`mspasspy.ccore.utility.TimeWindow`
+        """
         tws = self.md.get_double("deconvolution_data_window_start")
         twe = self.md.get_double("deconvolution_data_window_end")
         return TimeWindow(tws, twe)
 
     @property
     def full_dwin(self):
+        """
+        Return the full data window used by three-component GID engines.
+
+        If no explicit full-data window is configured, this property falls back
+        to :attr:`dwin`.
+
+        :rtype: :class:`mspasspy.ccore.utility.TimeWindow`
+        """
         if self.md.is_defined("full_data_window_start"):
             tws = self.md.get_double("full_data_window_start")
             twe = self.md.get_double("full_data_window_end")
@@ -1125,12 +1174,20 @@ class RFdeconProcessor:
 
     @property
     def nwin(self):
+        """
+        Return the configured noise window.
+
+        Engines that do not use noise data return the default, broad
+        :class:`mspasspy.ccore.utility.TimeWindow` instance.
+
+        :rtype: :class:`mspasspy.ccore.utility.TimeWindow`
+        """
         if self.__uses_noise:
             tws = self.md.get_double("noise_window_start")
             twe = self.md.get_double("noise_window_end")
             return TimeWindow(tws, twe)
         else:
-            return TimeWindow  # always initialize even if not used
+            return TimeWindow()  # always initialize even if not used
 
     def _prediction_error(self) -> float:
         """

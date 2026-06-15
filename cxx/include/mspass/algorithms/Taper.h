@@ -15,32 +15,47 @@
 
 namespace mspass::algorithms {
 
+/*! \brief Abstract base class for taper operators.
+
+Derived tapers apply amplitude weights to the head, tail, or full span of
+scalar and three-component seismic data.
+*/
 class BasicTaper {
 public:
+  /*! Construct a taper with all regions disabled. */
   BasicTaper() {
     head = false;
     tail = false;
     all = false;
   };
+  /*! Virtual destructor for derived taper operators. */
   virtual ~BasicTaper() {};
+  /*! Apply this taper to a scalar TimeSeries. */
   virtual int apply(mspass::seismic::TimeSeries &d) = 0;
+  /*! Apply this taper to a three-component Seismogram. */
   virtual int apply(mspass::seismic::Seismogram &d) = 0;
+  /*! Enable tapering on the head of a datum. */
   void enable_head() { head = true; };
+  /*! Disable tapering on the head of a datum. */
   void disable_head() {
     head = false;
     all = false;
   };
+  /*! Enable tapering on the tail of a datum. */
   void enable_tail() { tail = true; };
+  /*! Disable tapering on the tail of a datum. */
   void disable_tail() {
     tail = false;
     all = false;
   };
+  /*! Return true when head tapering is enabled directly or by full tapering. */
   bool head_is_enabled() {
     if (head || all) {
       return true;
     }
     return false;
   };
+  /*! Return true when tail tapering is enabled directly or by full tapering. */
   bool tail_is_enable() {
     if (tail || all) {
       return true;
@@ -50,14 +65,18 @@ public:
   /* These virtual methods are a bit of a design flaw as they don't
   apply well to the vector taper, but we implement them there to just
   throw an exception */
+  /*! Return the start time of the head taper. */
   virtual double get_t0head() const = 0;
+  /*! Return the end time of the head taper. */
   virtual double get_t1head() const = 0;
 
 protected:
   /* A taper can be head, tail, or all.  For efficiency it is required
   implementations set these three booleans.   head or tail may be true.
   all means a single function is needed to defne the taper.  */
-  bool head, tail, all;
+  bool head; /*!< True when head tapering is enabled. */
+  bool tail; /*!< True when tail tapering is enabled. */
+  bool all; /*!< True when the whole datum is tapered by one vector. */
 
 private:
   friend class boost::serialization::access;
@@ -86,11 +105,17 @@ public:
   */
   LinearTaper(const double t0head, const double t1head, const double t1tail,
               const double t0tail);
+  /*! Apply the linear taper to a scalar TimeSeries. */
   int apply(mspass::seismic::TimeSeries &d);
+  /*! Apply the linear taper to a three-component Seismogram. */
   int apply(mspass::seismic::Seismogram &d);
+  /*! Return the start time of the head ramp. */
   double get_t0head() const { return t0head; };
+  /*! Return the end time of the head ramp. */
   double get_t1head() const { return t1head; };
+  /*! Return the zero-weight end time of the tail ramp. */
   double get_t0tail() const { return t0tail; };
+  /*! Return the one-weight start time of the tail ramp. */
   double get_t1tail() const { return t1tail; };
 
 private:
@@ -125,11 +150,17 @@ public:
   CosineTaper(const double t0head, const double t1head, const double t1tail,
               const double t0tail);
   /* these need to post to history using new feature*/
+  /*! Apply the cosine taper to a scalar TimeSeries. */
   int apply(mspass::seismic::TimeSeries &d);
+  /*! Apply the cosine taper to a three-component Seismogram. */
   int apply(mspass::seismic::Seismogram &d);
+  /*! Return the start time of the head taper. */
   double get_t0head() const { return t0head; };
+  /*! Return the end time of the head taper. */
   double get_t1head() const { return t1head; };
+  /*! Return the zero-weight end time of the tail taper. */
   double get_t0tail() const { return t0tail; };
+  /*! Return the one-weight start time of the tail taper. */
   double get_t1tail() const { return t1tail; };
 
 private:
@@ -152,19 +183,27 @@ data of the same length as the taper defined in the operator. */
 class VectorTaper : public BasicTaper {
 public:
   VectorTaper();
+  /*! Construct from a vector of taper weights. */
   VectorTaper(const std::vector<double> taperdata);
+  /*! Apply the vector taper to a scalar TimeSeries. */
   int apply(mspass::seismic::TimeSeries &d);
+  /*! Apply the vector taper to a three-component Seismogram. */
   int apply(mspass::seismic::Seismogram &d);
+  /*! Disable this vector taper. */
   void disable() { all = false; };
+  /*! Enable this vector taper when weights are available. */
   void enable() {
     if (taper.size() > 0)
       all = true;
   };
+  /*! Return a copy of the taper weights. */
   std::vector<double> get_taper() { return taper; };
+  /*! Vector tapers do not define a head start time. */
   double get_t0head() const {
     std::cerr << "get_t0head not implemented for VectorTaper";
     return 0.0;
   };
+  /*! Vector tapers do not define a head end time. */
   double get_t1head() const {
     std::cerr << "get_t1head not implemented for VectorTaper";
     return 0.0;

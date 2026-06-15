@@ -38,6 +38,13 @@ class seed_keys:
             return False
 
     def same_channel(self, other):
+        """
+        Test whether another seed key has the same channel and location codes.
+
+        :param other: seed key object to compare.
+        :return: True when ``chan`` and ``loc`` match.
+        :rtype: bool
+        """
         if (other.chan == self.chan) and (other.loc == self.loc):
             return True
         else:
@@ -96,6 +103,7 @@ def TimeIntervalReader(
     attempting to assemble and post an error message that can be used
     for post-mortum analysis of a workflow.  All the complexity of this
     processing is hidden under two layers of code this reader utilizes:
+
         1.  The python function :py:func:`mspasspy.algorithms.window.merge`
             is a wrapper that handles some translations from the
             C++ primitives to python.  That function is used to glue

@@ -10,15 +10,26 @@
 #include <boost/serialization/base_object.hpp>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
+/*! \brief Scalar least-squares deconvolution operator.
+
+This FFT-based operator estimates a regularized inverse filter from an input
+wavelet and applies it to scalar data.
+*/
 class LeastSquareDecon : public FFTDeconOperator, public ScalarDecon {
 public:
+  /*! Construct with default damping. */
   LeastSquareDecon() : FFTDeconOperator(), ScalarDecon() { damp = 1.0; };
+  /*! Copy constructor. */
   LeastSquareDecon(const LeastSquareDecon &parent);
+  /*! Construct from Metadata parameters. */
   LeastSquareDecon(const mspass::utility::Metadata &md);
+  /*! Construct from Metadata plus wavelet and data vectors. */
   LeastSquareDecon(const mspass::utility::Metadata &md,
                    const std::vector<double> &wavelet,
                    const std::vector<double> &data);
+  /*! Update operator parameters from Metadata. */
   void changeparameter(const mspass::utility::Metadata &md);
+  /*! Compute the inverse operator and deconvolved output. */
   void process();
   /*! \brief Return the actual output of the deconvolution operator.
 

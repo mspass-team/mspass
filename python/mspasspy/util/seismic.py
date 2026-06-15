@@ -74,16 +74,18 @@ def has_live_data(ensemble) -> bool:
 
     This function simply scans the member vector of ensemble and returns
     True the first time it finds a datum marked live. That is much
-    faster with large ensembles than an alternative to using `number_live`
+    faster with large ensembles than an alternative to using ``number_live``
     and using the result to set an ensemble live or dead. The normal
     use of this function is to call it after accumulating a set of atomic
     data into an ensemble.  An empty ensemble container is always marked
     dead until explicitly set live.   Hence, after adding data to such
     a container run this with a construct like this:
-    ```
+
+    .. code-block:: python
+
         if has_live_data(ensemble):
             ensemble.set_live()
-    ```
+
     Note this function will throw a TypeError exception if ensemble is
     anything but a TimeSeriesEnsemble or SeismogramEnsemble.
 
@@ -190,7 +192,7 @@ def ensemble_time_range(ensemble, metric="inner") -> TimeWindow:
     values.
 
     :param ensemble:  ensemble container to be scanned for
-    time range.
+      time range.
     :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.
     :param metric:   measure to use to define the time range.
       Accepted values are:

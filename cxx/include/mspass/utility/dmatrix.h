@@ -63,8 +63,8 @@ public:
   Basic constructor for this error object.
   \param nr1 number of rows in matrix 1
   \param nc1 number of columns in matrix 1
-  \param nr1 number of rows in matrix 2
-  \param nc1 number of columns in matrix 2
+  \param nr2 number of rows in matrix 2
+  \param nc2 number of columns in matrix 2
   */
   dmatrix_size_error(const size_t nr1, const size_t nc1, const size_t nr2,
                      const size_t nc2) {
@@ -135,7 +135,7 @@ public:
   to be added are the same size. Hence, an exception will happen if you use
   this operator with a size mismatch.
 
-  \param  A is the matrix to be added to this.
+  \param other is the matrix to be added to this.
   \exception throws a dmatrix_size_error if other and this are not the same
   size.
   */
@@ -198,7 +198,7 @@ public:
 
   \param s is the scaling factor
   \param A is the matrix to be scaled
-  \return sA
+  \return s*A
   */
   friend dmatrix operator*(const double &s, const dmatrix &A) noexcept;
   dmatrix operator*(double s) const noexcept;
@@ -286,8 +286,8 @@ public:
 
   This operator is used for constructs like y=Ax where x is a
   vector and A is a matrix.   y is the returned vector.
-  \param A - matrix on right in multiply
-  \param x - vector on left of multiply operation
+  \param A - matrix on left in multiply
+  \param x - vector on right of multiply operation
 
   \return product A*x
   \exception dmatrix_size_error thrown if size of A and x do not match.

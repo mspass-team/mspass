@@ -58,8 +58,9 @@ void WaterLevelDecon::changeparameter(const Metadata &md) {
     throw;
   };
 }
-WaterLevelDecon::WaterLevelDecon(const Metadata &md, const vector<double> &w,
-                                 const vector<double> &d) {
+WaterLevelDecon::WaterLevelDecon(
+    const mspass::utility::Metadata &md, const std::vector<double> &w,
+    const std::vector<double> &d) {
   try {
     this->read_metadata(md);
   } catch (...) {

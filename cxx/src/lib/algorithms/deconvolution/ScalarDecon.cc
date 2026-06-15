@@ -16,7 +16,8 @@ ScalarDecon::ScalarDecon(const Metadata &md) : shapingwavelet(md) {
     throw;
   };
 }
-ScalarDecon::ScalarDecon(const vector<double> &d, const vector<double> &w)
+ScalarDecon::ScalarDecon(const std::vector<double> &d,
+                         const std::vector<double> &w)
     : data(d), wavelet(w) {
   result.reserve(data.size());
 }

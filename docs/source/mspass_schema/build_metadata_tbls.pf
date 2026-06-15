@@ -1,23 +1,23 @@
 site &Tbl{
-loc
 net
-site_id
+sta
+loc
 site_lat
 site_lon
 site_elev
-sta
+site_starttime
+site_endtime
+site_id
 }
 source &Tbl{
-evid
-magnitude
-mb
-ms
-orid
 source_id
 source_lat
 source_lon
 source_depth
 source_time
+source_magnitude
+mb
+ms
 }
 obspy_trace &Tbl{
 calib
@@ -30,28 +30,32 @@ sampling_rate
 sta
 starttime
 }
-sitechan &Tbl{
+channel &Tbl{
+channel_id
 chan
-chanid
-chan_id
-hang
-vang
+loc
+channel_lat
+channel_lon
+channel_elev
+channel_edepth
+channel_hang
+channel_vang
+channel_starttime
+channel_endtime
 }
 3Cdata &Tbl{
-U11
-U12
-U13
-U21
-U22
-U23
-U31
-U32
-U33
+tmatrix
+cardinal
+orthogonal
 }
 files &Tbl{
 dir
 dfile
 foff
+format
+nbytes
+storage_mode
+gridfs_id
 }
 phase &Tbl{
 phase
@@ -62,10 +66,10 @@ dist
 distance_units
 }
 MongoDB &Tbl{
+_id
 site_id
-chan_id
+channel_id
 source_id
-wf_id
-gridfs_wf_id
+gridfs_id
 storage_mode
 }

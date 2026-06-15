@@ -26,7 +26,7 @@ Schema
 Overview
 ~~~~~~~~
 
-Wikepedia defines a database schema as follow:
+Wikipedia defines a database schema as follows:
 
 | The term "`schema <https://en.wiktionary.org/wiki/schema>`__"
   refers to the organization of data as a blueprint of how the database

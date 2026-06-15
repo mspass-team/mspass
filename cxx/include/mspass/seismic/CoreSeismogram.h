@@ -284,7 +284,6 @@ public:
   \return std::vector containing a 3 vector of the samples at requested sample
   number
 
-  \param sample is the integer sample number of data desired.
   **/
   std::vector<double> operator[](const int sample) const;
   /*! \brief Overloaded version of operator[] for time.

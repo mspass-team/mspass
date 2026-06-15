@@ -6,6 +6,11 @@
 #include <vector>
 
 namespace mspass::seismic {
+/*! \brief Metadata-bearing container for a collection of seismic data objects.
+
+The template is used for scalar and three-component ensembles whose members
+share common Metadata stored on the ensemble header.
+*/
 template <typename Tdata> class Ensemble : public mspass::utility::Metadata {
 public:
   /*! \brief Container holding data objects.
@@ -26,7 +31,7 @@ public:
   building it.  This constructor reserve space but marks all members
   dead.
 
-  \param - expected number of members.
+  \param n expected number of members.
   */
   Ensemble(const size_t n) { member.reserve(n); };
   /*! Partial constructor to clone metadata and set aside n slots but no data*/

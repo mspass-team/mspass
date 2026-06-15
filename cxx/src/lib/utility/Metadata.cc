@@ -286,7 +286,7 @@ bool any_to_bool(const boost::any &val, bool &result) {
 }
 } // namespace
 
-Metadata::Metadata(ifstream &ifs, const string form) {
+Metadata::Metadata(std::ifstream &ifs, const std::string form) {
   try {
     char linebuffer[256];
     while (ifs.getline(linebuffer, 128)) {

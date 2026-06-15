@@ -10,18 +10,29 @@
 #include <boost/serialization/base_object.hpp>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
+/*! \brief Scalar water-level deconvolution operator.
+
+This FFT-based operator stabilizes spectral division by flooring the wavelet
+power spectrum at a configured water level.
+*/
 class WaterLevelDecon : public FFTDeconOperator, public ScalarDecon {
 public:
+  /*! Construct with default water level and QC state. */
   WaterLevelDecon() : FFTDeconOperator(), ScalarDecon() {
     this->wlv = 0.1;
     this->regularization_fraction = 0.0;
   };
+  /*! Copy constructor. */
   WaterLevelDecon(const WaterLevelDecon &parent);
+  /*! Construct from Metadata parameters. */
   WaterLevelDecon(const mspass::utility::Metadata &md);
+  /*! Construct from Metadata plus wavelet and data vectors. */
   WaterLevelDecon(const mspass::utility::Metadata &md,
                   const std::vector<double> &wavelet,
                   const std::vector<double> &data);
+  /*! Update operator parameters from Metadata. */
   void changeparameter(const mspass::utility::Metadata &md);
+  /*! Compute the water-level inverse operator and deconvolved output. */
   void process();
   /*! \brief Return the actual output of the deconvolution operator.
 

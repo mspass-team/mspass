@@ -42,9 +42,11 @@ int cautious_compare(const TimeSeries &x, const TimeSeries &y,
     return 0;
   }
 }
+/*! \brief Sort TimeSeries objects into descending SEED channel order. */
 struct greater_seedorder {
   /* Note this sort so undefined will be less than any defined value.
   Could be the reverse but an arbitrary choice */
+  /*! Return true when x should sort after y in SEED net/sta/loc/chan order. */
   bool operator()(TimeSeries x, TimeSeries y) {
     int retnet, retsta, retloc, retchan;
     retnet = cautious_compare(x, y, SEISMICMD_net);

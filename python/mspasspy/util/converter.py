@@ -686,10 +686,10 @@ def Textfile2Dataframe(
       The default is false meaning the simpler, identical api panda
       operators are used.
     :param insert_column: a dictionary of new columns to add, and their value(s).
-    If the content is a single value, it can be passedto define a constant value
-    for the entire column of data. The content can also be a list, in that case,
-    the list should contain values that are to be set, and it must be the same
-    length as the number of tuples in the table.
+      If the content is a single value, it can be passed to define a constant value
+      for the entire column of data. The content can also be a list, in that case,
+      the list should contain values that are to be set, and it must be the same
+      length as the number of tuples in the table.
     """
 
     if (

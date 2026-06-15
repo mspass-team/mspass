@@ -3,7 +3,8 @@
 using namespace std;
 using namespace mspass::utility;
 namespace mspass::utility {
-AttributeCrossReference::AttributeCrossReference(const string lines_to_parse) {
+AttributeCrossReference::AttributeCrossReference(
+    const std::string lines_to_parse) {
   try {
     istringstream instrm(lines_to_parse);
     do {
@@ -45,7 +46,8 @@ AttributeCrossReference::AttributeCrossReference(const string lines_to_parse) {
 }
 /*! This constructor was produced by a revisio of the previous to change
  * from a single string to a list container.   */
-AttributeCrossReference::AttributeCrossReference(const list<string> &lines) {
+AttributeCrossReference::AttributeCrossReference(
+    const std::list<std::string> &lines) {
   list<string>::const_iterator lptr;
   for (lptr = lines.begin(); lptr != lines.end(); ++lptr) {
     istringstream instrm(*lptr);
@@ -75,12 +77,13 @@ AttributeCrossReference::AttributeCrossReference(const list<string> &lines) {
   }
 }
 AttributeCrossReference::AttributeCrossReference(
-    const map<string, string> int2ext, const MetadataList &mdlist) {
+    const std::map<std::string, std::string> internal2external,
+    const mspass::utility::MetadataList &mdlist) {
   MetadataList::const_iterator mdlptr;
   for (mdlptr = mdlist.begin(); mdlptr != mdlist.end(); ++mdlptr) {
     imdtypemap.insert(pair<string, MDtype>(mdlptr->tag, mdlptr->mdt));
   }
-  itoe = int2ext;
+  itoe = internal2external;
   map<string, string>::iterator iptr;
   /* This extracts each pair of the map and inverts them */
   for (iptr = itoe.begin(); iptr != itoe.end(); ++iptr)

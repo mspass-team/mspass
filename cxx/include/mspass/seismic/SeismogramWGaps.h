@@ -4,6 +4,7 @@
 #include "mspass/seismic/Seismogram.h"
 
 namespace mspass::seismic {
+/*! \brief Three-component Seismogram with explicit data-gap tracking. */
 class SeismogramWGaps : public mspass::seismic::Seismogram,
                         public mspass::seismic::DataGap {
 public:
@@ -14,7 +15,9 @@ public:
   SeismogramWGaps();
   /*! Copy constructor. */
   SeismogramWGaps(const SeismogramWGaps &parent);
+  /*! Assignment operator. */
   SeismogramWGaps &operator=(const SeismogramWGaps &parent);
+  /*! Destructor. */
   ~SeismogramWGaps();
 
   /*! Force all data inside data gaps to zero.

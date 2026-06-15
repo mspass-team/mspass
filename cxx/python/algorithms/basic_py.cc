@@ -67,11 +67,35 @@ PYBIND11_MODULE(basic, m) {
     .def(py::init<const bool, const bool, const bool,
         const double, const double, const double, const double,
 	const double, const double, const double, const double,
-	const double> ())
-    .def(py::init<const mspass::utility::Metadata&>())
+	const double>(),
+      py::arg("zerophase"),
+      py::arg("enable_lo"),
+      py::arg("enable_hi"),
+      py::arg("fstoplo"),
+      py::arg("astoplo"),
+      py::arg("fpasslo"),
+      py::arg("apasslo"),
+      py::arg("fpasshi"),
+      py::arg("apasshi"),
+      py::arg("fstophi"),
+      py::arg("astophi"),
+      py::arg("sample_interval"),
+      "Construct from explicit low/high stop and pass-band amplitudes")
+    .def(py::init<const mspass::utility::Metadata&>(),
+      py::arg("md"),
+      "Construct from Metadata keys matching Butterworth parameter names")
     .def(py::init<const bool, const bool, const bool,
-        const int, const double, const int, const double, const double>())
-    .def(py::init<const Butterworth&>())
+        const int, const double, const int, const double, const double>(),
+      py::arg("zerophase"),
+      py::arg("enable_lo"),
+      py::arg("enable_hi"),
+      py::arg("npolelo"),
+      py::arg("f3dblo"),
+      py::arg("npolehi"),
+      py::arg("f3dbhi"),
+      py::arg("sample_interval"),
+      "Construct from corner frequencies, pole counts, and sample interval")
+    .def(py::init<const Butterworth&>(), py::arg("parent"), "Copy constructor")
     .def("impulse_response",&Butterworth::impulse_response,
          "Return impulse response")
     .def("transfer_function",&Butterworth::transfer_function,
@@ -246,7 +270,12 @@ PYBIND11_MODULE(basic, m) {
   py::class_<LinearTaper,BasicTaper>(m,"LinearTaper",
       "Define a ramp taper function")
     .def(py::init<>())
-    .def(py::init<const double, const double, const double, const double>())
+    .def(py::init<const double, const double, const double, const double>(),
+      py::arg("t0head"),
+      py::arg("t1head"),
+      py::arg("t1tail"),
+      py::arg("t0tail"),
+      "Construct from head and tail taper transition times")
     .def("apply",py::overload_cast<TimeSeries&>(&LinearTaper::apply),
       "Apply taper to a scalar TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&LinearTaper::apply),
@@ -281,7 +310,12 @@ PYBIND11_MODULE(basic, m) {
   py::class_<CosineTaper,BasicTaper>(m,"CosineTaper",
       "Define a taper using a half period cosine function")
     .def(py::init<>())
-    .def(py::init<const double, const double, const double, const double>())
+    .def(py::init<const double, const double, const double, const double>(),
+      py::arg("t0head"),
+      py::arg("t1head"),
+      py::arg("t1tail"),
+      py::arg("t0tail"),
+      "Construct from head and tail taper transition times")
     .def("apply",py::overload_cast<TimeSeries&>(&CosineTaper::apply),
             "Apply taper to a scalar TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&CosineTaper::apply),
@@ -316,7 +350,9 @@ PYBIND11_MODULE(basic, m) {
   py::class_<VectorTaper,BasicTaper>(m,"VectorTaper",
       "Define generic taper function with a parallel vector of weights")
     .def(py::init<>())
-    .def(py::init<const std::vector<double>>())
+    .def(py::init<const std::vector<double>>(),
+      py::arg("weights"),
+      "Construct from per-sample taper weights")
     .def("apply",py::overload_cast<TimeSeries&>(&VectorTaper::apply),
       "Apply taper to a scalar TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&VectorTaper::apply),
@@ -341,10 +377,14 @@ PYBIND11_MODULE(basic, m) {
     ))
   ;
   py::class_<TopMute>(m,"_TopMute",
-    "Defines a top mute operator (one sided taper")
+    "Defines a top mute operator (one-sided taper)")
     .def(py::init<>())
-    .def(py::init<const double, const double, const std::string>())
-    .def(py::init<const TopMute&>())
+    .def(py::init<const double, const double, const std::string>(),
+      py::arg("t0"),
+      py::arg("t1"),
+      py::arg("type"),
+      "Construct from mute start/end times and taper type")
+    .def(py::init<const TopMute&>(), py::arg("parent"), "Copy constructor")
     .def("apply",py::overload_cast<TimeSeries&>(&TopMute::apply),
       "Apply to a TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&TopMute::apply),

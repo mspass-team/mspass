@@ -372,7 +372,7 @@ noise windows have a drastically different length.  A subtle feature of
 psd estimates of stationary processes is that the psd level scales by
 1/length of the analysis window.   snr estimates correct for this effect.
 
-\param df is the expected signal frequency bin size.   An error will be
+\param signal_df is the expected signal frequency bin size.   An error will be
 thrown if that does not match the power spectrem s df.
 \param s is a (multitaper) power spectrum of the signal time window
 \param n is the comparable (multitaper) power spectrum of the noise time window.

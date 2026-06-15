@@ -45,7 +45,7 @@ public:
   newline constructor.  The list elements are expected to be
   the contents of each line (newline break) for the string version.
 
-  \lines list container with input lines in same format as that
+  \param lines list container with input lines in same format as that
      described above for single string constructor.
   \exception MsPASSError will be thrown if there are parsing errors.
   */

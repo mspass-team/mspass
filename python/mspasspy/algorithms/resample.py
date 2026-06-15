@@ -78,9 +78,19 @@ class BasicResampler(ABC):
             self.samprate = sampling_rate
 
     def target_samprate(self):
+        """
+        Return the target sampling rate in samples per second.
+
+        :rtype: float
+        """
         return self.samprate
 
     def target_dt(self):
+        """
+        Return the target sample interval in seconds.
+
+        :rtype: float
+        """
         return self.dt
 
     def dec_factor(self, d):

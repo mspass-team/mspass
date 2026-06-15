@@ -189,7 +189,7 @@ pair<string, string> split_line(string s) {
 /* Note this constructor is recursive.  That is when there is
    a nest &Arr{ in a pf this constructor will call itself for
    each Arr block */
-AntelopePf::AntelopePf(list<string> alllines) : Metadata() {
+AntelopePf::AntelopePf(std::list<std::string> alllines) : Metadata() {
   const string base_error("AntelopePf constructor:  ");
   list<string>::iterator lptr, end_block;
   list<string> block;
@@ -322,7 +322,7 @@ list<string> split_pfpath(string pfbase, char *s) {
   }
   return pfret;
 }
-AntelopePf::AntelopePf(string pfbase) {
+AntelopePf::AntelopePf(std::string pfbase) {
   try {
     list<string> pffiles;
     const std::string mspass_home_envname("MSPASS_HOME");

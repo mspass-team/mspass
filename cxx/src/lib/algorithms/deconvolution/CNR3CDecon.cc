@@ -797,7 +797,7 @@ Seismogram CNR3CDecon::process() {
   try {
     /* Immediately determine the data bandwidth for efficiency.
     If the data have insufficient bandwith return a null Seismogram
-    with only Metadata and no data.   Do, however, post a mesage to
+    with only Metadata and no data.   Do, however, post a message to
     elog in that situation assuming it will be saved to database an
     can be queried to tell what data were deleted for this reason.
     Some of the tests here are more cautious than needed as load

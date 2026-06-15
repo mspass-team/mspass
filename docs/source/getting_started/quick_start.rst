@@ -1,5 +1,7 @@
 .. _quick_start:
 
+:orphan:
+
 Getting Started in a Nutshell
 ===============================
 

@@ -326,7 +326,8 @@ VectorTaper::VectorTaper() {
   tail = false;
   all = false;
 }
-VectorTaper::VectorTaper(const vector<double> tp) : taper(tp) {
+VectorTaper::VectorTaper(const std::vector<double> taperdata)
+    : taper(taperdata) {
   /* Really only all needs to be set true here, but need to initialize
   others anyway as good practice.*/
   head = true;

@@ -16,13 +16,15 @@ namespace mspass::algorithms::deconvolution {
 typedef std::complex<double> Complex64;
 typedef std::complex<float> Complex32;
 
+/*! \brief FORTRAN-compatible single-precision complex value. */
 typedef struct FortranComplex32 {
-  float real;
-  float imag;
+  float real; /*!< Real component. */
+  float imag; /*!< Imaginary component. */
 } FortranComplex32;
+/*! \brief FORTRAN-compatible double-precision complex value. */
 typedef struct FortranComplex64 {
-  double real;
-  double imag;
+  double real; /*!< Real component. */
+  double imag; /*!< Imaginary component. */
 } FortranComplex64;
 /* needed for boost serialization */
 template <class Archive>
@@ -31,9 +33,11 @@ void serialize(Archive &ar, FortranComplex64 &z, const unsigned int version) {
   ar & z.imag;
 }
 
-/* \brief Interfacing object to ease conversion between FORTRAN and C++ complex.
+/*! \brief Interfacing object to ease conversion between FORTRAN and C++ complex.
 
-   */
+The internal representation is compatible with numerical libraries that expect
+interleaved real and imaginary values while exposing C++ convenience operators.
+*/
 class ComplexArray {
 public:
   /*! Empty constructor. */
@@ -53,14 +57,19 @@ public:
        fortran vector.
     */
   ComplexArray(int nsamp, FortranComplex32 *d);
+  /*! Construct from a double-precision FORTRAN complex array. */
   ComplexArray(int nsamp, FortranComplex64 *d);
+  /*! Construct from a real single-precision array. */
   ComplexArray(int nsamp, float *d);
+  /*! Construct from a real double-precision array. */
   ComplexArray(int nsamp, double *d);
+  /*! Construct a zero-filled complex array of length nsamp. */
   ComplexArray(int nsamp);
   /*! Construct from different length of vector, adds zoeros to it
       And construct a constant arrays
       */
   template <class T> ComplexArray(int nsamp, std::vector<T> d);
+  /*! Construct a constant real-valued complex array of length nsamp. */
   template <class T> ComplexArray(int nsamp, T d);
 
   /*! Construct from magnitude and phase arrays.*/
@@ -68,8 +77,11 @@ public:
 
   /* These will need to be implemented.  Likely cannot
      depend on the compiler to generate them correctly */
+  /*! Copy constructor. */
   ComplexArray(const ComplexArray &parent);
+  /*! Assignment operator. */
   ComplexArray &operator=(const ComplexArray &parent);
+  /*! Destructor. */
   ~ComplexArray();
 
   /* These are kind of the inverse of the constructor.
@@ -100,22 +112,32 @@ public:
     \return contents of vector at position sample.
     */
   Complex64 operator[](int sample);
+  /*! Return a pointer to the first interleaved complex value. */
   double *ptr();
+  /*! Return a pointer to the interleaved complex value at sample. */
   double *ptr(int sample);
+  /*! Add another complex array element by element. */
   ComplexArray &operator+=(const ComplexArray &other) noexcept(false);
+  /*! Subtract another complex array element by element. */
   ComplexArray &operator-=(const ComplexArray &other) noexcept(false);
   /* This actually is like .* in matlab - sample by sample multiply not
   a dot product */
+  /*! Multiply by another complex array element by element. */
   ComplexArray &operator*=(const ComplexArray &other) noexcept(false);
   /* This is like *= but complex divide element by element */
+  /*! Divide by another complex array element by element. */
   ComplexArray &operator/=(const ComplexArray &other) noexcept(false);
+  /*! Return the element-by-element sum with another complex array. */
   const ComplexArray operator+(const ComplexArray &other) const noexcept(false);
   // template<class T> ComplexArray operator +(const vector<T> &other);
   // template<class T> ComplexArray operator +(const T &other);
+  /*! Return the element-by-element difference from another complex array. */
   const ComplexArray operator-(const ComplexArray &other) const noexcept(false);
   // template<class T> ComplexArray operator -(const vector<T> &other);
   // template<class T> ComplexArray operator -(const T &other);
+  /*! Return the element-by-element product with another complex array. */
   const ComplexArray operator*(const ComplexArray &other) const noexcept(false);
+  /*! Return the element-by-element quotient with another complex array. */
   const ComplexArray operator/(const ComplexArray &other) const noexcept(false);
   /*! product of complex and real vectors */
   // template<class T> ComplexArray operator *(const vector<T> &other);
@@ -127,15 +149,15 @@ public:
   // ComplexArray &rhs);
   /*! Change vector to complex conjugates. */
   void conj();
-  /* Return stl vector of amplitude spectrum.  */
+  /*! Return stl vector of amplitude spectrum. */
   std::vector<double> abs() const;
-  /* Return rms value.  */
+  /*! Return rms value. */
   double rms() const;
-  /* Return 2-norm value.  */
+  /*! Return 2-norm value. */
   double norm2() const;
-  /* Return stl vector of phase */
+  /*! Return stl vector of phase values. */
   std::vector<double> phase() const;
-  /* Return size of the array*/
+  /*! Return size of the array. */
   int size() const;
 
 private:

@@ -124,6 +124,21 @@ class DBClient(pymongo.MongoClient):
         write_concern=None,
         read_concern=None,
     ):
+        """
+        Return the configured default MsPASS database handle.
+
+        :param default: fallback database name when the client was not created
+            with a default database name.
+        :param schema: optional MsPASS schema passed to the database wrapper.
+        :param codec_options: optional PyMongo codec options.
+        :param read_preference: optional PyMongo read preference.
+        :param write_concern: optional PyMongo write concern.
+        :param read_concern: optional PyMongo read concern.
+        :return: MsPASS database wrapper for the default database.
+        :rtype: :class:`mspasspy.db.database.Database`
+        :raises pymongo.errors.ConfigurationError: if no default database name
+            is available.
+        """
         if self.__default_database_name is None and default is None:
             raise pymongo.errors.ConfigurationError(
                 "No default database name defined or provided."
@@ -148,6 +163,21 @@ class DBClient(pymongo.MongoClient):
         write_concern=None,
         read_concern=None,
     ):
+        """
+        Return an MsPASS database handle by name.
+
+        :param name: database name.  When omitted, the client's configured
+            default database is used.
+        :param schema: optional MsPASS schema passed to the database wrapper.
+        :param codec_options: optional PyMongo codec options.
+        :param read_preference: optional PyMongo read preference.
+        :param write_concern: optional PyMongo write concern.
+        :param read_concern: optional PyMongo read concern.
+        :return: MsPASS database wrapper.
+        :rtype: :class:`mspasspy.db.database.Database`
+        :raises pymongo.errors.ConfigurationError: if ``name`` is omitted and
+            no default database is configured.
+        """
         if name is None:
             if self.__default_database_name is None:
                 raise pymongo.errors.ConfigurationError("No default database defined")

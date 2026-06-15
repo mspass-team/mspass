@@ -56,7 +56,9 @@ public:
   ObjectID assigned to the MongoDB document holding the parameter data
   that defines this instance of an algorithm.
 
-  \param name is the algorithm's (unique) name
+  \param name is the algorithm's (unique) name.
+  \param typin is the expected input data type.
+  \param typout is the output data type produced by the algorithm.
   \param id is a unique id string defining the parameters that were used for
     this instance of an algorithm.
   */
@@ -67,12 +69,14 @@ public:
     input_type = typin;
     output_type = typout;
   };
+  /*! Copy constructor. */
   AlgorithmDefinition(const AlgorithmDefinition &parent) {
     nm = parent.nm;
     myid = parent.myid;
     input_type = parent.input_type;
     output_type = parent.output_type;
   };
+  /*! Return the algorithm name. */
   std::string name() const { return nm; };
   /*! \brief return the id as a string.
 
@@ -91,6 +95,7 @@ public:
   fixed, but id defines a particular instance that may be variable. */
   void set_id(const std::string id) { myid = id; };
   // void set_name(const string name){nm=name;};
+  /*! Assignment operator. */
   AlgorithmDefinition &operator=(const AlgorithmDefinition &parent) {
     if (this == &parent) {
       nm = parent.nm;
@@ -113,13 +118,19 @@ private:
     ar & myid;
   };
 };
+/*! \brief Manager for process-level algorithm and job identifiers. */
 class ProcessManager {
 public:
+  /*! Construct a default process manager. */
   ProcessManager();
+  /*! Construct from a serialized process-manager file. */
   ProcessManager(std::string fname);
+  /*! Return an algorithm definition by name and instance number. */
   AlgorithmDefinition algorithm(const std::string name,
                                 const size_t instance = 0) const;
+  /*! Return the job name. */
   std::string jobname() const { return jobnm; };
+  /*! Return the job UUID as a string. */
   std::string jobid() const { return boost::uuids::to_string(job_uuid); };
   /*! \brief Get a new UUID to define unique job run.
 

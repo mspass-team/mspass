@@ -244,6 +244,28 @@ def correlate_template(
     demean=True,
     method="auto",
 ):
+    """
+    Correlate a time series against a template signal.
+
+    This is an MsPASS wrapper around
+    :func:`obspy.signal.cross_correlation.correlate_template`.  MsPASS
+    :class:`TimeSeries` inputs are converted to ObsPy ``Trace`` objects for
+    the call.
+
+    :param data: input data to search.
+    :type data: :class:`mspasspy.ccore.seismic.TimeSeries`
+    :param template: template signal to correlate with ``data``.
+    :type template: :class:`mspasspy.ccore.seismic.TimeSeries`
+    :param object_history: enable MsPASS object-history logging.
+    :param alg_name: algorithm name stored in object history.
+    :param alg_id: optional algorithm id stored in object history.
+    :param dryrun: validate wrapper behavior without changing data.
+    :param mode: correlation mode passed to ObsPy.
+    :param normalize: normalization mode passed to ObsPy.
+    :param demean: when True remove means before correlation.
+    :param method: correlation method passed to ObsPy.
+    :return: correlation sequence returned by ObsPy.
+    """
     return obspy.signal.cross_correlation.correlate_template(
         data, template, mode, normalize, demean, method
     )
@@ -264,6 +286,30 @@ def correlate_stream_template(
     handles_dead_data=True,
     **kwargs,
 ):
+    """
+    Correlate a multichannel data object against a stream template.
+
+    This wrapper converts MsPASS ensemble or seismogram inputs to ObsPy
+    ``Stream`` objects, calls
+    :func:`obspy.signal.cross_correlation.correlate_stream_template`, and
+    converts the result back to an MsPASS container selected by
+    ``return_type``.
+
+    :param stream: input :class:`Seismogram` or :class:`TimeSeriesEnsemble`.
+    :param template: template stream-compatible object.
+    :param object_history: enable MsPASS object-history logging.
+    :param alg_name: algorithm name stored in object history.
+    :param alg_id: optional algorithm id stored in object history.
+    :param dryrun: validate wrapper behavior without changing data.
+    :param template_time: optional template reference time passed to ObsPy.
+    :param return_type: ``"seismogram"`` or ``"timeseries_ensemble"``.
+    :param handles_dead_data: wrapper flag declaring dead-data handling.
+    :param kwargs: additional wrapper options.
+    :return: converted correlation result.
+    :rtype: :class:`mspasspy.ccore.seismic.Seismogram` or
+        :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`
+    :raises TypeError: if ``return_type`` is not supported.
+    """
     res = obspy.signal.cross_correlation.correlate_stream_template(
         stream, template, template_time
     )
@@ -297,6 +343,38 @@ def correlation_detector(
     handles_dead_data=False,
     **kwargs,
 ):
+    """
+    Run ObsPy's correlation detector on MsPASS data.
+
+    Input data and templates are converted to ObsPy streams before calling
+    :func:`obspy.signal.cross_correlation.correlation_detector`.  The
+    returned detections and similarity traces keep ObsPy's native return
+    shape.
+
+    :param stream: input :class:`Seismogram` or :class:`TimeSeriesEnsemble`.
+    :param templates: iterable of template objects convertible to ObsPy
+        streams.
+    :param heights: detection threshold or thresholds passed to ObsPy.
+    :param distance: minimum separation between detections passed to ObsPy.
+    :param object_history: enable MsPASS object-history logging.
+    :param alg_name: algorithm name stored in object history.
+    :param alg_id: optional algorithm id stored in object history.
+    :param dryrun: validate wrapper behavior without changing data.
+    :param template_times: optional template times passed to ObsPy.
+    :param template_magnitudes: optional template magnitudes passed to ObsPy.
+    :param template_names: optional template names passed to ObsPy.
+    :param similarity_func: optional ObsPy similarity function.
+    :param details: optional ObsPy details flag.
+    :param plot: optional ObsPy plotting flag or target.
+    :param return_type: retained for backward compatibility; ignored because
+        ObsPy returns detection dictionaries rather than waveform streams.
+    :param handles_dead_data: wrapper flag declaring dead-data handling.
+    :param kwargs: additional options passed to ObsPy.
+    :return: tuple ``(detections, similarities)`` returned by ObsPy.  The
+        detections are dictionaries describing each match and the similarities
+        are ObsPy similarity traces.
+    :rtype: tuple
+    """
     tem_list = []
     for template in templates:
         tem_list.append(template.toStream())
@@ -313,17 +391,7 @@ def correlation_detector(
         plot,
         **kwargs,
     )
-    converted_detections = []
-    for detection in detections:
-        if return_type == "seismogram":
-            converted_detections.append(Stream2Seismogram(detection, cardinal=True))
-        elif return_type == "timeseries_ensemble":
-            converted_detections.append(Stream2TimeSeriesEnsemble(detection))
-        else:
-            raise TypeError(
-                "Only seismogram and timeseries_ensemble types are supported"
-            )
-    return converted_detections, sims
+    return detections, sims
 
 
 @mspass_func_wrapper
@@ -339,6 +407,19 @@ def templates_max_similarity(
     dryrun=False,
     handles_dead_data=False,
 ):
+    """
+    Compute the maximum similarity across multiple templates.
+
+    :param st: input :class:`Seismogram` or :class:`TimeSeriesEnsemble`.
+    :param time: time at which similarity is evaluated.
+    :param streams_templates: template objects convertible to ObsPy streams.
+    :param object_history: enable MsPASS object-history logging.
+    :param alg_name: algorithm name stored in object history.
+    :param alg_id: optional algorithm id stored in object history.
+    :param dryrun: validate wrapper behavior without changing data.
+    :param handles_dead_data: wrapper flag declaring dead-data handling.
+    :return: maximum similarity value returned by ObsPy.
+    """
     tem_list = []
     for template in streams_templates:
         tem_list.append(template.toStream())
@@ -359,6 +440,26 @@ def xcorr_3c(
     full_xcorr=False,
     abs_max=True,
 ):
+    """
+    Cross-correlate two three-component seismograms.
+
+    This is an MsPASS wrapper for
+    :func:`obspy.signal.cross_correlation.xcorr_3c`.  Inputs are converted
+    to ObsPy ``Stream`` objects before correlation.
+
+    :param st1: first three-component seismogram.
+    :param st2: second three-component seismogram.
+    :param shift_len: maximum sample shift.
+    :param object_history: enable MsPASS object-history logging.
+    :param alg_name: algorithm name stored in object history.
+    :param alg_id: optional algorithm id stored in object history.
+    :param dryrun: validate wrapper behavior without changing data.
+    :param components: component codes passed to ObsPy; defaults to
+        ``["Z", "N", "E"]``.
+    :param full_xcorr: when True return the full cross-correlation function.
+    :param abs_max: when True choose the absolute maximum correlation.
+    :return: ObsPy cross-correlation result.
+    """
     if components is None:
         components = ["Z", "N", "E"]
     return obspy.signal.cross_correlation.xcorr_3c(
@@ -377,6 +478,19 @@ def xcorr_max(
     abs_max=True,
     handles_dead_data=False,
 ):
+    """
+    Return the maximum of a cross-correlation sequence.
+
+    :param data: cross-correlation sequence as a :class:`TimeSeries` or
+        compatible object converted to an ObsPy ``Trace``.
+    :param object_history: enable MsPASS object-history logging.
+    :param alg_name: algorithm name stored in object history.
+    :param alg_id: optional algorithm id stored in object history.
+    :param dryrun: validate wrapper behavior without changing data.
+    :param abs_max: when True choose the absolute maximum correlation.
+    :param handles_dead_data: wrapper flag declaring dead-data handling.
+    :return: sample shift and correlation value returned by ObsPy.
+    """
     return obspy.signal.cross_correlation.xcorr_max(data, abs_max)
 
 
@@ -399,6 +513,30 @@ def xcorr_pick_correction(
     plot=False,
     filename=None,
 ):
+    """
+    Estimate differential pick correction by cross-correlation.
+
+    This is an MsPASS wrapper for
+    :func:`obspy.signal.cross_correlation.xcorr_pick_correction`;
+    :class:`TimeSeries` inputs are converted to ObsPy ``Trace`` objects.
+
+    :param trace1: first waveform.
+    :param trace2: second waveform.
+    :param pick1: pick time on ``trace1``.
+    :param pick2: pick time on ``trace2``.
+    :param t_before: window start time before each pick.
+    :param t_after: window end time after each pick.
+    :param cc_maxlag: maximum lag allowed for the correction.
+    :param object_history: enable MsPASS object-history logging.
+    :param alg_name: algorithm name stored in object history.
+    :param alg_id: optional algorithm id stored in object history.
+    :param dryrun: validate wrapper behavior without changing data.
+    :param filter: optional ObsPy filter name.
+    :param filter_options: filter options passed to ObsPy.
+    :param plot: optional ObsPy plotting flag.
+    :param filename: optional output filename for plots.
+    :return: pick correction and correlation coefficient returned by ObsPy.
+    """
     return obspy.signal.cross_correlation.xcorr_pick_correction(
         pick1,
         trace1,

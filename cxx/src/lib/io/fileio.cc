@@ -118,10 +118,6 @@ that condition in some way.
 
 If entire ensemble is marked dead it will return an empty vector container.
 
-\param d input ensemble to save sample data
-\param dir directory name (if entry use current directory)
-\param dfile file name for write
-
 */
 std::vector<long int>
 fwrite_to_file(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries> &d,
@@ -193,10 +189,6 @@ and will generate a -1 entry in the foff vector returned.  Caller should handle
 that condition in some way.
 
 If entire ensemble is marked dead it will return an empty vector container.
-
-\param d input ensemble to save sample data
-\param dir directory name (if entry use current directory)
-\param dfile file name for write
 
 */
 std::vector<long int>

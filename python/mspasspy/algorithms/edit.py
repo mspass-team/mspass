@@ -1023,6 +1023,17 @@ class MetadataOperator(ABC):
 
 
 class ChangeKey(MetadataOperator):
+    """
+    Metadata editor that renames one key on MsPASS data objects.
+
+    :param oldkey: existing metadata key to copy or move.
+    :param newkey: destination metadata key.
+    :param erase_old: when True remove ``oldkey`` after copying its value to
+        ``newkey``; when False leave both keys defined.
+    :raises mspasspy.ccore.utility.MsPASSError: if either key name is not a
+        string.
+    """
+
     def __init__(self, oldkey, newkey, erase_old=True):
         # important to validate type of keys to avoid unexpected exceptions
         # when used
@@ -1048,6 +1059,16 @@ class ChangeKey(MetadataOperator):
         handles_enembles=True,
         **kwargs,
     ):
+        """
+        Rename ``oldkey`` to ``newkey`` on a data object or ensemble.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the key change to ensemble
+            members instead of only ensemble metadata.
+        :param fast_mode: when True skip key existence checks.
+        :param verbose: when True log missing-key failures.
+        :return: edited input object.
+        """
         if _input_is_valid(d):
             if d.dead():
                 return d
@@ -1087,6 +1108,14 @@ class ChangeKey(MetadataOperator):
             )
 
     def check_keys(self, d, apply_to_members):
+        """
+        Test whether ``oldkey`` is present where this operator will be applied.
+
+        :param d: data object or ensemble to inspect.
+        :param apply_to_members: when True check each live ensemble member.
+        :return: True if the required key is available.
+        :rtype: bool
+        """
         if _is_ensemble(d) and apply_to_members:
             for m in d.member:
                 if m.dead():
@@ -1193,6 +1222,12 @@ class SetValue(MetadataOperator):
             return False
 
     def check_operation(self, d):
+        """
+        Required abstract-method placeholder.
+
+        SetValue has no additional operation validation beyond
+        :meth:`check_keys`; this method intentionally returns ``None``.
+        """
         pass
 
 
@@ -1223,6 +1258,15 @@ class Add(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Apply the ``+=`` metadata operation to a data object or ensemble.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Add Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1287,7 +1331,7 @@ class Add(MetadataOperator):
 
 class Multiply(MetadataOperator):
     """
-    Used to implement *= operator on a specified Metadata key.
+    Used to implement ``*=`` operator on a specified Metadata key.
 
     Example:  to multiple metadata in, d, with key='Pamp' by 2.5
     you could use this
@@ -1313,6 +1357,15 @@ class Multiply(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Apply the ``*=`` metadata operation to a data object or ensemble.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Multiply Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1400,6 +1453,15 @@ class Subtract(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Apply the ``-=`` metadata operation to a data object or ensemble.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Subtract Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1488,6 +1550,15 @@ class Divide(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Apply the ``/=`` metadata operation to a data object or ensemble.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Divide Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1583,6 +1654,15 @@ class IntegerDivide(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Apply the ``//=`` metadata operation to a data object or ensemble.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata IntegerDivide Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1682,6 +1762,15 @@ class Mod(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Apply the ``%=`` metadata operation to a data object or ensemble.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Mod Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1785,6 +1874,15 @@ class Add2(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Compute a two-key metadata ``+`` operation and store the result.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Add2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1895,6 +1993,15 @@ class Multiply2(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Compute a two-key metadata ``*`` operation and store the result.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Multiply2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -2007,6 +2114,15 @@ class Subtract2(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Compute a two-key metadata ``-`` operation and store the result.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Subtract2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -2119,6 +2235,15 @@ class Divide2(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Compute a two-key metadata ``/`` operation and store the result.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Divide2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -2229,6 +2354,15 @@ class IntegerDivide2(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Compute a two-key metadata ``//`` operation and store the result.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata IntegerDivide2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -2339,6 +2473,15 @@ class Mod2(MetadataOperator):
         checks_arg0_type=True,
         **kwargs,
     ):
+        """
+        Compute a two-key metadata ``%`` operation and store the result.
+
+        :param d: MsPASS data object or ensemble to edit.
+        :param apply_to_members: when True apply the operation to each live
+            ensemble member.
+        :return: edited input object.  Invalid operations log an error and may
+            kill the affected datum.
+        """
         elognametag = "Metadata Mod2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -2492,9 +2635,19 @@ class MetadataOperatorChain(MetadataOperator):
     # this context.  We depend on the atomic operators to implement these
     # checks
     def check_keys(self, d):
+        """
+        Validate required keys for the operator chain.
+
+        The chain delegates key validation to each contained operator.
+        """
         pass
 
     def check_operation(self, d):
+        """
+        Validate operations for the operator chain.
+
+        The chain delegates operation validation to each contained operator.
+        """
         pass
 
     def __iadd__(self, other):

@@ -65,7 +65,7 @@ public:
   is recommended only for test python programs that do not need to
   interact with MongoDB.
 
-  \param is core data to be cloned
+  \param d core data to be cloned
   \param alg is the algorithm name to set for the origin history record.
   */
   Seismogram(const mspass::seismic::CoreSeismogram &d, const std::string alg);
@@ -122,8 +122,11 @@ with serialization.
 
   \param md is the Metadata that is used to drive the constructor.
   \param jobname is the jobname (defaults to test, but should be changed)
+  \param jobid is the identifier for the processing job.
   \param readername is the algorithm name assigned to the top level history
      record.   Defaults to "load3C"
+  \param algid is the algorithm identifier assigned to the top level history
+     record.
   */
   Seismogram(const Metadata &md,
              const std::string jobname = std::string("test"),
@@ -173,48 +176,98 @@ with serialization.
   Seismogram(const Seismogram &parent)
       : mspass::seismic::CoreSeismogram(parent),
         mspass::utility::ProcessingHistory(parent) {};
+  /*! Virtual destructor for safe deletion through base-class pointers. */
   virtual ~Seismogram() {};
   /*! Standard assignment operator. */
   Seismogram &operator=(const Seismogram &parent);
+  /*! Add another Seismogram sample-by-sample in place.
+   *
+   * The CoreSeismogram samples are added and the error logs are merged.
+   * \param d Seismogram to add to this object.
+   * \return reference to this modified Seismogram.
+   */
   Seismogram &operator+=(const Seismogram &d) {
     dynamic_cast<CoreSeismogram &>(*this) +=
         dynamic_cast<const CoreSeismogram &>(d);
     this->elog += d.elog;
     return (*this);
   };
+  /*! Add CoreSeismogram sample values in place.
+   *
+   * ProcessingHistory and the local error log are left unchanged.
+   * \param d core samples to add.
+   * \return reference to this modified Seismogram.
+   */
   Seismogram &operator+=(const CoreSeismogram &d) {
     dynamic_cast<CoreSeismogram &>(*this) += d;
     return (*this);
   };
+  /*! Return the sample-by-sample sum of two Seismogram objects.
+   *
+   * \param other Seismogram to add.
+   * \return new Seismogram containing the sum.
+   */
   const Seismogram operator+(const Seismogram &other) const {
     Seismogram result(*this);
     result += other;
     return result;
   };
+  /*! Return the sample-by-sample sum with a CoreSeismogram.
+   *
+   * \param other core samples to add.
+   * \return new CoreSeismogram containing the sum.
+   */
   const CoreSeismogram operator+(const CoreSeismogram &other) const {
     CoreSeismogram result(dynamic_cast<const CoreSeismogram &>(*this));
     result += other;
     return result;
   };
+  /*! Scale all component samples in place.
+   *
+   * \param scale multiplicative factor applied to every sample.
+   * \return reference to this modified Seismogram.
+   */
   Seismogram &operator*=(const double scale) {
     dynamic_cast<CoreSeismogram &>(*this) *= scale;
     return *this;
   };
+  /*! Subtract another Seismogram sample-by-sample in place.
+   *
+   * The CoreSeismogram samples are subtracted and the error logs are merged.
+   * \param d Seismogram to subtract from this object.
+   * \return reference to this modified Seismogram.
+   */
   Seismogram &operator-=(const Seismogram &d) {
     dynamic_cast<CoreSeismogram &>(*this) -=
         dynamic_cast<const CoreSeismogram &>(d);
     this->elog += d.elog;
     return (*this);
   };
+  /*! Subtract CoreSeismogram sample values in place.
+   *
+   * ProcessingHistory and the local error log are left unchanged.
+   * \param d core samples to subtract.
+   * \return reference to this modified Seismogram.
+   */
   Seismogram &operator-=(const CoreSeismogram &d) {
     dynamic_cast<CoreSeismogram &>(*this) -= d;
     return (*this);
   };
+  /*! Return the sample-by-sample difference of two Seismogram objects.
+   *
+   * \param other Seismogram to subtract.
+   * \return new Seismogram containing the difference.
+   */
   const Seismogram operator-(const Seismogram &other) const {
     Seismogram result(*this);
     result -= other;
     return result;
   };
+  /*! Return the sample-by-sample difference with a CoreSeismogram.
+   *
+   * \param other core samples to subtract.
+   * \return new CoreSeismogram containing the difference.
+   */
   const CoreSeismogram operator-(const CoreSeismogram &other) const {
     CoreSeismogram result(dynamic_cast<const CoreSeismogram &>(*this));
     result -= other;

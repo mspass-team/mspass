@@ -235,13 +235,13 @@ PYBIND11_MODULE(utility, m) {
 
   py::class_<SphericalCoordinate>(m,"SphericalCoordinate","Enscapsulates concept of spherical coordinates")
     .def(py::init<>())
-    .def(py::init<const SphericalCoordinate&>())
+    .def(py::init<const SphericalCoordinate&>(), py::arg("parent"), "Copy constructor")
     .def(py::init([](py::array_t<double> uv) {
       py::buffer_info info = uv.request();
       if (info.ndim != 1 || info.shape[0] != 3)
         throw py::value_error("SphericalCoordinate expects a vector of 3 elements");
       return UnitVectorToSpherical(static_cast<double*>(info.ptr));
-    }))
+    }), py::arg("unit_vector"), "Construct from a three-component unit vector")
     /* The use of capsule to avoid copy is found at
        https://github.com/pybind/pybind11/issues/1042 */
     .def_property_readonly("unit_vector", [](const SphericalCoordinate& self) {
@@ -251,7 +251,7 @@ PYBIND11_MODULE(utility, m) {
       vector<double> unit_vector(v, v + 3);
       delete[] v;
       return pybind11::module::import("numpy").attr("array")(unit_vector);
-    },"Return the unit vector equivalent to direction defined in sphereical coordinates")
+    },"Return the unit vector equivalent to the spherical-coordinate direction")
     .def_readwrite("radius", &SphericalCoordinate::radius,"R of spherical coordinates")
     .def_readwrite("theta", &SphericalCoordinate::theta,"zonal angle of spherical coordinates")
     .def_readwrite("phi", &SphericalCoordinate::phi,"azimuthal angle of spherical coordinates")
@@ -269,7 +269,8 @@ PYBIND11_MODULE(utility, m) {
      ))
   ;
 
-  py::class_<BasicMetadata,PyBasicMetadata>(m,"BasicMetadata")
+  py::class_<BasicMetadata,PyBasicMetadata>(m,"BasicMetadata",
+    "Abstract base class for key-value Metadata containers")
     .def(py::init<>())
   ;
 
@@ -288,10 +289,14 @@ PYBIND11_MODULE(utility, m) {
     .value("Invalid",MDtype::Invalid)
   ;
 
-  py::class_<Metadata,BasicMetadata> md(m,"Metadata");
+  py::class_<Metadata,BasicMetadata> md(m,"Metadata",
+    "Heterogeneous key-value container used throughout MsPASS ccore objects");
   md.def(py::init<>())
-    .def(py::init<const Metadata&>())
-    .def(py::init<std::ifstream&,const std::string>())
+    .def(py::init<const Metadata&>(), py::arg("parent"), "Copy constructor")
+    .def(py::init<std::ifstream&,const std::string>(),
+      py::arg("stream"),
+      py::arg("format"),
+      "Construct by reading Metadata from a stream")
     /* The order of the following type check matters. Note that due to
      * the pybind11's asymmetric conversion behavior from bytes to string,
      * we have to handle bytes before strings. The same applies to the
@@ -306,26 +311,33 @@ PYBIND11_MODULE(utility, m) {
       }
       md->clear_modified();
       return md;
-    }))
-    .def("get_double",&Metadata::get_double,"Retrieve a real number by a specified key")
-    .def("get_long",&Metadata::get_long,"Return a long integer by a specified key")
-    .def("get_bool",&Metadata::get_bool,"Return a (C) boolean defined by a specified key")
-    .def("get_string",&Metadata::get_string,"Return a string indexed by a specified key")
-    .def("get",&Metadata::get_any,"Return the value indexed by a specified key")
-    .def("__getitem__",&Metadata::get_any,"Return the value indexed by a specified key")
+    }), py::arg("items"), "Construct from a Python dictionary")
+    .def("get_double",&Metadata::get_double, py::arg("key"), "Retrieve a real number by a specified key")
+    .def("get_long",&Metadata::get_long, py::arg("key"), "Return a long integer by a specified key")
+    .def("get_bool",&Metadata::get_bool, py::arg("key"), "Return a (C) boolean defined by a specified key")
+    .def("get_string",&Metadata::get_string, py::arg("key"), "Return a string indexed by a specified key")
+    .def("get",&Metadata::get_any, py::arg("key"), "Return the value indexed by a specified key")
+    .def("__getitem__",&Metadata::get_any, py::arg("key"), "Return the value indexed by a specified key")
     .def("put", [](Metadata& md, const py::bytes k, const py::object v) {
       put_metadata_py_value(md, std::string(py::str(k.attr("__str__")())), v);
-    })
-    .def("put",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
-    .def("put",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
-    .def("put",py::overload_cast<const std::string,const long>(&Metadata::put_long))
+    }, py::arg("key"), py::arg("value"),
+      "Set a metadata value using a bytes key")
+    .def("put",py::overload_cast<const std::string,const double>(&BasicMetadata::put), py::arg("key"), py::arg("value"),
+      "Set a double metadata value")
+    .def("put",py::overload_cast<const std::string,const bool>(&BasicMetadata::put), py::arg("key"), py::arg("value"),
+      "Set a boolean metadata value")
+    .def("put",py::overload_cast<const std::string,const long>(&Metadata::put_long), py::arg("key"), py::arg("value"),
+      "Set a long integer metadata value")
     .def("put",[](Metadata& md, const std::string k, const py::bytes v) {
         md.put_object(k, py::reinterpret_borrow<py::object>(v));
-    })
-    .def("put",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
+    }, py::arg("key"), py::arg("value"),
+      "Store a Python bytes object as metadata")
+    .def("put",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put), py::arg("key"), py::arg("value"),
+      "Set a string metadata value")
     .def("put",[](Metadata& md, const std::string k, const py::object v) {
         put_metadata_py_value(md, k, v);
-    })
+    }, py::arg("key"), py::arg("value"),
+      "Store a Python object as metadata, preserving unsupported scalar types as Python objects")
     .def("__setitem__", [](Metadata& md, const py::bytes k, const py::object v) {
       put_metadata_py_value(md, std::string(py::str(k.attr("__str__")())), v);
     })
@@ -356,7 +368,8 @@ PYBIND11_MODULE(utility, m) {
         return std::string("string");
       else
         return typ;
-    },"Return a demangled typename for value associated with a key")
+    }, py::arg("key"),
+      "Return a demangled typename for value associated with a key")
     .def("modified",&Metadata::modified,"Return a list of all attributes that have been changes since construction")
     .def("clear_modified",&Metadata::clear_modified,"Clear container used to mark altered Metadata")
     /*  For unknown reasons could not make this overload work.
@@ -365,11 +378,15 @@ PYBIND11_MODULE(utility, m) {
     .def("is_defined",py::overload_cast<const std::string>(&Metadata::is_defined))
     .def("is_defined",py::overload_cast<const char *>(&Metadata::is_defined))
     */
-    .def("is_defined",&Metadata::is_defined,"Test if a key has a defined value")
-    .def("__contains__",&Metadata::is_defined,"Test if a key has a defined value")
-    .def("append_chain",&Metadata::append_chain,"Create or append to a string attribute that defines a chain")
-    .def("erase",&Metadata::erase,"Delete contents associated with a single key")
-    .def("__delitem__",&Metadata::erase,"Clears contents associated with a key")
+    .def("is_defined",&Metadata::is_defined, py::arg("key"), "Test if a key has a defined value")
+    .def("__contains__",&Metadata::is_defined, py::arg("key"), "Test if a key has a defined value")
+    .def("append_chain",&Metadata::append_chain,
+      py::arg("key"),
+      py::arg("value"),
+      py::arg("separator"),
+      "Create or append to a string attribute that defines a chain")
+    .def("erase",&Metadata::erase, py::arg("key"), "Delete contents associated with a single key")
+    .def("__delitem__",&Metadata::erase, py::arg("key"), "Clears contents associated with a key")
     .def("__len__",&Metadata::size,"Return len(self)")
     .def("__iter__", [](py::object s) { return PyMetadataIterator(s.cast<const Metadata &>(), s); })
     .def("__reversed__", [](const Metadata &s) -> Metadata {
@@ -429,7 +446,10 @@ PYBIND11_MODULE(utility, m) {
       return py::cast(s).attr("__class__").attr("__name__").cast<std::string>() +
           "(" + std::string(py::str(py::cast(s).attr("__str__")())) + ")";
     })
-    .def("change_key",&Metadata::change_key,"Change key to access an attribute")
+    .def("change_key",&Metadata::change_key,
+      py::arg("oldkey"),
+      py::arg("newkey"),
+      "Change key used to access an attribute")
     .def(py::self += py::self)
     .def(py::self + py::self)
     /* these are need to allow the class to be pickled*/
@@ -467,7 +487,10 @@ PYBIND11_MODULE(utility, m) {
     .def_readwrite("mdt",&Metadata_typedef::mdt,"Type of any value associated with this key")
   ;
   m.def("copy_selected_metadata",&copy_selected_metadata,
-        "Copy selected values from one Metadata container to another using a MetadataList schema");
+        "Copy selected values from one Metadata container to another using a MetadataList schema",
+        py::arg("mdin"),
+        py::arg("mdout"),
+        py::arg("mdlist"));
 
   /* We need this definition to bind dmatrix to a numpy array as described
   in this section of pybind11 documentation:\
@@ -477,8 +500,11 @@ PYBIND11_MODULE(utility, m) {
   */
   py::class_<dmatrix>(m, "dmatrix", py::buffer_protocol())
     .def(py::init<>())
-    .def(py::init<size_t,size_t>())
-    .def(py::init<const dmatrix&>())
+    .def(py::init<size_t,size_t>(),
+      py::arg("rows"),
+      py::arg("columns"),
+      "Construct a zero-filled matrix with the requested shape")
+    .def(py::init<const dmatrix&>(), py::arg("parent"), "Copy constructor")
     /* This is the copy constructor wrapper */
     .def(py::init([](py::array_t<double, py::array::f_style | py::array::forcecast> b) {
       py::buffer_info info = b.request();
@@ -487,7 +513,7 @@ PYBIND11_MODULE(utility, m) {
       auto v = new dmatrix(info.shape[0], info.shape[1]);
       memcpy(v->get_address(0,0), info.ptr, sizeof(double) * v->rows() * v->columns());
       return v;
-    }))
+    }), py::arg("array"), "Construct by copying a two-dimensional NumPy array")
     .def_buffer([](dmatrix &m) -> py::buffer_info {
       return py::buffer_info(
         m.get_address(0,0),                               /* Pointer to buffer */
@@ -760,9 +786,12 @@ PYBIND11_MODULE(utility, m) {
   py::class_<ErrorLogger>(m,"ErrorLogger","Used to post any nonfatal errors without aborting a program of family of parallel programs")
     .def(py::init<>())
     .def(py::init<const ErrorLogger&>())
-    .def(py::init<int>())
-    .def("set_job_id",&ErrorLogger::set_job_id)
-    .def("get_job_id",&ErrorLogger::get_job_id)
+    .def(py::init<int>(), py::arg("job_id"), "Construct with a job id")
+    .def("set_job_id",&ErrorLogger::set_job_id,
+      py::arg("job_id"),
+      "Set the job id attached to future log entries")
+    .def("get_job_id",&ErrorLogger::get_job_id,
+      "Return the job id attached to this logger")
     .def("log_error",[](ErrorLogger &self, py::object err) {
         if(!py::isinstance(err, py::handle(PyMsPASSError)))
           throw py::type_error("log_error(): incompatible function arguments.\n    arg0 should be 'mspasspy.ccore.utility.MsPASSError' but " + std::string("'") +
@@ -772,8 +801,15 @@ PYBIND11_MODULE(utility, m) {
       },
       "log error thrown as MsPASSError"
     )
-    .def("log_error",py::overload_cast<const std::string,const std::string,const ErrorSeverity>(&ErrorLogger::log_error),"log a message at a specified severity level")
-    .def("log_verbose",&ErrorLogger::log_verbose,"Log an informational message - tagged as log message")
+    .def("log_error",py::overload_cast<const std::string,const std::string,const ErrorSeverity>(&ErrorLogger::log_error),
+      py::arg("algorithm"),
+      py::arg("message"),
+      py::arg("severity"),
+      "Log a message at a specified severity level")
+    .def("log_verbose",&ErrorLogger::log_verbose,
+      py::arg("algorithm"),
+      py::arg("message"),
+      "Log an informational message - tagged as log message")
     .def("get_error_log",&ErrorLogger::get_error_log,"Return all posted entries")
     .def("size",&ErrorLogger::size,"Return number of entries in this log")
     .def(py::self += py::self,"Operator +=")

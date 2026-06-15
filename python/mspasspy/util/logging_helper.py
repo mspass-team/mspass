@@ -91,8 +91,8 @@ def ensemble_error(d, alg, message, err_severity=ErrorSeverity.Invalid):
       objects.
     :param alg: is the algorithm name posted to elog on each member
     :param message: is the string posted to all members
-    (Note due to a current flaw in the api we don't have access to the
-    severity attribute.  For now this always set it Invalid)
+      (Note due to a current flaw in the api we don't have access to the
+      severity attribute.  For now this always set it Invalid)
     """
     if isinstance(d, (TimeSeriesEnsemble, SeismogramEnsemble)):
         n = len(d.member)

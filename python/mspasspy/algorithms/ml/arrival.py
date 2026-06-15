@@ -20,8 +20,8 @@ def annotate_arrival_time(
     """
     Predict the arrival time of the P wave using the provided seisbench WaveformModel.
     The arrival time will be saved as a dictionary in the input TimeSeries object and can be accessed using
-        the key 'p_wave_picks'. In the dictionary, the key is the arrival time in the UTC timestamp format,
-        and the value is the probability of the pick.
+    the key ``p_wave_picks``. In the dictionary, the key is the arrival time in the UTC timestamp format,
+    and the value is the probability of the pick.
 
     :param timeseries: The time series data to predict the arrival time.
     :param threshold: The probability threshold (0-1) to filter p-wave picks.

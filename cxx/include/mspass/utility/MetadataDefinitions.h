@@ -68,6 +68,7 @@ public:
   \return MDtype enum that can be used to establish the proper type.
   */
   mspass::utility::MDtype type(const std::string key) const;
+  /*! Return the set of defined metadata keys. */
   std::list<std::string> keys() const;
   /*! Basic putter.
 
@@ -77,7 +78,7 @@ public:
 
   \param key is the key for indexing this attribute
   \param concept_ is brief description saved as the concept for this key
-  \param type defines the type to be defined for this key.
+  \param mdt defines the type to be defined for this key.
   */
   void add(const std::string key, const std::string concept_, const MDtype mdt);
   /*! \brief Methods to handle aliases.
@@ -97,6 +98,7 @@ public:
    the key is a registered unique name and not an alias.
    */
   bool is_alias(const std::string key) const;
+  /*! Return registered aliases for a definitive key. */
   std::list<std::string> aliases(const std::string key) const;
   /*! Get definitive name for an alias.
 
@@ -196,7 +198,7 @@ public:
   a double search required if preceded by is_normalized.
   */
   std::string unique_id_key(const std::string key) const;
-  /*! \Brief return the master collection (table) for a key used as a unique id.
+  /*! \brief return the master collection (table) for a key used as a unique id.
 
   Support for normalized Metadata requires static tables (collection in MongoDB)
   that contain the data using normalization.   In seismic data type examples are

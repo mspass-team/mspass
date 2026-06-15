@@ -363,6 +363,8 @@ public:
     more easily comprehended without additional lookups.
   \param typ defines the data type (C++ class) the algorithm that is generating
     this data will create.
+  \param parents is a vector of ProcessingHistory pointers for all input data
+    objects used to create this ensemble.
   \param create_newid is a boolean defining how the current id is handled.
     As described above, if true the method will call newid and set that
      as the current id of this data object.  If false the current value is
@@ -731,6 +733,7 @@ to all inputs passed through that algorithm.  For iterative algorithms the list
 can be much longer as each pass will be post new uuids for the same
 algorithm.
 
+\param h is the ProcessingHistory object to search.
 \param alg is the algorithm name to search for. (Note:  ignored in this
   implementation but will make any application more readable.)
 \param algid is the id string used to uniquely define a algorithm instance.

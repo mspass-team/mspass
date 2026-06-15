@@ -21,10 +21,13 @@ namespace utility {
  * set of errors when get operations fail.  */
 class MetadataGetError : public MsPASSError {
 public:
+  /*! Stream used internally to assemble the final error message. */
   std::stringstream ss;
+  /*! Default constructor used by containers and exception mechanics. */
   MetadataGetError()
       : MsPASSError() {}; // seems necessary to not default this with gcc
   /*! Constructor called when a key is not found in the Metadata.
+   * \param key is the Metadata key that could not be found.
    * \param Texpected is the type name (return of typeid name method) trying to
    * extract. */
   MetadataGetError(const std::string key, const char *Texpected) {
@@ -74,10 +77,12 @@ public:
     message = ss.str();
     badness = ErrorSeverity::Suspect;
   };
+  /*! Copy constructor preserving the message and severity. */
   MetadataGetError(const MetadataGetError &parent) {
     message = parent.message;
     badness = parent.badness;
   };
+  /*! Assignment operator preserving the message and severity. */
   MetadataGetError operator=(const MetadataGetError &parent) {
     if (this != &parent) {
       message = parent.message;
@@ -87,6 +92,12 @@ public:
   };
 };
 
+/*! \brief Type-safe metadata container used throughout MsPASS.
+
+Metadata stores named scalar values in a boost::any map and provides typed
+accessors, serialization helpers, and merge/update operations for seismic data
+headers and processing state.
+*/
 class Metadata : public BasicMetadata {
 public:
   /*! Default constructor.  Does nothing.
@@ -100,8 +111,8 @@ public:
   actually always promoted to a long.  The optional format variable is there to
   allow alternative formats in the future.
 
-  \param ifs - ifstream from which to read data
-  \param format - optional format specification.   Currently only default of
+  \param ifs ifstream from which to read data
+  \param form optional format specification.   Currently only default of
   "text" is accepted.
   \exception MsPASSError can be thrown for a variety of conditions.
   */
@@ -109,7 +120,7 @@ public:
   /*!
   Standard copy constructor.
 
-  \param mdold - parent object to be copied
+  \param mdold parent object to be copied
   **/
   Metadata(const Metadata &mdold);
   /*! Destructor - has to be explicitly implemented and declared virtual
@@ -117,7 +128,7 @@ public:
     feature of C++  inheritance. */
   virtual ~Metadata() {};
   /*! Standard assignment operator.
-    \param mdold - parent object to copy
+    \param mdold parent object to copy
   */
   Metadata &operator=(const Metadata &mdold);
   /*! Append additional metadata with replacement.
@@ -250,12 +261,29 @@ other attributes.
     }
     return iptr->second;
   };
+  /*! Return the stored C++ type name for a metadata value.
+   *
+   * \param key metadata key to inspect.
+   * \return demangled type name of the value stored for key.
+   * \exception MetadataGetError if key is undefined.
+   */
   std::string type(const std::string key) const;
+  /*! Store a value of any boost::any-compatible C++ type.
+   *
+   * The key is marked as changed so database update logic can detect it.
+   * \param key metadata key to create or replace.
+   * \param val value copied into the internal boost::any map.
+   */
   template <typename T> void put(const std::string key, T val) noexcept {
     boost::any aval = val;
     md[key] = aval;
     changed_or_set.insert(key);
   }
+  /*! Store a value using a C string key.
+   *
+   * \param key null-terminated metadata key to create or replace.
+   * \param val value copied into the internal boost::any map.
+   */
   template <typename T> void put(const char *key, T val) noexcept {
     /* could do this as put(string(key),val) but this is so trivial duplicating
     the code for the string method is more efficient than an added function
@@ -264,15 +292,35 @@ other attributes.
     md[std::string(key)] = aval;
     changed_or_set.insert(std::string(key));
   }
+  /*! Store a double-valued attribute.
+   *
+   * \param key metadata key to create or replace.
+   * \param val value to store.
+   */
   void put(const std::string key, const double val) override {
     this->put<double>(key, val);
   };
+  /*! Store an integer-valued attribute.
+   *
+   * \param key metadata key to create or replace.
+   * \param val value to store.
+   */
   void put(const std::string key, const int val) override {
     this->put<int>(key, val);
   };
+  /*! Store a boolean attribute.
+   *
+   * \param key metadata key to create or replace.
+   * \param val value to store.
+   */
   void put(const std::string key, const bool val) override {
     this->put<bool>(key, val);
   };
+  /*! Store a string-valued attribute.
+   *
+   * \param key metadata key to create or replace.
+   * \param val value to store.
+   */
   void put(const std::string key, const std::string val) override {
     this->put<std::string>(key, val);
   };
@@ -284,22 +332,37 @@ other attributes.
     std::string sval(val);
     this->put<std::string>(key, val);
   }
+  /*! Store a C string value using a std::string key.
+   *
+   * \param key metadata key to create or replace.
+   * \param val null-terminated string value to store.
+   */
   void put(std::string key, const char *val) { this->put(key.c_str(), val); }
+  /*! Store a pybind11 object for Python-facing metadata.
+   *
+   * \param key metadata key to create or replace.
+   * \param val Python object to store in the metadata map.
+   */
   void put_object(const std::string key, const pybind11::object val) {
     this->put<pybind11::object>(key, val);
   }
+  /*! Store an int through the Python-friendly typed wrapper. */
   void put_int(const std::string key, const int val) {
     this->put<int>(key, val);
   };
+  /*! Store a string through the Python-friendly typed wrapper. */
   void put_string(const std::string key, const std::string val) {
     this->put<std::string>(key, val);
   };
+  /*! Store a bool through the Python-friendly typed wrapper. */
   void put_bool(const std::string key, const bool val) {
     this->put<bool>(key, val);
   };
+  /*! Store a double through the Python-friendly typed wrapper. */
   void put_double(const std::string key, const double val) {
     this->put<double>(key, val);
   };
+  /*! Store a long through the Python-friendly typed wrapper. */
   void put_long(const std::string key, const long val) {
     this->put<long>(key, val);
   };
@@ -426,10 +489,15 @@ template <typename T> T Metadata::get(const std::string key) const {
   };
   return result;
 }
+/*! Specialization of Metadata::get for double values. */
 template <> double Metadata::get<double>(const std::string key) const;
+/*! Specialization of Metadata::get for int values. */
 template <> int Metadata::get<int>(const std::string key) const;
+/*! Specialization of Metadata::get for long values. */
 template <> long Metadata::get<long>(const std::string key) const;
+/*! Specialization of Metadata::get for bool values. */
 template <> bool Metadata::get<bool>(const std::string key) const;
+/*! Specialization of Metadata::get for float values. */
 template <> float Metadata::get<float>(const std::string key) const;
 /*! Return a pretty name from a boost any object.
  *
@@ -537,7 +605,7 @@ anything else.
 \param sd is the serialized data to be unpacked
 \return Metadata derived from sd
 */
-Metadata restore_serialized_metadata(const std::string);
+Metadata restore_serialized_metadata(const std::string sd);
 
 Metadata restore_serialized_metadata_py(const pybind11::object &sd);
 } // namespace utility

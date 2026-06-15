@@ -36,7 +36,7 @@ the following incantation:
 Verify python version
 ~~~~~~~~~~~~~~~~~~~~~~
 The MsPASS desktop application requires a version of python of
-3.10 or above.  Verify what you have running as follow:
+3.10 or above.  Verify what you have running as follows:
 
 .. code-block::
 

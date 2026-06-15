@@ -10,7 +10,7 @@ using namespace mspass::seismic;
 using namespace mspass::utility;
 
 
-/*! \brief Extracts a requested time window of data from a parent coreSeismogram
+/* \brief Extracts a requested time window of data from a parent coreSeismogram
 object.
 
 It is common to need to extract a smaller segment of data from a larger
@@ -69,7 +69,7 @@ CoreSeismogram WindowData(const CoreSeismogram &parent, const TimeWindow &tw) {
     }
   return (result);
 }
-/*! \brief Extracts a requested time window of data from a parent CoreTimeSeries
+/* \brief Extracts a requested time window of data from a parent CoreTimeSeries
 object.
 
 It is common to need to extract a smaller segment of data from a larger
@@ -129,7 +129,7 @@ CoreTimeSeries WindowData(const CoreTimeSeries &parent, const TimeWindow &tw) {
   return (result);
 }
 
-/*! \brief Extracts a requested time window of data from a parent Seismogram
+/* \brief Extracts a requested time window of data from a parent Seismogram
 object.
 
 It is common to need to extract a smaller segment of data from a larger
@@ -227,7 +227,7 @@ Seismogram WindowData(const Seismogram &parent, const TimeWindow &tw) {
   result.load_history(dynamic_cast<const ProcessingHistory &>(parent));
   return result;
 }
-/*! \brief Extracts a requested time window of data from a parent TimeSeries
+/* \brief Extracts a requested time window of data from a parent TimeSeries
 object.
 
 It is common to need to extract a smaller segment of data from a larger
