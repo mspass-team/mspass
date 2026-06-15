@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# If running in Kubernetes use HOME (the PVC mount point), in Docker use /home,
+if ! whoami &>/dev/null; then
+    if [ -w /etc/passwd ]; then
+        echo "jovyan:x:$(id -u):$(id -g):,,,:/home/jovyan:/bin/bash" >> /etc/passwd
+    fi
+fi
+
+# If running in Kubernetes use HOME (the PVC mount point), in Docker use /home/jovyan,
 # else fall back to MSPASS_WORK_DIR or pwd.
 if [[ -n "${KUBERNETES_SERVICE_HOST}" ]]; then
   MSPASS_WORKDIR=${MSPASS_WORK_DIR:-${HOME}}
