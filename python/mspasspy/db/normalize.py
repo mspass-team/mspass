@@ -163,18 +163,18 @@ class BasicMatcher(ABC):
         messages back to the caller in a manner that is easier to handle
         with the MsPASS error system than an exception mechanism.
         Callers should handle four cases that are possible for a return
-        (Noting [] means an empty list and [...] a list with data)
+        (noting ``[]`` means an empty list and ``[...]`` a list with data):
 
-           1. []  None  - notmatch found
-           2. [] ErrorLog - failure with an informational message in the
-             ErrorLog that should be preserved.  The presence of an error
-             should imply something went wrong and it was simply a null result.
-           3. [...] None - all is good with no detected errors
-           4. [...] ErrorLog - valid data returned but there is a warning
-              or informational message posted.  In this case handlers
-              may want to examine the ErrorSeverity components of the log
-              and handle different levels differently  (e.g. Fatal and
-              Informational should always be treated differently)
+        - ``([], None)`` means no match was found.
+        - ``([], ErrorLog)`` means failure with an informational message in the
+          ErrorLog that should be preserved.  The presence of an error
+          should imply something went wrong and it was simply a null result.
+        - ``([...], None)`` means success with no detected errors.
+        - ``([...], ErrorLog)`` means valid data were returned but there is a
+          warning or informational message posted.  In this case handlers
+          may want to examine the ErrorSeverity components of the log and
+          handle different levels differently  (e.g. Fatal and Informational
+          should always be treated differently).
 
         """
 
@@ -208,16 +208,16 @@ class BasicMatcher(ABC):
         with the MsPASS error system than an exception mechanism.
         Callers should handle four cases that are possible for a return:
 
-           1, None  None  - no match found
-           2. None ErrorLog - failure with an informational message in the
-             ErrorLog that the caller may want be preserved or convert to
-             an exception.
-           3. Metadata None - all is good with no detected errors
-           4. Metadata ErrorLog - valid data was returned but there is a warning
-              or informational message posted.  In this case handlers
-              may want to examine the ErrorSeverity components of the log
-              and handle different levels differently  (e.g. Fatal and
-              Informational should always be treated differently)
+        - ``(None, None)`` means no match was found.
+        - ``(None, ErrorLog)`` means failure with an informational message in
+          the ErrorLog that the caller may want be preserved or convert to
+          an exception.
+        - ``(Metadata, None)`` means success with no detected errors.
+        - ``(Metadata, ErrorLog)`` means valid data was returned but there is a
+          warning or informational message posted.  In this case handlers may
+          want to examine the ErrorSeverity components of the log and handle
+          different levels differently  (e.g. Fatal and Informational should
+          always be treated differently).
 
         """
         pass
@@ -467,15 +467,16 @@ class DictionaryCacheMatcher(BasicMatcher):
 
     The class defines a generic dictionary cache with a string key.   The way that
     key is define is abstracted through two virtual methods:
-    (1) The cache_id method creates a match key from a mspass data object.
-        That is normally from the Metadata container but it is not
-        restricted to that. e.g. start time for TimeSeries or
-        Seismogram objects can be obtained from the t0 attribute
-        directly.
-    (2) The db_make_cache_id is called by the internal method of this
-        intermediate class (method name is _load_normalization_cache)
-        to build the cache index from MongoDB documents scanned to
-        construct the cache.
+
+    - The cache_id method creates a match key from a mspass data object.
+      That is normally from the Metadata container but it is not
+      restricted to that. e.g. start time for TimeSeries or
+      Seismogram objects can be obtained from the t0 attribute
+      directly.
+    - The db_make_cache_id is called by the internal method of this
+      intermediate class (method name is _load_normalization_cache)
+      to build the cache index from MongoDB documents scanned to
+      construct the cache.
 
     Two different methods to define the cache index are necessary as a
     generic way to implement aliases.  A type example is the mspass use
@@ -619,11 +620,11 @@ class DictionaryCacheMatcher(BasicMatcher):
         :return:  2-component tuple following API specification in BasicMatcher.
           Only two possible results are possible from this implementation:
 
-           None ErrorLog - failure with an error message that can be passed on
-             if desired or printed
-           Metadata None - all is good with no detected errors.  The Metadata
-             container holds all attributes_to_load and any defined
-             load_if_defined values.
+          - ``(None, ErrorLog)`` means failure with an error message that can
+            be passed on if desired or printed.
+          - ``(Metadata, None)`` means success with no detected errors.  The
+            Metadata container holds all attributes_to_load and any defined
+            load_if_defined values.
 
         """
         find_output = self.find(mspass_object)
@@ -680,10 +681,12 @@ class DictionaryCacheMatcher(BasicMatcher):
         :return: tuple with two elements.  0 is either a list of valid Metadata
           container(s) or None and 1 is either None or an PyErrorLogger object.
           There are only two possible returns from this method:
-              [None, elog] - find failed.  See/save elog for why it failed.
-              [ [md1, md2, ..., mdn], None] - success with 0 a list of Metadata
-                containing attributes_to_load and load_if_defined
-                (if appropriate) in each component.
+
+          - ``[None, elog]`` means find failed.  See/save elog for why it
+            failed.
+          - ``[[md1, md2, ..., mdn], None]`` means success with 0 a list of
+            Metadata containing attributes_to_load and load_if_defined
+            (if appropriate) in each component.
         """
         if not isinstance(mspass_object, Metadata):
             elog = PyErrorLogger()
@@ -885,8 +888,8 @@ class DataFrameCacheMatcher(BasicMatcher):
     Subclasses of this class must implement a "subset" method to be
     concrete.  A subset method is the abstract algorithm that defines
     a match for that instance expressed as a pandas subset operation.
-    (For most algorithms there are multiple ways to skin that cat or is
-     it a panda?)  See concrete subclasses for examples.
+    For most algorithms there are multiple ways to express that subset
+    operation.  See concrete subclasses for examples.
 
     This class cannot be instantiated because it is not concrete
     (has abstract - virtual - methods that must be defined by subclasses)
@@ -1149,7 +1152,7 @@ class ObjectIdDBMatcher(DatabaseMatcher):
       extracted by find method.  Any data attached to these keys will only
       be posted in the find return if they are defined in the database
       document retrieved in the query.
-    :param type:  list of strings defining collection keys
+    :type load_if_defined:  list of strings defining collection keys
 
     :param aliases:  python dictionary defining alias names to apply
      when fetching from a data object's Metadata container.   The key sense
@@ -1157,7 +1160,7 @@ class ObjectIdDBMatcher(DatabaseMatcher):
      dictionary should match one  of the attributes in attributes_to_load
      or load_if_defined.  The value the key defines should be the alias
      used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
       Metadata containers by the find and find_one method will all have the
@@ -1192,6 +1195,13 @@ class ObjectIdDBMatcher(DatabaseMatcher):
         )
 
     def query_generator(self, mspass_object) -> dict:
+        """
+        Build a MongoDB ``_id`` query from an object metadata id key.
+
+        :param mspass_object: MsPASS object containing ``<collection>_id``.
+        :return: query dictionary or ``None`` if the id key is not defined.
+        :rtype: dict or None
+        """
         data_object_key = self.collection + "_id"
         if mspass_object.is_defined(data_object_key):
             query_id = mspass_object[data_object_key]
@@ -1262,7 +1272,7 @@ class ObjectIdMatcher(DictionaryCacheMatcher):
        That is essential if the collection contains generic names like "lat"
        or "depth" that would produce ambiguous keys if used directly.
        (e.g. lat is used for source, channel, and site collections in the
-        default schema.)
+       default schema.)
     :type prepend_collection_name:  boolean
     """
 
@@ -1386,7 +1396,9 @@ class MiniseedDBMatcher(DatabaseMatcher):
     anything but "channel" or "site" to enforce this limitation.
     If you use a schema other than the mspass schema the methods in
     this class will fail if you change any of the following keys:
-        net, sta, chan, loc, starttime, endtime, hang, vang
+
+    ``net``, ``sta``, ``chan``, ``loc``, ``starttime``, ``endtime``,
+    ``hang``, and ``vang``.
 
     Users should only call
     the find_one method for this application.   The find_one algorithm
@@ -1420,12 +1432,10 @@ class MiniseedDBMatcher(DatabaseMatcher):
     :param attributes_to_load:  list of keys of required attributes that will
       be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find will fail.
-      Default ["_id","lat","lon","elev","hang","vang"]
-               "hang","vang","starttime","endtime"]
-      when collection is set as channel.  Smaller list of
-      ["_id","lat","lon","elev"] is
-       default when collection is set as "site".
+      some calls to find will fail.  The default when ``collection`` is
+      ``channel`` is ``["_id", "lat", "lon", "elev", "hang", "vang",
+      "starttime", "endtime"]``.  The default when ``collection`` is
+      ``site`` is ``["_id", "lat", "lon", "elev"]``.
     :type attributes_to_load:  list of string defining keys in collection
       documents
 
@@ -1499,18 +1509,20 @@ class MiniseedDBMatcher(DatabaseMatcher):
         A common current issue is that if miniseed data are saved
         to wf_TimeSeries and then read back in a later workflow
         the default schema will alter the keys for net, sta, chan,
-        and loc to add the prefix "READONLY_" (e.g. READONLY_net).
+        and loc to add the prefix ``READONLY_`` (e.g. ``READONLY_net``).
         The query automatically tries to recover any of the
         station name keys using that recipe.
 
         :param mspass_object:   assumed to be a TimeSeries object
           with net, sta, chan, and (optional) loc defined.
           The time for the time interval test is translation to
-          MongoDB syntax of:
-           channel["starttime"] <= mspass_object.to <= channel["endtime"]
-           This algorithm will abort if the statement mspass_object.t0
-           does not resolve, which means the caller should assure
-           the input is a TimeSeries object.
+          MongoDB syntax of::
+
+              channel["starttime"] <= mspass_object.t0 <= channel["endtime"]
+
+          This algorithm will abort if the statement mspass_object.t0
+          does not resolve, which means the caller should assure
+          the input is a TimeSeries object.
 
         :return:  normal return is a string defining the query.
            If any required station name keys are not defined the
@@ -1557,6 +1569,7 @@ class MiniseedDBMatcher(DatabaseMatcher):
         slightly different form required by find_one.   More important
         is the fact that the wrapper implements two safties to make the
         code more robust:
+
             1.  It immediately tests that mspass_object is a valid TimeSeries
                 or Seismogram object. It will raise a TypeError exception
                 if that is not true.  That is enforced because find_one
@@ -1641,7 +1654,9 @@ class MiniseedMatcher(DictionaryCacheMatcher):
     anything but "channel" or "site" to enforce this limitation.
     If you use a schema other than the mspass schema the methods in
     this class will fail if you change any of the following keys:
-        net, sta, chan, loc, starttime, endtime, hang, vang
+
+    ``net``, ``sta``, ``chan``, ``loc``, ``starttime``, ``endtime``,
+    ``hang``, and ``vang``.
 
     Users should only call the find_one method for this application.
     The find_one method here overrides the generic find_one in the
@@ -1674,12 +1689,10 @@ class MiniseedMatcher(DictionaryCacheMatcher):
     :param attributes_to_load:  list of keys of required attributes that will
       be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find will fail.
-      Default ["_id","lat","lon","elev","hang","vang"]
-               "hang","vang","starttime","endtime"]
-      when collection is set as channel.  Smaller list of
-      ["_id","lat","lon","elev"] is
-      default when collection is set as "site".  In either case the
+      some calls to find will fail.  The default when ``collection`` is
+      ``channel`` is ``["_id", "lat", "lon", "elev", "hang", "vang",
+      "starttime", "endtime"]``.  The default when ``collection`` is
+      ``site`` is ``["_id", "lat", "lon", "elev"]``.  In either case the
       list MUST contain "starttime" and "endtime".  The reason is the
       linear search step will always use those two fields in the linear
       search for a time interval match. Be careful in how endtime is defined
@@ -1769,22 +1782,22 @@ class MiniseedMatcher(DictionaryCacheMatcher):
         Concrete implementations of this required method.  The cache_id
         in this algorithm is a composite key made from net, sta, chan, and
         loc with a fixed separator string of "_".  A typical example
-        is IU_AAK_BHZ_00_.
+        is ``IU_AAK_BHZ_00_``.
 
         An added feature to mesh with MsPASS conventions is a safety
         for attributes that are automatically renamed when saved
         that are marked readonly in the schema.   Such attributes
-        have a prepended tag, (at this time "READONLYERROR_").  If
+        have a prepended tag, (at this time ``READONLYERROR_``).  If
         one of the required keys for the index is missing (e.g. "net")
         the function tries to then fetch the modified name
-        (e.g. "READONLYERROR_net").  If that also fails it returns
+        (e.g. ``READONLYERROR_net``).  If that also fails it returns
         a None as specified by the API.
 
         :param mspass_object:  mspass object to be matched with cache.
           Must contain net, sta fpr site matching and net, sta, and
           chan for the channel collection. If loc is not defined for
           any case an emtpy string in defined an the key has two
-          trailing separator characters (e.g. IU_AAK_BHZ__)
+          trailing separator characters (e.g. ``IU_AAK_BHZ__``).
 
         :return: normal return is a string that can be used as an index string.
           If any of the required keys is missing it will return a None
@@ -1816,7 +1829,7 @@ class MiniseedMatcher(DictionaryCacheMatcher):
         Concrete implementations of this required method.  The cache_id
         in this algorithm is a composite key made from net, sta, chan, and
         loc with a fixed separator string of "_".  A typical example
-        is IU_AAK_BHZ_00_.  This method creates this string from
+        is ``IU_AAK_BHZ_00_``.  This method creates this string from
         a MongoDB document assumed passed through a python dictionary
         as argument doc.  Unlike the cache_id method this function
         does not have a safety for readonly errors.  The reason is that
@@ -1827,7 +1840,7 @@ class MiniseedMatcher(DictionaryCacheMatcher):
           Must contain net, sta fpr site matching and net, sta, and
           chan for the channel collection. If loc is not defined for
           any case an emtpy string in defined an the key has two
-          trailing separator characters (e.g. IU_AAK_BHZ__)
+          trailing separator characters (e.g. ``IU_AAK_BHZ__``).
 
         :return: normal return is a string that can be used as an index string.
           If any of the required keys is missing it will return a None
@@ -1876,10 +1889,10 @@ class MiniseedMatcher(DictionaryCacheMatcher):
         a numerical test for < endtime.
 
         :param mspass_object:   data to be used for matching against the
-        cache.  It must contain the required keys or the matching will
-        fail.  If the datum is marked dead the algorithm will return
-        immediately with a None response and an error message that
-        would usually be dropped by the call in that situation.
+          cache.  It must contain the required keys or the matching will
+          fail.  If the datum is marked dead the algorithm will return
+          immediately with a None response and an error message that
+          would usually be dropped by the call in that situation.
         :type mspass_object:  must be one of the atomic data types of
           mspass (currently TimeSeries and Seismogram) with t0
           defined as an epoch time computed from a UTC time stamp.
@@ -2194,9 +2207,9 @@ class EqualityMatcher(DataFrameCacheMatcher):
         match_keys dictionary key) than the right (dataframe column name).
 
         :param mspass_object:  Any valid mspass data object with a
-        Metadata container.  The container must contain all the
-        required match keys or the function will return an error condition
-        (see below)
+          Metadata container.  The container must contain all the
+          required match keys or the function will return an error condition
+          (see below)
         :type mspass_object:  TimeSeries, Seismogram, TimeSeriesEnsemble
           or SeismogramEnsemble object
 
@@ -2204,7 +2217,9 @@ class EqualityMatcher(DataFrameCacheMatcher):
            series of match conditions defined on construction.  Silently
            returns a zero length DataFrame if is no match.   Be warned
            two other situations can cause the return to have no data:
-               (1) dead input, and (2) match keys missing from mspass_object.
+
+           1. dead input.
+           2. match keys missing from mspass_object.
         """
         if hasattr(mspass_object, "dead"):
             if mspass_object.dead():
@@ -2227,7 +2242,7 @@ class EqualityDBMatcher(DatabaseMatcher):
     """
     Database equivalent of EqualityMatcher.
 
-    param db:  MongoDB database handle  (positional - no default)
+    :param db:  MongoDB database handle  (positional - no default)
     :type db: normally a MsPASS Database class but with this algorithm
       it can be the superclass from which Database is derived.
 
@@ -2348,7 +2363,8 @@ class OriginTimeDBMatcher(DatabaseMatcher):
     projected, test origin time as test_otime = t0 - t0offset.
     Note the sign convention that a positive offset means the time t0
     is after the event origin time.   We then select all source
-    records for which the time field satisifies:
+    records for which the time field satisifies::
+
         source.time - tolerance <= test_time <= source.time + tolerance
 
     The test_time value for matching from a datum can come through
@@ -2480,9 +2496,10 @@ class OriginTimeDBMatcher(DatabaseMatcher):
 
         :return:  query python dictionary on sucess.  Return None if
           a query could not be constructed.  That happens two ways here.
-          (1) If the input is not a valid mspass data object or marked dead.
-          (2) if the time_key algorithm is used and time_key isn't defined
-              in the input datum.
+
+          1. If the input is not a valid mspass data object or marked dead.
+          2. If the time_key algorithm is used and time_key isn't defined
+             in the input datum.
         """
         # This could generate mysterious results if a user messes up
         # badly, but  it makes the code more stable - otherwise
@@ -2535,7 +2552,8 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
     projected, test origin time as test_otime = t0 - t0offset.
     Note the sign convention that a positive offset means the time t0
     is after the event origin time.   We then select all source
-    records for which the time field satisifies:
+    records for which the time field satisifies::
+
         source.time - tolerance <= test_time <= source.time + tolerance
 
     The test_time value for matching from a datum can come through
@@ -2741,15 +2759,14 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         via the `data_time_key` argument.  If you then load the
         appropriate reference time in the ensemble's Metadata container
         you can normalize a common source gather's ensemble container
-        with a workflow.   Here is a code fragment illustrating the idea:
+        with a workflow.   Here is a code fragment illustrating the idea::
 
-        ```
-        source_matcher = OriginTimeMatcher(db,data_time_key="origin_time")
-        e = db.read_data(cursor, ... read args...)  # read ensemle e
-        # assume we got ths time (otime)vsome other way above
-        e['origin_time'] = otime
-        e = normalize(e,source_matcher)
-        ```
+            source_matcher = OriginTimeMatcher(db, data_time_key="origin_time")
+            e = db.read_data(cursor, ... read args...)  # read ensemble e
+            # assume we got this time (otime) some other way above
+            e["origin_time"] = otime
+            e = normalize(e, source_matcher)
+
         If the match suceeds the attributes defined in te Dataframe
         cache will be loaded into the Metadata contaienr of e.
         That is the defiition of a common source gather.
@@ -2954,15 +2971,16 @@ class ArrivalDBMatcher(DatabaseMatcher):
     waveform segments with an origin as miniseed.
 
     The algorithm it uses for matching is a logic and of two tests:
-        1.  We first match all arrival times falling between the
-            sample range of an input MsPASS data object, d.  That is,
-            first component of the query is to find all arrival times,
-            t_a, that obey the relation:  d.t0 <= t_a <= d.endtime().
-        2.  Match only data for which the (fixed) name "sta"
-            in arrival and the data match.   A secondary key match using
-            the "net" attribute is used only if "net" is defined with
-            the data.  That is done to streamline processing of css3.0
-            data where "net"  is not defined.
+
+    1. We first match all arrival times falling between the
+       sample range of an input MsPASS data object, d.  That is,
+       first component of the query is to find all arrival times,
+       t_a, that obey the relation:  d.t0 <= t_a <= d.endtime().
+    2. Match only data for which the (fixed) name "sta"
+       in arrival and the data match.   A secondary key match using
+       the "net" attribute is used only if "net" is defined with
+       the data.  That is done to streamline processing of css3.0
+       data where "net"  is not defined.
 
     Note the concept of an arrival time is also mixed as in
     some contexts it means a time computed from an earth model and other
@@ -2976,16 +2994,15 @@ class ArrivalDBMatcher(DatabaseMatcher):
       it can be the superclass from which Database is derived.
 
     :param collection:  Name of MongoDB collection that is to be queried
-       (default "arrival", which is not currently part of the stock
-        mspass schema.   Note it isn't required to be in the schema
-        and illustrates flexibility').
+      (default "arrival", which is not currently part of the stock
+      mspass schema.   Note it isn't required to be in the schema
+      and illustrates flexibility').
     :type collection: string
 
     :param attributes_to_load:  list of keys of required attributes that will
       be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find_one will fail.
-      Default ["phase","time"].
+      some calls to find_one will fail.  Default is ``["phase", "time"]``.
     :type attributes_to_load:  list of string defining keys in collection
       documents
 
@@ -3106,15 +3123,16 @@ class ArrivalMatcher(DataFrameCacheMatcher):
     waveform segments with an origin as miniseed.
 
     The algorithm it uses for matching is a logic and of two tests:
-        1.  We first match all arrival times falling between the
-            sample range of an input MsPASS data object, d.  That is,
-            first component of the query is to find all arrival times,
-            t_a, that obey the relation:  d.t0 <= t_a <= d.endtime().
-        2.  Match only data for which the (fixed) name "sta"
-            in arrival and the data match.   A secondary key match using
-            the "net" attribute is used only if "net" is defined with
-            the data.  That is done to streamline processing of css3.0
-            data where "net"  is not defined.
+
+    1. We first match all arrival times falling between the
+       sample range of an input MsPASS data object, d.  That is,
+       first component of the query is to find all arrival times,
+       t_a, that obey the relation:  d.t0 <= t_a <= d.endtime().
+    2. Match only data for which the (fixed) name "sta"
+       in arrival and the data match.   A secondary key match using
+       the "net" attribute is used only if "net" is defined with
+       the data.  That is done to streamline processing of css3.0
+       data where "net"  is not defined.
 
     Note the concept of an arrival time is also mixed as in
     some contexts it means a time computed from an earth model and other
@@ -3137,16 +3155,15 @@ class ArrivalMatcher(DataFrameCacheMatcher):
       it can be the superclass from which Database is derived.
 
     :param collection:  Name of MongoDB collection that is to be queried
-       (default "arrival", which is not currently part of the stock
-        mspass schema.   Note it isn't required to be in the schema
-        and illustrates flexibility').
+      (default "arrival", which is not currently part of the stock
+      mspass schema.   Note it isn't required to be in the schema
+      and illustrates flexibility').
     :type collection: string
 
     :param attributes_to_load:  list of keys of required attributes that will
       be returned in the output of the find method.   The keys listed
       must ALL have defined values for all documents in the collection or
-      some calls to find_one will fail.
-      Default ["phase","time"].
+      some calls to find_one will fail.  Default is ``["phase", "time"]``.
     :type attributes_to_load:  list of string defining keys in collection
       documents
 
@@ -3297,12 +3314,15 @@ def normalize(
 
     For example, suppose we create a concrete implementation of the
     MiniseedMatcher using all defaults from a database handle db as
-    follows:
+    follows::
+
         matcher = MiniseedMatcher()
+
     Suppose we then load data from wf_miniseed with read_distributed_data
     into the dask bag we will call dataset.  We can normalize
-    that data within a workflow as follows:
-        dataset = dataset.map(normalize,matcher)
+    that data within a workflow as follows::
+
+        dataset = dataset.map(normalize, matcher)
 
     An important warning about ensembles. If the function receives an
     ensemble by default it will enter a loop to apply the normalization

@@ -63,8 +63,8 @@ public:
   Basic constructor for this error object.
   \param nr1 number of rows in matrix 1
   \param nc1 number of columns in matrix 1
-  \param nr1 number of rows in matrix 2
-  \param nc1 number of columns in matrix 2
+  \param nr2 number of rows in matrix 2
+  \param nc2 number of columns in matrix 2
   */
   dmatrix_size_error(const size_t nr1, const size_t nc1, const size_t nr2,
                      const size_t nc2) {
@@ -126,6 +126,13 @@ public:
   \exception dmatrix_index_error is thrown if request is out of range
   */
   double operator()(const size_t rowindex, const size_t colindex) const;
+  /*! Mutable indexing operator to fetch or modify an array element.
+
+  \param r row index to fetch.
+  \param c column index to fetch.
+  \returns reference to matrix element at position (r,c).
+  \exception dmatrix_index_error is thrown if request is out of range.
+  */
   double &operator()(size_t r, size_t c);
   /*! Standard assignment operator */
   dmatrix &operator=(const dmatrix &other);
@@ -135,7 +142,7 @@ public:
   to be added are the same size. Hence, an exception will happen if you use
   this operator with a size mismatch.
 
-  \param  A is the matrix to be added to this.
+  \param other is the matrix to be added to this.
   \exception throws a dmatrix_size_error if other and this are not the same
   size.
   */
@@ -198,9 +205,15 @@ public:
 
   \param s is the scaling factor
   \param A is the matrix to be scaled
-  \return sA
+  \return s*A
   */
   friend dmatrix operator*(const double &s, const dmatrix &A) noexcept;
+  /*! Scale this matrix by a constant.
+
+  Multiplies every element in this matrix by s and returns the scaled copy.
+  \param s scaling factor.
+  \return this matrix multiplied by s.
+  */
   dmatrix operator*(double s) const noexcept;
   /*! \brief Transpose a matrix
    *
@@ -211,7 +224,7 @@ public:
    \return A transposed
    */
   friend dmatrix tr(const dmatrix &A) noexcept;
-  /* \brief Get a pointer to the location of a matrix component.
+  /*! \brief Get a pointer to the location of a matrix component.
 
   Although a sharp knife it is useful at times to get a raw pointer to
   the data in a dmatrix.   A common one is using the BLAS to do vector
@@ -250,9 +263,14 @@ public:
   void zero();
 
 protected:
+  /*! Contiguous Fortran-order storage for all matrix elements. */
   std::vector<double> ary; // initial size of container 0
+  /*! Number of scalar values in ary that represent this matrix. */
   size_t length;
-  size_t nrr, ncc;
+  /*! Number of rows in this matrix. */
+  size_t nrr;
+  /*! Number of columns in this matrix. */
+  size_t ncc;
 
 private:
   friend class boost::serialization::access;
@@ -286,8 +304,8 @@ public:
 
   This operator is used for constructs like y=Ax where x is a
   vector and A is a matrix.   y is the returned vector.
-  \param A - matrix on right in multiply
-  \param x - vector on left of multiply operation
+  \param A - matrix on left in multiply
+  \param x - vector on right of multiply operation
 
   \return product A*x
   \exception dmatrix_size_error thrown if size of A and x do not match.

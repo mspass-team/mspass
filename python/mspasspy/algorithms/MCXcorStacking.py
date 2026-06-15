@@ -1230,6 +1230,7 @@ def align_and_stack(
     cause the return to be a dead ensemble with an explanation in the
     elog container of the ensemble (in these situation the stack is an
     empty `TimeSeries` container):
+
         1.  Irregular sample intervals of live data.
         2.  Any live data with the time reference set to UTC
         3.  Inconsistency of the time range of the data and the
@@ -1246,6 +1247,7 @@ def align_and_stack(
             needs to contain if it is to be stable.   The "robust window" should
             be set to focus on the section of the signal that will have the most
             coherent stack.
+
     There is a further complexity in the iteration sequence used by this algorithm
     for any robust stack method.  That is, time shifts computed by cross-correlation
     can potentially move the correlation window outside the bounds of the
@@ -1318,7 +1320,7 @@ def align_and_stack(
         If a None type (default) use the logic defined above to set this time window.
     :param robust_stack_window_keys: specifies a pair of strings to be used
         as keys to extract the strart time (component 0) and end time (component 1)
-        of the robust time window to use from the beam `TimeSeries.
+        of the robust time window to use from the beam `TimeSeries`.
     :type robust_stack_window_keys: iterable list of two strings
     :param output_stack_window:  optional `TimeWindow` to apply to the
         computed robust stack output.   Default returns a stack spanning the

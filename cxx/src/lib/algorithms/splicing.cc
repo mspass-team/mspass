@@ -43,24 +43,39 @@ thought of as a struct with convenient constructors.
 */
 class SegmentVectorProperties {
 public:
+  /*! True when all live segments have the same sample interval. */
   bool dt_constant;
+  /*! True when at least one input segment is marked dead. */
   bool has_dead_components;
+  /*! True when live input segments are ordered by increasing start time. */
   bool is_sorted;
+  /*! True when adjacent live segments overlap beyond the time-tear tolerance. */
   bool has_overlaps;
+  /*! True when adjacent live segments have a gap beyond the time-tear tolerance. */
   bool has_gaps;
+  /*! Number of live segments found in the input vector. */
   int number_live;
+  /*! Index of the first live segment, or -1 when none are live. */
   int first_live;
-  /* This is set to the earliest start time of all segments. */
+  /*! Earliest start time of the live segments. */
   double t0;
-  /* This is set to lastest endtime of all segments */
+  /*! Latest end time of the live segments. */
   double endtime;
+  /*! Sample interval used for the spliced output when dt is constant. */
   double dt;
+  /*! Number of samples needed to hold the spliced output. */
   size_t spliced_nsamp;
-  /* This one holds messages best formed while scanning data that can be
-  passed downstream. */
+  /*! Messages formed while scanning input segments for downstream logging. */
   ErrorLogger elog;
+  /*! Construct an empty property set with conservative defaults. */
   SegmentVectorProperties();
+  /*! Scan a vector of segments and summarize ordering, gaps, overlaps, and size.
+  \param segments input segments to inspect before splicing.
+  */
   SegmentVectorProperties(const std::vector<TimeSeries> &segments);
+  /*! Standard copy constructor.
+  \param parent property set to copy.
+  */
   SegmentVectorProperties(const SegmentVectorProperties &parent);
 };
 SegmentVectorProperties::SegmentVectorProperties() : elog() {

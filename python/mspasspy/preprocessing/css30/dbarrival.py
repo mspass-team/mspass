@@ -99,7 +99,7 @@ def load_css30_sources(
     :param db:  MongoDB database handle
     :param srcdict:  dict output of extract_unique_css30_sources
     :param collection:  optional alternative collection to save (default
-    is source)
+      is source)
     :param attribute_names: list of keys to copy from srcdict to database.
       Note currently no aliases are allowed and we don't test that these
       are found.  We assume the list is consistent with what is
@@ -407,13 +407,16 @@ def set_netcode_snetsta(db, staindex, collection="arrival", use_immortal_cursor=
     :param collection:  MongoDB collection to scan to apply snetsta correction.
       (default is arrival)
 
-    :return:  tuple with these contentss:
-        0 - number of documents scanned
-        1 - number update
-        2 - set of stations names with no match in the snetsta index.
-          (these will often need additonal attention through another
-          mechanism)
+    :return:  tuple with these contents.
     :rtype:  tuple
+
+    The tuple contents are:
+
+    0. number of documents scanned
+    1. number update
+    2. set of stations names with no match in the snetsta index.
+       (these will often need additonal attention through another
+       mechanism)
     """
     col = db[collection]
     print(col.count_documents({}))
@@ -491,7 +494,7 @@ def set_netcode_from_site(
     seed net codes.   The algorithm used here is the most basic possible and
     looks only for a match of sta and and option time matched with
     a site's operation interval defined by a starttime to endtime time interval.
-    I returns two lists of problem children that have to be handled
+    It returns two lists of problem children that have to be handled
     separately:  (1) a set container of station names that have no matching
     value in the current site collection, and (2) a set container with
     a tuple of [net, sta, startime, endtime] values of net:sta combinations
@@ -524,15 +527,18 @@ def set_netcode_from_site(
       reduce processing overhead or handle sites where net is null and
       not needed at all.   Default is None which turns this option off.
     :return:  Summary of results in the form of a 4 element tuple.
-    :rtype:  tuple with the following contents:
-        0 - number of documents processed
-        1 - number of documents updated in this run
-        2 - set container of tuples with content (net,sta,starttime,endtime)
-            of all documents matching the reference sta code but having
-            different net codes or time spans.   These data are stored in a
-            set container to easily sort out the unique combinations.
-        3 - set container of station codes that found in collection that
-            had no matching entry in the site collection.
+    :rtype:  tuple
+
+    The tuple contents are:
+
+    0. number of documents processed
+    1. number of documents updated in this run
+    2. set container of tuples with content (net,sta,starttime,endtime)
+       of all documents matching the reference sta code but having
+       different net codes or time spans.   These data are stored in a
+       set container to easily sort out the unique combinations.
+    3. set container of station codes that found in collection that
+       had no matching entry in the site collection.
     """
 
     dbh = db[collection]

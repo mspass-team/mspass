@@ -270,9 +270,8 @@ class Database(pymongo.database.Database):
         raised if the collection already exists.   Useful mainly for advanced users tuning
         a polished workflow.
 
-        Parameters:
           :param name: the name of the collection to create
-          :param codec_options` (optional): An instance of
+          :param codec_options: (optional): An instance of
             :class:`~bson.codec_options.CodecOptions`. If ``None`` (the
             default) the :attr:`codec_options` of this :class:`Database` is
             used.
@@ -291,22 +290,22 @@ class Database(pymongo.database.Database):
             :class:`~pymongo.collation.Collation`.
           :param session: (optional): a
             :class:`~pymongo.client_session.ClientSession`.
-          :param **kwargs: (optional): additional keyword arguments will
-            be passed as options for the `create collection command`_
+          :param kwargs: (optional): additional keyword arguments will
+            be passed as options for the ``createCollection`` command.
 
-        All optional `create collection command`_ parameters should be passed
+        All optional ``createCollection`` command parameters should be passed
         as keyword arguments to this method. Valid options include, but are not
         limited to:
 
-          ``size``: desired initial size for the collection (in
-            bytes). For capped collections this size is the max
-            size of the collection.
-          ``capped``: if True, this is a capped collection
-          ``max``: maximum number of objects if capped (optional)
-          ``timeseries``: a document specifying configuration options for
-            timeseries collections
-          ``expireAfterSeconds``: the number of seconds after which a
-            document in a timeseries collection expires
+        - ``size``: desired initial size for the collection (in
+          bytes). For capped collections this size is the max
+          size of the collection.
+        - ``capped``: if True, this is a capped collection.
+        - ``max``: maximum number of objects if capped (optional).
+        - ``timeseries``: a document specifying configuration options for
+          timeseries collections.
+        - ``expireAfterSeconds``: the number of seconds after which a
+          document in a timeseries collection expires.
         """
         with self.__client._tmp_session(session) as s:
             # Skip this check in a transaction where listCollections is not
@@ -475,6 +474,7 @@ class Database(pymongo.database.Database):
         attributes are not defined for a retrieved document they default to
         "storage_mode"=="gridfs" and "format"=="binary".  The `storage_mode`
         attribute can currently be one of the following:
+
         - `gridfs` is taken to mean the data are stored in the MongoDB
            gridfs file system.
         - 'files' implies the data are stored in conventional computer files
@@ -724,13 +724,13 @@ class Database(pymongo.database.Database):
           having a common net:sta:chan:loc codes.  We use obspy's
           miniseed reader to crack miniseed data.  It breaks such data into
           multiple "segments".  We then use their
-          `merge<https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html>`__
+          `Stream.merge <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html>`__
           method of the "Stream" object to glue any such segments together.
           This parameter is passed as the "method" argument to that function.
           For detail see
-          `__add__ <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__>`
+          `Trace.__add__ <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.__add__.html#obspy.core.trace.Trace.__add__>`__
           for details on methods 0 and 1,
-          See `_cleanup <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup>`
+          See `Stream._cleanup <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup>`__
           for details on method -1.  Note this argument is ignored unless
           the reader is trying to read miniseed data.
         :type method: :class:`int` with one of three values: -1, 0, or 1
@@ -747,7 +747,7 @@ class Database(pymongo.database.Database):
           argument they call "interpolate_samples".  See their documentation
           for details, but this argument controls how "overlaps", as opposed
           to gaps, are handled by merge.  See the function documentation
-          `here<https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html>`__
+          `Stream.merge <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html>`__
           for details.
         :type interpolation_samples: :class:`int`
 
@@ -1101,7 +1101,7 @@ class Database(pymongo.database.Database):
         data objects in MsPASS.   That is, what we call atomic data
         (:class:`mspasspy.ccore.seismic.TimeSeries` and
         :class:`mspasspy.ccore.seismic.Seismogram`) and ensembles of the
-        two atomic types ():class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` and
+        two atomic types (:class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` and
         :class:`mspasspy.ccore.seismic.SeismogramEnsemble`).  Handling
         multiple types while simultaneously supporting multiple abstractions
         of how the data are stored externally has some complexities.
@@ -1177,6 +1177,7 @@ class Database(pymongo.database.Database):
             the external representation of data, this writer has limits
             on what it can and cannot do.  Key points about how formatting
             is handled are:
+
             -  The default save is a native format that is fast and efficient.
                You can select alternative formats for data by setting a valid
                value (string) for the "format" argument to this method.
@@ -1322,6 +1323,7 @@ class Database(pymongo.database.Database):
             any saved documents than try to enforce rules setting
             mode to "cautious" or "pedantic".   On the other hand, even
             if running in "promiscuous" mode certain rules are enforced:
+
              -  Any aliases defined in the schema are always reset to the
                 key defined for the schema.  e.g. if you used the alias
                 "dt" for the data sample interval this writer will always
@@ -1334,10 +1336,10 @@ class Database(pymongo.database.Database):
                 with a method in the Metadata container that keeps track of
                 any Metadata changes.  If a readonly attribute is found to
                 have been changed it will be renamed with the prefix
-                "READONLYERROR_", saved, and an error posted (e.g. if you try
+                ``READONLYERROR_``, saved, and an error posted (e.g. if you try
                 to alter site_lat (a readonly attribute) in a workflow when
                 you save the waveform you will find an entry with the key
-                READONERROR_site_lat.)  We emphasize the issue happens if
+                ``READONLYERROR_site_lat``.)  We emphasize the issue happens if
                 the value associated with such a key was altered after the
                 datum was constructed.  If the attribute does not
                 change it is ERASED and will not appear in the document.
@@ -1461,7 +1463,7 @@ class Database(pymongo.database.Database):
         :param normalizing_collections:  list of collection names dogmatically treated
           as normalizing collection names.  The keywords in the list are used
           to always (i.e. for all modes) erase any attribute with a key name
-          of the form `collection_attribute where `collection` is one of the collection
+          of the form ``collection_attribute`` where ``collection`` is one of the collection
           names in this list and attribute is any string.  Attribute names with the "_"
           separator are saved unless the collection field matches one one of the
           strings (e.g. "channel_vang" will be erased before saving to the
@@ -1470,7 +1472,7 @@ class Database(pymongo.database.Database):
           is used and different names are used for normalizing collections.
           (e.g. if one added a "shot" collection to the schema the list would need
           to be changed to at least add "shot".)
-        :type normalizing_collection:  list if strings defining collection names.
+        :type normalizing_collections: list of strings defining collection names.
         :param save_history:   When True the optional history data will
           be saved to the database if it was actually enabled in the workflow.
           If the history container is empty will silently do nothing.
@@ -2737,10 +2739,10 @@ class Database(pymongo.database.Database):
         for all "mode" parameters if an key is defined in the schema as
         readonly and it is listed as having been modified, it will
         be save with a new key creating by adding the prefix
-        "READONLYERROR_" .  e.g. if we had a site_sta read as
-        'AAK' but we changed it to 'XYZ' in a workflow, when we tried
+        ``READONLYERROR_``.  e.g. if we had a site_sta read as
+        ``AAK`` but we changed it to ``XYZ`` in a workflow, when we tried
         to save the data you will find an entry in the document
-        of {'READONLYERROR_site_sta' : 'XYZ'}
+        of ``{"READONLYERROR_site_sta": "XYZ"}``.
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -3017,6 +3019,7 @@ class Database(pymongo.database.Database):
         collections and storage methods, doing a full data update has some
         complexity.   This method handles the problem differently for the
         different pieces:
+
             1. An update is performed on the parent wf collection document.
                That update makes use of the related Database method
                called update_metadata.
@@ -3060,7 +3063,7 @@ class Database(pymongo.database.Database):
         :param normalizing_collections:  list of collection names dogmatically treated
           as normalizing collection names.  The keywords in the list are used
           to always (i.e. for all modes) erase any attribute with a key name
-          of the form `collection_attribute where `collection` is one of the collection
+          of the form ``collection_attribute`` where ``collection`` is one of the collection
           names in this list and attribute is any string.  Attribute names with the "_"
           separator are saved unless the collection field matches one one of the
           strings (e.g. "channel_vang" will be erased before saving to the
@@ -3069,7 +3072,7 @@ class Database(pymongo.database.Database):
           is used and different names are used for normalizing collections.
           (e.g. if one added a "shot" collection to the schema the list would need
           to be changed to at least add "shot".)
-        :type normalizing_collection:  list if strings defining collection names.
+        :type normalizing_collections: list of strings defining collection names.
         :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
           (defaults to 'Database.update_data' and should not normally need to be changed)
         :type alg_name: :class:`str`
@@ -4981,28 +4984,30 @@ class Database(pymongo.database.Database):
         duplicates based on the following keys:
 
         For site:
-            net
-            sta
-            chan
-            loc
-            starttime::endtime - this check is done cautiously with
-              a 10 s fudge factor to avoid the issue of floating point
-              equal tests.   Probably overly paranoid since these
-              fields are normally rounded to a time at the beginning
-              of a utc day, but small cost to pay for stabilty because
-              this function is not expected to be run millions of times
-              on a huge collection.
 
-        for channels:
-            net
-            sta
-            chan
-            loc
-            starttime::endtime - same approach as for site with same
-               issues - note especially 10 s fudge factor.   This is
-               necessary because channel metadata can change more
-               frequently than site metadata (e.g. with a sensor
-               orientation or sensor swap)
+        - ``net``
+        - ``sta``
+        - ``chan``
+        - ``loc``
+        - ``starttime``/``endtime`` - this check is done cautiously with
+          a 10 s fudge factor to avoid the issue of floating point
+          equal tests.   Probably overly paranoid since these
+          fields are normally rounded to a time at the beginning
+          of a utc day, but small cost to pay for stabilty because
+          this function is not expected to be run millions of times
+          on a huge collection.
+
+        For channels:
+
+        - ``net``
+        - ``sta``
+        - ``chan``
+        - ``loc``
+        - ``starttime``/``endtime`` - same approach as for site with same
+          issues - note especially 10 s fudge factor.   This is
+          necessary because channel metadata can change more
+          frequently than site metadata (e.g. with a sensor
+          orientation or sensor swap)
 
         The channel collection can contain full response data
         that can be obtained by extracting the data with the key
@@ -6007,23 +6012,24 @@ class Database(pymongo.database.Database):
         """
         Import and parse a textfile into set of documents, and store them
         into a mongodb collection. This function consists of two steps:
+
         1. Textfile2Dataframe: Convert the input textfile into a Pandas dataframe
         2. save_dataframe: Insert the documents in that dataframe into a mongodb
-        collection
+           collection
 
         :param filename:  path to text file that is to be read to create the
           table object that is to be processed (internally we use pandas or
           dask dataframes)
-          :param collection:  MongoDB collection name to be used to save the
+        :param collection:  MongoDB collection name to be used to save the
           (often subsetted) tuples of filename as documents in this collection.
         :param separator: The delimiter used for seperating fields,
           the default is r"\\s+", which is the regular expression of "one or more
           spaces".
-              For csv file, its value should be set to ','.
-              This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
-              To learn more details about the usage, check the following links:
-              https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
-              https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
+          For csv file, its value should be set to ','.  This parameter will
+          be passed into pandas.read_csv or dask.dataframe.read_csv.  To learn
+          more details about the usage, check the following links:
+          https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+          https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
         :param type_dict: pairs of each attribute and its type, usedd to validate
           the type of each input item
         :param header_line: defines the line to be used as the attribute names for
@@ -6067,7 +6073,7 @@ class Database(pymongo.database.Database):
           The default is false meaning the simpler, identical api panda
           operators are used.
         :param insert_column: a dictionary of new columns to add, and their value(s).
-          If the content is a single value, it can be passedto define a constant value
+          If the content is a single value, it can be passed to define a constant value
           for the entire column of data. The content can also be a list, in that case,
           the list should contain values that are to be set, and it must be the same
           length as the number of tuples in the table.
@@ -7062,6 +7068,19 @@ class Database(pymongo.database.Database):
         channel,
         collection="wf_miniseed",
     ):
+        """
+        Download one day of miniSEED data from an FDSN service and index it.
+
+        :param provider: ObsPy FDSN provider name or URL.
+        :param year: four-digit year to request.
+        :param day_of_year: Julian day to request.
+        :param network: network code selector.
+        :param station: station code selector.
+        :param location: location code selector.
+        :param channel: channel code selector.
+        :param collection: database collection used for waveform index records.
+        :return: result of inserting the waveform index documents.
+        """
         dbh = self[collection]
 
         client = Client(provider)
@@ -7674,7 +7693,7 @@ def md2doc(
     requirements for MongDB defined by a specified schema.   It
     dogmatically enforces readonly restrictions in the schema by
     changing the key for any fields marked readonly and found to have
-    been set as changed.  Such entries change to "READONLYERROR_" + k
+    been set as changed.  Such entries change to ``"READONLYERROR_" + k``
     where k is the original key marked readonly.  See user's manual for
     a discussion of why this is done.
 
@@ -7717,17 +7736,17 @@ def md2doc(
       normal use of this function inside the Database class.
       The contents of the tuple are:
 
-      0 - python dictionary of edited result ready to save as MongoDB document
-      1 - boolean equivalent of the "live" attribute of TimeSeries and Seismogram.
-          i.e. if True the result can be considered valid.  If False something
-          was very wrong with the input and the contents of 0 is invalid and
-          should not be used.  When False the error log in 2 will contain
-          one or more error messages.
-      2 - An ErrorLogger object that may or may not contain any error logging
-          messages.  Callers should call the size method of the this entry
-          and handle the list of error messages it contains if size is not zero.
-          Note the right way to do that for TimeSeries and Seismogram is to
-          use operator += for the elog attribute of the datum.
+      0. python dictionary of edited result ready to save as MongoDB document.
+      1. boolean equivalent of the "live" attribute of TimeSeries and Seismogram.
+         i.e. if True the result can be considered valid.  If False something
+         was very wrong with the input and the contents of 0 is invalid and
+         should not be used.  When False the error log in 2 will contain
+         one or more error messages.
+      2. An ErrorLogger object that may or may not contain any error logging
+         messages.  Callers should call the size method of the this entry
+         and handle the list of error messages it contains if size is not zero.
+         Note the right way to do that for TimeSeries and Seismogram is to
+         use operator += for the elog attribute of the datum.
     """
     # this is necessary in case someone uses this outside Database
     # it should never happen when used by Database methods
@@ -8047,25 +8066,28 @@ def doc2md(
 
     :param mode: read mode as described in detail in User's Manual.
       Behavior for this function is as follows:
-        "promiscuous" - (default)  no checks are applied to any key-value
-           pairs and the result is a one-to-one translation of the input.
-        "cautious" - Type constraints in the schema are enforced and
-          automatically conveted if possible.  If conversion is needed
-          and fails the live/dead boolan in the return will be set to
-          signal this datum should be killed.  There will also be elog entries.
-        "pedantic" - type conversions are strongly enforced.  If any
-          type mismatch of a value occurs the live/dead boolean returned
-          will be set to signal a kill and there will be one or more
-          error messages in the elog return.
-    :type mode: string (must match one of the above or the function will throw
-        a ValueError exception.
 
-    :return 3-component tuple:  0 = converted Metadata container,
-      1 - boolean equivalent to "live".  i.e. if True the results is valid
-      while if False constructing an object from the result is ill advised,
-      2 - ErrorLogger object containing in error messages.  Callers should
-        test if the result of the size method of the return is > 0 and
-        handle the error messages as desired.
+      - ``promiscuous``: default; no checks are applied to any key-value
+        pairs and the result is a one-to-one translation of the input.
+      - ``cautious``: type constraints in the schema are enforced and
+        automatically conveted if possible.  If conversion is needed
+        and fails the live/dead boolan in the return will be set to
+        signal this datum should be killed.  There will also be elog entries.
+      - ``pedantic``: type conversions are strongly enforced.  If any
+        type mismatch of a value occurs the live/dead boolean returned
+        will be set to signal a kill and there will be one or more
+        error messages in the elog return.
+    :type mode: string (must match one of the above or the function will throw
+      a ValueError exception.)
+
+    :return: 3-component tuple:
+
+      0. converted Metadata container.
+      1. boolean equivalent to "live"; if True the results is valid while
+         if False constructing an object from the result is ill advised.
+      2. ErrorLogger object containing error messages.  Callers should
+         test if the result of the size method of the return is > 0 and
+         handle the error messages as desired.
 
     """
     elog = ErrorLogger()
@@ -8194,16 +8216,14 @@ def doclist2mdlist(
     :type doclist:  any iterable container holding an array of dict containers
       with rational content (i.e. expected to be a MongoDB document with attributes
       defined for a set of seismic data objects.)
+    :return:  array with four components:
 
-    ---other here --
-
-    :return:  array with three components:
-        0 - filtered array of Metadata containers
-        1 - live boolean.   Set False only if conversion of all the documents
-            in doclist failed.
-        2 - ErrorLogger where warning and kill messages are posted (see above)
-        3 - an array of documents that could not be converted (i.e. marked
-            bad when processed with doc2md.)
+        0. filtered array of Metadata containers.
+        1. live boolean.   Set False only if conversion of all the documents
+           in doclist failed.
+        2. ErrorLogger where warning and kill messages are posted (see above).
+        3. an array of documents that could not be converted (i.e. marked
+           bad when processed with doc2md.)
 
     """
     mdlist = []

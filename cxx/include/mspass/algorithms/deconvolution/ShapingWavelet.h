@@ -30,12 +30,12 @@ public:
    with parameters defined by parameters passed through the Metadata object.
 
    \param md - Metadata object with parameters specifying the wavelet.
-   \npts - length of signal to be generated which is the same as the fft
+   \param npts length of signal to be generated which is the same as the fft
      size for real valued signals.   If set 0 (the default) the constructor
      will attempt to get npts from md using the keyword "operator_nfft".
    */
   ShapingWavelet(const mspass::utility::Metadata &md, int npts = 0);
-  /* \brief Use a wavelet defined by a TimeSeries object.
+  /*! \brief Use a wavelet defined by a TimeSeries object.
    *
    This constructor uses the data stored in a TimeSeries object to define
    the shaping wavelet.   Note to assure output is properly time aligned
@@ -46,7 +46,7 @@ public:
    time.)   If the input data size is smaller than the buffer size
    specified the buffer is zero padded.
 
-   \param w - TimeSeries specifying wavelet.   Note dt will be extracted
+   \param d TimeSeries specifying wavelet.   Note dt will be extracted
      and stored in this object.
    \param nfft - buffer size = fft length for frequency domain representation
      of the wavelet.  If ns of d is less than nfft or the time range defined
@@ -63,12 +63,16 @@ public:
   It is the default for CNR3CDecon.
   \param npolelo is the number of poles for the low corner
   \param f3dblo is the 3db point for the low corner of the passband
-  \param nplolehi is the number of poles for the upper corner filter
+  \param npolehi is the number of poles for the upper corner filter
   \param f3dbhi is the 3db point for the high corner of the passband.
+  \param dtin sample interval of the wavelet.
+  \param n number of samples in the wavelet.
   */
   ShapingWavelet(const int npolelo, const double f3dblo, const int npolehi,
                  const double f3dbhi, const double dtin, const int n);
+  /*! Copy constructor. */
   ShapingWavelet(const ShapingWavelet &parent);
+  /*! Assignment operator. */
   ShapingWavelet &operator=(const ShapingWavelet &parent);
   /*! Return a pointer to the shaping wavelet this object defines in
    * the frequency domain. */
@@ -76,9 +80,13 @@ public:
   /*! Return the impulse response of the shaping filter.   Expect the
    * result to be symmetric about 0 (i.e. output spans nfft/2 to nfft/2.*/
   mspass::seismic::CoreTimeSeries impulse_response();
+  /*! Return the frequency bin size. */
   double freq_bin_size() { return df; };
+  /*! Return the sample interval. */
   double sample_interval() { return dt; };
+  /*! Return the shaping wavelet type name. */
   std::string type() { return wavelet_name; };
+  /*! Return the number of complex frequency samples. */
   int size() const { return w.size(); };
 
 private:

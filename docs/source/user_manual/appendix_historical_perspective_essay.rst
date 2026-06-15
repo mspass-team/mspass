@@ -1,4 +1,7 @@
 .. _Historical_seismology_io:
+
+:orphan:
+
 Historical Perspective on Seismology Formats and Vestigal IO Concepts
 ========================================================================
 

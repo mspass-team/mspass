@@ -1524,7 +1524,7 @@ def test_write_distributed_ensemble(
     # the comparable atomic data test
     data_tag = "ensemble_file_save"
     srcid_list = get_srclist_by_tag(db, src_data_tag)
-    # Regeneate querylist and matcher definitions with the same code
+    # Regenerate querylist and matcher definitions with the same code
     # as above to reduce state dependency for a small cost
     querylist = []
     ensemble_doclist = []

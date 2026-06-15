@@ -355,12 +355,12 @@ a good reason to do so.
   mspass with :code:`docker compose` you may need to do port mapping
   if 8888 is blocked by a firewall.
 
-  Advanced Options
-  ~~~~~~~~~~~~~~~~~~~
+Advanced Options
+~~~~~~~~~~~~~~~~~~~
 
-  The :code:`docker compose` approach provides a rich collection of options
-  beyond those illustrated in our default configuration file shown above.
-  More examples can be found in the mspass github repository in the
-  *data/yaml* directory.  The most important example there is
-  *docker-compose_spark.yml* which shows how to lauch a pyspark cluster.
-  The default shown above will run the dask scheduler. 
+The :code:`docker compose` approach provides a rich collection of options
+beyond those illustrated in our default configuration file shown above.
+More examples can be found in the MsPASS GitHub repository in the
+*data/yaml* directory.  The most important example there is
+*docker-compose_spark.yaml* which shows how to launch a pyspark cluster.
+The default shown above will run the dask scheduler.

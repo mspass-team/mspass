@@ -53,7 +53,7 @@ MetadataDefinitions::MetadataDefinitions() {
   };
 }
 
-MetadataDefinitions::MetadataDefinitions(const string fname,
+MetadataDefinitions::MetadataDefinitions(const std::string fname,
                                          const MDDefFormat mdf) {
   try {
     switch (mdf) {

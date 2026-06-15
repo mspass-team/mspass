@@ -372,27 +372,27 @@ def read_distributed_data(
       that can be used as the normalization operator in the
       `normalize` function.
 
-     :param normalize_ensemble:  This parameter should be used to
-       apply normalization to ensemble Metadata (attributes common to
-       the entire ensemble.) It will be ignored if reading
-       atomic data.  Otherwise it behaves like normalize and is
-       assumed to a list of subclasses of :class:`BasicMatcher` objects.
-       If using this option you must also specify a valid value for
-       the `container_to_merge` argument.  The reason is that currently
-       the only efficient way to post any Metadata components to
-       an ensemble's Metadata container is via the algorithm used by
-       if the `container_to_merge` option is used.  This feature was
-       designed with ids in mind where the ids would link to a collection
-       that are contain defining properties for what the ensemble is.
-       For example, if the ensemble is a "common-source gather"
-       the `container_to_merge` could be a bag/RDD of ObjectIds defining
-       the `source_id` attribute.  Then the normalize_ensemble list
-       could contain an instance of :class:`mspasspy.db.normalize.ObjectIdMatcher`
-       created to match and load source data.
-     :type normalize_ensemble:  a :class:`list` of :class:`BasicMatcher`.
-       :class:`BasicMatchers` are applied sequentialy with the
-       `normalize` function with the list of attributes loaded defined
-       by the instance.
+    :param normalize_ensemble:  This parameter should be used to
+      apply normalization to ensemble Metadata (attributes common to
+      the entire ensemble.) It will be ignored if reading
+      atomic data.  Otherwise it behaves like normalize and is
+      assumed to a list of subclasses of :class:`BasicMatcher` objects.
+      If using this option you must also specify a valid value for
+      the `container_to_merge` argument.  The reason is that currently
+      the only efficient way to post any Metadata components to
+      an ensemble's Metadata container is via the algorithm used by
+      if the `container_to_merge` option is used.  This feature was
+      designed with ids in mind where the ids would link to a collection
+      that are contain defining properties for what the ensemble is.
+      For example, if the ensemble is a "common-source gather"
+      the `container_to_merge` could be a bag/RDD of ObjectIds defining
+      the `source_id` attribute.  Then the normalize_ensemble list
+      could contain an instance of :class:`mspasspy.db.normalize.ObjectIdMatcher`
+      created to match and load source data.
+    :type normalize_ensemble:  a :class:`list` of :class:`BasicMatcher`.
+      :class:`BasicMatchers` are applied sequentialy with the
+      `normalize` function with the list of attributes loaded defined
+      by the instance.
 
     :param load_history: boolean (True or False) switch used to enable or
       disable object level history mechanism.   When set True each datum
@@ -1509,7 +1509,7 @@ def write_distributed_data(
     :param normalizing_collections:  list of collection names dogmatically treated
         as normalizing collection names.  The keywords in the list are used
         to always (i.e. for all modes) erase any attribute with a key name
-        of the form `collection_attribute where `collection` is one of the collection
+        of the form ``collection_attribute`` where ``collection`` is one of the collection
         names in this list and attribute is any string.  Attribute names with the "_"
         separator are saved unless the collection field matches one one of the
         strings (e.g. "channel_vang" will be erased before saving to the
@@ -1518,18 +1518,18 @@ def write_distributed_data(
         is used and different names are used for normalizing collections.
         (e.g. if one added a "shot" collection to the schema the list would need
         to be changed to at least add "shot".)
-     :type normalizing_collection:  list if strings defining collection names.
+    :type normalizing_collections: list of strings defining collection names.
 
-     :param alg_name:  do not change
-     :param alg_id:  algorithm id for object-level history.  Normally
-         assigned by global history manager.
+    :param alg_name:  do not change
+    :param alg_id:  algorithm id for object-level history.  Normally
+        assigned by global history manager.
 
-     :param dask_client: Optional Dask distributed Client instance. When provided,
-         this client will be used for compute() operations instead of the default
-         multiprocessing scheduler. This is required when using Dask distributed
-         scheduler with worker plugins (e.g., MongoDBWorker). If None (default),
-         uses the default Dask scheduler.
-     :type dask_client: :class:`dask.distributed.Client` or None
+    :param dask_client: Optional Dask distributed Client instance. When provided,
+        this client will be used for compute() operations instead of the default
+        multiprocessing scheduler. This is required when using Dask distributed
+        scheduler with worker plugins (e.g., MongoDBWorker). If None (default),
+        uses the default Dask scheduler.
+    :type dask_client: :class:`dask.distributed.Client` or None
 
     """
     # We don't do type check on the data argument assuming dask or

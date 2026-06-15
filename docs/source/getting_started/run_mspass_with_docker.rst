@@ -1,5 +1,7 @@
 .. _run_mspass_with_docker:
 
+:orphan:
+
 Run MsPASS with Docker
 ======================
 
@@ -100,7 +102,7 @@ window and */home* in the container will be mapped to your
     docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
 
 When the container boots it splashes a bunch of text to the terminal from
-which it was launched announcing successful lauching of
+which it was launched announcing successful launching of
 required MsPAS components.
 The last part of the output will look something
 like this

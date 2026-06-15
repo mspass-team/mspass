@@ -16,7 +16,7 @@ AttributeProperties::AttributeProperties() {
   internal_name = "NULL";
   mdt = MDtype::String;
 }
-AttributeProperties::AttributeProperties(const string st) {
+AttributeProperties::AttributeProperties(const std::string st) {
   const string white(" \t\n");
   int current = 0;
   int end_current;
@@ -155,7 +155,7 @@ ostream &operator<<(ostream &ofs, const AttributeProperties &d) {
    Arr with tag name.   This allows multiple maps to be stored in a
    single file.   In mspass we might one day want to add a constructor
    that would use mongodb to store maps like this. */
-AttributeMap::AttributeMap(const AntelopePf &pf, const string name) {
+AttributeMap::AttributeMap(const AntelopePf &pf, const std::string name) {
   const string base_error("AttributeMap AntelopePf constructor:  ");
   try {
     AntelopePf pfnested = pf.get_branch(name);
@@ -199,7 +199,7 @@ AttributeMap::AttributeMap(const AntelopePf &pf, const string name) {
     throw;
   };
 }
-AttributeMap::AttributeMap(const string mapname) {
+AttributeMap::AttributeMap(const std::string tag) {
   const string base_error("AttributeMap constructor:");
   const string pfname("attribute_maps.pf");
   string datadir, pfdir, pffile;
@@ -208,7 +208,7 @@ AttributeMap::AttributeMap(const string mapname) {
     pfdir = datadir + "/pf/";
     pffile = pfdir + pfname;
     AntelopePf pfall_maps(pffile);
-    *this = AttributeMap(pfall_maps, mapname);
+    *this = AttributeMap(pfall_maps, tag);
   } catch (...) {
     throw;
   };
@@ -235,7 +235,7 @@ AttributeMap::AttributeMap(const AttributeMap &am) {
   attributes = am.attributes;
   aliasmap = am.aliasmap;
 }
-bool AttributeMap::is_alias(const string key) const {
+bool AttributeMap::is_alias(const std::string key) const {
   if (aliasmap.size() == 0)
     return false;
   if (aliasmap.find(key) == aliasmap.end())
@@ -245,7 +245,8 @@ bool AttributeMap::is_alias(const string key) const {
 bool AttributeMap::is_alias(const char *key) const {
   return this->is_alias(string(key));
 }
-map<string, AttributeProperties> AttributeMap::aliases(const string key) const {
+std::map<std::string, AttributeProperties>
+AttributeMap::aliases(const std::string key) const {
   map<string, AttributeProperties> result;
   /* reverse logic a bit odd, but cleanest solution */
   if (!this->is_alias(key))
@@ -275,7 +276,8 @@ map<string, AttributeProperties> AttributeMap::aliases(const string key) const {
   /* note this silently returns an empty list if key is not alias*/
   return (result);
 }
-map<string, AttributeProperties> AttributeMap::aliases(const char *key) const {
+std::map<std::string, AttributeProperties>
+AttributeMap::aliases(const char *key) const {
   try {
     return this->aliases(string(key));
   } catch (...) {
@@ -284,7 +286,7 @@ map<string, AttributeProperties> AttributeMap::aliases(const char *key) const {
 }
 /* This code has very strong parallels to aliases because they do similar
 things even though they return very different results. */
-list<string> AttributeMap::aliastables(const string key) const {
+std::list<std::string> AttributeMap::aliastables(const std::string key) const {
   list<string> result;
   if (!this->is_alias(key))
     throw MsPASSError(
@@ -310,7 +312,7 @@ list<string> AttributeMap::aliastables(const string key) const {
   }
   return (result);
 }
-list<string> AttributeMap::aliastables(const char *key) const {
+std::list<std::string> AttributeMap::aliastables(const char *key) const {
   try {
     return this->aliastables(string(key));
   } catch (...) {

@@ -168,12 +168,19 @@ public:
   AntelopePfError() {
     message = std::string("AntelopePfError->undefined error");
   };
+  /*! Construct an AntelopePfError from an std::string message.
+  \param mess message to append to the AntelopePfError prefix.
+  */
   AntelopePfError(std::string mess) {
     message = "AntelopePfError object message=" + mess;
   };
+  /*! Construct an AntelopePfError from a C string message.
+  \param mess message to append to the AntelopePfError prefix.
+  */
   AntelopePfError(const char *mess) {
     message = std::string("AntelopePfError object message=") + mess;
   };
+  /*! Write the stored error message to std::cerr. */
   void log_error() { std::cerr << message << std::endl; };
 };
 /* Procedural functions using AntelopePf object */

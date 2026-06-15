@@ -61,6 +61,20 @@ import numpy as np
 
 
 class DatascopeDatabase:
+    """
+    Lightweight adapter for Antelope/Datascope flat-file tables.
+
+    The class reads CSS3.0-style table definitions from an Antelope parameter
+    file and converts selected tables to and from pandas ``DataFrame``
+    objects.  It is intended as a translation layer for workflows that mix
+    Antelope catalog/table processing with MsPASS waveform processing.
+
+    :param dbname: root database name used by Datascope flat files.
+    :param pffile: optional parameter file defining table layouts; when
+        omitted the constructor searches ``$MSPASS_HOME/data/pf`` for the
+        bundled ``DatascopeDatabase.pf`` file.
+    """
+
     def __init__(self, dbname, pffile=None):
         """
         Constructor for this class.  It parses either the master
@@ -120,17 +134,17 @@ class DatascopeDatabase:
         the `rename` method.
 
         :param rename_attributes:  optional python dictionary used to
-        change the names of one or more columns of the output dataframe.
-        This argument is passed directly to the dataframe rename method.
-        Default is None which cause the rename call to be bypassed.
+            change the names of one or more columns of the output dataframe.
+            This argument is passed directly to the dataframe rename method.
+            Default is None which cause the rename call to be bypassed.
 
         :param attributes_to_use:  optional python list of attribute
-        names to extract from the larger table.  If used only the attributes
-        defined in the list will be returned in the dataframe. Default is
-        None which cause all attributes in the table to be returned.
+            names to extract from the larger table.  If used only the attributes
+            defined in the list will be returned in the dataframe. Default is
+            None which cause all attributes in the table to be returned.
 
         :return:  DataFrame representation of requested table with optional
-        edits applied.
+            edits applied.
 
         """
 
@@ -196,10 +210,10 @@ class DatascopeDatabase:
         value.
 
         :param table:  name of the table for which Null values is to
-        be retrieved.
+            be retrieved.
         :type table:  string
         :return:  python dictionary key by attribute names with Nulls
-        as the value associated with that attribute.
+            as the value associated with that attribute.
         """
         allproperties = self._parse_attribute_name_tbl(table)
         return allproperties[2]
@@ -215,37 +229,38 @@ class DatascopeDatabase:
         dataframe merge that loads and joins a named table to the
         input dataframe passed through arg 0 (df_left).   If more
         sophisticated join operators are needed there are two options:
-            1.  Do the join operator externally in Datascaope,
-                save the result as a Datascope view in a csv format, and then
-                inport the csv file with the pandas read_csv method.
-            2.  Save the larger of the two tables you want to join to
-                MongoDB and use one of the generic matchers that are
-                subclasses of :class:`mspasspy.db.normalize.DataFrameCacheMatcher`.
-                If the matching operation you need is not already defined you
-                may need to develop a custom subclass of that matcher.
+
+        1.  Do the join operator externally in Datascope, save the result
+            as a Datascope view in a csv format, and then import the csv file
+            with the pandas read_csv method.
+        2.  Save the larger of the two tables you want to join to MongoDB and
+            use one of the generic matchers that are subclasses of
+            :class:`mspasspy.db.normalize.DataFrameCacheMatcher`.  If the
+            matching operation you need is not already defined you may need
+            to develop a custom subclass of that matcher.
 
         :param df_left:  dataframe to which table (arg1) is to be joined.
 
         :param table:  antelope database table name to be joined with df_left.
 
         :param join_keys:  If not specified the keys returned by the
-        get_primary_keys method will be used for left and right tables in the join.
-        Can be a list of attribute names and if so left and right join
-        keys will be the same.  Can also be a python dictionary.  Use
-        that form if you want to use different keys for the left and
-        right tables in the join.  The keys of the dict are used for
-        the left and the values are used for the right.
+            get_primary_keys method will be used for left and right tables in
+            the join.  Can be a list of attribute names and if so left and
+            right join keys will be the same.  Can also be a python
+            dictionary.  Use that form if you want to use different keys for
+            the left and right tables in the join.  The keys of the dict are
+            used for the left and the values are used for the right.
 
         :param right_suffix:  Duplicate attribute names in a merge
-        need a way to be identified. Default uses the table name with
-        a leading underscore. (e.g. joining site would produce an lddate_site
-        attribute in the output dataframe).   If any other string is used
-        it is passed directly to the dataframe merge method and you will
-        get different names for ambiguous column names.
+            need a way to be identified. Default uses the table name with
+            a leading underscore. (e.g. joining site would produce an
+            lddate_site attribute in the output dataframe).   If any other
+            string is used it is passed directly to the dataframe merge method
+            and you will get different names for ambiguous column names.
 
         :param how:  defines the type of join operation to use.
-        Passed directly to the merge dataframe method.  See documentation
-        for dataframe merge to see options allowed for how.
+            Passed directly to the merge dataframe method.  See documentation
+            for dataframe merge to see options allowed for how.
 
         :return:  dataframe resulting from the join
         """
@@ -308,33 +323,34 @@ class DatascopeDatabase:
         clear any previous content.
 
         :param df: pandas DataFrame containing data to be written.  Note the
-        column names must match css3.0 schema mames or an exception will
-        be thrown.
+            column names must match css3.0 schema mames or an exception will
+            be thrown.
         :type df:  pandas DataFrame
         :param db:  output handle.   Default is None which is taken to mean
-        use this instance.
+            use this instance.
         :type db:  Can be any of:  (1) instance of `DatascopeDatabase`,
-        (2) a string defining the Datascope database base name, or
-        (3) None.   In all cases this argument is used only to generate
-        file names for the Datascope files.   For case 1 the name defined in
-        the class instance is used.  For case 2 the string received is used
-        as the base file name (e.g. if db="mydb" and table="arrival" this
-        method will write to a file called "mydb.arrival".)
-        In case 3 the name associated with this instance (self) will be used.
+            (2) a string defining the Datascope database base name, or
+            (3) None.   In all cases this argument is used only to generate
+            file names for the Datascope files.   For case 1 the name defined
+            in the class instance is used.  For case 2 the string received is
+            used as the base file name (e.g. if db="mydb" and
+            table="arrival" this method will write to a file called
+            "mydb.arrival".)  In case 3 the name associated with this
+            instance (self) will be used.
         :param table:  Datascope table to which the data should be
-        written.
+            written.
         :type table:  string (default 'wfdisc')
         :param dir: optional director name where the table data should be
-        saved.   Default is None which is taken to mean the current director.
-        If the directory does not exist it will be created.
-        :type:  string or None
+            saved.   Default is None which is taken to mean the current
+            director.  If the directory does not exist it will be created.
+        :type dir:  string or None
         :param append: boolean that when set causes the data to be appended
-        to a file if it already exist.  Default is True.  When set False
-        if the file exists it will be overwritten.
+            to a file if it already exist.  Default is True.  When set False
+            if the file exists it will be overwritten.
 
         :return:  possibly edited copy of input dataframe with null
-        values inserted and columns rearrange to match Datascope table
-        order,
+            values inserted and columns rearrange to match Datascope table
+            order,
         """
         message = "DatascopeDatabase.db2table:  "
         if db is None:
@@ -522,8 +538,10 @@ class DatascopeDatabase:
         """
         Forms the standard catalog view of CSS3.0 sans the orid==prefor
         condition to return a DataFrame formed by using
-        the DatascopeDatabase join method in sequence to produce:
+        the DatascopeDatabase join method in sequence to produce::
+
             event->origin->assoc->arrival
+
         noting the the assoc->arrival join is done via arid.
         The returned dataframe will have some attributes like the
         "time" attributes of `arrival` and `origin` altered to
@@ -540,7 +558,7 @@ class DatascopeDatabase:
         this class called by the function or pandas.
 
         :return:  Pandad DataFrame with the standard css3.0 catalog view.
-        Attribute names are css3.0 names.
+            Attribute names are css3.0 names.
 
         """
 
@@ -577,13 +595,13 @@ class DatascopeDatabase:
         4.  the net code mismatch with css3.0 (see below)
         5.  The equally obnoxious loc code problem
 
-        1. simply involves always posting some constants.
-        2.  is handled by silently deleting any attribute defined by the
-        Null value for that attribute in the wfdisc schema.
-        3. is handled by dropping any tuples for which the "datatype"
-        attribute on "sd" (normal mseed) or "S1" miniseed in an older
-        compression format.   When verbose is set true any entries
-        dropped will geneate a warning print mesage.
+        Item 1 simply involves always posting some constants.  Item 2 is
+        handled by silently deleting any attribute defined by the Null value
+        for that attribute in the wfdisc schema.  Item 3 is handled by
+        dropping any tuples for which the "datatype" attribute is "sd"
+        (normal mseed) or "S1" miniseed in an older compression format.
+        When verbose is set true any entries dropped will generate a warning
+        print message.
 
         Items 4 and 5 are a bigger complication.   The developers of
         Antelope created a solution to this problem by utilizing
@@ -631,22 +649,22 @@ class DatascopeDatabase:
         to what is appropriate for your data set.
 
         :param snetsta_xref:   image of the snetsta table used as
-        described above.  If set None (the default) this method will
-        call another method of this class called `parse_snetsa` that
-        reads the snetsta table and creates an instance of the
-        data structure.   See the docstring of that method below for
-        an explanation of the data structure of this object if you need to
-        generate one by some other means.
+            described above.  If set None (the default) this method will
+            call another method of this class called `parse_snetsa` that
+            reads the snetsta table and creates an instance of the
+            data structure.   See the docstring of that method below for
+            an explanation of the data structure of this object if you need to
+            generate one by some other means.
         :type snetsta_xref:  python dict or None
         :param test_existence:   Boolean that when set
-        True (default is False) enables a file existence check.
-        This operation is expensive on a large wfdisc as it has to
-        run an existence check on every tuple in the wfdisc.
+            True (default is False) enables a file existence check.
+            This operation is expensive on a large wfdisc as it has to
+            run an existence check on every tuple in the wfdisc.
         :param verbose:  When True prints a warning for each tuple
-        it drops.  If False it will drop problem tuples silently.  Note
-        tuples can be dropped for two reasons:  (1) `datatype` values that
-        do not define miniseed and (2) tuples failing the existence
-        check (if enabled)
+            it drops.  If False it will drop problem tuples silently.  Note
+            tuples can be dropped for two reasons:  (1) `datatype` values that
+            do not define miniseed and (2) tuples failing the existence
+            check (if enabled)
         """
         alg = "DatascopeDatabase.wfdisc2doclist"
         if verbose:
@@ -746,7 +764,7 @@ class DatascopeDatabase:
         the SEED concept of a network code (also location code for channel)
         was not considered.   The developers of Datascope created a workaround
         for this problem in a special table (I am not sure if it was part
-        of the original css3.0 schema or not) with the name `snetsta'.
+        of the original css3.0 schema or not) with the name ``snetsta``.
         They use snetsta to handle duplicate station names in multiple networks.
         A common example is that more than one operator has used the
         colorful station code "HELL" so if we see an entry for HELL it can

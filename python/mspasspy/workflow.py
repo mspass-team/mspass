@@ -91,15 +91,16 @@ def sliding_window_pipeline(
     at least two required arguments and they must match this
     somewhat rigid expectation:
 
-      arg0 - must be the current value being accumulated.  ALSO the
-        function must define arg0==None as a signal that the
-        accumulated result is to be initialized.  That is required
-        for the first time the function is entered.
-      arg1 - is the current value to be merged (accumulated into)
-        the value of arg0.
+    * ``arg0`` must be the current value being accumulated.  ALSO the
+      function must define ``arg0==None`` as a signal that the
+      accumulated result is to be initialized.  That is required
+      for the first time the function is entered.
+    * ``arg1`` is the current value to be merged (accumulated into)
+      the value of ``arg0``.
+
     Each call to accumulator should return a value that is the
     same type as arg0.   That and the None initialization allows the
-    accumulator to be stateless.   Optional *args and **kwargs
+    accumulator to be stateless.   Optional ``*args`` and ``**kwargs``
     values can be passed by the optional a_args and
     a_kwargs parameters.
 
@@ -114,7 +115,7 @@ def sliding_window_pipeline(
     The function is made generic at the cost of having a rather complicated
     API.   That is summarized here, but the reader is advised to consult
     the MsPASS User Manual and online sources if you aren't intimately familiar
-    with the way "*args" and "**kwargs" are used in python.
+    with the way ``*args`` and ``**kwargs`` are used in python.
 
     :param dlist:  any iterable with components matching the requirements
       of arg0 of processing_function.  Commonly a list of queries or
@@ -131,16 +132,10 @@ def sliding_window_pipeline(
     :type pfunc_args:   technically any iterable with a length at least as
       long as the required arg list by processing_function.   Usually a simple
       python list.  e.g. if signature signature for the processing function
-      is
-      ```
-      def myprocessor(a,b,c):
-      ```
-      and you have b=2.0 and c=5 you should set `pfunc_args=[2.0,3]`.
-
-
-        function that is to be applied to each component of dlist.  This function will
-       be used with dask distributed submit using *args and **kwargs with this equivalent call:
-       `processing_function(d,*args,**kwargs)
+      is ``def myprocessor(a, b, c):`` and you have b=2.0 and c=5 you
+      should set ``pfunc_args=[2.0, 3]``.  This function will be used
+      with dask distributed submit using ``*args`` and ``**kwargs`` with
+      this equivalent call: ``processing_function(d, *args, **kwargs)``.
     :param dask_client:  instance of a dask.distributed.Client that defines
        the cluster to which the processing_function is to run upon.  In
        MsPASS normal use is to fetch this with the MsPASS client
@@ -169,7 +164,7 @@ def sliding_window_pipeline(
        The function requires to arguments:  arg0 must be the previous
        value handle, and arg1 the current value being handled.  It must
        also emit the same type as arg0 it receives.   You should think of
-       the operation as a generalization of `return arg0+=arg1`.
+       the operation as a generalization of ``return arg0+=arg1``.
        It is ESSENTIAL this function handle the case with arg0 set to None
        and handle that as an initializer and return a valid initial
        value for the return.

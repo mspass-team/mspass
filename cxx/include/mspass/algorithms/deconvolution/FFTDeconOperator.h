@@ -20,18 +20,59 @@ object holds these for all such methods and recomputes them only when
 needed for efficiency.  */
 class FFTDeconOperator {
 public:
+  /*! \brief Construct an empty FFT operator shell.
+   *
+   * The FFT length is initialized to zero and GSL work objects are left
+   * unallocated until change_size or changeparameter supplies an operator size.
+   */
   FFTDeconOperator();
+  /*! \brief Construct from deconvolution Metadata.
+   *
+   * Uses operator_nfft, target_sample_interval, and the deconvolution data
+   * window entries in md to choose a power-of-two FFT length, compute the
+   * standard lag-window sample shift, and allocate the GSL FFT work objects.
+   */
   FFTDeconOperator(const mspass::utility::Metadata &md);
+  /*! \brief Copy constructor.
+   *
+   * Copies the FFT length and sample shift while allocating independent GSL
+   * work objects for the new operator.
+   */
   FFTDeconOperator(const FFTDeconOperator &parent);
+  /*! \brief Release allocated GSL FFT work objects. */
   ~FFTDeconOperator();
+  /*! \brief Assign FFT size and lag shift from another operator.
+   *
+   * The assigned operator receives its own GSL wavetable and workspace.
+   */
   FFTDeconOperator &operator=(const FFTDeconOperator &parent);
+  /*! \brief Reconfigure the FFT operator from Metadata.
+   *
+   * Recomputes the power-of-two FFT length and deconvolution sample shift from
+   * md.  Existing GSL work objects are replaced only when the FFT length changes.
+   */
   void changeparameter(const mspass::utility::Metadata &md);
+  /*! \brief Change the FFT work-buffer length.
+   *
+   * Frees any existing GSL FFT work objects, stores nfft_new as the operator
+   * length, and allocates new work objects for that size.
+   */
   void change_size(const int nfft_new);
+  /*! \brief Set the sample offset used to unwrap deconvolution lag windows. */
   void change_shift(const int shift) { sample_shift = shift; };
+  /*! \brief Return the current FFT work-buffer length. */
   int get_size() { return nfft; };
+  /*! \brief Return the current deconvolution lag-window sample shift. */
   int get_shift() { return sample_shift; };
+  /*! \brief Return the current FFT work-buffer length. */
   int operator_size() { return static_cast<int>(nfft); };
+  /*! \brief Return the current deconvolution lag-window sample shift. */
   int operator_shift() { return sample_shift; };
+  /*! \brief Return frequency spacing for the current FFT length.
+   *
+   * \param dt sample interval of the time-domain signal.
+   * \return 1 / (nfft * dt), the frequency-bin spacing for this operator.
+   */
   double df(const double dt) {
     double period;
     period = static_cast<double>(nfft) * dt;
@@ -50,10 +91,15 @@ public:
                                                  const double t0parent);
 
 protected:
+  /*! \brief Current FFT work-buffer length in samples. */
   int nfft;
+  /*! \brief Sample offset used to place zero lag in deconvolution outputs. */
   int sample_shift;
+  /*! \brief GSL factorization table allocated for nfft. */
   gsl_fft_complex_wavetable *wavetable;
+  /*! \brief GSL scratch workspace allocated for nfft. */
   gsl_fft_complex_workspace *workspace;
+  /*! \brief Frequency-domain inverse wavelet coefficients for derived operators. */
   ComplexArray winv;
 
 private:

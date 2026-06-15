@@ -137,35 +137,35 @@ dmatrix dmatrix::operator-(const dmatrix &other) const {
   };
 }
 
-dmatrix operator*(const dmatrix &x1, const dmatrix &b) {
+dmatrix operator*(const dmatrix &A, const dmatrix &B) {
   size_t i, j;
   /* The computed length in last arg to the error object is a relic*/
-  if (x1.columns() != b.rows())
-    throw dmatrix_size_error(x1.rows(), x1.columns(), b.rows(),
-                             b.rows() * b.columns());
-  dmatrix prod(x1.rows(), b.columns());
-  for (i = 0; i < x1.rows(); i++)
-    for (j = 0; j < b.columns(); j++) {
+  if (A.columns() != B.rows())
+    throw dmatrix_size_error(A.rows(), A.columns(), B.rows(),
+                             B.rows() * B.columns());
+  dmatrix prod(A.rows(), B.columns());
+  for (i = 0; i < A.rows(); i++)
+    for (j = 0; j < B.columns(); j++) {
       double *x1ptr, *bptr;
-      x1ptr = const_cast<dmatrix &>(x1).get_address(i, 0);
-      bptr = const_cast<dmatrix &>(b).get_address(0, j);
+      x1ptr = const_cast<dmatrix &>(A).get_address(i, 0);
+      bptr = const_cast<dmatrix &>(B).get_address(0, j);
       /* This temporary seems necessary */
       double *dptr;
       dptr = prod.get_address(i, j);
-      *dptr = ddot(x1.columns(), x1ptr, x1.rows(), bptr, 1);
+      *dptr = ddot(A.columns(), x1ptr, A.rows(), bptr, 1);
     }
   return prod;
 }
 
-dmatrix operator*(const double &x, const dmatrix &zx) noexcept {
+dmatrix operator*(const double &s, const dmatrix &A) noexcept {
   size_t i;
-  dmatrix tempmat(zx.rows(), zx.columns());
-  size_t lenary = zx.rows() * zx.columns();
+  dmatrix tempmat(A.rows(), A.columns());
+  size_t lenary = A.rows() * A.columns();
   double *zptr, *dptr;
-  zptr = const_cast<dmatrix &>(zx).get_address(0, 0);
+  zptr = const_cast<dmatrix &>(A).get_address(0, 0);
   dptr = tempmat.get_address(0, 0);
   for (i = 0; i < lenary; ++i) {
-    (*dptr) = x * (*zptr);
+    (*dptr) = s * (*zptr);
     ++dptr;
     ++zptr;
   }
@@ -180,12 +180,12 @@ dmatrix dmatrix::operator*(double x) const noexcept {
   return result;
 }
 
-dmatrix tr(const dmatrix &x1) noexcept {
+dmatrix tr(const dmatrix &A) noexcept {
   size_t i, j;
-  dmatrix temp(x1.columns(), x1.rows());
-  for (i = 0; i < x1.rows(); i++)
-    for (j = 0; j < x1.columns(); j++) {
-      temp(j, i) = x1(i, j);
+  dmatrix temp(A.columns(), A.rows());
+  for (i = 0; i < A.rows(); i++)
+    for (j = 0; j < A.columns(); j++) {
+      temp(j, i) = A(i, j);
     }
   return temp;
 }
@@ -236,17 +236,17 @@ double &dvector::operator()(const size_t rowindex) {
     throw dmatrix_index_error(nrr, 1, rowindex, 1);
   return (ary[rowindex]);
 }
-dvector operator*(const dmatrix &x1, const dvector &b) {
+dvector operator*(const dmatrix &A, const dvector &x) {
   size_t i;
-  size_t nrx1 = x1.rows();
-  size_t ncx1 = x1.columns();
-  size_t nrb = const_cast<dvector &>(b).rows();
+  size_t nrx1 = A.rows();
+  size_t ncx1 = A.columns();
+  size_t nrb = const_cast<dvector &>(x).rows();
   if (ncx1 != nrb)
     throw dmatrix_size_error(nrx1, ncx1, nrb, 1);
   dvector prod(nrx1);
   for (i = 0; i < nrx1; i++)
-    prod(i) = ddot(nrb, const_cast<dmatrix &>(x1).get_address(i, 0), nrx1,
-                   const_cast<dvector &>(b).get_address(0, 0), 1);
+    prod(i) = ddot(nrb, const_cast<dmatrix &>(A).get_address(i, 0), nrx1,
+                   const_cast<dvector &>(x).get_address(0, 0), 1);
   return prod;
 }
 } // namespace mspass::utility

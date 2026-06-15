@@ -29,7 +29,7 @@ d is not const because it simply isn't.
 \return file position in output file of the first byte written.
 the same number is saved in the "foff" metadata attribute.
 
-\expection This function will throw a MsPASS error for one of several
+\exception MsPASSError This function will throw for one of several
 common io related issues. Caller should always include the call to this
 function in a try block.
 
@@ -63,7 +63,7 @@ d is not const because it simply isn't.
 \return file position in output file of the first byte written.
 the same number is saved in the "foff" metadata attribute.
 
-\expection This function will throw a MsPASS error for one of several
+\exception MsPASSError This function will throw for one of several
 common io related issues. Caller should always include the call to this
 function in a try block.
 
@@ -99,7 +99,7 @@ d is not const because it simply isn't.
 \return file position in output file of the first byte written.
 the same number is saved in the "foff" metadata attribute.
 
-\expection This function will throw a MsPASS error for one of several
+\exception MsPASSError This function will throw for one of several
 common io related issues. Caller should always include the call to this
 function in a try block.
 
@@ -136,7 +136,7 @@ d is not const because it simply isn't.
 \return file position in output file of the first byte written.
 the same number is saved in the "foff" metadata attribute.
 
-\expection This function will throw a MsPASS error for one of several
+\exception MsPASSError This function will throw for one of several
 common io related issues. Caller should always include the call to this
 function in a try block.
 
@@ -157,7 +157,7 @@ has been initialized on construction or with set_npts to the size
 matching the data file contents.  If there is a mismatch the results
 are unpredictable.
 
-\param Seismogram object to hold the sample data to be read from the file.
+\param d Seismogram object to hold the sample data to be read from the file.
   Note that this function acts like a subroutine with entire purpose being
   to fill the data array of this object.
 \param dir is the directory name to use for file name (no trailing slash)
@@ -189,7 +189,7 @@ has been initialized on construction or with set_npts to the size
 matching the data file contents.  If there is a mismatch the results
 are unpredictable.
 
-\param TimeSeries object to hold the sample data to be read from the file
+\param d TimeSeries object to hold the sample data to be read from the file
   Note that this function acts like a subroutine with entire purpose being
   to fill the data array of this object.
 \param dir is the directory name to use for file name (no trailing slash)
@@ -219,16 +219,13 @@ The reader assumes the input has been initialized on construction or
 with set_npts to the size matching the data file contents.  If there is
 a mismatch the results are unpredictable.
 
-\param Ensemble<TimeSeries> object to hold the sample data to be read from the
-  files. Note that this function acts like a subroutine with entire purpose
-being to fill the data array of this object.
+\param de Ensemble of TimeSeries objects to hold the sample data to be read from
+  the files. Note that this function acts like a subroutine with entire purpose
+  being to fill the data array of this object.
 \param dir is the directory name to use for file name (no trailing slash)
 \param dfile is the leaf file name to be openned.
-\param foffs is a vector of the number of bytes to seek for first byte of all
-  TimeSeries objects to be read in the given file.
 \param indexes is a vector of indexes of TimeSeries objects to be read to the
   ensemble.
-\param length is the size of the ensemble. It is used to resize the ensemble.
 
 \return total number of samples read for all TimeSeries objects.  Note caller
 should test this value as a short read will not cause an error to be thrown.
@@ -254,16 +251,13 @@ The reader assumes the input has been initialized on construction or
 with set_npts to the size matching the data file contents.  If there is
 a mismatch the results are unpredictable.
 
-\param Ensemble<Seismogram> object to hold the sample data to be read from the
-  files. Note that this function acts like a subroutine with entire purpose
-being to fill the data array of this object.
+\param de Ensemble of Seismogram objects to hold the sample data to be read from
+  the files. Note that this function acts like a subroutine with entire purpose
+  being to fill the data array of this object.
 \param dir is the directory name to use for file name (no trailing slash)
 \param dfile is the leaf file name to be openned.
-\param foffs is a vector of the number of bytes to seek for first byte of all
-  Seismogram objects to be read in the given file.
 \param indexes is a vector of indexes of Seismogram objects to be read to the
   ensemble.
-\param length is the size of the ensemble. It is used to resize the ensemble.
 
 \return total number of samples read for all Seismogram objects.  Note caller
 should test this value as a short read will not cause an error to be thrown.

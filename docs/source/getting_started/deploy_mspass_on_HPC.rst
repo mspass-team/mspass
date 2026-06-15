@@ -1,4 +1,4 @@
-APPTAINER.. _deploy_mspass_on_HPC:
+.. _deploy_mspass_on_HPC:
 
 Deploying MsPASS on an HPC cluster
 =====================================
@@ -387,7 +387,8 @@ supply a README file.
 If the files you need are not on github and you are aware of colleagues
 using mspass you may need to contact them and ask for their working
 startup scripts.   If you are a trailblazer, then you will need to jump
-to the section below titled :ref:`Setting Up Configuration Files on a new Cluster`.
+to the section below titled
+:ref:`Setting Up Configuration Files on a new Cluster <hpc_shell_configuration_files>`.
 You can then use the next section for reference when you are actively
 working with MsPASS on that system.
 
@@ -545,7 +546,7 @@ job_script.sh
 the cluster.   Standard usage with slurm as the workload manager to run
 the workflow in the jupyter notebook file `myworkflow.ipynd` is;
 
-.. code-bloc
+.. code-block::
 
     sbatch job_script.sh myworkflow.ipynb
 
@@ -579,7 +580,7 @@ entire process is not a good idea, at least for getting strarted,
 unless you have no other option.
 
 The procedure for running MsPASS interactively is similar to that
-for running docker on a desktop system found in :ref:`run_mspass_with_docker`.
+for running containers on a desktop system found in :ref:`command_line_docker_desktop_operation`.
 There are two key differences:  (1) you launch MsPASS with apptainer
 (or something else) instead of docker and (2) there are a lot of
 potential network issues this manual cannot fully cover.  This subsection
@@ -707,13 +708,13 @@ For example:
 Here the primary node is MSPASS_SCHEDULER_ADDRESS, and the frontend is
 running on the node, it should be specified explicitly.
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Setting Up Configuration Files on a new Cluster
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _hpc_shell_configuration_files:
 
-"""""""""""
+Setting Up Configuration Files on a new Cluster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Overview
-"""""""""""
+""""""""
 If you are a trailblazer at your institution and need to configure MsPASS for
 your local cluster, you may want to first review the material in this
 User's Manual found in the section :ref:`getting_started_overview`.
@@ -729,7 +730,7 @@ called "run_mspass.sh".  You may also find it useful to compare that file
 to the examples for specific sites.
 
 The "Role" Concept
-"""""""""""""""""""""
+""""""""""""""""""
 In the section titled :ref:`getting_started_overview` we discuss in
 detail the abstraction we used in MsPASS to define what we call
 a "virtual cluster".   A key idea in that abstraction is a set of
@@ -762,7 +763,7 @@ script.
      as the job script is executed illustrated here as "node 1"
 
 How Different Roles are Run
-"""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""
 Notice from :numref:`HPC_config_figure1` that all 4 roles are
 launched as separate instances of the container.   In the script
 they are all launched with variations of this following:
@@ -803,7 +804,7 @@ that are used when each instance of the container is launched:
    and is the topic of the next section.
 
 Launching Workers
-""""""""""""""""""
+"""""""""""""""""
 Launching workers is linked to a fundamental problem you will face
 in adapting the template script to a different cluster:   node-to-node
 communications.   There are three low-level issues you will need to
@@ -870,7 +871,7 @@ at HPC centers at the time this manual was written.  Hence, you the odds
 are high you will not need to modify this line.
 
 Communications
-"""""""""""""""""""
+""""""""""""""
 Last, but far from least you may need to sort out some fundamental
 issues about how networking is implemented on your cluster.  There are
 two different issues you may need to consider:

@@ -75,6 +75,11 @@ public:
   if the form table.attribute.
   */
   std::string fully_qualified_name() const;
+  /*! Write this attribute definition to an output stream.
+  \param ofs output stream to receive the formatted attribute definition.
+  \param d attribute definition to write.
+  \return output stream after writing d.
+  */
   friend std::ostream &operator<<(std::ostream &ofs,
                                   const AttributeProperties &d);
 };
@@ -165,7 +170,7 @@ public:
   be searched in order.  Thus this method returns a list of AttributeProperties
   that are tied to an alias.  The idea would be that the caller would
   try each member of this list in order before throwing an error.
-  \param alias is the alias name to search.
+  \param key is the alias name to search.
   \return STL map of AttributeProperties that are aliases for the
           given keyword.  The map is keyed by the table name.
           This provides a clean interface for output of attributes

@@ -14,7 +14,8 @@ Seismogram::Seismogram(const size_t nsamples)
 CoreSeismogram.  Instead we have to call the constructors for the base class.*/
 Seismogram::Seismogram(const CoreSeismogram &d)
     : CoreSeismogram(d), ProcessingHistory() {}
-Seismogram::Seismogram(const CoreSeismogram &d, const string alg)
+Seismogram::Seismogram(const mspass::seismic::CoreSeismogram &d,
+                       const std::string alg)
     : CoreSeismogram(d), ProcessingHistory() {
   /* Not sure this is a good idea, but will give each instance
   created by this constructor a uuid.*/
@@ -67,9 +68,10 @@ Seismogram::Seismogram(const BasicTimeSeries &b, const Metadata &m,
       tmatrix[i][j] = tm(i, j);
   this->u = uin;
 }
-Seismogram::Seismogram(const Metadata &md, const string jobname,
-                       const string jobid, const string readername,
-                       const string algid)
+Seismogram::Seismogram(const Metadata &md, const std::string jobname,
+                       const std::string jobid,
+                       const std::string readername,
+                       const std::string algid)
     : CoreSeismogram(md, true), ProcessingHistory() {
   const string algname("SeismogramMDConstructor");
   this->set_jobname(jobname);

@@ -5,7 +5,8 @@ namespace mspass::seismic {
 
 using namespace mspass::seismic;
 using namespace mspass::algorithms;
-DataGap::DataGap(const std::list<TimeWindow> &twlist) {
+DataGap::DataGap(
+    const std::list<mspass::algorithms::TimeWindow> &twlist) {
   for (auto twptr = twlist.begin(); twptr != twlist.end(); ++twptr)
     gaps.insert(*twptr);
 }

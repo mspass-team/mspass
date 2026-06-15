@@ -77,11 +77,10 @@ jobs:
       if: ${{ matrix.python-version == '3.10' }}
       run: |
         export MSPASS_HOME=$(pwd)
-        sudo apt-get update && sudo apt-get install -yq doxygen pandoc
+        sudo apt-get update && sudo apt-get install -yq doxygen graphviz pandoc
         pip install -r docs/requirements.txt
-        cd docs 
-        ls
-        make html
+        cd docs
+        SPHINXOPTS="-W --keep-going" MPLCONFIGDIR=/tmp/mspass-matplotlib make html
     - name: Deploy to GitHub Pages 
       if: ${{ github.ref == 'refs/heads/master' && matrix.python-version == '3.10' }}
       uses: JamesIves/github-pages-deploy-action@3.7.1

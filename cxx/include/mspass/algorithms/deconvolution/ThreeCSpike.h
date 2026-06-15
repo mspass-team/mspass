@@ -12,6 +12,7 @@ enum IterDeconType {
   GROUP_SPARSE
 };
 
+/*! \brief Sparse three-component spike used by iterative deconvolution. */
 class ThreeCSpike {
 public:
   /*! Column index where this spike is placed in a three-component matrix. */

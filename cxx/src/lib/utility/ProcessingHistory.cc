@@ -88,7 +88,8 @@ ProcessingHistory::ProcessingHistory() : elog() {
   algorithm = "UNDEFINED";
   algid = "UNDEFINED";
 }
-ProcessingHistory::ProcessingHistory(const string jobnm, const string jid)
+ProcessingHistory::ProcessingHistory(const std::string jobnm,
+                                     const std::string jid)
     : BasicProcessingHistory(jobnm, jid), elog() {
   current_status = ProcessingStatus::UNDEFINED;
   current_id = "UNDEFINED";
@@ -315,9 +316,10 @@ Be careful not to mix that up with the uuid of the parent.
 There are two overloaded versions of this method.
 
 */
-string ProcessingHistory::new_map(const string alg, const string algid_in,
-                                  const AtomicType typ,
-                                  const ProcessingStatus newstatus) {
+std::string
+ProcessingHistory::new_map(const std::string alg,
+                           const std::string algid_in, const AtomicType typ,
+                           const ProcessingStatus newstatus) {
   if (this->is_empty()) {
     stringstream ss;
     ss << "Attempt to call this method on an empty history chain for uuid="
@@ -355,10 +357,10 @@ string ProcessingHistory::new_map(const string alg, const string algid_in,
   mytype = typ;
   return current_id;
 }
-string ProcessingHistory::new_map(const string alg, const string algid_in,
-                                  const AtomicType typ,
-                                  const ProcessingHistory &copy_to_clone,
-                                  const ProcessingStatus newstatus) {
+std::string ProcessingHistory::new_map(
+    const std::string alg, const std::string algid_in, const AtomicType typ,
+    const ProcessingHistory &copy_to_clone,
+    const ProcessingStatus newstatus) {
   /* We must be sure the chain is empty before we push the clone's data there*/
   this->clear();
   /* this works because get_nodes pushes the current data to the nodes
@@ -639,7 +641,7 @@ void ProcessingHistory::clear() {
 
 /* This is really just a wrapper around the count method.  We do it
 because it is an implementation detail to use a multimap in this form */
-int ProcessingHistory::number_inputs(const string testuuid) const {
+int ProcessingHistory::number_inputs(const std::string testuuid) const {
   // Return result is int to mesh better with python even though
   // count returns size_t
   int n = nodes.count(testuuid);
@@ -705,8 +707,10 @@ in the low level ProcessingHistory object that is a base class of all
 atomic data in mspass */
 /* This is used for sorting tuple in set below */
 typedef std::tuple<int, std::string, std::string> Algdata;
+/*! \brief Order algorithm-history tuples by processing stage. */
 class sort_by_stage {
 public:
+  /*! Return true when A has a lower stage number than B. */
   bool operator()(const Algdata A, const Algdata B) const {
     int i = std::get<0>(A);
     int j = std::get<0>(B);

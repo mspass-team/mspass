@@ -7,8 +7,9 @@ from mspasspy.util.converter import AntelopePf2dict
 
 def str_to_parameters_dict(parameter_str):
     """
-     Parse the parameter string defined by user into an ordered dict.
-     The input str should be in the format like "a, b, c=d, e=f, ..."
+    Parse the parameter string defined by user into an ordered dict.
+    The input str should be in the format like "a, b, c=d, e=f, ..."
+
     :param parameter_str: a parameter string defined by user
     :return: An OrderedDict of parameters and arguments.
     """
@@ -37,9 +38,10 @@ def str_to_parameters_dict(parameter_str):
 
 def params_to_parameters_dict(*args, **kwargs):
     """
-     Capture a function's parameters, return a dict that stores parameters and arguments.
-     Filepath arguments will be parsed into python object, and then turned into a dict. Now we support pf files
-     and yaml files.
+    Capture a function's parameters, return a dict that stores parameters and arguments.
+    Filepath arguments will be parsed into python object, and then turned into a dict. Now we support pf files
+    and yaml files.
+
     :param args: Non-keyworded arguments
     :param kwargs: Keyworded arguments
     :return: An OrderedDict of parameters and arguments.
@@ -60,9 +62,10 @@ def params_to_parameters_dict(*args, **kwargs):
 
 def parse_filepath_in_parameters(parameters_dict):
     """
-     Parse the filepath parameters in a function's parameters dict,
-     Filepath arguments will be parsed into python object, and then turned into a dict.
-     Currently we support pf files and yaml files.
+    Parse the filepath parameters in a function's parameters dict,
+    Filepath arguments will be parsed into python object, and then turned into a dict.
+    Currently we support pf files and yaml files.
+
     :param parameters_dict: parameter dict of a function
     :return: An OrderedDict of parameters and arguments.
     """
@@ -96,8 +99,9 @@ def parse_filepath_in_parameters(parameters_dict):
 
 def parameter_to_GTree(*args, parameters_str=None, **kwargs):
     """
-     A helper function to parse parameters and build a GTree accordingly. This function would
-     be used in GlobalHistoryManager to help record the parameters.
+    A helper function to parse parameters and build a GTree accordingly. This function would
+    be used in GlobalHistoryManager to help record the parameters.
+
     :param args: Non-keyworded arguments
     :param kwargs: Keyworded arguments
     :param parameter_str: a parameter string defined by user
@@ -288,6 +292,7 @@ class ParameterGTree(collections.OrderedDict):
         key can be a simple string.  For a leaf attached at a higher level node
         we specify a chain of one or more branch names with keys between
         the specified seperator.  Examples (all used default value of seperator):
+
         1.  If we had a leaf node with the key 'name' under the branch name
             'phases' we use the compound key 'phases.name'. Such a tag could, for
             example, contain 'P' for the seismic to define this set of parameters
@@ -304,12 +309,14 @@ class ParameterGTree(collections.OrderedDict):
         would need to be a set of keys that would define the path to climb the
         tree to fetch the desired leaf.  For this form the two examples above
         would be represented as follows:
+
         1.  ['phases','name']
         2.  ['phases','travel_time_calculator','taup','model_name']
 
         Users can also use the build-in index operation to access the children elements,
         which is more natural.
         for example:
+
         1.  ['phases']['name']
         2.  ['phases']['travel_time_calculator']['taup']['model_name']
 

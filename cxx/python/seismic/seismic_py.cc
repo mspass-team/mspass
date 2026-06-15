@@ -257,17 +257,27 @@ PYBIND11_MODULE(seismic, m) {
   */
   py::class_<BasicTimeSeries,PyBasicTimeSeries>(m,"_BasicTimeSeries","Core common concepts for uniformly sampled 1D data")
     .def(py::init<>())
-    .def("time",&BasicTimeSeries::time,"Return the computed time for a sample number (integer)")
-    .def("sample_number",&BasicTimeSeries::sample_number,"Return the sample index number for a specified time")
+    .def("time",&BasicTimeSeries::time,
+      py::arg("sample_number"),
+      "Return the computed time for a sample number")
+    .def("sample_number",&BasicTimeSeries::sample_number,
+      py::arg("time"),
+      "Return the sample index number for a specified time")
     .def("endtime",&BasicTimeSeries::endtime,"Return the (computed) end time of a time series")
     .def("shifted",&BasicTimeSeries::shifted,"Return True if the data have been time shifted to relative time")
     .def("rtoa",&BasicTimeSeries::rtoa,"Restore relative time to absolute if possible")
-    .def("ator",&BasicTimeSeries::ator,"Switch time standard from absolute (UTC) to a relative time scale")
-    .def("shift",&BasicTimeSeries::shift,"Shift time reference by a specified number of seconds")
+    .def("ator",&BasicTimeSeries::ator,
+      py::arg("tshift"),
+      "Switch time standard from absolute (UTC) to a relative time scale")
+    .def("shift",&BasicTimeSeries::shift,
+      py::arg("dt"),
+      "Shift time reference by a specified number of seconds")
     .def("get_t0shift",&BasicTimeSeries::get_t0shift,"Get the t0shift attribute used for relative time reference")
     .def("time_reference",&BasicTimeSeries::time_reference,"Return time standard")
     .def("shifted",&BasicTimeSeries::shifted,"Return true if data are UTC standard with a time shift applied")
-    .def("force_t0_shift",&BasicTimeSeries::force_t0_shift,"Force a time shift value to make data shifted UTC in relative time")
+    .def("force_t0_shift",&BasicTimeSeries::force_t0_shift,
+      py::arg("t0shift"),
+      "Force a time shift value to make data shifted UTC in relative time")
     .def("live",&BasicTimeSeries::live,"Return True if the data are marked valid (not dead)")
     .def("dead",&BasicTimeSeries::dead,"Return true if the data are marked bad and should not be used")
     .def("kill",&BasicTimeSeries::kill,"Mark this data object bad = dead")
@@ -280,10 +290,17 @@ PYBIND11_MODULE(seismic, m) {
     .def("t0",&BasicTimeSeries::t0,"Return the time of the first sample of data in this time series")
     .def("time_axis",&BasicTimeSeries::time_axis,"Return a DoubleVector with time of each sample - use for x axis in plots")
     /*Useful alias for t0 method*/
-    .def("starttime",[](const BasicTimeSeries &self){return self.t0();})
-    .def("set_dt",&BasicTimeSeries::set_dt,"Set the data time sample interval")
-    .def("set_npts",&BasicTimeSeries::set_npts,"Set the number of data samples in this object")
-    .def("set_t0",&BasicTimeSeries::set_t0,"Set time of sample 0 (t0) - does not check if consistent with time standard")
+    .def("starttime",[](const BasicTimeSeries &self){return self.t0();},
+      "Return alias for t0")
+    .def("set_dt",&BasicTimeSeries::set_dt,
+      py::arg("dt"),
+      "Set the data time sample interval")
+    .def("set_npts",&BasicTimeSeries::set_npts,
+      py::arg("npts"),
+      "Set the number of data samples in this object")
+    .def("set_t0",&BasicTimeSeries::set_t0,
+      py::arg("t0"),
+      "Set time of sample 0 (t0) - does not check if consistent with time standard")
     .def_property("npts",[](const BasicTimeSeries &self) {
         return self.npts();
       },[](BasicTimeSeries &self, size_t npts) {
@@ -321,9 +338,12 @@ PYBIND11_MODULE(seismic, m) {
 
   py::class_<CoreTimeSeries,BasicTimeSeries,Metadata>(m,"_CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())
-    .def(py::init<const CoreTimeSeries&>())
-    .def(py::init<const size_t>())
-    .def(py::init<const BasicTimeSeries&, const Metadata&>())
+    .def(py::init<const CoreTimeSeries&>(), py::arg("parent"), "Copy constructor")
+    .def(py::init<const size_t>(), py::arg("npts"), "Construct with npts zero samples")
+    .def(py::init<const BasicTimeSeries&, const Metadata&>(),
+      py::arg("bts"),
+      py::arg("md"),
+      "Construct from BasicTimeSeries attributes and Metadata")
     .def("set_dt",&CoreTimeSeries::set_dt,
       "Set data sample interval (overrides BasicTimeSeries virtual method)")
     .def("set_npts",&CoreTimeSeries::set_npts,
@@ -341,10 +361,16 @@ PYBIND11_MODULE(seismic, m) {
   ;
   py::class_<CoreSeismogram,BasicTimeSeries,Metadata>(m,"_CoreSeismogram","Defines basic concepts of a three-component seismogram")
     .def(py::init<>())
-    .def(py::init<const CoreSeismogram&>())
-    .def(py::init<const size_t>())
-    .def(py::init<const Metadata&,const bool>(),"Construct from Metadata with read from file option")
-    .def(py::init<const std::vector<CoreTimeSeries>&,const unsigned int>())
+    .def(py::init<const CoreSeismogram&>(), py::arg("parent"), "Copy constructor")
+    .def(py::init<const size_t>(), py::arg("npts"), "Construct with npts zero samples per component")
+    .def(py::init<const Metadata&,const bool>(),
+      py::arg("md"),
+      py::arg("load_data"),
+      "Construct from Metadata, optionally reading sample data from file")
+    .def(py::init<const std::vector<CoreTimeSeries>&,const unsigned int>(),
+      py::arg("components"),
+      py::arg("component_to_clone"),
+      "Construct from three scalar components and choose which component supplies shared metadata")
     .def("set_dt",&CoreSeismogram::set_dt,
       "Set data sample interval (overrides BasicTimeSeries virtual method)")
     .def("set_npts",&CoreSeismogram::set_npts,
@@ -355,20 +381,28 @@ PYBIND11_MODULE(seismic, m) {
       "Set data definition of time of sample 0 (overrides BasicTimeSeries virtual method)")
     .def("endtime",&CoreSeismogram::endtime,"Return the (computed) end time of a time series")
     .def("rotate_to_standard",&CoreSeismogram::rotate_to_standard,"Transform data to cardinal coordinates")
-    .def("rotate",py::overload_cast<SphericalCoordinate&>(&CoreSeismogram::rotate),"3D rotation defined by spherical coordinate angles")
-    .def("rotate",py::overload_cast<const double>(&CoreSeismogram::rotate),"2D rotation about the vertical axis")
+    .def("rotate",py::overload_cast<SphericalCoordinate&>(&CoreSeismogram::rotate),
+      py::arg("direction"),
+      "3D rotation defined by spherical coordinate angles")
+    .def("rotate",py::overload_cast<const double>(&CoreSeismogram::rotate),
+      py::arg("phi"),
+      "2D rotation about the vertical axis")
     .def("rotate",[](CoreSeismogram &self, py::array_t<double> tm) {
       py::buffer_info info = tm.request();
       if (info.ndim != 1 || info.shape[0] != 3)
         throw py::value_error("rotate expects a vector of 3 elements");
       self.rotate(static_cast<double*>(info.ptr));
-    },"3D rotation defined a unit vector direction")
+    },
+      py::arg("unit_vector"),
+      "3D rotation defined by a unit vector direction")
     .def("transform", [](CoreSeismogram &self, py::array_t<double, py::array::c_style | py::array::forcecast> tm) {
       py::buffer_info info = tm.request();
       if (info.ndim != 2 || info.shape[0] != 3 || info.shape[1] != 3)
         throw py::value_error("transform expects a 3x3 matrix");
       self.transform(static_cast<double(*)[3]>(info.ptr));
-    },"Applies an arbitrary transformation matrix to the data")
+    },
+      py::arg("tmatrix"),
+      "Apply an arbitrary 3x3 transformation matrix to the data")
     .def("cardinal",&CoreSeismogram::cardinal,"Returns true if components are cardinal")
     .def("orthogonal",&CoreSeismogram::orthogonal,"Returns true if components are orthogonal")
     .def("free_surface_transformation",&CoreSeismogram::free_surface_transformation,"Apply free surface transformation operator to data")
@@ -387,23 +421,39 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::self *= double())
     /* Place holder for data array.   Probably want this exposed through
     Seismogram api */
-    .def_readwrite("data",&CoreSeismogram::u)
+    .def_readwrite("data",&CoreSeismogram::u,
+      "3 by npts matrix containing component sample data")
   ;
 
   py::class_<Seismogram,CoreSeismogram,ProcessingHistory>(m,"Seismogram", "mspass three-component seismogram data object")
     .def(py::init<>())
-    .def(py::init<const Seismogram&>())
-    .def(py::init<const CoreSeismogram&>())
-    .def(py::init<const size_t>())
-    .def(py::init<const BasicTimeSeries&,const Metadata&>())
-    .def(py::init<const Metadata&,bool>())
-    .def(py::init<const CoreSeismogram&,const std::string>())
+    .def(py::init<const Seismogram&>(), py::arg("parent"), "Copy constructor")
+    .def(py::init<const CoreSeismogram&>(), py::arg("d"), "Construct from a CoreSeismogram")
+    .def(py::init<const size_t>(), py::arg("npts"), "Construct with npts zero samples per component")
+    .def(py::init<const BasicTimeSeries&,const Metadata&>(),
+      py::arg("bts"),
+      py::arg("md"),
+      "Construct from BasicTimeSeries attributes and Metadata")
+    .def(py::init<const Metadata&,bool>(),
+      py::arg("md"),
+      py::arg("load_data"),
+      "Construct from Metadata, optionally reading sample data from file")
+    .def(py::init<const CoreSeismogram&,const std::string>(),
+      py::arg("d"),
+      py::arg("alg"),
+      "Construct from a CoreSeismogram and initialize processing history")
     /* Don't think we really want to expose this to python if we don't need to
     .def(py::init<const BasicTimeSeries&,const Metadata&, const CoreSeismogram,
       const ProcessingHistory&, const ErrorLogger&,
       const bool,const bool, const dmatrix&,const dmatrix&>())
       */
-    .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
+    .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>(),
+      py::arg("md"),
+      py::arg("jobname"),
+      py::arg("jobid"),
+      py::arg("readername"),
+      py::arg("algid"),
+      "Construct from Metadata and initialize load history identifiers")
     .def("load_history",&Seismogram::load_history,
        "Load ProcessingHistory from another data object that contains relevant history")
     .def("__sizeof__",[](const Seismogram& self){return self.memory_use();})
@@ -484,12 +534,20 @@ PYBIND11_MODULE(seismic, m) {
 
     py::class_<TimeSeries,CoreTimeSeries,ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
       .def(py::init<>())
-      .def(py::init<const TimeSeries&>())
-      .def(py::init<const size_t>())
-      .def(py::init<const CoreTimeSeries&>())
-      .def(py::init<const BasicTimeSeries&,const Metadata&>())
-      .def(py::init<const Metadata&>())
-      .def(py::init<const CoreTimeSeries&,const std::string>())
+      .def(py::init<const TimeSeries&>(), py::arg("parent"), "Copy constructor")
+      .def(py::init<const size_t>(), py::arg("npts"), "Construct with npts zero samples")
+      .def(py::init<const CoreTimeSeries&>(), py::arg("d"), "Construct from a CoreTimeSeries")
+      .def(py::init<const BasicTimeSeries&,const Metadata&>(),
+        py::arg("bts"),
+        py::arg("md"),
+        "Construct from BasicTimeSeries attributes and Metadata")
+      .def(py::init<const Metadata&>(),
+        py::arg("md"),
+        "Construct from Metadata, reading sample data from file metadata")
+      .def(py::init<const CoreTimeSeries&,const std::string>(),
+        py::arg("d"),
+        py::arg("alg"),
+        "Construct from a CoreTimeSeries and initialize processing history")
       /* Not certain we should have this in the python api.  It is used in pickle interface but doesn't seem
 	helpful for python.  Uncomment if this proves false.
       .def(py::init<const BasicTimeSeries&, const Metadata&, const ErrorLogger&, const ProcessingHistory&,
@@ -596,8 +654,11 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<TimeSeries>&>())
     .def("update_metadata",&Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
-    .def("sync_metadata",py::overload_cast<>(&Ensemble<TimeSeries>::sync_metadata),"Copy ensemble metadata to all members")
-    .def("sync_metadata",py::overload_cast<std::vector<std::string>>(&Ensemble<TimeSeries>::sync_metadata),"Copy ensemble metadata to all members")
+    .def("sync_metadata",py::overload_cast<>(&Ensemble<TimeSeries>::sync_metadata),
+      "Copy all ensemble metadata to all members")
+    .def("sync_metadata",py::overload_cast<std::vector<std::string>>(&Ensemble<TimeSeries>::sync_metadata),
+      py::arg("keys"),
+      "Copy selected ensemble metadata keys to all members")
     // Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
     //    to function properlty
     .def_readwrite("member",&Ensemble<TimeSeries>::member,
@@ -647,8 +708,11 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<Seismogram>&>())
     .def("update_metadata",&Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
-    .def("sync_metadata",py::overload_cast<>(&Ensemble<Seismogram>::sync_metadata),"Copy ensemble metadata to all members")
-    .def("sync_metadata",py::overload_cast<std::vector<std::string>>(&Ensemble<Seismogram>::sync_metadata),"Copy ensemble metadata to all members")
+    .def("sync_metadata",py::overload_cast<>(&Ensemble<Seismogram>::sync_metadata),
+      "Copy all ensemble metadata to all members")
+    .def("sync_metadata",py::overload_cast<std::vector<std::string>>(&Ensemble<Seismogram>::sync_metadata),
+      py::arg("keys"),
+      "Copy selected ensemble metadata keys to all members")
     // Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
     //    to function properlty
     .def_readwrite("member",&Ensemble<Seismogram>::member,
@@ -879,18 +943,27 @@ PYBIND11_MODULE(seismic, m) {
                   "Container for power spectrum estimates")
       .def(py::init<>())
       .def(py::init<const Metadata&,const vector<double>&,const double,
-        const string,const double, const double, const int>())
+        const string,const double, const double, const int>(),
+        py::arg("md"),
+        py::arg("spectrum"),
+        py::arg("df"),
+        py::arg("spectrum_type"),
+        py::arg("f0"),
+        py::arg("dt"),
+        py::arg("npts"),
+        "Construct from Metadata, power values, frequency sampling, and parent time-series sampling")
       .def(py::init<const PowerSpectrum&>())
       .def("amplitude",&PowerSpectrum::amplitude,
         "Return an std::vector of amplitude values (sqrt of power)")
       .def("power",&PowerSpectrum::power,
         "Return power at a specified frequency using linear interpolation between gridded values")
       .def("frequency",&PowerSpectrum::frequency,"Return frequency linked to given sample number")
-      .def("frequencies",&PowerSpectrum::frequencies,"Return an std::vector of ")
+      .def("frequencies",&PowerSpectrum::frequencies,
+        "Return a vector containing the frequency for each spectrum sample")
       .def("nf",&PowerSpectrum::nf,
         "Return number of frequencies in this spectral estimate")
       .def("Nyquist",&PowerSpectrum::Nyquist,
-        "Return Nyquist frequency of this powewr spectrum estimate")
+        "Return Nyquist frequency of this power spectrum estimate")
       .def_readwrite("spectrum_type",&PowerSpectrum::spectrum_type,
           "Descriptive name of method used to generate spectrum")
       .def_readwrite("spectrum",&PowerSpectrum::spectrum,

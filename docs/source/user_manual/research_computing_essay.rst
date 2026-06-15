@@ -1,5 +1,7 @@
 .. _research_computing_essay:
 
+:orphan:
+
 MsPASS as a Research Computing Framework
 ============================================
 An essay by *Gary L. Pavlis*
@@ -66,10 +68,11 @@ First, the reader needs to understand what I mean by these terms.
 You can find a lot of resources on this topic with a web search.
 For other perspectives here are a few I found that are useful supplements
 to what I'm writing here:
-- `This<https://www.davideaversa.it/blog/research-code-vs-commercial-code/>`__
+
+- `This <https://www.davideaversa.it/blog/research-code-vs-commercial-code/>`__
   Interesting blog entry.
-- A Wikepedia entry on `Enterprise Software<https://en.wikipedia.org/wiki/Enterprise_software>`__
-- An online book on research coding by `Mineault<https://goodresearch.dev/index.html>`__
+- A Wikipedia entry on `Enterprise Software <https://en.wikipedia.org/wiki/Enterprise_software>`__
+- An online book on research coding by `Mineault <https://goodresearch.dev/index.html>`__
   (see that page for a proper citation and doi)
 
 None of the above sources, however, address a fundamental issue all readers
@@ -116,7 +119,7 @@ much harder otherwise.   There is an analog in seismology history.
 In the 1970s the unix shell revolutionized seismology data processing
 by providing a rich environment for assembling data processing workflows
 from small "unix filters".   There are entire systems built on this
-concept. For example, `Seismic Unix<https://cwp.mines.edu/software/>`__
+concept. For example, `Seismic Unix <https://cwp.mines.edu/software/>`__
 is a seismic refletion processing system
 using unix pipes to move data between processing modules.   Another is the
 now largely defunct "AH" system developed at Lamont in the late 1980s.
@@ -167,7 +170,7 @@ from with seismology data.  Where do you start?   Some starting points to consid
    attribute can almost always be passed to numpy or scipy functions
    that require a vector of numbers as input.   A good example for
    using MsPASS to generate simulation data can be found in
-   our `deconvolution tutorial<https://github.com/mspass-team/mspass_tutorial/blob/master/notebooks/deconvolution_tutorial.ipynb>`__
+   our `deconvolution tutorial <https://github.com/mspass-team/mspass_tutorial/blob/master/notebooks/deconvolution_tutorial.ipynb>`__
    The point is a first step is likely to require writing a python
    program to generate simulation data you can use for initial testing.
 -  Test your idea with a small data set with a serial loop before creating
@@ -182,7 +185,7 @@ from with seismology data.  Where do you start?   Some starting points to consid
    ecosystem (e.g. Spyder, Pycharm, or Visual Studio).   The dark side
    at this  point, however, is that to do so you will need to build a local
    copy of MsPASS.  Instructions for doing so are found
-   `here<https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__
+   `here <https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__
    but the process is currently not trivial.   It is, however, much easier
    if you do not need to install the parallel schedulers (dask and/or spark).
 
@@ -205,6 +208,7 @@ on a lot of data and the code just won't allow it.  For example, it
 only works by reading a list of SAC files.
 
 For this situation, you have three options:
+
 -  If the "dusty deck" is written in C, you may be able to use pybind11,
    which we used in MsPASS to build the low-level functions needed for
    efficiency.  That approach, however, is "not for the faint of heart"
@@ -217,7 +221,7 @@ For this situation, you have three options:
    compiled languages.  If there is local expertise you can lean that
    have done python bindings, you may want to seek guidance from that person.
    A complete current list maintained by python.org an can be found
-   `here<https://wiki.python.org/moin/IntegratingPythonWithOtherLanguages>`__.
+   `here <https://wiki.python.org/moin/IntegratingPythonWithOtherLanguages>`__.
 -  If you are very familiar with python, you may find it easier to just
    translate the algorithm to python.   There are tools like Chat GPT that
    can help you, but if you are a student you would be advised to
@@ -229,7 +233,7 @@ a thorough set of tests to make sure it does what you expect it to do.
 How exhaustive your testing program needs to be is a judgement call based
 on the time you have available and the level of complexity of the algorithm.
 In MsPASS we use
-`pytest<https://docs.pytest.org/en/latest/>`__
+`pytest <https://docs.pytest.org/en/latest/>`__
 to validate the entire code-base whenever we change anything
 and commit the result to github.  For most research,however, that is overkill, and
 few are likely to invest the time in learning yet another package
@@ -246,11 +250,11 @@ A final point to consider for algorithms written in python is that there
 are packages to improve the performance of python code.  A couple simple
 ones I know of are:
 
-1.  You could consider using `cython<https://cython.org/>`__
+1.  You could consider using `cython <https://cython.org/>`__
     to effectively compile your python
     code into C.   It has it's own quirks, but may be a fast solution for
     first-order improvement of an algorithm.
-2.  A more limited approach is to used `numba<https://numba.pydata.org/>`__
+2.  A more limited approach is to used `numba <https://numba.pydata.org/>`__
     to parallelize sections of a python function.   That is known to
     significantly improve speed of some pure-python functions, but requires
     installing yet another package and the result may not play well with

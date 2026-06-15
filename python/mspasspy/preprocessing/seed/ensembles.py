@@ -177,7 +177,7 @@ def dbsave_seed_ensemble_file(db, file, gather_type="event", keys=None):
       only currently supported format.  (others keyword will cause an
       error to be thrown)  Anticipated alternatives are:  "common_receiver"
       or "station", "image_point", and "time_window".
-     :return:  ObjectId of the document inserted that is the index for
+    :return:  ObjectId of the document inserted that is the index for
       the file processed.
     """
 
@@ -774,7 +774,7 @@ def load_arrivals_by_id(
       will be logged  and that member will be marked dead.  Users should
       always test for an empty ensemble after running this function.
     :param optional_key_map:  similar to required_key_map but missing attributes
-      only geneate a complaint message and the data will be left live
+      only generate a complaint message and the data will be left live
     :param verbose:  print some messages otherwise only posted to elog
 
     :return: count of number of live members in the ensemble at completion

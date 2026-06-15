@@ -286,7 +286,7 @@ bool any_to_bool(const boost::any &val, bool &result) {
 }
 } // namespace
 
-Metadata::Metadata(ifstream &ifs, const string form) {
+Metadata::Metadata(std::ifstream &ifs, const std::string form) {
   try {
     char linebuffer[256];
     while (ifs.getline(linebuffer, 128)) {
@@ -401,22 +401,27 @@ bool Metadata::get_bool(const string key) const {
                          "Metadata value is not boolean");
 }
 
+/*! Specialization returning numeric metadata as a double. */
 template <> double Metadata::get<double>(const string key) const {
   return this->get_double(key);
 }
 
+/*! Specialization returning integer-valued metadata as an int. */
 template <> int Metadata::get<int>(const string key) const {
   return this->get_int(key);
 }
 
+/*! Specialization returning integer-valued metadata as a long. */
 template <> long Metadata::get<long>(const string key) const {
   return this->get_long(key);
 }
 
+/*! Specialization returning boolean metadata as a bool. */
 template <> bool Metadata::get<bool>(const string key) const {
   return this->get_bool(key);
 }
 
+/*! Specialization returning numeric metadata as a float when in range. */
 template <> float Metadata::get<float>(const string key) const {
   map<string, boost::any>::const_iterator iptr;
   iptr = md.find(key);

@@ -170,6 +170,21 @@ def image_raw(
 
 
 def tse2nparray(ens):
+    """
+    Convert a :class:`TimeSeriesEnsemble` to a regularly sampled matrix.
+
+    The returned array has sample index on axis 0 and ensemble member index on
+    axis 1.  Samples outside an individual member's live time span are filled
+    with zeros.
+
+    :param ens: ensemble of scalar traces to convert.
+    :type ens: :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`
+    :return: three-element list ``[t0, dt, data]`` containing the earliest
+        start time, sample interval, and 2-D NumPy array.
+    :rtype: list
+    :raises RuntimeError: if ensemble members have inconsistent sample rates
+        or imply an unreasonably large time span.
+    """
     nseis = len(ens.member)
     tmax = 0.0
     tmin = 0.0
@@ -214,6 +229,15 @@ def tse2nparray(ens):
 
 
 def seis2nparray(d):
+    """
+    Convert a three-component :class:`Seismogram` to a NumPy array.
+
+    :param d: seismogram to convert.
+    :type d: :class:`mspasspy.ccore.seismic.Seismogram`
+    :return: three-element list ``[t0, dt, data]`` where ``data`` is a NumPy
+        view of the seismogram sample matrix.
+    :rtype: list
+    """
     tmin = d.t0
     dt = d.dt
     work = numpy.array(d.data)
@@ -221,6 +245,15 @@ def seis2nparray(d):
 
 
 def ts2nparray(d):
+    """
+    Convert a :class:`TimeSeries` to a NumPy array.
+
+    :param d: scalar time series to convert.
+    :type d: :class:`mspasspy.ccore.seismic.TimeSeries`
+    :return: three-element list ``[t0, dt, data]`` where ``data`` is a NumPy
+        array of samples.
+    :rtype: list
+    """
     tmin = d.t0
     dt = d.dt
     work = numpy.array(d.data)
@@ -231,7 +264,23 @@ def wtvaplot(
     d, ranges=None, scale=1.0, fill_color="k", normalize=False, cmap=None, title=None
 ):
     """
-    Wiggle trace variable area plotter for mspass ensemble objects.
+    Plot MsPASS data with wiggle trace variable area rendering.
+
+    :param d: data object to plot.  Supported inputs are
+        :class:`TimeSeries`, :class:`Seismogram`,
+        :class:`TimeSeriesEnsemble`, and :class:`SeismogramEnsemble`.
+    :param ranges: optional horizontal coordinate range passed to
+        :func:`wtva_raw`.
+    :param scale: amplitude scale factor.
+    :param fill_color: matplotlib color used to fill positive lobes; pass
+        ``None`` for wiggle traces without fill.
+    :param normalize: when True normalize the section before plotting.
+    :param cmap: optional colormap used to draw an image background beneath
+        the wiggles.
+    :param title: optional plot title.
+    :return: list of matplotlib figure handles, or ``None`` if conversion
+        fails.  Three-component ensembles return one figure per component.
+    :rtype: list or None
     """
     # We have to handle 3C ensembles specially to make 3 separate
     # windows.   this logic is potentially confusing.  the else
@@ -292,7 +341,21 @@ def imageplot(
     d, ranges=None, cmap=plt.cm.gray, aspect=None, vmin=None, vmax=None, title=None
 ):
     """
-    Image plotter for mspass ensemble objects.
+    Plot MsPASS data as an image section.
+
+    :param d: data object to plot.  Supported inputs are
+        :class:`TimeSeries`, :class:`Seismogram`,
+        :class:`TimeSeriesEnsemble`, and :class:`SeismogramEnsemble`.
+    :param ranges: optional horizontal coordinate range passed to
+        :func:`image_raw`.
+    :param cmap: matplotlib colormap used for amplitudes.
+    :param aspect: optional matplotlib ``imshow`` aspect value.
+    :param vmin: optional minimum amplitude for color scaling.
+    :param vmax: optional maximum amplitude for color scaling.
+    :param title: optional plot title.
+    :return: list of matplotlib figure handles, or ``None`` if conversion
+        fails.  Three-component ensembles return one figure per component.
+    :rtype: list or None
     """
     # We have to handle 3C ensembles specially to make 3 separate
     # windows.   this logic is potentially confusing.  the else
@@ -816,6 +879,12 @@ class SeismicPlotter(BasicSeismicPlotter):
         self.style = newstyle
 
     def plot(self, d):
+        """
+        Plot an MsPASS data object using the currently selected style.
+
+        :param d: data object or ensemble to plot.
+        :return: ``None``; figures are created through matplotlib state.
+        """
         # make copy always to prevent unintentional scaling of input data
         if self.normalize:
             d2plot = self._deepcopy(d)
@@ -1161,6 +1230,7 @@ class LargeEnsemblePlotter(SeismicPlotter):
     image when the number of ensemble members are of the order of 1/10
     or more of the number of pixels defining the y axis.  The way thsi
     subclass addresses that is by forcing the following:
+
         1.  It normally produces multiple plots to display data in blocks.
             sac users can think of this like theh "perplot" argument used
             in the sac ppk function.

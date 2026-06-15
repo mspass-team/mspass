@@ -29,67 +29,172 @@ or loadnoise(d, nwin).
 */
 class FrequencyDomainGIDDecon : public ScalarDecon {
 public:
+  /*! \brief Construct from the top-level deconvolution parameter file.
+
+  The constructor reads the frequency_domain_gid_deconvolution branch, builds
+  the configured leaf inverse operator, and initializes the signal, noise, and
+  FFT processing windows.
+
+  \param md top-level Antelope parameter file for the deconvolution operator.
+  */
   FrequencyDomainGIDDecon(const mspass::utility::AntelopePf &md);
   FrequencyDomainGIDDecon(const FrequencyDomainGIDDecon &parent) = delete;
   FrequencyDomainGIDDecon &operator=(const FrequencyDomainGIDDecon &parent) =
       delete;
   ~FrequencyDomainGIDDecon();
   void changeparameter(const mspass::utility::Metadata &md);
+  /*! \brief Load the three-component signal data used for deconvolution.
+
+  The input seismogram is windowed to dwin.  The supplied window must contain
+  the configured deconvolution FFT window.
+
+  \param d input three-component seismogram.
+  \param dwin full data window to retain around the deconvolution interval.
+  \return 0 on success and 1 if the requested data window is unusable.
+  */
   int load(const mspass::seismic::CoreSeismogram &d,
            mspass::algorithms::TimeWindow dwin);
+  /*! \brief Load the residual-domain noise window from a seismogram.
+
+  \param d input three-component seismogram containing the noise window.
+  \param nwin time window used to estimate residual noise.
+  \return 0 on success and 1 if the requested noise window is unusable.
+  */
   int loadnoise(const mspass::seismic::CoreSeismogram &d,
                 mspass::algorithms::TimeWindow nwin);
+  /*! \brief Load an externally supplied source wavelet.
+
+  External wavelets are accepted only when enabled by the configuration and
+  must match the configured target sample interval.
+
+  \param wavelet source wavelet to use instead of the internally estimated one.
+  \return 0 on success.
+  */
   int loadwavelet(const mspass::seismic::TimeSeries &wavelet);
+  /*! \brief Load an externally supplied core source wavelet.
+
+  \param wavelet core time series converted to a TimeSeries wavelet.
+  \return 0 on success.
+  */
   int loadwavelet(const mspass::seismic::CoreTimeSeries &wavelet);
+  /*! \brief Load an externally supplied scalar noise estimate.
+
+  The sample interval must match the configured target sample interval.  If no
+  residual-domain noise seismogram is already loaded, this vector is also used
+  to synthesize the residual noise estimate required by the sparse iteration.
+
+  \param noise scalar noise waveform.
+  \return 0 on success.
+  */
   int loadnoise(const mspass::seismic::TimeSeries &noise);
+  /*! \brief Load an externally supplied core scalar noise estimate.
+
+  \param noise core time series converted to a TimeSeries noise waveform.
+  \return 0 on success.
+  */
   int loadnoise(const mspass::seismic::CoreTimeSeries &noise);
+  /*! \brief Load an externally supplied noise power spectrum.
+
+  This overload is supported for ns_gid and group_sparse modes where the leaf
+  inverse operator uses the spectrum for noise-stable regularization.
+
+  \param noise_spectrum spectrum that covers DC and describes noise power.
+  \return 0 on success.
+  */
   int loadnoise(const mspass::seismic::PowerSpectrum &noise_spectrum);
+  /*! Clear any externally loaded wavelet and invalidate processed state. */
   void clear_external_wavelet();
+  /*! Clear externally loaded noise or noise spectrum and invalidate state. */
   void clear_external_noise();
+  /*! Return the configured deconvolution-window start time. */
   double deconvolution_window_start() const { return this->fftwin.start; };
+  /*! Return the configured deconvolution-window end time. */
   double deconvolution_window_end() const { return this->fftwin.end; };
+  /*! Return the current residual-noise window start time. */
   double noise_window_start() const { return this->nwin.start; };
+  /*! Return the current residual-noise window end time. */
   double noise_window_end() const { return this->nwin.end; };
+  /*! Return the serialized configuration parameter-file text. */
   std::string configuration_pf_text() const { return this->config_pf_text; };
+  /*! Return true if changeparameter has updated the leaf inverse operator. */
   bool leaf_parameters_have_changed() const {
     return this->leaf_parameters_changed;
   };
+  /*! Return the metadata most recently passed to changeparameter. */
   mspass::utility::Metadata changed_leaf_parameters() const {
     return this->changed_leaf_metadata;
   };
+  /*! Return true if an external wavelet is currently loaded. */
   bool external_wavelet_is_loaded() const {
     return this->external_wavelet_loaded;
   };
+  /*! Return true if an external scalar noise waveform is currently loaded. */
   bool external_noise_is_loaded() const { return this->external_noise_loaded; };
+  /*! Return true if an external noise power spectrum is currently loaded. */
   bool external_noise_spectrum_is_loaded() const {
     return this->external_noise_spectrum_loaded;
   };
+  /*! Return the loaded external wavelet, or an empty TimeSeries if absent. */
   mspass::seismic::TimeSeries loaded_external_wavelet() const {
     if (!this->external_wavelet_loaded)
       return mspass::seismic::TimeSeries();
     return this->external_wavelet;
   };
+  /*! Return the loaded external noise, or an empty TimeSeries if absent. */
   mspass::seismic::TimeSeries loaded_external_noise() const {
     if (!this->external_noise_loaded)
       return mspass::seismic::TimeSeries();
     return this->external_noise;
   };
+  /*! Return the loaded external noise spectrum, or an empty spectrum. */
   mspass::seismic::PowerSpectrum loaded_external_noise_spectrum() const {
     if (!this->external_noise_spectrum_loaded)
       return mspass::seismic::PowerSpectrum();
     return this->external_noise_spectrum;
   };
+  /*! \brief Load signal and residual-noise windows from one seismogram.
+
+  This convenience overload calls loadnoise(d, nwin) and load(d, dwin).
+
+  \param d input three-component seismogram.
+  \param dwin full data window to retain around the deconvolution interval.
+  \param nwin time window used to estimate residual noise.
+  \return sum of the signal and noise load return codes.
+  */
   int load(const mspass::seismic::CoreSeismogram &d,
            mspass::algorithms::TimeWindow dwin,
            mspass::algorithms::TimeWindow nwin);
+  /*! \brief Run the configured sparse GID iteration.
+
+  Processing requires both a loaded data window and a loaded residual-noise
+  estimate.  The method resets prior processed products before computing a new
+  inverse operator, sparse spike train, and QC state.
+  */
   void process();
+  /*! \brief Return the shaped deconvolution result.
+
+  The sparse output is convolved with the configured shaping wavelet and
+  returned in the loaded data window.
+  */
   mspass::seismic::CoreSeismogram getresult();
+  /*! \brief Return the unshaped sparse spike train.
+
+  Values are inserted at the selected sparse lags in a seismogram aligned with
+  the loaded data window.
+  */
   mspass::seismic::CoreSeismogram sparse_output();
+  /*! Return the final lag weights used by the sparse picker. */
   std::vector<double> lag_weight_vector() const;
   /*! Legacy alias for output_shaping_wavelet inherited from ScalarDecon. */
   mspass::seismic::CoreTimeSeries ideal_output();
+  /*! Return the resolution kernel of the active leaf inverse operator. */
   mspass::seismic::CoreTimeSeries actual_output();
+  /*! Return the inverse wavelet using a zero parent start time. */
   mspass::seismic::CoreTimeSeries inverse_wavelet();
+  /*! \brief Return the inverse wavelet with the parent time correction.
+
+  \param t0parent start time of the parent waveform used to set output time.
+  */
   mspass::seismic::CoreTimeSeries inverse_wavelet(double t0parent);
   mspass::utility::Metadata QCMetrics();
 

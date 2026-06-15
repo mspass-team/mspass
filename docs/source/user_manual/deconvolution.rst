@@ -863,36 +863,42 @@ Regularization and support reporting
 
 ``group_sparse_lambda`` controls shrinkage inside the objective.  A positive
 value is used directly.  The default value ``0.0`` selects an automatic
-noise-scaled value:
+noise-scaled value.  Let :math:`\lambda_{\mathrm{scale}}` denote
+``group_sparse_lambda_scale`` and let :math:`\eta` denote the automatic noise
+reference.  Then
 
 .. math::
 
    \lambda =
-   \texttt{group\_sparse\_lambda\_scale}
-   \times
+   \lambda_{\mathrm{scale}}\eta,
+   \qquad
+   \eta =
    \begin{cases}
-      \text{NS-GID inverse-filtered noise threshold},
-         & \text{if available}, \\
+      \eta_{\mathrm{noise}}, & \mathrm{available}, \\
       0.02\,\|\mathbf{y}\|_\infty,
-         & \text{otherwise}.
+         & \mathrm{otherwise}.
    \end{cases}
+
+Here :math:`\eta_{\mathrm{noise}}` is the NS-GID inverse-filtered noise
+threshold when that estimate is available.
 
 The exported sparse support has a second adaptive decision rule.  The
 regularized coefficient field can contain tiny numerical coefficients or small
-clustered sidelobe coefficients.  The default support threshold is
+clustered sidelobe coefficients.  Let :math:`a_0` denote
+``group_sparse_active_threshold``, :math:`s_a` denote
+``group_sparse_active_threshold_scale``, and :math:`q` denote
+``group_sparse_active_threshold_quantile``.  The default support threshold is
 
 .. math::
 
-   \tau_\text{support}
+   \tau_{\mathrm{support}}
       =
       \max\left(
-        \texttt{group\_sparse\_active\_threshold},
-        \texttt{group\_sparse\_active\_threshold\_scale}
-        \;Q_q\left(\left\{\|\hat{\mathbf{h}}_j\|_2\right\}\right)
+        a_0,
+        s_a Q_q\left(\left\{\|\hat{\mathbf{h}}_j\|_2\right\}\right)
       \right),
 
-where :math:`q=\texttt{group\_sparse\_active\_threshold\_quantile}`.  The
-distributed defaults are ``group_sparse_active_threshold=0.02``,
+with distributed defaults ``group_sparse_active_threshold=0.02``,
 ``group_sparse_active_threshold_scale=1.0``, and
 ``group_sparse_active_threshold_quantile=0.90``.
 
@@ -992,26 +998,23 @@ the core numerical checks still use fixed reproducible validation cases.
 What the figures show
 ~~~~~~~~~~~~~~~~~~~~~
 
-``complex_colored_validation_wavelet.png``
-    Shows the notched source wavelet, the noisy convolved three-component data,
-    and the known sparse impulse response used as synthetic truth.
-
-``complex_colored_scalar_methods.png`` and
-``scalar_noise_<scale>_stress_spike_results.png``
-    Compare scalar and CNR receiver-function outputs.  These traces are shaped
-    receiver functions, not sparse impulse responses.
-
-``TimeDomainGIDDecon_*`` and ``FrequencyDomainGIDDecon_*`` overlays
-    Compare GID outputs for the time-domain and frequency-domain engines.  Files
-    ending in ``_sparse_results.png`` show raw sparse impulse responses from
-    ``sparse_output`` and are the most direct visual comparison to the known
-    sparse truth.
-
-``external_wavelet_all_methods.png``
-    Compares methods when a prepared external wavelet is supplied.  The
-    companion ``external_wavelet_all_methods_display_filtered.png`` applies a
-    common plotting-only display filter; that filter is not part of the
-    algorithms or the pass/fail assertions.
+* ``complex_colored_validation_wavelet.png`` shows the notched source wavelet,
+  the noisy convolved three-component data, and the known sparse impulse
+  response used as synthetic truth.
+* ``complex_colored_scalar_methods.png`` and
+  ``scalar_noise_<scale>_stress_spike_results.png`` compare scalar and CNR
+  receiver-function outputs.  These traces are shaped receiver functions, not
+  sparse impulse responses.
+* ``TimeDomainGIDDecon_*`` and ``FrequencyDomainGIDDecon_*`` overlays compare
+  GID outputs for the time-domain and frequency-domain engines.  Files ending
+  in ``_sparse_results.png`` show raw sparse impulse responses from
+  ``sparse_output`` and are the most direct visual comparison to the known
+  sparse truth.
+* ``external_wavelet_all_methods.png`` compares methods when a prepared
+  external wavelet is supplied.  The companion
+  ``external_wavelet_all_methods_display_filtered.png`` applies a common
+  plotting-only display filter; that filter is not part of the algorithms or
+  the pass/fail assertions.
 
 Reading noise-scale plots
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1071,51 +1074,41 @@ wrappers use ``TimeDomainGIDDecon_properties`` and
 
 Useful first-pass fields are:
 
-``decon_operator`` and ``decon_processed``
-    Confirm which engine ran and whether it processed the datum.
-
-``decon_window_start``, ``decon_window_end``, ``noise_window_start``, and
-``noise_window_end``
-    Confirm that the analysis and noise windows match the intended workflow.
-
-``residual_L2_initial`` and ``residual_L2_final``
-    Check whether the fitted model reduced residual energy.  Smaller is not
-    automatically better if the sparse support becomes physically implausible.
-
-``gid_converged``, ``gid_stop_reason``, ``gid_iterations``, and
-``gid_number_spikes``
-    Summarize the GID iteration outcome.
-
-``gid_penalty_function``, ``gid_penalty_effective_width``,
-``lag_weight_L2_final``, and the ``gid_penalty_*`` adaptive-memory fields
-    Explain how the lag-weight penalty affected candidate selection.  These
-    fields are present for greedy GID modes, not for
-    ``deconvolution_type group_sparse``.
-
-``group_sparse_enabled``, ``group_sparse_converged``,
-``group_sparse_iterations``, ``group_sparse_lambda_used``,
-``group_sparse_active_threshold_used``, ``group_sparse_active_groups``,
-``group_sparse_objective_initial``, and ``group_sparse_objective_final``
-    Summarize the regularized group-sparse solve and the exported sparse
-    support decision.  ``group_sparse_objective_final`` is the solver's final
-    regularized objective after thresholding the proximal solution.  The
-    amplitude refit is reported separately as
-    ``group_sparse_debiased_objective_final`` and
-    ``group_sparse_debiased_fractional_improvement_final`` because it is the
-    same regularized objective evaluated after the debiased amplitude update on
-    the selected support.  These fields are present only for
-    ``deconvolution_type group_sparse``.
-
-``ns_gid_gain_max_actual``, ``ns_gid_noise_amplification``, and
-``ns_gid_effective_bandwidth_fraction``
-    Help audit inverse-operator stability for ``deconvolution_type ns_gid``.
-
-``group_sparse_inverse_gain_max_actual``,
-``group_sparse_inverse_noise_amplification``, and
-``group_sparse_inverse_effective_bandwidth_fraction``
-    Help audit the NS-GID inverse branch used internally by
-    ``deconvolution_type group_sparse``.  These fields are absent for other
-    GID modes.
+* ``decon_operator`` and ``decon_processed`` confirm which engine ran and
+  whether it processed the datum.
+* ``decon_window_start``, ``decon_window_end``, ``noise_window_start``, and
+  ``noise_window_end`` confirm that the analysis and noise windows match the
+  intended workflow.
+* ``residual_L2_initial`` and ``residual_L2_final`` check whether the fitted
+  model reduced residual energy.  Smaller is not automatically better if the
+  sparse support becomes physically implausible.
+* ``gid_converged``, ``gid_stop_reason``, ``gid_iterations``, and
+  ``gid_number_spikes`` summarize the GID iteration outcome.
+* ``gid_penalty_function``, ``gid_penalty_effective_width``,
+  ``lag_weight_L2_final``, and the ``gid_penalty_*`` adaptive-memory fields
+  explain how the lag-weight penalty affected candidate selection.  These
+  fields are present for greedy GID modes, not for
+  ``deconvolution_type group_sparse``.
+* ``group_sparse_enabled``, ``group_sparse_converged``,
+  ``group_sparse_iterations``, ``group_sparse_lambda_used``,
+  ``group_sparse_active_threshold_used``, ``group_sparse_active_groups``,
+  ``group_sparse_objective_initial``, and ``group_sparse_objective_final``
+  summarize the regularized group-sparse solve and the exported sparse support
+  decision.  ``group_sparse_objective_final`` is the solver's final regularized
+  objective after thresholding the proximal solution.  The amplitude refit is
+  reported separately as ``group_sparse_debiased_objective_final`` and
+  ``group_sparse_debiased_fractional_improvement_final`` because it is the same
+  regularized objective evaluated after the debiased amplitude update on the
+  selected support.  These fields are present only for
+  ``deconvolution_type group_sparse``.
+* ``ns_gid_gain_max_actual``, ``ns_gid_noise_amplification``, and
+  ``ns_gid_effective_bandwidth_fraction`` help audit inverse-operator stability
+  for ``deconvolution_type ns_gid``.
+* ``group_sparse_inverse_gain_max_actual``,
+  ``group_sparse_inverse_noise_amplification``, and
+  ``group_sparse_inverse_effective_bandwidth_fraction`` help audit the NS-GID
+  inverse branch used internally by ``deconvolution_type group_sparse``.  These
+  fields are absent for other GID modes.
 
 Implementation and compatibility notes
 --------------------------------------

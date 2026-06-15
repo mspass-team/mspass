@@ -20,7 +20,7 @@ database
 ensembles
 ---------
 
-.. automodule:: mspasspy.db.database
+.. automodule:: mspasspy.db.ensembles
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,7 +28,7 @@ ensembles
 matcher
 -------
 
-.. automodule:: mspasspy.db.database
+.. automodule:: mspasspy.db.matcher
     :members:
     :undoc-members:
     :show-inheritance:
@@ -52,7 +52,7 @@ schema
 spectrumdb
 ----------
 
-.. automodule:: mspasspy.db.schema
+.. automodule:: mspasspy.db.spectrumdb
     :members:
     :undoc-members:
     :show-inheritance:

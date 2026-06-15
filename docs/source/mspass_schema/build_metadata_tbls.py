@@ -1,109 +1,221 @@
-from mspasspy.ccore.utility import MetadataDefinitions
-from mspasspy.ccore.utility import MDtype
-from mspasspy.ccore.utility import AntelopePf
+"""Generate the CSV tables included by the schema documentation.
+
+The table contents are derived from ``data/yaml/mspass.yaml``.  The small
+``build_metadata_tbls.pf`` file only defines documentation-oriented subsets of
+that schema.  Every subset key is validated against the YAML schema so stale
+tables fail during the Sphinx build instead of rendering ``undefined`` rows.
+"""
+
+from __future__ import annotations
+
+import csv
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Iterable
+
+import yaml
 
 
-def write_group(pf, tag, mdef):
-    """
-    This function is implements the repetitious task of creating a
-    csv file of attributes that have some kind of logical or required
-    grouping in MsPASS.   The tag argument is used to create a csv
-    file of the same name for output.  e.g. if tag is 'source' the
-    function will write results to a file called 'source.csv'.  The
-    tag is also used to fetch an &Tbl{} block from the AntelopePf object
-    pf that is assumed to contain the set of unique keys that define
-    that grouping.   We intentionally do not handle exceptions for
-    get errors in that context because this program is expected to
-    be run under the hood by Travis (or equivalent) and we want the
-    program to exit with an error condition if there is such an error
-    to avoid corrupting automatically generated documentation.
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = Path(os.environ.get("MSPASS_HOME", SCRIPT_DIR.parents[2])).resolve()
+SCHEMA_FILE = REPO_ROOT / "data" / "yaml" / "mspass.yaml"
+GROUP_FILE = SCRIPT_DIR / "build_metadata_tbls.pf"
 
-    :param pf: is an AntelopePF that is assumed to contain a branch
-      (&Arr) with the tag defined by the branch argument.
-    :param branch: is the tag of the requested branch.  Note again
-       the output csv file will be the value of branch with file
-       extension ".csv"
-    :param mdef: is the MetadataDefinitions object created by the main
-       program here.  We pass it for efficiency.
-    """
-    tbl = pf.get_tbl(tag)
-    filename = tag + ".csv"
-    fh = open(filename, "w+")
-    fh.write('"%s","%s","%s","%s"\n' % ("Key", "Type", "Mutable", "Concept"))
-    for k in tbl:
-        t = mdef.type(k)
-        tstr = "undefined"
-        if t == MDtype.Int64:
-            tstr = "int"
-        elif t == MDtype.Double:
-            tstr = "double"
-        elif t == MDtype.String:
-            tstr = "string"
-        elif t == MDtype.Boolean:
-            tstr = "boolean"
-        writeable = mdef.writeable(k)
-        wstr = "undefined"
-        if writeable:
-            wstr = "Yes"
-        else:
-            wstr = "No"
-        fh.write('"%s","%s","%s","%s"\n' % (k, tstr, wstr, mdef.concept(k)))
-    fh.close()
+HEADER = ("Key", "Type", "Mutable", "Concept")
+TYPE_NAMES = {
+    "int": "int",
+    "integer": "int",
+    "double": "double",
+    "float": "double",
+    "str": "string",
+    "string": "string",
+    "bool": "boolean",
+    "boolean": "boolean",
+    "dict": "dict",
+    "list": "list",
+    "objectid": "ObjectId",
+    "bytes": "bytes",
+    "byte": "bytes",
+    "object": "bytes",
+}
 
 
-# These are file names for outputs
-# this is all entris in natrual sort order (keys alphabetical)
-allfile = "all.csv"
-allrst = "all.rst"
-# This contains all aliases
-aliasfile = "aliases.csv"
+@dataclass
+class AttributeDefinition:
+    """Normalized row data for a single metadata key."""
 
-mdef = MetadataDefinitions()
-fh = open(allfile, "w+")
-fh.write('"%s","%s","%s","%s"\n' % ("Key", "Type", "Mutable", "Concept"))
-mdk = mdef.keys()
-for k in mdk:
-    t = mdef.type(k)
-    tstr = "undefined"
-    if t == MDtype.Int64:
-        tstr = "int"
-    elif t == MDtype.Double:
-        tstr = "double"
-    elif t == MDtype.String:
-        tstr = "string"
-    elif t == MDtype.Boolean:
-        tstr = "boolean"
-    writeable = mdef.writeable(k)
-    wstr = "undefined"
-    if writeable:
-        wstr = "Yes"
-    else:
-        wstr = "No"
-    fh.write('"%s","%s","%s","%s"\n' % (k, tstr, wstr, mdef.concept(k)))
-fh.close()
-fh = open(aliasfile, "w+")
-fh.write('"%s","%s"\n' % ("Unique Key", "Valid Aliases"))
-for k in mdk:
-    aliaslist = mdef.aliases(k)
-    if len(aliaslist) > 0:
-        if len(aliaslist) == 1:
-            fh.write('"%s","%s"' % (k, aliaslist[0]))
-        else:
-            fh.write('"%s","' % k)
-            for i in range(len(aliaslist) - 1):
-                fh.write("%s : " % aliaslist[i])
-            val = aliaslist[len(aliaslist) - 1]
-            fh.write('%s"' % val)
-        fh.write("\n")
+    key: str
+    type_name: str
+    mutable: bool
+    concept: str = ""
+    aliases: set[str] = field(default_factory=set)
 
-# Now build the group tables using the function above.  Need the pf first
-pf = AntelopePf("build_metadata_tbls.pf")
-write_group(pf, "site", mdef)
-write_group(pf, "source", mdef)
-write_group(pf, "obspy_trace", mdef)
-write_group(pf, "sitechan", mdef)
-write_group(pf, "3Cdata", mdef)
-write_group(pf, "sitechan", mdef)
-write_group(pf, "phase", mdef)
-write_group(pf, "MongoDB", mdef)
-write_group(pf, "files", mdef)
+    def row(self) -> tuple[str, str, str, str]:
+        return (
+            self.key,
+            self.type_name,
+            "Yes" if self.mutable else "No",
+            self.concept,
+        )
+
+
+def _load_schema() -> dict:
+    with SCHEMA_FILE.open(encoding="utf-8") as stream:
+        return yaml.safe_load(stream)
+
+
+def _canonical_type(type_name: str | None) -> str:
+    if type_name is None:
+        raise ValueError("Schema attribute is missing a type")
+    return TYPE_NAMES.get(str(type_name).strip().casefold(), str(type_name))
+
+
+def _as_alias_set(aliases: object, key: str) -> set[str]:
+    if aliases is None:
+        return set()
+    if isinstance(aliases, str):
+        aliases = [aliases]
+    return {alias for alias in aliases if alias != key}
+
+
+def _default_collection_names(database_schema: dict) -> dict[str, str]:
+    defaults = {}
+    for collection, definition in database_schema.items():
+        if "default" in definition:
+            defaults[definition["default"]] = collection
+    return defaults
+
+
+def _compile_database_definitions(raw_schema: dict) -> dict[str, dict[str, dict]]:
+    """Resolve database references in the same way ``DatabaseSchema`` does."""
+
+    database_schema = raw_schema["Database"]
+    compiled = {
+        collection: dict(definition["schema"])
+        for collection, definition in database_schema.items()
+    }
+
+    for collection, attributes in compiled.items():
+        for key, attribute in list(attributes.items()):
+            if "reference" not in attribute:
+                continue
+            referenced_key = "_id" if key == f"{attribute['reference']}_id" else key
+            reference_collection = database_schema[attribute["reference"]]
+            while "base" in reference_collection:
+                reference_collection = database_schema[reference_collection["base"]]
+                if referenced_key in reference_collection["schema"]:
+                    break
+            foreign_attribute = reference_collection["schema"][referenced_key]
+            attributes[key] = {**foreign_attribute, **attribute}
+
+    return compiled
+
+
+def _metadata_catalog(raw_schema: dict) -> dict[str, AttributeDefinition]:
+    """Return a deterministic catalog of metadata attributes keyed by name."""
+
+    database_definitions = _compile_database_definitions(raw_schema)
+    defaults = _default_collection_names(raw_schema["Database"])
+    catalog: dict[str, AttributeDefinition] = {}
+
+    for metadata_definition in raw_schema["Metadata"].values():
+        for key, raw_attribute in metadata_definition["schema"].items():
+            attribute = dict(raw_attribute)
+            if "collection" in attribute:
+                collection = attribute["collection"]
+                lookup_key = key
+                if key.startswith(f"{collection}_"):
+                    lookup_key = key.replace(f"{collection}_", "", 1)
+                collection = defaults.get(collection, collection)
+                foreign_attribute = database_definitions[collection][lookup_key]
+                attribute = {**foreign_attribute, **attribute}
+
+            aliases = _as_alias_set(attribute.get("aliases"), key)
+            if key not in catalog:
+                catalog[key] = AttributeDefinition(
+                    key=key,
+                    type_name=_canonical_type(attribute.get("type")),
+                    mutable=not attribute.get("readonly", True),
+                    concept=attribute.get("concept", ""),
+                    aliases=aliases,
+                )
+            else:
+                catalog[key].aliases.update(aliases)
+
+    return catalog
+
+
+def _parse_group_tables(group_file: Path) -> dict[str, list[str]]:
+    """Parse the small AntelopePf-style ``&Tbl`` file used for table groups."""
+
+    groups: dict[str, list[str]] = {}
+    current_group: str | None = None
+
+    with group_file.open(encoding="utf-8") as stream:
+        for line_number, raw_line in enumerate(stream, start=1):
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if current_group is None:
+                if not line.endswith("&Tbl{"):
+                    raise ValueError(
+                        f"{group_file}:{line_number}: expected '<name> &Tbl{{'"
+                    )
+                current_group = line.split()[0]
+                if current_group in groups:
+                    raise ValueError(
+                        f"{group_file}:{line_number}: duplicate table {current_group}"
+                    )
+                groups[current_group] = []
+            elif line == "}":
+                current_group = None
+            else:
+                groups[current_group].append(line)
+
+    if current_group is not None:
+        raise ValueError(f"{group_file}: table {current_group} is missing '}}'")
+    return groups
+
+
+def _write_csv(path: Path, rows: Iterable[tuple[str, ...]]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as stream:
+        writer = csv.writer(stream, lineterminator="\n")
+        writer.writerows(rows)
+
+
+def _write_attribute_table(
+    filename: str, keys: Iterable[str], catalog: dict[str, AttributeDefinition]
+) -> None:
+    missing = [key for key in keys if key not in catalog]
+    if missing:
+        raise ValueError(
+            f"{GROUP_FILE}: table {filename} contains undefined schema keys: "
+            + ", ".join(missing)
+        )
+
+    rows = [HEADER]
+    rows.extend(catalog[key].row() for key in keys)
+    _write_csv(SCRIPT_DIR / filename, rows)
+
+
+def main() -> None:
+    raw_schema = _load_schema()
+    catalog = _metadata_catalog(raw_schema)
+
+    all_keys = sorted(catalog)
+    _write_attribute_table("all.csv", all_keys, catalog)
+
+    alias_rows = [("Unique Key", "Valid Aliases")]
+    for key in all_keys:
+        aliases = sorted(catalog[key].aliases)
+        if aliases:
+            alias_rows.append((key, " : ".join(aliases)))
+    _write_csv(SCRIPT_DIR / "aliases.csv", alias_rows)
+
+    for tag, keys in _parse_group_tables(GROUP_FILE).items():
+        _write_attribute_table(f"{tag}.csv", keys, catalog)
+
+
+if __name__ == "__main__":
+    main()

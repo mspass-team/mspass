@@ -41,7 +41,7 @@ public:
   \param tbp is the time bandwidth product to use for the operator.
   \param ntapers is the number of tapers to actually use for the operator.
     Note the maximum ntapers is always int(tbp*2).  If ntapers is more than
-    2*tbp a mesage will be posted to cerr and ntapers set to tbp*2.
+    2*tbp a message will be posted to cerr and ntapers set to tbp*2.
   \param nfftin is the size of the fft workspace to use for computation.
     When less than the winsize (the default forces this) set to 2*winsize+1.
   \param dtin sets the operator sample interval stored in the object and used
@@ -56,7 +56,7 @@ public:
   ~MTPowerSpectrumEngine();
   /*! Standard assignment operator. */
   MTPowerSpectrumEngine &operator=(const MTPowerSpectrumEngine &parent);
-  /*! \process a TimeSeries.
+  /*! \brief Process a TimeSeries.
 
   This is one of two methods for applying the multiaper algorithm to data.
   This one uses dt and data length to set the Rayleigh bin size (df).   If
@@ -67,7 +67,7 @@ public:
   on the right (i.e. sample 0 will be the start of the window used).
   The data return will be scaled to psd in units if 1/Hz.
 
-  \param parent is the data to process
+  \param d is the data to process
   \return vector containing estimated power spwecrum
   */
   mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries &d);

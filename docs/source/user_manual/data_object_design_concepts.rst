@@ -846,6 +846,8 @@ Error Logging Concepts
   ObjectID of the data in the wf collection.  Details of that association
   are given in other sections of this manual.
 
-.. |TimeSeries Inheritance| image:: /../_static/html/classmspass_1_1seismic_1_1_time_series.png
+.. |TimeSeries Inheritance| image:: ../doxygen/html/classmspass_1_1seismic_1_1_time_series__inherit__graph.png
+   :class: mspass-doxygen-graph
 
-.. |Seismogram Inheritance| image:: /../_static/html/classmspass_1_1seismic_1_1_seismogram.png
+.. |Seismogram Inheritance| image:: ../doxygen/html/classmspass_1_1seismic_1_1_seismogram__inherit__graph.png
+   :class: mspass-doxygen-graph

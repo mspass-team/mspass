@@ -13,6 +13,20 @@ from mspasspy.ccore.utility import MsPASSError
 
 
 class SchemaBase:
+    """
+    Base loader for MsPASS YAML schema definitions.
+
+    This class resolves a schema file path, validates the YAML structure, and
+    stores the raw schema dictionary used by database and metadata schema
+    containers.
+
+    :param schema_file: optional absolute path, relative filename, or ``None``
+        to load the default ``mspass.yaml`` schema from ``MSPASS_HOME`` or the
+        installed package data directory.
+    :raises mspasspy.ccore.utility.MsPASSError: if the schema file cannot be
+        opened, parsed, or validated.
+    """
+
     def __init__(self, schema_file=None):
         self._attr_dict = {}
         if schema_file is None:
@@ -73,6 +87,15 @@ class SchemaBase:
 
 
 class SchemaDefinitionBase:
+    """
+    Common interface for one set of schema attribute definitions.
+
+    Subclasses populate the internal dictionaries from either the database
+    schema or metadata schema sections.  Methods on this base class expose
+    aliases, type information, constraints, required keys, and xref keys for
+    a single collection-like schema definition.
+    """
+
     _main_dic = {}
     _alias_dic = {}
     _required_keys = []
@@ -394,6 +417,18 @@ class SchemaDefinitionBase:
 
 
 class DatabaseSchema(SchemaBase):
+    """
+    Container for MongoDB collection schema definitions.
+
+    Loading a ``DatabaseSchema`` creates one :class:`DBSchemaDefinition` for
+    each collection in the YAML ``Database`` section.  Each collection can be
+    accessed as an attribute, with ``[]`` lookup inherited from
+    :class:`SchemaBase`, and defaults can be queried with :meth:`default` or
+    :meth:`default_name`.
+
+    :param schema_file: optional schema file passed to :class:`SchemaBase`.
+    """
+
     def __init__(self, schema_file=None):
         super().__init__(schema_file)
         self._default_dic = {}
@@ -491,6 +526,17 @@ class DatabaseSchema(SchemaBase):
 
 
 class DBSchemaDefinition(SchemaDefinitionBase):
+    """
+    Schema definition for one database collection.
+
+    A ``DBSchemaDefinition`` expands referenced attributes from related
+    collections, records aliases, tracks required and xref keys, and exposes
+    helper methods used by database readers and writers.
+
+    :param schema_dic: dictionary for the YAML ``Database`` section.
+    :param collection_str: collection name to load from ``schema_dic``.
+    """
+
     def __init__(self, schema_dic, collection_str):
         self._collection_str = collection_str
         self._main_dic = {}
@@ -581,6 +627,16 @@ class DBSchemaDefinition(SchemaDefinitionBase):
 
 
 class MetadataSchema(SchemaBase):
+    """
+    Container for metadata schema definitions used by MsPASS data objects.
+
+    Loading a ``MetadataSchema`` creates one :class:`MDSchemaDefinition` for
+    each collection in the YAML ``Metadata`` section and links metadata keys
+    back to the database schema when a key is stored in MongoDB.
+
+    :param schema_file: optional schema file passed to :class:`SchemaBase`.
+    """
+
     def __init__(self, schema_file=None):
         super().__init__(schema_file)
         dbschema = DatabaseSchema(schema_file)
@@ -597,6 +653,19 @@ class MetadataSchema(SchemaBase):
 
 
 class MDSchemaDefinition(SchemaDefinitionBase):
+    """
+    Schema definition for one metadata collection.
+
+    A ``MDSchemaDefinition`` merges metadata-only attributes with referenced
+    database collection attributes, tracks aliases and constraints, and exposes
+    read/write helpers for metadata keys.
+
+    :param schema_dic: dictionary for the YAML ``Metadata`` section.
+    :param collection_str: metadata collection name to load.
+    :param dbschema: :class:`DatabaseSchema` used to resolve database-backed
+        metadata keys.
+    """
+
     def __init__(self, schema_dic, collection_str, dbschema):
         self._main_dic = {}
         self._alias_dic = {}

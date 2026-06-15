@@ -15,19 +15,27 @@ namespace mspass::seismic {
 **/
 class TimeWindowCmp {
 public:
+  /*! Return true when the first window ends before the second window starts. */
   bool operator()(const mspass::algorithms::TimeWindow ti1,
                   const mspass::algorithms::TimeWindow ti2) const {
     return (ti1.end < ti2.start);
   };
 };
 
+/*! \brief Container defining invalid time spans for gappy seismic data.
+
+DataGap stores TimeWindow intervals in a set so algorithms can query whether
+samples or windows overlap known gaps.
+*/
 class DataGap {
 public:
   /*! Default construtor.  Does nothing but create empty gap container. */
   DataGap() {};
   /*! Construct with an initial list of TimeWindows defining gaps. */
   DataGap(const std::list<mspass::algorithms::TimeWindow> &twlist);
+  /*! Copy constructor. */
   DataGap(const DataGap &parent) : gaps(parent.gaps) {};
+  /*! Virtual destructor for gap-aware derived classes. */
   virtual ~DataGap() {};
   /*!
   Checks if data at time ttest is a gap or valid data.

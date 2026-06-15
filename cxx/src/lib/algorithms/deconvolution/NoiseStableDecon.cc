@@ -44,13 +44,14 @@ NoiseStableDecon::NoiseStableDecon(const Metadata &md)
   this->read_metadata(md);
 }
 
-NoiseStableDecon::NoiseStableDecon(const Metadata &md, const vector<double> &w,
-                                   const vector<double> &d)
+NoiseStableDecon::NoiseStableDecon(const Metadata &md,
+                                   const std::vector<double> &wavelet,
+                                   const std::vector<double> &data)
     : FFTDeconOperator(md), noise_vector_loaded(false),
       noise_spectrum_loaded(false), processed(false) {
   this->read_metadata(md);
-  wavelet = w;
-  data = d;
+  this->wavelet = wavelet;
+  this->data = data;
 }
 
 int NoiseStableDecon::read_metadata(const Metadata &md) {
@@ -102,12 +103,12 @@ void NoiseStableDecon::changeparameter(const Metadata &md) {
   processed = false;
 }
 
-void NoiseStableDecon::loadnoise(const vector<double> &noise_in) {
-  if (noise_in.empty())
+void NoiseStableDecon::loadnoise(const std::vector<double> &noise) {
+  if (noise.empty())
     throw MsPASSError("NoiseStableDecon::loadnoise: noise vector cannot be "
                       "empty",
                       ErrorSeverity::Invalid);
-  noise = noise_in;
+  this->noise = noise;
   noise_vector_loaded = true;
   noise_spectrum_loaded = false;
   result.clear();

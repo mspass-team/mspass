@@ -1,5 +1,7 @@
 .. _deploy_mspass_with_docker_compose:
 
+:orphan:
+
 Deploy MsPASS with Docker Compose
 =================================
 
@@ -56,12 +58,12 @@ Deploy MsPASS Containers
 Docker Compose can deploy multiple MsPASS Containers of different roles, which simulates a distributed environment.
 Below, we provide two exemplary Docker Compose configurations that have distributed setup for both the computation (with Dask or Spark) and the database (with MongoDB).
 
-.. literalinclude:: ../../../docker-compose.yml
+.. literalinclude:: ../../../data/yaml/compose.yaml
    :language: yaml
    :linenos:
    :caption: Docker Compose example that configures a MongoDB cluster of two shards and a Dask cluster of one worker.
 
-.. literalinclude:: ../../../docker-compose_spark.yml
+.. literalinclude:: ../../../data/yaml/docker-compose_spark.yaml
    :language: yaml
    :linenos:
    :caption: Docker Compose example that configures a MongoDB cluster of two shards and a Spark cluster of one worker.
@@ -121,4 +123,3 @@ You should see similar outputs to the following indicating all the containers ar
   Removing mspass_mspass-scheduler_1 ... done
   Removing mspass_mspass-shard-1_1   ... done
   Removing network mspass_default
-

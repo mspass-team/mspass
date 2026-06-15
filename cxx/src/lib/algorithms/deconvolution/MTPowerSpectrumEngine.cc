@@ -180,7 +180,8 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const TimeSeries &d) {
     throw;
   };
 }
-vector<double> MTPowerSpectrumEngine::apply(const vector<double> &d) {
+std::vector<double>
+MTPowerSpectrumEngine::apply(const std::vector<double> &d) {
   /* This function must be dogmatic about d size = taperlen*/
   if (d.size() != this->taperlen) {
     stringstream ss;

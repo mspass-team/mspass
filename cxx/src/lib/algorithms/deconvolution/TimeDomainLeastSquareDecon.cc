@@ -79,7 +79,8 @@ TimeDomainLeastSquareDecon::TimeDomainLeastSquareDecon(const Metadata &md)
 }
 
 TimeDomainLeastSquareDecon::TimeDomainLeastSquareDecon(
-    const Metadata &md, const vector<double> &w, const vector<double> &d)
+    const mspass::utility::Metadata &md, const std::vector<double> &w,
+    const std::vector<double> &d)
     : TimeDomainLeastSquareDecon(md) {
   wavelet = w;
   data = d;

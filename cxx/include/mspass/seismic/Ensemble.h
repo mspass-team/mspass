@@ -6,6 +6,11 @@
 #include <vector>
 
 namespace mspass::seismic {
+/*! \brief Metadata-bearing container for a collection of seismic data objects.
+
+The template is used for scalar and three-component ensembles whose members
+share common Metadata stored on the ensemble header.
+*/
 template <typename Tdata> class Ensemble : public mspass::utility::Metadata {
 public:
   /*! \brief Container holding data objects.
@@ -26,7 +31,7 @@ public:
   building it.  This constructor reserve space but marks all members
   dead.
 
-  \param - expected number of members.
+  \param n expected number of members.
   */
   Ensemble(const size_t n) { member.reserve(n); };
   /*! Partial constructor to clone metadata and set aside n slots but no data*/
@@ -47,7 +52,7 @@ public:
     }
     return *this;
   };
-  /* \brief Indexing operator.
+  /*! \brief Indexing operator.
 
   This is the indexing operator used to extract an ensemble member
   with a (simpler) construct like x=e[i] as opposed to x=e.member[i].
@@ -227,6 +232,12 @@ public:
     }
     return *this;
   };
+  /*! \brief Estimate memory used by this ensemble.
+
+  The estimate includes the object itself, each member object's memory_use
+  estimate, ensemble Metadata storage, changed-or-set keys, and the ensemble
+  error log.
+  */
   size_t memory_use() const {
     size_t memuse;
     memuse = sizeof(*this);

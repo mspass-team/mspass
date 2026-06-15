@@ -204,8 +204,9 @@ CoreSeismogram::CoreSeismogram(const Metadata &md, const bool load_data)
   };
 }
 
-CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries> &ts,
-                               const unsigned int component_to_clone)
+CoreSeismogram::CoreSeismogram(
+    const std::vector<mspass::seismic::CoreTimeSeries> &ts,
+    const unsigned int component_to_clone)
     : BasicTimeSeries(
           dynamic_cast<const BasicTimeSeries &>(ts[component_to_clone])),
       Metadata(dynamic_cast<const Metadata &>(ts[component_to_clone])), u() {
@@ -814,9 +815,9 @@ bool CoreSeismogram::set_transformation_matrix(const double a[3][3]) {
   }
   return components_are_cardinal;
 }
-bool CoreSeismogram::set_transformation_matrix(py::object tmatrix_py) {
-  if (py::isinstance<py::array>(tmatrix_py)) {
-    auto tmatrix_ary = tmatrix_py.cast<
+bool CoreSeismogram::set_transformation_matrix(pybind11::object a) {
+  if (py::isinstance<py::array>(a)) {
+    auto tmatrix_ary = a.cast<
         py::array_t<double, py::array::c_style | py::array::forcecast>>();
     py::buffer_info info = tmatrix_ary.request();
     if ((info.ndim == 2 && info.shape[0] * info.shape[1] == 9) ||
@@ -827,19 +828,19 @@ bool CoreSeismogram::set_transformation_matrix(py::object tmatrix_py) {
       throw(MsPASSError(
           string("set_transformation_matrix: tmatrix should be a 3x3 matrix"),
           ErrorSeverity::Invalid));
-  } else if (py::isinstance<dmatrix>(tmatrix_py)) {
-    auto tmatrix_ary = tmatrix_py.cast<dmatrix>();
+  } else if (py::isinstance<dmatrix>(a)) {
+    auto tmatrix_ary = a.cast<dmatrix>();
     if (tmatrix_ary.rows() != 3 || tmatrix_ary.columns() != 3)
       throw(MsPASSError(
           string("set_transformation_matrix: tmatrix should be a 3x3 matrix"),
           ErrorSeverity::Invalid));
     return this->set_transformation_matrix(tmatrix_ary);
-  } else if (py::isinstance<py::list>(tmatrix_py)) {
+  } else if (py::isinstance<py::list>(a)) {
     dmatrix tmatrix_ary(3, 3);
     double *ptr = tmatrix_ary.get_address(0, 0);
-    if (py::len(tmatrix_py) == 9) {
+    if (py::len(a) == 9) {
       int i = 0;
-      for (auto item : tmatrix_py) {
+      for (auto item : a) {
         try {
           *(ptr + i) = item.cast<double>();
           i++;
@@ -849,9 +850,9 @@ bool CoreSeismogram::set_transformation_matrix(py::object tmatrix_py) {
                             ErrorSeverity::Invalid));
         }
       }
-    } else if (py::len(tmatrix_py) == 3) {
+    } else if (py::len(a) == 3) {
       int i = 0;
-      for (auto items : tmatrix_py) {
+      for (auto items : a) {
         if (!py::isinstance<py::list>(items))
           throw(MsPASSError(string("set_transformation_matrix: tmatrix should "
                                    "be a 3x3 list of list"),

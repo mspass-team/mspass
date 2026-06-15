@@ -1,7 +1,13 @@
-sphinx
-sphinx-rtd-theme
-m2r2
-breathe
+# Documentation tooling only. API builds also require the MsPASS runtime
+# dependencies, ABI-compatible mspasspy.ccore extension modules, Doxygen,
+# and Graphviz dot to be installed in the build environment.
+sphinx>=7,<8
+pydata-sphinx-theme>=0.16,<0.17
+m2r2==0.3.4
+breathe>=4.36,<5
 ipython_genutils
-sphinx-copybutton
+sphinx-copybutton>=0.5,<0.6
 jinja2
+setuptools>=64
+setuptools_scm>=8,<9
+pyyaml

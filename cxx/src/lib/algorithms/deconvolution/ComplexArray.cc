@@ -10,7 +10,7 @@ ComplexArray::ComplexArray() {
   /* Note declaration of shared_ptr initializes it with a NULL
      pointer equivalent - no initialization is needed */
 }
-ComplexArray::ComplexArray(vector<Complex64> &d) {
+ComplexArray::ComplexArray(std::vector<Complex64> &d) {
   nsamp = d.size();
   data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
   for (std::size_t i = 0; i < nsamp; i++) {
@@ -18,7 +18,7 @@ ComplexArray::ComplexArray(vector<Complex64> &d) {
     data[i].imag = d[i].imag();
   }
 }
-ComplexArray::ComplexArray(vector<Complex32> &d) {
+ComplexArray::ComplexArray(std::vector<Complex32> &d) {
   nsamp = d.size();
   data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
   for (std::size_t i = 0; i < nsamp; i++) {
@@ -67,7 +67,7 @@ ComplexArray::ComplexArray(int n) {
   }
 }
 
-ComplexArray::ComplexArray(vector<double> mag, vector<double> phase) {
+ComplexArray::ComplexArray(std::vector<double> mag, std::vector<double> phase) {
   nsamp = mag.size();
   if (nsamp == phase.size()) {
     data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);

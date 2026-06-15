@@ -109,7 +109,7 @@ public:
   is recommended only for test python programs that do not need to
   interact with MongoDB.
 
-  \param is core data to be cloned
+  \param d core data to be cloned
   \param alg is the algorithm name to set for the origin history record.
   */
   TimeSeries(const mspass::seismic::CoreTimeSeries &d, const std::string alg);
@@ -133,50 +133,105 @@ public:
         mspass::utility::ProcessingHistory(parent) {};
   /*! Standard assignment operator. */
   TimeSeries &operator=(const TimeSeries &parent);
+  /*! Add another TimeSeries sample-by-sample in place.
+   *
+   * The CoreTimeSeries samples are added and the error logs are merged.
+   * \param d TimeSeries to add to this object.
+   * \return reference to this modified TimeSeries.
+   */
   TimeSeries &operator+=(const TimeSeries &d) {
     dynamic_cast<CoreTimeSeries &>(*this) +=
         dynamic_cast<const CoreTimeSeries &>(d);
     this->elog += d.elog;
     return (*this);
   };
+  /*! Add CoreTimeSeries sample values in place.
+   *
+   * ProcessingHistory and the local error log are left unchanged.
+   * \param d core samples to add.
+   * \return reference to this modified TimeSeries.
+   */
   TimeSeries &operator+=(const CoreTimeSeries &d) {
     dynamic_cast<CoreTimeSeries &>(*this) += d;
     return (*this);
   };
+  /*! Return the sample-by-sample sum of two TimeSeries objects.
+   *
+   * \param other TimeSeries to add.
+   * \return new TimeSeries containing the sum.
+   */
   const TimeSeries operator+(const TimeSeries &other) const {
     TimeSeries result(*this);
     result += other;
     return result;
   };
+  /*! Return the sample-by-sample sum with a CoreTimeSeries.
+   *
+   * \param other core samples to add.
+   * \return new CoreTimeSeries containing the sum.
+   */
   const CoreTimeSeries operator+(const CoreTimeSeries &other) const {
     CoreTimeSeries result(dynamic_cast<const CoreTimeSeries &>(*this));
     result += other;
     return result;
   };
+  /*! Scale all samples in place.
+   *
+   * \param scale multiplicative factor applied to every sample.
+   * \return reference to this modified TimeSeries.
+   */
   TimeSeries &operator*=(const double scale) {
     dynamic_cast<CoreTimeSeries &>(*this) *= scale;
     return *this;
   };
+  /*! Subtract another TimeSeries sample-by-sample in place.
+   *
+   * The CoreTimeSeries samples are subtracted and the error logs are merged.
+   * \param d TimeSeries to subtract from this object.
+   * \return reference to this modified TimeSeries.
+   */
   TimeSeries &operator-=(const TimeSeries &d) {
     dynamic_cast<CoreTimeSeries &>(*this) -=
         dynamic_cast<const CoreTimeSeries &>(d);
     this->elog += d.elog;
     return (*this);
   };
+  /*! Subtract CoreTimeSeries sample values in place.
+   *
+   * ProcessingHistory and the local error log are left unchanged.
+   * \param d core samples to subtract.
+   * \return reference to this modified TimeSeries.
+   */
   TimeSeries &operator-=(const CoreTimeSeries &d) {
     dynamic_cast<CoreTimeSeries &>(*this) -= d;
     return (*this);
   };
+  /*! Return the sample-by-sample difference of two TimeSeries objects.
+   *
+   * \param other TimeSeries to subtract.
+   * \return new TimeSeries containing the difference.
+   */
   const TimeSeries operator-(const TimeSeries &other) const {
     TimeSeries result(*this);
     result -= other;
     return result;
   };
+  /*! Return the sample-by-sample difference with a CoreTimeSeries.
+   *
+   * \param other core samples to subtract.
+   * \return new CoreTimeSeries containing the difference.
+   */
   const CoreTimeSeries operator-(const CoreTimeSeries &other) const {
     CoreTimeSeries result(dynamic_cast<const CoreTimeSeries &>(*this));
     result -= other;
     return result;
   };
+  /*! Load just the ProcessingHistory data from another source.
+   *
+   * This is useful when an algorithm updates the sample data separately from
+   * provenance and wants to restore or propagate the history chain explicitly.
+   * \param h ProcessingHistory data to copy into this TimeSeries.
+   */
   void load_history(const mspass::utility::ProcessingHistory &h);
   /*! Return an estimate of the memmory use by the data in this object.
 

@@ -16,7 +16,7 @@ two section:
     in the top level of the yaml file hierarchy.
 2.  Parameters that define this particular instance of a virtual
     cluster.   All these parameters are at level 2 of the yaml file
-    under the key :code:`HPC_Cluster`.
+    under the key :code:`HPC_cluster`.
 
 ----------------------------
 General attributes
@@ -85,7 +85,7 @@ the key *HPC_cluster* as can be seen in the template file.
 - *container_env_flag* is passed as a flag when launching containers
   to control what is launched.  As described in the section on the shell
   script launch option the service a container runs is defined by
-  environment variable values passed with the *contaienr_run_command*.
+  environment variable values passed with the *container_run_command*.
 - *worker_run_command* is the command line program used to launch programs
   on other nodes.  Currently the only known mechanism is to use mpiexec.
   This attribute is an option only because some sites may use a special
@@ -96,7 +96,7 @@ the key *HPC_cluster* as can be seen in the template file.
   It is necessary to set this up if you want to connect to dask diagnostics
   or run an interactive job with one or more compute nodes. For guidance on
   how to construct this shell script look at the shell-based launchers
-  found `here on GitHub<https://github.com/mspass-team/mspass/tree/master/scripts>`__.
+  found `here on GitHub <https://github.com/mspass-team/mspass/tree/master/scripts>`__.
 
 .. note::
    The variables *container_run_command*, *container_run_args*, and

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from mspasspy.ccore.seismic import PowerSpectrum
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
-from mspasspy.db.dbclient import DBClient
+from mspasspy.db.client import DBClient
 from bson import ObjectId
 import pickle
 
@@ -63,7 +63,7 @@ class BasicObjectDatabase(ABC):
         defines a particular instance of a database stored in that system.
         Subclasses should call this constructor to set that name.
         :type name:  string
-        :parm type_list:  Because this class is aimed at supporting
+        :param type_list:  Because this class is aimed at supporting
         management of one or more data types we neee a clean way to define
         what those types are.  This argument serves that purpose.  It should
         contain a list of python types that can be tested with isintance
@@ -79,13 +79,13 @@ class BasicObjectDatabase(ABC):
         "DO_NOT_LOAD".
         :type db_schema:  Can be one of three type:
             1.  mspasspy.db.schema.DatabaseSchema - in this case the class
-                content is copied to self.db_schema.
+                content is copied to self.database_schema.
             2.  A string defining a specific schema by a keyword name.
                 That name is assume to match a yaml file name in the
                 mspass data/yaml directory.  e.g. the default mspass
                 schema is "mspass" defined with the file data/yaml/mspass.yaml.
                 A special case is the magic name "DO_NOT_LOAD".  If
-                that name appears no schema is loaded and self.db_schema is
+                that name appears no schema is loaded and self.database_schema is
                 set to None.
             3.  None - this is the default and used to load the default
                 schema file ("mspass")/
@@ -96,15 +96,16 @@ class BasicObjectDatabase(ABC):
         Note a schema is considered optional and
         can be turned off by setting this argument to the magic string
         "DO_NOT_LOAD".
-        type md_schema:  Can be one of three type:
-            1.  mspasspy.db.schema.DatabaseSchema - in this case the class
-                content is copied to self.db_schema.
+        :type md_schema:  Can be one of three type:
+
+            1.  mspasspy.db.schema.MetadataSchema - in this case the class
+                content is copied to self.metadata_schema.
             2.  A string defining a specific schema by a keyword name.
                 That name is assume to match a yaml file name in the
                 mspass data/yaml directory.  e.g. the default mspass
                 schema is "mspass" defined with the file data/yaml/mspass.yaml.
                 A special case is the magic name "DO_NOT_LOAD".  If
-                that name appears no schema is loaded and self.db_schema is
+                that name appears no schema is loaded and self.metadata_schema is
                 set to None.
             3.  None - this is the default and used to load the default
                 schema file ("mspass")/
@@ -233,17 +234,18 @@ class SpectrumDatabase(BasicObjectDatabase):
         and saves pickled version of datum with the key "serialized_data".
 
         :param datum:  PowerSpectrum to save.  The method will throw a
-        MsPASSError if this is not a PowerSpectrum object.   If the datum
-        is marked dead it will be silently skipped.
+          MsPASSError if this is not a PowerSpectrum object.   If the datum
+          is marked dead it will be silently skipped.
         :param exclude:  list of Metadata keys to not save to the saved
-        document.  Default is None which means all attributes will be saved.
+          document.  Default is None which means all attributes will be saved.
         :param metadata2save: list Metadata keys to be saved.  If not None
-        (default) only the data fetched with these keys will be saved to
-        the document created for this object.   If the key is not actually
-        found in the Metadata area of datum it will be silently ignored.
+          (default) only the data fetched with these keys will be saved to
+          the document created for this object.   If the key is not actually
+          found in the Metadata area of datum it will be silently ignored.
         :param format:  output format of the object.  Currently the only
-        accepted value is the default of "pickle".  The default format
-        pickles the input datum and saves the result with the key "serialized_data".
+          accepted value is the default of "pickle".  The default format
+          pickles the input datum and saves the result with the key
+          "serialized_data".
         """
         if format != "pickle":
             raise MsPASSError(
@@ -294,24 +296,24 @@ class SpectrumDatabase(BasicObjectDatabase):
         are used for that purpose.
 
         :param id_or_doc:  as the name implies this required argument must
-        be either a MongoDB ObjectId class or something that at least acts
-        like a MongoDB document. An id is used directly to generate a query.
-        If the argument is not an ObjectId the method attempts to fetch
-        an attribute with the stock key "_id".   If that key is not found
-        this method will throw an exception.
+          be either a MongoDB ObjectId class or something that at least acts
+          like a MongoDB document. An id is used directly to generate a query.
+          If the argument is not an ObjectId the method attempts to fetch
+          an attribute with the stock key "_id".   If that key is not found
+          this method will throw an exception.
 
         :param required:  list of keys (strings) that will always be fetched
-        from the document retrieved in the query.  The content retrieved
-        will always override any value that might have been stored with the
-        serialized version of the object.  Use this feature to fix attributes
-        repaired or added after a datum was saved.
+          from the document retrieved in the query.  The content retrieved
+          will always override any value that might have been stored with the
+          serialized version of the object.  Use this feature to fix attributes
+          repaired or added after a datum was saved.
 
         :param overide:  list of keys (strings) that should be fetched
-        from the document retrieved in the query and pushed to the
-        constructed object.   Use this feature to fix attributes repaired
-        or added after a datum was saved.  It differs from "required" as
-        the attribute is treated as optional.  i.e. it a value isn't found
-        for a particular key it is simply not posted.
+          from the document retrieved in the query and pushed to the
+          constructed object.   Use this feature to fix attributes repaired
+          or added after a datum was saved.  It differs from "required" as
+          the attribute is treated as optional.  i.e. it a value isn't found
+          for a particular key it is simply not posted.
         """
         if isinstance(id_or_doc, ObjectId):
             oid = id_or_doc
@@ -349,14 +351,14 @@ class SpectrumDatabase(BasicObjectDatabase):
         datum.
 
         :param query:  optional pymongo query (python dict) to apply the
-        Power Spectrum collection.  Default scans the entire collection.
+          Power Spectrum collection.  Default scans the entire collection.
 
         :param required:  optional list of keys every document scan is
-        expected to contain.
+          expected to contain.
 
         :return:  tuple with two integers.  Component 0 will contain the
-        number of documents scanned and component 1 will contain the number
-        the method considers valid.
+          number of documents scanned and component 1 will contain the number
+          the method considers valid.
         """
         if query:
             cursor = self.collection.find(query)

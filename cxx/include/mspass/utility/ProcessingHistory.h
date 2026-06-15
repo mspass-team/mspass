@@ -60,10 +60,16 @@ public:
     jnm = std::string();
   };
   virtual ~BasicProcessingHistory() {};
+  /*! Construct with explicit job name and job identifier.
+   *
+   * \param jobname descriptive name of the processing job.
+   * \param jobid identifier for the processing job or run.
+   */
   BasicProcessingHistory(const std::string jobname, const std::string jobid) {
     jid = jobid;
     jnm = jobname;
   };
+  /*! Copy the job-identification fields from another history object. */
   BasicProcessingHistory(const BasicProcessingHistory &parent) {
     jid = parent.jid;
     jnm = parent.jnm;
@@ -77,10 +83,15 @@ public:
   returns 0 since it does not implement the actual history mechanism.
   */
   virtual size_t number_of_stages() { return 0; };
+  /*! Return the job identifier stored with this history object. */
   std::string jobid() const { return jid; };
+  /*! Replace the job identifier stored with this history object. */
   void set_jobid(const std::string &newjid) { jid = newjid; };
+  /*! Return the descriptive job name stored with this history object. */
   std::string jobname() const { return jnm; };
+  /*! Replace the descriptive job name stored with this history object. */
   void set_jobname(const std::string jobname) { jnm = jobname; };
+  /*! Assign the job-identification fields from another history object. */
   BasicProcessingHistory &operator=(const BasicProcessingHistory &parent) {
     if (this != (&parent)) {
       jnm = parent.jnm;
@@ -90,7 +101,9 @@ public:
   }
 
 protected:
+  /*! Identifier for the processing job or run that owns this history. */
   std::string jid;
+  /*! Descriptive name of the processing job that owns this history. */
   std::string jnm;
 
 private:
@@ -143,9 +156,13 @@ public:
   /* These standard elements could be defaulted, but we implement them
   explicitly for clarity - implemented in the cc file. */
   NodeData();
+  /*! Copy all node attributes from another NodeData object. */
   NodeData(const NodeData &parent);
+  /*! Assign all node attributes from another NodeData object. */
   NodeData &operator=(const NodeData &parent);
+  /*! Return true when every node attribute matches another NodeData object. */
   bool operator==(const NodeData &other);
+  /*! Return true when any node attribute differs from another NodeData object. */
   bool operator!=(const NodeData &other);
 
 private:
@@ -225,6 +242,7 @@ viewed as a tree branching from a single root (the final output) to leaves that
 
 class ProcessingHistory : public BasicProcessingHistory {
 public:
+  /*! Error log for non-fatal processing-history consistency complaints. */
   ErrorLogger elog;
   /*! Default constructor. */
   ProcessingHistory();
@@ -363,6 +381,8 @@ public:
     more easily comprehended without additional lookups.
   \param typ defines the data type (C++ class) the algorithm that is generating
     this data will create.
+  \param parents is a vector of ProcessingHistory pointers for all input data
+    objects used to create this ensemble.
   \param create_newid is a boolean defining how the current id is handled.
     As described above, if true the method will call newid and set that
      as the current id of this data object.  If false the current value is
@@ -644,9 +664,11 @@ is simply appended with new definitions.
   want to add as baggage to regular data.  Hence, tools to reconstruct history
   (provenance) are expected to extend this class. */
 protected:
-  /* This map defines connections of each data object to others.  Key is the
-  uuid of a given object and the values (second) associated with
-  that key are the inputs used to create the data defined by the key uuid */
+  /*! Connections between each data object uuid and its input node records.
+   *
+   * The key is the uuid of a data object, and each associated NodeData value
+   * describes one input used to create the data identified by that uuid.
+   */
   std::multimap<std::string, mspass::utility::NodeData> nodes;
 
 private:
@@ -731,6 +753,7 @@ to all inputs passed through that algorithm.  For iterative algorithms the list
 can be much longer as each pass will be post new uuids for the same
 algorithm.
 
+\param h is the ProcessingHistory object to search.
 \param alg is the algorithm name to search for. (Note:  ignored in this
   implementation but will make any application more readable.)
 \param algid is the id string used to uniquely define a algorithm instance.

@@ -91,16 +91,16 @@ def validate_bandwidth_data(d, bd, bdkeys):
 
     :param d:  seismic data object being processed
     :type d:  normally a `Seismogram` object but there is no type checking.
-    Uses kill and error log concepts.
+        Uses kill and error log concepts.
     :param bd:  pair of floats returned by fetch_bandwidth_data.  -1.0 is
-    used by that function to flag undefined.
+        used by that function to flag undefined.
     :type bd:  tuple/array/list with 2 floats
     :param bdkeys:   parallel list/array/tuple of keys that were used by
-    fetch_bandwidth_data to fetch bandwidth data.  Required to post an
-    error message when necessary that will be helpful.
+        fetch_bandwidth_data to fetch bandwidth data.  Required to post an
+        error message when necessary that will be helpful.
     :return:  copy of the data if there are not problems.  If the bandwidth
-    data is not defined or is invalide (flow>figh) the return will be marked
-    dead and contain error messages describing the problem.
+        data is not defined or is invalide (flow>figh) the return will be marked
+        dead and contain error messages describing the problem.
     """
     if d.live:
         alg = "validate_bandwidth_data"
@@ -149,20 +149,21 @@ def fetch_and_validate_bandwidth_data(
     :param d:  input datum
     :type d:  atomic  mnpass seismic data object
     :param bdkeys:   required tuple/array of keys that define the
-    keys that should be used top fetch the low (component 0) and
-    high (component 1) band edges for the operator.
-    :type:  subscriptable container with two strings - python array or tuple.
+        keys that should be used top fetch the low (component 0) and
+        high (component 1) band edges for the operator.
+    :type bdkeys:  subscriptable container with two strings - python array or tuple.
     :param bandwidth_subdocument_key:   When not None (the default) the
-    function will first attempt to extract a subdocument (dictionary) from
-    the input data using this key.   If successful it will attempt to
-    extract data from that dictionary using the keys defined in bdkeys.
-    If the key is not found the datum will be marked data, and returned
-    with a descriptive error message.
-    :type bandwith_subdocument_key:  None or string
+        function will first attempt to extract a subdocument (dictionary) from
+        the input data using this key.   If successful it will attempt to
+        extract data from that dictionary using the keys defined in bdkeys.
+        If the key is not found the datum will be marked data, and returned
+        with a descriptive error message.
+    :type bandwidth_subdocument_key:  None or string
     :return: type with 3 components
-      0 = copy of data which may be marked dead if the process failed
-      1 - flow
-      2 - fhigh
+
+        0. copy of data which may be marked dead if the process failed
+        1. flow
+        2. fhigh
     """
     alg = "fetch_and_validate_bandwidth_data"
     if bandwidth_subdocument_key:
@@ -189,12 +190,13 @@ def prediction_error(engine, wavelet) -> float:
     Computes prediction error of deconvolution operator defined as
     norm(ao-ws)/norm(ws) where ao is the return from the
     actual_output method of engine and ws is the output shaping
-    wavelet.  The computed norm is L2
+    wavelet.  The computed norm is L2.
+
     :param engine:   assumed valid instance of a CNRDeconEngine
-       class
+        class
     :param wavelet:   wavelet TimeSeries object used in deconvolution.
-       For this operator it is not necessarily constant this
-       required for actual_output method.
+        For this operator it is not necessarily constant this
+        required for actual_output method.
     """
 
     # with internal use can assume ao and ws are the same length
@@ -245,6 +247,7 @@ def CNRRFDecon(
 
     As a "receiver function" algorithm this function demands some
     restrictions on the input that are checked before it will run.
+
     1.   The input through arg0 must be a `Seismgram`.
     2.   An instance of a `CNRDeconEngine` is required and must
          be entered via arg1.
@@ -255,6 +258,7 @@ def CNRRFDecon(
     For flexibility the way you can satisify item 3 has some
     complexity.   There are two combinations of arguments that
     can be used to satisfy requirement 3
+
     1.  Define BOTH signal_window and noise_window (both args are None
         by default).   When that constraint is true the input
         Seismogram (seis == arg0) is cut into two segments defined
@@ -282,21 +286,22 @@ def CNRRFDecon(
         before running the deconvolution operator.
 
     An alternative way to look at this is the function uses the following
-    logic to sort out valid inputs.  It is written in python pseudocode
+    logic to sort out valid inputs.  It is written in python pseudocode::
 
-       if noise_data:
-           if signal_window:
-               seis = WindowData(seis,signal_window.start, signal_window.end)
-           deconvolve seis
-       elif signal_window and noise_window:
-           seis = WindowData(seis,signal_window.start, signal_window.end)
-           noise = WindowData(seis,noise_window.start,noise_window.end)
-           noise_spectrum = engine.compute_spectrum(noise)
-           deconvolve seis using noise_spectrum
-       else:
-           raise exception
+        if noise_data:
+            if signal_window:
+                seis = WindowData(seis,signal_window.start, signal_window.end)
+            deconvolve seis
+        elif signal_window and noise_window:
+            seis = WindowData(seis,signal_window.start, signal_window.end)
+            noise = WindowData(seis,noise_window.start,noise_window.end)
+            noise_spectrum = engine.compute_spectrum(noise)
+            deconvolve seis using noise_spectrum
+        else:
+            raise exception
 
     The algorithm applied by this function has two novel features:
+
     1.  The bandwidth of the deconvolution operator is adjusted based on
         estimated bandwith from the spectrum of the signal and noise.
         The bandwwidth properties are extracted from Metadata
@@ -589,10 +594,7 @@ def CNRArrayDecon(
     **kwargs,
 ) -> tuple:
     """
-    Notes:  delete when writing final docstring
-    - assume ensemble members are aligned
-    - allow beam to be scalar or 3c, use component only if 3c
-    - get noise either by windowing beam or via noise_spectrum arg.  cross checks required to be one or the other
+    Apply colored-noise regularized deconvolution to an aligned array.
 
     This function applies the Colored Noise Regularization (CNR)
     deconvolution algorithm to data from an array held in a
@@ -620,6 +622,7 @@ def CNRArrayDecon(
     one of two ways.  The two modes are driven by the content of
     three arguments:   noise_window, signal_window, and noise_spectrum.
     Your inputs should match the assumptions for one of these two modes:
+
         1.  If `noise_spectrum` is set (default is a None type),
             the function assumes beam and the ensemble members have all
             been previously windowed down to contain only the signal that
@@ -649,6 +652,7 @@ def CNRArrayDecon(
             relative time base based on a phase arrival time,
             and (c) the beam is a stack of the ensemble members with
             a range large enough to span the input `noise_window` range.
+
     These two modes exist because at the time of this writing I could see
     two very different ways to estimate the spectrum used to regularize
     the inversion:  (a) the method of mode 2 derived from stack, and
@@ -688,6 +692,43 @@ def CNRArrayDecon(
     will be returned marked dead.  If False, the required values will
     be extracted from each member and only members lacking the required
     attributes would be killed.
+
+    :param ensemble: aligned array data to deconvolve.  Members should be in a
+        common relative-time frame and contain the signal window.
+    :type ensemble: :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
+    :param beam: array beam or stack defining the source wavelet.  A
+        :class:`Seismogram` beam uses ``beam_component`` to select the scalar
+        wavelet component.
+    :type beam: :class:`mspasspy.ccore.seismic.TimeSeries` or
+        :class:`mspasspy.ccore.seismic.Seismogram`
+    :param engine: configured colored-noise regularized deconvolution engine.
+    :param args: additional positional arguments passed through the MsPASS
+        wrapper machinery.
+    :param noise_window: noise window used to estimate a regularizing spectrum
+        from ``beam`` when ``noise_spectrum`` is not supplied.
+    :param signal_window: signal window applied to ``beam`` and ensemble
+        members when ``noise_spectrum`` is not supplied.
+    :param noise_spectrum: optional precomputed noise spectrum.  When supplied,
+        inputs are assumed to have already been windowed to the signal region.
+    :param use_3C_noise: when True use three-component noise where supported by
+        the engine.
+    :param beam_component: component index used when ``beam`` is a
+        :class:`Seismogram`.
+    :param use_wavelet_bandwidth: when True derive output bandwidth from
+        ``beam``; when False derive bandwidth separately from each ensemble
+        member.
+    :param bandwidth_subdocument_key: optional metadata key containing a
+        bandwidth subdocument.
+    :param bandwidth_keys: two-element sequence containing low- and
+        high-frequency bandwidth keys.
+    :param return_wavelet: when True include wavelet diagnostics in the return
+        value.
+    :param handles_ensembles: wrapper flag declaring ensemble handling.
+    :param kwargs: additional wrapper options.
+    :return: deconvolved ensemble, or a tuple/list including wavelet diagnostic
+        outputs when ``return_wavelet`` is True.  Data problems are reported by
+        marking affected data dead and logging errors.
+    :rtype: :class:`mspasspy.ccore.seismic.SeismogramEnsemble` or tuple
     """
 
     prog = "CNRArrayDecon"

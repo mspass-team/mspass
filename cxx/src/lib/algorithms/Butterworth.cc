@@ -297,7 +297,7 @@ void reverse_vector(int nd, double *d) {
 /* This is a core method.  The other apply methods just call his one.
 It depends on a property of seismic unix implementation of bw Filters
 that allow input and output to be the same data vector*/
-void Butterworth::apply(vector<double> &d) {
+void Butterworth::apply(std::vector<double> &d) {
   if (use_lo) {
     this->bflowcut(npoles_hi, f3db_hi, d.size(), &(d[0]), &(d[0]));
     if (zerophase) {

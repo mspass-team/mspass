@@ -24,12 +24,12 @@ public:
   virtual void loaddata(mspass::Seismogram& d,const int comp)=0;
   virtual void loadwavelet(const mspass::TimeSeries& w)=0;
   */
-  /* \brief Apply the loaded 3C deconvolution operator.
+  /*! \brief Apply the loaded 3C deconvolution operator.
 
   Implementations process the currently loaded data and return the
   deconvolved three-component result. */
   virtual mspass::seismic::Seismogram process() = 0;
-  /*! \brif Return the actual output of the deconvolution operator.
+  /*! \brief Return the actual output of the deconvolution operator.
 
   The actual output is defined as w^-1*w and is compable to resolution
   kernels in linear inverse theory.   Although not required we would
@@ -109,6 +109,7 @@ public:
   CNR3CDecon(const CNR3CDecon &parent);
   /*! Standard destructor. */
   ~CNR3CDecon();
+  /*! Assignment operator. */
   CNR3CDecon &operator=(const CNR3CDecon &parent);
   /*! \brief Change the setup of the operator on the fly.
 
@@ -240,7 +241,7 @@ public:
   with the ScalarDecon api because of it.  */
   mspass::seismic::Seismogram process();
 
-  /* \brief Return the output shaping wavelet.
+  /*! \brief Return the output shaping wavelet.
 
   This is the target finite-bandwidth wavelet used to represent the
   deconvolved result.  The historical name ideal_output is retained for
@@ -248,8 +249,9 @@ public:
   mspass::seismic::TimeSeries output_shaping_wavelet() {
     return this->ideal_output();
   }
+  /*! Return the ideal output shaping wavelet. */
   mspass::seismic::TimeSeries ideal_output();
-  /*! \brif Return the actual output of the deconvolution operator.
+  /*! \brief Return the actual output of the deconvolution operator.
 
   The actual output is defined as w^-1*w and is compable to resolution
   kernels in linear inverse theory.   Although not required we would

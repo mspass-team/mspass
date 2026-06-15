@@ -23,7 +23,7 @@ may be longer than the data duration because of padding.   However,
 you are asking for problems if the n is greater than the parent
 time series length.
 
-\param tbb is the time bandwidth product to use to generate the window
+\param tbp is the time bandwidth product to use to generate the window
   (Note increasing tbp will widen the equivalent time domain pulse.   Pulse
   duration will be approximately tbp*N/n samples where N is the total
   DFT length)
@@ -31,7 +31,7 @@ time series length.
   given tbp.   See tbp description for how n interacts with tbp to
   define the shaped pulse duration.
 
-\param double array of length n.  Array is expected to be used as a window
+\return double array of length n.  Array is expected to be used as a window
 function in the frequency domain BUT will nearly always need to undergo a
 circular shift to put the peak at 0.   NOT done here to avoid confusion.
 */
