@@ -7,7 +7,7 @@ if [[ -n "${KUBERNETES_SERVICE_HOST}" ]]; then
   # Ensure the working directory exists (it may be pre-created by the PVC)
   mkdir -p "${MSPASS_WORKDIR}" 2>/dev/null || true
 elif grep "docker/containers" /proc/self/mountinfo -qa; then
-  MSPASS_WORKDIR=/home
+  MSPASS_WORKDIR=/home/jovyan
 elif [[ -z ${MSPASS_WORK_DIR} ]]; then
   MSPASS_WORKDIR=`pwd`
 else
@@ -80,7 +80,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
           if [ -z "$1" ]; then
               # Interactive Jupyter Lab mode for Dask — run as NB_USER so that
               # a Kubernetes PVC mounted at HOME is writable by the lab process.
-              NB_USER=${NB_USER:-mspass}
+              NB_USER=${NB_USER:-jovyan}
               chown -R ${NB_USER}:100 "${MSPASS_WORKDIR}" 2>/dev/null || true
               exec su --preserve-environment -c "jupyter lab ${NOTEBOOK_ARGS}" ${NB_USER}
           else
