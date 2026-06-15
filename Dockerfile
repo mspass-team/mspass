@@ -1,7 +1,19 @@
-#Image: mspass/mspass
-#Version: 1.0.0
+# syntax=docker/dockerfile:1
+# Image: mspass/mspass
+# Version: 1.0.0
+#
+# Build targets:
+#   runtime - standard MsPASS image, also used by the default final stage
+#   dev     - debug build with development and documentation dependencies
+#   geolab  - GeoLab/Kubernetes image with non-root Jupyter runtime
+#   mpi     - standard image built from the MPI base image
+#   tacc    - thin TACC startup overlay on the published weekly image
 
-FROM ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
+ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
+ARG MSPASS_TACC_BASE_IMAGE=ghcr.io/mspass-team/mspass:weekly
+ARG DASK_LABEXTENSION_VERSION=7.0.0
+
+FROM ${MSPASS_BASE_IMAGE} AS mspass-base
 
 LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
 
@@ -27,7 +39,7 @@ RUN set -eux; \
 	&& docker-clean
 
 # grab "js-yaml" for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
-ENV JSYAML_VERSION 3.13.1
+ENV JSYAML_VERSION=3.13.1
 
 RUN set -ex; \
 	\
@@ -73,11 +85,11 @@ ARG MONGO_PACKAGE=mongodb-org
 ARG MONGO_REPO=repo.mongodb.org
 ENV MONGO_PACKAGE=${MONGO_PACKAGE} MONGO_REPO=${MONGO_REPO}
 
-ENV MONGO_MAJOR 6.0
+ENV MONGO_MAJOR=6.0
 RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] http://$MONGO_REPO/apt/ubuntu jammy/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
 
 # https://docs.mongodb.org/master/release-notes/6.0/
-ENV MONGO_VERSION 6.0.5
+ENV MONGO_VERSION=6.0.5
 # 03/08/2023, https://github.com/mongodb/mongo/tree/c9a99c120371d4d4c52cbb15dac34a36ce8d3b1d
 
 RUN set -x \
@@ -99,7 +111,7 @@ VOLUME /data/db /data/configdb
 
 # ensure that if running as custom user that "mongosh" has a valid "HOME"
 # https://github.com/docker-library/mongo/issues/524
-ENV HOME /data/db
+ENV HOME=/data/db
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
@@ -122,9 +134,9 @@ ARG TARGETARCH
 # Prepare the environment
 ARG SPARK_VERSION=3.0.0
 
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-${TARGETARCH}
-ENV SPARK_HOME /usr/local/spark
-ENV PYSPARK_PYTHON python3
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-${TARGETARCH}
+ENV SPARK_HOME=/usr/local/spark
+ENV PYSPARK_PYTHON=python3
 
 ARG APACHE_MIRROR=https://archive.apache.org/dist
 ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
@@ -151,8 +163,8 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
 # Install Python tooling
 RUN pip3 --no-cache-dir install --upgrade pip \
 	&& docker-clean
-RUN if [ "$TARGETARCH" == "arm64" ]; then export CFLAGS="-O3" \
-	&& export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true; fi\
+RUN if [ "$TARGETARCH" = "arm64" ]; then export CFLAGS="-O3" \
+	&& export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true; fi \
 	&& pip3 --no-cache-dir install numpy \
 	&& docker-clean
 
@@ -168,32 +180,140 @@ RUN rm -r /usr/local/pybind11-${PYBIND11_VERSION}
 RUN pip3 --no-cache-dir install --upgrade setuptools \
 	&& docker-clean
 
-# Add cxx library
+FROM mspass-base AS mspass-source
+
+# Add source used by all full MsPASS image variants.
 ADD cxx /mspass/cxx
-RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
-    && mkdir build && cd build \
-    && cmake .. \
-    && make \
-    && make install \ 
-    && rm -rf ../build \
-	&& docker-clean
-
-# Add data and env variable for the MetadataDefinition class
 ADD data /mspass/data
-ENV MSPASS_HOME /mspass
-
-# Add setup.py to install python components
 ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
 ADD python /mspass/python
 ADD .git /mspass/.git
+ENV MSPASS_HOME=/mspass
+
+FROM mspass-source AS runtime-package
+
+# Add cxx library
+RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
+    && mkdir build && cd build \
+    && cmake .. \
+    && make \
+    && make install \
+    && rm -rf ../build \
+	&& docker-clean
+
+# Install python components
 RUN pip3 install /mspass -v \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean
+
+FROM mspass-source AS dev-package
+
+# Add cxx library with debug symbols
+RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
+    && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Debug .. \
+    && make \
+    && make install \
+    && rm -rf ../build \
+	&& docker-clean
+
+# Add seisbench dependency in the dev container for development purpose
+RUN MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench]' -v \
+	&& rm -rf /mspass/build /mspass/.git && docker-clean
+
+# Add docs and dependencies to build docs
+ADD docs /mspass/docs
+RUN apt-get update && apt-get install -yq doxygen pandoc \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install -r /mspass/docs/requirements.txt \
+    && docker-clean
+
+FROM runtime-package AS runtime-common
 
 # Install jedi
 RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean
 
 # Tini operates as a process subreaper for jupyter.
+ARG TARGETARCH
+ARG TINI_VERSION=v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH} /usr/sbin/tini
+RUN chmod +x /usr/sbin/tini
+
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
+
+# replace localhost to 127.0.0.1 in pymongo to run on HPC
+RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_path.txt && \
+	PYTHON_SITE_PACKAGES_PATH=$(cat site_packages_path.txt) && \
+	[ -f "${PYTHON_SITE_PACKAGES_PATH}/pymongo/encryption_options.py" ] && sed -i "s/localhost:27020,/127.0.0.1:27020,/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/encryption_options.py" || true && \
+	[ -f "${PYTHON_SITE_PACKAGES_PATH}/pymongo/mongo_client.py" ] && sed -i 's/HOST = "localhost"/HOST = "127.0.0.1"/g' "${PYTHON_SITE_PACKAGES_PATH}/pymongo/mongo_client.py" || true && \
+	[ -f "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py" ] && sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py" || true && \
+	rm site_packages_path.txt
+
+ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}"
+
+# Set the default behavior of this container
+ENV SPARK_MASTER_PORT=7077
+ENV DASK_SCHEDULER_PORT=8786
+ENV MONGODB_PORT=27017
+ENV JUPYTER_PORT=8888
+ENV MSPASS_ROLE=all
+# ENV MSPASS_SCHEDULER dask
+
+FROM runtime-common AS runtime
+
+ARG DASK_LABEXTENSION_VERSION
+
+# install Dask JupyterLab extension
+RUN pip3 install dask-labextension==${DASK_LABEXTENSION_VERSION} && docker-clean
+
+# Add startup script
+ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
+RUN chmod +x /usr/sbin/start-mspass.sh
+
+ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
+
+FROM runtime AS mpi
+
+FROM runtime-common AS geolab
+
+ARG DASK_LABEXTENSION_VERSION
+
+# Create a non-root user (UID 1000) for JupyterLab so that a Kubernetes PVC
+# mounted at /home/mspass is writable without requiring root inside the pod.
+# mongosh still needs a valid HOME, which /home/mspass satisfies.
+ARG NB_USER=mspass
+ARG NB_UID=1000
+ENV NB_USER=${NB_USER} \
+    NB_UID=${NB_UID} \
+    HOME=/home/mspass
+
+RUN useradd --create-home --uid ${NB_UID} --gid 100 \
+        --shell /bin/bash ${NB_USER} && \
+    echo "${NB_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# install Dask JupyterLab extension
+RUN pip3 install dask-labextension==${DASK_LABEXTENSION_VERSION} && docker-clean
+
+# Add startup script
+ADD scripts/start-mspass-geolab.sh /usr/sbin/start-mspass.sh
+RUN chmod +x /usr/sbin/start-mspass.sh
+
+# Grant mspass user write access to directories it needs at runtime
+RUN chown -R ${NB_USER}:100 /home/mspass && \
+    chmod g+w /etc/passwd
+
+ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
+
+FROM dev-package AS dev
+
+ARG DASK_LABEXTENSION_VERSION
+
+# Install jedi
+RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean
+
+# Tini operates as a process subreaper for jupyter.
+ARG TARGETARCH
 ARG TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH} /usr/sbin/tini
 RUN chmod +x /usr/sbin/tini
@@ -213,15 +333,26 @@ RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_pa
 	rm site_packages_path.txt
 
 # install Dask JupyterLab extension
-RUN pip install dask-labextension==7.0.0 && docker-clean
+RUN pip3 install dask-labextension==${DASK_LABEXTENSION_VERSION} && docker-clean
 
 ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}"
 
 # Set the default behavior of this container
-ENV SPARK_MASTER_PORT 7077
-ENV DASK_SCHEDULER_PORT 8786
-ENV MONGODB_PORT 27017
-ENV JUPYTER_PORT 8888
-ENV MSPASS_ROLE all
+ENV SPARK_MASTER_PORT=7077
+ENV DASK_SCHEDULER_PORT=8786
+ENV MONGODB_PORT=27017
+ENV JUPYTER_PORT=8888
+ENV MSPASS_ROLE=all
 # ENV MSPASS_SCHEDULER dask
 ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
+
+FROM ${MSPASS_TACC_BASE_IMAGE} AS tacc
+
+LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
+
+ADD scripts/start-mspass-tacc.sh /usr/sbin/start-mspass-tacc.sh
+RUN chmod +x /usr/sbin/start-mspass-tacc.sh
+
+ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass-tacc.sh"]
+
+FROM runtime AS final

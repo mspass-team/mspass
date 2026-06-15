@@ -49,7 +49,7 @@ jobs:
             /usr/share/dotnet \
             /usr/share/swift
           df -h /
-          
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -70,13 +70,15 @@ jobs:
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -121,18 +123,20 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
+          target: runtime
           platforms: linux/amd64
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
-          
+
       - name: Build and push Docker image (amd64)
         uses: docker/build-push-action@v7
         if: ${{ github.event_name != 'pull_request' }}
         with:
           context: .
+          target: runtime
           platforms: linux/amd64
           push: true
           tags: ${{ steps.amd64-tags.outputs.tags }}
@@ -195,6 +199,7 @@ jobs:
             ${{ runner.os }}-buildx.arm64-
 
       - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -202,6 +207,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -240,8 +246,9 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
+          target: runtime
           platforms: linux/arm64
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.arm64-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache-arm64
@@ -270,6 +277,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -277,6 +285,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -334,7 +343,7 @@ jobs:
             /usr/share/dotnet \
             /usr/share/swift
           df -h /
-          
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -355,13 +364,15 @@ jobs:
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -398,9 +409,9 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Dockerfile_dev
+          target: dev
           platforms: linux/amd64
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.amd64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache-dev
@@ -461,6 +472,7 @@ jobs:
             ${{ runner.os }}-buildx.dev.arm64-
 
       - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -468,6 +480,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -501,9 +514,9 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Dockerfile_dev
+          target: dev
           platforms: linux/arm64
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.arm64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache-dev-arm64
@@ -519,6 +532,7 @@ jobs:
   publish-dev-manifest:
 
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
     needs:
       - build-dev
       - build-dev-arm64
@@ -531,6 +545,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -538,6 +553,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -554,6 +570,261 @@ jobs:
             --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-amd64 \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-arm64
+
+
+  build-geolab:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      # Remove software and language runtimes we're not using
+      - name: Remove unnecessary files
+        run: |
+          sudo rm -rf \
+            "$AGENT_TOOLSDIRECTORY" \
+            /opt/google/chrome \
+            /opt/microsoft/msedge \
+            /opt/microsoft/powershell \
+            /opt/pipx \
+            /usr/lib/mono \
+            /usr/local/julia* \
+            /usr/local/lib/android \
+            /usr/local/lib/node_modules \
+            /usr/local/share/chromium \
+            /usr/local/share/powershell \
+            /usr/share/dotnet \
+            /usr/share/swift
+          df -h /
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Cache Docker layers
+        uses: actions/cache@v5
+        with:
+          path: |
+            /tmp/.buildx-cache-geolab
+          key: ${{ runner.os }}-buildx.geolab-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx.geolab-
+
+      # Login against a Docker registry
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Extract metadata (labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          flavor: |
+            latest=true
+          images: |
+            mspass/mspass
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Prepare amd64 geolab manifest tags
+        id: amd64-geolab-tags
+        shell: bash
+        run: |
+          cat <<'EOF' > amd64-geolab-tags.txt
+          mspass/mspass:geolab-amd64
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-amd64
+          EOF
+          {
+            echo 'tags<<EOF'
+            cat amd64-geolab-tags.txt
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      # Build and push geolab image
+      - name: Build and push geolab image (amd64)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: geolab
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.amd64-geolab-tags.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache-geolab
+          cache-to: type=local,dest=/tmp/.buildx-cache-geolab-new
+
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
+        run: |
+          if [ -d /tmp/.buildx-cache-geolab-new ]; then
+            rm -rf /tmp/.buildx-cache-geolab
+            mv /tmp/.buildx-cache-geolab-new /tmp/.buildx-cache-geolab
+          fi
+
+  build-geolab-arm64:
+
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      # Remove software and language runtimes we're not using
+      - name: Remove unnecessary files
+        run: |
+          sudo rm -rf \
+            "$AGENT_TOOLSDIRECTORY" \
+            /opt/google/chrome \
+            /opt/microsoft/msedge \
+            /opt/microsoft/powershell \
+            /opt/pipx \
+            /usr/lib/mono \
+            /usr/local/julia* \
+            /usr/local/lib/android \
+            /usr/local/lib/node_modules \
+            /usr/local/share/chromium \
+            /usr/local/share/powershell \
+            /usr/share/dotnet \
+            /usr/share/swift
+          df -h /
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Cache Docker layers
+        uses: actions/cache@v5
+        with:
+          path: |
+            /tmp/.buildx-cache-geolab-arm64
+          key: ${{ runner.os }}-buildx.geolab.arm64-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx.geolab.arm64-
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          flavor: |
+            latest=true
+          images: |
+            mspass/mspass
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Prepare arm64 geolab manifest tags
+        id: arm64-geolab-tags
+        shell: bash
+        run: |
+          cat <<'EOF' > arm64-geolab-tags.txt
+          mspass/mspass:geolab-arm64
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-arm64
+          EOF
+          {
+            echo 'tags<<EOF'
+            cat arm64-geolab-tags.txt
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and push geolab image (arm64)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: geolab
+          platforms: linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.arm64-geolab-tags.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache-geolab-arm64
+          cache-to: type=local,dest=/tmp/.buildx-cache-geolab-arm64-new
+
+      - name: Move cache
+        run: |
+          if [ -d /tmp/.buildx-cache-geolab-arm64-new ]; then
+            rm -rf /tmp/.buildx-cache-geolab-arm64
+            mv /tmp/.buildx-cache-geolab-arm64-new /tmp/.buildx-cache-geolab-arm64
+          fi
+
+  publish-geolab-manifest:
+
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
+    needs:
+      - build-geolab
+      - build-geolab-arm64
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Create multi-arch geolab manifests
+        shell: bash
+        run: |
+          docker buildx imagetools create \
+            --tag mspass/mspass:geolab \
+            mspass/mspass:geolab-amd64 \
+            mspass/mspass:geolab-arm64
+          docker buildx imagetools create \
+            --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-amd64 \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-arm64
 
   build-mpi:
 
@@ -581,7 +852,7 @@ jobs:
             /usr/share/dotnet \
             /usr/share/swift
           df -h /
-          
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -602,13 +873,15 @@ jobs:
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -631,7 +904,9 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Dockerfile_mpi
+          target: mpi
+          build-args: |
+            MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
@@ -677,7 +952,7 @@ jobs:
             /usr/share/dotnet \
             /usr/share/swift
           df -h /
-          
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -698,13 +973,15 @@ jobs:
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Log in to Docker Hub
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -728,7 +1005,7 @@ jobs:
         #if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
-          file: Dockerfile_tacc
+          target: tacc
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
@@ -737,7 +1014,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache-tacc
           cache-to: type=local,dest=/tmp/.buildx-cache-tacc-new
-          
+
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
