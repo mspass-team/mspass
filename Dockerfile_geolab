@@ -100,11 +100,11 @@ VOLUME /data/db /data/configdb
 # Create a non-root user (UID 1000) for JupyterLab so that a Kubernetes PVC
 # mounted at /home/mspass is writable without requiring root inside the pod.
 # mongosh still needs a valid HOME, which /home/mspass satisfies.
-ARG NB_USER=jovyan
+ARG NB_USER=mspass
 ARG NB_UID=1000
 ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
-    HOME=/home/jovyan
+    HOME=/home/mspass
 
 RUN useradd --create-home --uid ${NB_UID} --gid 100 \
         --shell /bin/bash ${NB_USER} && \
@@ -226,14 +226,9 @@ RUN pip install dask-labextension && docker-clean
 
 ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}"
 
-RUN chown -R ${NB_USER}:100 \
-        /home/jovyan \
-        /opt/conda \
-        /usr/local/spark \
-        /mspass && \
-    python3 -c "import site; print('\n'.join(site.getsitepackages()))" \
-        | xargs -I{} chown -R ${NB_USER}:100 {} && \
-    chmod 0666 /etc/passwd
+# Grant mspass user write access to directories it needs at runtime
+RUN chown -R ${NB_USER}:100 /home/mspass && \
+    chmod g+w /etc/passwd
 
 # Set the default behavior of this container
 ENV SPARK_MASTER_PORT 7077
