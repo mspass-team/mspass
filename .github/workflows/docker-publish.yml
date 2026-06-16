@@ -20,6 +20,8 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  # Keep BuildKit cache out of GitHub Actions cache entries.
+  CACHE_IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
   build-latest:
@@ -56,7 +58,6 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -110,8 +111,7 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=amd64-runtime
-          cache-to: type=gha,scope=amd64-runtime,mode=max
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
 
       - name: Build and push Docker image (amd64)
         uses: docker/build-push-action@v7
@@ -123,8 +123,46 @@ jobs:
           push: true
           tags: ${{ steps.amd64-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=amd64-runtime
-          cache-to: type=gha,scope=amd64-runtime,mode=max
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
+          cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64,mode=max
+
+      - name: Prepare amd64 GeoLab tags
+        id: amd64-geolab-tags
+        shell: bash
+        run: |
+          cat <<'EOF' > amd64-geolab-tags.txt
+          mspass/mspass:geolab-amd64
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-amd64
+          EOF
+          {
+            echo 'tags<<EOF'
+            cat amd64-geolab-tags.txt
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build GeoLab image (amd64)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: geolab
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.amd64-geolab-tags.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
+
+      - name: Build TACC image (amd64 only)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: tacc
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            mspass/mspass:tacc
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:tacc
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
 
   build-latest-arm64:
     runs-on: ubuntu-24.04-arm
@@ -160,7 +198,6 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -205,15 +242,53 @@ jobs:
 
       - name: Build Docker image (arm64)
         uses: docker/build-push-action@v7
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           target: runtime
           platforms: linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: false
           tags: ${{ steps.arm64-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=arm64-runtime
-          cache-to: type=gha,scope=arm64-runtime,mode=max
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
+
+      - name: Build and push Docker image (arm64)
+        uses: docker/build-push-action@v7
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          context: .
+          target: runtime
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.arm64-tags.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
+          cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64,mode=max
+
+      - name: Prepare arm64 GeoLab tags
+        id: arm64-geolab-tags
+        shell: bash
+        run: |
+          cat <<'EOF' > arm64-geolab-tags.txt
+          mspass/mspass:geolab-arm64
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-arm64
+          EOF
+          {
+            echo 'tags<<EOF'
+            cat arm64-geolab-tags.txt
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build GeoLab image (arm64)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: geolab
+          platforms: linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.arm64-geolab-tags.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
 
   publish-latest-manifest:
     runs-on: ubuntu-latest
@@ -340,6 +415,7 @@ jobs:
 
       - name: Build and push dev image (amd64)
         uses: docker/build-push-action@v7
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           target: dev
@@ -348,9 +424,23 @@ jobs:
           tags: ${{ steps.amd64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
-            type=gha,scope=amd64-runtime
-            type=gha,scope=amd64-dev
-          cache-to: type=gha,scope=amd64-dev,mode=max
+            type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
+            type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-amd64
+
+      - name: Build and push dev image (amd64)
+        uses: docker/build-push-action@v7
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          context: .
+          target: dev
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.amd64-dev-tags.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: |
+            type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
+            type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-amd64
+          cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-amd64,mode=max
 
   build-dev-arm64:
     runs-on: ubuntu-24.04-arm
@@ -424,6 +514,7 @@ jobs:
 
       - name: Build and push dev image (arm64)
         uses: docker/build-push-action@v7
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           target: dev
@@ -432,9 +523,23 @@ jobs:
           tags: ${{ steps.arm64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
-            type=gha,scope=arm64-runtime
-            type=gha,scope=arm64-dev
-          cache-to: type=gha,scope=arm64-dev,mode=max
+            type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
+            type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-arm64
+
+      - name: Build and push dev image (arm64)
+        uses: docker/build-push-action@v7
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          context: .
+          target: dev
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.arm64-dev-tags.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: |
+            type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
+            type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-arm64
+          cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-arm64,mode=max
 
   publish-dev-manifest:
     runs-on: ubuntu-latest
@@ -474,184 +579,12 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-amd64 \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-arm64
 
-  build-geolab:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Remove unnecessary files
-        run: |
-          sudo rm -rf \
-            "$AGENT_TOOLSDIRECTORY" \
-            /opt/google/chrome \
-            /opt/microsoft/msedge \
-            /opt/microsoft/powershell \
-            /opt/pipx \
-            /usr/lib/mono \
-            /usr/local/julia* \
-            /usr/local/lib/android \
-            /usr/local/lib/node_modules \
-            /usr/local/share/chromium \
-            /usr/local/share/powershell \
-            /usr/share/dotnet \
-            /usr/share/swift
-          df -h /
-
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          flavor: |
-            latest=true
-          images: |
-            mspass/mspass
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Prepare amd64 GeoLab manifest tags
-        id: amd64-geolab-tags
-        shell: bash
-        run: |
-          cat <<'EOF' > amd64-geolab-tags.txt
-          mspass/mspass:geolab-amd64
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-amd64
-          EOF
-          {
-            echo 'tags<<EOF'
-            cat amd64-geolab-tags.txt
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Build GeoLab image (amd64)
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          target: geolab
-          platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.amd64-geolab-tags.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=gha,scope=amd64-runtime
-            type=gha,scope=amd64-geolab
-          cache-to: type=gha,scope=amd64-geolab,mode=max
-
-  build-geolab-arm64:
-    runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Remove unnecessary files
-        run: |
-          sudo rm -rf \
-            "$AGENT_TOOLSDIRECTORY" \
-            /opt/google/chrome \
-            /opt/microsoft/msedge \
-            /opt/microsoft/powershell \
-            /opt/pipx \
-            /usr/lib/mono \
-            /usr/local/julia* \
-            /usr/local/lib/android \
-            /usr/local/lib/node_modules \
-            /usr/local/share/chromium \
-            /usr/local/share/powershell \
-            /usr/share/dotnet \
-            /usr/share/swift
-          df -h /
-
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          flavor: |
-            latest=true
-          images: |
-            mspass/mspass
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Prepare arm64 GeoLab manifest tags
-        id: arm64-geolab-tags
-        shell: bash
-        run: |
-          cat <<'EOF' > arm64-geolab-tags.txt
-          mspass/mspass:geolab-arm64
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-arm64
-          EOF
-          {
-            echo 'tags<<EOF'
-            cat arm64-geolab-tags.txt
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Build GeoLab image (arm64)
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          target: geolab
-          platforms: linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.arm64-geolab-tags.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=gha,scope=arm64-runtime
-            type=gha,scope=arm64-geolab
-          cache-to: type=gha,scope=arm64-geolab,mode=max
-
   publish-geolab-manifest:
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' }}
     needs:
-      - build-geolab
-      - build-geolab-arm64
+      - build-latest
+      - build-latest-arm64
     permissions:
       contents: read
       packages: write
@@ -719,7 +652,6 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -745,90 +677,33 @@ jobs:
 
       - name: Build MPI image (amd64 only)
         uses: docker/build-push-action@v7
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           target: mpi
           build-args: |
             MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest
           platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: false
           tags: |
             mspass/mspass:mpi
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mpi
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=amd64-mpi
-          cache-to: type=gha,scope=amd64-mpi,mode=max
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-mpi-amd64
 
-  build-tacc:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Remove unnecessary files
-        run: |
-          sudo rm -rf \
-            "$AGENT_TOOLSDIRECTORY" \
-            /opt/google/chrome \
-            /opt/microsoft/msedge \
-            /opt/microsoft/powershell \
-            /opt/pipx \
-            /usr/lib/mono \
-            /usr/local/julia* \
-            /usr/local/lib/android \
-            /usr/local/lib/node_modules \
-            /usr/local/share/chromium \
-            /usr/local/share/powershell \
-            /usr/share/dotnet \
-            /usr/share/swift
-          df -h /
-
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          flavor: |
-            latest=true
-          images: |
-            mspass/mspass
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Build TACC image (amd64 only)
+      - name: Build and push MPI image (amd64 only)
         uses: docker/build-push-action@v7
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           context: .
-          target: tacc
+          target: mpi
+          build-args: |
+            MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest
           platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: |
-            mspass/mspass:tacc
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:tacc
+            mspass/mspass:mpi
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mpi
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=gha,scope=amd64-runtime
-            type=gha,scope=amd64-tacc
-          cache-to: type=gha,scope=amd64-tacc,mode=max
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-mpi-amd64
+          cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-mpi-amd64,mode=max
