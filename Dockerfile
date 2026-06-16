@@ -8,10 +8,9 @@
 #   geolab  - GeoLab/Kubernetes image with non-root Jupyter runtime
 #   mpi     - standard image built with the MPI base image
 #             docker build --target mpi --build-arg MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest .
-#   tacc    - thin TACC startup overlay on the published weekly image
+#   tacc    - standard runtime image with TACC interactive access enabled
 
 ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
-ARG MSPASS_TACC_BASE_IMAGE=ghcr.io/mspass-team/mspass:weekly
 ARG DASK_LABEXTENSION_VERSION=7.0.0
 
 FROM ${MSPASS_BASE_IMAGE} AS mspass-base
@@ -183,13 +182,8 @@ RUN pip3 --no-cache-dir install --upgrade setuptools \
 
 FROM mspass-base AS mspass-source
 
-# Add source used by all full MsPASS image variants.
+# Add source needed by the C++ build first so Python-only changes can reuse it.
 ADD cxx /mspass/cxx
-ADD data /mspass/data
-ADD setup.py /mspass/setup.py
-ADD pyproject.toml /mspass/pyproject.toml
-ADD python /mspass/python
-ADD .git /mspass/.git
 ENV MSPASS_HOME=/mspass
 
 FROM mspass-source AS runtime-package
@@ -204,6 +198,11 @@ RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
 	&& docker-clean
 
 # Install python components
+ADD data /mspass/data
+ADD setup.py /mspass/setup.py
+ADD pyproject.toml /mspass/pyproject.toml
+ADD python /mspass/python
+ADD .git /mspass/.git
 RUN pip3 install /mspass -v \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean
 
@@ -219,6 +218,11 @@ RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
 	&& docker-clean
 
 # Add seisbench dependency in the dev container for development purpose
+ADD data /mspass/data
+ADD setup.py /mspass/setup.py
+ADD pyproject.toml /mspass/pyproject.toml
+ADD python /mspass/python
+ADD .git /mspass/.git
 RUN MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench]' -v \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean
 
@@ -276,37 +280,28 @@ ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
 
 FROM runtime AS mpi
 
-FROM runtime-common AS geolab
-
-ARG DASK_LABEXTENSION_VERSION
+FROM runtime AS geolab
 
 # Create a non-root user (UID 1000) for JupyterLab so that a Kubernetes PVC
 # mounted at /home/mspass is writable without requiring root inside the pod.
 # mongosh still needs a valid HOME, which /home/mspass satisfies.
 ARG NB_USER=mspass
 ARG NB_UID=1000
+ARG NB_HOME=/home/mspass
 ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
-    HOME=/home/mspass \
+    NB_HOME=${NB_HOME} \
+    HOME=${NB_HOME} \
     MSPASS_USE_HOME_WORKDIR=true \
     MSPASS_RUN_JUPYTER_AS_NB_USER=true
 
-RUN useradd --create-home --uid ${NB_UID} --gid 100 \
+RUN useradd --create-home --home-dir ${NB_HOME} --uid ${NB_UID} --gid 100 \
         --shell /bin/bash ${NB_USER} && \
     echo "${NB_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# install Dask JupyterLab extension
-RUN pip3 install dask-labextension==${DASK_LABEXTENSION_VERSION} && docker-clean
-
-# Add startup script
-ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
-RUN chmod +x /usr/sbin/start-mspass.sh
-
-# Grant mspass user write access to directories it needs at runtime
-RUN chown -R ${NB_USER}:100 /home/mspass && \
+# Grant the notebook user write access to its runtime home.
+RUN chown -R ${NB_USER}:100 ${NB_HOME} && \
     chmod g+w /etc/passwd
-
-ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
 
 FROM dev-package AS dev
 
@@ -349,15 +344,8 @@ ENV MSPASS_ROLE=all
 # ENV MSPASS_SCHEDULER dask
 ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
 
-FROM ${MSPASS_TACC_BASE_IMAGE} AS tacc
-
-LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
+FROM runtime AS tacc
 
 ENV MSPASS_TACC_MODE=true
-
-ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
-RUN chmod +x /usr/sbin/start-mspass.sh
-
-ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
 
 FROM runtime AS final

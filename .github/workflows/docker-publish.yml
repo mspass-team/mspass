@@ -21,17 +21,14 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
-
 jobs:
   build-latest:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
         run: |
           sudo rm -rf \
@@ -58,17 +55,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Cache Docker layers
-        uses: actions/cache@v5
-        with:
-          path: |
-            /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      # Login against a Docker registry
-      # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
         if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
@@ -84,8 +70,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v6
@@ -116,9 +100,7 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      # Build and push Docker image with Buildx (don't push on PR)
-      # https://github.com/docker/build-push-action
-      - name: Build and push Docker image (amd64 only)
+      - name: Build Docker image (amd64 only)
         uses: docker/build-push-action@v7
         if: ${{ github.event_name == 'pull_request' }}
         with:
@@ -128,8 +110,8 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=gha,scope=amd64-runtime
+          cache-to: type=gha,scope=amd64-runtime,mode=max
 
       - name: Build and push Docker image (amd64)
         uses: docker/build-push-action@v7
@@ -141,28 +123,16 @@ jobs:
           push: true
           tags: ${{ steps.amd64-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      # Temp fix
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        run: |
-          if [ -d /tmp/.buildx-cache-new ]; then
-            rm -rf /tmp/.buildx-cache
-            mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-          fi
+          cache-from: type=gha,scope=amd64-runtime
+          cache-to: type=gha,scope=amd64-runtime,mode=max
 
   build-latest-arm64:
-
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
       packages: write
 
     steps:
-      # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
         run: |
           sudo rm -rf \
@@ -188,15 +158,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
-
-      - name: Cache Docker layers
-        uses: actions/cache@v5
-        with:
-          path: |
-            /tmp/.buildx-cache-arm64
-          key: ${{ runner.os }}-buildx.arm64-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx.arm64-
 
       - name: Log into registry ${{ env.REGISTRY }}
         if: ${{ github.event_name != 'pull_request' }}
@@ -242,7 +203,7 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      - name: Build and push Docker image (arm64)
+      - name: Build Docker image (arm64)
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -251,18 +212,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.arm64-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-arm64
-          cache-to: type=local,dest=/tmp/.buildx-cache-arm64-new
-
-      - name: Move cache
-        run: |
-          if [ -d /tmp/.buildx-cache-arm64-new ]; then
-            rm -rf /tmp/.buildx-cache-arm64
-            mv /tmp/.buildx-cache-arm64-new /tmp/.buildx-cache-arm64
-          fi
+          cache-from: type=gha,scope=arm64-runtime
+          cache-to: type=gha,scope=arm64-runtime,mode=max
 
   publish-latest-manifest:
-
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' }}
     needs:
@@ -277,7 +230,6 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -285,7 +237,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -318,14 +269,12 @@ jobs:
           done <<< "${{ steps.meta.outputs.tags }}"
 
   build-dev:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
         run: |
           sudo rm -rf \
@@ -352,19 +301,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Cache Docker layers
-        uses: actions/cache@v5
-        with:
-          path: |
-            /tmp/.buildx-cache-dev
-          key: ${{ runner.os }}-buildx.dev-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx.dev-
-
-      # Login against a Docker registry
-      # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -372,14 +309,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v6
@@ -404,38 +338,27 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      # Build and push dev image
       - name: Build and push dev image (amd64)
         uses: docker/build-push-action@v7
         with:
           context: .
           target: dev
           platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.amd64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-dev
-          cache-to: type=local,dest=/tmp/.buildx-cache-dev-new
-
-      # Temp fix
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        run: |
-          if [ -d /tmp/.buildx-cache-dev-new ]; then
-            rm -rf /tmp/.buildx-cache-dev
-            mv /tmp/.buildx-cache-dev-new /tmp/.buildx-cache-dev
-          fi
+          cache-from: |
+            type=gha,scope=amd64-runtime
+            type=gha,scope=amd64-dev
+          cache-to: type=gha,scope=amd64-dev,mode=max
 
   build-dev-arm64:
-
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
       packages: write
 
     steps:
-      # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
         run: |
           sudo rm -rf \
@@ -462,17 +385,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Cache Docker layers
-        uses: actions/cache@v5
-        with:
-          path: |
-            /tmp/.buildx-cache-dev-arm64
-          key: ${{ runner.os }}-buildx.dev.arm64-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx.dev.arm64-
-
       - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -480,7 +393,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -516,23 +428,16 @@ jobs:
           context: .
           target: dev
           platforms: linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.arm64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-dev-arm64
-          cache-to: type=local,dest=/tmp/.buildx-cache-dev-arm64-new
-
-      - name: Move cache
-        run: |
-          if [ -d /tmp/.buildx-cache-dev-arm64-new ]; then
-            rm -rf /tmp/.buildx-cache-dev-arm64
-            mv /tmp/.buildx-cache-dev-arm64-new /tmp/.buildx-cache-dev-arm64
-          fi
+          cache-from: |
+            type=gha,scope=arm64-runtime
+            type=gha,scope=arm64-dev
+          cache-to: type=gha,scope=arm64-dev,mode=max
 
   publish-dev-manifest:
-
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' }}
     needs:
       - build-dev
       - build-dev-arm64
@@ -545,7 +450,6 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -553,7 +457,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -571,16 +474,13 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-amd64 \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-arm64
 
-
   build-geolab:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
         run: |
           sudo rm -rf \
@@ -607,17 +507,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Cache Docker layers
-        uses: actions/cache@v5
-        with:
-          path: |
-            /tmp/.buildx-cache-geolab
-          key: ${{ runner.os }}-buildx.geolab-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx.geolab-
-
-      # Login against a Docker registry
-      # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
         if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
@@ -633,8 +522,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Extract metadata (labels) for Docker
-      # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v6
@@ -645,7 +532,7 @@ jobs:
             mspass/mspass
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Prepare amd64 geolab manifest tags
+      - name: Prepare amd64 GeoLab manifest tags
         id: amd64-geolab-tags
         shell: bash
         run: |
@@ -659,8 +546,7 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      # Build and push geolab image
-      - name: Build and push geolab image (amd64)
+      - name: Build GeoLab image (amd64)
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -669,28 +555,18 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.amd64-geolab-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-geolab
-          cache-to: type=local,dest=/tmp/.buildx-cache-geolab-new
-
-      # Temp fix
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        run: |
-          if [ -d /tmp/.buildx-cache-geolab-new ]; then
-            rm -rf /tmp/.buildx-cache-geolab
-            mv /tmp/.buildx-cache-geolab-new /tmp/.buildx-cache-geolab
-          fi
+          cache-from: |
+            type=gha,scope=amd64-runtime
+            type=gha,scope=amd64-geolab
+          cache-to: type=gha,scope=amd64-geolab,mode=max
 
   build-geolab-arm64:
-
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
       packages: write
 
     steps:
-      # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
         run: |
           sudo rm -rf \
@@ -717,15 +593,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Cache Docker layers
-        uses: actions/cache@v5
-        with:
-          path: |
-            /tmp/.buildx-cache-geolab-arm64
-          key: ${{ runner.os }}-buildx.geolab.arm64-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx.geolab.arm64-
-
       - name: Log into registry ${{ env.REGISTRY }}
         if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
@@ -751,7 +618,7 @@ jobs:
             mspass/mspass
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Prepare arm64 geolab manifest tags
+      - name: Prepare arm64 GeoLab manifest tags
         id: arm64-geolab-tags
         shell: bash
         run: |
@@ -765,7 +632,7 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      - name: Build and push geolab image (arm64)
+      - name: Build GeoLab image (arm64)
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -774,18 +641,12 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.arm64-geolab-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-geolab-arm64
-          cache-to: type=local,dest=/tmp/.buildx-cache-geolab-arm64-new
-
-      - name: Move cache
-        run: |
-          if [ -d /tmp/.buildx-cache-geolab-arm64-new ]; then
-            rm -rf /tmp/.buildx-cache-geolab-arm64
-            mv /tmp/.buildx-cache-geolab-arm64-new /tmp/.buildx-cache-geolab-arm64
-          fi
+          cache-from: |
+            type=gha,scope=arm64-runtime
+            type=gha,scope=arm64-geolab
+          cache-to: type=gha,scope=arm64-geolab,mode=max
 
   publish-geolab-manifest:
-
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' }}
     needs:
@@ -800,7 +661,6 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log into registry ${{ env.REGISTRY }}
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -808,13 +668,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Create multi-arch geolab manifests
+      - name: Create multi-arch GeoLab manifests
         shell: bash
         run: |
           docker buildx imagetools create \
@@ -827,14 +686,12 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-arm64
 
   build-mpi:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
         run: |
           sudo rm -rf \
@@ -861,17 +718,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Cache Docker layers
-        uses: actions/cache@v5
-        with:
-          path: |
-            /tmp/.buildx-cache-mpi
-          key: ${{ runner.os }}-buildx.mpi-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx.mpi-
-
-      # Login against a Docker registry
-      # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
         if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
@@ -887,8 +733,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v6
@@ -899,8 +743,7 @@ jobs:
             mspass/mspass
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # Build and push mpi image
-      - name: Build and push mpi image (amd64 only)
+      - name: Build MPI image (amd64 only)
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -913,28 +756,16 @@ jobs:
             mspass/mspass:mpi
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mpi
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-mpi
-          cache-to: type=local,dest=/tmp/.buildx-cache-mpi-new
-
-      # Temp fix
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        run: |
-          if [ -d /tmp/.buildx-cache-mpi-new ]; then
-            rm -rf /tmp/.buildx-cache-mpi
-            mv /tmp/.buildx-cache-mpi-new /tmp/.buildx-cache-mpi
-          fi
+          cache-from: type=gha,scope=amd64-mpi
+          cache-to: type=gha,scope=amd64-mpi,mode=max
 
   build-tacc:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
         run: |
           sudo rm -rf \
@@ -961,17 +792,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Cache Docker layers
-        uses: actions/cache@v5
-        with:
-          path: |
-            /tmp/.buildx-cache-tacc
-          key: ${{ runner.os }}-buildx.tacc-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx.tacc-
-
-      # Login against a Docker registry
-      # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
         if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
@@ -987,8 +807,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v6
@@ -999,10 +817,8 @@ jobs:
             mspass/mspass
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # Build and push tacc image
-      - name: Build and push tacc image (amd64 only)
+      - name: Build TACC image (amd64 only)
         uses: docker/build-push-action@v7
-        #if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
           target: tacc
@@ -1012,15 +828,7 @@ jobs:
             mspass/mspass:tacc
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:tacc
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-tacc
-          cache-to: type=local,dest=/tmp/.buildx-cache-tacc-new
-
-      # Temp fix
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        run: |
-          if [ -d /tmp/.buildx-cache-tacc-new ]; then
-            rm -rf /tmp/.buildx-cache-tacc
-            mv /tmp/.buildx-cache-tacc-new /tmp/.buildx-cache-tacc
-          fi
+          cache-from: |
+            type=gha,scope=amd64-runtime
+            type=gha,scope=amd64-tacc
+          cache-to: type=gha,scope=amd64-tacc,mode=max

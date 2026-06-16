@@ -27,11 +27,15 @@ dependencies = [
     "dask[complete]>=2025.9.1",
     "schema",
     "decorator",
-    "boto3",
-    "botocore",
-    "moto",
+    # Keep the AWS dependency family coordinated with aiobotocore to avoid
+    # expensive resolver backtracking during source/container installs.
+    "aioboto3>=15.5.0,<15.6.0",
+    "aiobotocore[boto3]>=2.25.1,<2.26.0",
+    "boto3>=1.40.46,<1.40.62",
+    "botocore>=1.40.46,<1.40.62",
+    "moto>=5.2.2,<5.3.0",
     "requests",
-    "earthscope-sdk",
+    "earthscope-sdk>=1.5.0,<1.6.0",
     "xarray",
     "zarr",
     "pandas>=2.3.3",
@@ -40,7 +44,7 @@ dependencies = [
     "ipympl",
 ]
 dynamic = ["version"]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 
 [project.urls]
 Homepage = "https://github.com/mspass-team/mspass"

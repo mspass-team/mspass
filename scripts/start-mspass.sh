@@ -72,9 +72,11 @@ function configure_tacc_interactive_access {
   print_notebook_link "Welcome to Tapis interactive" "http://$tapis_exec_system.tacc.utexas.edu:$login_port/lab?token=$MSPASS_JUPYTER_TOKEN"
 }
 
-if [[ "${MSPASS_TACC_MODE:-false}" = "true" && "$1" != "--batch" ]]; then
-  configure_tacc_interactive_access
-fi
+function configure_tacc_interactive_access_if_needed {
+  if [[ "${MSPASS_TACC_MODE:-false}" = "true" ]]; then
+    configure_tacc_interactive_access
+  fi
+}
 
 # define SLEEP_TIME
 if [[ -z $MSPASS_SLEEP_TIME ]]; then
@@ -100,7 +102,7 @@ MONGO_LOG=${MSPASS_LOG_DIR}/mongo_log
 export SPARK_WORKER_DIR=${MSPASS_WORKER_DIR}
 export SPARK_LOG_DIR=${MSPASS_LOG_DIR}
 
-if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
+if [ $# -eq 0 ] || [ "$1" = "--batch" ]; then
 
   function start_mspass_frontend {
       RUN_JUPYTER_AS_NB_USER=false
@@ -108,33 +110,51 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
           RUN_JUPYTER_AS_NB_USER=true
       fi
 
-      NOTEBOOK_ARGS="--notebook-dir=${MSPASS_WORKDIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0"
+      NOTEBOOK_ARGS=(
+          "--notebook-dir=${MSPASS_WORKDIR}"
+          "--port=${JUPYTER_PORT}"
+          "--no-browser"
+          "--ip=0.0.0.0"
+      )
       if [[ "${MSPASS_ALLOW_ROOT:-auto}" = "true" || ( "${MSPASS_ALLOW_ROOT:-auto}" = "auto" && "$RUN_JUPYTER_AS_NB_USER" != "true" ) ]]; then
-          NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --allow-root"
+          NOTEBOOK_ARGS+=("--allow-root")
       fi
+
+      function quote_command {
+          local quoted_command
+          printf -v quoted_command '%q ' "$@"
+          printf '%s' "${quoted_command% }"
+      }
 
       function run_frontend_as_nb_user {
           NB_USER=${NB_USER:-mspass}
           chown -R ${NB_USER}:100 "${MSPASS_WORKDIR}" 2>/dev/null || true
-          su --preserve-environment -c "export PATH=${CONDA_DIR:-/opt/conda}/bin:\$PATH; $1" ${NB_USER}
+          local quoted_command
+          quoted_command=$(quote_command "$@")
+          su --preserve-environment -c "export PATH=${CONDA_DIR:-/opt/conda}/bin:\$PATH; ${quoted_command}" "${NB_USER}"
       }
 
       # Handle Jupyter password hashing if set
       if [[ ! -z ${MSPASS_JUPYTER_PWD+x} ]]; then
-          MSPASS_JUPYTER_PWD_HASHED=$(python3 -c "from notebook.auth import passwd; print(passwd('${MSPASS_JUPYTER_PWD}'))")
-          NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.password=${MSPASS_JUPYTER_PWD_HASHED}"
+          MSPASS_JUPYTER_PWD_HASHED=$(MSPASS_JUPYTER_PWD="${MSPASS_JUPYTER_PWD}" python3 -c 'import os; from notebook.auth import passwd; print(passwd(os.environ["MSPASS_JUPYTER_PWD"]))')
+          NOTEBOOK_ARGS+=("--NotebookApp.password=${MSPASS_JUPYTER_PWD_HASHED}")
       fi
       if [[ -n ${MSPASS_JUPYTER_TOKEN:-} ]]; then
-          NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.token=${MSPASS_JUPYTER_TOKEN}"
+          NOTEBOOK_ARGS+=("--NotebookApp.token=${MSPASS_JUPYTER_TOKEN}")
       fi
 
       if [ "$MSPASS_SCHEDULER" = "spark" ]; then
           if [ -z "$1" ]; then
               # Interactive Jupyter Lab mode for Spark
               export PYSPARK_DRIVER_PYTHON=jupyter
-              export PYSPARK_DRIVER_PYTHON_OPTS="lab ${NOTEBOOK_ARGS}"
+              NOTEBOOK_ARGS_STRING=$(quote_command "${NOTEBOOK_ARGS[@]}")
+              export PYSPARK_DRIVER_PYTHON_OPTS="lab ${NOTEBOOK_ARGS_STRING}"
               if [[ "$RUN_JUPYTER_AS_NB_USER" = "true" ]]; then
-                  run_frontend_as_nb_user "pyspark --conf spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc --conf spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc --conf spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT} --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0"
+                  run_frontend_as_nb_user pyspark \
+                      --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+                      --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+                      --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \
+                      --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
               else
                   pyspark \
                       --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
@@ -165,9 +185,9 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
           if [ -z "$1" ]; then
               # Interactive Jupyter Lab mode for Dask
               if [[ "$RUN_JUPYTER_AS_NB_USER" = "true" ]]; then
-                  run_frontend_as_nb_user "jupyter lab ${NOTEBOOK_ARGS}"
+                  run_frontend_as_nb_user jupyter lab "${NOTEBOOK_ARGS[@]}"
               else
-                  jupyter lab ${NOTEBOOK_ARGS}
+                  jupyter lab "${NOTEBOOK_ARGS[@]}"
               fi
           else
               # Batch mode processing for Dask
@@ -226,6 +246,33 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
       done
     fi
     sleep ${MSPASS_SLEEP_TIME}
+  }
+
+  FRONTEND_CLEANUP_DONE=false
+  FRONTEND_CLEANUP_MODE=single
+
+  function run_frontend_cleanup {
+    local status=${1:-$?}
+    trap - EXIT INT TERM
+    if [ "$FRONTEND_CLEANUP_DONE" = "true" ]; then
+      return "$status"
+    fi
+
+    FRONTEND_CLEANUP_DONE=true
+    if [ "$FRONTEND_CLEANUP_MODE" = "multiple" ]; then
+      clean_up_multiple_nodes
+    else
+      clean_up_single_node
+    fi
+
+    pkill -TERM -P $$ 2>/dev/null || true
+    return "$status"
+  }
+
+  function enable_frontend_cleanup_trap {
+    trap 'run_frontend_cleanup $?' EXIT
+    trap 'run_frontend_cleanup 130; exit 130' INT
+    trap 'run_frontend_cleanup 143; exit 143' TERM
   }
 
   function start_db_scratch {
@@ -416,18 +463,25 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
     fi
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "frontend" ]; then
-    start_mspass_frontend $2
-    frontend_status=$?
     if [ "$MSPASS_DB_MODE" = "shard" ]; then
-      clean_up_multiple_nodes
+      FRONTEND_CLEANUP_MODE=multiple
     else
-      clean_up_single_node
+      FRONTEND_CLEANUP_MODE=single
     fi
+    enable_frontend_cleanup_trap
+    if [ "$1" != "--batch" ]; then
+      configure_tacc_interactive_access_if_needed
+    fi
+    start_mspass_frontend "$2"
+    frontend_status=$?
+    run_frontend_cleanup "$frontend_status"
     if [ "$1" = "--batch" ]
     then
       exit $frontend_status
     fi
   else # if [ "$MSPASS_ROLE" = "all" ]
+    FRONTEND_CLEANUP_MODE=single
+    enable_frontend_cleanup_trap
     MSPASS_DB_ADDRESS=$HOSTNAME
     MSPASS_SCHEDULER_ADDRESS=$HOSTNAME
     eval $MSPASS_SCHEDULER_CMD
@@ -437,9 +491,12 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
     else
       start_db_scratch
     fi
-    start_mspass_frontend $2
+    if [ "$1" != "--batch" ]; then
+      configure_tacc_interactive_access_if_needed
+    fi
+    start_mspass_frontend "$2"
     frontend_status=$?
-    clean_up_single_node
+    run_frontend_cleanup "$frontend_status"
     if [ "$1" = "--batch" ]
     then
       exit $frontend_status
@@ -447,5 +504,5 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
   fi
   wait
 else
-  docker-entrypoint.sh $@
+  docker-entrypoint.sh "$@"
 fi
