@@ -116,7 +116,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
       function run_frontend_as_nb_user {
           NB_USER=${NB_USER:-mspass}
           chown -R ${NB_USER}:100 "${MSPASS_WORKDIR}" 2>/dev/null || true
-          su --preserve-environment -c "$1" ${NB_USER}
+          su --preserve-environment -c "export PATH=${CONDA_DIR:-/opt/conda}/bin:\$PATH; $1" ${NB_USER}
       }
 
       # Handle Jupyter password hashing if set
@@ -124,7 +124,7 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
           MSPASS_JUPYTER_PWD_HASHED=$(python3 -c "from notebook.auth import passwd; print(passwd('${MSPASS_JUPYTER_PWD}'))")
           NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.password=${MSPASS_JUPYTER_PWD_HASHED}"
       fi
-      if [[ ! -z ${MSPASS_JUPYTER_TOKEN+x} ]]; then
+      if [[ -n ${MSPASS_JUPYTER_TOKEN:-} ]]; then
           NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.token=${MSPASS_JUPYTER_TOKEN}"
       fi
 
@@ -417,10 +417,15 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "frontend" ]; then
     start_mspass_frontend $2
+    frontend_status=$?
     if [ "$MSPASS_DB_MODE" = "shard" ]; then
       clean_up_multiple_nodes
     else
       clean_up_single_node
+    fi
+    if [ "$1" = "--batch" ]
+    then
+      exit $frontend_status
     fi
   else # if [ "$MSPASS_ROLE" = "all" ]
     MSPASS_DB_ADDRESS=$HOSTNAME
@@ -433,7 +438,12 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
       start_db_scratch
     fi
     start_mspass_frontend $2
+    frontend_status=$?
     clean_up_single_node
+    if [ "$1" = "--batch" ]
+    then
+      exit $frontend_status
+    fi
   fi
   wait
 else
