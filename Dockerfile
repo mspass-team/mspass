@@ -12,6 +12,30 @@
 
 ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
 ARG DASK_LABEXTENSION_VERSION=7.0.0
+ARG SPARK_VERSION=3.0.0
+ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop2.7
+ARG SPARK_ARCHIVE=${SPARK_PACKAGE}.tgz
+ARG APACHE_MIRROR=https://archive.apache.org/dist
+ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/${SPARK_ARCHIVE}
+ARG SPARK_SHA512=f5652835094d9f69eb3260e20ca9c2d58e8bdf85a8ed15797549a518b23c862b75a329b38d4248f8427e4310718238c60fae0f9d1afb3c70fb390d3e9cce2e49
+
+FROM alpine:3.20 AS spark-archive
+
+ARG SPARK_ARCHIVE
+ARG SPARK_SHA512
+ARG SPARK_URL
+
+RUN --mount=type=bind,source=.docker-build-assets,target=/mnt/build-assets,readonly \
+    set -eux; \
+    if [ -f "/mnt/build-assets/${SPARK_ARCHIVE}" ]; then \
+        cp "/mnt/build-assets/${SPARK_ARCHIVE}" /spark.tgz; \
+    else \
+        apk add --no-cache ca-certificates curl; \
+        curl -fL --retry 5 --retry-all-errors --retry-delay 10 \
+            --connect-timeout 20 --speed-limit 1024 --speed-time 60 --max-time 900 \
+            -o /spark.tgz "${SPARK_URL}"; \
+    fi; \
+    echo "${SPARK_SHA512}  /spark.tgz" | sha512sum -c -
 
 FROM ${MSPASS_BASE_IMAGE} AS mspass-base
 
@@ -132,18 +156,19 @@ RUN apt-get update \
 ARG TARGETARCH
 
 # Prepare the environment
-ARG SPARK_VERSION=3.0.0
+ARG SPARK_VERSION
+ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop2.7
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-${TARGETARCH}
 ENV SPARK_HOME=/usr/local/spark
 ENV PYSPARK_PYTHON=python3
 
-ARG APACHE_MIRROR=https://archive.apache.org/dist
-ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
-
-# Download & install Spark
-RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
-    && cd /usr/local && ln -s spark-${SPARK_VERSION}-bin-hadoop2.7 spark \
+# Install Spark from the CI-provided build asset when present; otherwise the
+# spark-archive stage downloads it with retries, speed limits, and checksum verification.
+COPY --from=spark-archive /spark.tgz /tmp/spark.tgz
+RUN tar -xzf /tmp/spark.tgz -C /usr/local/ \
+    && cd /usr/local && ln -s ${SPARK_PACKAGE} spark \
+    && rm /tmp/spark.tgz \
 	&& docker-clean
 RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
 RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_path.txt && \

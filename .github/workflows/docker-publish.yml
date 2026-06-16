@@ -22,9 +22,38 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   # Keep BuildKit cache out of GitHub Actions cache entries.
   CACHE_IMAGE: ghcr.io/${{ github.repository }}
+  SPARK_VERSION: 3.0.0
+  SPARK_ARCHIVE: spark-3.0.0-bin-hadoop2.7.tgz
+  SPARK_URL: https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+  SPARK_SHA512: f5652835094d9f69eb3260e20ca9c2d58e8bdf85a8ed15797549a518b23c862b75a329b38d4248f8427e4310718238c60fae0f9d1afb3c70fb390d3e9cce2e49
 
 jobs:
+  download-spark:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Download Spark archive
+        shell: bash
+        run: |
+          set -euxo pipefail
+          curl -fL --retry 5 --retry-all-errors --retry-delay 10 \
+            --connect-timeout 20 --speed-limit 1024 --speed-time 60 --max-time 900 \
+            -o "${SPARK_ARCHIVE}" "${SPARK_URL}"
+          echo "${SPARK_SHA512}  ${SPARK_ARCHIVE}" | sha512sum -c -
+
+      - name: Upload Spark build asset
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-${{ env.SPARK_VERSION }}
+          path: ${{ env.SPARK_ARCHIVE }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
   build-latest:
+    needs: download-spark
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -53,6 +82,12 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Download Spark build asset
+        uses: actions/download-artifact@v4
+        with:
+          name: spark-${{ env.SPARK_VERSION }}
+          path: .docker-build-assets
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -165,6 +200,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
 
   build-latest-arm64:
+    needs: download-spark
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
@@ -193,6 +229,12 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Download Spark build asset
+        uses: actions/download-artifact@v4
+        with:
+          name: spark-${{ env.SPARK_VERSION }}
+          path: .docker-build-assets
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -344,6 +386,7 @@ jobs:
           done <<< "${{ steps.meta.outputs.tags }}"
 
   build-dev:
+    needs: download-spark
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -372,6 +415,12 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Download Spark build asset
+        uses: actions/download-artifact@v4
+        with:
+          name: spark-${{ env.SPARK_VERSION }}
+          path: .docker-build-assets
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -443,6 +492,7 @@ jobs:
           cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-amd64,mode=max
 
   build-dev-arm64:
+    needs: download-spark
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
@@ -471,6 +521,12 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Download Spark build asset
+        uses: actions/download-artifact@v4
+        with:
+          name: spark-${{ env.SPARK_VERSION }}
+          path: .docker-build-assets
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -619,6 +675,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-arm64
 
   build-mpi:
+    needs: download-spark
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -647,6 +704,12 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Download Spark build asset
+        uses: actions/download-artifact@v4
+        with:
+          name: spark-${{ env.SPARK_VERSION }}
+          path: .docker-build-assets
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
