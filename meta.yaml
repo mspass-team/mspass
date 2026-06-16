@@ -52,9 +52,11 @@ requirements:
     - cloudpickle
     - schema
     - decorator
-    - boto3
-    - botocore
-    - moto
+    - aioboto3>=15.5.0,<15.6.0
+    - aiobotocore>=2.25.1,<2.26.0
+    - boto3>=1.40.46,<1.40.62
+    - botocore>=1.40.46,<1.40.62
+    - moto>=5.2.2,<5.3.0
     - requests
     - xarray
     - zarr

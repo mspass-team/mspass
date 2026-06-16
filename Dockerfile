@@ -1,7 +1,43 @@
-#Image: mspass/mspass
-#Version: 1.0.0
+# syntax=docker/dockerfile:1
+# Image: mspass/mspass
+# Version: 1.0.0
+#
+# Build targets:
+#   runtime - standard MsPASS image, also used by the default final stage
+#   dev     - debug build with development and documentation dependencies
+#   geolab  - GeoLab/Kubernetes image with non-root Jupyter runtime
+#   mpi     - standard image built with the MPI base image
+#             docker build --target mpi --build-arg MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest .
+#   tacc    - standard runtime image with TACC interactive access enabled
 
-FROM ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
+ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
+ARG DASK_LABEXTENSION_VERSION=7.0.0
+ARG SPARK_VERSION=3.0.0
+ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop2.7
+ARG SPARK_ARCHIVE=${SPARK_PACKAGE}.tgz
+ARG APACHE_MIRROR=https://archive.apache.org/dist
+ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/${SPARK_ARCHIVE}
+ARG SPARK_SHA512=f5652835094d9f69eb3260e20ca9c2d58e8bdf85a8ed15797549a518b23c862b75a329b38d4248f8427e4310718238c60fae0f9d1afb3c70fb390d3e9cce2e49
+
+FROM alpine:3.20 AS spark-archive
+
+ARG SPARK_ARCHIVE
+ARG SPARK_SHA512
+ARG SPARK_URL
+
+RUN --mount=type=bind,source=.docker-build-assets,target=/mnt/build-assets,readonly \
+    set -eux; \
+    if [ -f "/mnt/build-assets/${SPARK_ARCHIVE}" ]; then \
+        cp "/mnt/build-assets/${SPARK_ARCHIVE}" /spark.tgz; \
+    else \
+        apk add --no-cache ca-certificates curl; \
+        curl -fL --retry 5 --retry-all-errors --retry-delay 10 \
+            --connect-timeout 20 --speed-limit 1024 --speed-time 60 --max-time 900 \
+            -o /spark.tgz "${SPARK_URL}"; \
+    fi; \
+    echo "${SPARK_SHA512}  /spark.tgz" | sha512sum -c -
+
+FROM ${MSPASS_BASE_IMAGE} AS mspass-base
 
 LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
 
@@ -27,7 +63,7 @@ RUN set -eux; \
 	&& docker-clean
 
 # grab "js-yaml" for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
-ENV JSYAML_VERSION 3.13.1
+ENV JSYAML_VERSION=3.13.1
 
 RUN set -ex; \
 	\
@@ -73,11 +109,11 @@ ARG MONGO_PACKAGE=mongodb-org
 ARG MONGO_REPO=repo.mongodb.org
 ENV MONGO_PACKAGE=${MONGO_PACKAGE} MONGO_REPO=${MONGO_REPO}
 
-ENV MONGO_MAJOR 6.0
+ENV MONGO_MAJOR=6.0
 RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] http://$MONGO_REPO/apt/ubuntu jammy/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
 
 # https://docs.mongodb.org/master/release-notes/6.0/
-ENV MONGO_VERSION 6.0.5
+ENV MONGO_VERSION=6.0.5
 # 03/08/2023, https://github.com/mongodb/mongo/tree/c9a99c120371d4d4c52cbb15dac34a36ce8d3b1d
 
 RUN set -x \
@@ -99,7 +135,7 @@ VOLUME /data/db /data/configdb
 
 # ensure that if running as custom user that "mongosh" has a valid "HOME"
 # https://github.com/docker-library/mongo/issues/524
-ENV HOME /data/db
+ENV HOME=/data/db
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
@@ -120,18 +156,19 @@ RUN apt-get update \
 ARG TARGETARCH
 
 # Prepare the environment
-ARG SPARK_VERSION=3.0.0
+ARG SPARK_VERSION
+ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop2.7
 
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-${TARGETARCH}
-ENV SPARK_HOME /usr/local/spark
-ENV PYSPARK_PYTHON python3
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-${TARGETARCH}
+ENV SPARK_HOME=/usr/local/spark
+ENV PYSPARK_PYTHON=python3
 
-ARG APACHE_MIRROR=https://archive.apache.org/dist
-ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
-
-# Download & install Spark
-RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
-    && cd /usr/local && ln -s spark-${SPARK_VERSION}-bin-hadoop2.7 spark \
+# Install Spark from the CI-provided build asset when present; otherwise the
+# spark-archive stage downloads it with retries, speed limits, and checksum verification.
+COPY --from=spark-archive /spark.tgz /tmp/spark.tgz
+RUN tar -xzf /tmp/spark.tgz -C /usr/local/ \
+    && cd /usr/local && ln -s ${SPARK_PACKAGE} spark \
+    && rm /tmp/spark.tgz \
 	&& docker-clean
 RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
 RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_path.txt && \
@@ -151,8 +188,8 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
 # Install Python tooling
 RUN pip3 --no-cache-dir install --upgrade pip \
 	&& docker-clean
-RUN if [ "$TARGETARCH" == "arm64" ]; then export CFLAGS="-O3" \
-	&& export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true; fi\
+RUN if [ "$TARGETARCH" = "arm64" ]; then export CFLAGS="-O3" \
+	&& export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true; fi \
 	&& pip3 --no-cache-dir install numpy \
 	&& docker-clean
 
@@ -168,21 +205,25 @@ RUN rm -r /usr/local/pybind11-${PYBIND11_VERSION}
 RUN pip3 --no-cache-dir install --upgrade setuptools \
 	&& docker-clean
 
-# Add cxx library
+FROM mspass-base AS mspass-source
+
+# Add source needed by the C++ build first so Python-only changes can reuse it.
 ADD cxx /mspass/cxx
+ENV MSPASS_HOME=/mspass
+
+FROM mspass-source AS runtime-package
+
+# Add cxx library
 RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
     && mkdir build && cd build \
     && cmake .. \
     && make \
-    && make install \ 
+    && make install \
     && rm -rf ../build \
 	&& docker-clean
 
-# Add data and env variable for the MetadataDefinition class
+# Install python components
 ADD data /mspass/data
-ENV MSPASS_HOME /mspass
-
-# Add setup.py to install python components
 ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
 ADD python /mspass/python
@@ -190,10 +231,112 @@ ADD .git /mspass/.git
 RUN pip3 install /mspass -v \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean
 
+FROM mspass-source AS dev-package
+
+# Add cxx library with debug symbols
+RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
+    && mkdir build && cd build \
+    && cmake -DCMAKE_BUILD_TYPE=Debug .. \
+    && make \
+    && make install \
+    && rm -rf ../build \
+	&& docker-clean
+
+# Add seisbench dependency in the dev container for development purpose
+ADD data /mspass/data
+ADD setup.py /mspass/setup.py
+ADD pyproject.toml /mspass/pyproject.toml
+ADD python /mspass/python
+ADD .git /mspass/.git
+RUN MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench]' -v \
+	&& rm -rf /mspass/build /mspass/.git && docker-clean
+
+# Add docs and dependencies to build docs
+ADD docs /mspass/docs
+RUN apt-get update && apt-get install -yq doxygen pandoc \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install -r /mspass/docs/requirements.txt \
+    && docker-clean
+
+FROM runtime-package AS runtime-common
+
 # Install jedi
 RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean
 
 # Tini operates as a process subreaper for jupyter.
+ARG TARGETARCH
+ARG TINI_VERSION=v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH} /usr/sbin/tini
+RUN chmod +x /usr/sbin/tini
+
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
+
+# replace localhost to 127.0.0.1 in pymongo to run on HPC
+RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_path.txt && \
+	PYTHON_SITE_PACKAGES_PATH=$(cat site_packages_path.txt) && \
+	[ -f "${PYTHON_SITE_PACKAGES_PATH}/pymongo/encryption_options.py" ] && sed -i "s/localhost:27020,/127.0.0.1:27020,/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/encryption_options.py" || true && \
+	[ -f "${PYTHON_SITE_PACKAGES_PATH}/pymongo/mongo_client.py" ] && sed -i 's/HOST = "localhost"/HOST = "127.0.0.1"/g' "${PYTHON_SITE_PACKAGES_PATH}/pymongo/mongo_client.py" || true && \
+	[ -f "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py" ] && sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py" || true && \
+	rm site_packages_path.txt
+
+ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}"
+
+# Set the default behavior of this container
+ENV SPARK_MASTER_PORT=7077
+ENV DASK_SCHEDULER_PORT=8786
+ENV MONGODB_PORT=27017
+ENV JUPYTER_PORT=8888
+ENV MSPASS_ROLE=all
+# ENV MSPASS_SCHEDULER dask
+
+FROM runtime-common AS runtime
+
+ARG DASK_LABEXTENSION_VERSION
+
+# install Dask JupyterLab extension
+RUN pip3 install dask-labextension==${DASK_LABEXTENSION_VERSION} && docker-clean
+
+# Add startup script
+ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
+RUN chmod +x /usr/sbin/start-mspass.sh
+
+ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
+
+FROM runtime AS mpi
+
+FROM runtime AS geolab
+
+# Create a non-root user (UID 1000) for JupyterLab so that a Kubernetes PVC
+# mounted at /home/mspass is writable without requiring root inside the pod.
+# mongosh still needs a valid HOME, which /home/mspass satisfies.
+ARG NB_USER=mspass
+ARG NB_UID=1000
+ARG NB_HOME=/home/mspass
+ENV NB_USER=${NB_USER} \
+    NB_UID=${NB_UID} \
+    NB_HOME=${NB_HOME} \
+    HOME=${NB_HOME} \
+    MSPASS_USE_HOME_WORKDIR=true \
+    MSPASS_RUN_JUPYTER_AS_NB_USER=true
+
+RUN useradd --create-home --home-dir ${NB_HOME} --uid ${NB_UID} --gid 100 \
+        --shell /bin/bash ${NB_USER} && \
+    echo "${NB_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Grant the notebook user write access to its runtime home.
+RUN chown -R ${NB_USER}:100 ${NB_HOME} && \
+    chmod g+w /etc/passwd
+
+FROM dev-package AS dev
+
+ARG DASK_LABEXTENSION_VERSION
+
+# Install jedi
+RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean
+
+# Tini operates as a process subreaper for jupyter.
+ARG TARGETARCH
 ARG TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH} /usr/sbin/tini
 RUN chmod +x /usr/sbin/tini
@@ -213,15 +356,21 @@ RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_pa
 	rm site_packages_path.txt
 
 # install Dask JupyterLab extension
-RUN pip install dask-labextension==7.0.0 && docker-clean
+RUN pip3 install dask-labextension==${DASK_LABEXTENSION_VERSION} && docker-clean
 
 ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}"
 
 # Set the default behavior of this container
-ENV SPARK_MASTER_PORT 7077
-ENV DASK_SCHEDULER_PORT 8786
-ENV MONGODB_PORT 27017
-ENV JUPYTER_PORT 8888
-ENV MSPASS_ROLE all
+ENV SPARK_MASTER_PORT=7077
+ENV DASK_SCHEDULER_PORT=8786
+ENV MONGODB_PORT=27017
+ENV JUPYTER_PORT=8888
+ENV MSPASS_ROLE=all
 # ENV MSPASS_SCHEDULER dask
 ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
+
+FROM runtime AS tacc
+
+ENV MSPASS_TACC_MODE=true
+
+FROM runtime AS final
