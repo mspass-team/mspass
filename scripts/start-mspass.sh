@@ -13,6 +13,69 @@ else
   MSPASS_WORKDIR=$MSPASS_WORK_DIR
 fi
 
+function terminal_columns {
+  local columns=${COLUMNS:-}
+  if [[ -z "$columns" ]] && command -v tput >/dev/null 2>&1; then
+    columns=$(tput cols 2>/dev/null || true)
+  fi
+  echo "${columns:-80}"
+}
+
+function print_centered_line {
+  local columns
+  columns=$(terminal_columns)
+  echo "$1" | sed -e :a -e "s/^.\{1,${columns}\}$/ & /;ta" | tr -d '\n' | head -c "$columns"
+  echo -e "\n"
+}
+
+function print_notebook_link {
+  local title="$1"
+  local url="$2"
+  local columns
+  columns=$(terminal_columns)
+  printf '%*s\n' "$columns" '' | tr ' ' -
+  print_centered_line "$title"
+  print_centered_line "The link below will open a MsPASS Jupyter Notebook"
+  print_centered_line "$url"
+  printf '%*s\n' "$columns" '' | tr ' ' -
+}
+
+function configure_tacc_interactive_access {
+  local tapis_exec_system
+  local node_hostname
+  local login_port
+  local status_port
+
+  if [ "$_tapisExecSystemId" == "Stampede3" ]; then
+    tapis_exec_system="stampede3"
+  elif [ "$_tapisExecSystemId" == "Frontera.exec" ]; then
+    tapis_exec_system="frontera"
+  elif [ "$_tapisExecSystemId" == "Stampede.exec" ]; then
+    tapis_exec_system="stampede2"
+  else
+    tapis_exec_system="frontera"
+  fi
+
+  node_hostname=$(hostname -s)
+  login_port=$(echo "$node_hostname" | perl -ne 'print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;')
+  status_port=$(($login_port + 1))
+  echo "got login node port $login_port"
+  echo "got status node port $status_port"
+
+  for i in `seq 4`; do
+    ssh -q -f -g -N -R $login_port:$node_hostname:8888 login$i > /dev/null 2>&1
+    ssh -q -f -g -N -R $status_port:$node_hostname:8787 login$i > /dev/null 2>&1
+  done
+
+  MSPASS_JUPYTER_TOKEN=${MSPASS_JUPYTER_TOKEN:-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 20 | head -n 1)}
+  echo "Created reverse ports on $tapis_exec_system logins"
+  print_notebook_link "Welcome to Tapis interactive" "http://$tapis_exec_system.tacc.utexas.edu:$login_port/lab?token=$MSPASS_JUPYTER_TOKEN"
+}
+
+if [[ "${MSPASS_TACC_MODE:-false}" = "true" && "$1" != "--batch" ]]; then
+  configure_tacc_interactive_access
+fi
+
 # define SLEEP_TIME
 if [[ -z $MSPASS_SLEEP_TIME ]]; then
   MSPASS_SLEEP_TIME=15
@@ -60,6 +123,9 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
       if [[ ! -z ${MSPASS_JUPYTER_PWD+x} ]]; then
           MSPASS_JUPYTER_PWD_HASHED=$(python3 -c "from notebook.auth import passwd; print(passwd('${MSPASS_JUPYTER_PWD}'))")
           NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.password=${MSPASS_JUPYTER_PWD_HASHED}"
+      fi
+      if [[ ! -z ${MSPASS_JUPYTER_TOKEN+x} ]]; then
+          NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.token=${MSPASS_JUPYTER_TOKEN}"
       fi
 
       if [ "$MSPASS_SCHEDULER" = "spark" ]; then

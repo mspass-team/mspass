@@ -353,9 +353,11 @@ FROM ${MSPASS_TACC_BASE_IMAGE} AS tacc
 
 LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
 
-ADD scripts/start-mspass-tacc.sh /usr/sbin/start-mspass-tacc.sh
-RUN chmod +x /usr/sbin/start-mspass-tacc.sh
+ENV MSPASS_TACC_MODE=true
 
-ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass-tacc.sh"]
+ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
+RUN chmod +x /usr/sbin/start-mspass.sh
+
+ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
 
 FROM runtime AS final
