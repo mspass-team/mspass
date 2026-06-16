@@ -19,13 +19,15 @@ ARG APACHE_MIRROR=https://archive.apache.org/dist
 ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/${SPARK_ARCHIVE}
 ARG SPARK_SHA512=f5652835094d9f69eb3260e20ca9c2d58e8bdf85a8ed15797549a518b23c862b75a329b38d4248f8427e4310718238c60fae0f9d1afb3c70fb390d3e9cce2e49
 
+FROM scratch AS spark-build-assets
+
 FROM alpine:3.20 AS spark-archive
 
 ARG SPARK_ARCHIVE
 ARG SPARK_SHA512
 ARG SPARK_URL
 
-RUN --mount=type=bind,source=.docker-build-assets,target=/mnt/build-assets,readonly \
+RUN --mount=type=bind,from=spark-build-assets,source=/,target=/mnt/build-assets,readonly \
     set -eux; \
     if [ -f "/mnt/build-assets/${SPARK_ARCHIVE}" ]; then \
         cp "/mnt/build-assets/${SPARK_ARCHIVE}" /spark.tgz; \

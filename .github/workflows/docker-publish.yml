@@ -34,13 +34,26 @@ jobs:
       contents: read
 
     steps:
+      - name: Restore Spark archive cache
+        id: spark-cache
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.SPARK_ARCHIVE }}
+          key: spark-${{ env.SPARK_ARCHIVE }}-${{ env.SPARK_SHA512 }}
+
       - name: Download Spark archive
+        if: ${{ steps.spark-cache.outputs.cache-hit != 'true' }}
         shell: bash
         run: |
           set -euxo pipefail
           curl -fL --retry 5 --retry-all-errors --retry-delay 10 \
             --connect-timeout 20 --speed-limit 1024 --speed-time 60 --max-time 900 \
             -o "${SPARK_ARCHIVE}" "${SPARK_URL}"
+
+      - name: Verify Spark archive
+        shell: bash
+        run: |
+          set -euxo pipefail
           echo "${SPARK_SHA512}  ${SPARK_ARCHIVE}" | sha512sum -c -
 
       - name: Upload Spark build asset
@@ -146,6 +159,8 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
 
       - name: Build and push Docker image (amd64)
@@ -158,6 +173,8 @@ jobs:
           push: true
           tags: ${{ steps.amd64-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
           cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64,mode=max
 
@@ -184,6 +201,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.amd64-geolab-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
 
       - name: Build TACC image (amd64 only)
@@ -197,6 +216,8 @@ jobs:
             mspass/mspass:tacc
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:tacc
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
 
   build-latest-arm64:
@@ -292,6 +313,8 @@ jobs:
           push: false
           tags: ${{ steps.arm64-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
 
       - name: Build and push Docker image (arm64)
@@ -304,6 +327,8 @@ jobs:
           push: true
           tags: ${{ steps.arm64-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
           cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64,mode=max
 
@@ -330,6 +355,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.arm64-geolab-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
 
   publish-latest-manifest:
@@ -472,6 +499,8 @@ jobs:
           push: true
           tags: ${{ steps.amd64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: |
             type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
             type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-amd64
@@ -486,6 +515,8 @@ jobs:
           push: true
           tags: ${{ steps.amd64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: |
             type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
             type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-amd64
@@ -578,6 +609,8 @@ jobs:
           push: true
           tags: ${{ steps.arm64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: |
             type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
             type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-arm64
@@ -592,6 +625,8 @@ jobs:
           push: true
           tags: ${{ steps.arm64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: |
             type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
             type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-dev-arm64
@@ -752,6 +787,8 @@ jobs:
             mspass/mspass:mpi
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mpi
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-mpi-amd64
 
       - name: Build and push MPI image (amd64 only)
@@ -768,5 +805,7 @@ jobs:
             mspass/mspass:mpi
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:mpi
           labels: ${{ steps.meta.outputs.labels }}
+          build-contexts: |
+            spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-mpi-amd64
           cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-mpi-amd64,mode=max
