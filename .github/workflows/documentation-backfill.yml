@@ -97,6 +97,7 @@ jobs:
     - name: Prepare Documentation for GitHub Pages
       working-directory: source
       run: |
+        git fetch origin gh-pages:refs/remotes/origin/gh-pages --depth=1 || true
         python ../support/docs/scripts/prepare_versioned_docs.py \
           --html-dir docs/build/html \
           --site-dir docs/build/site \

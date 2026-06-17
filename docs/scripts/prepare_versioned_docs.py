@@ -5,9 +5,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
+
+
+VERSION_DIR_RE = re.compile(r"^v\d+(?:\.\d+)*(?:[A-Za-z0-9._+-]*)?$")
 
 
 def _copy_tree(source: Path, destination: Path) -> None:
@@ -16,14 +20,30 @@ def _copy_tree(source: Path, destination: Path) -> None:
     shutil.copytree(source, destination)
 
 
-def _git_tags() -> list[str]:
+def _version_sort_key(version: str) -> tuple[tuple[int, ...], str]:
+    numeric_parts = []
+    for part in version.lstrip("v").split("."):
+        match = re.match(r"(\d+)", part)
+        numeric_parts.append(int(match.group(1)) if match else 0)
+    return tuple(numeric_parts), version
+
+
+def _deployed_versions() -> list[str]:
+    """Return version directories that already exist on the GitHub Pages branch."""
     result = subprocess.run(
-        ["git", "tag", "--list", "v[0-9]*", "--sort=-v:refname"],
-        check=True,
+        ["git", "ls-tree", "-d", "--name-only", "origin/gh-pages"],
         capture_output=True,
         text=True,
     )
-    return [tag.strip() for tag in result.stdout.splitlines() if tag.strip()]
+    if result.returncode != 0:
+        return []
+
+    versions = {
+        name.strip()
+        for name in result.stdout.splitlines()
+        if VERSION_DIR_RE.match(name.strip())
+    }
+    return sorted(versions, key=_version_sort_key, reverse=True)
 
 
 def _with_trailing_slash(url: str) -> str:
@@ -32,9 +52,10 @@ def _with_trailing_slash(url: str) -> str:
 
 def _switcher_entries(site_url: str, current_version: str) -> list[dict[str, object]]:
     site_url = site_url.rstrip("/")
-    tags = _git_tags()
-    if current_version.startswith("v") and current_version not in tags:
-        tags.insert(0, current_version)
+    versions = sorted(set(_deployed_versions()), key=_version_sort_key, reverse=True)
+    if current_version.startswith("v") and current_version not in versions:
+        versions.append(current_version)
+        versions = sorted(set(versions), key=_version_sort_key, reverse=True)
 
     entries: list[dict[str, object]] = [
         {
@@ -43,7 +64,7 @@ def _switcher_entries(site_url: str, current_version: str) -> list[dict[str, obj
             "url": _with_trailing_slash(site_url),
         }
     ]
-    for index, tag in enumerate(tags):
+    for index, tag in enumerate(versions):
         entry: dict[str, object] = {
             "name": tag,
             "version": tag,

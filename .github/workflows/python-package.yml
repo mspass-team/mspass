@@ -95,6 +95,7 @@ jobs:
         MSPASS_DOCS_SITE_URL: https://www.mspass.org
         MSPASS_DOCS_VERSION_MATCH: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
       run: |
+        git fetch origin gh-pages:refs/remotes/origin/gh-pages --depth=1 || true
         python docs/scripts/prepare_versioned_docs.py \
           --html-dir docs/build/html \
           --site-dir docs/build/site \
