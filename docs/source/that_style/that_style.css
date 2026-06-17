@@ -491,6 +491,20 @@ table.doxtable th {
   white-space: normal;
 }
 
+@media (min-width: 721px) {
+  table.memberdecls .memItemLeft,
+  table.memberdecls .memTemplItemLeft {
+    overflow-wrap: normal;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  table.memberdecls .memItemRight,
+  table.memberdecls .memTemplItemRight {
+    width: 100%;
+  }
+}
+
 .fragment,
 pre.fragment,
 div.line,
@@ -512,6 +526,23 @@ code,
 pre.fragment,
 div.line {
   font: 400 0.92rem/1.5 "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+span.lineno {
+  background: var(--mspass-surface-strong);
+  border-right: 2px solid var(--mspass-border);
+  color: var(--mspass-muted);
+}
+
+span.lineno a {
+  background: transparent;
+  color: inherit;
+}
+
+span.lineno a:hover,
+span.lineno a:focus {
+  background: var(--mspass-surface);
+  color: var(--mspass-primary-strong);
 }
 
 code,
@@ -725,6 +756,23 @@ html[data-theme="dark"] input,
 html[data-theme="dark"] select,
 html[data-theme="dark"] textarea {
   background: var(--mspass-code) !important;
+}
+
+html[data-theme="dark"] span.lineno {
+  background: var(--mspass-surface-strong) !important;
+  border-right-color: var(--mspass-border) !important;
+  color: var(--mspass-muted) !important;
+}
+
+html[data-theme="dark"] span.lineno a {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+html[data-theme="dark"] span.lineno a:hover,
+html[data-theme="dark"] span.lineno a:focus {
+  background: var(--mspass-surface) !important;
+  color: var(--mspass-primary-strong) !important;
 }
 
 html[data-theme="dark"] div.dyncontent,

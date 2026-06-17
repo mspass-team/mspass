@@ -102,7 +102,11 @@ def _get_project_version():
     try:
         from setuptools_scm import get_version
 
-        scm_version = get_version(root=repo_root, fallback_version=fallback_version)
+        scm_version = get_version(
+            root=repo_root,
+            fallback_version=fallback_version,
+            local_scheme=_docs_local_scheme,
+        )
         if scm_version != fallback_version:
             return scm_version
     except Exception:
@@ -114,9 +118,23 @@ def _get_project_version():
         return fallback_version
 
 
+def _docs_local_scheme(scm_version):
+    """Keep the Git node in docs versions without adding dirty-date suffixes."""
+    node = getattr(scm_version, "node", None)
+    if node and (scm_version.distance or scm_version.dirty):
+        return f"+{node}"
+    return ""
+
+
 # The full version, including alpha/beta/rc tags
 release = _get_project_version()
 version = release.split("+", 1)[0]
+docs_version_match = os.environ.get("MSPASS_DOCS_VERSION_MATCH", "latest")
+docs_site_url = os.environ.get("MSPASS_DOCS_SITE_URL", "https://www.mspass.org")
+docs_switcher_json_url = os.environ.get(
+    "MSPASS_DOCS_SWITCHER_JSON_URL",
+    f"{docs_site_url.rstrip('/')}/switcher.json",
+)
 
 
 # -- General configuration ---------------------------------------------------
@@ -175,11 +193,17 @@ html_theme_options = {
     "navigation_depth": 4,
     "collapse_navigation": False,
     "navbar_align": "content",
+    "navbar_start": ["navbar-logo", "version-switcher"],
     "navbar_center": ["navbar-sections.html"],
     "navbar_persistent": ["search-button-field"],
     "search_bar_text": "Search MsPASS docs...",
     "primary_sidebar_end": [],
     "footer_end": [],
+    "switcher": {
+        "json_url": docs_switcher_json_url,
+        "version_match": docs_version_match,
+    },
+    "check_switcher": False,
 }
 
 html_sidebars = {
