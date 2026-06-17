@@ -491,6 +491,20 @@ table.doxtable th {
   white-space: normal;
 }
 
+@media (min-width: 721px) {
+  table.memberdecls .memItemLeft,
+  table.memberdecls .memTemplItemLeft {
+    overflow-wrap: normal;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  table.memberdecls .memItemRight,
+  table.memberdecls .memTemplItemRight {
+    width: 100%;
+  }
+}
+
 .fragment,
 pre.fragment,
 div.line,
