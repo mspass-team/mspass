@@ -114,9 +114,16 @@ def _get_project_version():
         return fallback_version
 
 
-# The full version, including alpha/beta/rc tags
-release = _get_project_version()
-version = release.split("+", 1)[0]
+def _public_docs_version(resolved_version):
+    """Return a stable public version string for rendered documentation."""
+    return resolved_version.split("+", 1)[0]
+
+
+# The rendered docs should show the public PEP 440 version.  The local
+# setuptools_scm suffix is useful for wheels, but it makes published docs noisy.
+_resolved_release = _get_project_version()
+release = _public_docs_version(_resolved_release)
+version = release
 
 
 # -- General configuration ---------------------------------------------------
