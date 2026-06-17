@@ -96,8 +96,20 @@ copyright = f"2020-{date.today().year}, MsPASS Team"
 author = "MsPASS Team"
 
 
+def _docs_release_override():
+    """Return an explicit docs release version, if the publishing workflow set one."""
+    release_override = os.environ.get("MSPASS_DOCS_RELEASE", "").strip()
+    if release_override.startswith("v"):
+        return release_override[1:]
+    return release_override
+
+
 def _get_project_version():
     """Resolve the docs version from the same Git metadata used for packaging."""
+    release_override = _docs_release_override()
+    if release_override:
+        return release_override
+
     fallback_version = "0+unknown"
     try:
         from setuptools_scm import get_version

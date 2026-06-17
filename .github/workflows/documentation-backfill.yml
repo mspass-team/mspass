@@ -21,6 +21,7 @@ jobs:
         case "$DOCS_REF" in
           v[0-9]*)
             echo "ref=$DOCS_REF" >> "$GITHUB_OUTPUT"
+            echo "release=${DOCS_REF#v}" >> "$GITHUB_OUTPUT"
             echo "version_match=$DOCS_REF" >> "$GITHUB_OUTPUT"
             ;;
           *)
@@ -88,6 +89,7 @@ jobs:
       working-directory: source/docs
       env:
         MSPASS_DOCS_SITE_URL: https://www.mspass.org
+        MSPASS_DOCS_RELEASE: ${{ steps.docs-ref.outputs.release }}
         MSPASS_DOCS_VERSION_MATCH: ${{ steps.docs-ref.outputs.version_match }}
         MSPASS_HOME: ${{ github.workspace }}/source
         MPLCONFIGDIR: /tmp/mspass-matplotlib
