@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classmspass_1_1algorithms_1_1_vector_taper" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::VectorTaper</compoundname>
+    <basecompoundref refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public" virt="non-virtual">mspass::algorithms::BasicTaper</basecompoundref>
+    <includes refid="_taper_8h" local="no">Taper.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_vector_taper_1ab5697654ab4cf98d3163f857626ed458" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::VectorTaper::taper</definition>
+        <argsstring></argsstring>
+        <name>taper</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::taper</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="213" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="213" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classmspass_1_1algorithms_1_1_vector_taper_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class boost::serialization::access</definition>
+        <argsstring></argsstring>
+        <name>boost::serialization::access</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::access</qualifiedname>
+        <param>
+          <type>boost::serialization::access</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="214" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="214" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1abeddf364803709f1ba8c5ac6df4e3fe0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::VectorTaper::VectorTaper</definition>
+        <argsstring>()</argsstring>
+        <name>VectorTaper</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::VectorTaper</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="185" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="324" bodyend="328"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1ab1eed64ca482959a7b370bee80edb33b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::VectorTaper::VectorTaper</definition>
+        <argsstring>(const std::vector&lt; double &gt; taperdata)</argsstring>
+        <name>VectorTaper</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::VectorTaper</qualifiedname>
+        <param>
+          <type>const std::vector&lt; double &gt;</type>
+          <declname>taperdata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct from a vector of taper weights. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="187" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="329" bodyend="336"/>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" compoundref="_taper_8h" startline="79">mspass::algorithms::BasicTaper::all</references>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" compoundref="_taper_8h" startline="77">mspass::algorithms::BasicTaper::head</references>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" compoundref="_taper_8h" startline="78">mspass::algorithms::BasicTaper::tail</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1a0513879267986e1c1c52e35b3519687b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::VectorTaper::apply</definition>
+        <argsstring>(mspass::seismic::TimeSeries &amp;d)</argsstring>
+        <name>apply</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::apply</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1ab4399e7277aec39a56b017d156838d8b">apply</reimplements>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Apply the vector taper to a scalar TimeSeries. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="189" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="337" bodyend="353"/>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" compoundref="_taper_8h" startline="79">mspass::algorithms::BasicTaper::all</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1a3f0bc37e59814ec60992825f145c0103" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::VectorTaper::apply</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d)</argsstring>
+        <name>apply</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::apply</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1af7be5cccae05c468002776a4fceaf77a">apply</reimplements>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Apply the vector taper to a three-component Seismogram. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="191" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="354" bodyend="374"/>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" compoundref="_taper_8h" startline="79">mspass::algorithms::BasicTaper::all</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">mspass::seismic::CoreSeismogram::u</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1aee8397b62578221b5165497286941863" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::VectorTaper::disable</definition>
+        <argsstring>()</argsstring>
+        <name>disable</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::disable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Disable this vector taper. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="193" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="193" bodyend="193"/>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" compoundref="_taper_8h" startline="79">mspass::algorithms::BasicTaper::all</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1a942c9e116af34bf2e55a69f4fccc3f85" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::VectorTaper::enable</definition>
+        <argsstring>()</argsstring>
+        <name>enable</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::enable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Enable this vector taper when weights are available. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="195" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="195" bodyend="198"/>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" compoundref="_taper_8h" startline="79">mspass::algorithms::BasicTaper::all</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1a475440fb90c185abd98cde4f70009c7c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt; double &gt; mspass::algorithms::VectorTaper::get_taper</definition>
+        <argsstring>()</argsstring>
+        <name>get_taper</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::get_taper</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return a copy of the taper weights. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="200" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="200" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1af4d087c6e3af62c4279e73a843144176" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::VectorTaper::get_t0head</definition>
+        <argsstring>() const</argsstring>
+        <name>get_t0head</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::get_t0head</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1a55c51763d7c820c6a4595127768e8d5f">get_t0head</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Vector tapers do not define a head start time. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="202" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="202" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1a3e34ba1539ae7b1567bbe0bbb7a8ec10" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::VectorTaper::get_t1head</definition>
+        <argsstring>() const</argsstring>
+        <name>get_t1head</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::get_t1head</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1ade8769ae7f4508ff3eb71afe057035ac">get_t1head</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Vector tapers do not define a head end time. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="207" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="207" bodyend="210"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_vector_taper_1ae2ae798f319a4f24cc8666d7149c15e1" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void mspass::algorithms::VectorTaper::serialize</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>mspass::algorithms::VectorTaper::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="216" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="216" bodyend="219"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>General taper.</para>
+<para>This method provides a simple way to build a taper from a set of uniformly spaced points. The apply methods will dogmatically only accept input data of the same length as the taper defined in the operator. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>mspass::algorithms::BasicTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_basic_taper"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::VectorTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_vector_taper"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>mspass::algorithms::BasicTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_basic_taper"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::VectorTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_vector_taper"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="183" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="183" bodyend="220"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" prot="protected" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>all</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a0513879267986e1c1c52e35b3519687b" prot="public" virt="virtual"><scope>mspass::algorithms::VectorTaper</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a3f0bc37e59814ec60992825f145c0103" prot="public" virt="virtual"><scope>mspass::algorithms::VectorTaper</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4227e073cf362b77e163faea881bb84" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>BasicTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>boost::serialization::access</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1aee8397b62578221b5165497286941863" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>disable</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4cc68faa949932e653804bfc5db42ce" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>disable_head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1aade23966f66e7d1b741e6e8ee2dbde90" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>disable_tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a942c9e116af34bf2e55a69f4fccc3f85" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>enable</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1aafe6a155d954150e1105bbf9b9bd66" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>enable_head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a04b2cdddaa30789f37be9c6346a3689b" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>enable_tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1af4d087c6e3af62c4279e73a843144176" prot="public" virt="virtual"><scope>mspass::algorithms::VectorTaper</scope><name>get_t0head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a3e34ba1539ae7b1567bbe0bbb7a8ec10" prot="public" virt="virtual"><scope>mspass::algorithms::VectorTaper</scope><name>get_t1head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a475440fb90c185abd98cde4f70009c7c" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>get_taper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" prot="protected" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a16b1f6b4866b298466e1fd388597d507" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>head_is_enabled</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ae2ae798f319a4f24cc8666d7149c15e1" prot="private" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>serialize</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" prot="protected" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a02092ec778f1e289956bbfde3eff7bcd" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>tail_is_enable</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ab5697654ab4cf98d3163f857626ed458" prot="private" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>taper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1abeddf364803709f1ba8c5ac6df4e3fe0" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>VectorTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ab1eed64ca482959a7b370bee80edb33b" prot="public" virt="non-virtual"><scope>mspass::algorithms::VectorTaper</scope><name>VectorTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac68777236f5c051c487a18ff652420ba" prot="public" virt="virtual"><scope>mspass::algorithms::VectorTaper</scope><name>~BasicTaper</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
