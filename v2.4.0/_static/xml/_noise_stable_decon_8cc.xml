@@ -1,0 +1,893 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="_noise_stable_decon_8cc" kind="file" language="C++">
+    <compoundname>NoiseStableDecon.cc</compoundname>
+    <includes refid="_noise_stable_decon_8h" local="yes">mspass/algorithms/deconvolution/NoiseStableDecon.h</includes>
+    <includes refid="amplitudes_8h" local="yes">mspass/algorithms/amplitudes.h</includes>
+    <includes refid="_g_i_d_decon_util_8h" local="yes">mspass/algorithms/deconvolution/GIDDeconUtil.h</includes>
+    <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
+    <includes local="no">algorithm</includes>
+    <includes local="no">cmath</includes>
+    <incdepgraph>
+      <node id="4">
+        <label>mspass/algorithms/TimeWindow.h</label>
+        <link refid="_time_window_8h_source"/>
+      </node>
+      <node id="42">
+        <label>mspass/algorithms/algorithms.h</label>
+        <link refid="algorithms_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>mspass/algorithms/amplitudes.h</label>
+        <link refid="amplitudes_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>mspass/algorithms/deconvolution/BasicDeconOperator.h</label>
+        <link refid="_basic_decon_operator_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>mspass/algorithms/deconvolution/ComplexArray.h</label>
+        <link refid="_complex_array_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>mspass/algorithms/deconvolution/FFTDeconOperator.h</label>
+        <link refid="_f_f_t_decon_operator_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="64">
+        <label>mspass/algorithms/deconvolution/GIDDeconUtil.h</label>
+        <link refid="_g_i_d_decon_util_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass/algorithms/deconvolution/NoiseStableDecon.h</label>
+        <link refid="_noise_stable_decon_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>mspass/algorithms/deconvolution/ScalarDecon.h</label>
+        <link refid="_scalar_decon_8h_source"/>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>mspass/algorithms/deconvolution/ShapingWavelet.h</label>
+        <link refid="_shaping_wavelet_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="65">
+        <label>mspass/algorithms/deconvolution/ThreeCSpike.h</label>
+        <link refid="_three_c_spike_8h_source"/>
+        <childnode refid="48" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>mspass/seismic/BasicSpectrum.h</label>
+        <link refid="_basic_spectrum_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>mspass/seismic/BasicTimeSeries.h</label>
+        <link refid="_basic_time_series_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>mspass/seismic/CoreSeismogram.h</label>
+        <link refid="_core_seismogram_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="61">
+        <label>mspass/seismic/DataGap.h</label>
+        <link refid="_data_gap_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>mspass/seismic/Ensemble.h</label>
+        <link refid="_ensemble_8h_source"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>mspass/seismic/PowerSpectrum.h</label>
+        <link refid="_power_spectrum_8h_source"/>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>mspass/seismic/Seismogram.h</label>
+        <link refid="_seismogram_8h_source"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>mspass/seismic/SlownessVector.h</label>
+        <link refid="_slowness_vector_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="58">
+        <label>mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="60">
+        <label>mspass/seismic/TimeSeriesWGaps.h</label>
+        <link refid="_time_series_w_gaps_8h_source"/>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+      </node>
+      <node id="66">
+        <label>mspass/utility/AntelopePf.h</label>
+        <link refid="_antelope_pf_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>mspass/utility/ProcessingHistory.h</label>
+        <link refid="_processing_history_8h_source"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>mspass/utility/SphericalCoordinate.h</label>
+        <link refid="_spherical_coordinate_8h_source"/>
+      </node>
+      <node id="62">
+        <label>mspass/utility/VectorStatistics.h</label>
+        <link refid="_vector_statistics_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="48">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="59">
+        <label>mspass/utility/memory_constants.h</label>
+        <link refid="memory__constants_8h_source"/>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/source/cxx/src/lib/algorithms/deconvolution/NoiseStableDecon.cc</label>
+        <link refid="_noise_stable_decon_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="67" relation="include">
+        </childnode>
+      </node>
+      <node id="63">
+        <label>algorithm</label>
+      </node>
+      <node id="22">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="33">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="49">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="50">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="6">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="7">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="53">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="8">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="54">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="55">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="56">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="57">
+        <label>boost/uuid/uuid_serialize.hpp</label>
+      </node>
+      <node id="67">
+        <label>cmath</label>
+      </node>
+      <node id="9">
+        <label>complex</label>
+      </node>
+      <node id="21">
+        <label>exception</label>
+      </node>
+      <node id="23">
+        <label>fstream</label>
+      </node>
+      <node id="10">
+        <label>gsl/gsl_errno.h</label>
+      </node>
+      <node id="11">
+        <label>gsl/gsl_fft_complex.h</label>
+      </node>
+      <node id="12">
+        <label>iostream</label>
+      </node>
+      <node id="24">
+        <label>list</label>
+      </node>
+      <node id="25">
+        <label>map</label>
+      </node>
+      <node id="16">
+        <label>math.h</label>
+      </node>
+      <node id="51">
+        <label>memory</label>
+      </node>
+      <node id="26">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="27">
+        <label>set</label>
+      </node>
+      <node id="28">
+        <label>sstream</label>
+      </node>
+      <node id="19">
+        <label>string</label>
+      </node>
+      <node id="29">
+        <label>typeinfo</label>
+      </node>
+      <node id="36">
+        <label>unistd.h</label>
+      </node>
+      <node id="13">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
+    <innernamespace refid="namespacemspass_1_1algorithms">mspass::algorithms</innernamespace>
+    <innernamespace refid="namespacemspass_1_1algorithms_1_1deconvolution">mspass::algorithms::deconvolution</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/NoiseStableDecon.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/amplitudes.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/GIDDeconUtil.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/MsPASSError.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;algorithm&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cmath&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms::deconvolution<sp/>{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>;</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">mspass::algorithms::amplitudes::normalize;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>get_double_default(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;md,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>&amp;key,</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>default_value)<sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(md.<ref refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" kindref="member">is_defined</ref>(key))</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>GetDoubleRequired(md,<sp/>key);</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>default_value;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>get_bool_default(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;md,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>&amp;key,</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>default_value)<sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(md.<ref refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" kindref="member">is_defined</ref>(key))</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>GetBoolDefault(md,<sp/>key,<sp/>default_value);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>default_value;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>folded_frequency(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nfft,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt)<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>kfold<sp/>=<sp/>min(k,<sp/>nfft<sp/>-<sp/>k);</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(kfold)<sp/>/<sp/>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(nfft)<sp/>*<sp/>dt);</highlight></codeline>
+<codeline lineno="30"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="31"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal">NoiseStableDecon::NoiseStableDecon()</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" kindref="compound">FFTDeconOperator</ref>(),<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" kindref="compound">ScalarDecon</ref>(),<sp/>mu_min(3.0e-3),<sp/>alpha(1.0),</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>noise_floor(1.0e-12),<sp/>gain_max(1.0e3),<sp/>snr_taper_low(1.0),</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>snr_taper_high(3.0),<sp/>use_reliability_taper(false),</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>noise_vector_loaded(false),<sp/>noise_spectrum_loaded(false),</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>processed(false),<sp/>max_gain_actual(0.0),<sp/>noise_amplification(0.0),</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>effective_bandwidth_fraction(0.0)<sp/>{}</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a80029630f63c0a32eeb65d2fe5c1be43" refkind="member"><highlight class="normal">NoiseStableDecon::NoiseStableDecon(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;md)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" kindref="compound">FFTDeconOperator</ref>(md),<sp/>noise_vector_loaded(false),</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>noise_spectrum_loaded(false),<sp/>processed(false)<sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>this-&gt;read_metadata(md);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1aab9b7bd176ac3cbd716a12540d41661d" refkind="member"><highlight class="normal">NoiseStableDecon::NoiseStableDecon(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;md,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>&amp;wavelet,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>&amp;data)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" kindref="compound">FFTDeconOperator</ref>(md),<sp/>noise_vector_loaded(false),</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>noise_spectrum_loaded(false),<sp/>processed(false)<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>this-&gt;read_metadata(md);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>this-&gt;wavelet<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" kindref="member">wavelet</ref>;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>this-&gt;data<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" kindref="member">data</ref>;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>NoiseStableDecon::read_metadata(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;md)<sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>base_error(</highlight><highlight class="stringliteral">&quot;NoiseStableDecon::read_metadata:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nfft_from_win<sp/>=<sp/>ComputeFFTLength(md);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>new_sample_shift<sp/>=<sp/>ComputeDeconSampleShift(md);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(new_sample_shift<sp/>&lt;<sp/>0<sp/>||<sp/>new_sample_shift<sp/>&gt;<sp/>nfft_from_win)</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;computed<sp/>sample_shift<sp/>is<sp/>outside<sp/>fft<sp/>buffer&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Fatal);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(nfft_from_win<sp/>!=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>)</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aeaceb977e9797e483bf3a8ba030743c6" kindref="member">change_size</ref>(nfft_from_win);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a7034bf16dcf7ea16563a7032ce19b08e" kindref="member">sample_shift</ref><sp/>=<sp/>new_sample_shift;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>mu_min<sp/>=<sp/>get_double_default(md,<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_mu_min&quot;</highlight><highlight class="normal">,<sp/>3.0e-3);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>alpha<sp/>=<sp/>get_double_default(md,<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_alpha&quot;</highlight><highlight class="normal">,<sp/>1.0);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>noise_floor<sp/>=<sp/>get_double_default(md,<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_noise_floor&quot;</highlight><highlight class="normal">,<sp/>1.0e-12);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/>gain_max<sp/>=<sp/>get_double_default(md,<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_gain_max&quot;</highlight><highlight class="normal">,<sp/>1.0e3);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>snr_taper_low<sp/>=<sp/>get_double_default(md,<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_snr_taper_low&quot;</highlight><highlight class="normal">,<sp/>1.0);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>snr_taper_high<sp/>=<sp/>get_double_default(md,<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_snr_taper_high&quot;</highlight><highlight class="normal">,<sp/>3.0);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>use_reliability_taper<sp/>=</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>get_bool_default(md,<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_use_reliability_taper&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(mu_min<sp/>&lt;=<sp/>0.0)</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_mu_min<sp/>must<sp/>be<sp/>positive&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Fatal);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(alpha<sp/>&lt;<sp/>0.0)</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_alpha<sp/>cannot<sp/>be<sp/>negative&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Fatal);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(noise_floor<sp/>&lt;=<sp/>0.0)</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_noise_floor<sp/>must<sp/>be<sp/>positive&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Fatal);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(gain_max<sp/>&lt;=<sp/>0.0)</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;ns_gid_gain_max<sp/>must<sp/>be<sp/>positive&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Fatal);</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(snr_taper_high<sp/>&lt;=<sp/>snr_taper_low)</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;ns_gid_snr_taper_high<sp/>must<sp/>exceed<sp/>taper_low&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Fatal);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" kindref="member">shapingwavelet</ref><sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref>(md,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>max_gain_actual<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/>noise_amplification<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/>effective_bandwidth_fraction<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1ae578cc62d08ce8c629999db6cccf4d76" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1ae578cc62d08ce8c629999db6cccf4d76" kindref="member">NoiseStableDecon::changeparameter</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;md)<sp/>{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>this-&gt;read_metadata(md);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.clear();</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref><sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref>();</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/>processed<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1af064696ae3aa3a335d3a6a3aefca19b0" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1af064696ae3aa3a335d3a6a3aefca19b0" kindref="member">NoiseStableDecon::loadnoise</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>&amp;noise)<sp/>{</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(noise.empty())</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="stringliteral">&quot;NoiseStableDecon::loadnoise:<sp/>noise<sp/>vector<sp/>cannot<sp/>be<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;empty&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>this-&gt;noise<sp/>=<sp/>noise;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>noise_vector_loaded<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/>noise_spectrum_loaded<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.clear();</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref><sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref>();</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/>processed<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a3d2f18b2abf8dade9da4f6fd6a0a9eaa" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1af064696ae3aa3a335d3a6a3aefca19b0" kindref="member">NoiseStableDecon::loadnoise</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/>&amp;noise_in)<sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1af064696ae3aa3a335d3a6a3aefca19b0" kindref="member">loadnoise</ref>(noise_in.<ref refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" kindref="member">s</ref>);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1aa6f4c1471d7be56a2065e596db085448" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1af064696ae3aa3a335d3a6a3aefca19b0" kindref="member">NoiseStableDecon::loadnoise</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref><sp/>&amp;noise_spectrum_in)<sp/>{</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>ValidatePowerSpectrumCoversDC(noise_spectrum_in,</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;NoiseStableDecon::loadnoise&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/>noise_spectrum<sp/>=<sp/>noise_spectrum_in;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/>noise_spectrum_loaded<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/>noise_vector_loaded<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.clear();</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref><sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref>();</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/>processed<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>NoiseStableDecon::reliability_taper(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>snr)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!use_reliability_taper)</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1.0;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(snr<sp/>&lt;=<sp/>snr_taper_low)</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(snr<sp/>&gt;=<sp/>snr_taper_high)</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1.0;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x<sp/>=<sp/>(snr<sp/>-<sp/>snr_taper_low)<sp/>/<sp/>(snr_taper_high<sp/>-<sp/>snr_taper_low);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>x<sp/>*<sp/>x<sp/>*<sp/>(3.0<sp/>-<sp/>2.0<sp/>*<sp/>x);</highlight></codeline>
+<codeline lineno="143"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal">vector&lt;double&gt;<sp/>NoiseStableDecon::noise_power_spectrum(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt)<sp/>{</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>pn(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>0.0);</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(noise_spectrum_loaded)<sp/>{</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>;<sp/>++k)<sp/>{</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f<sp/>=<sp/>folded_frequency(k,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>dt);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>pn[k]<sp/>=<sp/>max(0.0,<sp/>noise_spectrum.<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1a3d1e72618b8e88c5929839c5e8885859" kindref="member">power</ref>(f));</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(noise_vector_loaded<sp/>&amp;&amp;<sp/>!noise.empty())<sp/>{</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/>vector&lt;double&gt;<sp/>noise_padded(noise);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(noise_padded.size()<sp/>&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>)</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>noise_padded.resize(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(noise_padded.size()<sp/>&lt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>)</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>noise_padded.resize(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>0.0);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>n_fft(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>&amp;(noise_padded[0]));</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/>gsl_fft_complex_forward(n_fft.ptr(),<sp/>1,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" kindref="member">wavetable</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" kindref="member">workspace</ref>);</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>;<sp/>++k)<sp/>{</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Complex64<sp/>z<sp/>=<sp/>n_fft[k];</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>pn[k]<sp/>=<sp/>norm(z);</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pn;</highlight></codeline>
+<codeline lineno="166"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a19db2fe4c7ff43c30049877b30769aaf" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a19db2fe4c7ff43c30049877b30769aaf" kindref="member">NoiseStableDecon::process</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>base_error(</highlight><highlight class="stringliteral">&quot;NoiseStableDecon::process:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.clear();</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref><sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref>();</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/>processed<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>output_length<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" kindref="member">data</ref>.size();</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(output_length<sp/>&lt;=<sp/>0)</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;no<sp/>data<sp/>loaded&quot;</highlight><highlight class="normal">,<sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" kindref="member">wavelet</ref>.empty())</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;no<sp/>wavelet<sp/>loaded&quot;</highlight><highlight class="normal">,<sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(output_length<sp/>&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref><sp/>||<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" kindref="member">wavelet</ref>.size()<sp/>&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>)</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;loaded<sp/>vectors<sp/>exceed<sp/>padded<sp/>FFT<sp/>length&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>data_padded(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" kindref="member">data</ref>);</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/>data_padded.resize(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>0.0);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>d_fft(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>&amp;(data_padded[0]));</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/>gsl_fft_complex_forward(d_fft.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" kindref="member">ptr</ref>(),<sp/>1,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" kindref="member">wavetable</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" kindref="member">workspace</ref>);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>wavelet_padded(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" kindref="member">wavelet</ref>);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/>wavelet_padded.resize(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>0.0);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>s_fft(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>&amp;(wavelet_padded[0]));</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/>gsl_fft_complex_forward(s_fft.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" kindref="member">ptr</ref>(),<sp/>1,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" kindref="member">wavetable</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" kindref="member">workspace</ref>);</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(s_fft.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a3e956e714feaea6763204e3517421b9f" kindref="member">rms</ref>()<sp/>&lt;=<sp/>0.0)</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;wavelet<sp/>vector<sp/>is<sp/>all<sp/>zeros&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" kindref="member">shapingwavelet</ref>.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1adf4577a4442559e6aaad9056258c2915" kindref="member">sample_interval</ref>();</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>pn<sp/>=<sp/>this-&gt;noise_power_spectrum(dt);</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref><sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref>(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/>max_gain_actual<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/>noise_amplification<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>spectral_power_peak<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>;<sp/>++k)</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/>spectral_power_peak<sp/>=<sp/>max(spectral_power_peak,<sp/>norm(s_fft[k]));</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>mu_floor<sp/>=<sp/>mu_min<sp/>*<sp/>spectral_power_peak;</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>usable_bins<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>;<sp/>++k)<sp/>{</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/>Complex64<sp/>s<sp/>=<sp/>s_fft[k];</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>absS2<sp/>=<sp/>norm(s);</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>absS<sp/>=<sp/>sqrt(absS2);</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>snr<sp/>=<sp/>absS2<sp/>/<sp/>(pn[k]<sp/>+<sp/>noise_floor);</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>mu_noise<sp/>=<sp/>alpha<sp/>*<sp/>absS2<sp/>/<sp/>(snr<sp/>+<sp/>1.0e-12);</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>mu_gain<sp/>=<sp/>max(0.0,<sp/>absS<sp/>/<sp/>gain_max<sp/>-<sp/>absS2);</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>mu<sp/>=<sp/>max({mu_floor,<sp/>mu_noise,<sp/>mu_gain});</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>b<sp/>=<sp/>this-&gt;reliability_taper(snr);</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/>Complex64<sp/>g(0.0,<sp/>0.0);</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((absS2<sp/>+<sp/>mu)<sp/>&gt;<sp/>0.0)</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>g<sp/>=<sp/>b<sp/>*<sp/>conj(s)<sp/>/<sp/>(absS2<sp/>+<sp/>mu);</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>gain<sp/>=<sp/>abs(g);</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(gain<sp/>&gt;<sp/>gain_max)<sp/>{</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>g<sp/>*=<sp/>gain_max<sp/>/<sp/>gain;</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>gain<sp/>=<sp/>gain_max;</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*ptr<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref>.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" kindref="member">ptr</ref>(k);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/>ptr[0]<sp/>=<sp/>g.real();</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/>ptr[1]<sp/>=<sp/>g.imag();</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/>max_gain_actual<sp/>=<sp/>max(max_gain_actual,<sp/>gain);</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/>noise_amplification<sp/>+=<sp/>gain<sp/>*<sp/>gain<sp/>*<sp/>pn[k];</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(b<sp/>&gt;<sp/>0.0<sp/>&amp;&amp;<sp/>gain<sp/>&gt;<sp/>0.0)</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++usable_bins;</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/>noise_amplification<sp/>=<sp/>sqrt(noise_amplification<sp/>/<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>));</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/>effective_bandwidth_fraction<sp/>=</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(usable_bins)<sp/>/<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>rf_fft<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref><sp/>*<sp/>d_fft;</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/>gsl_fft_complex_inverse(rf_fft.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" kindref="member">ptr</ref>(),<sp/>1,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" kindref="member">wavetable</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" kindref="member">workspace</ref>);</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref><sp/>=<sp/>ExtractLagWindow(rf_fft,<sp/>output_length,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a7034bf16dcf7ea16563a7032ce19b08e" kindref="member">sample_shift</ref>);</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/>processed<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="238"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"></highlight></codeline>
+<codeline lineno="240" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1ab028c2f6bc4a326174e2806645d50d4d" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1ab028c2f6bc4a326174e2806645d50d4d" kindref="member">NoiseStableDecon::actual_output</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!processed<sp/>||<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref>.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a4fb1f0df8241bf1aa07ad3012464250f" kindref="member">size</ref>()<sp/>&lt;=<sp/>0)</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;NoiseStableDecon::actual_output:<sp/>process<sp/>must<sp/>be<sp/>called<sp/>first&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>wavelet_padded(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" kindref="member">wavelet</ref>);</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(wavelet_padded.size()<sp/>&lt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>)</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/>wavelet_padded.resize(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>0.0);</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>W(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/>&amp;(wavelet_padded[0]));</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/>gsl_fft_complex_forward(W.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" kindref="member">ptr</ref>(),<sp/>1,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" kindref="member">wavetable</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" kindref="member">workspace</ref>);</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>ao_fft<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref><sp/>*<sp/>W;</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/>gsl_fft_complex_inverse(ao_fft.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" kindref="member">ptr</ref>(),<sp/>1,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" kindref="member">wavetable</ref>,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" kindref="member">workspace</ref>);</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/>vector&lt;double&gt;<sp/>ao;</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/>ao.reserve(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/>ao_fft.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a4fb1f0df8241bf1aa07ad3012464250f" kindref="member">size</ref>();<sp/>++k)</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/>ao.push_back(ao_fft[k].real());</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i0<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref><sp/>/<sp/>2;</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/>ao<sp/>=<sp/>circular_shift(ao,<sp/>i0);</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" kindref="member">shapingwavelet</ref>.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1adf4577a4442559e6aaad9056258c2915" kindref="member">sample_interval</ref>();</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.set_t0(-dt<sp/>*<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(i0));</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.set_dt(dt);</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.set_live();</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.set_npts(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.set_tref(TimeReferenceType::Relative);</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>;<sp/>++k)</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.s[k]<sp/>=<sp/>ao[k];</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.s<sp/>=<sp/>normalize&lt;double&gt;(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>.s);</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" kindref="member">result</ref>;</highlight></codeline>
+<codeline lineno="269"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"></highlight></codeline>
+<codeline lineno="271" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a865a66895ee2c898a4a6514ab1afa7d5" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1aa79682eec94211b4610ae8219a7e0495" kindref="member">NoiseStableDecon::inverse_wavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0parent)<sp/>{</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!processed<sp/>||<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref>.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a4fb1f0df8241bf1aa07ad3012464250f" kindref="member">size</ref>()<sp/>&lt;=<sp/>0)</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;NoiseStableDecon::inverse_wavelet:<sp/>process<sp/>must<sp/>be<sp/>called<sp/>first&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt<sp/>=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" kindref="member">shapingwavelet</ref>.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1adf4577a4442559e6aaad9056258c2915" kindref="member">sample_interval</ref>();</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>no_shaping(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>;<sp/>++k)<sp/>{</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*ptr<sp/>=<sp/>no_shaping.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" kindref="member">ptr</ref>(k);</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/>ptr[0]<sp/>=<sp/>1.0;</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/>ptr[1]<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3473dc7f359332dbf5a685efe30a684b" kindref="member">FourierInverse</ref>(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" kindref="member">winv</ref>,<sp/>no_shaping,<sp/>dt,<sp/>t0parent);</highlight></codeline>
+<codeline lineno="284"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"></highlight></codeline>
+<codeline lineno="286" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1aa79682eec94211b4610ae8219a7e0495" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1aa79682eec94211b4610ae8219a7e0495" kindref="member">NoiseStableDecon::inverse_wavelet</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1aa79682eec94211b4610ae8219a7e0495" kindref="member">inverse_wavelet</ref>(0.0);</highlight></codeline>
+<codeline lineno="288"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"></highlight></codeline>
+<codeline lineno="290" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a026a23ca70213ae84f7a189b3e18985a" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a026a23ca70213ae84f7a189b3e18985a" kindref="member">NoiseStableDecon::QCMetrics</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>md(this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a83e9fd9e0f13b1a0a650fdb0bb805543" kindref="member">BasicQCMetrics</ref>(</highlight><highlight class="stringliteral">&quot;NoiseStableDecon&quot;</highlight><highlight class="normal">,<sp/>processed));</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;decon_operator_nfft&quot;</highlight><highlight class="normal">,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;decon_operator_sample_shift&quot;</highlight><highlight class="normal">,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a7034bf16dcf7ea16563a7032ce19b08e" kindref="member">sample_shift</ref>);</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;ns_gid_gain_max_requested&quot;</highlight><highlight class="normal">,<sp/>gain_max);</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;ns_gid_gain_max_actual&quot;</highlight><highlight class="normal">,<sp/>max_gain_actual);</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;ns_gid_mu_min&quot;</highlight><highlight class="normal">,<sp/>mu_min);</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;ns_gid_alpha&quot;</highlight><highlight class="normal">,<sp/>alpha);</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;ns_gid_noise_amplification&quot;</highlight><highlight class="normal">,<sp/>noise_amplification);</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;ns_gid_effective_bandwidth_fraction&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>effective_bandwidth_fraction);</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;ns_gid_operator_nfft&quot;</highlight><highlight class="normal">,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" kindref="member">nfft</ref>);</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/>md.<ref refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" kindref="member">put</ref>(</highlight><highlight class="stringliteral">&quot;ns_gid_use_reliability_taper&quot;</highlight><highlight class="normal">,<sp/>use_reliability_taper);</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md;</highlight></codeline>
+<codeline lineno="304"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="305"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/mspass/mspass/source/cxx/src/lib/algorithms/deconvolution/NoiseStableDecon.cc"/>
+  </compounddef>
+</doxygen>

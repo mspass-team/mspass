@@ -1,0 +1,764 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Signal to Noise Ratio Estimation &#8212; MsPASS 2.4.1.dev0+g518a12e5 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=d8d6f5fb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/signal_to_noise';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Arrival Time Measurement Techniques in MsPASS" href="arrival_time_measurement.html" />
+    <link rel="prev" title="Graphics in MsPASS" href="graphics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Signal to Noise Ratio Estimation</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="signal-to-noise-ratio-estimation">
+<span id="signal-to-noise"></span><h1>Signal to Noise Ratio Estimation<a class="headerlink" href="#signal-to-noise-ratio-estimation" title="Link to this heading">#</a></h1>
+<section id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">#</a></h2>
+<p>When analyzing passive array data most seismology analysis focuses
+on “transient signals” that are the wiggly lines that are the core
+data of seismology.   One of the most basic quantitative measures of
+“goodness” of a particular signal is what is universally called
+signal-to-noise ratio.  Robust estimates of signal-to-noise ratio are
+an essential component of any workflow that doesn’t resort to brute
+force interactive trace editing by a human.  A fundamental problem we
+recognized in building this component of MsPASS is that there is no
+standard definition of how to measure signal-to-noise ratio.   The reason is
+that not all metrics perform equally on all signals.  For that reason we
+decided it was necessary to supply a range of options for signal-to-noise
+estimation to allow anyone to develop a “robust” set of automated
+criteria for data editing.</p>
+<p>It is useful to first give a generic definition of signal-to-noise
+ratio.  Sections below describe specific metrics based on the following
+generic formula:</p>
+<div class="math notranslate nohighlight">
+\[snr = \frac{signal\_metric}{noise\_metric}\]</div>
+<p>i.e. we divide some measures of the signal amplitude by some measure of
+noise amplitude.  There are complexities in defining what “the signal”
+and “noise” mean and what measure is used for each.  We can address the
+first in a common way for all MsPASS implementations.  Choices for the
+second are discussed below.</p>
+<p>All MsPASS algorithms are driven by definitions of the time windows that
+define the part of an input datum is signal and noise.   All current
+implementations are driven by a simple data object we call a <cite>TimeWindow</cite>.
+You can read the docstring but everything useful about this object
+can be gleaned from running this code fragment in the mspass container:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeWindow</span>
+<span class="n">win</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span><span class="mf">20.0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time window range:  &quot;</span><span class="p">,</span><span class="n">win</span><span class="o">.</span><span class="n">start</span><span class="p">,</span><span class="s2">&quot;&lt;=t&lt;=&quot;</span><span class="p">,</span><span class="n">win</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The time window here would be appropriate if the datum it used for
+had been converted to “relative time”.   The example could be appropriate
+to define a signal window if the data had been converted to “relative time”
+(see section <a class="reference internal" href="time_standard_constraints.html#time-standard-constraints"><span class="std std-ref">Time Standard Constraints</span></a>)
+with zero defined as a measured or predicted phase arrival time.</p>
+<p>All algorithms to estimate <em>snr</em> require a <cite>TimeWindow</cite> defining what section of
+data should be used for computing some metric for signal and noise to
+compute the ratio.  The metric applied to each window may or may not always
+be the same.</p>
+</section>
+<section id="time-window-amplitude-metrics">
+<h2>Time Window Amplitude Metrics<a class="headerlink" href="#time-window-amplitude-metrics" title="Link to this heading">#</a></h2>
+<p>The most common measure of amplitude is the root mean square error
+that is a scaled version of the L2 vector norm:</p>
+<div class="math notranslate nohighlight">
+\[| \bf{x} \|_{rms} = \sqrt{\frac{\sum\limits_{i=n_s}^{n_e} x_i^2 }{n_e - n_s -1}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(n_s\)</span> is the data index for the start time of a time window and
+<span class="math notranslate nohighlight">\(n_e\)</span> is the index of the end time.  In the snr docstrings this metric
+is given the tag <cite>rms</cite>.</p>
+<p>The traditional metric for most earthquake magnitude formulas is
+peak amplitude. In linear algebra language peak amplitude in a time
+window is called the <span class="math notranslate nohighlight">\(L_\infty\)</span> norm defined as:</p>
+<div class="math notranslate nohighlight">
+\[| \bf{x} |_{\infty} = max ( \mid x_{n_s}\mid ,  \mid x_{n_s + 1}\mid , \cdots , \mid x_{n_e}\mid )\]</div>
+<p>For those unfamiliar with this jargon it is little more than
+a mathematical statement that we measure the largest sample amplitude.
+In the snr docstrings this metric is given the tag <cite>peak</cite>.</p>
+<p>MsPASS also provides a facility to calculate a few less common metrics based
+on ranked (sorted) lists of amplitudes.  All create a vector of
+<span class="math notranslate nohighlight">\(N=n_s - n_e -1\)</span> absolute values of each sample in the time window
+(<span class="math notranslate nohighlight">\(\mid x_i \mid\)</span>) and sort the values in increasing order.
+The MsPASS snr module supports two metrics based on a fully sorted list
+of amplitudes:</p>
+<ol class="arabic simple">
+<li><p>The tag <cite>median</cite> is used to compute the standard quanity called the
+median, which is defined the center (50% point) of the sorted list of amplitudes.</p></li>
+<li><p>The generic tag <cite>perc</cite> is used for a family of metrics using sorted
+amplitudes.   Users familiar with seismic unix will recognize this
+keyword as a common argument for plot scaling in that package.  MsPASS,
+in fact, adapted the perc metric concept from seismic unix.
+If used it always requires specifying a “percentage”
+describing the level it should define.   e.g the default of 95 means
+return the amplitude for which 95% of the samples have a lower amplitude.
+Similarly, perc of 50 would be the same as the median and 100 would
+be the same as the peak amplitude.</p></li>
+</ol>
+</section>
+<section id="low-level-snr-estimation">
+<h2>Low-level SNR Estimation<a class="headerlink" href="#low-level-snr-estimation" title="Link to this heading">#</a></h2>
+<p>The basic function to compute signal-to-noise ratios has the
+simple name <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.snr" title="mspasspy.algorithms.snr.snr"><code class="xref py py-func docutils literal notranslate"><span class="pre">snr</span></code></a>.  The docstring
+describes the detailed use, but you will normally need to specify or
+default four key parameters:  (1) signal time window, (2) noise time window,
+(3) metric to use for the signal window, and (4) metric to use for the
+noise window.   The metric choice is made by using the tag strings
+defined above:  <cite>rms</cite>, <cite>peak, `mad</cite>, or <cite>perc</cite>.   Note the <cite>perc</cite>
+option level defaults but can be set to any level that makes sense.
+If <cite>perc</cite> is used for both signal and noise the same level will be used
+for both.  The following is a typical usage example.  The example uses
+the <cite>peak</cite> metric for the signal and rms for noise and returns the estimate
+in the symbol <cite>dsnr</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">swin</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="n">nwin</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">120.0</span><span class="p">,</span><span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
+<span class="c1"># assume d is a TimeSeries object defined above</span>
+<span class="n">dsnr</span> <span class="o">=</span> <span class="n">snr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">noise_window</span><span class="o">=</span><span class="n">nwin</span><span class="p">,</span><span class="n">signal_window</span><span class="o">=</span><span class="n">swin</span><span class="p">,</span>
+               <span class="n">noise_metric</span><span class="o">=</span><span class="s2">&quot;rms&quot;</span><span class="p">,</span><span class="n">signal_metric</span><span class="o">=</span><span class="s2">&quot;peak&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="broadband-snr-estimation">
+<h2>Broadband SNR Estimation<a class="headerlink" href="#broadband-snr-estimation" title="Link to this heading">#</a></h2>
+<p>MsPASS implements a set of more elaborate signal-to-noise metrics
+designed for quality control editing of modern broadband data.
+An issue not universally appreciated about all, modern, passive array
+data recorded with broadband instruments is that traditional measures of
+signal-to-noise ratio are usually meaningless if applied to raw data.
+From a signal processing perspective the fundamental reason is that
+broadband seismic noise and earthquake signals are both strongly
+“colored”.  Broadband noise is always dominated by microseisms and/or
+cultural noise at frequencies above a few Hz.   Earthquake’s have
+characteristic spectra.  The “colors” earthquakes generate are commonly
+used, in fact, to measure source properties.  As a result most earthquake records
+have wildly variable signal-to-noise variation across the recording
+band of modern instruments.   MsPASS addresses this issue through
+a novel implementation in the function
+<code class="xref py py-func docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code>
+and two higher level functions that use it internally called
+<code class="xref py py-func docutils literal notranslate"><span class="pre">arrival_snr</span></code>
+and <code class="xref py py-func docutils literal notranslate"><span class="pre">arrival_snr_QC</span></code>.
+The focus of this section is the algorithm used in
+<code class="xref py py-func docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code>.
+The others should be thought of as convenient wrappers to run
+<cite>FD_snr_estimator</cite>.</p>
+<p>The “FD” in <cite>FD_snr_estimator</cite> function is short for “Frequency Domain”
+emphasizing that FD is the key idea of the algorithm.  Specifically,
+the function computes the
+power spectrum of the signal and noise windows tha are used to compute a series of
+broadband snr metrics you can use to sort out signals worth processing further.
+The algorithm makes a fundamental assumption that the optimal frequency band
+of a given signal can be defined by a high and low corner frequency.
+In marginal snr conditions that assumption can easily be wrong.
+A type example is teleseismic P waves that have signals in the
+traditional short period and long period bands, but the signal level does
+not exceed the microseism peak.  Nonetheless, the single passband assumption
+is an obvious first order approach we have found useful for automated
+data winnowing.</p>
+<p>The function attempts to determine the data passband by a process illustrated in the
+Figure below.  The algorithm is a bidirectional search.  The lower passband edge
+initiates at the highest frequency distinguishable from zero as
+defined by the time-bandwidth product (<cite>tbp</cite> input parameter).  The upper
+passband edge search is initiated either from a user specified frequency
+or the default of 80% of Nyquist.  Both searches increment/decrement through
+frequency bins computing the ratio of the signal power spectral density to
+the estimated noise power spectral density.  An input parameter with the
+tag <cite>band_cutoff_snr</cite> defines the minimum snr the algorithm assumes is
+indicating a signal is present.   A special feature of the search possible
+because of the use of multitaper spectra uses the <cite>tbp</cite> parameter.
+A property of multitaper spectra is the spectra are smoothed at a scale of the
+number of frequency binds defined by the time-bandwidth product through
+the formula:</p>
+<div class="math notranslate nohighlight">
+\[W = T \Delta f\]</div>
+<p>where <span class="math notranslate nohighlight">\(T\)</span> is the window length in seconds and
+<span class="math notranslate nohighlight">\(\Delta f\)</span> is the desired frequency resolution of a
+spectral estimate in Hz.   It is convenient to think of <span class="math notranslate nohighlight">\(Delta f\)</span>
+in terms of the number of Rayleigh bins, <span class="math notranslate nohighlight">\(\frac{1}{T}\)</span>
+which is the frequency resolution of the discrete Fourier
+transform for a signal of duration <span class="math notranslate nohighlight">\(T\)</span>.</p>
+<p>A key point is that increasing the time-bandwidth products causes the
+spectral estimates to progressively smoother.   For this application
+we found using <cite>tbp=4</cite> with 8 tapers or <cite>tbp=5</cite> and 10 tapers
+are good choices as they produce
+smoother spectra that produces more stable results.
+Readers unfamiliar with
+multitaper spectral methods may find it useful begin with
+the <a class="reference external" href="https://www.mathworks.com/help/signal/ref/pmtm.html">matlab help file in their multitaper estimator</a>.
+There is also a large literature applying the technique to a range of
+practical problems easily found by any library search engine.
+We chose to use the multitaper because it always produces a more
+stable estimator for this application because of its reliable smoothing
+properties.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="graphics.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Graphics in MsPASS</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="arrival_time_measurement.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Arrival Time Measurement Techniques in MsPASS</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concepts">Concepts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#time-window-amplitude-metrics">Time Window Amplitude Metrics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#low-level-snr-estimation">Low-level SNR Estimation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#broadband-snr-estimation">Broadband SNR Estimation</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/signal_to_noise.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/signal_to_noise.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

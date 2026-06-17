@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="_three_c_spike_8cc" kind="file" language="C++">
+    <compoundname>ThreeCSpike.cc</compoundname>
+    <includes refid="_three_c_spike_8h" local="yes">mspass/algorithms/deconvolution/ThreeCSpike.h</includes>
+    <includes local="no">cmath</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>mspass/algorithms/deconvolution/ThreeCSpike.h</label>
+        <link refid="_three_c_spike_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/source/cxx/src/lib/algorithms/deconvolution/ThreeCSpike.cc</label>
+        <link refid="_three_c_spike_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="11">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="12">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="13">
+        <label>cmath</label>
+      </node>
+      <node id="9">
+        <label>exception</label>
+      </node>
+      <node id="4">
+        <label>iostream</label>
+      </node>
+      <node id="5">
+        <label>sstream</label>
+      </node>
+      <node id="6">
+        <label>string</label>
+      </node>
+      <node id="7">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
+    <innernamespace refid="namespacemspass_1_1algorithms">mspass::algorithms</innernamespace>
+    <innernamespace refid="namespacemspass_1_1algorithms_1_1deconvolution">mspass::algorithms::deconvolution</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/ThreeCSpike.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cmath&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms::deconvolution<sp/>{</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a4fd05cb28f3af9c4e934413e4de4f80c" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a4fd05cb28f3af9c4e934413e4de4f80c" kindref="member">ThreeCSpike::ThreeCSpike</ref>(<ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>&amp;d,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k)<sp/>{</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>3;<sp/>++i)</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[i]<sp/>=<sp/>d(i,<sp/>k);</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" kindref="member">col</ref><sp/>=<sp/>k;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0,<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kindref="member">amp</ref><sp/>=<sp/>0.0;<sp/>i<sp/>&lt;<sp/>3;<sp/>++i)</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kindref="member">amp</ref><sp/>+=<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[i]<sp/>*<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[i];</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kindref="member">amp</ref><sp/>=<sp/>sqrt(<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kindref="member">amp</ref>);</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(...)<sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="20" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a10d1bcc7e27b67f3359f27c43e8c2fa3" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a4fd05cb28f3af9c4e934413e4de4f80c" kindref="member">ThreeCSpike::ThreeCSpike</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>u0,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>u1,</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>u2)<sp/>{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" kindref="member">col</ref><sp/>=<sp/>k;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[0]<sp/>=<sp/>u0;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[1]<sp/>=<sp/>u1;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[2]<sp/>=<sp/>u2;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kindref="member">amp</ref><sp/>=<sp/>sqrt(u0<sp/>*<sp/>u0<sp/>+<sp/>u1<sp/>*<sp/>u1<sp/>+<sp/>u2<sp/>*<sp/>u2);</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="28" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a06623d666c1d41e52dbbfa4b539d803d" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a4fd05cb28f3af9c4e934413e4de4f80c" kindref="member">ThreeCSpike::ThreeCSpike</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref><sp/>&amp;parent)<sp/>{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" kindref="member">col</ref><sp/>=<sp/>parent.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" kindref="member">col</ref>;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kindref="member">amp</ref><sp/>=<sp/>parent.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kindref="member">amp</ref>;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/>3;<sp/>++k)</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[k]<sp/>=<sp/>parent.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[k];</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="34" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa8bdeef42c27a659671ac313eaafc116" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref><sp/>&amp;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa8bdeef42c27a659671ac313eaafc116" kindref="member">ThreeCSpike::operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref><sp/>&amp;parent)<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>!=<sp/>(&amp;parent))<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" kindref="member">col</ref><sp/>=<sp/>parent.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" kindref="member">col</ref>;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kindref="member">amp</ref><sp/>=<sp/>parent.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kindref="member">amp</ref>;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/>3;<sp/>++k)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[k]<sp/>=<sp/>parent.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kindref="member">u</ref>[k];</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/mspass/mspass/source/cxx/src/lib/algorithms/deconvolution/ThreeCSpike.cc"/>
+  </compounddef>
+</doxygen>

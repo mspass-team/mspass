@@ -1,0 +1,345 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classmspass_1_1algorithms_1_1_linear_taper" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::LinearTaper</compoundname>
+    <basecompoundref refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public" virt="non-virtual">mspass::algorithms::BasicTaper</basecompoundref>
+    <includes refid="_taper_8h" local="no">Taper.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_linear_taper_1a452d8621b00f87d946db68a29eba66f8" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::LinearTaper::t0head</definition>
+        <argsstring></argsstring>
+        <name>t0head</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::t0head</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="122" column="10" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_linear_taper_1ad1ddd6999cbdc806f345cc5fbcbfd93b" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::LinearTaper::t1head</definition>
+        <argsstring></argsstring>
+        <name>t1head</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::t1head</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="122" column="17" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_linear_taper_1a465cc7f980ec9fe975f0769009292df2" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::LinearTaper::t1tail</definition>
+        <argsstring></argsstring>
+        <name>t1tail</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::t1tail</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="122" column="24" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_linear_taper_1aed3f3983763e27179a9a6e223f35cb85" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::LinearTaper::t0tail</definition>
+        <argsstring></argsstring>
+        <name>t0tail</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::t0tail</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="122" column="31" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classmspass_1_1algorithms_1_1_linear_taper_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class boost::serialization::access</definition>
+        <argsstring></argsstring>
+        <name>boost::serialization::access</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::access</qualifiedname>
+        <param>
+          <type>boost::serialization::access</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="123" column="16" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_linear_taper_1a44264430db4aa773bc797520063333b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::LinearTaper::LinearTaper</definition>
+        <argsstring>()</argsstring>
+        <name>LinearTaper</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::LinearTaper</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="98" column="3" bodyfile="/home/runner/work/mspass/mspass/source/cxx/src/lib/algorithms/Taper.cc" bodystart="7" bodyend="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_linear_taper_1a349267509cb638cabc85a8b3e6608746" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::LinearTaper::LinearTaper</definition>
+        <argsstring>(const double t0head, const double t1head, const double t1tail, const double t0tail)</argsstring>
+        <name>LinearTaper</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::LinearTaper</qualifiedname>
+        <param>
+          <type>const double</type>
+          <declname>t0head</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>t1head</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>t1tail</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>t0tail</declname>
+        </param>
+        <briefdescription>
+<para>primary constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Defines linear taper for front and/or back end of a time range. Zero times before t0head and after t0tail. Linear ramp between t0head and t1head and in opposite sense from t1tail to t0tail. Setting 0 value = 1 value should be used as a signal to disable. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="106" column="3" bodyfile="/home/runner/work/mspass/mspass/source/cxx/src/lib/algorithms/Taper.cc" bodystart="12" bodyend="40"/>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" compoundref="_taper_8h" startline="79">mspass::algorithms::BasicTaper::all</references>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" compoundref="_taper_8h" startline="77">mspass::algorithms::BasicTaper::head</references>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" compoundref="_taper_8h" startline="78">mspass::algorithms::BasicTaper::tail</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::LinearTaper::apply</definition>
+        <argsstring>(mspass::seismic::TimeSeries &amp;d)</argsstring>
+        <name>apply</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::apply</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1ab4399e7277aec39a56b017d156838d8b">apply</reimplements>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Apply the linear taper to a scalar TimeSeries. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="109" column="7" bodyfile="/home/runner/work/mspass/mspass/source/cxx/src/lib/algorithms/Taper.cc" bodystart="41" bodyend="96"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" compoundref="_basic_time_series_8h" startline="77" endline="79">mspass::seismic::BasicTimeSeries::endtime</references>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" compoundref="_taper_8h" startline="77">mspass::algorithms::BasicTaper::head</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" compoundref="_basic_time_series_8h" startline="72" endline="72">mspass::seismic::BasicTimeSeries::sample_number</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" compoundref="_taper_8h" startline="78">mspass::algorithms::BasicTaper::tail</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_linear_taper_1a08de73ccb968eee24da501b3df0a8e56" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::LinearTaper::apply</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d)</argsstring>
+        <name>apply</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::apply</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1af7be5cccae05c468002776a4fceaf77a">apply</reimplements>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Apply the linear taper to a three-component Seismogram. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="111" column="7" bodyfile="/home/runner/work/mspass/mspass/source/cxx/src/lib/algorithms/Taper.cc" bodystart="97" bodyend="160"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" compoundref="_core_seismogram_8h" startline="496" endline="498">mspass::seismic::CoreSeismogram::endtime</references>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" compoundref="_taper_8h" startline="77">mspass::algorithms::BasicTaper::head</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" compoundref="_basic_time_series_8h" startline="72" endline="72">mspass::seismic::BasicTimeSeries::sample_number</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
+        <references refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" compoundref="_taper_8h" startline="78">mspass::algorithms::BasicTaper::tail</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">mspass::seismic::CoreSeismogram::u</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_linear_taper_1a0b48a3c90385cff894c9c1be8c6f3436" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::LinearTaper::get_t0head</definition>
+        <argsstring>() const</argsstring>
+        <name>get_t0head</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::get_t0head</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1a55c51763d7c820c6a4595127768e8d5f">get_t0head</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the start time of the head ramp. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="113" column="10" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="113" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_linear_taper_1a56c92176f8b7c425c58f11227a216e81" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::LinearTaper::get_t1head</definition>
+        <argsstring>() const</argsstring>
+        <name>get_t1head</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::get_t1head</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1ade8769ae7f4508ff3eb71afe057035ac">get_t1head</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the end time of the head ramp. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="115" column="10" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="115" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_linear_taper_1a499085a4672f02cbe889daab211f4ca4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::LinearTaper::get_t0tail</definition>
+        <argsstring>() const</argsstring>
+        <name>get_t0tail</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::get_t0tail</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the zero-weight end time of the tail ramp. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="117" column="10" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="117" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_linear_taper_1aed2b9f6a0a29a592b8ab0d191af5a935" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::LinearTaper::get_t1tail</definition>
+        <argsstring>() const</argsstring>
+        <name>get_t1tail</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::get_t1tail</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the one-weight start time of the tail ramp. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="119" column="10" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="119" bodyend="119"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_linear_taper_1a439de3a886886dc19e613f659a7114b9" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void mspass::algorithms::LinearTaper::serialize</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <qualifiedname>mspass::algorithms::LinearTaper::serialize</qualifiedname>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="125" column="8" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="125" bodyend="131"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Used to construct an operator to apply a linear taper to either end. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Linear tapers are defined here as a time spanning a ramp running from 0 to 1. Data will be zeroed on each end of a 0 mark and a linear weight applied between 0 points and 1 points. Postive ramp slope on left and negative slope ramp on right. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>mspass::algorithms::BasicTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_basic_taper"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::LinearTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_linear_taper"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>mspass::algorithms::BasicTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_basic_taper"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::LinearTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_linear_taper"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" line="96" column="1" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/algorithms/Taper.h" bodystart="96" bodyend="132"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" prot="protected" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>all</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb" prot="public" virt="virtual"><scope>mspass::algorithms::LinearTaper</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a08de73ccb968eee24da501b3df0a8e56" prot="public" virt="virtual"><scope>mspass::algorithms::LinearTaper</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4227e073cf362b77e163faea881bb84" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>BasicTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>boost::serialization::access</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4cc68faa949932e653804bfc5db42ce" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>disable_head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1aade23966f66e7d1b741e6e8ee2dbde90" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>disable_tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1aafe6a155d954150e1105bbf9b9bd66" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>enable_head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a04b2cdddaa30789f37be9c6346a3689b" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>enable_tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a0b48a3c90385cff894c9c1be8c6f3436" prot="public" virt="virtual"><scope>mspass::algorithms::LinearTaper</scope><name>get_t0head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a499085a4672f02cbe889daab211f4ca4" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>get_t0tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a56c92176f8b7c425c58f11227a216e81" prot="public" virt="virtual"><scope>mspass::algorithms::LinearTaper</scope><name>get_t1head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1aed2b9f6a0a29a592b8ab0d191af5a935" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>get_t1tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" prot="protected" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a16b1f6b4866b298466e1fd388597d507" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>head_is_enabled</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a44264430db4aa773bc797520063333b9" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>LinearTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a349267509cb638cabc85a8b3e6608746" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>LinearTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a439de3a886886dc19e613f659a7114b9" prot="private" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>serialize</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a452d8621b00f87d946db68a29eba66f8" prot="private" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>t0head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1aed3f3983763e27179a9a6e223f35cb85" prot="private" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>t0tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1ad1ddd6999cbdc806f345cc5fbcbfd93b" prot="private" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>t1head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a465cc7f980ec9fe975f0769009292df2" prot="private" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>t1tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" prot="protected" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a02092ec778f1e289956bbfde3eff7bcd" prot="public" virt="non-virtual"><scope>mspass::algorithms::LinearTaper</scope><name>tail_is_enable</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac68777236f5c051c487a18ff652420ba" prot="public" virt="virtual"><scope>mspass::algorithms::LinearTaper</scope><name>~BasicTaper</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

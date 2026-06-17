@@ -1,0 +1,1447 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mspasspy.db.matcher &#8212; MsPASS 2.4.1.dev0+g518a12e5 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=d8d6f5fb"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mspasspy/db/matcher';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.db.matcher</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mspasspy.db.matcher</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># this is copied from edit.py.  easier to duplicate than load that entire</span>
+<span class="c1"># module with this one</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This internal function standardizes the test to certify the</span>
+<span class="sd">    input datum, d, is or is not a valid MsPASS data object.   Putting it</span>
+<span class="sd">    in one place makes extending the code base for other data types much</span>
+<span class="sd">    easier.  It uses an isinstance tests of d to standardize the test that</span>
+<span class="sd">    the input is valid data.  It returns True if d is one a valid data</span>
+<span class="sd">    object known to mspass.  Returns false it not.  Caller must decide</span>
+<span class="sd">    what to do if the function returns false.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># We need this for matchers that only work for atomic data (e.g. mseed matching)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="NMF">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.NMF">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NMF</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract base class for a family of Normalization Match Functions (NMF).</span>
+<span class="sd">    This family of object are used in MsPASS to standize the api for</span>
+<span class="sd">    generic mongodb match operation for &quot;normalizing&quot; a collection.</span>
+<span class="sd">    Normalization is comparable to a relational database join.</span>
+<span class="sd">    With MongoDB normalization is most sensible for the case when the</span>
+<span class="sd">    collection to be normalized is much smaller than collection that is</span>
+<span class="sd">    to be joined (normalized)  i.e. the normalization operation is many</span>
+<span class="sd">    to one with many links from the documents in the collection to be</span>
+<span class="sd">    normalized to each normalizing document.  The stock normalizing collections</span>
+<span class="sd">    in MsPASS are channel, site, and source.</span>
+
+<span class="sd">    The api defines two basic operations any concrete instance of the</span>
+<span class="sd">    class must implement:  (1)  a method to fetch the entire document</span>
+<span class="sd">    defining a match and (2) a method to fetch and copy specified</span>
+<span class="sd">    key-value pairs to a valid MsPASS data object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span> <span class="o">=</span> <span class="n">kill_on_failure</span>
+        <span class="c1"># this list is always needed for normalize method.  Here we just</span>
+        <span class="c1"># initialize it to an empty list to avoid that step in all subclasses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This convenience method allows a concrete instance to be</span>
+<span class="sd">        called with the simpler syntax with the (implied) principle</span>
+<span class="sd">        method &quot;normalize&quot;.   e.g. to normalize d with the</span>
+<span class="sd">        channel collection using id_matcher you can use</span>
+<span class="sd">        d = id_matcher(d)  instead of d = id_matcher.normalize(d)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NMF.get_document">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.NMF.get_document">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch the database document matching the input datum.</span>
+
+<span class="sd">        :param d: MsPASS data object used to build the match query.</span>
+<span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
+<span class="sd">        :rtype: dict or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="NMF.normalize">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.NMF.normalize">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy selected fields from the matching database document to a datum.</span>
+
+<span class="sd">        :param d: MsPASS data object to normalize.</span>
+<span class="sd">        :return: normalized input datum.  Failed matches may log errors and</span>
+<span class="sd">            kill the datum depending on matcher configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="NMF.log_error">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.NMF.log_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_error</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">matchername</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">kill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This base class method is used to standardize the error logging</span>
+<span class="sd">        functionality of all NMF objects.   It writes a standardized</span>
+<span class="sd">        message to simplify writing of subclasses - they need only</span>
+<span class="sd">        define the matchername (normally the name of the subclass) and</span>
+<span class="sd">        format a specific message to be posted.  The caller may optionally</span>
+<span class="sd">        kill the datum and specify an alternative severity level to</span>
+<span class="sd">        the default warning.</span>
+
+<span class="sd">        Note most subclasses may want to include a verbose option in the constructor</span>
+<span class="sd">        (or the reciprocal silent) that provide an option of only writing log messages when</span>
+<span class="sd">        verbose is set true.  There are possible cases with large data sets where</span>
+<span class="sd">        verbose messages can cause bottlenecks and bloated elog collections.</span>
+
+<span class="sd">        :param d:  MsPASS data object to which elog message is to be</span>
+<span class="sd">          written.</span>
+<span class="sd">        :param matchername: is the string assigned to the &quot;algorithm&quot; field</span>
+<span class="sd">          of the message posted to d.elog.</span>
+<span class="sd">        :param message:  specialized message to post - this string is added</span>
+<span class="sd">          to an internal generic message.</span>
+<span class="sd">        :param kill:  boolean controlling if the message should cause the</span>
+<span class="sd">          datum to be killed.   Default False meaning only the message</span>
+<span class="sd">          is posted.</span>
+<span class="sd">        :param severity:  ErrorSeverity to assign to elog message</span>
+<span class="sd">          (See ErrorLogger docstring).  Default is Informational</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="n">fullmessage</span> <span class="o">=</span> <span class="n">message</span>
+            <span class="k">if</span> <span class="n">kill</span><span class="p">:</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="n">fullmessage</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Datum was killed&quot;</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">matchername</span><span class="p">,</span> <span class="n">fullmessage</span><span class="p">,</span> <span class="n">severity</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;NMF.log_error method received invalid data;  arg 0 must be a MsPASS data object&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ID_matcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.ID_matcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ID_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">attributes_to_load</span><span class="p">,</span> <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span> <span class="o">=</span> <span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+            <span class="c1"># assume type errors will be thrown if attributes_to_load is not array like</span>
+            <span class="c1"># this is attributes_to_load is initialized to an empty list in</span>
+            <span class="c1"># super()</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;ID_matcher constructor:  arg0 must be a collection name - received invalid type&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="ID_matcher.get_document">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.ID_matcher.get_document">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch the database document matching the input datum.</span>
+
+<span class="sd">        :param d: MsPASS data object used to build the match query.</span>
+<span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
+<span class="sd">        :rtype: dict or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span><span class="p">):</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span><span class="p">]}</span>
+            <span class="c1"># Note this will return None if the query fails - callers should handle that condition</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># this is actually redundant with log_error usage but better to be clear</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">:</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Normalizing ID with key=&quot;</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                <span class="o">+</span> <span class="s2">&quot; is not defined in this object&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;ID_matcher&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ID_matcher.normalize">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.ID_matcher.normalize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy selected fields from the matching database document to a datum.</span>
+
+<span class="sd">        :param d: MsPASS data object to normalize.</span>
+<span class="sd">        :return: normalized input datum.  Failed matches may log errors and</span>
+<span class="sd">            kill the datum depending on matcher configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">d</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;No matching _id found for &quot;</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                    <span class="o">+</span> <span class="s2">&quot; in collection=&quot;</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span>
+                    <span class="s2">&quot;ID_matcher&quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># We accumulate error messages to aid user debugging</span>
+                        <span class="c1"># but it could create bloated elog collections</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="n">d</span><span class="p">,</span>
+                            <span class="s2">&quot;ID_matcher&quot;</span><span class="p">,</span>
+                            <span class="n">message</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                        <span class="p">)</span>
+            <span class="c1"># Notice logic that if no match is found we log the error</span>
+            <span class="c1"># (and usually kill it) and land here. Allows application in a map</span>
+            <span class="c1"># operation</span>
+            <span class="k">return</span> <span class="n">d</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="mseed_channel_matcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_channel_matcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">mseed_channel_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to match wf_miniseed to the channel collection using</span>
+<span class="sd">    the mseed standard channel string tags net, sta, chan, and (optionally) loc.</span>
+<span class="sd">    It can also be used to data saved in wf_TimeSeries where the mseed tags</span>
+<span class="sd">    are often altered by MsPASS to change fields like ``net`` to</span>
+<span class="sd">    ``READONLYERROR_net``.</span>
+<span class="sd">    There is an automatic fallback for each of the tags where if the proper</span>
+<span class="sd">    name is not found we alway try to use the ``READONLYERROR_`` version before</span>
+<span class="sd">    giving up.</span>
+
+<span class="sd">    An issue with this matcher is that it is very common to have redundant</span>
+<span class="sd">    entries in the channel collection for the same channel of data.  That</span>
+<span class="sd">    can happen for a variety of reasons that are harmless.  When that happens</span>
+<span class="sd">    the method of this object will normally post an elog message warning of the</span>
+<span class="sd">    potential issue.  Those warnings can be silenced by setting verbose</span>
+<span class="sd">    in the constructor to False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">db</span><span class="p">,</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">,</span> <span class="s2">&quot;hang&quot;</span><span class="p">,</span> <span class="s2">&quot;vang&quot;</span><span class="p">],</span>
+        <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">readonly_tag</span><span class="o">=</span><span class="s2">&quot;READONLYERROR_&quot;</span><span class="p">,</span>
+        <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span>
+        <span class="c1"># assume type errors will be thrown if attributes_to_load is not array like</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">=</span> <span class="n">readonly_tag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
+
+<div class="viewcode-block" id="mseed_channel_matcher.get_document">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_channel_matcher.get_document">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch the channel/site document matching net, station, location, and time.</span>
+
+<span class="sd">        :param d: atomic MsPASS data object used to build the match query.</span>
+<span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
+<span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
+<span class="sd">        :rtype: dict or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;mseed_channel_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object&quot;</span>
+            <span class="p">)</span>
+        <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;net&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">d</span><span class="p">,</span>
+                <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Required match key=net or &quot;</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
+                <span class="o">+</span> <span class="s2">&quot;net are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># We repeat the above logic for sta and chan for debugging but it</span>
+        <span class="c1"># could cause bloated elog messages if a user makes a dumb error</span>
+        <span class="c1"># with a large data set.  that seems preferable to mysterious behavior</span>
+        <span class="c1"># could make it a verbose option but for now we will always blunder on</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;sta&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">d</span><span class="p">,</span>
+                <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Required match key=sta or &quot;</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
+                <span class="o">+</span> <span class="s2">&quot;sta are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;chan&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;chan&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">d</span><span class="p">,</span>
+                <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Required match key=chan or &quot;</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
+                <span class="o">+</span> <span class="s2">&quot;chan are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># loc has to be handled differently because it is often not defined</span>
+        <span class="c1"># We just don&#39;t add loc to the query if it isn&#39;t defined</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;loc&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+
+        <span class="c1"># return now if this datum has been marked dead</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_is_ok</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># default to data start time if time is not explicitly passed</span>
+        <span class="k">if</span> <span class="n">time</span><span class="p">:</span>
+            <span class="n">querytime</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">querytime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
+
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
+
+        <span class="n">matchsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">d</span><span class="p">,</span>
+                <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Multiple channel docs match net:sta:chan:loc:time for this datum - using first one found&quot;</span><span class="p">,</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mseed_channel_matcher.normalize">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_channel_matcher.normalize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize a datum with fields from the matching channel/site document.</span>
+
+<span class="sd">        :param d: atomic MsPASS data object to normalize.</span>
+<span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
+<span class="sd">        :return: normalized input datum.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="k">if</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;No matching document was found in channel collection for this datum&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span>
+                    <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="s2">&quot;channel_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># We accumulate error messages to aid user debugging</span>
+                        <span class="c1"># but it could create bloated elog collections</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="n">d</span><span class="p">,</span>
+                            <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
+                            <span class="n">message</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                        <span class="p">)</span>
+            <span class="c1"># Notice logic that if no match is found we log the error</span>
+            <span class="c1"># (and usually kill it) and land here. Allows application in a map</span>
+            <span class="c1"># operation</span>
+            <span class="k">return</span> <span class="n">d</span></div>
+</div>
+
+
+
+<span class="c1"># this class is modified form mseed_channel_matcher removing the chan</span>
+<span class="c1"># key and replacing channel by site</span>
+<div class="viewcode-block" id="mseed_site_matcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_site_matcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">mseed_site_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to match derived from seed data to the site collection using</span>
+<span class="sd">    the mseed standard site string tags net, sta, and (optionally) loc.</span>
+<span class="sd">    It can also be used to data saved in wf_TimeSeries or wf_Seismogram where the mseed tags</span>
+<span class="sd">    are often altered by MsPASS to change fields like ``net`` to</span>
+<span class="sd">    ``READONLYERROR_net``.</span>
+<span class="sd">    There is an automatic fallback for each of the tags where if the proper</span>
+<span class="sd">    name is not found we alway try to use the ``READONLYERROR_`` version before</span>
+<span class="sd">    giving up.</span>
+
+<span class="sd">    An issue with this matcher is that it is very common to have redundant</span>
+<span class="sd">    entries in the site collection for the same site of data.  That</span>
+<span class="sd">    can happen for a variety of reasons that are harmless.  When that happens</span>
+<span class="sd">    the method of this object will normally post an elog message warning of the</span>
+<span class="sd">    potential issue.  Those warnings can be silenced by setting verbose</span>
+<span class="sd">    in the constructor to False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">db</span><span class="p">,</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">],</span>
+        <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">readonly_tag</span><span class="o">=</span><span class="s2">&quot;READONLYERROR_&quot;</span><span class="p">,</span>
+        <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;site&quot;</span><span class="p">]</span>
+        <span class="c1"># assume type errors will be thrown if attributes_to_load is not array like</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">=</span> <span class="n">readonly_tag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
+
+<div class="viewcode-block" id="mseed_site_matcher.get_document">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_site_matcher.get_document">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch the channel/site document matching net, station, location, and time.</span>
+
+<span class="sd">        :param d: atomic MsPASS data object used to build the match query.</span>
+<span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
+<span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
+<span class="sd">        :rtype: dict or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;mseed_site_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object&quot;</span>
+            <span class="p">)</span>
+        <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;net&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">d</span><span class="p">,</span>
+                <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Required match key=net or &quot;</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
+                <span class="o">+</span> <span class="s2">&quot;net are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># We repeat the above logic for sta and chan for debugging but it</span>
+        <span class="c1"># could cause bloated elog messages if a user makes a dumb error</span>
+        <span class="c1"># with a large data set.  that seems preferable to mysterious behavior</span>
+        <span class="c1"># could make it a verbose option but for now we will always blunder on</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;sta&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">d</span><span class="p">,</span>
+                <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Required match key=sta or &quot;</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
+                <span class="o">+</span> <span class="s2">&quot;sta are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># loc has to be handled differently because it is often not defined</span>
+        <span class="c1"># We just don&#39;t add loc to the query if it isn&#39;t defined</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;loc&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+
+        <span class="c1"># return now if this datum has been marked dead</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_is_ok</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># default to data start time if time is not explicitly passed</span>
+        <span class="k">if</span> <span class="n">time</span><span class="p">:</span>
+            <span class="n">querytime</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">querytime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
+
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
+
+        <span class="n">matchsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">d</span><span class="p">,</span>
+                <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Multiple site docs match net:sta:chan:loc:time for this datum - using first one found&quot;</span><span class="p">,</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mseed_site_matcher.normalize">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_site_matcher.normalize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize a datum with fields from the matching channel/site document.</span>
+
+<span class="sd">        :param d: atomic MsPASS data object to normalize.</span>
+<span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
+<span class="sd">        :return: normalized input datum.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="k">if</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;No matching document was found in site collection for this datum&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span>
+                    <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="s2">&quot;site_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># We accumulate error messages to aid user debugging</span>
+                        <span class="c1"># but it could create bloated elog collections</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="n">d</span><span class="p">,</span>
+                            <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
+                            <span class="n">message</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                        <span class="p">)</span>
+            <span class="c1"># Notice logic that if no match is found we log the error</span>
+            <span class="c1"># (and usually kill it) and land here. Allows application in a map</span>
+            <span class="c1"># operation</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;mseed_site_matcher.normalize:  received invalid data type&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="origin_time_source_matcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.origin_time_source_matcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">origin_time_source_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">db</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+        <span class="n">t0offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">tolerance</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
+        <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span> <span class="o">=</span> <span class="n">t0offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span> <span class="o">=</span> <span class="n">tolerance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<div class="viewcode-block" id="origin_time_source_matcher.get_document">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.origin_time_source_matcher.get_document">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="c1"># this logic allows setting ensemble metadata using a specific</span>
+            <span class="c1"># time but if time is not defined we default to using data start time (t0)</span>
+            <span class="k">if</span> <span class="n">time</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">test_time</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">test_time</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;$ge&quot;</span><span class="p">:</span> <span class="n">test_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
+                    <span class="s2">&quot;$le&quot;</span><span class="p">:</span> <span class="n">test_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="n">matchsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span>
+                    <span class="s2">&quot;origin_time_source_matcher&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;multiple source documents match the origin time computed from time received - using first found&quot;</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="origin_time_source_matcher.normalize">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.origin_time_source_matcher.normalize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize a datum with source fields matched by origin time.</span>
+
+<span class="sd">        :param d: MsPASS data object to normalize.</span>
+<span class="sd">        :param time: optional origin time override.</span>
+<span class="sd">        :return: normalized input datum.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;No matching document was found in&quot;</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+                    <span class="o">+</span> <span class="s2">&quot; collection for this datum&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span>
+                    <span class="s2">&quot;origin_time_source_matcher&quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># We accumulate error messages to aid user debugging</span>
+                        <span class="c1"># but it could create bloated elog collections</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="n">d</span><span class="p">,</span>
+                            <span class="s2">&quot;origin_time_source_matcher&quot;</span><span class="p">,</span>
+                            <span class="n">message</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                        <span class="p">)</span>
+            <span class="c1"># Notice logic that if no match is found we log the error</span>
+            <span class="c1"># (and usually kill it) and land here. Allows application in a map</span>
+            <span class="c1"># operation</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;origin_time_source_matcher.normalize:  received invalid data type&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="css30_arrival_interval_matcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.css30_arrival_interval_matcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">css30_arrival_interval_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This matcher is used to match phase picks stored in the database</span>
+<span class="sd">    (default is arrival collection) to waveforms.  The basic algorithm</span>
+<span class="sd">    is an interval match.  That is, an arrival with a time between</span>
+<span class="sd">    starttime and endtime is considered a match.   If multiple matches</span>
+<span class="sd">    are found for same phase name the algorithm uses a time offset test</span>
+<span class="sd">    of starttime relative to the phase time.  The data for the arrival</span>
+<span class="sd">    doc with time most closely matched to starttime+time_offset is</span>
+<span class="sd">    selected.</span>
+
+<span class="sd">    The main use of this class is to match a collection of raw data</span>
+<span class="sd">    with arrival time picks made by another source</span>
+<span class="sd">    (e.g. the Array Network Facilty of Earthscope css3.0 arrival picks)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">db</span><span class="p">,</span>
+        <span class="n">startime_offset</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span>
+        <span class="n">phasename</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
+        <span class="n">phasename_key</span><span class="o">=</span><span class="s2">&quot;phase&quot;</span><span class="p">,</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span>
+        <span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evid&quot;</span><span class="p">,</span> <span class="s2">&quot;iphase&quot;</span><span class="p">,</span> <span class="s2">&quot;seaz&quot;</span><span class="p">,</span> <span class="s2">&quot;esaz&quot;</span><span class="p">,</span> <span class="s2">&quot;deltim&quot;</span><span class="p">,</span> <span class="s2">&quot;timeres&quot;</span><span class="p">],</span>
+        <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">arrival_collection_name</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span> <span class="o">=</span> <span class="n">phasename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phasename_key</span> <span class="o">=</span> <span class="n">phasename_key</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">load_if_defined</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">arrival_collection_name</span><span class="p">]</span>
+
+<div class="viewcode-block" id="css30_arrival_interval_matcher.get_document">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.css30_arrival_interval_matcher.get_document">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch the database document matching the input datum.</span>
+
+<span class="sd">        :param d: MsPASS data object used to build the match query.</span>
+<span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
+<span class="sd">        :rtype: dict or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
+        <span class="n">etime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phasename_key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$ge&quot;</span><span class="p">:</span> <span class="n">stime</span><span class="p">,</span> <span class="s2">&quot;$le&quot;</span><span class="p">:</span> <span class="n">etime</span><span class="p">}</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="n">matchlist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># the key here perhaps should be set in constructor</span>
+            <span class="c1"># for now it is frozen as this constant</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="c1"># ignore any docs with the time attribute not set</span>
+                <span class="k">if</span> <span class="s2">&quot;time&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                    <span class="n">dt</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_offset</span>
+                    <span class="n">matchlist</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span> <span class="n">doc</span><span class="p">])</span>
+            <span class="c1"># handle these special cases</span>
+            <span class="n">n_to_test</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matchlist</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n_to_test</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">&quot;css30_arrival_interval_matcher.get_document:  no arrival docs found with phasename set as&quot;</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span>
+                    <span class="o">+</span> <span class="s2">&quot; with a time attribute defined.  This should not happen and indicates a serious database inconsistence.  Aborting&quot;</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">n_to_test</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># weird syntax but this returns to doc of the one and only</span>
+                <span class="c1"># tuple getting through the above loop.  Execution of this</span>
+                <span class="c1"># block should be very very rare</span>
+                <span class="k">return</span> <span class="n">matchlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dtmin</span> <span class="o">=</span> <span class="n">matchlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">imin</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matchlist</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">dt</span> <span class="o">=</span> <span class="n">matchlist</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="c1"># not dt values are stored as abs differences</span>
+                    <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="n">dtmin</span><span class="p">:</span>
+                        <span class="n">imin</span> <span class="o">=</span> <span class="n">ii</span>
+                        <span class="n">dtmin</span> <span class="o">=</span> <span class="n">dt</span>
+                <span class="k">return</span> <span class="n">matchlist</span><span class="p">[</span><span class="n">imin</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="css30_arrival_interval_matcher.normalize">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.css30_arrival_interval_matcher.normalize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy selected fields from the matching database document to a datum.</span>
+
+<span class="sd">        :param d: MsPASS data object to normalize.</span>
+<span class="sd">        :return: normalized input datum.  Failed matches may log errors and</span>
+<span class="sd">            kill the datum depending on matcher configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="k">if</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;No matching document was found in&quot;</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">arrival_collection_name</span>
+                    <span class="o">+</span> <span class="s2">&quot; collection for this datum&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span>
+                    <span class="s2">&quot;css30_arrival_interval_matcher&quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># We accumulate error messages to aid user debugging</span>
+                        <span class="c1"># but it could create bloated elog collections</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="n">d</span><span class="p">,</span>
+                            <span class="s2">&quot;css30_arrival_interval_matcher&quot;</span><span class="p">,</span>
+                            <span class="n">message</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                        <span class="p">)</span>
+                <span class="c1"># similar for optional but don&#39;t log errors for missing</span>
+                <span class="c1"># attributes unless verbose is set true</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="s2">&quot;css30_arrival_interval_matcher&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;No data found with optional load key=&quot;</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+            <span class="c1"># Notice logic that if no match is found we log the error</span>
+            <span class="c1"># (and usually kill it) and land here. Allows application in a map</span>
+            <span class="c1"># operation</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;css30_arrival_interval_matcher.normalize:  received invalid data type&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

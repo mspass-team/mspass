@@ -1,0 +1,783 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Adapting an Existing Algorithm to MsPASS &#8212; MsPASS 2.4.1.dev0+g518a12e5 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=d8d6f5fb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/adapting_algorithms';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Parallel Processing" href="parallel_processing.html" />
+    <link rel="prev" title="Arrival Time Measurement Techniques in MsPASS" href="arrival_time_measurement.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Adapting an Existing Algorithm to MsPASS</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="adapting-an-existing-algorithm-to-mspass">
+<span id="adapting-algorithms"></span><h1>Adapting an Existing Algorithm to MsPASS<a class="headerlink" href="#adapting-an-existing-algorithm-to-mspass" title="Link to this heading">#</a></h1>
+<section id="purpose">
+<h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading">#</a></h2>
+<p>The purpose of this document is to describe how an existing algorithm written
+in C/C++ or python can be adapted to the MsPASS framework.  The ideas should
+also readily be adapted to Fortran algorithms as well, but the authors have
+no experience at this point in adapting Fortran code.  If this grows as we
+hope someone in the community with experience adapting Fortran to python
+may want to modify this document to describe how to do that.</p>
+<p>The audience of this document is assumed to be core MsPASS developers who are
+working directly with the MsPASS git repository.  The examples all show
+how to add an algorithm to become a full component of MsPASS.   Eventually
+a parallel document will be needed to produce a private, custom module that
+can work as a custom extension of MsPASS.</p>
+<p>We begin with some common requirements needed to implement a function compatible
+with the framework.  The remainder of the document centers on a set of examples
+of increasing complexity.</p>
+</section>
+<section id="what-you-will-need-to-implement">
+<h2>What you will need to implement<a class="headerlink" href="#what-you-will-need-to-implement" title="Link to this heading">#</a></h2>
+<section id="required">
+<h3>Required<a class="headerlink" href="#required" title="Link to this heading">#</a></h3>
+<p>The following must be satisfied by an implementation to mesh with the MsPASS
+framework.</p>
+<ul class="simple">
+<li><p>The algorithm must be encapsulated in a single computing function form.
+That is it must be expressible in the form x=f(y).  We mean this in the most
+general form of object oriented languages like python.  x and y can be any
+valid object.   x can and often is void provided y is mutable (i.e. the
+function acts like as FORTRAN subroutine).  y also is rarely a single symbol
+but is usually a mix of simple parameters and arbitrarily complex object.
+In most cases the arguments would be typical python key-default value pairs.</p></li>
+<li><p>All data passed in and out of any such function must have support for
+“pickle”.   This is trivial for simple types like integers and floats, but
+is not a given for an arbitrary data structure.  Support for pickle is required
+if the algorithm is to be run under spark because in a multiprocessor
+environment the scheduler has to automatically move data between
+processing nodes.  Spark does this under the hood with pickle.</p></li>
+<li><p>The algorithm must not use any graphical displays or interactive user
+input of any kind.  MsPASS is designed for massive processing in a background
+mode.  Graphical displays and interactive inputs are not compatible with this
+model.</p></li>
+<li><p>The algorithm must never throw an unhandled exception or abort for
+any reason other than a fatal system error.  Unhandled exceptions on
+one piece of data can abort an entire job, so bombproof implementations
+are essential.   We describe some tricks below to assure this constraint is
+satisfied.</p></li>
+</ul>
+</section>
+<section id="optional-but-recommended">
+<h3>Optional but recommended<a class="headerlink" href="#optional-but-recommended" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>MsPASS has a global level and object level history mechanism an algorithm
+should implement to be fully integrated in the framework.  The history mechanisms were
+implemented to enhance the community’s ability to reproduce work done by
+others to validate previous results.  It can also provide a mechanism to
+not have to constantly “recreate the wheel” and add to an existing workflow
+instead of having to start from scratch.   Use of a nonstandard module
+that does not use the history features may break preservation of the
+workflow history chain.  In any case, as we consider in detail below
+history preservation should always be made optional.</p></li>
+<li><p>Many of the constraints of MsPASS are more easily satisfied if the
+algorithm uses MsPASS seismic data objects as inputs and outputs and
+converting to alternative structures required by a legacy
+algorithm with some kind of wrapper code.  e.g. Many legacy algorithms
+have interwoven dependencies on SAC or segy file images.   At some cost
+of efficiency many such algorithms can be adapted with converters that
+reorganize mspass Metadata attributes and build the fixed data structures
+such algorithms depend upon.  An example of how to do this can be see in
+the wrappers we developed for adapting obspy to the framework.</p></li>
+<li><p>If the algorithm you are adapting is in C or C++ you will need a means to
+create wrapper code to expose the C/C++ code to the python interpreter.
+We use pybind11 and the examples below focus on how to use that package
+to build these wrappers.  There are other packages like swig,
+boost python, and others (including low level C code wrappers)
+for accomplishing this requirement, but for ease of compatibility we
+recommend using pybind11 unless there is a compelling reason to do
+otherwise.</p></li>
+</ul>
+</section>
+</section>
+<section id="example-1-simple-function-time-windowing-function">
+<h2>Example 1:  Simple function - Time Windowing Function<a class="headerlink" href="#example-1-simple-function-time-windowing-function" title="Link to this heading">#</a></h2>
+<p>This example illustrates how we adapted an existing C++ algorithm to the
+MsPASS framework.   The objective was to produce a standard processing
+function to cut smaller time windows of data from a longer (in time)
+segment of data.</p>
+<p>For us the cleanest starting point for this goal was an existing C++
+function in the seispp library that Pavlis had used extensively for
+some time.   The prototype for this function can be found at the
+Antelope User’s group contrib repository in the file
+<a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib/blob/master/lib/seismic/libseispp/slice_and_dice.cc">slice_and_dice.cpp</a></p>
+<p>We retained the original function interface:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">TimeSeries</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
+<span class="n">ThreeComponentSeismogram</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ThreeComponentSeismogram</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>with two changes.</p>
+<ol class="arabic simple">
+<li><p>What we call a Seismogram in MsPASSs had the excessively verbose name ThreeComponentSeismogram in the older SEISPP library.</p></li>
+<li><p>To simplify the binding code in pybind11 (see below) we changed the name for the Seismogram version.</p></li>
+</ol>
+<p>The MsPASS C++ version of these two functions became the following (we include the doxygen
+comments for reference):</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/*! \brief Extracts a requested time window of data from a parent TimeSeries object.</span>
+<span class="cm">It is common to need to extract a smaller segment of data from a larger</span>
+<span class="cm">time window of data.  This function accomplishes this in a nifty method that</span>
+<span class="cm">takes advantage of the methods contained in the BasicTimeSeries object for</span>
+<span class="cm">handling time.</span>
+<span class="cm">\return new Seismgram object derived from  parent but windowed by input</span>
+<span class="cm">      time window range.</span>
+<span class="cm">\exception MsPASSError object if the requested time window is not inside data range</span>
+<span class="cm">\param parent is the larger TimeSeries object to be windowed</span>
+<span class="cm">\param tw defines the data range to be extracted from parent.</span>
+<span class="cm">*/</span>
+<span class="n">TimeSeries</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
+<span class="cm">/*! \brief Extracts a requested time window of data from a parent Seismogram object.</span>
+<span class="cm">It is common to need to extract a smaller segment of data from a larger</span>
+<span class="cm">time window of data.  This function accomplishes this in a nifty method that</span>
+<span class="cm">takes advantage of the methods contained in the BasicTimeSeries object for</span>
+<span class="cm">handling time.</span>
+<span class="cm">\return new Seismgram object derived from  parent but windowed by input</span>
+<span class="cm">      time window range.</span>
+<span class="cm">\exception MsPASSError object if the requested time window is not inside data range</span>
+<span class="cm">\param parent is the larger Seismogram object to be windowed</span>
+<span class="cm">\param tw defines the data range to be extracted from parent.</span>
+<span class="cm">*/</span>
+<span class="n">Seismogram</span><span class="w"> </span><span class="nf">WindowData3C</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Seismogram</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>A nontrivial detail we will not inflict on the reader is how we modified
+the original code to MsPASS libraries.  In addition to name changes
+there are some major differences in the API for TimeSeries and Seismogram
+objects from their ancestors (TimeSeries and ThreeComponentSeismogram).
+The current version of the implementations of these two algorithms can be
+found <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
+<p>MsPASS uses the <cite>pybind11 package &lt;https://pybind11.readthedocs.io/en/stable/&gt;</cite>
+to bind C++ or C code for use by the python interpreter.  For the present
+all C/C++ code is bound to a single module we call mspasspy.ccore.
+The details of the build system used in MsPASS are best discussed in a
+separate document (Need a link here eventually).  This particular example
+required adding the above function prototype definitions to
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h">this include file</a>
+and the C++ function code <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
+<p>Creating the python bindings for these two functions required inserting the
+following blocks in the binding code for the algorithms module found
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/basic_py.cc">here</a>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="p">;</span>
+<span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData3C&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData3C</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>We note a few details about this block of code:</p>
+<ol class="arabic">
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">m</span></code> symbol is defined earlier in this file as a tag for the module to which we aim to bind this function.
+It is defined earlier in the file with this construct:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">ccore</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That is, this construct defines the symbol <code class="code docutils literal notranslate"><span class="pre">m</span></code> as an abstraction for the
+python module ccore.</p>
+</li>
+<li><p>The actual C++ function names are “WindowData” and “WindowData3C”, but
+we change the names here to “_WindowData” and “_WindowData3C” respectively.
+We recommend that convention as it is conventional in python, although not really
+rigidly enforced by the language, to assume a symbol with one or
+leading underscores is “for internal use”
+(see e.g. obspy documentation or
+<a class="reference external" href="https://www.datacamp.com/community/tutorials/role-underscore-python">this nice overview</a>).
+That usage is appropriate here as our next step will be to write a master python
+wrapper used as a front end to simplify the user api to this pair of
+functions that implement the same conceptual algorithm on two different types of
+data.</p></li>
+<li><p>Our binding code does nothing fancy with the arguments.  The pybind11 documentation
+describes how to set default argument values.  We intentionally do not use such
+a construct here as these ccore functions should only be used through
+the master python wrapper we will discuss next (This is also why we intentionally
+wrapped the functions with a name containing a leading underscore.)</p></li>
+</ol>
+</section>
+<section id="example-2-pure-python-function">
+<h2>Example 2:  Pure Python Function<a class="headerlink" href="#example-2-pure-python-function" title="Link to this heading">#</a></h2>
+</section>
+<section id="example-3-more-complicated-mixed-c-and-python-example-scale-function">
+<h2>Example 3:  More complicated mixed C++ and python example - scale function<a class="headerlink" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function" title="Link to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="arrival_time_measurement.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Arrival Time Measurement Techniques in MsPASS</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="parallel_processing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Parallel Processing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#purpose">Purpose</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-will-need-to-implement">What you will need to implement</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#required">Required</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-but-recommended">Optional but recommended</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-simple-function-time-windowing-function">Example 1:  Simple function - Time Windowing Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-pure-python-function">Example 2:  Pure Python Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function">Example 3:  More complicated mixed C++ and python example - scale function</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/adapting_algorithms.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/adapting_algorithms.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

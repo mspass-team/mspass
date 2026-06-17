@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classmspass_1_1seismic_1_1_time_window_cmp" kind="class" language="C++" prot="public">
+    <compoundname>mspass::seismic::TimeWindowCmp</compoundname>
+    <includes refid="_data_gap_8h" local="no">DataGap.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_window_cmp_1ad4907b066765551fa19bbf0d4c8a6e31" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::seismic::TimeWindowCmp::operator()</definition>
+        <argsstring>(const mspass::algorithms::TimeWindow ti1, const mspass::algorithms::TimeWindow ti2) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>mspass::seismic::TimeWindowCmp::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>ti1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>ti2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return true when the first window ends before the second window starts. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/seismic/DataGap.h" line="19" column="8" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/seismic/DataGap.h" bodystart="19" bodyend="22"/>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Function object used for weak comparison to order TimeWindow objects. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>TimeWindow objects are used, among other things, to define real or processed induced data gaps. The set container requires a weak ordering function like to correctly determine if a time is inside a particular time window. <simplesect kind="author"><para>Gary L. Pavlis </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/source/cxx/include/mspass/seismic/DataGap.h" line="16" column="1" bodyfile="/home/runner/work/mspass/mspass/source/cxx/include/mspass/seismic/DataGap.h" bodystart="16" bodyend="23"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1seismic_1_1_time_window_cmp_1ad4907b066765551fa19bbf0d4c8a6e31" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindowCmp</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

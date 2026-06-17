@@ -1,0 +1,636 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mspasspy.util.db_utils &#8212; MsPASS 2.4.1.dev0+g518a12e5 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=d8d6f5fb"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mspasspy/util/db_utils';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.util.db_utils</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mspasspy.util.db_utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Database utility functions for parallel processing support.</span>
+
+<span class="sd">This module provides utilities for handling database connections in both</span>
+<span class="sd">serial and parallel (Dask worker) contexts.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkerPlugin</span><span class="p">,</span> <span class="n">get_worker</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+
+
+<div class="viewcode-block" id="fetch_dbhandle">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.fetch_dbhandle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch a Database handle from dbname_or_handle.</span>
+
+<span class="sd">    This function provides a unified way to get a Database instance.  In parallel mode</span>
+<span class="sd">    (Dask worker), it fetches the DBClient from the worker plugin to avoid serializing</span>
+<span class="sd">    Database/DBClient objects.  In serial mode, it returns the provided Database instance.</span>
+
+<span class="sd">    :param dbname_or_handle: Either a string (database name) or a Database instance.</span>
+<span class="sd">        If a string is provided, the function assumes it&#39;s being called in a Dask worker</span>
+<span class="sd">        context and will get the DBClient from worker.data[&quot;dbclient&quot;].</span>
+<span class="sd">    :type dbname_or_handle: str or :class:`mspasspy.db.database.Database`</span>
+<span class="sd">    :return: :class:`mspasspy.db.database.Database` instance</span>
+<span class="sd">    :raises: ValueError if dbname_or_handle is neither a string nor a Database instance,</span>
+<span class="sd">        or if called with a string outside of a Dask worker context.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">worker</span> <span class="o">=</span> <span class="n">get_worker</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;fetch_dbhandle: when called with a string argument, this function must be &quot;</span>
+                <span class="s2">&quot;executed within a Dask worker context so that get_worker() succeeds and a &quot;</span>
+                <span class="s2">&quot;DBClient is available via a worker plugin.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dbclient</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;dbclient&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;fetch_dbhandle: Dask worker does not contain a &#39;dbclient&#39; entry in &quot;</span>
+                <span class="s2">&quot;worker.data. Make sure the MongoDBWorker (or an equivalent WorkerPlugin) &quot;</span>
+                <span class="s2">&quot;is registered so that a DBClient is created per worker.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">,</span> <span class="n">Database</span><span class="p">):</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">dbname_or_handle</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;fetch_dbhandle: illegal type for arg1=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be str defining a db name or a Database object&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">db</span></div>
+
+
+
+<div class="viewcode-block" id="MongoDBWorker">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.MongoDBWorker">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MongoDBWorker</span><span class="p">(</span><span class="n">WorkerPlugin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dask worker plugin to manage MongoDB client per worker.</span>
+
+<span class="sd">    Creates a DBClient instance for each worker and stores it in worker.data.</span>
+<span class="sd">    This ensures each worker has its own database connection to prevent</span>
+<span class="sd">    connection leaks when Database objects are serialized to workers.</span>
+
+<span class="sd">    :param mspass_client: MSPASS :class:`~mspasspy.client.Client` (or any object</span>
+<span class="sd">        with ``get_database_client()`` returning a :class:`~mspasspy.db.client.DBClient`).</span>
+<span class="sd">        The worker uses that client&#39;s ``_mspass_db_host`` for per-worker connections.</span>
+<span class="sd">    :param dbclient_key: Key under ``worker.data`` for the created :class:`~mspasspy.db.client.DBClient`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_client</span><span class="p">,</span> <span class="n">dbclient_key</span><span class="o">=</span><span class="s2">&quot;dbclient&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span> <span class="o">=</span> <span class="n">dbclient_key</span>
+        <span class="n">db_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">db_client</span><span class="p">,</span> <span class="s2">&quot;_mspass_db_host&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;mongodb://localhost:27017/&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;mongodb://&quot;</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;mongodb://</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">url</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;dbclient_key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span><span class="p">,</span>
+            <span class="s2">&quot;connection_url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;dbclient_key&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;connection_url&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="MongoDBWorker.setup">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.MongoDBWorker.setup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worker</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when worker starts - create DBClient for this worker.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span><span class="p">)</span>
+        <span class="n">worker</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbclient</span></div>
+
+
+<div class="viewcode-block" id="MongoDBWorker.teardown">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.MongoDBWorker.teardown">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worker</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when worker shuts down - cleanup if needed.&quot;&quot;&quot;</span>
+        <span class="n">dbclient</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dbclient</span><span class="p">:</span>
+            <span class="n">dbclient</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

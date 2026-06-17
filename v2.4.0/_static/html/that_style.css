@@ -1,0 +1,862 @@
+@charset "UTF-8";
+
+:root,
+html[data-theme="light"] {
+  --mspass-bg: #ffffff;
+  --mspass-surface: #f7f9fb;
+  --mspass-surface-strong: #eef3f6;
+  --mspass-border: #d8dee8;
+  --mspass-text: #1f2933;
+  --mspass-muted: #5e6a76;
+  --mspass-primary: #27627a;
+  --mspass-primary-strong: #164f63;
+  --mspass-secondary: #6b705c;
+  --mspass-accent: #b45f3a;
+  --mspass-code: #f3f5f7;
+  --mspass-diagram-bg: #f6f8fa;
+  --mspass-shadow: rgba(31, 41, 51, 0.12);
+}
+
+html[data-theme="dark"] {
+  --mspass-bg: #111820;
+  --mspass-surface: #17212b;
+  --mspass-surface-strong: #1f2b36;
+  --mspass-border: #344452;
+  --mspass-text: #e5edf3;
+  --mspass-muted: #aab6c1;
+  --mspass-primary: #8ac7dd;
+  --mspass-primary-strong: #b9dfeb;
+  --mspass-secondary: #adb591;
+  --mspass-accent: #e09a79;
+  --mspass-code: #1d2833;
+  --mspass-diagram-bg: #17212b;
+  --mspass-shadow: rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --mspass-bg: #111820;
+    --mspass-surface: #17212b;
+    --mspass-surface-strong: #1f2b36;
+    --mspass-border: #344452;
+    --mspass-text: #e5edf3;
+    --mspass-muted: #aab6c1;
+    --mspass-primary: #8ac7dd;
+    --mspass-primary-strong: #b9dfeb;
+    --mspass-secondary: #adb591;
+    --mspass-accent: #e09a79;
+    --mspass-code: #1d2833;
+    --mspass-diagram-bg: #17212b;
+    --mspass-shadow: rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+}
+
+html,
+body,
+#doc-content,
+#side-nav,
+#nav-tree,
+#top,
+#titlearea,
+#main-menu,
+div.contents,
+div.header,
+div.headertitle,
+div.textblock,
+div.summary,
+div.directory,
+div.toc,
+div.ingroups,
+table,
+tbody,
+thead,
+tfoot,
+tr,
+td,
+th,
+dl,
+dt,
+dd,
+p,
+ul,
+ol,
+li {
+  background-color: var(--mspass-bg);
+  color: var(--mspass-text);
+}
+
+body,
+table,
+div,
+p,
+dl {
+  font: 400 15px/1.55 "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+a,
+a:visited,
+a.el,
+a.el:visited,
+a.elRef,
+a.elRef:visited,
+a.code,
+a.code:visited,
+a.codeRef,
+a.codeRef:visited {
+  color: var(--mspass-primary);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--mspass-primary-strong);
+  text-decoration: underline;
+}
+
+#top,
+#titlearea,
+#main-menu,
+div.navpath {
+  background: var(--mspass-bg);
+  background-image: none;
+  border-color: var(--mspass-border);
+  box-shadow: none;
+}
+
+#titlearea {
+  border-bottom: 1px solid var(--mspass-border);
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 0.75rem 1.25rem;
+  width: 100%;
+}
+
+#titlearea table,
+#titlearea tbody,
+#titlearea tr,
+#titlearea td {
+  background: transparent;
+}
+
+#titlearea table {
+  max-width: 100%;
+}
+
+#projectalign {
+  min-width: 0;
+}
+
+#projectname,
+#projectbrief {
+  overflow-wrap: anywhere;
+}
+
+.title,
+div.header,
+div.headertitle,
+div.contents,
+p.reference,
+a.el,
+a.elRef {
+  overflow-wrap: anywhere;
+}
+
+#projectname {
+  color: var(--mspass-text);
+  font-size: 1.28rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+#projectnumber,
+#projectbrief,
+span.legend,
+h3.version,
+.directory .levels,
+div.summary,
+div.ingroups {
+  color: var(--mspass-muted);
+}
+
+#projectnumber,
+#projectbrief {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+#main-menu {
+  border-bottom: 1px solid var(--mspass-border);
+  padding: 0 1rem;
+}
+
+.sm-dox,
+.sm-dox ul,
+.sm-dox li,
+.sm-dox a,
+.sm-dox a:focus,
+.sm-dox a:active,
+.sm-dox a:hover,
+.sm-dox a.highlighted {
+  background-image: none;
+  box-shadow: none;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+.sm-dox > li > a,
+.sm-dox > li:not(:last-child) > a {
+  color: var(--mspass-text);
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.7rem 0.9rem;
+  text-transform: none;
+}
+
+.sm-dox > li > a:hover,
+.sm-dox > li > a.highlighted,
+.sm-dox > li:not(:last-child) > a:hover,
+.sm-dox > li:not(:last-child) > a.highlighted {
+  background: var(--mspass-surface-strong);
+  color: var(--mspass-primary-strong);
+}
+
+.sm-dox ul {
+  background: var(--mspass-bg);
+  border: 1px solid var(--mspass-border);
+  border-radius: 6px !important;
+  box-shadow: 0 0.45rem 1.2rem var(--mspass-shadow);
+  padding: 0.35rem;
+}
+
+.sm-dox ul a {
+  background: transparent;
+  color: var(--mspass-text);
+  font-size: 0.92rem;
+  font-weight: 500;
+  padding: 0.45rem 0.7rem;
+}
+
+.sm-dox ul a:hover,
+.sm-dox ul a.highlighted {
+  background: var(--mspass-surface-strong);
+  color: var(--mspass-primary-strong);
+}
+
+.sm-dox a span.sub-arrow {
+  border-color: var(--mspass-muted) transparent transparent;
+}
+
+#MSearchBox,
+#MSearchResultsWindow,
+#MSearchSelectWindow,
+a.SelectItem,
+input,
+select,
+textarea {
+  background: var(--mspass-bg);
+  border-color: var(--mspass-border);
+  color: var(--mspass-text);
+}
+
+#MSearchBox {
+  border: 1px solid var(--mspass-border);
+  border-radius: 6px;
+  box-shadow: none;
+  height: 2rem;
+  margin-top: 0.2rem;
+}
+
+#MSearchField {
+  color: var(--mspass-text);
+  font: 400 0.92rem "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+div.contents {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: 1.4rem 1.6rem 2rem;
+  width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.title {
+  color: var(--mspass-text);
+  font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0.5rem 0 1rem;
+}
+
+h1.groupheader,
+h2.groupheader,
+tr.heading h2 {
+  border-bottom: 1px solid var(--mspass-border);
+  color: var(--mspass-text);
+  font-weight: 700;
+}
+
+h1.groupheader {
+  font-size: 1.5rem;
+}
+
+h2.groupheader {
+  font-size: 1.35rem;
+}
+
+h3.groupheader,
+.paramtype,
+.mlabel {
+  color: var(--mspass-secondary);
+}
+
+.memitem,
+.memproto,
+.memdoc,
+.memtitle,
+.memname,
+.memdesc,
+.memItemLeft,
+.memItemRight,
+.memTemplItemLeft,
+.memTemplItemRight,
+.memberdecls,
+.fieldtable,
+.directory,
+.params,
+.mlabels,
+.directory tr,
+.memberdecls tr,
+.memberdecls td,
+.memberdecls th,
+.mdescLeft,
+.mdescRight {
+  background-image: none;
+  border-color: var(--mspass-border);
+  box-shadow: none;
+  color: var(--mspass-text);
+}
+
+.memitem,
+.memproto,
+.memdoc,
+.memberdecls,
+table.memberdecls,
+table.directory,
+table.fieldtable,
+table.params {
+  border-radius: 6px;
+}
+
+.memitem {
+  box-sizing: border-box;
+  display: block !important;
+  margin-right: 0;
+  max-width: 100%;
+  width: 100% !important;
+}
+
+.memproto,
+.memdoc {
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.memproto table,
+.memdoc table {
+  max-width: 100%;
+}
+
+.memproto table,
+.memproto tbody,
+.memproto tr,
+.memproto td,
+.memproto .memname,
+.memproto .mlabels,
+.memdoc table,
+.memdoc tbody,
+.memdoc tr,
+.memdoc td {
+  box-sizing: border-box;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.memproto .memname,
+.memproto .paramtype,
+.memproto .paramname,
+.memdoc .paramtype,
+.memdoc .paramname {
+  overflow-wrap: anywhere;
+}
+
+.memproto,
+.memtitle,
+.memberdecls .heading,
+table.fieldtable th,
+table.doxtable th {
+  background: var(--mspass-surface-strong);
+}
+
+.memdoc,
+table.memberdecls,
+table.directory,
+table.fieldtable,
+table.params,
+table.doxtable {
+  background: var(--mspass-bg);
+  border: 1px solid var(--mspass-border);
+  box-shadow: none;
+}
+
+.memberdecls .odd,
+table.directory tr.even,
+table.doxtable tr:nth-child(even) {
+  background: var(--mspass-surface);
+}
+
+.memtitle {
+  color: var(--mspass-primary-strong);
+  font-weight: 700;
+}
+
+.memname,
+.paramname,
+.params .paramname {
+  color: var(--mspass-text);
+  font-weight: 600;
+}
+
+.mlabel {
+  background: var(--mspass-surface-strong);
+  border: 1px solid var(--mspass-border);
+  border-radius: 4px;
+}
+
+table.memberdecls,
+table.directory,
+table.fieldtable,
+table.params,
+table.doxtable {
+  box-sizing: border-box;
+  max-width: 100%;
+  width: 100%;
+}
+
+table.memberdecls td,
+table.memberdecls th,
+table.directory td,
+table.directory th,
+table.fieldtable td,
+table.fieldtable th,
+table.params td,
+table.params th,
+table.doxtable td,
+table.doxtable th {
+  border-color: var(--mspass-border);
+  padding: 0.45rem 0.55rem;
+}
+
+.memItemLeft,
+.memItemRight,
+.memTemplItemLeft,
+.memTemplItemRight,
+.memdescLeft,
+.memdescRight {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+@media (min-width: 721px) {
+  table.memberdecls .memItemLeft,
+  table.memberdecls .memTemplItemLeft {
+    overflow-wrap: normal;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  table.memberdecls .memItemRight,
+  table.memberdecls .memTemplItemRight {
+    width: 100%;
+  }
+}
+
+.fragment,
+pre.fragment,
+div.line,
+code,
+.computeroutput {
+  background: var(--mspass-code);
+  border-color: var(--mspass-border);
+  color: var(--mspass-text);
+}
+
+.fragment {
+  border: 1px solid var(--mspass-border);
+  border-radius: 6px;
+  box-shadow: none;
+  overflow-x: auto;
+  padding: 0.65rem;
+}
+
+pre.fragment,
+div.line {
+  font: 400 0.92rem/1.5 "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+span.lineno {
+  background: var(--mspass-surface-strong);
+  border-right: 2px solid var(--mspass-border);
+  color: var(--mspass-muted);
+}
+
+span.lineno a {
+  background: transparent;
+  color: inherit;
+}
+
+span.lineno a:hover,
+span.lineno a:focus {
+  background: var(--mspass-surface);
+  color: var(--mspass-primary-strong);
+}
+
+code,
+.computeroutput {
+  border: 1px solid var(--mspass-border);
+  border-radius: 4px;
+  padding: 0.05rem 0.25rem;
+}
+
+div.dyncontent,
+.dotgraph,
+.mscgraph,
+.plantumlgraph,
+.diagraph {
+  border-radius: 6px;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+div.dyncontent img,
+.dotgraph img,
+.mscgraph img,
+.plantumlgraph img,
+.diagraph img {
+  height: auto;
+  max-width: 100%;
+}
+
+.inherit_header td {
+  background: var(--mspass-surface-strong);
+  color: var(--mspass-text);
+  font-weight: 600;
+}
+
+.inherit_header img {
+  background: var(--mspass-bg);
+  border: 1px solid var(--mspass-border);
+  border-radius: 3px;
+  padding: 1px;
+}
+
+
+span.keyword,
+span.keywordflow {
+  color: #5da66f;
+  font-weight: 700;
+}
+
+span.keywordtype,
+span.preprocessor {
+  color: var(--mspass-accent);
+}
+
+span.comment {
+  color: var(--mspass-muted);
+  font-style: italic;
+}
+
+span.stringliteral,
+span.charliteral {
+  color: var(--mspass-secondary);
+}
+
+html[data-theme="dark"] span.keyword,
+html[data-theme="dark"] span.keywordflow {
+  color: #9bd18f;
+}
+
+html[data-theme="dark"] span.stringliteral,
+html[data-theme="dark"] span.charliteral {
+  color: #c9d98f;
+}
+
+html[data-theme="dark"] span.keywordtype,
+html[data-theme="dark"] span.preprocessor {
+  color: #e09a79;
+}
+
+div.ah,
+span.ah {
+  background: var(--mspass-surface-strong);
+  border: 1px solid var(--mspass-border);
+  border-radius: 4px;
+  box-shadow: none;
+  color: var(--mspass-secondary);
+  font: 700 0.95rem "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  margin: 0.25rem 0;
+  padding: 0.2rem 0.35rem;
+  text-transform: none;
+}
+
+div.navpath,
+#nav-path,
+#nav-path ul,
+#nav-path li,
+.navpath ul,
+.navpath li,
+.navpath li.navelem a {
+  background: var(--mspass-surface);
+  background-image: none;
+  border-color: var(--mspass-border);
+  color: var(--mspass-muted);
+  text-shadow: none;
+}
+
+div.qindex,
+div.navtab,
+div.classindex,
+table.classindex {
+  background: var(--mspass-bg);
+  border-color: var(--mspass-border);
+}
+
+a.qindexHL {
+  background: var(--mspass-primary);
+  border: 1px solid var(--mspass-primary);
+  color: #ffffff;
+}
+
+blockquote,
+dl.note,
+dl.warning,
+dl.attention,
+dl.pre,
+dl.post,
+dl.invariant,
+dl.deprecated,
+dl.todo,
+dl.test,
+dl.bug {
+  background: var(--mspass-surface);
+  border-color: var(--mspass-border);
+  color: var(--mspass-text);
+}
+
+.caption,
+caption,
+dt {
+  font-weight: 700;
+}
+
+dl.el {
+  margin-left: 0;
+}
+
+div.multicol {
+  column-gap: 1.5rem;
+}
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] table,
+html[data-theme="dark"] tbody,
+html[data-theme="dark"] thead,
+html[data-theme="dark"] tfoot,
+html[data-theme="dark"] tr,
+html[data-theme="dark"] td,
+html[data-theme="dark"] th,
+html[data-theme="dark"] div,
+html[data-theme="dark"] p,
+html[data-theme="dark"] dl,
+html[data-theme="dark"] dt,
+html[data-theme="dark"] dd,
+html[data-theme="dark"] ul,
+html[data-theme="dark"] ol,
+html[data-theme="dark"] li {
+  background-color: var(--mspass-bg) !important;
+  color: var(--mspass-text);
+}
+
+html[data-theme="dark"] .memproto,
+html[data-theme="dark"] .memtitle,
+html[data-theme="dark"] table.fieldtable th,
+html[data-theme="dark"] table.doxtable th,
+html[data-theme="dark"] #main-menu,
+html[data-theme="dark"] #nav-path,
+html[data-theme="dark"] #nav-path ul,
+html[data-theme="dark"] #nav-path li,
+html[data-theme="dark"] div.navpath,
+html[data-theme="dark"] .navpath ul,
+html[data-theme="dark"] .navpath li {
+  background: var(--mspass-surface-strong) !important;
+}
+
+html[data-theme="dark"] .memberdecls .odd,
+html[data-theme="dark"] table.directory tr.even,
+html[data-theme="dark"] table.doxtable tr:nth-child(even),
+html[data-theme="dark"] blockquote,
+html[data-theme="dark"] dl.note,
+html[data-theme="dark"] dl.warning,
+html[data-theme="dark"] dl.attention,
+html[data-theme="dark"] dl.pre,
+html[data-theme="dark"] dl.post,
+html[data-theme="dark"] dl.invariant,
+html[data-theme="dark"] dl.deprecated,
+html[data-theme="dark"] dl.todo,
+html[data-theme="dark"] dl.test,
+html[data-theme="dark"] dl.bug {
+  background: var(--mspass-surface) !important;
+}
+
+html[data-theme="dark"] .fragment,
+html[data-theme="dark"] pre.fragment,
+html[data-theme="dark"] div.line,
+html[data-theme="dark"] code,
+html[data-theme="dark"] .computeroutput,
+html[data-theme="dark"] #MSearchBox,
+html[data-theme="dark"] #MSearchResultsWindow,
+html[data-theme="dark"] #MSearchSelectWindow,
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background: var(--mspass-code) !important;
+}
+
+html[data-theme="dark"] span.lineno {
+  background: var(--mspass-surface-strong) !important;
+  border-right-color: var(--mspass-border) !important;
+  color: var(--mspass-muted) !important;
+}
+
+html[data-theme="dark"] span.lineno a {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+html[data-theme="dark"] span.lineno a:hover,
+html[data-theme="dark"] span.lineno a:focus {
+  background: var(--mspass-surface) !important;
+  color: var(--mspass-primary-strong) !important;
+}
+
+html[data-theme="dark"] div.dyncontent,
+html[data-theme="dark"] .dotgraph,
+html[data-theme="dark"] .mscgraph,
+html[data-theme="dark"] .plantumlgraph,
+html[data-theme="dark"] .diagraph {
+  background: var(--mspass-diagram-bg) !important;
+  border: 1px solid var(--mspass-border);
+  padding: 0.75rem;
+}
+
+html[data-theme="dark"] div.dyncontent .center,
+html[data-theme="dark"] .dotgraph .center,
+html[data-theme="dark"] .mscgraph .center,
+html[data-theme="dark"] .plantumlgraph .center,
+html[data-theme="dark"] .diagraph .center {
+  background: var(--mspass-diagram-bg) !important;
+}
+
+html[data-theme="dark"] div.dyncontent img[src*="__graph"],
+html[data-theme="dark"] .dotgraph img[src*="__graph"],
+html[data-theme="dark"] .mscgraph img[src*="__graph"],
+html[data-theme="dark"] .plantumlgraph img[src*="__graph"],
+html[data-theme="dark"] .diagraph img[src*="__graph"] {
+  background: transparent !important;
+  filter: invert(0.94) hue-rotate(180deg) saturate(0.8) brightness(1.08) contrast(0.96);
+}
+
+html[data-theme="dark"] .inherit_header td {
+  background: var(--mspass-surface-strong) !important;
+  color: var(--mspass-text);
+}
+
+@media (max-width: 720px) {
+  #titlearea,
+  #main-menu {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  div.contents {
+    padding: 1rem 0.85rem 1.5rem;
+  }
+
+  .memproto table,
+  .memproto .memname,
+  .memproto .mlabels {
+    width: 100% !important;
+  }
+
+  .memproto .mlabels-right {
+    width: auto;
+  }
+
+  table.memberdecls {
+    display: block;
+    overflow-x: hidden;
+    width: 100% !important;
+  }
+
+  table.memberdecls tbody,
+  table.memberdecls tr,
+  table.memberdecls td,
+  table.memberdecls th {
+    box-sizing: border-box;
+    display: block;
+    max-width: 100%;
+    width: 100% !important;
+  }
+
+  table.memberdecls .memItemLeft,
+  table.memberdecls .memTemplItemLeft {
+    padding-bottom: 0.15rem;
+  }
+
+  table.memberdecls .memItemRight,
+  table.memberdecls .memTemplItemRight {
+    padding-left: 0.55rem;
+    padding-top: 0.15rem;
+  }
+
+  table.memberdecls .memSeparator {
+    height: 1px;
+    padding: 0;
+  }
+}

@@ -1,0 +1,930 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mspasspy.db.spectrumdb &#8212; MsPASS 2.4.1.dev0+g518a12e5 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=d8d6f5fb"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mspasspy/db/spectrumdb';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.db.spectrumdb</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mspasspy.db.spectrumdb</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">PowerSpectrum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseSchema</span><span class="p">,</span> <span class="n">MetadataSchema</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+
+
+<div class="viewcode-block" id="BasicObjectDatabase">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BasicObjectDatabase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract base class for database handle to save a single object type.</span>
+
+<span class="sd">    This is a base class for an alternative interface to the MsPASS</span>
+<span class="sd">    database handle used as a core component of the framework.</span>
+<span class="sd">    The main use of this alternative interface is assumed to be</span>
+<span class="sd">    as a way to cleanly add additional data objects to the core object</span>
+<span class="sd">    of MsPASS.   For example, this file contains a concrete implementation</span>
+<span class="sd">    of this class to save power spectrum estimates in a particular</span>
+<span class="sd">    MongoDB collection.  Users should use that as an example for how</span>
+<span class="sd">    to utilize this approach for saving other types of data that</span>
+<span class="sd">    MsPASS standard objects (TimeSeries, Seismogram, TimeSeriesEnsemble,</span>
+<span class="sd">    and SeismogramEnsemble).</span>
+
+<span class="sd">    A key point of this class it to create a simple, flexible interface</span>
+<span class="sd">    to build a MongoDB collection that would store one and only one type</span>
+<span class="sd">    of data object.   An implementation may choose to implement a schema</span>
+<span class="sd">    if they wish using the schema mechanism of MsPASS.   Research uses</span>
+<span class="sd">    for different objects that are specialized to one user or group</span>
+<span class="sd">    may find this class a useful base to build upon.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">type_list</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">db_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">md_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Base class constructor.   Most subclasses should normally</span>
+<span class="sd">        calls this constructor as part of the __init__ method of the</span>
+<span class="sd">        subclass.</span>
+
+<span class="sd">        This constructor creates an instance of the MsPASS Database</span>
+<span class="sd">        class internally (self.db).  Subclasses should define what collections(s)</span>
+<span class="sd">        this handle should reference. A schema can optionally be loaded through</span>
+<span class="sd">        the two schema arguments but is not required.   That is, the decision</span>
+<span class="sd">        on whether or not to enforce a schema definition with MongoDB is</span>
+<span class="sd">        an implementation detail for the type(s) that handle suports.</span>
+<span class="sd">        Note the required `type_list` arg is a list of python types</span>
+<span class="sd">        a concrete implementation will support.   The model is used it that</span>
+<span class="sd">        the a subclass implementation could call this base class constructor</span>
+<span class="sd">        with the list of types it supports.   An appropriate way to think</span>
+<span class="sd">        of `type_list` is a virtual attribute.</span>
+
+<span class="sd">        :param name:   all database systems use the concept of a string that</span>
+<span class="sd">        defines a particular instance of a database stored in that system.</span>
+<span class="sd">        Subclasses should call this constructor to set that name.</span>
+<span class="sd">        :type name:  string</span>
+<span class="sd">        :param type_list:  Because this class is aimed at supporting</span>
+<span class="sd">        management of one or more data types we neee a clean way to define</span>
+<span class="sd">        what those types are.  This argument serves that purpose.  It should</span>
+<span class="sd">        contain a list of python types that can be tested with isintance</span>
+<span class="sd">        to verify data being handled are of the right type.  (see above)</span>
+<span class="sd">        :type type_list:  list of python types that will work in a loop of</span>
+<span class="sd">        isinstance tests.</span>
+<span class="sd">        :param db_schema:   A concrete instance of this class may want to</span>
+<span class="sd">        impose a specific schema on the attributes to be stored in the</span>
+<span class="sd">        database.  This defines the schema to use for attributes stored</span>
+<span class="sd">        externally in the database.  It sets the class variable</span>
+<span class="sd">        self.database_schema.  Note a schema is considered optional and</span>
+<span class="sd">        can be turned off by setting this argument to the magic string</span>
+<span class="sd">        &quot;DO_NOT_LOAD&quot;.</span>
+<span class="sd">        :type db_schema:  Can be one of three type:</span>
+<span class="sd">            1.  mspasspy.db.schema.DatabaseSchema - in this case the class</span>
+<span class="sd">                content is copied to self.database_schema.</span>
+<span class="sd">            2.  A string defining a specific schema by a keyword name.</span>
+<span class="sd">                That name is assume to match a yaml file name in the</span>
+<span class="sd">                mspass data/yaml directory.  e.g. the default mspass</span>
+<span class="sd">                schema is &quot;mspass&quot; defined with the file data/yaml/mspass.yaml.</span>
+<span class="sd">                A special case is the magic name &quot;DO_NOT_LOAD&quot;.  If</span>
+<span class="sd">                that name appears no schema is loaded and self.database_schema is</span>
+<span class="sd">                set to None.</span>
+<span class="sd">            3.  None - this is the default and used to load the default</span>
+<span class="sd">                schema file (&quot;mspass&quot;)/</span>
+<span class="sd">        :param md_schema:  A concrete instance of this class may want to</span>
+<span class="sd">        impose a schema on attributes loaded as Metadata to a MsPASS</span>
+<span class="sd">        data object.   Most useful for type enforcement.   It defines</span>
+<span class="sd">        the contents of the class attribute self.metadata_schema.</span>
+<span class="sd">        Note a schema is considered optional and</span>
+<span class="sd">        can be turned off by setting this argument to the magic string</span>
+<span class="sd">        &quot;DO_NOT_LOAD&quot;.</span>
+<span class="sd">        :type md_schema:  Can be one of three type:</span>
+
+<span class="sd">            1.  mspasspy.db.schema.MetadataSchema - in this case the class</span>
+<span class="sd">                content is copied to self.metadata_schema.</span>
+<span class="sd">            2.  A string defining a specific schema by a keyword name.</span>
+<span class="sd">                That name is assume to match a yaml file name in the</span>
+<span class="sd">                mspass data/yaml directory.  e.g. the default mspass</span>
+<span class="sd">                schema is &quot;mspass&quot; defined with the file data/yaml/mspass.yaml.</span>
+<span class="sd">                A special case is the magic name &quot;DO_NOT_LOAD&quot;.  If</span>
+<span class="sd">                that name appears no schema is loaded and self.metadata_schema is</span>
+<span class="sd">                set to None.</span>
+<span class="sd">            3.  None - this is the default and used to load the default</span>
+<span class="sd">                schema file (&quot;mspass&quot;)/</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">do_not_load_keyword</span> <span class="o">=</span> <span class="s2">&quot;DO_NOT_LOAD&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type_list</span> <span class="o">=</span> <span class="n">type_list</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_schema</span><span class="p">,</span> <span class="n">DatabaseSchema</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">db_schema</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">db_schema</span> <span class="o">==</span> <span class="n">do_not_load_keyword</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">(</span><span class="n">db_schema</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md_schema</span><span class="p">,</span> <span class="n">MetadataSchema</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">md_schema</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md_schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">md_schema</span> <span class="o">==</span> <span class="n">do_not_load_keyword</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">(</span><span class="n">md_schema</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BasicObjectDatabase.data_valid">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase.data_valid">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tests if input datum d has a type supported by this handle.</span>
+<span class="sd">        Returns a True if the answer is yes and false if the answer is no.</span>
+<span class="sd">        Callers should handle the condition of false that would almost alway</span>
+<span class="sd">        be an error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">typ</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="BasicObjectDatabase.read_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase.read_data">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read one datum.</span>
+
+<span class="sd">        Concrete implementation must implement this method.  It would</span>
+<span class="sd">        normally contain some identifier in the arg list to select one an d</span>
+<span class="sd">        only one entry from the database.   It would then return run an</span>
+<span class="sd">        algorithm to construct and return the atomic data with wich this</span>
+<span class="sd">        class is associated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BasicObjectDatabase.save_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase.save_data">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save one datum.</span>
+
+<span class="sd">        Concrete implementations must implement this method.  It will save</span>
+<span class="sd">        datum d by whatever scheme is used for the implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BasicObjectDatabase.verify">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase.verify">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify the validity of the data with which this handle is associated.</span>
+
+<span class="sd">        Any real database needs a way to verify the contents are &quot;clean&quot; as</span>
+<span class="sd">        defined by the needs of the system.   This method should implement</span>
+<span class="sd">        whatever algorithm is appropriate to verify the contents are valid</span>
+<span class="sd">        in the sense that read_data operations will not fail or some more</span>
+<span class="sd">        elaborate requirement is satisified.   Most implementations will</span>
+<span class="sd">        want to use a list of verify tests that implement different</span>
+<span class="sd">        algorithms that define what &quot;clean&quot; means.</span>
+
+<span class="sd">        Concrete implementations must implement this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SpectrumDatabase">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.SpectrumDatabase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpectrumDatabase</span><span class="p">(</span><span class="n">BasicObjectDatabase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specialized database handle to manage PowerSpectrum data.</span>
+
+<span class="sd">    Use this handle to read and write PowerSpectrum objects to a</span>
+<span class="sd">    MongoDB database.  This interface is much simpler than the</span>
+<span class="sd">    standard MsPASS database.  The class has only a basic reader and writer</span>
+<span class="sd">    and a simple verify method required by the abstract base class from</span>
+<span class="sd">    which it is derived.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;PowerSpectrum&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for this database handle.   Note because this class</span>
+<span class="sd">        inherits pymongo.database.Database.   You can pass arguments</span>
+<span class="sd">        to this constructor recognized by the base class constructor</span>
+<span class="sd">        for pymongo&#39;s handle like  &quot;read_concern&quot; or &quot;write_concern&quot; and</span>
+<span class="sd">        they will be passed to the pymongo constructor by the standard</span>
+<span class="sd">        python mechanism of *args and **kwargs.</span>
+
+<span class="sd">        :param name:  MongoDB database name to use.</span>
+<span class="sd">        :type name:  string</span>
+<span class="sd">        :param collection:  optional alternative collection name to</span>
+<span class="sd">        use for reads and writes (default is &quot;PowerSpectrum&quot;)</span>
+<span class="sd">        :type collection:  string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">type_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">PowerSpectrum</span><span class="p">]</span>
+        <span class="n">BasicObjectDatabase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">type_list</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="s2">&quot;DO_NOT_LOAD&quot;</span><span class="p">,</span> <span class="n">md_schema</span><span class="o">=</span><span class="s2">&quot;DO_NOT_LOAD&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SpectrumDatabase.save_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.SpectrumDatabase.save_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata2save</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pickle&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves a single PowerSpectrum object defined through arg0.   Default</span>
+<span class="sd">        dumps all metadata elements to PowerSpectrum collection document</span>
+<span class="sd">        and saves pickled version of datum with the key &quot;serialized_data&quot;.</span>
+
+<span class="sd">        :param datum:  PowerSpectrum to save.  The method will throw a</span>
+<span class="sd">          MsPASSError if this is not a PowerSpectrum object.   If the datum</span>
+<span class="sd">          is marked dead it will be silently skipped.</span>
+<span class="sd">        :param exclude:  list of Metadata keys to not save to the saved</span>
+<span class="sd">          document.  Default is None which means all attributes will be saved.</span>
+<span class="sd">        :param metadata2save: list Metadata keys to be saved.  If not None</span>
+<span class="sd">          (default) only the data fetched with these keys will be saved to</span>
+<span class="sd">          the document created for this object.   If the key is not actually</span>
+<span class="sd">          found in the Metadata area of datum it will be silently ignored.</span>
+<span class="sd">        :param format:  output format of the object.  Currently the only</span>
+<span class="sd">          accepted value is the default of &quot;pickle&quot;.  The default format</span>
+<span class="sd">          pickles the input datum and saves the result with the key</span>
+<span class="sd">          &quot;serialized_data&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s2">&quot;pickle&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;SpectrumDatabase.save_data:  format can currently only be pickle&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_valid</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">datum</span>
+            <span class="k">if</span> <span class="n">metadata2save</span><span class="p">:</span>
+                <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">metadata2save</span><span class="p">:</span>
+                    <span class="c1"># if running this mode silently ignore any</span>
+                    <span class="c1"># metadata defined in the keep list but not defined</span>
+                    <span class="c1"># in the datum.   Questionable behavior</span>
+                    <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">datum</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
+                        <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;serialized_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+            <span class="n">recid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
+            <span class="k">return</span> <span class="n">recid</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;SpectrumDatabase.save_data:  illegal data type for arg0. Found type=</span><span class="si">{typ}</span><span class="s2"> - only support PowerSpectrum&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">typ</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpectrumDatabase.read_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.SpectrumDatabase.read_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">id_or_doc</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads one PowerSpectrum using an object id either directly or</span>
+<span class="sd">        indirectly via an input MongoDB document.   Because this implementation</span>
+<span class="sd">        uses pickle to restore the PowerSpectrum object from a serialized</span>
+<span class="sd">        form it may be useful to verify the content of the restored datum</span>
+<span class="sd">        created by pickle has attributes that are the same as the database.</span>
+<span class="sd">        The can be necessary if the database was edited after a datum of</span>
+<span class="sd">        interest was saved.  The &quot;required&quot; and &quot;override&quot; optional arguments</span>
+<span class="sd">        are used for that purpose.</span>
+
+<span class="sd">        :param id_or_doc:  as the name implies this required argument must</span>
+<span class="sd">          be either a MongoDB ObjectId class or something that at least acts</span>
+<span class="sd">          like a MongoDB document. An id is used directly to generate a query.</span>
+<span class="sd">          If the argument is not an ObjectId the method attempts to fetch</span>
+<span class="sd">          an attribute with the stock key &quot;_id&quot;.   If that key is not found</span>
+<span class="sd">          this method will throw an exception.</span>
+
+<span class="sd">        :param required:  list of keys (strings) that will always be fetched</span>
+<span class="sd">          from the document retrieved in the query.  The content retrieved</span>
+<span class="sd">          will always override any value that might have been stored with the</span>
+<span class="sd">          serialized version of the object.  Use this feature to fix attributes</span>
+<span class="sd">          repaired or added after a datum was saved.</span>
+
+<span class="sd">        :param overide:  list of keys (strings) that should be fetched</span>
+<span class="sd">          from the document retrieved in the query and pushed to the</span>
+<span class="sd">          constructed object.   Use this feature to fix attributes repaired</span>
+<span class="sd">          or added after a datum was saved.  It differs from &quot;required&quot; as</span>
+<span class="sd">          the attribute is treated as optional.  i.e. it a value isn&#39;t found</span>
+<span class="sd">          for a particular key it is simply not posted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">id_or_doc</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">):</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">id_or_doc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">id_or_doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">datakey</span> <span class="o">=</span> <span class="s2">&quot;serialized_data&quot;</span>
+            <span class="k">if</span> <span class="n">datakey</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                <span class="n">datum</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">datakey</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">required</span><span class="p">:</span>
+                        <span class="n">datum</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">override</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">override</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                            <span class="n">datum</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;SpectrumDatabase.read_data:  missing required key=serialized_data - expected to contain datum serialized with pickle&quot;</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">datum</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;SpectrumDatabase.read_data: no document with ObjectId=</span><span class="si">{oid}</span><span class="s2"> was found in PowerSpectrum collection&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">oid</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">oid</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpectrumDatabase.verify">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.SpectrumDatabase.verify">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scans PowerSpectrum collection to verify the contents.  An optional</span>
+<span class="sd">        MongoDB query can be passed to scan a limited subset.  You can also</span>
+<span class="sd">        pass a list of required keys that must be present in each document</span>
+<span class="sd">        processed.  The method always tests for the existence of the special</span>
+<span class="sd">        key &quot;serialized_data&quot; that is used to store a pickled copy of the</span>
+<span class="sd">        datum.</span>
+
+<span class="sd">        :param query:  optional pymongo query (python dict) to apply the</span>
+<span class="sd">          Power Spectrum collection.  Default scans the entire collection.</span>
+
+<span class="sd">        :param required:  optional list of keys every document scan is</span>
+<span class="sd">          expected to contain.</span>
+
+<span class="sd">        :return:  tuple with two integers.  Component 0 will contain the</span>
+<span class="sd">          number of documents scanned and component 1 will contain the number</span>
+<span class="sd">          the method considers valid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">[{}]</span>
+        <span class="n">nprocessed</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nvalid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">testkey</span> <span class="o">=</span> <span class="s2">&quot;serialized_data&quot;</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">testkey</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                <span class="n">aok</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">required</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                            <span class="n">aok</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="k">break</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aok</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">aok</span><span class="p">:</span>
+            <span class="n">nvalid</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">nprocessed</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">nprocessed</span><span class="p">,</span> <span class="n">nvalid</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

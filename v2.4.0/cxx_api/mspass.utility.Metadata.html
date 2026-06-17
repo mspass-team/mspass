@@ -1,0 +1,918 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mspass::utility::Metadata &#8212; MsPASS 2.4.1.dev0+g518a12e5 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=a6aee3fd" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=d8d6f5fb"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'cxx_api/mspass.utility.Metadata';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mspass::seismic::TimeSeries" href="mspass.seismic.TimeSeries.html" />
+    <link rel="prev" title="MsPASS C++ API" href="mspass.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1.dev0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MsPASS</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">C++ API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspass::utility::Metadata</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mspass-utility-metadata">
+<h1>mspass::utility::Metadata<a class="headerlink" href="#mspass-utility-metadata" title="Link to this heading">#</a></h1>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8MetadataE">
+<span id="_CPPv3N6mspass7utility8MetadataE"></span><span id="_CPPv2N6mspass7utility8MetadataE"></span><span id="mspass::utility::Metadata"></span><span class="target" id="classmspass_1_1utility_1_1_metadata"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Metadata</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mspass</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utility</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">BasicMetadata</span></span><a class="headerlink" href="#_CPPv4N6mspass7utility8MetadataE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Subclassed by mspass::seismic::Ensemble&lt; T &gt;, mspass::seismic::CoreSeismogram, mspass::seismic::CoreTimeSeries, mspass::seismic::Ensemble&lt; Tdata &gt;, mspass::seismic::PowerSpectrum, mspass::utility::AntelopePf</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata8MetadataEv">
+<span id="_CPPv3N6mspass7utility8Metadata8MetadataEv"></span><span id="_CPPv2N6mspass7utility8Metadata8MetadataEv"></span><span id="mspass::utility::Metadata::Metadata"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Metadata</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata8MetadataEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata8MetadataERNSt8ifstreamEKNSt6stringE">
+<span id="_CPPv3N6mspass7utility8Metadata8MetadataERNSt8ifstreamEKNSt6stringE"></span><span id="_CPPv2N6mspass7utility8Metadata8MetadataERNSt8ifstreamEKNSt6stringE"></span><span id="mspass::utility::Metadata::Metadata__std::ifstreamR.ssC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a5255fc3ae6accb650f221c9065a92eff"></span><span class="sig-name descname"><span class="n"><span class="pre">Metadata</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ifstream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ifs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">form</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">(</span></span><span class="s"><span class="pre">&quot;pf&quot;</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata8MetadataERNSt8ifstreamEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata">
+<span id="_CPPv3N6mspass7utility8Metadata8MetadataERK8Metadata"></span><span id="_CPPv2N6mspass7utility8Metadata8MetadataERK8Metadata"></span><span id="mspass::utility::Metadata::Metadata__MetadataCR"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1afa617529be5501b6b059091118a1a51f"></span><span class="sig-name descname"><span class="n"><span class="pre">Metadata</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata" title="mspass::utility::Metadata::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">mdold</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8MetadataD0Ev">
+<span id="_CPPv3N6mspass7utility8MetadataD0Ev"></span><span id="_CPPv2N6mspass7utility8MetadataD0Ev"></span><span id="mspass::utility::Metadata::~Metadata"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a6d06560c0b169240031c6a274dc7990f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Metadata</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8MetadataD0Ev" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8MetadataaSERK8Metadata">
+<span id="_CPPv3N6mspass7utility8MetadataaSERK8Metadata"></span><span id="_CPPv2N6mspass7utility8MetadataaSERK8Metadata"></span><span id="mspass::utility::Metadata::assign-operator__MetadataCR"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa"></span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">mdold</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8MetadataaSERK8Metadata" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8MetadatapLERK8Metadata">
+<span id="_CPPv3N6mspass7utility8MetadatapLERK8Metadata"></span><span id="_CPPv2N6mspass7utility8MetadatapLERK8Metadata"></span><span id="mspass::utility::Metadata::add-assign-operator__MetadataCR"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa"></span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6mspass7utility8MetadatapLERK8Metadata" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8MetadataplERK8Metadata">
+<span id="_CPPv3NK6mspass7utility8MetadataplERK8Metadata"></span><span id="_CPPv2NK6mspass7utility8MetadataplERK8Metadata"></span><span id="mspass::utility::Metadata::add-operator__MetadataCRC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8MetadataplERK8Metadata" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata10get_doubleEKNSt6stringE">
+<span id="_CPPv3NK6mspass7utility8Metadata10get_doubleEKNSt6stringE"></span><span id="_CPPv2NK6mspass7utility8Metadata10get_doubleEKNSt6stringE"></span><span id="mspass::utility::Metadata::get_double__ssCC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_double</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata10get_doubleEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata7get_intEKNSt6stringE">
+<span id="_CPPv3NK6mspass7utility8Metadata7get_intEKNSt6stringE"></span><span id="_CPPv2NK6mspass7utility8Metadata7get_intEKNSt6stringE"></span><span id="mspass::utility::Metadata::get_int__ssCC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_int</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata7get_intEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata8get_longEKNSt6stringE">
+<span id="_CPPv3NK6mspass7utility8Metadata8get_longEKNSt6stringE"></span><span id="_CPPv2NK6mspass7utility8Metadata8get_longEKNSt6stringE"></span><span id="mspass::utility::Metadata::get_long__ssCC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504"></span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_long</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata8get_longEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata10get_stringEKNSt6stringE">
+<span id="_CPPv3NK6mspass7utility8Metadata10get_stringEKNSt6stringE"></span><span id="_CPPv2NK6mspass7utility8Metadata10get_stringEKNSt6stringE"></span><span id="mspass::utility::Metadata::get_string__ssCC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_string</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata10get_stringEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata8get_boolEKNSt6stringE">
+<span id="_CPPv3NK6mspass7utility8Metadata8get_boolEKNSt6stringE"></span><span id="_CPPv2NK6mspass7utility8Metadata8get_boolEKNSt6stringE"></span><span id="mspass::utility::Metadata::get_bool__ssCC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_bool</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata8get_boolEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK6mspass7utility8Metadata3getE1TKNSt6stringE">
+<span id="_CPPv3I0ENK6mspass7utility8Metadata3getEKNSt6stringE"></span><span id="_CPPv2I0ENK6mspass7utility8Metadata3getEKNSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539"></span><a class="reference internal" href="#_CPPv4I0ENK6mspass7utility8Metadata3getE1TKNSt6stringE" title="mspass::utility::Metadata::get::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK6mspass7utility8Metadata3getE1TKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK6mspass7utility8Metadata3getE1TPKc">
+<span id="_CPPv3I0ENK6mspass7utility8Metadata3getEPKc"></span><span id="_CPPv2I0ENK6mspass7utility8Metadata3getEPKc"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1a5d6876ed25c3f5d93052239ec828a3c5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0ENK6mspass7utility8Metadata3getE1TPKc" title="mspass::utility::Metadata::get::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK6mspass7utility8Metadata3getE1TPKc" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata7get_anyEKNSt6stringE">
+<span id="_CPPv3NK6mspass7utility8Metadata7get_anyEKNSt6stringE"></span><span id="_CPPv2NK6mspass7utility8Metadata7get_anyEKNSt6stringE"></span><span id="mspass::utility::Metadata::get_any__ssCC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a991516933477580b6b59dd578819df06"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boost</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">any</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_any</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata7get_anyEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata4typeEKNSt6stringE">
+<span id="_CPPv3NK6mspass7utility8Metadata4typeEKNSt6stringE"></span><span id="_CPPv2NK6mspass7utility8Metadata4typeEKNSt6stringE"></span><span id="mspass::utility::Metadata::type__ssCC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata4typeEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6mspass7utility8Metadata3putEvKNSt6stringE1T">
+<span id="_CPPv3I0EN6mspass7utility8Metadata3putEKNSt6stringE1T"></span><span id="_CPPv2I0EN6mspass7utility8Metadata3putEKNSt6stringE1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <a class="reference internal" href="#_CPPv4I0EN6mspass7utility8Metadata3putEvKNSt6stringE1T" title="mspass::utility::Metadata::put::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6mspass7utility8Metadata3putEvKNSt6stringE1T" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6mspass7utility8Metadata3putEvPKc1T">
+<span id="_CPPv3I0EN6mspass7utility8Metadata3putEPKc1T"></span><span id="_CPPv2I0EN6mspass7utility8Metadata3putEPKc1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1aec776bbbbf8528903432d9b30d1272d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">key</span></span>, <a class="reference internal" href="#_CPPv4I0EN6mspass7utility8Metadata3putEvPKc1T" title="mspass::utility::Metadata::put::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN6mspass7utility8Metadata3putEvPKc1T" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKd">
+<span id="_CPPv3N6mspass7utility8Metadata3putEKNSt6stringEKd"></span><span id="_CPPv2N6mspass7utility8Metadata3putEKNSt6stringEKd"></span><span id="mspass::utility::Metadata::put__ssC.doubleC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1aefee14db8cda9c7143a0eb7bf2d1be1f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKd" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKi">
+<span id="_CPPv3N6mspass7utility8Metadata3putEKNSt6stringEKi"></span><span id="_CPPv2N6mspass7utility8Metadata3putEKNSt6stringEKi"></span><span id="mspass::utility::Metadata::put__ssC.iC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a11ef6cbc1adec7964e2d9c3a4ead15b1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKi" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKb">
+<span id="_CPPv3N6mspass7utility8Metadata3putEKNSt6stringEKb"></span><span id="_CPPv2N6mspass7utility8Metadata3putEKNSt6stringEKb"></span><span id="mspass::utility::Metadata::put__ssC.bC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1ab3989b1152e9b7b3dcce36aaec89f46d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKb" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKNSt6stringE">
+<span id="_CPPv3N6mspass7utility8Metadata3putEKNSt6stringEKNSt6stringE"></span><span id="_CPPv2N6mspass7utility8Metadata3putEKNSt6stringEKNSt6stringE"></span><span id="mspass::utility::Metadata::put__ssC.ssC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1adc016a9bb2288f1f0a7687cfa6844ceb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata3putEPKcPKc">
+<span id="_CPPv3N6mspass7utility8Metadata3putEPKcPKc"></span><span id="_CPPv2N6mspass7utility8Metadata3putEPKcPKc"></span><span id="mspass::utility::Metadata::put__cCP.cCP"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1aa60d283b9eaae245294914557c723c30"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata3putEPKcPKc" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata3putENSt6stringEPKc">
+<span id="_CPPv3N6mspass7utility8Metadata3putENSt6stringEPKc"></span><span id="_CPPv2N6mspass7utility8Metadata3putENSt6stringEPKc"></span><span id="mspass::utility::Metadata::put__ss.cCP"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a45c295b33cdbcc297b7429235b81de9a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata3putENSt6stringEPKc" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata10put_objectEKNSt6stringEKN8pybind116objectE">
+<span id="_CPPv3N6mspass7utility8Metadata10put_objectEKNSt6stringEKN8pybind116objectE"></span><span id="_CPPv2N6mspass7utility8Metadata10put_objectEKNSt6stringEKN8pybind116objectE"></span><span id="mspass::utility::Metadata::put_object__ssC.pybind11::objectC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1aa8402af6778236df398ff0fe25911e21"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put_object</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata10put_objectEKNSt6stringEKN8pybind116objectE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata7put_intEKNSt6stringEKi">
+<span id="_CPPv3N6mspass7utility8Metadata7put_intEKNSt6stringEKi"></span><span id="_CPPv2N6mspass7utility8Metadata7put_intEKNSt6stringEKi"></span><span id="mspass::utility::Metadata::put_int__ssC.iC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a5fe91d35373564958386f08915b7ce3c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put_int</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata7put_intEKNSt6stringEKi" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata10put_stringEKNSt6stringEKNSt6stringE">
+<span id="_CPPv3N6mspass7utility8Metadata10put_stringEKNSt6stringEKNSt6stringE"></span><span id="_CPPv2N6mspass7utility8Metadata10put_stringEKNSt6stringEKNSt6stringE"></span><span id="mspass::utility::Metadata::put_string__ssC.ssC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a5efd5678db951e3517c5667fefe93ddf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put_string</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata10put_stringEKNSt6stringEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata8put_boolEKNSt6stringEKb">
+<span id="_CPPv3N6mspass7utility8Metadata8put_boolEKNSt6stringEKb"></span><span id="_CPPv2N6mspass7utility8Metadata8put_boolEKNSt6stringEKb"></span><span id="mspass::utility::Metadata::put_bool__ssC.bC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1add02049febdc316d70d0fb62e96b2e36"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put_bool</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata8put_boolEKNSt6stringEKb" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata10put_doubleEKNSt6stringEKd">
+<span id="_CPPv3N6mspass7utility8Metadata10put_doubleEKNSt6stringEKd"></span><span id="_CPPv2N6mspass7utility8Metadata10put_doubleEKNSt6stringEKd"></span><span id="mspass::utility::Metadata::put_double__ssC.doubleC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1aafaa017f0e16f37a81a6abdb406a1e08"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put_double</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata10put_doubleEKNSt6stringEKd" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata8put_longEKNSt6stringEKl">
+<span id="_CPPv3N6mspass7utility8Metadata8put_longEKNSt6stringEKl"></span><span id="_CPPv2N6mspass7utility8Metadata8put_longEKNSt6stringEKl"></span><span id="mspass::utility::Metadata::put_long__ssC.lC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1ab1ede27ae9810767832f0879ccbfd234"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put_long</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata8put_longEKNSt6stringEKl" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata12append_chainEKNSt6stringEKNSt6stringEKNSt6stringE">
+<span id="_CPPv3N6mspass7utility8Metadata12append_chainEKNSt6stringEKNSt6stringEKNSt6stringE"></span><span id="_CPPv2N6mspass7utility8Metadata12append_chainEKNSt6stringEKNSt6stringEKNSt6stringE"></span><span id="mspass::utility::Metadata::append_chain__ssC.ssC.ssC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">append_chain</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">separator</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">(</span></span><span class="s"><span class="pre">&quot;:&quot;</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata12append_chainEKNSt6stringEKNSt6stringEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata8modifiedEv">
+<span id="_CPPv3NK6mspass7utility8Metadata8modifiedEv"></span><span id="_CPPv2NK6mspass7utility8Metadata8modifiedEv"></span><span id="mspass::utility::Metadata::modifiedC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1ad42258d0cd85b4a3e28eb1448cafe62e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">modified</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata8modifiedEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata14clear_modifiedEv">
+<span id="_CPPv3N6mspass7utility8Metadata14clear_modifiedEv"></span><span id="_CPPv2N6mspass7utility8Metadata14clear_modifiedEv"></span><span id="mspass::utility::Metadata::clear_modified"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">clear_modified</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata14clear_modifiedEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata4keysEv">
+<span id="_CPPv3NK6mspass7utility8Metadata4keysEv"></span><span id="_CPPv2NK6mspass7utility8Metadata4keysEv"></span><span id="mspass::utility::Metadata::keysC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">keys</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata4keysEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata10is_definedEKNSt6stringE">
+<span id="_CPPv3NK6mspass7utility8Metadata10is_definedEKNSt6stringE"></span><span id="_CPPv2NK6mspass7utility8Metadata10is_definedEKNSt6stringE"></span><span id="mspass::utility::Metadata::is_defined__ssCC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_defined</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata10is_definedEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata5eraseEKNSt6stringE">
+<span id="_CPPv3N6mspass7utility8Metadata5eraseEKNSt6stringE"></span><span id="_CPPv2N6mspass7utility8Metadata5eraseEKNSt6stringE"></span><span id="mspass::utility::Metadata::erase__ssC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">erase</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata5eraseEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata4sizeEv">
+<span id="_CPPv3NK6mspass7utility8Metadata4sizeEv"></span><span id="_CPPv2NK6mspass7utility8Metadata4sizeEv"></span><span id="mspass::utility::Metadata::sizeC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata4sizeEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata5beginEv">
+<span id="_CPPv3NK6mspass7utility8Metadata5beginEv"></span><span id="_CPPv2NK6mspass7utility8Metadata5beginEv"></span><span id="mspass::utility::Metadata::beginC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">boost</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">any</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">const_iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata5beginEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6mspass7utility8Metadata3endEv">
+<span id="_CPPv3NK6mspass7utility8Metadata3endEv"></span><span id="_CPPv2NK6mspass7utility8Metadata3endEv"></span><span id="mspass::utility::Metadata::endC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">boost</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">any</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">const_iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata3endEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata10change_keyEKNSt6stringEKNSt6stringE">
+<span id="_CPPv3N6mspass7utility8Metadata10change_keyEKNSt6stringEKNSt6stringE"></span><span id="_CPPv2N6mspass7utility8Metadata10change_keyEKNSt6stringEKNSt6stringE"></span><span id="mspass::utility::Metadata::change_key__ssC.ssC"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">change_key</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">oldkey</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newkey</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata10change_keyEKNSt6stringEKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getEdKNSt6stringE">
+<span id="_CPPv3IENK6mspass7utility8Metadata3getEKNSt6stringE"></span><span id="_CPPv2IENK6mspass7utility8Metadata3getEKNSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1a8de95c06d1c6e064e261c1cde49f0ff9"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getEdKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getEiKNSt6stringE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1a461fa38069a9b499e6381cb4cad3b14d"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getEiKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getElKNSt6stringE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1a7904a74f5d29f63c92d0607c6d76d1a3"></span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getElKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getEbKNSt6stringE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1af526cc7f00976c793f104b32539768f7"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getEbKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getEfKNSt6stringE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1a2ed7fd2682fe3b127ef3148c48cc9cd2"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getEfKNSt6stringE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getEdK6string">
+<span id="_CPPv3IENK6mspass7utility8Metadata3getEK6string"></span><span id="_CPPv2IENK6mspass7utility8Metadata3getEK6string"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1a2269c377a085fa237380ef7223016438"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getEdK6string" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getEiK6string">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1af6039a832c2a9174fba5138313e22af0"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getEiK6string" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getElK6string">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1a5db9d3c7df64572dbea4dcad4697af2b"></span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getElK6string" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getEbK6string">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1ab3c0669e8079562da593df78c9719270"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getEbK6string" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IENK6mspass7utility8Metadata3getEfK6string">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1aa417fcccd6e5ba621b5def12ab8d98ad"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IENK6mspass7utility8Metadata3getEfK6string" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata21serialize_metadata_pyERK8Metadata">
+<span id="_CPPv3N6mspass7utility8Metadata21serialize_metadata_pyERK8Metadata"></span><span id="_CPPv2N6mspass7utility8Metadata21serialize_metadata_pyERK8Metadata"></span><span id="mspass::utility::Metadata::serialize_metadata_py__MetadataCR"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a492ba774f3adb7d1f45bdf41eaa4639b"></span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">serialize_metadata_py</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">md</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata21serialize_metadata_pyERK8Metadata" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8Metadata30restore_serialized_metadata_pyERKN8pybind116objectE">
+<span id="_CPPv3N6mspass7utility8Metadata30restore_serialized_metadata_pyERKN8pybind116objectE"></span><span id="_CPPv2N6mspass7utility8Metadata30restore_serialized_metadata_pyERKN8pybind116objectE"></span><span id="mspass::utility::Metadata::restore_serialized_metadata_py__pybind11::objectCR"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec"></span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">restore_serialized_metadata_py</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">pybind11</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sd</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata30restore_serialized_metadata_pyERKN8pybind116objectE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6mspass7utility8MetadatalsERNSt13ostringstreamERKN6mspass7utility8MetadataE">
+<span id="_CPPv3N6mspass7utility8MetadatalsERNSt13ostringstreamERKN6mspass7utility8MetadataE"></span><span id="_CPPv2N6mspass7utility8MetadatalsERNSt13ostringstreamERKN6mspass7utility8MetadataE"></span><span id="mspass::utility::Metadata::lshift-operator__std::ostringstreamR.mspass::utility::MetadataCR"></span><span class="target" id="classmspass_1_1utility_1_1_metadata_1ab5bd5012ea08b04497a3d19e97412ab1"></span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostringstream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&lt;&lt;</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostringstream</span></span><span class="p"><span class="pre">&amp;</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">mspass</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utility</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata"><span class="n"><span class="pre">Metadata</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8MetadatalsERNSt13ostringstreamERKN6mspass7utility8MetadataE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mspass.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">MsPASS C++ API</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mspass.seismic.TimeSeries.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mspass::seismic::TimeSeries</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8MetadataE"><code class="docutils literal notranslate"><span class="pre">mspass::utility::Metadata</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata8MetadataEv"><code class="docutils literal notranslate"><span class="pre">Metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata8MetadataERNSt8ifstreamEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata"><code class="docutils literal notranslate"><span class="pre">Metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8MetadataD0Ev"><code class="docutils literal notranslate"><span class="pre">~Metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8MetadataaSERK8Metadata"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8MetadatapLERK8Metadata"><code class="docutils literal notranslate"><span class="pre">operator+=()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8MetadataplERK8Metadata"><code class="docutils literal notranslate"><span class="pre">operator+()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata10get_doubleEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_double()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata7get_intEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_int()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata8get_longEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_long()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata10get_stringEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_string()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata8get_boolEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_bool()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENK6mspass7utility8Metadata3getE1TKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENK6mspass7utility8Metadata3getE1TPKc"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata7get_anyEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_any()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata4typeEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN6mspass7utility8Metadata3putEvKNSt6stringE1T"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN6mspass7utility8Metadata3putEvPKc1T"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKd"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKi"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKb"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata3putEKNSt6stringEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata3putEPKcPKc"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata3putENSt6stringEPKc"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata10put_objectEKNSt6stringEKN8pybind116objectE"><code class="docutils literal notranslate"><span class="pre">put_object()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata7put_intEKNSt6stringEKi"><code class="docutils literal notranslate"><span class="pre">put_int()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata10put_stringEKNSt6stringEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">put_string()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata8put_boolEKNSt6stringEKb"><code class="docutils literal notranslate"><span class="pre">put_bool()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata10put_doubleEKNSt6stringEKd"><code class="docutils literal notranslate"><span class="pre">put_double()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata8put_longEKNSt6stringEKl"><code class="docutils literal notranslate"><span class="pre">put_long()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata12append_chainEKNSt6stringEKNSt6stringEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">append_chain()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata8modifiedEv"><code class="docutils literal notranslate"><span class="pre">modified()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata14clear_modifiedEv"><code class="docutils literal notranslate"><span class="pre">clear_modified()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata4keysEv"><code class="docutils literal notranslate"><span class="pre">keys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata10is_definedEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">is_defined()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata5eraseEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">erase()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata4sizeEv"><code class="docutils literal notranslate"><span class="pre">size()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata5beginEv"><code class="docutils literal notranslate"><span class="pre">begin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK6mspass7utility8Metadata3endEv"><code class="docutils literal notranslate"><span class="pre">end()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata10change_keyEKNSt6stringEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">change_key()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getEdKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getEiKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getElKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getEbKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getEfKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getEdK6string"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getEiK6string"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getElK6string"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getEbK6string"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IENK6mspass7utility8Metadata3getEfK6string"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata21serialize_metadata_pyERK8Metadata"><code class="docutils literal notranslate"><span class="pre">serialize_metadata_py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8Metadata30restore_serialized_metadata_pyERKN8pybind116objectE"><code class="docutils literal notranslate"><span class="pre">restore_serialized_metadata_py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N6mspass7utility8MetadatalsERNSt13ostringstreamERKN6mspass7utility8MetadataE"><code class="docutils literal notranslate"><span class="pre">operator&lt;&lt;</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/cxx_api/mspass.utility.Metadata.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/cxx_api/mspass.utility.Metadata.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>
