@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.Undertaker &#8212; MsPASS 2.4.1.dev3+g1c784b34 documentation</title>
+    <title>mspasspy.util.Undertaker &#8212; MsPASS 2.4.1.dev4+g92330b7a documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=0f24d03d"></script>
+    <script src="../../../_static/documentation_options.js?v=0ebaa3b5"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.1.dev3" />
+  <meta name="docsearch:version" content="2.4.1.dev4" />
   </head>
   
   
@@ -1004,7 +1004,7 @@
 <span class="sd">        This method standardizes handling of abortions.  They are always</span>
 <span class="sd">        saved as a document in a collection set by the constructor</span>
 <span class="sd">        (self.aborted_data_collection) that defaults to &quot;abortions&quot;.</span>
-<span class="sd">        The documents saved have up to 3 key-value pairs:</span>
+<span class="sd">        The documents saved have up to 4 key-value pairs:</span>
 
 <span class="sd">        - &quot;tombstone&quot; - contents are a subdocument (dict) of the</span>
 <span class="sd">          wf document that was aborted during construction.</span>
@@ -1014,6 +1014,8 @@
 <span class="sd">          situations it could be set to &quot;unknown&quot; if</span>
 <span class="sd">          Undertaker._handle_abortion is called on a raw document</span>
 <span class="sd">          and type is not set (see parameters below)</span>
+<span class="sd">        - &quot;data_tag&quot; - optional processing stage or job tag set on this</span>
+<span class="sd">          Undertaker instance.</span>
 
 <span class="sd">        :param doc_or_datum:  container defining the aborted fetus.</span>
 <span class="sd">        :type doc_or_datum:  Must be one of `TimeSeries`, `Seismogram`, `Metadata`,</span>
@@ -1037,24 +1039,22 @@
         <span class="n">insertion_doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_tag</span><span class="p">:</span>
             <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;data_tag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_tag</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;tombstone&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc_or_datum</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">insertion_doc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">elog2doc</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="o">.</span><span class="n">elog</span><span class="p">))</span>
+            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">)):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
                 <span class="n">remains</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">remains</span> <span class="o">=</span> <span class="n">doc_or_datum</span>
-            <span class="c1"># Note made a list to be consistent with ensemble version</span>
-            <span class="n">insertion_doc</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tombstone&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">remains</span><span class="p">]}</span>
+            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;tombstone&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">remains</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
                 <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># this should not be entered but is safer to include it</span>
                 <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
-            <span class="n">insertion_doc</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tombstone&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">)}</span>
-            <span class="k">if</span> <span class="n">doc_or_datum</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">logdata</span> <span class="o">=</span> <span class="n">elog2doc</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">)</span>
-                <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;logdata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">logdata</span>
-            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Undertaker.handle_abortion:   Illegal type for arg0=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">))</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MsPASS Schema &#8212; MsPASS 2.4.1.dev3+g1c784b34 documentation</title>
+    <title>MsPASS Schema &#8212; MsPASS 2.4.1.dev4+g92330b7a documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=0f24d03d"></script>
+    <script src="../_static/documentation_options.js?v=0ebaa3b5"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -58,7 +58,7 @@
     <link rel="prev" title="mspass::seismic::Seismogram" href="../cxx_api/mspass.seismic.Seismogram.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.1.dev3" />
+  <meta name="docsearch:version" content="2.4.1.dev4" />
   </head>
   
   
@@ -468,11 +468,13 @@ seismology is CSS3.0, which is used by systems such as Antelope.  In computer
 science, however, the term has a broader meaning: it describes the structure,
 types, and constraints of data.  MsPASS uses that broader meaning because its
 primary database backend is MongoDB rather than a relational database.</p>
-<p>This section documents the metadata keys recognized by MsPASS.  Each table is
-generated from <code class="docutils literal notranslate"><span class="pre">data/yaml/mspass.yaml</span></code> during the Sphinx build, so the
-published tables track the same schema used by the Python database layer.</p>
+<p>This section documents the MongoDB collections and metadata keys recognized by
+MsPASS.  Each table is generated from <code class="docutils literal notranslate"><span class="pre">data/yaml/mspass.yaml</span></code> during the
+Sphinx build, so the published tables track the same schema used by the Python
+database layer.</p>
 <p>The tables below are organized in three ways:</p>
 <ol class="arabic simple">
+<li><p>The database collection schemas defined in the YAML <code class="docutils literal notranslate"><span class="pre">Database</span></code> section.</p></li>
 <li><p>A complete alphabetical catalog of valid metadata keys and aliases.</p></li>
 <li><p>Groups of keys that are normalized into master MongoDB collections, such as
 receiver and source coordinates.</p></li>
@@ -480,320 +482,1742 @@ receiver and source coordinates.</p></li>
 ObsPy <code class="docutils literal notranslate"><span class="pre">Trace</span></code> attributes, three-component orientation metadata, and file
 storage metadata.</p></li>
 </ol>
+<section id="database-collections">
+<h2>Database Collections<a class="headerlink" href="#database-collections" title="Link to this heading">#</a></h2>
+<p>These tables describe the MongoDB collections defined by the YAML schema.  They
+include operational collections such as <code class="docutils literal notranslate"><span class="pre">elog</span></code>, <code class="docutils literal notranslate"><span class="pre">cemetery</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">abortions</span></code> that are populated by the database and dead-data handling code.</p>
+<section id="wf-timeseries-collection">
+<h3>wf_TimeSeries Collection<a class="headerlink" href="#wf-timeseries-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-number">Table 10 </span><span class="caption-text"><strong>wf_TimeSeries collection schema</strong></span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>npts</p></td>
+<td><p>nsamp : wfdisc.nsamp</p></td>
+<td><p>int</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Number of data samples</p></td>
+</tr>
+<tr class="row-even"><td><p>nbytes</p></td>
+<td></td>
+<td><p>int</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Number of bytes for storage of sample data - required for some formats</p></td>
+</tr>
+<tr class="row-odd"><td><p>delta</p></td>
+<td><p>dt</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Data sample interval in seconds</p></td>
+</tr>
+<tr class="row-even"><td><p>sampling_rate</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Data sampling frequency in Hz=1/s</p></td>
+</tr>
+<tr class="row-odd"><td><p>starttime</p></td>
+<td><p>t0 : time</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Time of first sample of data (epoch time or relative to some other time mark)</p></td>
+</tr>
+<tr class="row-even"><td><p>starttime_shift</p></td>
+<td><p>t0shift</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Time shift applied to define relative time of 0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>endtime</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Time of last sample of data (epoch time or relative to some other time mark)</p></td>
+</tr>
+<tr class="row-even"><td><p>utc_convertible</p></td>
+<td></td>
+<td><p>boolean</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>When true starttime_shift can be used to convert relative time to UTC.</p></td>
+</tr>
+<tr class="row-odd"><td><p>time_standard</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Defines time standard for meaning of t0 (default should be UTC)</p></td>
+</tr>
+<tr class="row-even"><td><p>calib</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Nominal conversion factor for changing sample data to ground motion units.</p></td>
+</tr>
+<tr class="row-odd"><td><p>storage_mode</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+</tr>
+<tr class="row-even"><td><p>format</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
+</tr>
+<tr class="row-odd"><td><p>dir</p></td>
+<td><p>file.dir : wfdisc.dir : wfprocess.dir</p></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Directory path to an external file (always used with dfile)</p></td>
+</tr>
+<tr class="row-even"><td><p>dfile</p></td>
+<td><p>file.dfile : wfdisc.dfile : wfprocess.dfile</p></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>External data file name.</p></td>
+</tr>
+<tr class="row-odd"><td><p>foff</p></td>
+<td><p>file.foff : wfdisc.foff : wfprocess.foff</p></td>
+<td><p>int</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
+</tr>
+<tr class="row-even"><td><p>url</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Url to external data file.</p></td>
+</tr>
+<tr class="row-odd"><td><p>gridfs_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>The _id of data file in the fs.files collection.</p></td>
+</tr>
+<tr class="row-even"><td><p>source_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>source</p></td>
+<td><p>ObjectId used to define a particular seismic source</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>site</p></td>
+<td><p>ObjectId used to define a particular instrument/seismic station</p></td>
+</tr>
+<tr class="row-even"><td><p>history_object_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>history_object</p></td>
+<td><p>ObjectId of this document - standard MongoDB attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p>elog_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>elog</p></td>
+<td><p>ObjectID used to define an unique entry in elog collection.</p></td>
+</tr>
+<tr class="row-even"><td><p>data_tag</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Used as a tag for data at a particular stage of processing. Used in save_data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>channel_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>channel</p></td>
+<td><p>ObjectId used to define a particular component of data</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="wf-seismogram-collection">
+<h3>wf_Seismogram Collection<a class="headerlink" href="#wf-seismogram-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-number">Table 11 </span><span class="caption-text"><strong>wf_Seismogram collection schema</strong></span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>npts</p></td>
+<td><p>nsamp : wfdisc.nsamp</p></td>
+<td><p>int</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Number of data samples</p></td>
+</tr>
+<tr class="row-even"><td><p>nbytes</p></td>
+<td></td>
+<td><p>int</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Number of bytes for storage of sample data - required for some formats</p></td>
+</tr>
+<tr class="row-odd"><td><p>delta</p></td>
+<td><p>dt</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Data sample interval in seconds</p></td>
+</tr>
+<tr class="row-even"><td><p>sampling_rate</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Data sampling frequency in Hz=1/s</p></td>
+</tr>
+<tr class="row-odd"><td><p>starttime</p></td>
+<td><p>t0 : time</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Time of first sample of data (epoch time or relative to some other time mark)</p></td>
+</tr>
+<tr class="row-even"><td><p>starttime_shift</p></td>
+<td><p>t0shift</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Time shift applied to define relative time of 0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>endtime</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Time of last sample of data (epoch time or relative to some other time mark)</p></td>
+</tr>
+<tr class="row-even"><td><p>utc_convertible</p></td>
+<td></td>
+<td><p>boolean</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>When true starttime_shift can be used to convert relative time to UTC.</p></td>
+</tr>
+<tr class="row-odd"><td><p>time_standard</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Defines time standard for meaning of t0 (default should be UTC)</p></td>
+</tr>
+<tr class="row-even"><td><p>calib</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Nominal conversion factor for changing sample data to ground motion units.</p></td>
+</tr>
+<tr class="row-odd"><td><p>storage_mode</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+</tr>
+<tr class="row-even"><td><p>format</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
+</tr>
+<tr class="row-odd"><td><p>dir</p></td>
+<td><p>file.dir : wfdisc.dir : wfprocess.dir</p></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Directory path to an external file (always used with dfile)</p></td>
+</tr>
+<tr class="row-even"><td><p>dfile</p></td>
+<td><p>file.dfile : wfdisc.dfile : wfprocess.dfile</p></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>External data file name.</p></td>
+</tr>
+<tr class="row-odd"><td><p>foff</p></td>
+<td><p>file.foff : wfdisc.foff : wfprocess.foff</p></td>
+<td><p>int</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
+</tr>
+<tr class="row-even"><td><p>url</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Url to external data file.</p></td>
+</tr>
+<tr class="row-odd"><td><p>gridfs_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>The _id of data file in the fs.files collection.</p></td>
+</tr>
+<tr class="row-even"><td><p>source_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>source</p></td>
+<td><p>ObjectId used to define a particular seismic source</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>site</p></td>
+<td><p>Linking id to site collection</p></td>
+</tr>
+<tr class="row-even"><td><p>history_object_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>history_object</p></td>
+<td><p>ObjectId of this document - standard MongoDB attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p>elog_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>elog</p></td>
+<td><p>ObjectID used to define an unique entry in elog collection.</p></td>
+</tr>
+<tr class="row-even"><td><p>data_tag</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Used as a tag for data at a particular stage of processing. Used in save_data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>tmatrix</p></td>
+<td></td>
+<td><p>list</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Three-component data’s transformation matrix</p></td>
+</tr>
+<tr class="row-even"><td><p>cardinal</p></td>
+<td></td>
+<td><p>boolean</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>When true the data stored are orthogonal and in cardinal (ENZ) geographic directions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>orthogonal</p></td>
+<td></td>
+<td><p>boolean</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion).</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_id_list</p></td>
+<td></td>
+<td><p>list</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="wf-miniseed-collection">
+<h3>wf_miniseed Collection<a class="headerlink" href="#wf-miniseed-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id4">
+<caption><span class="caption-number">Table 12 </span><span class="caption-text"><strong>wf_miniseed collection schema</strong></span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>npts</p></td>
+<td><p>nsamp : wfdisc.nsamp</p></td>
+<td><p>int</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Number of data samples</p></td>
+</tr>
+<tr class="row-even"><td><p>nbytes</p></td>
+<td></td>
+<td><p>int</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>number of bytes in a group of time ordered miniseed packets</p></td>
+</tr>
+<tr class="row-odd"><td><p>delta</p></td>
+<td><p>dt</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Data sample interval in seconds</p></td>
+</tr>
+<tr class="row-even"><td><p>sampling_rate</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Data sampling frequency in Hz=1/s</p></td>
+</tr>
+<tr class="row-odd"><td><p>starttime</p></td>
+<td><p>t0 : time</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Time of first sample of data (epoch time or relative to some other time mark)</p></td>
+</tr>
+<tr class="row-even"><td><p>starttime_shift</p></td>
+<td><p>t0shift</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Time shift applied to define relative time of 0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>endtime</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Time of last sample of data (epoch time or relative to some other time mark)</p></td>
+</tr>
+<tr class="row-even"><td><p>utc_convertible</p></td>
+<td></td>
+<td><p>boolean</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>When true starttime_shift can be used to convert relative time to UTC.</p></td>
+</tr>
+<tr class="row-odd"><td><p>time_standard</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Defines time standard for meaning of t0 (default should be UTC)</p></td>
+</tr>
+<tr class="row-even"><td><p>calib</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Nominal conversion factor for changing sample data to ground motion units.</p></td>
+</tr>
+<tr class="row-odd"><td><p>storage_mode</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+</tr>
+<tr class="row-even"><td><p>format</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
+</tr>
+<tr class="row-odd"><td><p>dir</p></td>
+<td><p>file.dir : wfdisc.dir : wfprocess.dir</p></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Directory path to an external file (always used with dfile)</p></td>
+</tr>
+<tr class="row-even"><td><p>dfile</p></td>
+<td><p>file.dfile : wfdisc.dfile : wfprocess.dfile</p></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>External data file name.</p></td>
+</tr>
+<tr class="row-odd"><td><p>foff</p></td>
+<td><p>file.foff : wfdisc.foff : wfprocess.foff</p></td>
+<td><p>int</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
+</tr>
+<tr class="row-even"><td><p>url</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Url to external data file.</p></td>
+</tr>
+<tr class="row-odd"><td><p>gridfs_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>The _id of data file in the fs.files collection.</p></td>
+</tr>
+<tr class="row-even"><td><p>source_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>source</p></td>
+<td><p>ObjectId used to define a particular seismic source</p></td>
+</tr>
+<tr class="row-odd"><td><p>site_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>site</p></td>
+<td><p>ObjectId used to define a particular instrument/seismic station</p></td>
+</tr>
+<tr class="row-even"><td><p>history_object_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>history_object</p></td>
+<td><p>ObjectId of this document - standard MongoDB attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p>elog_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>elog</p></td>
+<td><p>ObjectID used to define an unique entry in elog collection.</p></td>
+</tr>
+<tr class="row-even"><td><p>data_tag</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Used as a tag for data at a particular stage of processing. Used in save_data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>last_packet_time</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Time tag on the last packet of a contiguous block of miniseed packets</p></td>
+</tr>
+<tr class="row-even"><td><p>net</p></td>
+<td><p>channel.net : network : site.net : site_net : wfdisc.net</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td><p>site</p></td>
+<td><p>network code (net component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>sta</p></td>
+<td><p>KSTNM : channel.sta : site.sta : station : wfdisc.sta</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td><p>site</p></td>
+<td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-even"><td><p>loc</p></td>
+<td><p>channel.loc : location : site.loc</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td><p>channel</p></td>
+<td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>chan</p></td>
+<td><p>KCMPNM : channel : channel.chan : wfdisc.chan</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td><p>channel</p></td>
+<td><p>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code</p></td>
+</tr>
+<tr class="row-even"><td><p>channel_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>channel</p></td>
+<td><p>ObjectId used to define a particular component of data</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="site-collection">
+<h3>site Collection<a class="headerlink" href="#site-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id5">
+<caption><span class="caption-number">Table 13 </span><span class="caption-text"><strong>site collection schema</strong></span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId used to define a particular instrument/seismic station</p></td>
+</tr>
+<tr class="row-odd"><td><p>net</p></td>
+<td><p>channel.net : network : site.net : site_net : wfdisc.net</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>network code (net component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-even"><td><p>sta</p></td>
+<td><p>KSTNM : channel.sta : site.sta : station : wfdisc.sta</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>loc</p></td>
+<td><p>channel.loc : location : site.loc</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td><p>channel</p></td>
+<td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-even"><td><p>lat</p></td>
+<td><p>STLA : site.lat : site_lat</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>latitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-odd"><td><p>lon</p></td>
+<td><p>STLO : site.lon : site_lon : stlo</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>longitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-even"><td><p>elev</p></td>
+<td><p>STEL : site.elev : site_elev : stel</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
+</tr>
+<tr class="row-odd"><td><p>starttime</p></td>
+<td><p>site.starttime : site_starttime</p></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Time of seismic station/instrument starts recording</p></td>
+</tr>
+<tr class="row-even"><td><p>endtime</p></td>
+<td><p>site.endtime : site_endtime</p></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Time of seismic station/instrument ends recording</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="channel-collection">
+<h3>channel Collection<a class="headerlink" href="#channel-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id6">
+<caption><span class="caption-number">Table 14 </span><span class="caption-text"><strong>channel collection schema</strong></span><a class="headerlink" href="#id6" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId used to define a particular component of data</p></td>
+</tr>
+<tr class="row-odd"><td><p>net</p></td>
+<td><p>channel.net : network : site.net : site_net : wfdisc.net</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td><p>site</p></td>
+<td><p>network code (net component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-even"><td><p>sta</p></td>
+<td><p>KSTNM : channel.sta : site.sta : station : wfdisc.sta</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td><p>site</p></td>
+<td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-odd"><td><p>loc</p></td>
+<td><p>channel.loc : location : site.loc</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
+</tr>
+<tr class="row-even"><td><p>chan</p></td>
+<td><p>KCMPNM : channel : channel.chan : wfdisc.chan</p></td>
+<td><p>string</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code</p></td>
+</tr>
+<tr class="row-odd"><td><p>lat</p></td>
+<td><p>channel_lat</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>latitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-even"><td><p>lon</p></td>
+<td><p>channel_lon</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>longitude of a seismic station/instrument in degrees</p></td>
+</tr>
+<tr class="row-odd"><td><p>elev</p></td>
+<td><p>channel_elev</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
+</tr>
+<tr class="row-even"><td><p>edepth</p></td>
+<td><p>channel_edepth</p></td>
+<td><p>double</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>depth of a seismic station/instrument in km</p></td>
+</tr>
+<tr class="row-odd"><td><p>hang</p></td>
+<td><p>CMPAZ : channel_hang</p></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Azimuth (in degree) of a seismometer component - horizontal angle</p></td>
+</tr>
+<tr class="row-even"><td><p>vang</p></td>
+<td><p>CMPINC : channel_vang</p></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Inclination from +up (in degree) of a seismometer component - vertical angle</p></td>
+</tr>
+<tr class="row-odd"><td><p>starttime</p></td>
+<td><p>channel_starttime</p></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Time of channel starts recording</p></td>
+</tr>
+<tr class="row-even"><td><p>endtime</p></td>
+<td><p>channel_endtime</p></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Time of channel ends recording</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="source-collection">
+<h3>source Collection<a class="headerlink" href="#source-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id7">
+<caption><span class="caption-number">Table 15 </span><span class="caption-text"><strong>source collection schema</strong></span><a class="headerlink" href="#id7" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId used to define a particular seismic source</p></td>
+</tr>
+<tr class="row-odd"><td><p>lat</p></td>
+<td><p>EVLA : origin.lat : source.lat : source_lat</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Latitude (in degrees) of the hypocenter of seismic source</p></td>
+</tr>
+<tr class="row-even"><td><p>lon</p></td>
+<td><p>EVLO : origin.lon : source.lon : source_lon</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Longitude (in degrees) of the hypocenter of seismic source</p></td>
+</tr>
+<tr class="row-odd"><td><p>depth</p></td>
+<td><p>EVDP : origin.depth : source.depth : source_depth</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Depth (in km) of the hypocenter of seismic source</p></td>
+</tr>
+<tr class="row-even"><td><p>time</p></td>
+<td><p>origin.time : source.time : source_time</p></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Origin time of the hypocenter of seismic source (epoch time)</p></td>
+</tr>
+<tr class="row-odd"><td><p>magnitude</p></td>
+<td><p>MAG : source_magnitude</p></td>
+<td><p>double</p></td>
+<td><p>normal</p></td>
+<td></td>
+<td><p>Generic magnitude attribute</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="history-global-collection">
+<h3>history_global Collection<a class="headerlink" href="#history-global-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id8">
+<caption><span class="caption-number">Table 16 </span><span class="caption-text"><strong>history_global collection schema</strong></span><a class="headerlink" href="#id8" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId used to define a global history object</p></td>
+</tr>
+<tr class="row-odd"><td><p>job_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId  used to define a job</p></td>
+</tr>
+<tr class="row-even"><td><p>job_name</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>the name of the job</p></td>
+</tr>
+<tr class="row-odd"><td><p>alg_name</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>the name of the algorithm</p></td>
+</tr>
+<tr class="row-even"><td><p>alg_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId used to define a unique algorithm(alg_name + parameters)</p></td>
+</tr>
+<tr class="row-odd"><td><p>parameters</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>the parameters of the algorithm</p></td>
+</tr>
+<tr class="row-even"><td><p>time</p></td>
+<td></td>
+<td><p>double</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>timestamp when save the global history record</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="history-object-collection">
+<h3>history_object Collection<a class="headerlink" href="#history-object-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id9">
+<caption><span class="caption-number">Table 17 </span><span class="caption-text"><strong>history_object collection schema</strong></span><a class="headerlink" href="#id9" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectId of this document - standard MongoDB attribute</p></td>
+</tr>
+<tr class="row-odd"><td><p>save_uuid</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>unique id string (UUID) of save algorithm that generated this document</p></td>
+</tr>
+<tr class="row-even"><td><p>save_stage</p></td>
+<td></td>
+<td><p>int</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>Processing stage of save process that generated this document</p></td>
+</tr>
+<tr class="row-odd"><td><p>processing_history</p></td>
+<td></td>
+<td><p>bytes</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>serialized content of actual ProcessingHistory container defining full history</p></td>
+</tr>
+<tr class="row-even"><td><p>wf_Seismogram_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>wf_Seismogram</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>wf_TimeSeries_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>wf_TimeSeries</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-even"><td><p>alg_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>history_global</p></td>
+<td><p>ObjectId used to define a unique algorithm(alg_name + parameters)</p></td>
+</tr>
+<tr class="row-odd"><td><p>alg_name</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>the name of the algorithm</p></td>
+</tr>
+<tr class="row-even"><td><p>job_name</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Name tag assigned to a specific workflow (job)</p></td>
+</tr>
+<tr class="row-odd"><td><p>job_id</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Instance name tag of a specific workflow (job).  Added qualifier for job_name that can be used to tag multiple common runs (e.g. a parameter test set)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="elog-collection">
+<h3>elog Collection<a class="headerlink" href="#elog-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id10">
+<caption><span class="caption-number">Table 18 </span><span class="caption-text"><strong>elog collection schema</strong></span><a class="headerlink" href="#id10" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectID used to define an unique entry in elog collection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>logdata</p></td>
+<td></td>
+<td><p>list</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>a list of LogData entries.</p></td>
+</tr>
+<tr class="row-even"><td><p>wf_Seismogram_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>wf_Seismogram</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>wf_TimeSeries_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>wf_TimeSeries</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-even"><td><p>wf_miniseed_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>wf_miniseed</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>tombstone</p></td>
+<td></td>
+<td><p>dict</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>a copy of the Metadata of a dead object.</p></td>
+</tr>
+<tr class="row-even"><td><p>data_tag</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>tag used to identify the processing stage or job that generated this error log.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="cemetery-collection">
+<h3>cemetery Collection<a class="headerlink" href="#cemetery-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id11">
+<caption><span class="caption-number">Table 19 </span><span class="caption-text"><strong>cemetery collection schema</strong></span><a class="headerlink" href="#id11" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectID used to define an unique entry in elog collection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>logdata</p></td>
+<td></td>
+<td><p>list</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>a list of LogData entries.</p></td>
+</tr>
+<tr class="row-even"><td><p>wf_Seismogram_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>wf_Seismogram</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>wf_TimeSeries_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>wf_TimeSeries</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-even"><td><p>wf_miniseed_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>xref_key</p></td>
+<td><p>wf_miniseed</p></td>
+<td><p>ObjectId used to define a data object</p></td>
+</tr>
+<tr class="row-odd"><td><p>tombstone</p></td>
+<td></td>
+<td><p>dict</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>a copy of the Metadata of a dead object.</p></td>
+</tr>
+<tr class="row-even"><td><p>data_tag</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>tag used to identify the processing stage or job that generated this error log.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="abortions-collection">
+<h3>abortions Collection<a class="headerlink" href="#abortions-collection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table" id="id12">
+<caption><span class="caption-number">Table 20 </span><span class="caption-text"><strong>abortions collection schema</strong></span><a class="headerlink" href="#id12" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_id</p></td>
+<td></td>
+<td><p>ObjectId</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>ObjectID used to define a unique entry in abortions collection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>logdata</p></td>
+<td></td>
+<td><p>list</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>a list of LogData entries recorded while constructing an aborted data object.</p></td>
+</tr>
+<tr class="row-even"><td><p>tombstone</p></td>
+<td></td>
+<td><p>dict</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>a copy of the Metadata or source document that failed data-object construction.</p></td>
+</tr>
+<tr class="row-odd"><td><p>type</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>required</p></td>
+<td></td>
+<td><p>expected data-object type for the aborted document.</p></td>
+</tr>
+<tr class="row-even"><td><p>data_tag</p></td>
+<td></td>
+<td><p>string</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>tag used to identify the processing stage or job that generated this abortion record.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
 <section id="all-valid-attributes">
 <h2>All Valid Attributes<a class="headerlink" href="#all-valid-attributes" title="Link to this heading">#</a></h2>
 <p>The table below defines all attributes MsPASS should handle without special
 treatment.  They are arranged in alphabetical order. (Note all keys are
 case sensitive.  In UTF-8 alphabetical order capitals appear before lower case.)</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id2">
-<caption><span class="caption-number">Table 10 </span><span class="caption-text"><strong>All MsPASS Attributes</strong></span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id13">
+<caption><span class="caption-number">Table 21 </span><span class="caption-text"><strong>All MsPASS Attributes</strong></span><a class="headerlink" href="#id13" title="Link to this table">#</a></caption>
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 6.9%" />
-<col style="width: 6.9%" />
-<col style="width: 69.4%" />
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mutable</p></th>
-<th class="head"><p>Concept</p></th>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>DEPMAX</p></td>
+<td><p>depmax</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Minimum amplitude of a signal</p></td>
 </tr>
 <tr class="row-odd"><td><p>DEPMEN</p></td>
+<td><p>depmen</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Mean amplitude of a signal</p></td>
 </tr>
 <tr class="row-even"><td><p>DEPMIN</p></td>
+<td><p>depmin</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Maximum amplitude of a signal</p></td>
 </tr>
 <tr class="row-odd"><td><p>IEVTYP</p></td>
+<td></td>
 <td><p>int</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Event type code as used in SAC</p></td>
 </tr>
 <tr class="row-even"><td><p>IZTYPE</p></td>
+<td><p>TimeReferenceType</p></td>
 <td><p>int</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Reference time type as used by SAC</p></td>
 </tr>
 <tr class="row-odd"><td><p>KEVNM</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Event name</p></td>
 </tr>
 <tr class="row-even"><td><p>_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>ObjectId used to define a data object</p></td>
 </tr>
 <tr class="row-odd"><td><p>calib</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Nominal conversion factor for changing sample data to ground motion units.</p></td>
 </tr>
 <tr class="row-even"><td><p>cardinal</p></td>
+<td></td>
 <td><p>boolean</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>When true the data stored are orthogonal and in cardinal (ENZ) geographic directions.</p></td>
 </tr>
 <tr class="row-odd"><td><p>chan</p></td>
+<td><p>KCMPNM : channel : channel.chan : wfdisc.chan</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_edepth</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>depth of a seismic station/instrument in km</p></td>
 </tr>
 <tr class="row-odd"><td><p>channel_elev</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_endtime</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Time of channel ends recording</p></td>
 </tr>
 <tr class="row-odd"><td><p>channel_hang</p></td>
+<td><p>CMPAZ</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Azimuth (in degree) of a seismometer component - horizontal angle</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>xref_key</p></td>
+<td><p>channel</p></td>
 <td><p>ObjectId used to define a particular component of data</p></td>
 </tr>
 <tr class="row-odd"><td><p>channel_lat</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>latitude of a seismic station/instrument in degrees</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_lon</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>longitude of a seismic station/instrument in degrees</p></td>
 </tr>
 <tr class="row-odd"><td><p>channel_starttime</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Time of channel starts recording</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_vang</p></td>
+<td><p>CMPINC</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Inclination from +up (in degree) of a seismometer component - vertical angle</p></td>
 </tr>
 <tr class="row-odd"><td><p>delta</p></td>
+<td><p>dt</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Data sample interval in seconds</p></td>
 </tr>
 <tr class="row-even"><td><p>dfile</p></td>
+<td><p>file.dfile : wfdisc.dfile : wfprocess.dfile</p></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>External data file name.</p></td>
 </tr>
 <tr class="row-odd"><td><p>dir</p></td>
+<td><p>file.dir : wfdisc.dir : wfprocess.dir</p></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>Directory path to an external file (always used with dfile)</p></td>
 </tr>
 <tr class="row-even"><td><p>dist</p></td>
+<td><p>GCARC : assoc.delta</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Source receiver distance</p></td>
 </tr>
 <tr class="row-odd"><td><p>distance_units</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Units of dist attribute</p></td>
 </tr>
 <tr class="row-even"><td><p>esaz</p></td>
+<td><p>AZ</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Event to station azimuth</p></td>
 </tr>
 <tr class="row-odd"><td><p>foff</p></td>
+<td><p>file.foff : wfdisc.foff : wfprocess.foff</p></td>
 <td><p>int</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
 </tr>
 <tr class="row-even"><td><p>format</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
 </tr>
 <tr class="row-odd"><td><p>gridfs_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>The _id of data file in the fs.files collection.</p></td>
 </tr>
 <tr class="row-even"><td><p>iphase</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Indicated phase (from CSS3.0) - phase name from travel time curve association</p></td>
 </tr>
 <tr class="row-odd"><td><p>jdate</p></td>
+<td></td>
 <td><p>int</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Julian date string as used in CSS3.0</p></td>
 </tr>
 <tr class="row-even"><td><p>loc</p></td>
+<td><p>channel.loc : location : site.loc</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-odd"><td><p>mb</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td></td>
+<td></td>
 <td><p>Body wave magnitude</p></td>
 </tr>
 <tr class="row-even"><td><p>ms</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td></td>
+<td></td>
 <td><p>Surface wave magnitude</p></td>
 </tr>
 <tr class="row-odd"><td><p>nbytes</p></td>
+<td></td>
 <td><p>int</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>Number of bytes for storage of sample data - required for some formats</p></td>
 </tr>
 <tr class="row-even"><td><p>net</p></td>
+<td><p>channel.net : network : site.net : site_net : wfdisc.net</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>network code (net component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-odd"><td><p>npts</p></td>
+<td><p>nsamp : wfdisc.nsamp</p></td>
 <td><p>int</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Number of data samples</p></td>
 </tr>
 <tr class="row-even"><td><p>orthogonal</p></td>
+<td></td>
 <td><p>boolean</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion).</p></td>
 </tr>
 <tr class="row-odd"><td><p>phase</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Phase name assigned by an analyst to a pick</p></td>
 </tr>
 <tr class="row-even"><td><p>sampling_rate</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>Data sampling frequency in Hz=1/s</p></td>
 </tr>
 <tr class="row-odd"><td><p>seaz</p></td>
+<td><p>BAZ</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Station to event azimuth</p></td>
 </tr>
 <tr class="row-even"><td><p>site_elev</p></td>
+<td><p>STEL : site.elev : stel</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
 </tr>
 <tr class="row-odd"><td><p>site_endtime</p></td>
+<td><p>site.endtime</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Time of seismic station/instrument ends recording</p></td>
 </tr>
 <tr class="row-even"><td><p>site_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>xref_key</p></td>
+<td><p>site</p></td>
 <td><p>ObjectId used to define a particular instrument/seismic station</p></td>
 </tr>
 <tr class="row-odd"><td><p>site_lat</p></td>
+<td><p>STLA : site.lat</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>latitude of a seismic station/instrument in degrees</p></td>
 </tr>
 <tr class="row-even"><td><p>site_lon</p></td>
+<td><p>STLO : site.lon : stlo</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>longitude of a seismic station/instrument in degrees</p></td>
 </tr>
 <tr class="row-odd"><td><p>site_starttime</p></td>
+<td><p>site.starttime</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Time of seismic station/instrument starts recording</p></td>
 </tr>
 <tr class="row-even"><td><p>source_depth</p></td>
+<td><p>EVDP : origin.depth : source.depth</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Depth (in km) of the hypocenter of seismic source</p></td>
 </tr>
 <tr class="row-odd"><td><p>source_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>xref_key</p></td>
+<td><p>source</p></td>
 <td><p>ObjectId used to define a particular seismic source</p></td>
 </tr>
 <tr class="row-even"><td><p>source_lat</p></td>
+<td><p>EVLA : origin.lat : source.lat</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Latitude (in degrees) of the hypocenter of seismic source</p></td>
 </tr>
 <tr class="row-odd"><td><p>source_lon</p></td>
+<td><p>EVLO : origin.lon : source.lon</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Longitude (in degrees) of the hypocenter of seismic source</p></td>
 </tr>
 <tr class="row-even"><td><p>source_magnitude</p></td>
+<td><p>MAG</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Generic magnitude attribute</p></td>
 </tr>
 <tr class="row-odd"><td><p>source_time</p></td>
+<td><p>origin.time : source.time</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Origin time of the hypocenter of seismic source (epoch time)</p></td>
 </tr>
 <tr class="row-even"><td><p>sta</p></td>
+<td><p>KSTNM : channel.sta : site.sta : station : wfdisc.sta</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-odd"><td><p>starttime</p></td>
+<td><p>t0 : time</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Time of first sample of data (epoch time or relative to some other time mark)</p></td>
 </tr>
 <tr class="row-even"><td><p>storage_mode</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
 </tr>
 <tr class="row-odd"><td><p>time_standard</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Defines time standard for meaning of t0 (default should be UTC)</p></td>
 </tr>
 <tr class="row-even"><td><p>tmatrix</p></td>
+<td></td>
 <td><p>list</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Three-component data’s transformation matrix</p></td>
 </tr>
 <tr class="row-odd"><td><p>units</p></td>
+<td><p>IDEP : idep</p></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Physical units of sample data (nm/s is normal assumed default)</p></td>
 </tr>
 <tr class="row-even"><td><p>utc_convertible</p></td>
+<td></td>
 <td><p>boolean</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>When true starttime_shift can be used to convert relative time to UTC.</p></td>
 </tr>
 </tbody>
@@ -805,8 +2229,8 @@ alias mechanism that allows a function to fetch an attribute internally
 (i.e. when the data are in memory for processing) using an alternative name (alias).
 The table below defines all valid aliases for unique keys with the alias keys
 separated by colons:</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id3">
-<caption><span class="caption-number">Table 11 </span><span class="caption-text"><strong>All MsPASS aliases</strong></span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id14">
+<caption><span class="caption-number">Table 22 </span><span class="caption-text"><strong>All MsPASS aliases</strong></span><a class="headerlink" href="#id14" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -918,65 +2342,87 @@ separated by colons:</p>
 <p>This set of attributes defines the physical location of a seismic sensor on the
 Earth.  It also lists related attributes used for cross-referencing documents
 in the <code class="docutils literal notranslate"><span class="pre">site</span></code> collection.</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id4">
-<caption><span class="caption-number">Table 12 </span><span class="caption-text"><strong>Receiver coordinate (site collection) Attributes</strong></span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id15">
+<caption><span class="caption-number">Table 23 </span><span class="caption-text"><strong>Receiver coordinate (site collection) Attributes</strong></span><a class="headerlink" href="#id15" title="Link to this table">#</a></caption>
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 6.9%" />
-<col style="width: 6.9%" />
-<col style="width: 69.4%" />
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mutable</p></th>
-<th class="head"><p>Concept</p></th>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>net</p></td>
+<td><p>channel.net : network : site.net : site_net : wfdisc.net</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>network code (net component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-odd"><td><p>sta</p></td>
+<td><p>KSTNM : channel.sta : site.sta : station : wfdisc.sta</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-even"><td><p>loc</p></td>
+<td><p>channel.loc : location : site.loc</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-odd"><td><p>site_lat</p></td>
+<td><p>STLA : site.lat</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>latitude of a seismic station/instrument in degrees</p></td>
 </tr>
 <tr class="row-even"><td><p>site_lon</p></td>
+<td><p>STLO : site.lon : stlo</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>longitude of a seismic station/instrument in degrees</p></td>
 </tr>
 <tr class="row-odd"><td><p>site_elev</p></td>
+<td><p>STEL : site.elev : stel</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
 </tr>
 <tr class="row-even"><td><p>site_starttime</p></td>
+<td><p>site.starttime</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Time of seismic station/instrument starts recording</p></td>
 </tr>
 <tr class="row-odd"><td><p>site_endtime</p></td>
+<td><p>site.endtime</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Time of seismic station/instrument ends recording</p></td>
 </tr>
 <tr class="row-even"><td><p>site_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>xref_key</p></td>
+<td><p>site</p></td>
 <td><p>ObjectId used to define a particular instrument/seismic station</p></td>
 </tr>
 </tbody>
@@ -991,60 +2437,80 @@ multiple location estimates for the same seismic events that is a major
 complication in the relational database schema CSS3.0 used, for example,
 in Antelope.  Each source is defined by the unique id <code class="docutils literal notranslate"><span class="pre">source_id</span></code> listed in
 the table below.</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id5">
-<caption><span class="caption-number">Table 13 </span><span class="caption-text"><strong>Source coordinate (source collection) Attributes</strong></span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id16">
+<caption><span class="caption-number">Table 24 </span><span class="caption-text"><strong>Source coordinate (source collection) Attributes</strong></span><a class="headerlink" href="#id16" title="Link to this table">#</a></caption>
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 6.9%" />
-<col style="width: 6.9%" />
-<col style="width: 69.4%" />
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mutable</p></th>
-<th class="head"><p>Concept</p></th>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>source_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>xref_key</p></td>
+<td><p>source</p></td>
 <td><p>ObjectId used to define a particular seismic source</p></td>
 </tr>
 <tr class="row-odd"><td><p>source_lat</p></td>
+<td><p>EVLA : origin.lat : source.lat</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Latitude (in degrees) of the hypocenter of seismic source</p></td>
 </tr>
 <tr class="row-even"><td><p>source_lon</p></td>
+<td><p>EVLO : origin.lon : source.lon</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Longitude (in degrees) of the hypocenter of seismic source</p></td>
 </tr>
 <tr class="row-odd"><td><p>source_depth</p></td>
+<td><p>EVDP : origin.depth : source.depth</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Depth (in km) of the hypocenter of seismic source</p></td>
 </tr>
 <tr class="row-even"><td><p>source_time</p></td>
+<td><p>origin.time : source.time</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Origin time of the hypocenter of seismic source (epoch time)</p></td>
 </tr>
 <tr class="row-odd"><td><p>source_magnitude</p></td>
+<td><p>MAG</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Generic magnitude attribute</p></td>
 </tr>
 <tr class="row-even"><td><p>mb</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td></td>
+<td></td>
 <td><p>Body wave magnitude</p></td>
 </tr>
 <tr class="row-odd"><td><p>ms</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td></td>
+<td></td>
 <td><p>Surface wave magnitude</p></td>
 </tr>
 </tbody>
@@ -1060,65 +2526,87 @@ the table below.</p>
 a fixed set of required parameters.  The names can be aliased but the
 unique keys of all of the attributes below are identical to the name defined
 for the ObsPy <code class="docutils literal notranslate"><span class="pre">Trace</span></code> object.</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id6">
-<caption><span class="caption-number">Table 14 </span><span class="caption-text"><strong>Required Attributes for obspy Trace object</strong></span><a class="headerlink" href="#id6" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id17">
+<caption><span class="caption-number">Table 25 </span><span class="caption-text"><strong>Required Attributes for obspy Trace object</strong></span><a class="headerlink" href="#id17" title="Link to this table">#</a></caption>
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 6.9%" />
-<col style="width: 6.9%" />
-<col style="width: 69.4%" />
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mutable</p></th>
-<th class="head"><p>Concept</p></th>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>calib</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Nominal conversion factor for changing sample data to ground motion units.</p></td>
 </tr>
 <tr class="row-odd"><td><p>chan</p></td>
+<td><p>KCMPNM : channel : channel.chan : wfdisc.chan</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code</p></td>
 </tr>
 <tr class="row-even"><td><p>delta</p></td>
+<td><p>dt</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Data sample interval in seconds</p></td>
 </tr>
 <tr class="row-odd"><td><p>loc</p></td>
+<td><p>channel.loc : location : site.loc</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-even"><td><p>net</p></td>
+<td><p>channel.net : network : site.net : site_net : wfdisc.net</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>network code (net component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-odd"><td><p>npts</p></td>
+<td><p>nsamp : wfdisc.nsamp</p></td>
 <td><p>int</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Number of data samples</p></td>
 </tr>
 <tr class="row-even"><td><p>sampling_rate</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>Data sampling frequency in Hz=1/s</p></td>
 </tr>
 <tr class="row-odd"><td><p>sta</p></td>
+<td><p>KSTNM : channel.sta : site.sta : station : wfdisc.sta</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-even"><td><p>starttime</p></td>
+<td><p>t0 : time</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Time of first sample of data (epoch time or relative to some other time mark)</p></td>
 </tr>
 </tbody>
@@ -1127,75 +2615,101 @@ for the ObsPy <code class="docutils literal notranslate"><span class="pre">Trace
 </section>
 <section id="channel-attributes">
 <h3>Channel Attributes<a class="headerlink" href="#channel-attributes" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table" id="id7">
-<caption><span class="caption-number">Table 15 </span><span class="caption-text"><strong>Channel attributes</strong></span><a class="headerlink" href="#id7" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id18">
+<caption><span class="caption-number">Table 26 </span><span class="caption-text"><strong>Channel attributes</strong></span><a class="headerlink" href="#id18" title="Link to this table">#</a></caption>
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 6.9%" />
-<col style="width: 6.9%" />
-<col style="width: 69.4%" />
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mutable</p></th>
-<th class="head"><p>Concept</p></th>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>channel_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>xref_key</p></td>
+<td><p>channel</p></td>
 <td><p>ObjectId used to define a particular component of data</p></td>
 </tr>
 <tr class="row-odd"><td><p>chan</p></td>
+<td><p>KCMPNM : channel : channel.chan : wfdisc.chan</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code</p></td>
 </tr>
 <tr class="row-even"><td><p>loc</p></td>
+<td><p>channel.loc : location : site.loc</p></td>
 <td><p>string</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
 </tr>
 <tr class="row-odd"><td><p>channel_lat</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>latitude of a seismic station/instrument in degrees</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_lon</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>longitude of a seismic station/instrument in degrees</p></td>
 </tr>
 <tr class="row-odd"><td><p>channel_elev</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_edepth</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>depth of a seismic station/instrument in km</p></td>
 </tr>
 <tr class="row-odd"><td><p>channel_hang</p></td>
+<td><p>CMPAZ</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Azimuth (in degree) of a seismometer component - horizontal angle</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_vang</p></td>
+<td><p>CMPINC</p></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Inclination from +up (in degree) of a seismometer component - vertical angle</p></td>
 </tr>
 <tr class="row-odd"><td><p>channel_starttime</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Time of channel starts recording</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_endtime</p></td>
+<td></td>
 <td><p>double</p></td>
-<td><p>No</p></td>
+<td><p>normal</p></td>
+<td></td>
 <td><p>Time of channel ends recording</p></td>
 </tr>
 </tbody>
@@ -1206,35 +2720,45 @@ for the ObsPy <code class="docutils literal notranslate"><span class="pre">Trace
 <h3>Three-Component Data Attributes<a class="headerlink" href="#three-component-data-attributes" title="Link to this heading">#</a></h3>
 <p>These attributes describe the orientation and transformation matrix used by
 three-component seismic data objects.</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id8">
-<caption><span class="caption-number">Table 16 </span><span class="caption-text"><strong>Three-component data attributes</strong></span><a class="headerlink" href="#id8" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id19">
+<caption><span class="caption-number">Table 27 </span><span class="caption-text"><strong>Three-component data attributes</strong></span><a class="headerlink" href="#id19" title="Link to this table">#</a></caption>
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 6.9%" />
-<col style="width: 6.9%" />
-<col style="width: 69.4%" />
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mutable</p></th>
-<th class="head"><p>Concept</p></th>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>tmatrix</p></td>
+<td></td>
 <td><p>list</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>Three-component data’s transformation matrix</p></td>
 </tr>
 <tr class="row-odd"><td><p>cardinal</p></td>
+<td></td>
 <td><p>boolean</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>When true the data stored are orthogonal and in cardinal (ENZ) geographic directions.</p></td>
 </tr>
 <tr class="row-even"><td><p>orthogonal</p></td>
+<td></td>
 <td><p>boolean</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion).</p></td>
 </tr>
 </tbody>
@@ -1243,50 +2767,66 @@ three-component seismic data objects.</p>
 </section>
 <section id="seismic-phase-related-attributes">
 <h3>Seismic Phase Related Attributes<a class="headerlink" href="#seismic-phase-related-attributes" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table" id="id9">
-<caption><span class="caption-number">Table 17 </span><span class="caption-text"><strong>Phase attributes</strong></span><a class="headerlink" href="#id9" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id20">
+<caption><span class="caption-number">Table 28 </span><span class="caption-text"><strong>Phase attributes</strong></span><a class="headerlink" href="#id20" title="Link to this table">#</a></caption>
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 6.9%" />
-<col style="width: 6.9%" />
-<col style="width: 69.4%" />
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mutable</p></th>
-<th class="head"><p>Concept</p></th>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>phase</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Phase name assigned by an analyst to a pick</p></td>
 </tr>
 <tr class="row-odd"><td><p>iphase</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Indicated phase (from CSS3.0) - phase name from travel time curve association</p></td>
 </tr>
 <tr class="row-even"><td><p>esaz</p></td>
+<td><p>AZ</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Event to station azimuth</p></td>
 </tr>
 <tr class="row-odd"><td><p>seaz</p></td>
+<td><p>BAZ</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Station to event azimuth</p></td>
 </tr>
 <tr class="row-even"><td><p>dist</p></td>
+<td><p>GCARC : assoc.delta</p></td>
 <td><p>double</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Source receiver distance</p></td>
 </tr>
 <tr class="row-odd"><td><p>distance_units</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td></td>
+<td></td>
 <td><p>Units of dist attribute</p></td>
 </tr>
 </tbody>
@@ -1295,55 +2835,73 @@ three-component seismic data objects.</p>
 </section>
 <section id="external-file-attributes">
 <h3>External File Attributes<a class="headerlink" href="#external-file-attributes" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table" id="id10">
-<caption><span class="caption-number">Table 18 </span><span class="caption-text"><strong>File attributes</strong></span><a class="headerlink" href="#id10" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id21">
+<caption><span class="caption-number">Table 29 </span><span class="caption-text"><strong>File attributes</strong></span><a class="headerlink" href="#id21" title="Link to this table">#</a></caption>
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 6.9%" />
-<col style="width: 6.9%" />
-<col style="width: 69.4%" />
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mutable</p></th>
-<th class="head"><p>Concept</p></th>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>dir</p></td>
+<td><p>file.dir : wfdisc.dir : wfprocess.dir</p></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>Directory path to an external file (always used with dfile)</p></td>
 </tr>
 <tr class="row-odd"><td><p>dfile</p></td>
+<td><p>file.dfile : wfdisc.dfile : wfprocess.dfile</p></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>External data file name.</p></td>
 </tr>
 <tr class="row-even"><td><p>foff</p></td>
+<td><p>file.foff : wfdisc.foff : wfprocess.foff</p></td>
 <td><p>int</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
 </tr>
 <tr class="row-odd"><td><p>format</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
 </tr>
 <tr class="row-even"><td><p>nbytes</p></td>
+<td></td>
 <td><p>int</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>Number of bytes for storage of sample data - required for some formats</p></td>
 </tr>
 <tr class="row-odd"><td><p>storage_mode</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
 </tr>
 <tr class="row-even"><td><p>gridfs_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>The _id of data file in the fs.files collection.</p></td>
 </tr>
 </tbody>
@@ -1352,50 +2910,66 @@ three-component seismic data objects.</p>
 </section>
 <section id="indexing-attributes-for-mongodb">
 <h3>Indexing Attributes for MongoDB<a class="headerlink" href="#indexing-attributes-for-mongodb" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table" id="id11">
-<caption><span class="caption-number">Table 19 </span><span class="caption-text"><strong>MongoDB attributes</strong></span><a class="headerlink" href="#id11" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id22">
+<caption><span class="caption-number">Table 30 </span><span class="caption-text"><strong>MongoDB attributes</strong></span><a class="headerlink" href="#id22" title="Link to this table">#</a></caption>
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 6.9%" />
-<col style="width: 6.9%" />
-<col style="width: 69.4%" />
+<col style="width: 10.9%" />
+<col style="width: 16.4%" />
+<col style="width: 7.3%" />
+<col style="width: 9.1%" />
+<col style="width: 10.9%" />
+<col style="width: 45.5%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Mutable</p></th>
-<th class="head"><p>Concept</p></th>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>constraint</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>concept</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>No</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>ObjectId used to define a data object</p></td>
 </tr>
 <tr class="row-odd"><td><p>site_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>xref_key</p></td>
+<td><p>site</p></td>
 <td><p>ObjectId used to define a particular instrument/seismic station</p></td>
 </tr>
 <tr class="row-even"><td><p>channel_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>xref_key</p></td>
+<td><p>channel</p></td>
 <td><p>ObjectId used to define a particular component of data</p></td>
 </tr>
 <tr class="row-odd"><td><p>source_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>xref_key</p></td>
+<td><p>source</p></td>
 <td><p>ObjectId used to define a particular seismic source</p></td>
 </tr>
 <tr class="row-even"><td><p>gridfs_id</p></td>
+<td></td>
 <td><p>ObjectId</p></td>
-<td><p>Yes</p></td>
+<td><p>optional</p></td>
+<td></td>
 <td><p>The _id of data file in the fs.files collection.</p></td>
 </tr>
 <tr class="row-odd"><td><p>storage_mode</p></td>
+<td></td>
 <td><p>string</p></td>
-<td><p>Yes</p></td>
+<td><p>required</p></td>
+<td></td>
 <td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
 </tr>
 </tbody>
@@ -1443,6 +3017,20 @@ three-component seismic data objects.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-collections">Database Collections</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wf-timeseries-collection">wf_TimeSeries Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wf-seismogram-collection">wf_Seismogram Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wf-miniseed-collection">wf_miniseed Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#site-collection">site Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#channel-collection">channel Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#source-collection">source Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#history-global-collection">history_global Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#history-object-collection">history_object Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#elog-collection">elog Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cemetery-collection">cemetery Collection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#abortions-collection">abortions Collection</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#all-valid-attributes">All Valid Attributes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#master-documents-for-normalized-attributes">Master Documents for Normalized Attributes</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#site-collection-receiver-coordinates">Site Collection (Receiver coordinates)</a></li>
