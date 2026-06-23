@@ -105,6 +105,13 @@ class TestUnderTaker:
         assert (num_docs + 1) == self.db[self.aborted_data_collection].count_documents(
             {}
         )
+        last_document = list(
+            self.db[self.aborted_data_collection].find().sort("_id", -1).limit(1)
+        )[0]
+        assert last_document["data_tag"] == "undertaker_dead"
+        assert isinstance(last_document["tombstone"], dict)
+        assert "logdata" in last_document
+        assert last_document["logdata"][0]["algorithm"] == "sample error"
 
         # Test with Seismogram object
         sg = get_live_seismogram()
@@ -123,6 +130,12 @@ class TestUnderTaker:
         assert (num_docs + 3) == self.db[self.aborted_data_collection].count_documents(
             {}
         )
+        last_document = list(
+            self.db[self.aborted_data_collection].find().sort("_id", -1).limit(1)
+        )[0]
+        assert last_document["data_tag"] == "undertaker_dead"
+        assert last_document["tombstone"] == {"some_key": "some_value"}
+        assert last_document["type"] == "MetadataType"
 
         # Test with a dictionary
         doc = {"key1": "value1", "key2": "value2"}
@@ -138,6 +151,8 @@ class TestUnderTaker:
         last_document = list(
             self.db[self.aborted_data_collection].find().sort("_id", -1).limit(1)
         )[0]
+        assert last_document["data_tag"] == "undertaker_dead"
+        assert last_document["tombstone"] == doc
         assert last_document["type"] == "unknown"
 
         # Test with an invalid type - expecting a TypeError

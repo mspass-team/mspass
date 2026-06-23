@@ -51,6 +51,10 @@ class TestSchema:
         assert self.dbschema.default("wf") == self.dbschema.wf_TimeSeries
         assert self.dbschema.default_name("site") == "site"
         assert self.dbschema.default("site") == self.dbschema.site
+        assert self.dbschema.default_name("cemetery") == "cemetery"
+        assert self.dbschema.default("cemetery") == self.dbschema.cemetery
+        assert self.dbschema.default_name("abortions") == "abortions"
+        assert self.dbschema.default("abortions") == self.dbschema.abortions
         with pytest.raises(MsPASSError, match="no default defined"):
             dummy = self.dbschema.default_name("wff")
         with pytest.raises(MsPASSError, match="no default defined"):
@@ -236,6 +240,13 @@ class TestSchema:
             "depth",
             "time",
         ]
+        assert self.dbschema.elog.required_keys() == ["_id", "logdata"]
+        assert self.dbschema.cemetery.required_keys() == ["_id", "logdata"]
+        assert self.dbschema.abortions.required_keys() == [
+            "_id",
+            "tombstone",
+            "type",
+        ]
 
     def test_DBSchemaDefinition_xref_keys(self):
         assert self.dbschema.wf_TimeSeries.xref_keys() == [
@@ -253,6 +264,17 @@ class TestSchema:
         ]
         assert self.dbschema.site.xref_keys() == []
         assert self.dbschema.source.xref_keys() == []
+        assert self.dbschema.elog.xref_keys() == [
+            "wf_Seismogram_id",
+            "wf_TimeSeries_id",
+            "wf_miniseed_id",
+        ]
+        assert self.dbschema.cemetery.xref_keys() == [
+            "wf_Seismogram_id",
+            "wf_TimeSeries_id",
+            "wf_miniseed_id",
+        ]
+        assert self.dbschema.abortions.xref_keys() == []
 
     def test_MDSchemaDefinition_collection(self):
         assert self.mdschema.TimeSeries.collection("sta") == "site"

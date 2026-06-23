@@ -523,7 +523,7 @@ class Undertaker:
         This method standardizes handling of abortions.  They are always
         saved as a document in a collection set by the constructor
         (self.aborted_data_collection) that defaults to "abortions".
-        The documents saved have up to 3 key-value pairs:
+        The documents saved have up to 4 key-value pairs:
 
         - "tombstone" - contents are a subdocument (dict) of the
           wf document that was aborted during construction.
@@ -533,6 +533,8 @@ class Undertaker:
           situations it could be set to "unknown" if
           Undertaker._handle_abortion is called on a raw document
           and type is not set (see parameters below)
+        - "data_tag" - optional processing stage or job tag set on this
+          Undertaker instance.
 
         :param doc_or_datum:  container defining the aborted fetus.
         :type doc_or_datum:  Must be one of `TimeSeries`, `Seismogram`, `Metadata`,
@@ -556,24 +558,22 @@ class Undertaker:
         insertion_doc = dict()
         if self.data_tag:
             insertion_doc["data_tag"] = self.data_tag
-        if isinstance(doc_or_datum, (dict, Metadata)):
+        if isinstance(doc_or_datum, (TimeSeries, Seismogram)):
+            insertion_doc["tombstone"] = dict(doc_or_datum)
+            if doc_or_datum.elog.size() > 0:
+                insertion_doc.update(elog2doc(doc_or_datum.elog))
+            insertion_doc["type"] = str(doc_or_datum.__class__)
+        elif isinstance(doc_or_datum, (dict, Metadata)):
             if isinstance(doc_or_datum, Metadata):
                 remains = dict(doc_or_datum)
             else:
                 remains = doc_or_datum
-            # Note made a list to be consistent with ensemble version
-            insertion_doc = {"tombstone": [remains]}
+            insertion_doc["tombstone"] = remains
             if type:
                 insertion_doc["type"] = type
             else:
                 # this should not be entered but is safer to include it
                 insertion_doc["type"] = "unknown"
-        elif isinstance(doc_or_datum, (TimeSeries, Seismogram)):
-            insertion_doc = {"tombstone": dict(doc_or_datum)}
-            if doc_or_datum.elog.size() > 0:
-                logdata = elog2doc(doc_or_datum)
-                insertion_doc["logdata"] = logdata
-            insertion_doc["type"] = str(type(doc_or_datum))
         else:
             message = "Undertaker.handle_abortion:   Illegal type for arg0={}".format(
                 str(type(doc_or_datum))
