@@ -189,6 +189,51 @@ Database:
         reference: channel
         constraint: xref_key
 
+  site:
+    schema:
+      _id:
+        type: ObjectID
+        concept: ObjectId used to define a particular instrument/seismic station
+        constraint: required
+      net:
+        type: string
+        concept: network code (net component of SEED net:sta:chan)
+        aliases: [network, site.net, channel.net, wfdisc.net, site_net]
+        constraint: normal
+      sta:
+        type: string
+        concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
+        aliases: [station, site.sta, channel.sta, wfdisc.sta, KSTNM]
+        constraint: normal
+      loc:
+        reference: channel
+        constraint: normal
+      lat:
+        type: double
+        concept: latitude of a seismic station/instrument in degrees
+        aliases: [STLA, site.lat, site_lat]
+        constraint: required
+      lon:
+        type: double
+        concept: longitude of a seismic station/instrument in degrees
+        aliases: [STLO, stlo, site.lon, site_lon]
+        constraint: required
+      elev:
+        type: double
+        concept: elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
+        aliases: [STEL, stel, site.elev, site_elev]
+        constraint: required
+      starttime:
+        type: double
+        concept: Time of seismic station/instrument starts recording
+        aliases: [site.starttime, site_starttime]
+        constraint: normal
+      endtime:
+        type: double
+        concept: Time of seismic station/instrument ends recording
+        aliases: [site.endtime, site_endtime]
+        constraint: normal
+
 
   channel:
     schema:
@@ -348,26 +393,58 @@ Database:
 
   elog:
     schema:
+      <<: &elog_record
+        _id:
+          type: ObjectID
+          concept: ObjectID used to define an unique entry in elog collection.
+          constraint: required
+        logdata:
+          type: list
+          concept: a list of LogData entries.
+          constraint: required
+        wf_Seismogram_id:
+          reference: wf_Seismogram
+          constraint: xref_key
+        wf_TimeSeries_id:
+          reference: wf_TimeSeries
+          constraint: xref_key
+        wf_miniseed_id:
+          reference: wf_miniseed
+          constraint: xref_key
+        tombstone:
+          type: dict
+          concept: a copy of the Metadata of a dead object.
+          constraint: optional
+        data_tag:
+          type: string
+          concept: tag used to identify the processing stage or job that generated this error log.
+          constraint: optional
+
+  cemetery:
+    schema:
+      <<: *elog_record
+
+  abortions:
+    schema:
       _id:
         type: ObjectID
-        concept: ObjectID used to define an unique entry in elog collection.
+        concept: ObjectID used to define a unique entry in abortions collection.
         constraint: required
       logdata:
         type: list
-        concept: a list of LogData.
-        constraint: required
-      wf_Seismogram_id:
-        reference: wf_Seismogram
-        constraint: xref_key
-      wf_TimeSeries_id:
-        reference: wf_TimeSeries
-        constraint: xref_key
-      wf_miniseed_id:
-        reference: wf_miniseed
-        constraint: xref_key
+        concept: a list of LogData entries recorded while constructing an aborted data object.
+        constraint: optional
       tombstone:
         type: dict
-        concept: a copy of the Metadata of a dead object.
+        concept: a copy of the Metadata or source document that failed data-object construction.
+        constraint: required
+      type:
+        type: string
+        concept: expected data-object type for the aborted document.
+        constraint: required
+      data_tag:
+        type: string
+        concept: tag used to identify the processing stage or job that generated this abortion record.
         constraint: optional
 
 

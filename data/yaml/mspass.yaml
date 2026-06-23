@@ -46,7 +46,7 @@ Database:
         nbytes:
           type: int
           concept: Number of bytes for storage of sample data - required for some formats
-          constaint: optional
+          constraint: optional
         delta:
           type: double
           concept: Data sample interval in seconds
@@ -187,7 +187,7 @@ Database:
       nbytes:
         type: int
         concept: number of bytes in a group of time ordered miniseed packets
-        constaint: required
+        constraint: required
       net:
         reference: site
         constraint: normal
@@ -422,26 +422,58 @@ Database:
         constraint:  optional
   elog:
     schema:
+      <<: &elog_record
+        _id:
+          type: ObjectID
+          concept: ObjectID used to define an unique entry in elog collection.
+          constraint: required
+        logdata:
+          type: list
+          concept: a list of LogData entries.
+          constraint: required
+        wf_Seismogram_id:
+          reference: wf_Seismogram
+          constraint: xref_key
+        wf_TimeSeries_id:
+          reference: wf_TimeSeries
+          constraint: xref_key
+        wf_miniseed_id:
+          reference: wf_miniseed
+          constraint: xref_key
+        tombstone:
+          type: dict
+          concept: a copy of the Metadata of a dead object.
+          constraint: optional
+        data_tag:
+          type: string
+          concept: tag used to identify the processing stage or job that generated this error log.
+          constraint: optional
+
+  cemetery:
+    schema:
+      <<: *elog_record
+
+  abortions:
+    schema:
       _id:
         type: ObjectID
-        concept: ObjectID used to define an unique entry in elog collection.
+        concept: ObjectID used to define a unique entry in abortions collection.
         constraint: required
       logdata:
         type: list
-        concept: a list of LogData.
-        constraint: required
-      wf_Seismogram_id:
-        reference: wf_Seismogram
-        constraint: xref_key
-      wf_TimeSeries_id:
-        reference: wf_TimeSeries
-        constraint: xref_key
-      wf_miniseed_id:
-        reference: wf_miniseed
-        constraint: xref_key
+        concept: a list of LogData entries recorded while constructing an aborted data object.
+        constraint: optional
       tombstone:
         type: dict
-        concept: a copy of the Metadata of a dead object.
+        concept: a copy of the Metadata or source document that failed data-object construction.
+        constraint: required
+      type:
+        type: string
+        concept: expected data-object type for the aborted document.
+        constraint: required
+      data_tag:
+        type: string
+        concept: tag used to identify the processing stage or job that generated this abortion record.
         constraint: optional
 
 
