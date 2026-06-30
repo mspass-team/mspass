@@ -284,6 +284,165 @@ pure python code that implements some summation operation.  Turning the
 summation loop into a reduce operator can parallelize the loop.  Users
 should consider that approach in writing pure python algorithms.
 
+Futures
+-------------
+Fundamentals
+#############
+Versions of python newer than 3.2 have a built in
+`cocurrent.futures<https://docs.python.org/3/library/concurrent.futures.html>`_
+module.   That module provides threading support for any python application.
+Since the release of dask distributed they have supported a distributed
+memory variant of the futures api.   That is, dask Futures are used much
+like stock python Futures but can run on a cluster with many nodes.
+The stock python module, in contrast, only works on a single machine
+(shared memory system).  MsPASS uses dask Futures for the `sliding_window_pipeline`
+feature described above.  Although it may be possible to create a workflow
+mixing dask and python Futures, note that is not recommended as it is
+intrisically dangerous and prone to mysterious failures.   The examples
+in this section use dask Futures interface
+but you should be aware the standard python API is very similar.
+
+The `dask documentation<https://docs.dask.org/en/stable/futures.html>`_
+on this topic is excellent.   If you are reading this, you should
+use that to understand the general concepts.  For MsPASS jobs there
+are a few things to highlight:
+
+-  The Futures interface is ideal for a pipeline processing workflow.
+   That means, any workflow that could be expressed as a string of
+   map operators without a reduce operation is easily converted to
+   one you could implement with Futures.
+-  To run a pipeline workflow with Futures the sequence of map
+   operators need to be bundled into a single function.
+   For actual examples see our tutorials for the 2026 Earthscope
+   short course found
+   `here<https://github.com/mspass-team/mspass_tutorial/tree/master/Earthscope2026>`_.
+   For a generic example in pseudocode suppose I wanted to run
+   algorithm A, B, and C on a dask bag of data.   The map version of that
+   sequence might be:
+
+.. code-block:: python
+
+   import dask.bag as dbg
+   mydata = dbg.from_sequence(input_list_defining_data)
+   mydata = dbg.map(reader_function)   #  something to read data from sequence
+   mydata = dbg.map(A)
+   mydata = dbg.map(B)
+   mydata = dbg.map(C)
+   result = mydata.compute()
+
+   To run that with the Futures interface, you would need to create a
+   python function that merges the pipeline steps into function call.
+   Here is a sketch of what how that would be laid out without the
+   real life required complexity of all the arguments to the processing
+   functions:
+
+.. code-block:: python
+
+   def my_process_function(x):
+     """
+     Example function to run process read, A, B, and C with Futures.
+     Arg0 (x) is a value of one of the contents of "input_list_defining_data"
+     in version using map operations above.
+     """
+     d = read_function(x)
+     d = A(d)
+     d = B(d)
+     d = C(d)
+     return d
+
+A naive use of that function on a complete data set is the following:
+
+.. code-block:: python
+
+   from dask.distributed import as_completed
+   from mspasspy.client import Client
+   mspass_client = Client()
+   dask_client = mspass_client.get_scheduler()
+   f_list = list()
+   for x in input_list_defining_data:
+       f = dask_client.submit(my_process_function,x)
+       f_list.append(f)
+   for f in as_completed(f_list):
+       y = f.result()
+       function_to_handle_result(y)
+
+This example uses the `as_completed` dask function.   The
+"function_to_handle_result" is a stub for something like a writer
+to save the results something that combines the result (a variant of Reduce).
+See the dask distributed documentation for details on `as_completed`.
+
+-  The toy example above did not include any arguments to the
+   hypothetical functions used inside "my_process_function".   Arguments are nearly
+   always required that are not simple constants like `collection="wf_TimeSeries"`.
+   It is important to realize that any data passed as arguments to a
+   function used in any parallel construct (map or submit) needs to be
+   serialized, transmitted to the worker, and reconstructed by the worker
+   before the function start work on a particular piece of data.
+   Large, auxiliary data objects that are required arguments can thus
+   create a serious performance issue.   Two common examples in waveform
+   processing are "Matchers" used by :py:func:`mspasspy.db.normalize.normalize`
+   and obspy's
+   `Tau-P travel time calculator<https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html>`_.
+   We have found signicant improvement in performance by using dask's
+   `scatter<https://distributed.dask.org/en/latest/locality.html>`_ to preload large data objects.
+   See the source in that link for details on how to use that function and
+   more about why it is often useful.
+
+MsPASS Sliding Window Pipeline
+#################################
+In version 2.4.0 of MsPASS we added a special function for handling
+large data sets that uses the Futures API called
+:py:func:`mspasspy.workflow.sliding_window_pipeline`.
+The basic structure of the alorithm is similar to the tutorial
+example with `submit` above but it adds an important variation
+for handling large data.  That is, if one applied that algorithm to
+a list of more than a few hundred things we found the scheduler
+would be overwhelmed.   At best performance suffers.  If the list is
+too long you can crash the scheduler.  To keep that from happening
+instead of submitting everyting at once submits are pushed into
+a queue of a finite size (the sliding window).   The scheduler then
+only needs to send a single task (run the function sent with submit
+on the data passed to it) at a time to each worker with a simple
+queue algorithm.   That approach has several advantages
+for typical seismic workflows:
+1. It provides a stable way to handle very large lists like all the
+   wf_miniseed documents that define the raw inputs to a waveform processing
+   workflow.  Prior to our development of the `sliding_window_pipeline`
+   function we had been unable to process data sets with atomic data
+   (TimeSeries or Seismogram objects) driven by a list of documents
+   returned by a MongoDB query.  That approach with a bag created using
+   `dask.bag.from_sequence` would not work when the list was larger than
+   around 10,000 documents.   `sliding_window_pipeline` does no suffer
+   from that problem if the slliding window size is set properly.
+2. Memory use is more predictable than one using either bag.map or the
+   map method of the dask distibuted client.  The reason, in fact,
+   item 1 is a factor is because of memory management issues with
+   stock use of dask's map operators.  Most MsPASS workflows can be
+   reduced to three generic steps:  (a) create a waveform object from
+   some input desciption, (b) modify that datum, and (c) save the
+   modified data.   The input to (a) for atomic data in MsPASS is
+   normally a MongoDB document.  In nearly all cases when that document(s)
+   is used to create a waveform object, the size of what is passed to
+   step (b) bloats by several orders of magnitude.   That seems to fool
+   both the dask and spark schedulers causing them to submit too many
+   tasks to each worker causing memory faults when multiple instances
+   try to allocate additional memory.  With the `sliding_window_pipeline`
+   memory use is always exactly predictable as the sliding window size
+   times the nominal input data size times an algorithm dependent
+   factor (e.g., 2 if the algorithm makes a temporary copy of the input.)
+   See :ref:`memory_management`
+   for more on this topic.
+
+.. note::
+
+   The sliding window pipeline is an interesting example of the utility
+   of modern AI applications in scientific computing.  There seems no
+   definitive pubished source on the idea as it is an application of
+   some common computer science concepts.   The generic algorithm is considered
+   "best practice" in other fields according to Gemini, although I'm
+   unable to validate that claim.  The point is that the idea for this
+   algorithm came from asking Gemini the right question, not by digging
+   through the published literature.
 
 Schedulers
 ---------------
@@ -292,6 +451,15 @@ Dask (the default) and Spark.   Both do very similar things but are known
 to perform differently in different cluster environments.  Users needing to
 push the system to the limits may need to evaluate which perform better in
 their environment.
+
+.. note::
+
+   Although MsPASS still support both pyspark and dask, most of our
+   real data experience has used daks.  Furthermore, the Futures
+   feature of dask, which is the basis for the `sliding_window_pipeline` ,
+   does not seem to have an equivalent in pyspark.   Support for
+   spark should be considered marginal and may, in fact, be dropped in
+   future releases.
 
 In MsPASS we use Spark and Dask to implement the "master-worker"
 model of parallel computing.   The "master" is the scheduler that hands off
@@ -351,38 +519,107 @@ using the data start time, and then saves the results.
   # read -> detrend -> filter -> window
   # example uses dask scheduler
   data = read_distributed_data(db, cursor)
-  data = data.map(signals.detrend,'demean')
+  data = data.map(signals.detrend,type='demean')
   data = data.map(signals.filter,"bandpass",freqmin=0.01,freqmax=2.0)
   # windowing is relative to start time.  300 s window starting at d.t0+200
   data = data.map(lambda d : WindowData(d,200.0,500.0,t0shift=d.t0))
   data_out = data.compute()
+
+That same workflow using `sliding_window_pipeline` is this:
+
+.. code-block:: python
+
+   def atomic_example(doc,dbname):
+       """
+       Example function merging atomic processing example functions
+       into a single function for dask client submit in
+       sliding_window_pipeline.
+       """
+       db = fetch_dbhandle(dbname)   # parallel method to fetch from worker memory
+       d = db.read_data(doc)
+       d = signals.detrend(d,type="demean")
+       d = signals.filter(d,"bandpass",freqmin=0.01,freqmax=2.0)
+       d = WindowData(d,200.0,500.0,t0shift=d.t0)
+       return d
+
+   import mspasspy.client as msc
+   mspass_client = msc.Client()
+   dask_client = mspass_client.get_scheduler()
+   db = mspass_client.get_database("mydatabase")
+   cursor = db.wf_Seismogram.find({})
+   doclist = list(cursor)
+   data_out = sliding_window_pipeline(doclist,
+                       atomic_example,
+                       dask_client,
+                       db.name)
+
+where in for this case I added the code to instantiate a MsPASS Client
+omitted in the map example.   It illustrates that `sliding_window_pipeline`
+requires an instance of the dask client.  With the map version the
+dask client is hidden inside the bag map method.
 
 Ensemble Example
 ----------------------
-This example needs to use function to build a query, put the query
-in a map call, and then run an ensemble process.
-Here is an untested prototype for this manual
+Handling ensembles is similar to atomic data, but the starting point
+to create one is different.   In particular, this example uses
+`read_distributed_data` with a list of dictionaries that define
+queries as inputs.  The ensemble groups are the results of each
+query.  In this case, that is common source gathers defined by
+source_id values found in input.
 
 .. code:: python
 
-  def read_common_source_gather(db,collection,srcid):
-    dbcol = db[collection]
-    query = {"source_id" : srcid }
-    # note with logic of this use we don't need to test for
-    # no matches because distinct returns only not null source_id values dbcol
-    cursor = dbcol.find(query)
-    ensemble = db.read_ensemble(db,collection=collection)
-    return ensemble
-
-  dbcol = db.wf_Seismogram
   srcidlist = db.wf_Seismogram.distinct("source_id")
-  data = dask.bag.from_sequence(srcidlist)
-  data = data.map(lambda srcid : read_common_source_gather(db,"wf_Seismogram",srcid))
-  data = data.map(signals.detrend,'demean')
+  querylist=list()
+  for srcid in srcidlist:
+      query = {"source_id" : srcid}
+      querylist.append(query)
+
+  data = read_distributed_data(querylist,db,collection="wf_Seismogram")
+  data = data.map(signals.detrend,type='demean')
   data = data.map(signals.filter,"bandpass",freqmin=0.01,freqmax=2.0)
   # windowing is relative to start time.  300 s window starting at d.t0+200
   data = data.map(lambda d : WindowData(d,200.0,500.0,t0shift=d.t0))
   data_out = data.compute()
+
+The comparable code using `sliding_window_pipeline` is:
+
+.. code:: python
+
+  def process_ensemble(query,db.name):
+    """
+    Processing function for submit with ensemble example.
+    """
+    db = fetch_dbhandle(db.name)
+    cursor = db.wf_Seismogram.find(query)
+    # more robust code would handle a null cursor here - omitted for simplicity
+    ens = db.read_data(cursor,collection="wf_Seismogram")
+    ens = signals.detrend(ens,type="demean")
+    ens = signals.filter(ens,"bandpass",freqmin=0.01,freqmax=2.0)
+    # ator and rtoa do not work on ensembles
+    # the concept applies only to atomic data
+    for i in range(len(ens.member)):
+        d = ens.member[0]  # use d as a shorthand for convenience
+        d.ator(d.t0)
+        d = WindowData(d,200.0,500.0)
+        d.rota()
+        ens.member[0] = d
+    return ens
+
+    import mspasspy.client as msc
+    mspass_client = msc.Client()
+    dask_client = mspass_client.get_scheduler()
+    db = mspass_client.get_database("mydatabase")
+    srcidlist = db.wf_Seismogram.distinct("source_id")
+    querylist=list()
+    for srcid in srcidlist:
+        query = {"source_id" : srcid}
+        querylist.append(query)
+    data_out = sliding_window_pipeline(querylist,
+                            process_ensemble,
+                            dask_client,
+                            db.name)
+
 
 New Organization for discussion
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
