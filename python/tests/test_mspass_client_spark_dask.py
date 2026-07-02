@@ -49,6 +49,10 @@ def _dask_client_error_match(address):
     return re.escape("cannot create a dask client with: " + address)
 
 
+def _new_uninitialized_dask_client():
+    return DaskClient.__new__(DaskClient)
+
+
 def test_dask_scheduler_full_uri_constructor_address(monkeypatch):
     _patch_client_startup_for_scheduler_address(monkeypatch)
     monkeypatch.delenv("DASK_SCHEDULER_PORT", raising=False)
@@ -131,6 +135,113 @@ def test_set_scheduler_dask_empty_port_uses_default(monkeypatch):
     assert client._scheduler == "spark"
 
 
+def test_scheduler_none_constructor_does_not_create_scheduler(monkeypatch, capsys):
+    _patch_client_startup_for_scheduler_address(monkeypatch)
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    client = Client(scheduler="none")
+    assert client._scheduler is None
+    assert client.get_scheduler() is None
+    assert not hasattr(client, "_dask_client")
+    assert not hasattr(client, "_spark_context")
+    assert capsys.readouterr().out == ""
+
+
+def test_scheduler_none_from_environment_does_not_create_scheduler(monkeypatch, capsys):
+    _patch_client_startup_for_scheduler_address(monkeypatch)
+    monkeypatch.setenv("MSPASS_SCHEDULER", "none")
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    client = Client()
+    assert client._scheduler is None
+    assert client.get_scheduler() is None
+    assert not hasattr(client, "_dask_client")
+    assert capsys.readouterr().out == ""
+
+
+def test_fourth_positional_argument_still_sets_job_name(monkeypatch):
+    captured = {}
+
+    monkeypatch.setattr(DBClient, "server_info", lambda self: {})
+
+    def mock_global_history_manager(self, history_db, job_name, collection=None):
+        captured["job_name"] = job_name
+
+    monkeypatch.setattr(GlobalHistoryManager, "__init__", mock_global_history_manager)
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+
+    client = Client("127.0.0.1", "none", None, "my_job")
+
+    assert captured["job_name"] == "my_job"
+    assert client.get_scheduler() is None
+    assert not hasattr(client, "_dask_client")
+
+
+def test_dask_scheduler_uses_provided_dask_client(monkeypatch):
+    _patch_client_startup_for_scheduler_address(monkeypatch)
+    provided_client = _new_uninitialized_dask_client()
+    registered_plugins = []
+
+    def mock_register_plugin(self, plugin, name=None):
+        registered_plugins.append((self, plugin, name))
+
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    monkeypatch.setattr(DaskClient, "register_plugin", mock_register_plugin)
+
+    client = Client(scheduler="dask", dask_client=provided_client)
+
+    assert client.get_scheduler() is provided_client
+    assert registered_plugins
+    assert registered_plugins[0][0] is provided_client
+    assert registered_plugins[0][2] == "mongodb_worker"
+
+
+def test_dask_client_takes_precedence_over_scheduler_host(monkeypatch):
+    _patch_client_startup_for_scheduler_address(monkeypatch)
+    provided_client = _new_uninitialized_dask_client()
+    registered_plugins = []
+
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    monkeypatch.setattr(
+        DaskClient,
+        "register_plugin",
+        lambda self, plugin, name=None: registered_plugins.append(name),
+    )
+
+    client = Client(
+        scheduler="dask",
+        scheduler_host="tcp://127.0.0.1:41585",
+        dask_client=provided_client,
+    )
+
+    assert client.get_scheduler() is provided_client
+    assert registered_plugins == ["mongodb_worker"]
+
+
+def test_dask_client_with_scheduler_none_raises(monkeypatch):
+    provided_client = _new_uninitialized_dask_client()
+    with pytest.raises(
+        MsPASSError,
+        match="dask_client cannot be used when scheduler is none.",
+    ):
+        Client(scheduler="none", dask_client=provided_client)
+
+
+def test_dask_client_with_scheduler_spark_raises(monkeypatch):
+    provided_client = _new_uninitialized_dask_client()
+    with pytest.raises(
+        MsPASSError,
+        match="dask_client can only be used with the dask scheduler.",
+    ):
+        Client(scheduler="spark", dask_client=provided_client)
+
+
+def test_dask_client_requires_distributed_client(monkeypatch):
+    with pytest.raises(
+        MsPASSError,
+        match="dask_client should be a dask.distributed.Client",
+    ):
+        Client(scheduler="dask", dask_client=object())
+
+
 class TestMsPASSClient:
     @staticmethod
     def _close_dask_scheduler(client):
@@ -153,7 +264,7 @@ class TestMsPASSClient:
 
         with pytest.raises(
             MsPASSError,
-            match="scheduler should be either dask or spark but xxx is found.",
+            match="scheduler should be dask, spark, or none but xxx is found.",
         ):
             Client(scheduler="xxx")
 
@@ -263,9 +374,7 @@ class TestMsPASSClient:
             MsPASSError,
             match=_dask_client_error_match("tcp://127.0.0.1:41585"),
         ):
-            client = Client(
-                scheduler="dask", scheduler_host="tcp://127.0.0.1:41585"
-            )
+            client = Client(scheduler="dask", scheduler_host="tcp://127.0.0.1:41585")
         monkeypatch.undo()
 
         monkeypatch.setenv("MSPASS_SCHEDULER", "dask")

@@ -309,26 +309,58 @@ FROM runtime AS mpi
 
 FROM runtime AS geolab
 
-# Create a non-root user (UID 1000) for JupyterLab so that a Kubernetes PVC
-# mounted at /home/mspass is writable without requiring root inside the pod.
-# mongosh still needs a valid HOME, which /home/mspass satisfies.
+# Match EarthScope GeoLab's canonical persistent workspace while keeping the
+# MsPASS Unix username.  GeoLab mounts /home/jovyan at runtime, so image-layer
+# contents can be hidden, but the user metadata and defaults should agree with
+# the runtime workspace.
 ARG NB_USER=mspass
 ARG NB_UID=1000
-ARG NB_HOME=/home/mspass
+ARG NB_GID=1000
+ARG NB_HOME=/home/jovyan
 ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
+    NB_GID=${NB_GID} \
     NB_HOME=${NB_HOME} \
     HOME=${NB_HOME} \
+    MSPASS_WORK_DIR=${NB_HOME} \
     MSPASS_USE_HOME_WORKDIR=true \
-    MSPASS_RUN_JUPYTER_AS_NB_USER=true
+    MSPASS_RUN_JUPYTER_AS_NB_USER=true \
+    MSPASS_SCHEDULER=none \
+    MSPASS_ENABLE_LOCAL_DASK=false
 
-RUN useradd --create-home --home-dir ${NB_HOME} --uid ${NB_UID} --gid 100 \
-        --shell /bin/bash ${NB_USER} && \
+RUN set -eux; \
+    if ! getent group "${NB_GID}" >/dev/null; then \
+        groupadd --gid "${NB_GID}" "${NB_USER}"; \
+    fi; \
+    existing_user="$(getent passwd "${NB_UID}" | cut -d: -f1 || true)"; \
+    if [ -n "${existing_user}" ] && [ "${existing_user}" != "${NB_USER}" ]; then \
+        usermod --login "${NB_USER}" "${existing_user}"; \
+    fi; \
+    if id -u "${NB_USER}" >/dev/null 2>&1; then \
+        usermod --home "${NB_HOME}" --uid "${NB_UID}" --gid "${NB_GID}" "${NB_USER}"; \
+        mkdir -p "${NB_HOME}"; \
+    else \
+        useradd --create-home --home-dir "${NB_HOME}" --uid "${NB_UID}" --gid "${NB_GID}" \
+            --shell /bin/bash "${NB_USER}"; \
+    fi; \
     echo "${NB_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Grant the notebook user write access to its runtime home.
-RUN chown -R ${NB_USER}:100 ${NB_HOME} && \
+RUN chown -R ${NB_UID}:${NB_GID} ${NB_HOME} && \
     chmod g+w /etc/passwd
+
+# EarthScope GeoLab's distributed Dask path uses Dask Gateway.  These packages
+# must be present in the image so Gateway-created scheduler and worker pods can
+# import the same runtime packages as the notebook pod.  Require at least the
+# observed GeoLab Gateway-compatible Dask/Distributed versions without pinning
+# them down, so newer base images are not downgraded.
+RUN pip3 install \
+        'dask>=2026.3.0' \
+        'distributed>=2026.3.0' \
+        dask-gateway==2026.3.0 \
+    && docker-clean
+
+WORKDIR ${NB_HOME}
 
 FROM dev-package AS dev
 
