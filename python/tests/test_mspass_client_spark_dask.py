@@ -354,9 +354,7 @@ class TestMsPASSClient:
             MsPASSError,
             match=_dask_client_error_match("tcp://127.0.0.1:41585"),
         ):
-            client = Client(
-                scheduler="dask", scheduler_host="tcp://127.0.0.1:41585"
-            )
+            client = Client(scheduler="dask", scheduler_host="tcp://127.0.0.1:41585")
         monkeypatch.undo()
 
         monkeypatch.setenv("MSPASS_SCHEDULER", "dask")
