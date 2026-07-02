@@ -78,6 +78,50 @@ function configure_tacc_interactive_access_if_needed {
   fi
 }
 
+function is_jupyterhub_singleuser_command {
+  local arg
+  for arg in "$@"; do
+    if [[ "$(basename "$arg")" = "jupyterhub-singleuser" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+function scheduler_address_has_port {
+  local address="$1"
+  local without_scheme="${address#*://}"
+
+  if [[ "$without_scheme" =~ ^\[.*\]:[0-9]+$ ]]; then
+    return 0
+  fi
+
+  if [[ "$without_scheme" =~ ^[^:]+:[0-9]+$ ]]; then
+    return 0
+  fi
+
+  return 1
+}
+
+function build_dask_scheduler_uri {
+  local address="$1"
+  local port="${2:-8786}"
+
+  if scheduler_address_has_port "$address"; then
+    if [[ "$address" = *"://"* ]]; then
+      printf '%s' "$address"
+    else
+      printf 'tcp://%s' "$address"
+    fi
+  else
+    if [[ "$address" = *"://"* ]]; then
+      printf '%s:%s' "$address" "$port"
+    else
+      printf 'tcp://%s:%s' "$address" "$port"
+    fi
+  fi
+}
+
 # define SLEEP_TIME
 if [[ -z $MSPASS_SLEEP_TIME ]]; then
   MSPASS_SLEEP_TIME=15
@@ -102,7 +146,14 @@ MONGO_LOG=${MSPASS_LOG_DIR}/mongo_log
 export SPARK_WORKER_DIR=${MSPASS_WORKER_DIR}
 export SPARK_LOG_DIR=${MSPASS_LOG_DIR}
 
+MSPASS_START_LOCAL_SERVICES=false
 if [ $# -eq 0 ] || [ "$1" = "--batch" ]; then
+  MSPASS_START_LOCAL_SERVICES=true
+elif is_jupyterhub_singleuser_command "$@" && [ "${MSPASS_ROLE:-all}" = "all" ]; then
+  MSPASS_START_LOCAL_SERVICES=true
+fi
+
+if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
 
   function start_mspass_frontend {
       RUN_JUPYTER_AS_NB_USER=false
@@ -181,7 +232,7 @@ if [ $# -eq 0 ] || [ "$1" = "--batch" ]; then
           fi
       else
           # Dask scheduler configuration
-          export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
+          export DASK_SCHEDULER_ADDRESS="$(build_dask_scheduler_uri "${MSPASS_SCHEDULER_ADDRESS}" "${DASK_SCHEDULER_PORT}")"
           if [ -z "$1" ]; then
               # Interactive Jupyter Lab mode for Dask
               if [[ "$RUN_JUPYTER_AS_NB_USER" = "true" ]]; then
@@ -298,13 +349,25 @@ if [ $# -eq 0 ] || [ "$1" = "--batch" ]; then
     mongod --port $MONGODB_PORT --dbpath /tmp/db/data --logpath /tmp/logs/mongo_log --bind_ip_all &
   }
 
+  function start_local_mspass_services {
+    export MSPASS_DB_ADDRESS=$HOSTNAME
+    export MSPASS_SCHEDULER_ADDRESS=$HOSTNAME
+    eval $MSPASS_SCHEDULER_CMD
+    eval $MSPASS_WORKER_CMD
+    if [ "$MSPASS_DB_PATH" = "tmp" ]; then
+      start_db_tmp
+    else
+      start_db_scratch
+    fi
+  }
+
   MY_ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
   if [ "$MSPASS_SCHEDULER" = "spark" ]; then
     MSPASS_SCHEDULER_CMD='$SPARK_HOME/sbin/start-master.sh'
     MSPASS_WORKER_CMD='$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT'
   else # if [ "$MSPASS_SCHEDULER" = "dask" ]
     MSPASS_SCHEDULER_CMD='dask scheduler --port $DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-scheduler_log_${MY_ID} 2>&1 & sleep 5'
-    MSPASS_WORKER_CMD='dask worker ${MSPASS_WORKER_ARG} --memory-limit=${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0} --local-directory $MSPASS_WORKER_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
+    MSPASS_WORKER_CMD='dask worker ${MSPASS_WORKER_ARG} --memory-limit=${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0} --local-directory $MSPASS_WORKER_DIR "$(build_dask_scheduler_uri "$MSPASS_SCHEDULER_ADDRESS" "$DASK_SCHEDULER_PORT")" > ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
   fi
 
   if [ "$MSPASS_ROLE" = "db" ]; then
@@ -482,20 +545,17 @@ if [ $# -eq 0 ] || [ "$1" = "--batch" ]; then
   else # if [ "$MSPASS_ROLE" = "all" ]
     FRONTEND_CLEANUP_MODE=single
     enable_frontend_cleanup_trap
-    MSPASS_DB_ADDRESS=$HOSTNAME
-    MSPASS_SCHEDULER_ADDRESS=$HOSTNAME
-    eval $MSPASS_SCHEDULER_CMD
-    eval $MSPASS_WORKER_CMD
-    if [ "$MSPASS_DB_PATH" = "tmp" ]; then
-      start_db_tmp
+    start_local_mspass_services
+    if is_jupyterhub_singleuser_command "$@"; then
+      docker-entrypoint.sh "$@"
+      frontend_status=$?
     else
-      start_db_scratch
+      if [ "$1" != "--batch" ]; then
+        configure_tacc_interactive_access_if_needed
+      fi
+      start_mspass_frontend "$2"
+      frontend_status=$?
     fi
-    if [ "$1" != "--batch" ]; then
-      configure_tacc_interactive_access_if_needed
-    fi
-    start_mspass_frontend "$2"
-    frontend_status=$?
     run_frontend_cleanup "$frontend_status"
     if [ "$1" = "--batch" ]
     then
