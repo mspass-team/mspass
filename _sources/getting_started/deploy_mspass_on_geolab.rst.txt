@@ -109,13 +109,67 @@ The notebook pod should use ``/home/jovyan`` as the workspace:
     echo $HOME
     echo $NB_HOME
     echo $MSPASS_WORKDIR
+    echo $MSPASS_DB_ADDRESS
     echo $MSPASS_DB_DIR
     echo $MSPASS_LOG_DIR
     echo $MSPASS_WORKER_DIR
+    mongosh --host 127.0.0.1 --port 27017 --eval 'db.adminCommand({ping: 1})'
+    tail -50 "$MSPASS_LOG_DIR/mongo_log"
 
 The expected workspace and home directory is ``/home/jovyan``.  The MsPASS
-runtime directories should be ``/home/jovyan/db``, ``/home/jovyan/logs``, and
-``/home/jovyan/work``.
+runtime directories should keep notebook logs and work files under
+``/home/jovyan/logs`` and ``/home/jovyan/work``.  MongoDB data defaults to an
+ephemeral notebook-local directory, ``/tmp/mspass-mongo/db/data``, to avoid
+persisted database version conflicts, stale locks, and NFS storage issues.
+``MSPASS_DB_ADDRESS`` is computed from the pod address so Dask Gateway workers
+do not receive a localhost MongoDB URL.
+
+The notebook-local MongoDB process should be active, not defunct, and the
+``mongosh`` ping should succeed.  To verify MsPASS can use MongoDB without a
+scheduler:
+
+.. code-block:: python
+
+    from mspasspy.client import Client
+
+    mspass_client = Client(scheduler="none")
+    print(mspass_client.get_database_client().admin.command({"ping": 1}))
+    print(mspass_client.get_scheduler())
+
+To verify that the MongoDB worker plugin can initialize on Gateway workers:
+
+.. code-block:: python
+
+    from dask_gateway import Gateway
+    from mspasspy.client import Client
+
+    gateway = Gateway()
+    cluster = gateway.new_cluster()
+    cluster.scale(1)
+
+    dask_client = cluster.get_client()
+    dask_client.wait_for_workers(1, timeout="120s")
+
+    mspass_client = Client(scheduler="dask", dask_client=dask_client)
+
+    def check_worker_db():
+        from dask.distributed import get_worker
+
+        worker = get_worker()
+        dbclient = worker.data["dbclient"]
+        return dbclient.admin.command({"ping": 1})
+
+    print(dask_client.submit(check_worker_db).result())
+
+Persistent MongoDB data under ``/home/jovyan`` is opt-in.  Set
+``MSPASS_PERSISTENT_MONGO=true`` or ``MSPASS_DB_PATH=home`` before the
+JupyterHub single-user server starts to use ``/home/jovyan/db``.  Persistent
+MongoDB data can break across MongoDB major-version upgrades.  The GeoLab image
+keeps the same MongoDB version as the other MsPASS container tags, but data
+written by a different MongoDB major version may still require an explicit
+MongoDB upgrade or downgrade procedure.  The startup script never deletes
+persistent data by default.  Set ``MSPASS_RESET_MONGO_DB=true`` only when you
+intentionally want the selected MongoDB data directory removed before startup.
 
 GeoLab local Dask fallback
 --------------------------

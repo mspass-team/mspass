@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MsPASS With EarthScope GeoLab &#8212; MsPASS 2.4.1.dev7+g513603f5 documentation</title>
+    <title>Using MsPASS With EarthScope GeoLab &#8212; MsPASS 2.4.1.dev8+gd916bad5 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=299b117c"></script>
+    <script src="../_static/documentation_options.js?v=fddb5b5b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Deploy MsPASS with Conda and Coiled" href="deploy_mspass_with_conda_and_coiled.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.1.dev7" />
+  <meta name="docsearch:version" content="2.4.1.dev8" />
   </head>
   
   
@@ -553,14 +553,63 @@ cluster name.</p>
 <span class="nb">echo</span><span class="w"> </span><span class="nv">$HOME</span>
 <span class="nb">echo</span><span class="w"> </span><span class="nv">$NB_HOME</span>
 <span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_WORKDIR</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_DB_ADDRESS</span>
 <span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_DB_DIR</span>
 <span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_LOG_DIR</span>
 <span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_WORKER_DIR</span>
+mongosh<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">27017</span><span class="w"> </span>--eval<span class="w"> </span><span class="s1">&#39;db.adminCommand({ping: 1})&#39;</span>
+tail<span class="w"> </span>-50<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_LOG_DIR</span><span class="s2">/mongo_log&quot;</span>
 </pre></div>
 </div>
 <p>The expected workspace and home directory is <code class="docutils literal notranslate"><span class="pre">/home/jovyan</span></code>.  The MsPASS
-runtime directories should be <code class="docutils literal notranslate"><span class="pre">/home/jovyan/db</span></code>, <code class="docutils literal notranslate"><span class="pre">/home/jovyan/logs</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">/home/jovyan/work</span></code>.</p>
+runtime directories should keep notebook logs and work files under
+<code class="docutils literal notranslate"><span class="pre">/home/jovyan/logs</span></code> and <code class="docutils literal notranslate"><span class="pre">/home/jovyan/work</span></code>.  MongoDB data defaults to an
+ephemeral notebook-local directory, <code class="docutils literal notranslate"><span class="pre">/tmp/mspass-mongo/db/data</span></code>, to avoid
+persisted database version conflicts, stale locks, and NFS storage issues.
+<code class="docutils literal notranslate"><span class="pre">MSPASS_DB_ADDRESS</span></code> is computed from the pod address so Dask Gateway workers
+do not receive a localhost MongoDB URL.</p>
+<p>The notebook-local MongoDB process should be active, not defunct, and the
+<code class="docutils literal notranslate"><span class="pre">mongosh</span></code> ping should succeed.  To verify MsPASS can use MongoDB without a
+scheduler:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">({</span><span class="s2">&quot;ping&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>To verify that the MongoDB worker plugin can initialize on Gateway workers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dask_gateway</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gateway</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">gateway</span> <span class="o">=</span> <span class="n">Gateway</span><span class="p">()</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">new_cluster</span><span class="p">()</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">dask_client</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
+<span class="n">dask_client</span><span class="o">.</span><span class="n">wait_for_workers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="s2">&quot;120s&quot;</span><span class="p">)</span>
+
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span> <span class="n">dask_client</span><span class="o">=</span><span class="n">dask_client</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check_worker_db</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_worker</span>
+
+    <span class="n">worker</span> <span class="o">=</span> <span class="n">get_worker</span><span class="p">()</span>
+    <span class="n">dbclient</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;dbclient&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">({</span><span class="s2">&quot;ping&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">check_worker_db</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Persistent MongoDB data under <code class="docutils literal notranslate"><span class="pre">/home/jovyan</span></code> is opt-in.  Set
+<code class="docutils literal notranslate"><span class="pre">MSPASS_PERSISTENT_MONGO=true</span></code> or <code class="docutils literal notranslate"><span class="pre">MSPASS_DB_PATH=home</span></code> before the
+JupyterHub single-user server starts to use <code class="docutils literal notranslate"><span class="pre">/home/jovyan/db</span></code>.  Persistent
+MongoDB data can break across MongoDB major-version upgrades.  The GeoLab image
+keeps the same MongoDB version as the other MsPASS container tags, but data
+written by a different MongoDB major version may still require an explicit
+MongoDB upgrade or downgrade procedure.  The startup script never deletes
+persistent data by default.  Set <code class="docutils literal notranslate"><span class="pre">MSPASS_RESET_MONGO_DB=true</span></code> only when you
+intentionally want the selected MongoDB data directory removed before startup.</p>
 </section>
 <section id="geolab-local-dask-fallback">
 <h2>GeoLab local Dask fallback<a class="headerlink" href="#geolab-local-dask-fallback" title="Link to this heading">#</a></h2>
