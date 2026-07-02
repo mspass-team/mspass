@@ -38,6 +38,7 @@ package.
    getting_started/deploy_mspass_on_HPC
    getting_started/HPCClusterLauncher_configuration
    getting_started/deploy_mspass_with_conda_and_coiled
+   getting_started/deploy_mspass_on_geolab
    getting_started/getting_started_overview
 
 .. toctree::
