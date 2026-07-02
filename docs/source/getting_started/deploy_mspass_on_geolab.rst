@@ -3,13 +3,23 @@
 Using MsPASS With EarthScope GeoLab
 ===================================
 
-EarthScope GeoLab provides distributed Dask through Dask Gateway.  The Gateway
-cluster is created from the running Jupyter image, so the MsPASS GeoLab image
-includes the Dask, Distributed, Dask Gateway, and MsPASS runtime packages needed
-by notebook, scheduler, and worker pods.  Installing ``dask-gateway`` manually
-inside a running notebook pod is not sufficient because Gateway-created
-scheduler and worker pods are started from the image, not from the notebook
-pod's mutated runtime filesystem.
+EarthScope GeoLab provides distributed Dask through Dask Gateway.  The MsPASS
+GeoLab image is built from the same GeoLab/Pangeo-style base image contract as
+the official EarthScope image, with MsPASS installed into the
+``/srv/conda/envs/notebook`` environment.  This keeps the notebook, scheduler,
+and worker pods on the same Dask Gateway runtime while adding the MsPASS Python
+and compiled extension packages.
+
+Gateway-created scheduler and worker pods run arbitrary commands supplied by
+the Gateway server.  The MsPASS GeoLab image therefore uses a pass-through
+entrypoint for non-JupyterHub commands, matching the official GeoLab startup
+style.  MsPASS-specific initialization, including workspace directories and the
+notebook-local MongoDB service, runs only for ``jupyterhub-singleuser`` notebook
+pods.
+
+Installing ``dask-gateway`` manually inside a running notebook pod is not
+sufficient because Gateway-created scheduler and worker pods are started from
+the image, not from the notebook pod's mutated runtime filesystem.
 
 A Gateway cluster starts with no workers until it is scaled or configured for
 adaptive scaling.  A typical MsPASS setup is:
@@ -77,9 +87,35 @@ the MsPASS and Gateway runtime packages:
 
     print(dask_client.submit(check_worker).result())
 
-If ``gateway.new_cluster()`` still fails after rebuilding the image with these
-packages, the next diagnostic is the EarthScope/2i2c Dask Gateway server-side
-logs for the failed cluster name.
+If ``gateway.new_cluster()`` still fails after rebuilding the image, the next
+diagnostic is the EarthScope/2i2c Dask Gateway server-side logs for the failed
+cluster name.
+
+Finally verify that MsPASS can use the Gateway client:
+
+.. code-block:: python
+
+    from mspasspy.client import Client
+
+    mspass_client = Client(scheduler="dask", dask_client=dask_client)
+    print(mspass_client.get_scheduler().scheduler_info())
+
+The notebook pod should use ``/home/jovyan`` as the workspace:
+
+.. code-block:: bash
+
+    whoami
+    pwd
+    echo $HOME
+    echo $NB_HOME
+    echo $MSPASS_WORKDIR
+    echo $MSPASS_DB_DIR
+    echo $MSPASS_LOG_DIR
+    echo $MSPASS_WORKER_DIR
+
+The expected workspace and home directory is ``/home/jovyan``.  The MsPASS
+runtime directories should be ``/home/jovyan/db``, ``/home/jovyan/logs``, and
+``/home/jovyan/work``.
 
 GeoLab local Dask fallback
 --------------------------
@@ -87,7 +123,8 @@ GeoLab local Dask fallback
 The GeoLab image defaults to ``MSPASS_SCHEDULER=none`` so that
 ``Client()`` does not silently create an in-pod Dask ``LocalCluster``.  This is
 separate from Dask Gateway, which is the normal distributed Dask path on
-GeoLab.
+GeoLab.  Dask Gateway scheduler and worker commands pass directly through the
+image entrypoint and do not run MsPASS startup or local MongoDB startup.
 
 For fallback or debugging only, local in-pod Dask can be enabled before the
 JupyterHub single-user server starts:

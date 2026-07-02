@@ -11,6 +11,7 @@
 #   tacc    - standard runtime image with TACC interactive access enabled
 
 ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
+ARG GEOLAB_BASE_IMAGE=ghcr.io/mspass-team/geolab-base-mirror@sha256:7aa0b713de225288188163c13519efce1ac5248ea386e734d88ad7c54b0abe27
 ARG DASK_LABEXTENSION_VERSION=7.0.0
 ARG SPARK_VERSION=3.0.0
 ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop2.7
@@ -307,60 +308,94 @@ ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass.sh"]
 
 FROM runtime AS mpi
 
-FROM runtime AS geolab
+FROM ${GEOLAB_BASE_IMAGE} AS geolab
 
-# Match EarthScope GeoLab's canonical persistent workspace while keeping the
-# MsPASS Unix username.  GeoLab mounts /home/jovyan at runtime, so image-layer
-# contents can be hidden, but the user metadata and defaults should agree with
-# the runtime workspace.
-ARG NB_USER=mspass
+# Build a GeoLab-compatible image from the same Pangeo-style base contract used
+# by EarthScope GeoLab.  Non-JupyterHub commands must pass through directly so
+# Dask Gateway scheduler and worker pods can run the command selected by the
+# Gateway server.
+USER root
+
+# Keep the base GeoLab uid/gid/user identity so mounted /home/jovyan workspaces
+# and Dask Gateway scheduler/worker pods match the official GeoLab runtime.
+ARG NB_USER=jovyan
 ARG NB_UID=1000
 ARG NB_GID=1000
 ARG NB_HOME=/home/jovyan
+ARG MONGO_MAJOR=8.0
 ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
     NB_GID=${NB_GID} \
     NB_HOME=${NB_HOME} \
     HOME=${NB_HOME} \
     MSPASS_WORK_DIR=${NB_HOME} \
-    MSPASS_USE_HOME_WORKDIR=true \
-    MSPASS_RUN_JUPYTER_AS_NB_USER=true \
     MSPASS_SCHEDULER=none \
-    MSPASS_ENABLE_LOCAL_DASK=false
+    MSPASS_ENABLE_LOCAL_DASK=false \
+    MSPASS_DB_ADDRESS=127.0.0.1 \
+    MONGODB_PORT=27017 \
+    DASK_SCHEDULER_PORT=8786 \
+    PATH=/srv/conda/envs/notebook/bin:/srv/conda/condabin:/srv/conda/bin:${PATH}
 
 RUN set -eux; \
-    if ! getent group "${NB_GID}" >/dev/null; then \
-        groupadd --gid "${NB_GID}" "${NB_USER}"; \
-    fi; \
-    existing_user="$(getent passwd "${NB_UID}" | cut -d: -f1 || true)"; \
-    if [ -n "${existing_user}" ] && [ "${existing_user}" != "${NB_USER}" ]; then \
-        usermod --login "${NB_USER}" "${existing_user}"; \
-    fi; \
-    if id -u "${NB_USER}" >/dev/null 2>&1; then \
-        usermod --home "${NB_HOME}" --uid "${NB_UID}" --gid "${NB_GID}" "${NB_USER}"; \
-        mkdir -p "${NB_HOME}"; \
-    else \
-        useradd --create-home --home-dir "${NB_HOME}" --uid "${NB_UID}" --gid "${NB_GID}" \
-            --shell /bin/bash "${NB_USER}"; \
-    fi; \
-    echo "${NB_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    export DEBIAN_FRONTEND=noninteractive; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        gnupg \
+        build-essential \
+        cmake \
+        gfortran \
+        git \
+        libblas-dev \
+        libboost-dev \
+        libboost-serialization-dev \
+        libgsl-dev \
+        liblapack-dev \
+        libyaml-cpp-dev \
+    ; \
+    install -d -m 0755 /etc/apt/keyrings; \
+    curl -fsSL "https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc" \
+        | gpg --dearmor -o "/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg"; \
+    echo "deb [ arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/${MONGO_MAJOR} multiverse" \
+        > "/etc/apt/sources.list.d/mongodb-org-${MONGO_MAJOR}.list"; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends mongodb-org; \
+    rm -rf /var/lib/apt/lists/*
 
-# Grant the notebook user write access to its runtime home.
-RUN chown -R ${NB_UID}:${NB_GID} ${NB_HOME} && \
-    chmod g+w /etc/passwd
+ADD cxx /mspass/cxx
+ADD data /mspass/data
+ADD setup.py /mspass/setup.py
+ADD pyproject.toml /mspass/pyproject.toml
+ADD python /mspass/python
+ADD .git /mspass/.git
 
-# EarthScope GeoLab's distributed Dask path uses Dask Gateway.  These packages
-# must be present in the image so Gateway-created scheduler and worker pods can
-# import the same runtime packages as the notebook pod.  Require at least the
-# observed GeoLab Gateway-compatible Dask/Distributed versions without pinning
-# them down, so newer base images are not downgraded.
-RUN pip3 install \
-        'dask>=2026.3.0' \
-        'distributed>=2026.3.0' \
-        dask-gateway==2026.3.0 \
-    && docker-clean
+RUN set -eux; \
+    printf '%s\n' \
+        'dask==2026.3.0' \
+        'distributed==2026.3.0' \
+        'dask-gateway==2026.3.0' \
+        > /tmp/geolab-dask-constraints.txt; \
+    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --upgrade pip setuptools wheel setuptools_scm; \
+    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir -v \
+        --constraint /tmp/geolab-dask-constraints.txt /mspass; \
+    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --force-reinstall --no-deps \
+        dask==2026.3.0 \
+        distributed==2026.3.0 \
+        dask-gateway==2026.3.0; \
+    /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; expected={'dask':'2026.3.0','distributed':'2026.3.0','dask-gateway':'2026.3.0'}; actual={name: md.version(name) for name in expected}; print(actual); assert actual == expected, actual; import mspasspy; print(mspasspy.__file__)"; \
+    rm -rf /mspass/build /mspass/.git /root/.cache /tmp/geolab-dask-constraints.txt
 
+ADD scripts/start-mspass-geolab-entrypoint.sh /usr/sbin/start-mspass-geolab-entrypoint.sh
+ADD scripts/start-mspass-geolab.sh /usr/sbin/start-mspass-geolab.sh
+RUN chmod +x /usr/sbin/start-mspass-geolab-entrypoint.sh /usr/sbin/start-mspass-geolab.sh && \
+    mkdir -p "${NB_HOME}" && \
+    chown -R "${NB_UID}:${NB_GID}" "${NB_HOME}" /mspass
+
+USER ${NB_UID}:${NB_GID}
 WORKDIR ${NB_HOME}
+ENTRYPOINT ["/usr/sbin/start-mspass-geolab-entrypoint.sh"]
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser"]
 
 FROM dev-package AS dev
 
