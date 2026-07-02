@@ -71,11 +71,11 @@ class Client:
         database_host=None,
         scheduler=None,
         scheduler_host=None,
-        dask_client=None,
         job_name="mspass",
         database_name="mspass",
         schema=None,
         collection=None,
+        dask_client=None,
     ):
         # job_name should be a string
         if database_host is not None and not type(database_host) is str:
@@ -192,10 +192,15 @@ class Client:
         )
 
         # set scheduler
+        self._scheduler_disabled = False
         if dask_client is not None:
             self._scheduler = "dask"
         elif scheduler:
-            self._scheduler = None if scheduler == "none" else scheduler
+            if scheduler == "none":
+                self._scheduler = None
+                self._scheduler_disabled = True
+            else:
+                self._scheduler = scheduler
         elif MSPASS_SCHEDULER:
             if MSPASS_SCHEDULER not in ("dask", "spark", "none"):
                 raise MsPASSError(
@@ -204,7 +209,11 @@ class Client:
                     + " is found.",
                     "Fatal",
                 )
-            self._scheduler = None if MSPASS_SCHEDULER == "none" else MSPASS_SCHEDULER
+            if MSPASS_SCHEDULER == "none":
+                self._scheduler = None
+                self._scheduler_disabled = True
+            else:
+                self._scheduler = MSPASS_SCHEDULER
         else:
             if _mspasspy_has_dask_distributed:
                 self._scheduler = "dask"
@@ -283,7 +292,7 @@ class Client:
                         + self._dask_client_address,
                         "Fatal",
                     )
-        else:
+        elif not self._scheduler_disabled:
             print("There is no spark or dask installed, this client has no scheduler")
 
         # Auto-register MongoDB worker plugin for dask to avoid DB serialization leaks
@@ -329,6 +338,8 @@ class Client:
             return self._spark_context
         elif self._scheduler == "dask":
             return self._dask_client
+        elif self._scheduler_disabled:
+            return None
         else:
             print(
                 "There is no spark or dask installed, this client has no scheduler, returned None"

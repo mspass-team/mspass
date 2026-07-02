@@ -48,7 +48,7 @@ with mock.patch.dict(
 
             with pytest.raises(
                 MsPASSError,
-                match="scheduler should be either dask or spark but xxx is found.",
+                match="scheduler should be dask, spark, or none but xxx is found.",
             ):
                 Client(scheduler="xxx")
 

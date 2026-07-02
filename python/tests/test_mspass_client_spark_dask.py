@@ -135,7 +135,7 @@ def test_set_scheduler_dask_empty_port_uses_default(monkeypatch):
     assert client._scheduler == "spark"
 
 
-def test_scheduler_none_constructor_does_not_create_scheduler(monkeypatch):
+def test_scheduler_none_constructor_does_not_create_scheduler(monkeypatch, capsys):
     _patch_client_startup_for_scheduler_address(monkeypatch)
     monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
     client = Client(scheduler="none")
@@ -143,14 +143,34 @@ def test_scheduler_none_constructor_does_not_create_scheduler(monkeypatch):
     assert client.get_scheduler() is None
     assert not hasattr(client, "_dask_client")
     assert not hasattr(client, "_spark_context")
+    assert capsys.readouterr().out == ""
 
 
-def test_scheduler_none_from_environment_does_not_create_scheduler(monkeypatch):
+def test_scheduler_none_from_environment_does_not_create_scheduler(monkeypatch, capsys):
     _patch_client_startup_for_scheduler_address(monkeypatch)
     monkeypatch.setenv("MSPASS_SCHEDULER", "none")
     monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
     client = Client()
     assert client._scheduler is None
+    assert client.get_scheduler() is None
+    assert not hasattr(client, "_dask_client")
+    assert capsys.readouterr().out == ""
+
+
+def test_fourth_positional_argument_still_sets_job_name(monkeypatch):
+    captured = {}
+
+    monkeypatch.setattr(DBClient, "server_info", lambda self: {})
+
+    def mock_global_history_manager(self, history_db, job_name, collection=None):
+        captured["job_name"] = job_name
+
+    monkeypatch.setattr(GlobalHistoryManager, "__init__", mock_global_history_manager)
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+
+    client = Client("127.0.0.1", "none", None, "my_job")
+
+    assert captured["job_name"] == "my_job"
     assert client.get_scheduler() is None
     assert not hasattr(client, "_dask_client")
 

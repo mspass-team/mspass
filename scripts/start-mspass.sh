@@ -180,7 +180,7 @@ if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
 
       function run_frontend_as_nb_user {
           NB_USER=${NB_USER:-mspass}
-          chown -R ${NB_UID:-${NB_USER}}:${NB_GID:-${NB_UID:-100}} "${MSPASS_WORKDIR}" 2>/dev/null || true
+          chown -R ${NB_UID:-${NB_USER}}:${NB_GID:-100} "${MSPASS_WORKDIR}" 2>/dev/null || true
           local quoted_command
           quoted_command=$(quote_command "$@")
           su --preserve-environment -c "export PATH=${CONDA_DIR:-/opt/conda}/bin:\$PATH; ${quoted_command}" "${NB_USER}"
@@ -230,6 +230,26 @@ if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
                   --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \
                   --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0 \
                   "$script_file"
+          fi
+      elif [ "$MSPASS_SCHEDULER" = "none" ]; then
+          if [ -z "$1" ]; then
+              # No local scheduler is configured.  This is the GeoLab Dask
+              # Gateway path; notebooks can attach an external Dask client.
+              if [[ "$RUN_JUPYTER_AS_NB_USER" = "true" ]]; then
+                  run_frontend_as_nb_user jupyter lab "${NOTEBOOK_ARGS[@]}"
+              else
+                  jupyter lab "${NOTEBOOK_ARGS[@]}"
+              fi
+          else
+              input_file="$1"
+              if [[ "$input_file" == *.ipynb ]]; then
+                  echo "Converting notebook to Python script: $input_file"
+                  jupyter nbconvert --to script "$input_file"
+                  script_file="${input_file%.*}.py"
+              else
+                  script_file="$input_file"
+              fi
+              python "$script_file"
           fi
       else
           # Dask scheduler configuration
@@ -389,6 +409,9 @@ if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
   if [ "$MSPASS_SCHEDULER" = "spark" ]; then
     MSPASS_SCHEDULER_CMD='$SPARK_HOME/sbin/start-master.sh'
     MSPASS_WORKER_CMD='$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT'
+  elif [ "$MSPASS_SCHEDULER" = "none" ]; then
+    MSPASS_SCHEDULER_CMD=':'
+    MSPASS_WORKER_CMD=':'
   else # if [ "$MSPASS_SCHEDULER" = "dask" ]
     MSPASS_SCHEDULER_CMD='dask scheduler --port $DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-scheduler_log_${MY_ID} 2>&1 & sleep 5'
     MSPASS_WORKER_CMD='dask worker ${MSPASS_WORKER_ARG} --memory-limit=${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0} --local-directory $MSPASS_WORKER_DIR "$(build_dask_scheduler_uri "$MSPASS_SCHEDULER_ADDRESS" "$DASK_SCHEDULER_PORT")" > ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
