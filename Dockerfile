@@ -330,8 +330,16 @@ ENV NB_USER=${NB_USER} \
     NB_HOME=${NB_HOME} \
     HOME=${NB_HOME} \
     MSPASS_WORK_DIR=${NB_HOME} \
-    MSPASS_SCHEDULER=none \
-    MSPASS_ENABLE_LOCAL_DASK=false \
+    MSPASS_WORKDIR=${NB_HOME} \
+    MSPASS_DB_DIR=${NB_HOME}/db \
+    MSPASS_LOG_DIR=${NB_HOME}/logs \
+    MSPASS_WORKER_DIR=${NB_HOME}/work \
+    MONGO_DATA_DIR=${NB_HOME}/db/data \
+    MONGO_LOG=${NB_HOME}/logs/mongo_log \
+    MSPASS_SCHEDULER=dask \
+    MSPASS_ENABLE_LOCAL_DASK=true \
+    MSPASS_SCHEDULER_ADDRESS=127.0.0.1 \
+    MSPASS_DB_ADDRESS=127.0.0.1 \
     MONGODB_PORT=27017 \
     DASK_SCHEDULER_PORT=8786 \
     PATH=/srv/conda/envs/notebook/bin:/srv/conda/condabin:/srv/conda/bin:${PATH}
@@ -376,19 +384,17 @@ ADD python /mspass/python
 ADD .git /mspass/.git
 
 RUN set -eux; \
-    printf '%s\n' \
-        'dask==2026.3.0' \
-        'distributed==2026.3.0' \
-        'dask-gateway==2026.3.0' \
-        > /tmp/geolab-dask-constraints.txt; \
     /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --upgrade pip setuptools wheel setuptools_scm; \
+    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --upgrade \
+        'dask[complete]>=2025.9.1' \
+        'distributed>=2025.9.1'; \
     /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir -v \
-        --constraint /tmp/geolab-dask-constraints.txt /mspass; \
-    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --force-reinstall --no-deps \
-        dask==2026.3.0 \
-        distributed==2026.3.0 \
-        dask-gateway==2026.3.0; \
-    /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; expected={'dask':'2026.3.0','distributed':'2026.3.0','dask-gateway':'2026.3.0'}; actual={name: md.version(name) for name in expected}; print(actual); assert actual == expected, actual; import mspasspy; print(mspasspy.__file__)"; \
+        /mspass; \
+    /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; names=('dask','distributed'); open('/tmp/geolab-dask-constraints.txt','w').write(''.join(f'{name}=={md.version(name)}\n' for name in names))"; \
+    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --upgrade \
+        --constraint /tmp/geolab-dask-constraints.txt \
+        dask-gateway; \
+    /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; names=('dask','distributed','dask-gateway'); print({name: md.version(name) for name in names}); import mspasspy; print(mspasspy.__file__)"; \
     rm -rf /mspass/build /mspass/.git /root/.cache /tmp/geolab-dask-constraints.txt
 
 ADD scripts/start-mspass-geolab-entrypoint.sh /usr/sbin/start-mspass-geolab-entrypoint.sh

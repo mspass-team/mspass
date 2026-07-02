@@ -5,41 +5,33 @@ export HOME=/home/jovyan
 export NB_HOME=/home/jovyan
 export MSPASS_WORK_DIR=/home/jovyan
 export MSPASS_WORKDIR=/home/jovyan
+export MSPASS_DB_DIR="${MSPASS_DB_DIR:-/home/jovyan/db}"
 export MSPASS_LOG_DIR="${MSPASS_LOG_DIR:-/home/jovyan/logs}"
 export MSPASS_WORKER_DIR="${MSPASS_WORKER_DIR:-/home/jovyan/work}"
-
-export MONGODB_PORT="${MONGODB_PORT:-27017}"
-export MSPASS_SCHEDULER="${MSPASS_SCHEDULER:-none}"
-export DASK_SCHEDULER_PORT="${DASK_SCHEDULER_PORT:-8786}"
-
-case "${MSPASS_PERSISTENT_MONGO:-false}:${MSPASS_DB_PATH:-}" in
-    true:*|TRUE:*|True:*|1:*|yes:*|YES:*|Yes:*|*:home)
-        export MSPASS_DB_DIR="${MSPASS_DB_DIR:-/home/jovyan/db}"
-        ;;
-    *)
-        export MSPASS_MONGO_ROOT="${MSPASS_MONGO_ROOT:-/tmp/mspass-mongo}"
-        export MSPASS_DB_DIR="${MSPASS_DB_DIR:-$MSPASS_MONGO_ROOT/db}"
-        ;;
-esac
-
 export MONGO_DATA_DIR="${MONGO_DATA_DIR:-$MSPASS_DB_DIR/data}"
 export MONGO_LOG="${MONGO_LOG:-$MSPASS_LOG_DIR/mongo_log}"
+
+export MONGODB_PORT="${MONGODB_PORT:-27017}"
+export MSPASS_ENABLE_LOCAL_DASK="${MSPASS_ENABLE_LOCAL_DASK:-true}"
+export MSPASS_SCHEDULER="${MSPASS_SCHEDULER:-dask}"
+export MSPASS_SCHEDULER_ADDRESS="${MSPASS_SCHEDULER_ADDRESS:-127.0.0.1}"
+export MSPASS_DB_ADDRESS="${MSPASS_DB_ADDRESS:-127.0.0.1}"
+export DASK_SCHEDULER_PORT="${DASK_SCHEDULER_PORT:-8786}"
+
+case "${MSPASS_ENABLE_LOCAL_DASK}" in
+    false|FALSE|False|0|no|NO|No)
+        if [ "${MSPASS_SCHEDULER}" = "dask" ] && \
+            [ "${MSPASS_SCHEDULER_ADDRESS}" = "127.0.0.1" ]; then
+            export MSPASS_SCHEDULER=none
+        fi
+        ;;
+esac
 
 mkdir -p "$MONGO_DATA_DIR" "$MSPASS_LOG_DIR" "$MSPASS_WORKER_DIR"
 
 if [ "${MSPASS_RESET_MONGO_DB:-false}" = "true" ]; then
     rm -rf "$MONGO_DATA_DIR"
     mkdir -p "$MONGO_DATA_DIR"
-fi
-
-# Health checks use localhost, but Dask Gateway workers need a pod-routable
-# MongoDB address when the MongoDBWorker plugin serializes the DB connection.
-if [ -z "${MSPASS_DB_ADDRESS:-}" ]; then
-    db_address="$(hostname -i 2>/dev/null | awk '{print $1}')"
-    if [ -z "$db_address" ]; then
-        db_address="$(hostname)"
-    fi
-    export MSPASS_DB_ADDRESS="$db_address"
 fi
 
 MONGO_PID=""
@@ -131,15 +123,14 @@ fi
 case "${MSPASS_ENABLE_LOCAL_DASK:-false}" in
     true|TRUE|True|1|yes|YES|Yes)
         export MSPASS_SCHEDULER=dask
-        export MSPASS_SCHEDULER_ADDRESS="${MSPASS_SCHEDULER_ADDRESS:-127.0.0.1}"
-        dask scheduler --port "$DASK_SCHEDULER_PORT" \
+        dask scheduler --host 127.0.0.1 --port "$DASK_SCHEDULER_PORT" \
             > "$MSPASS_LOG_DIR/dask-scheduler.log" 2>&1 &
         DASK_SCHEDULER_PID=$!
         sleep 5
         dask worker \
             --memory-limit="${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0}" \
             --local-directory "$MSPASS_WORKER_DIR" \
-            "tcp://${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}" \
+            "tcp://127.0.0.1:${DASK_SCHEDULER_PORT}" \
             > "$MSPASS_LOG_DIR/dask-worker.log" 2>&1 &
         DASK_WORKER_PID=$!
         ;;
