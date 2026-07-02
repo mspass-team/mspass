@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MsPASS With EarthScope GeoLab &#8212; MsPASS 2.4.1.dev6+gd324b5ae documentation</title>
+    <title>Using MsPASS With EarthScope GeoLab &#8212; MsPASS 2.4.1.dev7+g513603f5 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8d930418"></script>
+    <script src="../_static/documentation_options.js?v=299b117c"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Deploy MsPASS with Conda and Coiled" href="deploy_mspass_with_conda_and_coiled.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.1.dev6" />
+  <meta name="docsearch:version" content="2.4.1.dev7" />
   </head>
   
   
@@ -464,13 +464,21 @@
                   
   <section id="using-mspass-with-earthscope-geolab">
 <span id="deploy-mspass-on-geolab"></span><h1>Using MsPASS With EarthScope GeoLab<a class="headerlink" href="#using-mspass-with-earthscope-geolab" title="Link to this heading">#</a></h1>
-<p>EarthScope GeoLab provides distributed Dask through Dask Gateway.  The Gateway
-cluster is created from the running Jupyter image, so the MsPASS GeoLab image
-includes the Dask, Distributed, Dask Gateway, and MsPASS runtime packages needed
-by notebook, scheduler, and worker pods.  Installing <code class="docutils literal notranslate"><span class="pre">dask-gateway</span></code> manually
-inside a running notebook pod is not sufficient because Gateway-created
-scheduler and worker pods are started from the image, not from the notebook
-pod’s mutated runtime filesystem.</p>
+<p>EarthScope GeoLab provides distributed Dask through Dask Gateway.  The MsPASS
+GeoLab image is built from the same GeoLab/Pangeo-style base image contract as
+the official EarthScope image, with MsPASS installed into the
+<code class="docutils literal notranslate"><span class="pre">/srv/conda/envs/notebook</span></code> environment.  This keeps the notebook, scheduler,
+and worker pods on the same Dask Gateway runtime while adding the MsPASS Python
+and compiled extension packages.</p>
+<p>Gateway-created scheduler and worker pods run arbitrary commands supplied by
+the Gateway server.  The MsPASS GeoLab image therefore uses a pass-through
+entrypoint for non-JupyterHub commands, matching the official GeoLab startup
+style.  MsPASS-specific initialization, including workspace directories and the
+notebook-local MongoDB service, runs only for <code class="docutils literal notranslate"><span class="pre">jupyterhub-singleuser</span></code> notebook
+pods.</p>
+<p>Installing <code class="docutils literal notranslate"><span class="pre">dask-gateway</span></code> manually inside a running notebook pod is not
+sufficient because Gateway-created scheduler and worker pods are started from
+the image, not from the notebook pod’s mutated runtime filesystem.</p>
 <p>A Gateway cluster starts with no workers until it is scaled or configured for
 adaptive scaling.  A typical MsPASS setup is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dask_gateway</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gateway</span>
@@ -529,16 +537,38 @@ the MsPASS and Gateway runtime packages:</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">check_worker</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>If <code class="docutils literal notranslate"><span class="pre">gateway.new_cluster()</span></code> still fails after rebuilding the image with these
-packages, the next diagnostic is the EarthScope/2i2c Dask Gateway server-side
-logs for the failed cluster name.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">gateway.new_cluster()</span></code> still fails after rebuilding the image, the next
+diagnostic is the EarthScope/2i2c Dask Gateway server-side logs for the failed
+cluster name.</p>
+<p>Finally verify that MsPASS can use the Gateway client:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span> <span class="n">dask_client</span><span class="o">=</span><span class="n">dask_client</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span><span class="o">.</span><span class="n">scheduler_info</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The notebook pod should use <code class="docutils literal notranslate"><span class="pre">/home/jovyan</span></code> as the workspace:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>whoami
+<span class="nb">pwd</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$HOME</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$NB_HOME</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_WORKDIR</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_DB_DIR</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_LOG_DIR</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_WORKER_DIR</span>
+</pre></div>
+</div>
+<p>The expected workspace and home directory is <code class="docutils literal notranslate"><span class="pre">/home/jovyan</span></code>.  The MsPASS
+runtime directories should be <code class="docutils literal notranslate"><span class="pre">/home/jovyan/db</span></code>, <code class="docutils literal notranslate"><span class="pre">/home/jovyan/logs</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">/home/jovyan/work</span></code>.</p>
 </section>
 <section id="geolab-local-dask-fallback">
 <h2>GeoLab local Dask fallback<a class="headerlink" href="#geolab-local-dask-fallback" title="Link to this heading">#</a></h2>
 <p>The GeoLab image defaults to <code class="docutils literal notranslate"><span class="pre">MSPASS_SCHEDULER=none</span></code> so that
 <code class="docutils literal notranslate"><span class="pre">Client()</span></code> does not silently create an in-pod Dask <code class="docutils literal notranslate"><span class="pre">LocalCluster</span></code>.  This is
 separate from Dask Gateway, which is the normal distributed Dask path on
-GeoLab.</p>
+GeoLab.  Dask Gateway scheduler and worker commands pass directly through the
+image entrypoint and do not run MsPASS startup or local MongoDB startup.</p>
 <p>For fallback or debugging only, local in-pod Dask can be enabled before the
 JupyterHub single-user server starts:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">MSPASS_ENABLE_LOCAL_DASK</span><span class="o">=</span><span class="nb">true</span>
