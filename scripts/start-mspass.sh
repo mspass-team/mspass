@@ -138,6 +138,7 @@ fi
 if [[ -z ${MSPASS_WORKER_DIR} ]]; then
   MSPASS_WORKER_DIR=${MSPASS_WORKDIR}/work
 fi
+export MSPASS_WORKDIR MSPASS_DB_DIR MSPASS_LOG_DIR MSPASS_WORKER_DIR
 # Note that only log is required for all roles. Other dirs will be created later when needed.
 [[ -d $MSPASS_LOG_DIR ]] || mkdir -p $MSPASS_LOG_DIR
 
@@ -179,7 +180,7 @@ if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
 
       function run_frontend_as_nb_user {
           NB_USER=${NB_USER:-mspass}
-          chown -R ${NB_USER}:100 "${MSPASS_WORKDIR}" 2>/dev/null || true
+          chown -R ${NB_UID:-${NB_USER}}:${NB_GID:-${NB_UID:-100}} "${MSPASS_WORKDIR}" 2>/dev/null || true
           local quoted_command
           quoted_command=$(quote_command "$@")
           su --preserve-environment -c "export PATH=${CONDA_DIR:-/opt/conda}/bin:\$PATH; ${quoted_command}" "${NB_USER}"
@@ -349,11 +350,34 @@ if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
     mongod --port $MONGODB_PORT --dbpath /tmp/db/data --logpath /tmp/logs/mongo_log --bind_ip_all &
   }
 
+  function env_flag_true {
+    case "$1" in
+      true|TRUE|True|1|yes|YES|Yes) return 0 ;;
+      *) return 1 ;;
+    esac
+  }
+
+  function local_scheduler_enabled_for_command {
+    if [ "${MSPASS_SCHEDULER:-}" = "none" ]; then
+      if is_jupyterhub_singleuser_command "$@" && env_flag_true "${MSPASS_ENABLE_LOCAL_DASK:-false}"; then
+        # GeoLab's distributed Dask path is Dask Gateway.  This opt-in flag keeps
+        # the local in-pod Dask fallback available without making it the default.
+        export MSPASS_SCHEDULER=dask
+      else
+        return 1
+      fi
+    fi
+
+    return 0
+  }
+
   function start_local_mspass_services {
     export MSPASS_DB_ADDRESS=$HOSTNAME
-    export MSPASS_SCHEDULER_ADDRESS=$HOSTNAME
-    eval $MSPASS_SCHEDULER_CMD
-    eval $MSPASS_WORKER_CMD
+    if local_scheduler_enabled_for_command "$@"; then
+      export MSPASS_SCHEDULER_ADDRESS=$HOSTNAME
+      eval $MSPASS_SCHEDULER_CMD
+      eval $MSPASS_WORKER_CMD
+    fi
     if [ "$MSPASS_DB_PATH" = "tmp" ]; then
       start_db_tmp
     else
@@ -545,8 +569,12 @@ if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
   else # if [ "$MSPASS_ROLE" = "all" ]
     FRONTEND_CLEANUP_MODE=single
     enable_frontend_cleanup_trap
-    start_local_mspass_services
+    start_local_mspass_services "$@"
     if is_jupyterhub_singleuser_command "$@"; then
+      cd "$MSPASS_WORKDIR" || {
+        echo "Cannot change to MSPASS_WORKDIR: $MSPASS_WORKDIR" >&2
+        exit 1
+      }
       docker-entrypoint.sh "$@"
       frontend_status=$?
     else

@@ -59,6 +59,11 @@ class Client:
 
     For the address and port of each client/instances, we first check the user specified parameters, if not then
     serach the environment varibales values, if not againm then use the default settings.
+
+    An existing :class:`dask.distributed.Client` can be supplied with ``dask_client``.
+    This is useful for externally managed Dask clusters, including Dask Gateway
+    clusters.  The caller owns the external cluster and should keep it alive while
+    the MsPASS client is using it.
     """
 
     def __init__(
@@ -66,6 +71,7 @@ class Client:
         database_host=None,
         scheduler=None,
         scheduler_host=None,
+        dask_client=None,
         job_name="mspass",
         database_name="mspass",
         schema=None,
@@ -79,9 +85,9 @@ class Client:
                 + " is found.",
                 "Fatal",
             )
-        if scheduler is not None and scheduler != "dask" and scheduler != "spark":
+        if scheduler is not None and scheduler not in ("dask", "spark", "none"):
             raise MsPASSError(
-                "scheduler should be either dask or spark but "
+                "scheduler should be dask, spark, or none but "
                 + str(scheduler)
                 + " is found.",
                 "Fatal",
@@ -113,6 +119,26 @@ class Client:
                 + " is found.",
                 "Fatal",
             )
+        if dask_client is not None:
+            if scheduler == "none":
+                raise MsPASSError(
+                    "dask_client cannot be used when scheduler is none.",
+                    "Fatal",
+                )
+            if scheduler == "spark":
+                raise MsPASSError(
+                    "dask_client can only be used with the dask scheduler.",
+                    "Fatal",
+                )
+            if not _mspasspy_has_dask_distributed or not isinstance(
+                dask_client, DaskClient
+            ):
+                raise MsPASSError(
+                    "dask_client should be a dask.distributed.Client but "
+                    + str(type(dask_client))
+                    + " is found.",
+                    "Fatal",
+                )
 
         # check env variables
         MSPASS_DB_ADDRESS = os.environ.get("MSPASS_DB_ADDRESS")
@@ -166,10 +192,19 @@ class Client:
         )
 
         # set scheduler
-        if scheduler:
-            self._scheduler = scheduler
+        if dask_client is not None:
+            self._scheduler = "dask"
+        elif scheduler:
+            self._scheduler = None if scheduler == "none" else scheduler
         elif MSPASS_SCHEDULER:
-            self._scheduler = MSPASS_SCHEDULER
+            if MSPASS_SCHEDULER not in ("dask", "spark", "none"):
+                raise MsPASSError(
+                    "MSPASS_SCHEDULER should be dask, spark, or none but "
+                    + str(MSPASS_SCHEDULER)
+                    + " is found.",
+                    "Fatal",
+                )
+            self._scheduler = None if MSPASS_SCHEDULER == "none" else MSPASS_SCHEDULER
         else:
             if _mspasspy_has_dask_distributed:
                 self._scheduler = "dask"
@@ -226,7 +261,9 @@ class Client:
 
         elif self._scheduler == "dask":
             # if no defind scheduler_host and no MSPASS_SCHEDULER_ADDRESS, use local cluster to create a client
-            if not scheduler_host and not MSPASS_SCHEDULER_ADDRESS:
+            if dask_client is not None:
+                self._dask_client = dask_client
+            elif not scheduler_host and not MSPASS_SCHEDULER_ADDRESS:
                 self._dask_client = DaskClient()
             else:
                 if scheduler_host:
