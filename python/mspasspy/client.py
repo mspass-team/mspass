@@ -1,5 +1,6 @@
 import os
 import pymongo
+from urllib.parse import urlsplit
 
 from mspasspy.db.client import DBClient
 from mspasspy.util.db_utils import MongoDBWorker
@@ -26,6 +27,25 @@ except ImportError:
     _mspasspy_has_dask_distributed = False
 
 from mspasspy.ccore.utility import MsPASSError
+
+
+def _address_has_port(address):
+    if "://" in address:
+        parsed_address = urlsplit(address)
+    else:
+        parsed_address = urlsplit("//" + address)
+    try:
+        return parsed_address.port is not None
+    except ValueError:
+        return False
+
+
+def _build_dask_scheduler_address(scheduler_address, scheduler_port=None):
+    if _address_has_port(scheduler_address):
+        return scheduler_address
+    if scheduler_port is None or scheduler_port == "":
+        scheduler_port = "8786"
+    return scheduler_address + ":" + str(scheduler_port)
 
 
 class Client:
@@ -209,22 +229,14 @@ class Client:
             if not scheduler_host and not MSPASS_SCHEDULER_ADDRESS:
                 self._dask_client = DaskClient()
             else:
-                scheduler_host_has_port = False
-                # set host
                 if scheduler_host:
-                    self._dask_client_address = scheduler_host
-                    # check if scheduler_host contains port number already
-                    if ":" in scheduler_host:
-                        scheduler_host_has_port = True
+                    scheduler_address = scheduler_host
                 else:
-                    self._dask_client_address = MSPASS_SCHEDULER_ADDRESS
+                    scheduler_address = MSPASS_SCHEDULER_ADDRESS
 
-                # add port
-                if not scheduler_host_has_port and DASK_SCHEDULER_PORT:
-                    self._dask_client_address += ":" + DASK_SCHEDULER_PORT
-                else:
-                    # use to port 8786 by default if not specified
-                    self._dask_client_address += ":8786"
+                self._dask_client_address = _build_dask_scheduler_address(
+                    scheduler_address, DASK_SCHEDULER_PORT
+                )
                 # sanity check
                 try:
                     self._dask_client = DaskClient(self._dask_client_address)
@@ -429,19 +441,9 @@ class Client:
                 del self._dask_client
 
         elif scheduler == "dask":
-            scheduler_host_has_port = False
-            self._dask_client_address = scheduler_host
-            # check if scheduler_host contains port number already
-            if ":" in scheduler_host:
-                scheduler_host_has_port = True
-
-            # add port
-            if not scheduler_host_has_port:
-                if scheduler_port:
-                    self._dask_client_address += ":" + scheduler_port
-                else:
-                    # use to port 8786 by default if not specified
-                    self._dask_client_address += ":8786"
+            self._dask_client_address = _build_dask_scheduler_address(
+                scheduler_host, scheduler_port
+            )
 
             # sanity check
             prev_dask_client = None

@@ -38,6 +38,99 @@ def mock_excpt(*args, **kwargs):
     raise Exception("mocked exception")
 
 
+def _patch_client_startup_for_scheduler_address(monkeypatch):
+    monkeypatch.setattr(DBClient, "server_info", lambda self: {})
+    monkeypatch.setattr(
+        GlobalHistoryManager, "__init__", lambda self, *args, **kwargs: None
+    )
+
+
+def _dask_client_error_match(address):
+    return re.escape("cannot create a dask client with: " + address)
+
+
+def test_dask_scheduler_full_uri_constructor_address(monkeypatch):
+    _patch_client_startup_for_scheduler_address(monkeypatch)
+    monkeypatch.delenv("DASK_SCHEDULER_PORT", raising=False)
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    with pytest.raises(
+        MsPASSError,
+        match=_dask_client_error_match("tcp://127.0.0.1:41585"),
+    ):
+        Client(scheduler="dask", scheduler_host="tcp://127.0.0.1:41585")
+
+
+def test_dask_scheduler_full_uri_env_address(monkeypatch):
+    _patch_client_startup_for_scheduler_address(monkeypatch)
+    monkeypatch.setenv("MSPASS_SCHEDULER", "dask")
+    monkeypatch.setenv("MSPASS_SCHEDULER_ADDRESS", "tcp://127.0.0.1:41585")
+    monkeypatch.delenv("DASK_SCHEDULER_PORT", raising=False)
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    with pytest.raises(
+        MsPASSError,
+        match=_dask_client_error_match("tcp://127.0.0.1:41585"),
+    ):
+        Client()
+
+
+def test_dask_scheduler_bare_host_uses_env_port(monkeypatch):
+    _patch_client_startup_for_scheduler_address(monkeypatch)
+    monkeypatch.setenv("DASK_SCHEDULER_PORT", "12345")
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    with pytest.raises(
+        MsPASSError,
+        match=_dask_client_error_match("168.0.0.1:12345"),
+    ):
+        Client(scheduler="dask", scheduler_host="168.0.0.1")
+
+
+def test_dask_scheduler_bare_host_uses_default_port(monkeypatch):
+    _patch_client_startup_for_scheduler_address(monkeypatch)
+    monkeypatch.delenv("DASK_SCHEDULER_PORT", raising=False)
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    with pytest.raises(
+        MsPASSError,
+        match=_dask_client_error_match("168.0.0.1:8786"),
+    ):
+        Client(scheduler="dask", scheduler_host="168.0.0.1")
+
+
+def test_set_scheduler_dask_uses_full_uri_address(monkeypatch):
+    client = Client.__new__(Client)
+    client._scheduler = "spark"
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    with pytest.raises(
+        MsPASSError,
+        match=_dask_client_error_match("tcp://127.0.0.1:41585"),
+    ):
+        client.set_scheduler("dask", "tcp://127.0.0.1:41585")
+    assert client._scheduler == "spark"
+
+
+def test_set_scheduler_dask_coerces_non_string_port(monkeypatch):
+    client = Client.__new__(Client)
+    client._scheduler = "spark"
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    with pytest.raises(
+        MsPASSError,
+        match=_dask_client_error_match("168.0.0.1:12345"),
+    ):
+        client.set_scheduler("dask", "168.0.0.1", scheduler_port=12345)
+    assert client._scheduler == "spark"
+
+
+def test_set_scheduler_dask_empty_port_uses_default(monkeypatch):
+    client = Client.__new__(Client)
+    client._scheduler = "spark"
+    monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+    with pytest.raises(
+        MsPASSError,
+        match=_dask_client_error_match("168.0.0.1:8786"),
+    ):
+        client.set_scheduler("dask", "168.0.0.1", scheduler_port="")
+    assert client._scheduler == "spark"
+
+
 class TestMsPASSClient:
     @staticmethod
     def _close_dask_scheduler(client):
@@ -144,6 +237,7 @@ class TestMsPASSClient:
             self.client = Client()
 
     def test_dask_scheduler(self, monkeypatch):
+        monkeypatch.delenv("DASK_SCHEDULER_PORT", raising=False)
         monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
         with pytest.raises(
             MsPASSError,
@@ -161,6 +255,46 @@ class TestMsPASSClient:
             match="Runntime error: cannot create a dask client with: 168.0.0.1:12345",
         ):
             client = Client()
+        monkeypatch.undo()
+
+        monkeypatch.delenv("DASK_SCHEDULER_PORT", raising=False)
+        monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+        with pytest.raises(
+            MsPASSError,
+            match=_dask_client_error_match("tcp://127.0.0.1:41585"),
+        ):
+            client = Client(
+                scheduler="dask", scheduler_host="tcp://127.0.0.1:41585"
+            )
+        monkeypatch.undo()
+
+        monkeypatch.setenv("MSPASS_SCHEDULER", "dask")
+        monkeypatch.setenv("MSPASS_SCHEDULER_ADDRESS", "tcp://127.0.0.1:41585")
+        monkeypatch.delenv("DASK_SCHEDULER_PORT", raising=False)
+        monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+        with pytest.raises(
+            MsPASSError,
+            match=_dask_client_error_match("tcp://127.0.0.1:41585"),
+        ):
+            client = Client()
+        monkeypatch.undo()
+
+        monkeypatch.setenv("DASK_SCHEDULER_PORT", "12345")
+        monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+        with pytest.raises(
+            MsPASSError,
+            match=_dask_client_error_match("168.0.0.1:12345"),
+        ):
+            client = Client(scheduler="dask", scheduler_host="168.0.0.1")
+        monkeypatch.undo()
+
+        monkeypatch.delenv("DASK_SCHEDULER_PORT", raising=False)
+        monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+        with pytest.raises(
+            MsPASSError,
+            match=_dask_client_error_match("168.0.0.1:8786"),
+        ):
+            client = Client(scheduler="dask", scheduler_host="168.0.0.1")
         monkeypatch.undo()
 
     def test_spark_scheduler(self, monkeypatch):
@@ -265,6 +399,17 @@ class TestMsPASSClient:
             match="Runntime error: cannot create a dask client with: localhost:8786",
         ):
             self.client.set_scheduler("dask", "localhost", scheduler_port="8786")
+        monkeypatch.undo()
+        assert self.client._scheduler == "dask"
+        assert isinstance(self.client._dask_client, DaskClient)
+        assert self.client._dask_client == temp_dask_client
+
+        monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
+        with pytest.raises(
+            MsPASSError,
+            match=_dask_client_error_match("tcp://127.0.0.1:41585"),
+        ):
+            self.client.set_scheduler("dask", "tcp://127.0.0.1:41585")
         monkeypatch.undo()
         assert self.client._scheduler == "dask"
         assert isinstance(self.client._dask_client, DaskClient)
