@@ -322,7 +322,8 @@ ARG NB_USER=jovyan
 ARG NB_UID=1000
 ARG NB_GID=1000
 ARG NB_HOME=/home/jovyan
-ARG MONGO_MAJOR=8.0
+ARG MONGO_MAJOR=6.0
+ARG MONGO_VERSION=6.0.5
 ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
     NB_GID=${NB_GID} \
@@ -331,7 +332,6 @@ ENV NB_USER=${NB_USER} \
     MSPASS_WORK_DIR=${NB_HOME} \
     MSPASS_SCHEDULER=none \
     MSPASS_ENABLE_LOCAL_DASK=false \
-    MSPASS_DB_ADDRESS=127.0.0.1 \
     MONGODB_PORT=27017 \
     DASK_SCHEDULER_PORT=8786 \
     PATH=/srv/conda/envs/notebook/bin:/srv/conda/condabin:/srv/conda/bin:${PATH}
@@ -357,10 +357,15 @@ RUN set -eux; \
     install -d -m 0755 /etc/apt/keyrings; \
     curl -fsSL "https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc" \
         | gpg --dearmor -o "/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg"; \
-    echo "deb [ arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/${MONGO_MAJOR} multiverse" \
+    echo "deb [ arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/${MONGO_MAJOR} multiverse" \
         > "/etc/apt/sources.list.d/mongodb-org-${MONGO_MAJOR}.list"; \
     apt-get update; \
-    apt-get install -y --no-install-recommends mongodb-org; \
+    apt-get install -y --no-install-recommends \
+        mongodb-org=${MONGO_VERSION} \
+        mongodb-org-server=${MONGO_VERSION} \
+        mongodb-org-shell=${MONGO_VERSION} \
+        mongodb-org-mongos=${MONGO_VERSION} \
+        mongodb-org-tools=${MONGO_VERSION}; \
     rm -rf /var/lib/apt/lists/*
 
 ADD cxx /mspass/cxx

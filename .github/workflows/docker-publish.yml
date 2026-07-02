@@ -332,33 +332,6 @@ jobs:
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
           cache-to: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64,mode=max
 
-      - name: Prepare arm64 GeoLab tags
-        id: arm64-geolab-tags
-        shell: bash
-        run: |
-          cat <<'EOF' > arm64-geolab-tags.txt
-          mspass/mspass:geolab-arm64
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-arm64
-          EOF
-          {
-            echo 'tags<<EOF'
-            cat arm64-geolab-tags.txt
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Build GeoLab image (arm64)
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          target: geolab
-          platforms: linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.arm64-geolab-tags.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-contexts: |
-            spark-build-assets=.docker-build-assets
-          cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-arm64
-
   publish-latest-manifest:
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' }}
@@ -675,7 +648,6 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     needs:
       - build-latest
-      - build-latest-arm64
     permissions:
       contents: read
       packages: write
@@ -697,17 +669,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Create multi-arch GeoLab manifests
+      - name: Create GeoLab manifests
         shell: bash
         run: |
           docker buildx imagetools create \
             --tag mspass/mspass:geolab \
-            mspass/mspass:geolab-amd64 \
-            mspass/mspass:geolab-arm64
+            mspass/mspass:geolab-amd64
           docker buildx imagetools create \
             --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-amd64 \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-arm64
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:geolab-amd64
 
   build-mpi:
     needs: download-spark
