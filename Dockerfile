@@ -384,17 +384,25 @@ ADD python /mspass/python
 ADD .git /mspass/.git
 
 RUN set -eux; \
+    printf '%s\n' \
+        'dask==2026.3.0' \
+        'distributed==2026.3.0' \
+        'dask-gateway==2026.3.0' \
+        > /tmp/geolab-dask-constraints.txt; \
     /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --upgrade pip setuptools wheel setuptools_scm; \
-    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --upgrade \
-        'dask[complete]>=2025.9.1' \
-        'distributed>=2025.9.1'; \
-    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir -v \
-        /mspass; \
-    /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; names=('dask','distributed'); open('/tmp/geolab-dask-constraints.txt','w').write(''.join(f'{name}=={md.version(name)}\n' for name in names))"; \
-    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --upgrade \
+    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir \
         --constraint /tmp/geolab-dask-constraints.txt \
-        dask-gateway; \
-    /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; names=('dask','distributed','dask-gateway'); print({name: md.version(name) for name in names}); import mspasspy; print(mspasspy.__file__)"; \
+        'dask[complete]==2026.3.0' \
+        'distributed==2026.3.0' \
+        'dask-gateway==2026.3.0'; \
+    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir -v \
+        --constraint /tmp/geolab-dask-constraints.txt \
+        /mspass; \
+    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --force-reinstall --no-deps \
+        dask==2026.3.0 \
+        distributed==2026.3.0 \
+        dask-gateway==2026.3.0; \
+    /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; expected={'dask':'2026.3.0','distributed':'2026.3.0','dask-gateway':'2026.3.0'}; actual={name: md.version(name) for name in expected}; print(actual); assert actual == expected, actual; import mspasspy; print(mspasspy.__file__)"; \
     rm -rf /mspass/build /mspass/.git /root/.cache /tmp/geolab-dask-constraints.txt
 
 ADD scripts/start-mspass-geolab-entrypoint.sh /usr/sbin/start-mspass-geolab-entrypoint.sh
