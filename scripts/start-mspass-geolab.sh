@@ -18,6 +18,12 @@ export MSPASS_SCHEDULER_ADDRESS="${MSPASS_SCHEDULER_ADDRESS:-127.0.0.1}"
 export MSPASS_DB_ADDRESS="${MSPASS_DB_ADDRESS:-127.0.0.1}"
 export DASK_SCHEDULER_PORT="${DASK_SCHEDULER_PORT:-8786}"
 
+# GeoLab currently provides up to 4 CPUs.  Use multiple single-threaded
+# worker processes by default to avoid Python GIL contention.
+export MSPASS_DASK_WORKER_COUNT="${MSPASS_DASK_WORKER_COUNT:-4}"
+export MSPASS_DASK_WORKER_THREADS="${MSPASS_DASK_WORKER_THREADS:-1}"
+export MSPASS_DASK_WORKER_MEMORY_LIMIT="${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0}"
+
 case "${MSPASS_ENABLE_LOCAL_DASK}" in
     false|FALSE|False|0|no|NO|No)
         if [ "${MSPASS_SCHEDULER}" = "dask" ] && \
@@ -36,7 +42,7 @@ fi
 
 MONGO_PID=""
 DASK_SCHEDULER_PID=""
-DASK_WORKER_PID=""
+DASK_WORKER_PIDS=""
 FRONTEND_PID=""
 
 cleanup() {
@@ -48,10 +54,12 @@ cleanup() {
         wait "$FRONTEND_PID" 2>/dev/null || true
     fi
 
-    if [ -n "$DASK_WORKER_PID" ] && kill -0 "$DASK_WORKER_PID" 2>/dev/null; then
-        kill "$DASK_WORKER_PID" 2>/dev/null || true
-        wait "$DASK_WORKER_PID" 2>/dev/null || true
-    fi
+    for worker_pid in $DASK_WORKER_PIDS; do
+        if kill -0 "$worker_pid" 2>/dev/null; then
+            kill "$worker_pid" 2>/dev/null || true
+            wait "$worker_pid" 2>/dev/null || true
+        fi
+    done
 
     if [ -n "$DASK_SCHEDULER_PID" ] && kill -0 "$DASK_SCHEDULER_PID" 2>/dev/null; then
         kill "$DASK_SCHEDULER_PID" 2>/dev/null || true
@@ -126,13 +134,23 @@ case "${MSPASS_ENABLE_LOCAL_DASK:-false}" in
         dask scheduler --host 127.0.0.1 --port "$DASK_SCHEDULER_PORT" \
             > "$MSPASS_LOG_DIR/dask-scheduler.log" 2>&1 &
         DASK_SCHEDULER_PID=$!
+
         sleep 5
-        dask worker \
-            --memory-limit="${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0}" \
-            --local-directory "$MSPASS_WORKER_DIR" \
-            "tcp://127.0.0.1:${DASK_SCHEDULER_PORT}" \
-            > "$MSPASS_LOG_DIR/dask-worker.log" 2>&1 &
-        DASK_WORKER_PID=$!
+
+        worker_index=1
+        while [ "$worker_index" -le "$MSPASS_DASK_WORKER_COUNT" ]; do
+            worker_dir="$MSPASS_WORKER_DIR/worker-${worker_index}"
+            mkdir -p "$worker_dir"
+
+            dask worker \
+                --nthreads "$MSPASS_DASK_WORKER_THREADS" \
+                --memory-limit="$MSPASS_DASK_WORKER_MEMORY_LIMIT" \
+                --local-directory "$worker_dir" \
+                "tcp://127.0.0.1:${DASK_SCHEDULER_PORT}" \
+                > "$MSPASS_LOG_DIR/dask-worker-${worker_index}.log" 2>&1 &
+            DASK_WORKER_PIDS="$DASK_WORKER_PIDS $!"
+            worker_index=$((worker_index + 1))
+        done
         ;;
 esac
 
