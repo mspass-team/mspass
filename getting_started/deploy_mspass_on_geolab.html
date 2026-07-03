@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MsPASS on EarthScope GeoLab &#8212; MsPASS 2.4.1.dev10+g4cf627d3 documentation</title>
+    <title>Using MsPASS on EarthScope GeoLab &#8212; MsPASS 2.4.1.dev11+g1cf22eb4 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=9f911561"></script>
+    <script src="../_static/documentation_options.js?v=643ecf13"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Deploy MsPASS with Conda and Coiled" href="deploy_mspass_with_conda_and_coiled.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.1.dev10" />
+  <meta name="docsearch:version" content="2.4.1.dev11" />
   </head>
   
   
@@ -487,7 +487,7 @@ run:</p>
 <ul class="simple">
 <li><p>a MongoDB ping result like <code class="docutils literal notranslate"><span class="pre">{&quot;ok&quot;:</span> <span class="pre">1.0}</span></code>;</p></li>
 <li><p>a Dask scheduler address like <code class="docutils literal notranslate"><span class="pre">tcp://127.0.0.1:8786</span></code>;</p></li>
-<li><p>one local Dask worker.</p></li>
+<li><p>four single-threaded local Dask workers by default.</p></li>
 </ul>
 </section>
 <section id="what-the-geolab-image-starts-automatically">
@@ -496,7 +496,7 @@ run:</p>
 <ul class="simple">
 <li><p>a local MongoDB server;</p></li>
 <li><p>one local Dask scheduler;</p></li>
-<li><p>one local Dask worker;</p></li>
+<li><p>four local Dask workers;</p></li>
 <li><p>the JupyterHub single-user server.</p></li>
 </ul>
 <p>These services run inside the same GeoLab notebook pod.  Users normally do not
@@ -518,6 +518,15 @@ MSPASS_SCHEDULER_ADDRESS=127.0.0.1
 DASK_SCHEDULER_PORT=8786
 </pre></div>
 </div>
+<p>The default worker layout is controlled by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">MSPASS_DASK_WORKER_COUNT</span><span class="o">=</span><span class="m">4</span>
+<span class="nv">MSPASS_DASK_WORKER_THREADS</span><span class="o">=</span><span class="m">1</span>
+<span class="nv">MSPASS_DASK_WORKER_MEMORY_LIMIT</span><span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+<p>Use multiple single-threaded worker processes on GeoLab to avoid Python GIL
+contention.  These values must be set before the JupyterHub single-user server
+starts.</p>
 <p>This means <code class="docutils literal notranslate"><span class="pre">Client()</span></code> connects to the already-running local services.  It
 should not create a new hidden Dask <code class="docutils literal notranslate"><span class="pre">LocalCluster</span></code> for each notebook.</p>
 </section>

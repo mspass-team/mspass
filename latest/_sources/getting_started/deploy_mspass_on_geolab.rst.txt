@@ -33,7 +33,7 @@ A healthy setup should show:
 
 * a MongoDB ping result like ``{"ok": 1.0}``;
 * a Dask scheduler address like ``tcp://127.0.0.1:8786``;
-* one local Dask worker.
+* four single-threaded local Dask workers by default.
 
 What the GeoLab image starts automatically
 ------------------------------------------
@@ -42,7 +42,7 @@ When the MsPASS GeoLab image starts in JupyterHub, it starts:
 
 * a local MongoDB server;
 * one local Dask scheduler;
-* one local Dask worker;
+* four local Dask workers;
 * the JupyterHub single-user server.
 
 These services run inside the same GeoLab notebook pod.  Users normally do not
@@ -68,6 +68,18 @@ The default service addresses are:
     MSPASS_SCHEDULER=dask
     MSPASS_SCHEDULER_ADDRESS=127.0.0.1
     DASK_SCHEDULER_PORT=8786
+
+The default worker layout is controlled by:
+
+.. code-block:: bash
+
+    MSPASS_DASK_WORKER_COUNT=4
+    MSPASS_DASK_WORKER_THREADS=1
+    MSPASS_DASK_WORKER_MEMORY_LIMIT=0
+
+Use multiple single-threaded worker processes on GeoLab to avoid Python GIL
+contention.  These values must be set before the JupyterHub single-user server
+starts.
 
 This means ``Client()`` connects to the already-running local services.  It
 should not create a new hidden Dask ``LocalCluster`` for each notebook.
