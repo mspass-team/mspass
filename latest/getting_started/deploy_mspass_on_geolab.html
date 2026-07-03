@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MsPASS With EarthScope GeoLab &#8212; MsPASS 2.4.1.dev9+gb1ea5343 documentation</title>
+    <title>Using MsPASS on EarthScope GeoLab &#8212; MsPASS 2.4.1.dev10+g4cf627d3 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=02c8fd48"></script>
+    <script src="../_static/documentation_options.js?v=9f911561"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Deploy MsPASS with Conda and Coiled" href="deploy_mspass_with_conda_and_coiled.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.1.dev9" />
+  <meta name="docsearch:version" content="2.4.1.dev10" />
   </head>
   
   
@@ -336,7 +336,7 @@
 <li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Using MsPASS With EarthScope GeoLab</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Using MsPASS on EarthScope GeoLab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
@@ -445,7 +445,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Using MsPASS With EarthScope GeoLab</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Using MsPASS on EarthScope GeoLab</span></li>
   </ul>
 </nav>
 </div>
@@ -462,52 +462,113 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="using-mspass-with-earthscope-geolab">
-<span id="deploy-mspass-on-geolab"></span><h1>Using MsPASS With EarthScope GeoLab<a class="headerlink" href="#using-mspass-with-earthscope-geolab" title="Link to this heading">#</a></h1>
-<p>The MsPASS GeoLab image is built from the same GeoLab/Pangeo-style base image
-contract as the official EarthScope image, with MsPASS installed into the
-<code class="docutils literal notranslate"><span class="pre">/srv/conda/envs/notebook</span></code> environment.  Non-JupyterHub commands pass through
-the entrypoint directly so EarthScope Dask Gateway can still start scheduler
-and worker pods from the image.</p>
-<p>Live GeoLab network tests show that Gateway worker pods cannot reach arbitrary
-ports on the notebook pod, including a notebook-local MongoDB service.  For
-that reason, the default MsPASS GeoLab startup path uses notebook-local MongoDB
-and notebook-local Dask in the same pod.  Dask Gateway remains available for
-manual use, pure Dask workflows, and future DB-backed workflows where MongoDB
-is reachable from Gateway workers.</p>
-<section id="default-notebook-runtime">
-<h2>Default notebook runtime<a class="headerlink" href="#default-notebook-runtime" title="Link to this heading">#</a></h2>
-<p>When the JupyterHub single-user server starts, the GeoLab image starts local
-MongoDB plus one local Dask scheduler and worker.  The scheduler binds to
-<code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> on <code class="docutils literal notranslate"><span class="pre">DASK_SCHEDULER_PORT</span></code> and notebook kernels default to:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">HOME</span><span class="o">=</span>/home/jovyan
-<span class="nv">NB_HOME</span><span class="o">=</span>/home/jovyan
-<span class="nv">MSPASS_WORK_DIR</span><span class="o">=</span>/home/jovyan
-<span class="nv">MSPASS_WORKDIR</span><span class="o">=</span>/home/jovyan
-<span class="nv">MSPASS_DB_DIR</span><span class="o">=</span>/home/jovyan/db
-<span class="nv">MSPASS_LOG_DIR</span><span class="o">=</span>/home/jovyan/logs
-<span class="nv">MSPASS_WORKER_DIR</span><span class="o">=</span>/home/jovyan/work
-<span class="nv">MONGO_DATA_DIR</span><span class="o">=</span>/home/jovyan/db/data
-<span class="nv">MONGO_LOG</span><span class="o">=</span>/home/jovyan/logs/mongo_log
-<span class="nv">MSPASS_DB_ADDRESS</span><span class="o">=</span><span class="m">127</span>.0.0.1
-<span class="nv">MSPASS_SCHEDULER</span><span class="o">=</span>dask
-<span class="nv">MSPASS_SCHEDULER_ADDRESS</span><span class="o">=</span><span class="m">127</span>.0.0.1
-</pre></div>
-</div>
-<p>This means the usual notebook client constructor attaches to the pre-started
-local scheduler instead of creating a hidden <code class="docutils literal notranslate"><span class="pre">LocalCluster</span></code>:</p>
+  <section id="using-mspass-on-earthscope-geolab">
+<span id="deploy-mspass-on-geolab"></span><h1>Using MsPASS on EarthScope GeoLab<a class="headerlink" href="#using-mspass-on-earthscope-geolab" title="Link to this heading">#</a></h1>
+<p>This page explains how to use MsPASS in EarthScope GeoLab.</p>
+<p>The short version is: open a GeoLab server with the MsPASS image,
+<code class="docutils literal notranslate"><span class="pre">ghcr.io/mspass-team/mspass:geolab</span></code>, create a normal MsPASS <code class="docutils literal notranslate"><span class="pre">Client</span></code>, and
+use it as you would in a local notebook.  The image starts the services MsPASS
+needs automatically.</p>
+<section id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
+<p>Start a GeoLab server with the MsPASS GeoLab image, then open a notebook and
+run:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 
-<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">({</span><span class="s2">&quot;ping&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}))</span>
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Check that the database and scheduler are available:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">({</span><span class="s2">&quot;ping&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span><span class="o">.</span><span class="n">scheduler_info</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>The MongoDB worker plugin should also be able to reach the local MongoDB
-service from the local Dask worker:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
+<p>A healthy setup should show:</p>
+<ul class="simple">
+<li><p>a MongoDB ping result like <code class="docutils literal notranslate"><span class="pre">{&quot;ok&quot;:</span> <span class="pre">1.0}</span></code>;</p></li>
+<li><p>a Dask scheduler address like <code class="docutils literal notranslate"><span class="pre">tcp://127.0.0.1:8786</span></code>;</p></li>
+<li><p>one local Dask worker.</p></li>
+</ul>
+</section>
+<section id="what-the-geolab-image-starts-automatically">
+<h2>What the GeoLab image starts automatically<a class="headerlink" href="#what-the-geolab-image-starts-automatically" title="Link to this heading">#</a></h2>
+<p>When the MsPASS GeoLab image starts in JupyterHub, it starts:</p>
+<ul class="simple">
+<li><p>a local MongoDB server;</p></li>
+<li><p>one local Dask scheduler;</p></li>
+<li><p>one local Dask worker;</p></li>
+<li><p>the JupyterHub single-user server.</p></li>
+</ul>
+<p>These services run inside the same GeoLab notebook pod.  Users normally do not
+need to start MongoDB or Dask manually.</p>
+<p>The default runtime layout is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>HOME=/home/jovyan
+MSPASS_WORKDIR=/home/jovyan
+MSPASS_DB_DIR=/home/jovyan/db
+MONGO_DATA_DIR=/home/jovyan/db/data
+MSPASS_LOG_DIR=/home/jovyan/logs
+MSPASS_WORKER_DIR=/home/jovyan/work
+</pre></div>
+</div>
+<p>The default service addresses are:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MSPASS_DB_ADDRESS=127.0.0.1
+MONGODB_PORT=27017
+MSPASS_SCHEDULER=dask
+MSPASS_SCHEDULER_ADDRESS=127.0.0.1
+DASK_SCHEDULER_PORT=8786
+</pre></div>
+</div>
+<p>This means <code class="docutils literal notranslate"><span class="pre">Client()</span></code> connects to the already-running local services.  It
+should not create a new hidden Dask <code class="docutils literal notranslate"><span class="pre">LocalCluster</span></code> for each notebook.</p>
+</section>
+<section id="check-the-running-services">
+<h2>Check the running services<a class="headerlink" href="#check-the-running-services" title="Link to this heading">#</a></h2>
+<p>In a GeoLab terminal, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ps<span class="w"> </span>-ef<span class="w"> </span><span class="p">|</span><span class="w"> </span>egrep<span class="w"> </span><span class="s1">&#39;jupyter|ipykernel|dask|distributed|mongo&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span>grep
+</pre></div>
+</div>
+<p>A healthy server should show processes similar to:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mongod --port 27017 --dbpath /home/jovyan/db/data ...
+dask scheduler --host 127.0.0.1 --port 8786
+dask worker ... tcp://127.0.0.1:8786
+jupyterhub-singleuser
+ipykernel_launcher
+</pre></div>
+</div>
+<p>Check MongoDB directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mongosh<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">27017</span><span class="w"> </span>--eval<span class="w"> </span><span class="s1">&#39;db.adminCommand({ping: 1})&#39;</span>
+</pre></div>
+</div>
+<p>Expected output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{ ok: 1 }
+</pre></div>
+</div>
+<p>Check the main environment variables:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MSPASS_WORKDIR=</span><span class="nv">$MSPASS_WORKDIR</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MSPASS_DB_DIR=</span><span class="nv">$MSPASS_DB_DIR</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MONGO_DATA_DIR=</span><span class="nv">$MONGO_DATA_DIR</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MSPASS_LOG_DIR=</span><span class="nv">$MSPASS_LOG_DIR</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MSPASS_WORKER_DIR=</span><span class="nv">$MSPASS_WORKER_DIR</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MSPASS_DB_ADDRESS=</span><span class="nv">$MSPASS_DB_ADDRESS</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MSPASS_SCHEDULER=</span><span class="nv">$MSPASS_SCHEDULER</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MSPASS_SCHEDULER_ADDRESS=</span><span class="nv">$MSPASS_SCHEDULER_ADDRESS</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="use-the-default-local-dask-scheduler">
+<h2>Use the default local Dask scheduler<a class="headerlink" href="#use-the-default-local-dask-scheduler" title="Link to this heading">#</a></h2>
+<p>The recommended default on GeoLab is to use the local Dask scheduler started by
+the image:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">check_worker_db</span><span class="p">():</span>
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">scheduler</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">scheduler</span><span class="o">.</span><span class="n">scheduler_info</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>To confirm that a Dask worker can access the MsPASS database:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_worker_db</span><span class="p">():</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_worker</span>
 
     <span class="n">worker</span> <span class="o">=</span> <span class="n">get_worker</span><span class="p">()</span>
@@ -517,49 +578,54 @@ service from the local Dask worker:</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">scheduler</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">check_worker_db</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>Resetting MongoDB data is always explicit.  Set
-<code class="docutils literal notranslate"><span class="pre">MSPASS_RESET_MONGO_DB=true</span></code> only when you intentionally want
-<code class="docutils literal notranslate"><span class="pre">MONGO_DATA_DIR</span></code> removed before startup.  The startup script does not delete
-the database directory by default.</p>
-</section>
-<section id="disabling-local-dask">
-<h2>Disabling local Dask<a class="headerlink" href="#disabling-local-dask" title="Link to this heading">#</a></h2>
-<p>Local in-pod Dask can be disabled before the JupyterHub single-user server
-starts:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">MSPASS_ENABLE_LOCAL_DASK</span><span class="o">=</span><span class="nb">false</span>
-<span class="nv">MSPASS_SCHEDULER</span><span class="o">=</span>none
+<p>Expected output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{&#39;ok&#39;: 1.0}
 </pre></div>
 </div>
-<p>With those settings the startup script still starts notebook-local MongoDB, but
-does not start a local Dask scheduler or worker.  <code class="docutils literal notranslate"><span class="pre">Client(scheduler=&quot;none&quot;)</span></code>
-or <code class="docutils literal notranslate"><span class="pre">MSPASS_SCHEDULER=none</span></code> leaves the MsPASS scheduler unset.  Setting
-<code class="docutils literal notranslate"><span class="pre">MSPASS_ENABLE_LOCAL_DASK=false</span></code> by itself also changes the default local
-<code class="docutils literal notranslate"><span class="pre">dask</span></code> scheduler setting to <code class="docutils literal notranslate"><span class="pre">none</span></code> unless an external scheduler address is
-configured.</p>
+<p>This test confirms that the MsPASS Dask worker plugin is installed and that the
+local Dask worker can connect to MongoDB.</p>
+</section>
+<section id="database-persistence-and-reset">
+<h2>Database persistence and reset<a class="headerlink" href="#database-persistence-and-reset" title="Link to this heading">#</a></h2>
+<p>By default, the MongoDB data directory is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/jovyan/db/data
+</pre></div>
+</div>
+<p>This directory is inside the GeoLab user workspace, so it can persist across
+server restarts.</p>
+<p>To reset the local MongoDB database, stop the GeoLab server and start it again
+with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">MSPASS_RESET_MONGO_DB</span><span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+<p>Only use this when you intentionally want to remove the selected MongoDB data
+directory before startup.  The startup script does not delete the database by
+default.</p>
 </section>
 <section id="dask-gateway">
 <h2>Dask Gateway<a class="headerlink" href="#dask-gateway" title="Link to this heading">#</a></h2>
-<p>EarthScope GeoLab provides distributed Dask through Dask Gateway.  Installing
-<code class="docutils literal notranslate"><span class="pre">dask-gateway</span></code> manually inside a running notebook pod is not sufficient
-because Gateway-created scheduler and worker pods are started from the image,
-not from the notebook pod’s mutated runtime filesystem.  The MsPASS GeoLab
-image keeps <code class="docutils literal notranslate"><span class="pre">dask</span></code>, <code class="docutils literal notranslate"><span class="pre">distributed</span></code>, <code class="docutils literal notranslate"><span class="pre">dask_gateway</span></code>, and <code class="docutils literal notranslate"><span class="pre">mspasspy</span></code>
-importable in notebook, scheduler, and worker pods.</p>
-<p>A Gateway cluster starts with no workers until it is scaled or configured for
-adaptive scaling:</p>
+<p>EarthScope GeoLab also provides Dask Gateway.  The MsPASS GeoLab image can be
+used with Dask Gateway, and Gateway workers can import <code class="docutils literal notranslate"><span class="pre">mspasspy</span></code>.  However,
+Gateway is not the default scheduler path for MsPASS on GeoLab.</p>
+<p>The reason is practical: live GeoLab tests showed that Gateway worker pods
+cannot connect back to arbitrary ports on the notebook pod.  In particular,
+Gateway workers could not connect to the notebook-local MongoDB service.
+Therefore, DB-backed MsPASS workflows should use the default local Dask
+scheduler unless a worker-reachable MongoDB endpoint is available.</p>
+<p>You can still create a Gateway cluster manually:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dask_gateway</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gateway</span>
 
 <span class="n">gateway</span> <span class="o">=</span> <span class="n">Gateway</span><span class="p">()</span>
 <span class="n">cluster</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">new_cluster</span><span class="p">()</span>
 <span class="n">cluster</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="n">dask_client</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
-<span class="n">dask_client</span><span class="o">.</span><span class="n">wait_for_workers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="s2">&quot;120s&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">dask_client</span><span class="o">.</span><span class="n">scheduler_info</span><span class="p">())</span>
+<span class="n">gateway_client</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
+<span class="n">gateway_client</span><span class="o">.</span><span class="n">wait_for_workers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="s2">&quot;120s&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">gateway_client</span><span class="o">.</span><span class="n">scheduler_info</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>To verify that a Gateway worker was created from an image containing the MsPASS
-runtime packages:</p>
+<p>To check that Gateway workers can import the MsPASS runtime:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_worker</span><span class="p">():</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
@@ -581,11 +647,12 @@ runtime packages:</p>
         <span class="s2">&quot;mspasspy&quot;</span><span class="p">:</span> <span class="n">mspasspy</span><span class="o">.</span><span class="vm">__file__</span><span class="p">,</span>
     <span class="p">}</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">check_worker</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">gateway_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">check_worker</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>MsPASS can accept an externally-created Dask client, including one returned by
-Dask Gateway:</p>
+<section id="using-a-gateway-client-with-mspass">
+<h3>Using a Gateway client with MsPASS<a class="headerlink" href="#using-a-gateway-client-with-mspass" title="Link to this heading">#</a></h3>
+<p>MsPASS can accept an externally created Dask client:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dask_gateway</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gateway</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 
@@ -593,57 +660,90 @@ Dask Gateway:</p>
 <span class="n">cluster</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">new_cluster</span><span class="p">()</span>
 <span class="n">cluster</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
-<span class="n">dask_client</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
-<span class="n">dask_client</span><span class="o">.</span><span class="n">wait_for_workers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="s2">&quot;120s&quot;</span><span class="p">)</span>
+<span class="n">gateway_client</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
+<span class="n">gateway_client</span><span class="o">.</span><span class="n">wait_for_workers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="s2">&quot;120s&quot;</span><span class="p">)</span>
 
-<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span> <span class="n">dask_client</span><span class="o">=</span><span class="n">dask_client</span><span class="p">)</span>
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span> <span class="n">dask_client</span><span class="o">=</span><span class="n">gateway_client</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Keep the <code class="docutils literal notranslate"><span class="pre">cluster</span></code> object alive while using <code class="docutils literal notranslate"><span class="pre">mspass_client</span></code>.  MsPASS uses
-the provided Dask client but does not own or shut down the Gateway cluster.</p>
-<p>DB-backed MsPASS workflows through Gateway need a MongoDB endpoint that Gateway
-workers can reach.  Passing a Gateway client to <code class="docutils literal notranslate"><span class="pre">Client</span></code> still registers the
-MongoDB worker plugin, so notebook-local <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> MongoDB is not a valid
-Gateway worker database address.</p>
+<p>Keep the <code class="docutils literal notranslate"><span class="pre">cluster</span></code> object alive while using <code class="docutils literal notranslate"><span class="pre">mspass_client</span></code>.</p>
+<p>This pattern is useful only when the Gateway workers can reach the MongoDB
+endpoint used by MsPASS.  The default notebook-local MongoDB address
+<code class="docutils literal notranslate"><span class="pre">127.0.0.1:27017</span></code> is not valid from Gateway worker pods.</p>
+<p>For DB-backed MsPASS workflows with Gateway, use a MongoDB endpoint that is
+reachable from both the notebook pod and Gateway worker pods.</p>
 </section>
-<section id="rebuilt-image-smoke-checks">
-<h2>Rebuilt image smoke checks<a class="headerlink" href="#rebuilt-image-smoke-checks" title="Link to this heading">#</a></h2>
-<p>In a fresh GeoLab server using the rebuilt MsPASS GeoLab image, verify the
-workspace and runtime environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>whoami
-<span class="nb">pwd</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$HOME</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$NB_HOME</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_WORK_DIR</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_WORKDIR</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_DB_ADDRESS</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_SCHEDULER</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_SCHEDULER_ADDRESS</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_DB_DIR</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MONGO_DATA_DIR</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_LOG_DIR</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MSPASS_WORKER_DIR</span>
-mongosh<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">27017</span><span class="w"> </span>--eval<span class="w"> </span><span class="s1">&#39;db.adminCommand({ping: 1})&#39;</span>
-tail<span class="w"> </span>-50<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MONGO_LOG</span><span class="s2">&quot;</span>
+</section>
+<section id="disable-local-dask">
+<h2>Disable local Dask<a class="headerlink" href="#disable-local-dask" title="Link to this heading">#</a></h2>
+<p>The local Dask scheduler and worker can be disabled before the JupyterHub
+single-user server starts:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">MSPASS_ENABLE_LOCAL_DASK</span><span class="o">=</span><span class="nb">false</span>
+<span class="nv">MSPASS_SCHEDULER</span><span class="o">=</span>none
 </pre></div>
 </div>
-<p>Expected values are <code class="docutils literal notranslate"><span class="pre">/home/jovyan</span></code> for the workspace and home variables,
-<code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> for local MongoDB and local Dask addresses, and runtime
-directories under <code class="docutils literal notranslate"><span class="pre">/home/jovyan</span></code>.  The expected notebook processes are
-<code class="docutils literal notranslate"><span class="pre">mongod</span></code>, <code class="docutils literal notranslate"><span class="pre">dask</span> <span class="pre">scheduler</span></code>, <code class="docutils literal notranslate"><span class="pre">dask</span> <span class="pre">worker</span></code>, <code class="docutils literal notranslate"><span class="pre">jupyterhub-singleuser</span></code>, and
-notebook kernel processes.</p>
-<p>To verify installed package versions:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dask</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">distributed</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dask_gateway</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy</span>
+<p>With these settings, the image still starts local MongoDB, but it does not start
+a local Dask scheduler or worker.  In that mode, use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">dask</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">distributed</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">dask_gateway</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">mspasspy</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">({</span><span class="s2">&quot;ping&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">())</span>
 </pre></div>
 </div>
+<p>Expected scheduler output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>None
+</pre></div>
+</div>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<section id="client-cannot-connect-to-mongodb">
+<h3><code class="docutils literal notranslate"><span class="pre">Client()</span></code> cannot connect to MongoDB<a class="headerlink" href="#client-cannot-connect-to-mongodb" title="Link to this heading">#</a></h3>
+<p>Check that MongoDB is running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ps<span class="w"> </span>-ef<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>mongod<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span>grep
+mongosh<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">27017</span><span class="w"> </span>--eval<span class="w"> </span><span class="s1">&#39;db.adminCommand({ping: 1})&#39;</span>
+tail<span class="w"> </span>-100<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MONGO_LOG</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">mongod</span></code> is not running, the log file usually explains why startup failed.</p>
+</section>
+<section id="client-creates-the-wrong-dask-scheduler">
+<h3><code class="docutils literal notranslate"><span class="pre">Client()</span></code> creates the wrong Dask scheduler<a class="headerlink" href="#client-creates-the-wrong-dask-scheduler" title="Link to this heading">#</a></h3>
+<p>Check the scheduler-related variables:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_SCHEDULER</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MSPASS_SCHEDULER_ADDRESS</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DASK_SCHEDULER_PORT</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>The default GeoLab values should be:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dask
+127.0.0.1
+8786
+</pre></div>
+</div>
+<p>Then check that the local scheduler exists:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ps<span class="w"> </span>-ef<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;dask scheduler&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span>grep
+</pre></div>
+</div>
+</section>
+<section id="gateway-workers-cannot-access-mongodb">
+<h3>Gateway workers cannot access MongoDB<a class="headerlink" href="#gateway-workers-cannot-access-mongodb" title="Link to this heading">#</a></h3>
+<p>This is expected with the default notebook-local MongoDB service.  Gateway
+workers run in separate pods and may not be able to connect to services running
+inside the notebook pod.</p>
+<p>Use the default local Dask scheduler for DB-backed MsPASS workflows unless your
+GeoLab deployment provides a MongoDB endpoint reachable from Gateway workers.</p>
+</section>
+<section id="the-dask-dashboard-shows-0-b-memory">
+<h3>The Dask dashboard shows <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">B</span></code> memory<a class="headerlink" href="#the-dask-dashboard-shows-0-b-memory" title="Link to this heading">#</a></h3>
+<p>The local worker starts with:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--memory-limit=0
+</pre></div>
+</div>
+<p>In Dask this means no explicit memory limit is set.  It does not mean the
+worker has no memory available.</p>
+</section>
 </section>
 </section>
 
@@ -694,10 +794,23 @@ notebook kernel processes.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#default-notebook-runtime">Default notebook runtime</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#disabling-local-dask">Disabling local Dask</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dask-gateway">Dask Gateway</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rebuilt-image-smoke-checks">Rebuilt image smoke checks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick start</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-geolab-image-starts-automatically">What the GeoLab image starts automatically</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-the-running-services">Check the running services</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-the-default-local-dask-scheduler">Use the default local Dask scheduler</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-persistence-and-reset">Database persistence and reset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dask-gateway">Dask Gateway</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-gateway-client-with-mspass">Using a Gateway client with MsPASS</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#disable-local-dask">Disable local Dask</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#client-cannot-connect-to-mongodb"><code class="docutils literal notranslate"><span class="pre">Client()</span></code> cannot connect to MongoDB</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#client-creates-the-wrong-dask-scheduler"><code class="docutils literal notranslate"><span class="pre">Client()</span></code> creates the wrong Dask scheduler</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gateway-workers-cannot-access-mongodb">Gateway workers cannot access MongoDB</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-dask-dashboard-shows-0-b-memory">The Dask dashboard shows <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">B</span></code> memory</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
