@@ -17,7 +17,7 @@ a linear read.  Use the index for entry during use for reminders.
 Fundamentals
 --------------------------------------------
 Wikepedia provides the following generic definition of a
-"`database<https://en.wikipedia.org/wiki/Database>_":
+`database <https://en.wikipedia.org/wiki/Database>`_:
 
 | In computing, a database is an organized collection of data or a type
   of data store based on the use of a database management system (DBMS),
@@ -33,7 +33,7 @@ Prior to MsPASS two approaches were used in Seismology to define a
     of tree structure of a unix file system to manage waveform data.
     It is not commonly appreciated that that approach is an
     implementation of the oldest form of database called called
-    a `hierarchic database model<https://en.wikipedia.org/wiki/Hierarchical_database_model>`__,
+    a `hierarchic database model <https://en.wikipedia.org/wiki/Hierarchical_database_model>`__,
     which dates back to the concepts developed by IBM in the 1960s.
     The only reason that is important is that a large fraction of
     research code in seismology use files and file naming conventions
@@ -43,7 +43,7 @@ Prior to MsPASS two approaches were used in Seismology to define a
     continuous data.
 2.  The nuclear monitoring community of seismology was an early
     adopter (early 1980s) of the then revolutionary concept of
-    `relational database systems<https://en.wikipedia.org/wiki/Relational_database>`__.
+    `relational database systems <https://en.wikipedia.org/wiki/Relational_database>`__.
     Since then relational databases have become the foundation of a large
     fraction of information technology platforms across a wide range of
     fields.   Today relational databases are a workhorse in all seismology
@@ -52,7 +52,7 @@ Prior to MsPASS two approaches were used in Seismology to define a
     system we interact with only through a simplified interface.
 
 MsPASS uses a more recent development with a package called
-`MongoDB<https://www.mongodb.com/>`_.  MongoDB is an implementation of
+`MongoDB <https://www.mongodb.com/>`_.  MongoDB is an implementation of
 what is called a "document database".   The name is misleading because
 it has far more utility than providing a way to manage documents.
 There is a lot more information about MongoDB in this manual and
@@ -80,7 +80,7 @@ points, however, are worth emphasizing about MongoDB and MsPaSS:
   are extensible and not frozen as they are in something like a
   file format like SEGY.
 - MongoDB has a clean interface to python called
-  `pymongo<https://pymongo.readthedocs.io/en/stable/>`__.
+  `pymongo <https://pymongo.readthedocs.io/en/stable/>`__.
   Experienced python programmers will find the interface easy to use
   as it involves a small number of class methods and input and most of the
   output as python dictionaries or lists of python dictionaries or other
@@ -88,9 +88,9 @@ points, however, are worth emphasizing about MongoDB and MsPaSS:
 
 A final point in this overview is that most modern database systems,
 including MongoDB, use a
-`client-server model<https://en.wikipedia.org/wiki/Client%E2%80%93server_model>`_.
+`client-server model <https://en.wikipedia.org/wiki/Client%E2%80%93server_model>`_.
 More about this
-topic is found in the :ref:`mspass_component` section.   MsPASS
+topic is found in the :ref:`mspass_components` section.   MsPASS
 packages up components in a single client.  Most MsPASS jobs begin with a
 version of the following stock incantation:
 
@@ -113,7 +113,7 @@ launch a client and initiate connections to the server.  Any parallel
 application requiring database access would be very very slow if a new
 client had to be instantiated for each new parallel task.   MsPASS solves
 that problem by using a feature of dask called a
-`worker plugin<https://docs.dask.org/en/stable/customize-initialization.html>`_.
+`worker plugin <https://docs.dask.org/en/stable/customize-initialization.html>`_.
 We have found that parallel database access requires the
 use of such a plugin.  Naive uses will either perform badly or
 just fail.   For details about clients, in general, see :ref:`mspass_components`.
@@ -289,7 +289,7 @@ There are two ways one can manage formatted data:
     the raw data into MsPASS data objects.   That is, for example the
     recommended approach for starting a workflow with raw miniseed data.
     Numerous examples are found in the
-    `MsPASS tutorials repository<https://github.com/mspass-team/mspass_tutorial>`_.
+    `MsPASS tutorials repository <https://github.com/mspass-team/mspass_tutorial>`_.
     That approach is particularly useful for data storage as most miniseed
     data uses compression to reduce data storage size by nearly a factor of 10.
 
@@ -383,7 +383,7 @@ The reader should note that the `"format": "mseed"` line
 is not the default for data storage.   The default is `binary`
 (note if `format` is not defined the default is `binary`).
 `binary` tells the reader the to use the low level C function called
-`fread<https://www.tutorialspoint.com/c_standard_library/c_function_fread.htm>`_
+`fread <https://www.tutorialspoint.com/c_standard_library/c_function_fread.htm>`_
 to load the `data` array in a TimeSeries or Seismogram objects being
 constructed by the reader.  The reason for using a raw binary reader
 as opposed to storage with something like miniseed is IO speed.
@@ -408,6 +408,7 @@ To the reader that makes little difference in how it behaves.   It simply
 references a different IO system to use to load the data array.  Some key
 points noted elsewhere in this manual are important to emphasize about
 gridfs storage:
+
 1.  We have found for most systems gridfs storage is much slower than
     file-based IO.  There are multiple technical reasons for that which are
     a side issue for the topic here.
@@ -815,7 +816,7 @@ the equivalent parallel pseudocode logic is this::
   5) Run a sequence of map operators as in step 1i of the serial algorithm
   6) Save results with a parallel writer
 
-Where step 1) is described in :ref:`components`.  More about what all
+Where step 1) is described in :ref:`mspass_components`.  More about what all
 that means can be found in :ref:`parallel_processing`.
 
 A simple perspective on the difference is that the loop for the serial
@@ -1105,7 +1106,7 @@ some support for two alternative indexing methods.
     geospatial queries can also be used on :code:`site` and :code:`channel` collections
     created with StationXML files too provided the user constructs the
     index required to do that.   An example of how to do this can be found
-    `here<https://github.com/mspass-team/mspass_tutorial/blob/master/Earthscope2024/Session2.ipynb>`_
+    `here <https://github.com/mspass-team/mspass_tutorial/blob/master/Earthscope2024/Session2.ipynb>`_
     in our tutorial repository.
 
 A spatial query to link anything to a point in the :code:`site` or :code:`channel` collection has
@@ -1353,7 +1354,7 @@ Other waveform formats
 :::::::::::::::::::::::
 MsPASS technically has support a long list of data formats
 that are supported by the obspy
-`read<https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html>`_
+`read <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html>`_
 function.  MsPASS does not, however, have a simplified interface to
 work with other formats comparable to
 :py:meth:`mspasspy.db.database.Database.index_mseed_file`.   Instead,
@@ -1391,6 +1392,7 @@ them into MsPASS:
                   )
 
 Note a few things about this script:
+
 1.  I've used obspy to handle the formatted reading.
 2.  I use the MsPASS converter :py:func:`mspasspy.converters.Trace2TimeSeries`
     to convert the Trace object obspy.read returns into a TimeSeries.

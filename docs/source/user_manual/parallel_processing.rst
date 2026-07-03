@@ -190,7 +190,7 @@ That operator is more or less a constructor for the container that Spark
 calls an RDD that is assigned the symbol d_out in the example above.
 The following line, which from a programming perspective is a call to the map method of the RDD we call
 d_out, uses the functional programming construct of a lambda function.
-This tutorial in `realpython.com  <https://realpython.com/python-lambda/>`_
+This tutorial in `realpython.com <https://realpython.com/python-lambda/>`_
 and `this one <https://www.w3schools.com/python/python_lambda.asp>`_ by w3schools.com
 are good starting points.
 
@@ -289,7 +289,7 @@ Futures
 Fundamentals
 #############
 Versions of python newer than 3.2 have a built in
-`cocurrent.futures<https://docs.python.org/3/library/concurrent.futures.html>`_
+`concurrent.futures <https://docs.python.org/3/library/concurrent.futures.html>`_
 module.   That module provides threading support for any python application.
 Since the release of dask distributed they have supported a distributed
 memory variant of the futures api.   That is, dask Futures are used much
@@ -302,7 +302,7 @@ intrisically dangerous and prone to mysterious failures.   The examples
 in this section use dask Futures interface
 but you should be aware the standard python API is very similar.
 
-The `dask documentation<https://docs.dask.org/en/stable/futures.html>`_
+The `dask documentation <https://docs.dask.org/en/stable/futures.html>`_
 on this topic is excellent.   If you are reading this, you should
 use that to understand the general concepts.  For MsPASS jobs there
 are a few things to highlight:
@@ -315,7 +315,7 @@ are a few things to highlight:
    operators need to be bundled into a single function.
    For actual examples see our tutorials for the 2026 Earthscope
    short course found
-   `here<https://github.com/mspass-team/mspass_tutorial/tree/master/Earthscope2026>`_.
+   `here <https://github.com/mspass-team/mspass_tutorial/tree/master/Earthscope2026>`_.
    For a generic example in pseudocode suppose I wanted to run
    algorithm A, B, and C on a dask bag of data.   The map version of that
    sequence might be:
@@ -382,9 +382,9 @@ See the dask distributed documentation for details on `as_completed`.
    create a serious performance issue.   Two common examples in waveform
    processing are "Matchers" used by :py:func:`mspasspy.db.normalize.normalize`
    and obspy's
-   `Tau-P travel time calculator<https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html>`_.
+   `Tau-P travel time calculator <https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html>`_.
    We have found signicant improvement in performance by using dask's
-   `scatter<https://distributed.dask.org/en/latest/locality.html>`_ to preload large data objects.
+   `scatter <https://distributed.dask.org/en/latest/locality.html>`_ to preload large data objects.
    See the source in that link for details on how to use that function and
    more about why it is often useful.
 
@@ -405,6 +405,7 @@ only needs to send a single task (run the function sent with submit
 on the data passed to it) at a time to each worker with a simple
 queue algorithm.   That approach has several advantages
 for typical seismic workflows:
+
 1. It provides a stable way to handle very large lists like all the
    wf_miniseed documents that define the raw inputs to a waveform processing
    workflow.  Prior to our development of the `sliding_window_pipeline`

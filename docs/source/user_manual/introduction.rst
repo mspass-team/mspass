@@ -106,7 +106,7 @@ Some key features of MsPASS are the following:
 
 -   MsPASS promotes reproducible science through two different mechanism:
 
-    1.  The standard frontend is a `jupyter lab<https://jupyterlab.readthedocs.io/en/latest/>`__ interface.   Jupyter
+    1.  The standard frontend is a `jupyter lab <https://jupyterlab.readthedocs.io/en/latest/>`__ interface.   Jupyter
         notebooks are a proven, useful mechanism to support reproducible
         calculations and document what exactly was done without major
         headaches.
@@ -124,7 +124,7 @@ Some key features of MsPASS are the following:
     a long list of general purpose, open-source packages.
     Some are C/C++ libraries that
     are linked with code in the ccore modules (e.g. `boost <https://www.boost.org/>`__
-    and the `GNU Scientific Library <https://www.gnu.org/software/gsl/>`__)
+    and the `GNU Scientific Library <https://www.gnu.org/software/gsl/>`__).
     and some are python packages like ObsPy.
 
 Getting Started

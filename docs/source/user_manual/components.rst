@@ -125,6 +125,7 @@ is migrating all the waveform data they manage:
                         response_checksum_validation="when_required",
                     ),
                 )
+
 That code creates an instance of a "client" for interacting with S3
 data.  The object created is referenced above with the symbol `s3_client`.
 
@@ -182,7 +183,7 @@ contain this construct in a code box:
 
 When used in a jupyter notebook the last line generates a block of
 hypertext that contains connection data to link to dask diagnostics.
-The object defined above by the `dask_client`symbol also contains
+The object defined above by the `dask_client` symbol also contains
 a long list of methods described in the dask documenation.
 
 Notice the mspass client does not have a method to fetch the "frontend".
@@ -287,7 +288,7 @@ skeleton example illustrates how to handle that situation:
 
 The key point here is that with that construct `myfunction` can
 be run in a parallel constuct using map-reduce or the Futures interface
-(see :ref:`paralle_processing`).   The essential thing to do is to send the
+(see :ref:`parallel_processing`).   The essential thing to do is to send the
 function only the database name and then use the `fetch_dbhandle` inside
 the function to create the database handle to the database the name references.
 
