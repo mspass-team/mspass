@@ -27,6 +27,7 @@ package.
    :caption: Introduction
 
    user_manual/introduction
+   user_manual/components
 
 .. toctree::
    :maxdepth: 1
