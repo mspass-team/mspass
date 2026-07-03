@@ -15,6 +15,20 @@ Some key features of MsPASS are the following:
     needs to work with data that match the data models described in this
     manual.
 
+-   It is essential that all users or potential user understand that MsPASS
+    was designed as a package to support *research* in seismology NOT
+    a *mission* like seismic network operations.  As a result MsPASS design
+    was shaped by several key axioms:
+
+    *  It must be as generic as possible.   That is essential to support basic research
+       that is open-ended and wildly variable.
+    *  It needs to be fully open-source so it is available to the entire
+       seismology community worldwide. Cost should not be a barrier to creativity.
+    *  It must be flexible enough to support the wide range of approaches
+       to utilizing seismic waveform data.  Flexibility is more important than
+       efficiency but assume scalability can make up for inefficiency in
+       problems that are often one up solutions.
+
 -   Few seismologists have strong expertise in modern information technology.
     Furthermore, installing a software package can prove challenging today
     even on a desktop on which you may have special privileges.  On large high performance (HPC)
@@ -27,12 +41,12 @@ Some key features of MsPASS are the following:
 
 -   Another keyword in the acronym is "parallel".  Computer technology reached
     the physical limit of single CPU computers many years ago.  NO existing
-    open-source package for handling earthquake data provided consistent support for
-    parallel processing until MsPASS.
+    open-source package for handling earthquake data provided consistent,
+    generic support for parallel processing until MsPASS.
 
 -   A first order goal of MsPASS was building
     a consistent framework to allow scalability from a single desktop
-    machine with multiple cores to a giant cloud-based system. In MsPASS
+    machine with multiple cores to a giant cloud-based or HPC system. In MsPASS
     we developed a simplified API for running processing in parallel.
     The API makes it relatively easy to prototype a workflow with a test data set before
     porting it to a large cluster to handle a more massive processing job.
@@ -52,8 +66,9 @@ Some key features of MsPASS are the following:
     use a custom command interpreter.   We assert that custom languages
     like that in SAC or even the unix shell will become the equivalent of
     Latin as a language in the coming years.  Python has emerged as the
-    most common glue language used within open-source software packages.  It was thus
-    the clear choice as the driver language for MsPASS.
+    most common glue language used within open-source software packages.  It was
+    our choice as the driver language for MsPASS because of community
+    experience in python thanks to packages like `Obspy <https://docs.obspy.org/>`__.
 
 -   Although python has huge advantages as "glue language" and as a way to
     quickly develop prototypes, it also has a serious limitation.   Python,
@@ -89,21 +104,27 @@ Some key features of MsPASS are the following:
     but ignored.  That model maps well to massively parallel scheduling
     because dead data are treated like live data but they just process faster.
 
--   To promote reproducible science MsPASS has an integrated processing history
-    capability.  The goal of that component of MsPASS is to ultimately allow
-    publication of the processing workflow used in a scientific paper that
-    would allow the reader to reproduce the data that paper used.  At the
-    time this user's manuals was written that part of the system is incomplete.
-    For that reason (and for efficiency) MsPASS processing functions make
-    handling history optional and by default it is turned off.  If the system
-    grows as we hope that limitation will disappear.
+-   MsPASS promotes reproducible science through two different mechanism:
+
+    1.  The standard frontend is a `jupyter lab <https://jupyterlab.readthedocs.io/en/latest/>`__ interface.   Jupyter
+        notebooks are a proven, useful mechanism to support reproducible
+        calculations and document what exactly was done without major
+        headaches.
+    2.  MsPaSS has an embedded processing history  capability.
+        The goal of that component of MsPASS is to ultimately allow
+        publication of the processing workflow used in a scientific paper that
+        would allow the reader to reproduce the data that paper used.  At this
+        time that part of the system remains incomplete.
+        For that reason (and for efficiency) MsPASS processing functions make
+        handling history optional and by default it is turned off.  If the system
+        grows as we hope that limitation will disappear.
 
 -   The design of MsPASS has stressed leading edge but not bleeding edge open-source
     technologies.  MsPASS was assembled from
     a long list of general purpose, open-source packages.
     Some are C/C++ libraries that
     are linked with code in the ccore modules (e.g. `boost <https://www.boost.org/>`__
-    and the `GNU Scientific Library <https://www.gnu.org/software/gsl/>`__)
+    and the `GNU Scientific Library <https://www.gnu.org/software/gsl/>`__).
     and some are python packages like ObsPy.
 
 Getting Started

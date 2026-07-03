@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Parallel Processing &#8212; MsPASS 2.4.1.dev11+g1cf22eb4 documentation</title>
+    <title>Parallel Processing &#8212; MsPASS 2.4.1.dev13+g8be1cca8 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=643ecf13"></script>
+    <script src="../_static/documentation_options.js?v=a481ffb0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Adapting an Existing Algorithm to MsPASS" href="adapting_algorithms.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.1.dev11" />
+  <meta name="docsearch:version" content="2.4.1.dev13" />
   </head>
   
   
@@ -324,7 +324,12 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
@@ -339,13 +344,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-</ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
@@ -719,6 +721,164 @@ pure python code that implements some summation operation.  Turning the
 summation loop into a reduce operator can parallelize the loop.  Users
 should consider that approach in writing pure python algorithms.</p>
 </section>
+<section id="futures">
+<h3>Futures<a class="headerlink" href="#futures" title="Link to this heading">#</a></h3>
+<section id="fundamentals">
+<h4>Fundamentals<a class="headerlink" href="#fundamentals" title="Link to this heading">#</a></h4>
+<p>Versions of python newer than 3.2 have a built in
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html">concurrent.futures</a>
+module.   That module provides threading support for any python application.
+Since the release of dask distributed they have supported a distributed
+memory variant of the futures api.   That is, dask Futures are used much
+like stock python Futures but can run on a cluster with many nodes.
+The stock python module, in contrast, only works on a single machine
+(shared memory system).  MsPASS uses dask Futures for the <cite>sliding_window_pipeline</cite>
+feature described above.  Although it may be possible to create a workflow
+mixing dask and python Futures, note that is not recommended as it is
+intrisically dangerous and prone to mysterious failures.   The examples
+in this section use dask Futures interface
+but you should be aware the standard python API is very similar.</p>
+<p>The <a class="reference external" href="https://docs.dask.org/en/stable/futures.html">dask documentation</a>
+on this topic is excellent.   If you are reading this, you should
+use that to understand the general concepts.  For MsPASS jobs there
+are a few things to highlight:</p>
+<ul class="simple">
+<li><p>The Futures interface is ideal for a pipeline processing workflow.
+That means, any workflow that could be expressed as a string of
+map operators without a reduce operation is easily converted to
+one you could implement with Futures.</p></li>
+<li><p>To run a pipeline workflow with Futures the sequence of map
+operators need to be bundled into a single function.
+For actual examples, see
+<a class="reference external" href="https://github.com/mspass-team/mspass_tutorial/tree/master/Earthscope2026">the 2026 Earthscope tutorial course material</a>.
+For a generic example in pseudocode suppose I wanted to run
+algorithm A, B, and C on a dask bag of data.   The map version of that
+sequence might be:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dask.bag</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dbg</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">dbg</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">input_list_defining_data</span><span class="p">)</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">dbg</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">reader_function</span><span class="p">)</span>   <span class="c1">#  something to read data from sequence</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">dbg</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">dbg</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">dbg</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">mydata</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+
+<span class="n">To</span> <span class="n">run</span> <span class="n">that</span> <span class="k">with</span> <span class="n">the</span> <span class="n">Futures</span> <span class="n">interface</span><span class="p">,</span> <span class="n">you</span> <span class="n">would</span> <span class="n">need</span> <span class="n">to</span> <span class="n">create</span> <span class="n">a</span>
+<span class="n">python</span> <span class="n">function</span> <span class="n">that</span> <span class="n">merges</span> <span class="n">the</span> <span class="n">pipeline</span> <span class="n">steps</span> <span class="n">into</span> <span class="n">function</span> <span class="n">call</span><span class="o">.</span>
+<span class="n">Here</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">sketch</span> <span class="n">of</span> <span class="n">what</span> <span class="n">how</span> <span class="n">that</span> <span class="n">would</span> <span class="n">be</span> <span class="n">laid</span> <span class="n">out</span> <span class="n">without</span> <span class="n">the</span>
+<span class="n">real</span> <span class="n">life</span> <span class="n">required</span> <span class="n">complexity</span> <span class="n">of</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">arguments</span> <span class="n">to</span> <span class="n">the</span> <span class="n">processing</span>
+<span class="n">functions</span><span class="p">:</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_process_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Example function to run process read, A, B, and C with Futures.</span>
+<span class="sd">  Arg0 (x) is a value of one of the contents of &quot;input_list_defining_data&quot;</span>
+<span class="sd">  in version using map operations above.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">read_function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">C</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">d</span>
+</pre></div>
+</div>
+<p>A naive use of that function on a complete data set is the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_completed</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
+<span class="n">f_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">input_list_defining_data</span><span class="p">:</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">my_process_function</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">f_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">f_list</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+    <span class="n">function_to_handle_result</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This example uses the <cite>as_completed</cite> dask function.   The
+“function_to_handle_result” is a stub for something like a writer
+to save the results something that combines the result (a variant of Reduce).
+See the dask distributed documentation for details on <cite>as_completed</cite>.</p>
+<ul class="simple">
+<li><p>The toy example above did not include any arguments to the
+hypothetical functions used inside “my_process_function”.   Arguments are nearly
+always required that are not simple constants like <cite>collection=”wf_TimeSeries”</cite>.
+It is important to realize that any data passed as arguments to a
+function used in any parallel construct (map or submit) needs to be
+serialized, transmitted to the worker, and reconstructed by the worker
+before the function start work on a particular piece of data.
+Large, auxiliary data objects that are required arguments can thus
+create a serious performance issue.   Two common examples in waveform
+processing are “Matchers” used by <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize" title="mspasspy.db.normalize.normalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.db.normalize.normalize()</span></code></a>
+and obspy’s
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html">Tau-P travel time calculator</a>.
+We have found signicant improvement in performance by using dask’s
+<a class="reference external" href="https://distributed.dask.org/en/latest/locality.html">scatter</a> to preload large data objects.
+See the source in that link for details on how to use that function and
+more about why it is often useful.</p></li>
+</ul>
+</section>
+<section id="mspass-sliding-window-pipeline">
+<h4>MsPASS Sliding Window Pipeline<a class="headerlink" href="#mspass-sliding-window-pipeline" title="Link to this heading">#</a></h4>
+<p>In version 2.4.0 of MsPASS we added a special function for handling
+large data sets that uses the Futures API called
+<a class="reference internal" href="../python_api/mspasspy.workflow.html#mspasspy.workflow.sliding_window_pipeline" title="mspasspy.workflow.sliding_window_pipeline"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.workflow.sliding_window_pipeline()</span></code></a>.
+The basic structure of the alorithm is similar to the tutorial
+example with <cite>submit</cite> above but it adds an important variation
+for handling large data.  That is, if one applied that algorithm to
+a list of more than a few hundred things we found the scheduler
+would be overwhelmed.   At best performance suffers.  If the list is
+too long you can crash the scheduler.  To keep that from happening
+instead of submitting everyting at once submits are pushed into
+a queue of a finite size (the sliding window).   The scheduler then
+only needs to send a single task (run the function sent with submit
+on the data passed to it) at a time to each worker with a simple
+queue algorithm.   That approach has several advantages
+for typical seismic workflows:</p>
+<ol class="arabic simple">
+<li><p>It provides a stable way to handle very large lists like all the
+wf_miniseed documents that define the raw inputs to a waveform processing
+workflow.  Prior to our development of the <cite>sliding_window_pipeline</cite>
+function we had been unable to process data sets with atomic data
+(TimeSeries or Seismogram objects) driven by a list of documents
+returned by a MongoDB query.  That approach with a bag created using
+<cite>dask.bag.from_sequence</cite> would not work when the list was larger than
+around 10,000 documents.   <cite>sliding_window_pipeline</cite> does no suffer
+from that problem if the slliding window size is set properly.</p></li>
+<li><p>Memory use is more predictable than one using either bag.map or the
+map method of the dask distibuted client.  The reason, in fact,
+item 1 is a factor is because of memory management issues with
+stock use of dask’s map operators.  Most MsPASS workflows can be
+reduced to three generic steps:  (a) create a waveform object from
+some input desciption, (b) modify that datum, and (c) save the
+modified data.   The input to (a) for atomic data in MsPASS is
+normally a MongoDB document.  In nearly all cases when that document(s)
+is used to create a waveform object, the size of what is passed to
+step (b) bloats by several orders of magnitude.   That seems to fool
+both the dask and spark schedulers causing them to submit too many
+tasks to each worker causing memory faults when multiple instances
+try to allocate additional memory.  With the <cite>sliding_window_pipeline</cite>
+memory use is always exactly predictable as the sliding window size
+times the nominal input data size times an algorithm dependent
+factor (e.g., 2 if the algorithm makes a temporary copy of the input.)
+See <a class="reference internal" href="memory_management.html#memory-management"><span class="std std-ref">Memory Management</span></a>
+for more on this topic.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The sliding window pipeline is an interesting example of the utility
+of modern AI applications in scientific computing.  There seems no
+definitive pubished source on the idea as it is an application of
+some common computer science concepts.   The generic algorithm is considered
+“best practice” in other fields according to Gemini, although I’m
+unable to validate that claim.  The point is that the idea for this
+algorithm came from asking Gemini the right question, not by digging
+through the published literature.</p>
+</div>
+</section>
+</section>
 <section id="schedulers">
 <h3>Schedulers<a class="headerlink" href="#schedulers" title="Link to this heading">#</a></h3>
 <p>As noted previously MsPASS currently supports two different schedulers:
@@ -726,6 +886,15 @@ Dask (the default) and Spark.   Both do very similar things but are known
 to perform differently in different cluster environments.  Users needing to
 push the system to the limits may need to evaluate which perform better in
 their environment.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although MsPASS still support both pyspark and dask, most of our
+real data experience has used daks.  Furthermore, the Futures
+feature of dask, which is the basis for the <cite>sliding_window_pipeline</cite> ,
+does not seem to have an equivalent in pyspark.   Support for
+spark should be considered marginal and may, in fact, be dropped in
+future releases.</p>
+</div>
 <p>In MsPASS we use Spark and Dask to implement the “master-worker”
 model of parallel computing.   The “master” is the scheduler that hands off
 task to be completed by the workers.  A critical issue this raises is how
@@ -780,37 +949,100 @@ using the data start time, and then saves the results.</p>
 <span class="c1"># read -&gt; detrend -&gt; filter -&gt; window</span>
 <span class="c1"># example uses dask scheduler</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="s1">&#39;demean&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;demean&#39;</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 <span class="c1"># windowing is relative to start time.  300 s window starting at d.t0+200</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">500.0</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
 <span class="n">data_out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>That same workflow using <cite>sliding_window_pipeline</cite> is this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">atomic_example</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">dbname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Example function merging atomic processing example functions</span>
+<span class="sd">    into a single function for dask client submit in</span>
+<span class="sd">    sliding_window_pipeline.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>   <span class="c1"># parallel method to fetch from worker memory</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;demean&quot;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">500.0</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msc</span>
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">msc</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="n">doclist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+<span class="n">data_out</span> <span class="o">=</span> <span class="n">sliding_window_pipeline</span><span class="p">(</span><span class="n">doclist</span><span class="p">,</span>
+                    <span class="n">atomic_example</span><span class="p">,</span>
+                    <span class="n">dask_client</span><span class="p">,</span>
+                    <span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where in for this case I added the code to instantiate a MsPASS Client
+omitted in the map example.   It illustrates that <cite>sliding_window_pipeline</cite>
+requires an instance of the dask client.  With the map version the
+dask client is hidden inside the bag map method.</p>
 </section>
 <section id="ensemble-example">
 <h3>Ensemble Example<a class="headerlink" href="#ensemble-example" title="Link to this heading">#</a></h3>
-<p>This example needs to use function to build a query, put the query
-in a map call, and then run an ensemble process.
-Here is an untested prototype for this manual</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">read_common_source_gather</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="p">,</span><span class="n">srcid</span><span class="p">):</span>
-  <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
-  <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">srcid</span> <span class="p">}</span>
-  <span class="c1"># note with logic of this use we don&#39;t need to test for</span>
-  <span class="c1"># no matches because distinct returns only not null source_id values dbcol</span>
-  <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-  <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
-  <span class="k">return</span> <span class="n">ensemble</span>
+<p>Handling ensembles is similar to atomic data, but the starting point
+to create one is different.   In particular, this example uses
+<cite>read_distributed_data</cite> with a list of dictionaries that define
+queries as inputs.  The ensemble groups are the results of each
+query.  In this case, that is common source gathers defined by
+source_id values found in input.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<span class="n">querylist</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcidlist</span><span class="p">:</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">}</span>
+    <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 
-<span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span>
-<span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">srcidlist</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">srcid</span> <span class="p">:</span> <span class="n">read_common_source_gather</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">,</span><span class="n">srcid</span><span class="p">))</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="s1">&#39;demean&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;demean&#39;</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 <span class="c1"># windowing is relative to start time.  300 s window starting at d.t0+200</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">500.0</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
 <span class="n">data_out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The comparable code using <cite>sliding_window_pipeline</cite> is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_ensemble</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Processing function for submit with ensemble example.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+  <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+  <span class="c1"># more robust code would handle a null cursor here - omitted for simplicity</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;demean&quot;</span><span class="p">)</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+  <span class="c1"># ator and rtoa do not work on ensembles</span>
+  <span class="c1"># the concept applies only to atomic data</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+      <span class="n">d</span> <span class="o">=</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># use d as a shorthand for convenience</span>
+      <span class="n">d</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+      <span class="n">d</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">500.0</span><span class="p">)</span>
+      <span class="n">d</span><span class="o">.</span><span class="n">rota</span><span class="p">()</span>
+      <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+  <span class="k">return</span> <span class="n">ens</span>
+
+  <span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msc</span>
+  <span class="n">mspass_client</span> <span class="o">=</span> <span class="n">msc</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+  <span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
+  <span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+  <span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+  <span class="n">querylist</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+  <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcidlist</span><span class="p">:</span>
+      <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">}</span>
+      <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+  <span class="n">data_out</span> <span class="o">=</span> <span class="n">sliding_window_pipeline</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span>
+                          <span class="n">process_ensemble</span><span class="p">,</span>
+                          <span class="n">dask_client</span><span class="p">,</span>
+                          <span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -975,7 +1207,7 @@ before:</p>
 </pre></div>
 </div>
 <p>Here we set the environment variables inside the container using this syntactic sugar SINGULARITYENV_XXX.
-For more information, you could view the usage <a class="reference external" href="https://sylabs.io/guides/3.0/user-guide/appendix.html">here</a>.
+For more information, see <a class="reference external" href="https://sylabs.io/guides/3.0/user-guide/appendix.html">the Sylabs usage appendix</a>.
 We define and set different variables in different containers we start because in our start-mspass.sh, we
 define different bahavior under different <em>MSPASS_ROLE</em> so that for each role, it will execute the bash
 script we define in the start-mspass.sh. Though it looks complicated and hard to extend, this is prabably
@@ -1047,6 +1279,11 @@ as your sbatch option for nodes.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-map-operator">The map operator</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reduce-fold-operators">Reduce/fold operators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#futures">Futures</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamentals">Fundamentals</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspass-sliding-window-pipeline">MsPASS Sliding Window Pipeline</a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#schedulers">Schedulers</a></li>
 </ul>
 </li>
