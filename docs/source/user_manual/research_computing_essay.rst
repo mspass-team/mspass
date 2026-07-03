@@ -52,9 +52,10 @@ section is an extended discussion of what research computing is and
 why any student needs to understand why it is not at all the same thing
 as running an "app" like Microsoft Word, Excel, or Adobe Illustrator.
 The second section discusses strategies you as a student might
-need to consider depending on where you come into a particular problem.
+need to consider that depend on where you enter the knowledge
+tree for a particular research problem.
 That is, some ideas are frontier and you may need to more-or-less start
-from scratch.   Other science problems you may be facing have
+from scratch.   Most other science problems have
 partial solutions that range from needing to parallelize an existing
 algorithm to tuning an existing workflow that is too slow to
 work for the scale of problem you need to address.  These
@@ -87,7 +88,7 @@ first encountered computer programming all programs scientists used where
 "research code".   The only exception were system tools like the
 core operating system code, FORTRAN compilers, and scientific
 computing libraries.   That evolved with
-time as the toolbox changed.  The emergence of the unix operating system
+time as the toolboxs changed.  The emergence of the unix operating system
 started a trend that still continues to build research code from
 building blocks of increasing complexity.   Modern python packages
 like MsPASS are assembled from "Enterprise" components.  That is,
@@ -112,15 +113,15 @@ yet "Enterprise" class software.  It is, however, a long way from a
 prototype and can get better only by feedback from user's like you
 as we work to improve "the product".
 
-what is MsPASS then?  It is a "framework" for supporting research computing.
-That means, it won't do everything for you but provides a set of tools
+What is MsPASS then?  It is a "framework" for supporting research computing.
+That means, it won't necessarily do everything for you but provides a set of tools
 to help you solve computational problems in seismology that would be
 much harder otherwise.   There is an analog in seismology history.
 In the 1970s the unix shell revolutionized seismology data processing
 by providing a rich environment for assembling data processing workflows
 from small "unix filters".   There are entire systems built on this
 concept. For example, `Seismic Unix <https://cwp.mines.edu/software/>`__
-is a seismic refletion processing system
+is a seismic reflection processing system
 using unix pipes to move data between processing modules.   Another is the
 now largely defunct "AH" system developed at Lamont in the late 1980s.
 AH was more-or-less the equivalent of
@@ -139,7 +140,7 @@ Solving Computational Seismology Problems with MsPASS
 Experimental Early Work
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 You have an idea for a new algorithm to extract information
-from with seismology data.  Where do you start?   Some starting points to consider are:
+from seismology data.  Where do you start?   Some starting points to consider are:
 
 -  Rarely do any such ideas come from nowhere, but like all science
    your idea builds on previous work.   Are there implementations you
@@ -223,7 +224,8 @@ For this situation, you have three options:
    A complete current list maintained by python.org an can be found
    `here <https://wiki.python.org/moin/IntegratingPythonWithOtherLanguages>`__.
 -  If you are very familiar with python, you may find it easier to just
-   translate the algorithm to python.   There are tools like Chat GPT that
+   translate the algorithm to python.   There are tools like ChatGPT
+   and google Gemini that
    can help you, but if you are a student you would be advised to
    use our own brain as much as possible to do the translation so you fully
    understand what you produce.
@@ -235,7 +237,7 @@ on the time you have available and the level of complexity of the algorithm.
 In MsPASS we use
 `pytest <https://docs.pytest.org/en/latest/>`__
 to validate the entire code-base whenever we change anything
-and commit the result to github.  For most research,however, that is overkill, and
+and commit the result to github.  For most research, however, that is overkill, and
 few are likely to invest the time in learning yet another package
 (pytest has it's own quirks).  Nonetheless, it is essential you test
 any prototype to make sure it does what you think it should do.
@@ -262,7 +264,7 @@ ones I know of are:
     collide with thread pools that are used by default in dask.   I do not
     really know if this is a problem, but it might be.  If you go down that
     route and read this, please pass on what you find to the MsPASS development
-    team with a github issue.
+    team with a github issue or discussion page.
 
 When you have a tested function(s) that implement your idea, the
 first thing I would recommend anyone do is try it out with a serial
@@ -279,3 +281,50 @@ section.
 
 Tuning Processing to a Large Dataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The end member in adapting an algorithm is best described as a situation.
+That is, suppose you are running a serial workflow
+and estimate it would take months to years to process the entire
+data set you want to utilize.   If you conclude large scale parallel
+processing is the only answer (it may not be) you face the problem of
+tuning your workflow to run on a large cluster with hundreds to thousands
+of cores at your disposal.
+
+If that situation describes what you are facing, the best advice I have
+for you is to first read some keys sections of this manual to be sure you
+understand some fundamentals:
+- :ref:`parallel_processing` reviews key concepts in what modern clusters are
+  and how they area abstracted in MsPASS.
+- :ref:`io` discusses key concepts of how input/output work on modern
+  computer systems and how that impacts parallel performance.   Keep in mind
+  a basic axiom of high performance computing:  a supercomputer is a
+  computer that turns CPU bound jobs into IO bound jobs.   An absolutely
+  critical element of tuning processing of large data sets is balancing
+  IO throughput with CPU requirements.
+- :ref:`database_concepts` discusses important issues about special IO
+  considerations centered on interactions with MongoDB.   The most important
+  concept you must become your mantra is
+  that in in parallel processing you must always avoid database transactions
+  mixed with computations.  Modern clusters have large working memory and
+  most database transactions are best done up front and loaded into memory
+  for passed as data structures to workers.   Similarly, output database
+  tasks are best structured into a task that won't block the processing
+  while it finishes.
+
+Once you know the fundamentals the best thing to do is use a subset of
+a massive data set to tune your workflow.   Use tools like
+`dask diagnostics<https://docs.dask.org/en/stable/diagnostics-distributed.html>`_
+to evaluate how effectively your test data set utilize CPU resources
+within available memory constraints.
+A well balanced workflow will use close to 100% cpu on all workers most of the
+time and fit in a workable memory block.   In my experience, there are
+universal tradeoffs in memory use and throughput when working with large data
+sets.   That links closely with overall IO performance as to keep the CPUs
+busy the readers have to be operating independently to feed the CPU data.
+Similarly, if the CPUs block waiting for output to complete performance will
+drop.   Properly designed workflows using approaches described in
+:ref:`parallel_processing` can provide that kind of balance by letting
+the dask or pyspark schedulers do their job.   The problem is that how
+the schedulers work have limitations and careful tuning requires you
+to know how to help the scheduler do best job it can.
+Web research, our section :ref:`parallel_processing`, and our tutorials
+are what you need to work this out for your problem.
