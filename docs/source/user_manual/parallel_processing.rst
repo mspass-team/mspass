@@ -313,9 +313,8 @@ are a few things to highlight:
    one you could implement with Futures.
 -  To run a pipeline workflow with Futures the sequence of map
    operators need to be bundled into a single function.
-   For actual examples see our tutorials for the 2026 Earthscope
-   short course found
-   `here <https://github.com/mspass-team/mspass_tutorial/tree/master/Earthscope2026>`_.
+   For actual examples, see
+   `the 2026 Earthscope tutorial course material <https://github.com/mspass-team/mspass_tutorial/tree/master/Earthscope2026>`__.
    For a generic example in pseudocode suppose I wanted to run
    algorithm A, B, and C on a dask bag of data.   The map version of that
    sequence might be:
@@ -802,7 +801,7 @@ before:
   SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR $SING_COM
 
 Here we set the environment variables inside the container using this syntactic sugar SINGULARITYENV_XXX.
-For more information, you could view the usage `here <https://sylabs.io/guides/3.0/user-guide/appendix.html>`_.
+For more information, see `the Sylabs usage appendix <https://sylabs.io/guides/3.0/user-guide/appendix.html>`__.
 We define and set different variables in different containers we start because in our start-mspass.sh, we
 define different bahavior under different *MSPASS_ROLE* so that for each role, it will execute the bash
 script we define in the start-mspass.sh. Though it looks complicated and hard to extend, this is prabably

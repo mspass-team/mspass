@@ -1105,8 +1105,8 @@ some support for two alternative indexing methods.
     in MongoDB can be used as an alternate index.  We note that
     geospatial queries can also be used on :code:`site` and :code:`channel` collections
     created with StationXML files too provided the user constructs the
-    index required to do that.   An example of how to do this can be found
-    `here <https://github.com/mspass-team/mspass_tutorial/blob/master/Earthscope2024/Session2.ipynb>`_
+    index required to do that.   See
+    `an example notebook <https://github.com/mspass-team/mspass_tutorial/blob/master/Earthscope2024/Session2.ipynb>`__
     in our tutorial repository.
 
 A spatial query to link anything to a point in the :code:`site` or :code:`channel` collection has

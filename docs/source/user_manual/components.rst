@@ -6,8 +6,8 @@ MsPASS Services
 ----------------------
 Much of the modern IT environment centers around the abstract concept of
 a "service".  That concept has evolved for decades and is, in fact, a
-central focus of cloud systems.   You can read more about that
-`here <https://aws.amazon.com/what-is/service-oriented-architecture/>`_.
+central focus of cloud systems.   You can read more about that in
+`an introduction to service-oriented architecture <https://aws.amazon.com/what-is/service-oriented-architecture/>`__.
 For the purpose of this manual, you should understand that a service
 is a version of a black box.   If you put in something it understands it
 will spit out an answer you can use.   If you give it something it doesn't
@@ -47,10 +47,10 @@ jupyter notebook that defines your workflow.  For that reason,
 MsPASS has a set of "launchers":
 
 1.  When you are running on a desktop/laptop system we recommend you use the
-    `mspass-desktop` command line tool described in :ref:`mspass_desktop`_.
+    `mspass-desktop` command line tool described in :ref:`mspass_desktop`.
 2.  When running on an HPC system the recommended way to handle launching
     is with the python `HPCClusterLauncher` class.  Setting up MsPASS to run
-    on an HPC platform is described in :ref:`deploy_mspass_on_HPC`_.
+    on an HPC platform is described in :ref:`deploy_mspass_on_HPC`.
 3.  Running MsPASS on a cloud system can be simpler or harder depending on
     how much work someone else has done for you.   Earthscope
     `GeoLab <https://www.earthscope.org/data/geolab/>`_
