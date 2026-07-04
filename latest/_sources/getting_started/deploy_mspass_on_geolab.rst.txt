@@ -361,3 +361,22 @@ The local worker starts with:
 
 In Dask this means no explicit memory limit is set.  It does not mean the
 worker has no memory available.
+
+Notebook-local Python modules
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The GeoLab image starts Dask scheduler and worker processes before the
+notebook kernel starts.  Therefore workers do not automatically inherit
+per-notebook ``sys.path`` changes or helper modules that are only importable
+from the notebook's current directory.
+
+For durable code, package the helper module and install it into the image.
+For prototype notebook-local code, upload it to the active Dask workers before
+submitting tasks:
+
+.. code-block:: python
+
+    from pathlib import Path
+
+    dask_client = mspass_client.get_scheduler()
+    dask_client.upload_file(str(Path("s3_client_plugin.py").resolve()))

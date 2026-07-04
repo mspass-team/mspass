@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MsPASS on EarthScope GeoLab &#8212; MsPASS 2.4.1.dev13+g8be1cca8 documentation</title>
+    <title>Using MsPASS on EarthScope GeoLab &#8212; MsPASS 2.4.1.dev14+g66df775d documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a481ffb0"></script>
+    <script src="../_static/documentation_options.js?v=9b86c3ff"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Deploy MsPASS with Conda and Coiled" href="deploy_mspass_with_conda_and_coiled.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.1.dev13" />
+  <meta name="docsearch:version" content="2.4.1.dev14" />
   </head>
   
   
@@ -755,6 +755,22 @@ GeoLab deployment provides a MongoDB endpoint reachable from Gateway workers.</p
 <p>In Dask this means no explicit memory limit is set.  It does not mean the
 worker has no memory available.</p>
 </section>
+<section id="notebook-local-python-modules">
+<h3>Notebook-local Python modules<a class="headerlink" href="#notebook-local-python-modules" title="Link to this heading">#</a></h3>
+<p>The GeoLab image starts Dask scheduler and worker processes before the
+notebook kernel starts.  Therefore workers do not automatically inherit
+per-notebook <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> changes or helper modules that are only importable
+from the notebook’s current directory.</p>
+<p>For durable code, package the helper module and install it into the image.
+For prototype notebook-local code, upload it to the active Dask workers before
+submitting tasks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
+<span class="n">dask_client</span><span class="o">.</span><span class="n">upload_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;s3_client_plugin.py&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()))</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -820,6 +836,7 @@ worker has no memory available.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#client-creates-the-wrong-dask-scheduler"><code class="docutils literal notranslate"><span class="pre">Client()</span></code> creates the wrong Dask scheduler</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gateway-workers-cannot-access-mongodb">Gateway workers cannot access MongoDB</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-dask-dashboard-shows-0-b-memory">The Dask dashboard shows <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">B</span></code> memory</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-local-python-modules">Notebook-local Python modules</a></li>
 </ul>
 </li>
 </ul>
