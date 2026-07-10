@@ -1,3 +1,11 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/source/_static/images/logos/mspass-banner-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/source/_static/images/logos/mspass-banner-light.png">
+    <img alt="MsPASS — Massive Parallel Analysis System for Seismologists" src="docs/source/_static/images/logos/mspass-banner-light.png" width="900">
+  </picture>
+</p>
+
 # MsPASS: Massive Parallel Analysis System for Seismologists
 
 [![Docker Build](https://img.shields.io/github/actions/workflow/status/mspass-team/mspass/docker-publish.yml?branch=master&label=docker%20build&logo=docker)](https://github.com/mspass-team/mspass/actions/workflows/docker-publish.yml)

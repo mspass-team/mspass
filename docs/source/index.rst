@@ -3,6 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. image:: _static/images/logos/mspass-banner-light.png
+   :alt: MsPASS — Massive Parallel Analysis System for Seismologists
+   :align: center
+   :class: only-light mspass-home-banner
+
+.. image:: _static/images/logos/mspass-banner-dark.png
+   :alt: MsPASS — Massive Parallel Analysis System for Seismologists
+   :align: center
+   :class: only-dark mspass-home-banner
+
 MsPASS Documentation
 ====================
 
