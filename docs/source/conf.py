@@ -197,7 +197,11 @@ exclude_patterns = [
 html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
-    "logo": {"text": "MsPASS"},
+    "logo": {
+        "alt_text": "MsPASS documentation",
+        "image_light": "_static/images/logos/mspass-symbol-light.png",
+        "image_dark": "_static/images/logos/mspass-symbol-dark.png",
+    },
     "github_url": "https://github.com/mspass-team/mspass",
     "use_edit_page_button": True,
     "show_toc_level": 2,
