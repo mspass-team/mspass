@@ -1,0 +1,122 @@
+.. MsPASS documentation master file, created by
+   sphinx-quickstart on Wed Feb  5 16:31:33 2020.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+.. image:: _static/images/logos/mspass-banner-light.png
+   :alt: MsPASS — Massive Parallel Analysis System for Seismologists
+   :align: center
+   :class: only-light mspass-home-banner
+
+.. image:: _static/images/logos/mspass-banner-dark.png
+   :alt: MsPASS — Massive Parallel Analysis System for Seismologists
+   :align: center
+   :class: only-dark mspass-home-banner
+
+MsPASS Documentation
+====================
+
+The Massive Parallel Analysis System for Seismologists
+is an open source framework for seismic data processing
+and management. It has three core components:
+
+* A scalable parallel processing framework based on a
+  dataflow computation model.
+* A NoSQL database system centered on document store.
+* A container-based virtualization environment.
+
+The system builds on the `ObsPy <http://obspy.org>`_
+toolkit, with extension built on a rewrite of the
+`SEISPP <http://www.indiana.edu/~pavlab/software/seispp/html/index.html>`_
+package.
+
+.. .. mdinclude:: ../../README.md
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Introduction
+
+   user_manual/introduction
+   user_manual/components
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Desktop Operation
+
+   getting_started/mspass_desktop
+   getting_started/command_line_desktop
+   getting_started/deploy_mspass_with_conda
+   getting_started/advanced_setup_considerations
+
+.. toctree::
+   :maxdepth: 2
+   :caption:  Cluster Operations
+
+   getting_started/deploy_mspass_on_HPC
+   getting_started/HPCClusterLauncher_configuration
+   getting_started/deploy_mspass_with_conda_and_coiled
+   getting_started/deploy_mspass_on_geolab
+   getting_started/getting_started_overview
+
+.. toctree::
+   :maxdepth: 1
+   :caption:  Data Management
+
+   user_manual/database_concepts
+   user_manual/CRUD_operations
+   user_manual/mongodb_and_mspass
+   user_manual/normalization
+   user_manual/importing_tabular_data
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Seismic Data Objects
+
+   user_manual/data_object_design_concepts
+   user_manual/numpy_scipy_interface
+   user_manual/obspy_interface
+   user_manual/time_standard_constraints
+   user_manual/processing_history_concepts
+   user_manual/continuous_data
+   user_manual/schema_choices
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Data Processing
+
+   user_manual/algorithms
+   user_manual/deconvolution
+   user_manual/importing_data
+   user_manual/handling_errors
+   user_manual/data_editing
+   user_manual/cleaning_metadata
+   user_manual/header_math
+   user_manual/graphics
+   user_manual/signal_to_noise
+   user_manual/arrival_time_measurement
+   user_manual/adapting_algorithms
+
+.. toctree::
+   :maxdepth: 1
+   :caption: System Tuning
+
+   user_manual/parallel_processing
+   user_manual/memory_management
+   user_manual/io
+   user_manual/parallel_io
+
+.. toctree::
+   :maxdepth: 2
+   :caption:  FAQ
+
+   user_manual/FAQ
+   user_manual/development_strategies
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Reference Manual
+
+   python_api/index
+   cxx_api/index
+   mspass_schema/mspass_schema

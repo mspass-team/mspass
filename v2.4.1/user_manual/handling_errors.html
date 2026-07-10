@@ -1,0 +1,929 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Handling Errors &#8212; MsPASS 2.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=e9ebdb8f"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/handling_errors';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Editing" href="data_editing.html" />
+    <link rel="prev" title="Importing Data" href="importing_data.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Handling Errors</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="handling-errors">
+<span id="id1"></span><h1>Handling Errors<a class="headerlink" href="#handling-errors" title="Link to this heading">#</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>Errors are a universal issue in large scale data processing.
+In single threaded applications it was common to follow the classic unix
+model of writing error messages to stderr.  Anyone processing large
+amounts of data that can generate hundreds to thousands of error messages
+know that stderr logging is problematic because the critical errors
+can be hard to find in the debris.  A common solution used for single
+threading was to use a log file that could be searched post mortem to
+find problems.   In a multi-threaded situation that solution can work, but
+requires specialized io libraries to avoid write collisions if two threads
+try to write the to same file.  An example that may be familiar to many
+seismologists of that approach is the elog library used in
+<a class="reference external" href="https://brtt.com">Antelope</a>.  That approach can work for a shared memory
+system but is more problematic in a large cluster of distributed machines
+or (worse) a cloud system.  In a distributed system a centralized error
+logger would need to maintain a connection to every running process, which
+would to a challenge to implement from scratch.   We originally considered
+using python’s logging mechanism, but recognized that would not solve the
+large log file issue.</p>
+<p>The above issues led us to a completely different solution for error logging.
+We include an ErrorLogger class as a member of all supported data
+objects.  That model simplifies the error handling because the error
+handling model can be stated as two simple rules:</p>
+<ol class="arabic simple">
+<li><p>If there is any error that the user needs to be warned about, post
+an informative message to the error log.  Error are not always black
+and white so the message should define the severity level of the error.</p></li>
+<li><p>If the error invalidates the data, mark the data dead.  We expand
+on this concept further below in the section titled “Kills”.</p></li>
+</ol>
+<p>This section is organized around three key concepts used in the
+error handling system of MsPASS:   standardized exception handling,
+the error logger api, and concepts related to marking data dead.  The
+last item has two important subtopics:  the kill concept and
+a special class we tag with the descriptive, albeit perhaps overly cute,
+name of <code class="code docutils literal notranslate"><span class="pre">Undertaker</span></code>.</p>
+</section>
+<section id="exceptions-and-error-handlers">
+<h2>Exceptions and Error Handlers<a class="headerlink" href="#exceptions-and-error-handlers" title="Link to this heading">#</a></h2>
+<p>Any book on programming in any language will address the issue of error handling.
+The reason, of course, is that most algorithms have limitations on
+what they receive as inputs or can evolve to a state that is untenable.
+There are multiple standard ways to handle errors.   In MsPASS we aimed to
+treat errors with one of three approaches.</p>
+<ol class="arabic simple">
+<li><p>The python language is flexible, but standard practice encourages the
+use of the try-raise-except construct (the try-throw-catch keywords in C++).
+We use that exception mechanism internally to handle most error conditions.
+To provide some regularity, most error raised by a MsPASS function or
+method will be the exception class called MsPASSError.
+(The exception is error that match standard python exception types.)  Following
+standard practice the MsPASSError is defined as a subclass of the
+base class Exception.  That allows generic error handlers like the
+following to catch MsPASSError exceptions as described in most
+books and online python tutorials
+(<a class="reference external" href="https://medium.com/better-programming/a-comprehensive-guide-to-handling-exceptions-in-python-7175f0ce81f7">Follow this link for a good example</a>)</p></li>
+<li><p>Many algorithms are not black and white but need to return
+something that can indicate the degree of success.   We reserve that
+model to situations where partial success is not really an error but
+the result of an algorithm that is expected to behave in different ways
+with different inputs.  For example, the save_inventory method of
+<a class="reference external" href="../python_api/mspasspy.db.html#module-mspasspy.db.database">database</a>
+returns a tuple with three numbers: number of site documents added,
+number of channel documents added, and the number of stations in the
+obspy Inventory object that the method received.  The result is dependent
+on history of what was saved previously because this particular algorithm
+tests the input to not add duplicates to the database.</p></li>
+<li><p>Processing functions in MsPASS that are properly designed for the
+framework MUST obey a very important rule:  a function to be run in
+parallel should never throw an exception, but use the error log and (optional)
+kill method described below.</p></li>
+</ol>
+</section>
+<section id="error-logger">
+<h2>Error Logger<a class="headerlink" href="#error-logger" title="Link to this heading">#</a></h2>
+<p>As discussed in the overview section above, handling errors in a parallel
+environment presents special problems.  A key issue is that the schedulers
+MsPASS supports (Spark and Dask) both will abort a job if any function
+throws an unhandled exception.  For that reason, if a MsPASS processing
+function ever throws an exception it is a bug or an unrecoverable
+error that does invalidate an entire run.  Instead, we always aim
+to handle errors with what we call our ErrorLogger and a classic approach
+using a kill mechanism.</p>
+<p>All seismic data objects of MsPASS
+are defined and implemented in C++.  (They are bound to python through
+wrappers using a package called pybind11.)  All
+have a C++ class called <a class="reference external" href="../_static/html/classmspass_1_1utility_1_1_error_logger.html">ErrorLogger</a>
+as a public attribute we define with the symbol <code class="code docutils literal notranslate"><span class="pre">elog</span></code>.
+(The python bindings are also defined in this link:
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorLogger</span></code></a>. )
+That mechanism
+allows processing functions to handle all exceptions without aborting
+through constructs similar to the following pythonic pseudocode:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="c1"># code that may throw an error processing data object &quot;d&quot;</span>
+<span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">merr</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">merr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">merr</span><span class="o">.</span><span class="n">severity</span><span class="p">()</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">:</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;Unexcepted exception: more details&#39;</span><span class="p">,</span><span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The kill method is described further in the next section.  The key point
+is that generic error handlers catch any exceptions and post message to
+the <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorLogger</span></code></a>
+carried with the data in a container
+with the symbolic name elog.   An error posted to the
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorLogger</span></code></a>
+always contains two components:  (1) a (hopefully informative)
+string that describes the error, and (2) a severity tag.   The
+class description
+describes the severity method that returns a special class called
+ErrorSeverity.   ErrorSeverity is technically a binding to a C++ enum
+class that defines a finite set of values that should be understood
+as follows:</p>
+<p><code class="code docutils literal notranslate"><span class="pre">Fatal</span></code>: A serious error that should cause the job to abort.   This
+is reserved only for completely unrecoverable errors such as a malloc error.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">Invalid</span></code>: This error indicates the algorithm could not produce valid
+data.  Data with Invalid errors will always be marked dead.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">Suspect</span></code>:  Suspect is reserved for the condition where the datum
+is not killed, but the algorithm that posted it wants to give a hint that
+you should consider not using it for additional processing.  There are currently
+no examples of this error being posted, but we include it in the api
+to allow that option.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">Complaint</span></code>:  A complaint is posted for an error that was handled and
+fully corrected.   Complaints are posted largely as informational messages
+to warn the user there were problems with data they may want to correct
+to avoid problems with different downstream algorithms.  Such errors can
+also often be useful in determining why a later stage of processing aborts.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">Debug</span></code>:  Reserved for verbose logging to track a problem.  Useful to
+insert in a long running job where something is going wrong that is
+yielding invalid data but the job is not aborting or logging errors that
+define the problem.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">Informative</span></code>:  Used for very verbose options on some algorithms to
+extract some auxiliary information needed for some other purpose.</p>
+<p>A final point about error logs is to how they are preserved.  Error
+messages should always be examined after a processing sequence is completed
+to appraise the validity of the result.  With a large data set is it is
+very easy to generate huge error logs.  To make the result more manageable
+all save operators automatically write any error log entries to
+a special collection in MongoDB we call the <code class="code docutils literal notranslate"><span class="pre">elog</span></code> collection.</p>
+</section>
+<section id="kills">
+<h2>Kills<a class="headerlink" href="#kills" title="Link to this heading">#</a></h2>
+<section id="concepts">
+<h3>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">#</a></h3>
+<p>The approach of marking a piece of seismic data bad/dead is familiar to
+anyone who has ever done seismic reflection processing.  All seismic
+processing systems have a set of trace editing functions to mark
+bad data.  That approach goes back to the earliest days of seismic reflection
+processing as evidenced by a trace id field (technically an
+unsigned int16) in SEGY that when set to a particular value (2) defines
+that datum as dead.</p>
+<p>The kill concept is useful in the MsPASS framework as a way to simplify
+parallel workflows.  Spark and Dask both use a mechanism to abstract
+an entire data set as a single container (called an RDD in Spark and a “Bag”
+in Dask).  As described in detail in the section of this manual on
+parallel processing, the model used by MsPASS assumes a processing function
+to run in parallel applies the same function to every member of the dataset
+defined by the RDD or Bag container.  The kill mechanism is a simple
+mechanism to define data that should be considered no longer valid.   All
+properly designed python functions in MsPASS automatically do nothing if
+data are marked dead leaving the dead data as elements of the RDD/Bag.</p>
+<p>Since v2 of MsPASS the package defines two forms of dead dead:
+(1) normal kills created during data processing and (2) what we
+(colorfully) call “abortions”.   The name is descriptive because a
+dead datum marked as an “abortion” was never born.   The tag is
+defined only during read operations if the construction of the object
+fails.   Users should put aside any political views on the human
+version of this topic and take a strictly pro life stance on
+MsPASS abortions.  All abortions are a bad thing that should be
+eliminated if they happen.   For the same reason MsPASS algorithms rarely
+throw exceptions, when abortions occur (always during reading)
+the <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> created from a MongoDB document are stored in
+a dead datum with no sample data.   That body will be carried
+through a workflow.   Abortions are handled specially by during a save
+as described below.</p>
+<p>A second feature added to MsPASS since v2 is that an entire ensemble
+can be killed.  Killing an ensemble is equivalent to killing all the
+atomic data members.</p>
+<p>Handling dead data has two important, practical constraints:</p>
+<ol class="arabic simple">
+<li><p>Any careful scientist will want to have a record of what data was
+killed and why it was killed.</p></li>
+<li><p>As noted earlier with a parallel container the body needs to be
+carried through the processing.   If the data objects are large
+moving the entire body around is inefficient and unnecessarily
+consumes memory.</p></li>
+</ol>
+<p>How we address these two constraints is described in two sections
+below.  The first is handled automatically by the
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a> method of
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a>.  The second has
+options that are implemented as methods of the class
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code> that is the
+topic of the second subsection below.</p>
+<p>A final point is that if a job is expected to kill a large fraction of data
+there is a point where it becomes more efficient to clear the dataset of
+dead data.   That needs to be done with some care if one wishes to preserve
+error log entries that document why a datum was killed.   The
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code>
+class, which described in the next section was designed
+to handle such issues.</p>
+</section>
+<section id="database-handling-of-dead-data">
+<h3>Database handling of dead data<a class="headerlink" href="#database-handling-of-dead-data" title="Link to this heading">#</a></h3>
+<p>The standard way in MsPASS to preserve a record of killed data is
+implicit when the data are saved via the Database method
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>.
+The <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> class internally
+creates an instance of
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a>
+(Described in more detail the next section and the docstring
+viewable via the above link.) that handles the dead data during the save
+operation.  The
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>
+method has these features:</p>
+<ol class="arabic simple">
+<li><p>If an atomic datum is marked dead,
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>
+calls the <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bury</span></code></a>
+method of <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a> on the
+contents.  The default behavior of
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bury</span></code></a>
+is to create a document in the
+<code class="code docutils literal notranslate"><span class="pre">cemetery</span></code> collection with two primary key-value pairs:
+(a) The <code class="code docutils literal notranslate"><span class="pre">logdata</span></code> key is associated with a readable dump of the
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorLogger</span></code></a> content.  (b) The <code class="code docutils literal notranslate"><span class="pre">tombstone</span></code> key is
+associated with a python dictionary (subdocument in MongoDB jargon)
+that is an image of the datum’s <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></a>
+container. If the <code class="code docutils literal notranslate"><span class="pre">return_data</span></code> boolean is set True (default is False),
+the sample vector/array will be cleared and set to zero length on the
+returned object.</p></li>
+<li><p>A special case is atomic data that are marked as “abortions”.
+That property is marked by the reader by setting a Metadata boolean
+with the key
+<code class="code docutils literal notranslate"><span class="pre">is_abortion</span></code> to True.  The only difference
+in how these are handled is that “abortions”
+are saved to the <code class="code docutils literal notranslate"><span class="pre">abortions</span></code> collection instead of the
+<code class="code docutils literal notranslate"><span class="pre">cemetery</span></code> collection used for data killed during processing.
+The reason for that separation is to emphasize the pro-life
+stance of MsPASS - abortions should always be considered a serious error.</p></li>
+<li><p>Handling ensembles is a more complex problem because there are two
+very different definintions of dead:  (a) the entire ensemble can be
+marked dead or (b) only some members are marked dead.
+If the entire ensemble is marked dead, a common message is posted to
+all members and the <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bury</span></code></a>
+method is called on all members.   If <code class="code docutils literal notranslate"><span class="pre">return_data</span></code> is
+set True, the member data vector is cleared.  In the more common
+situation where only some of the ensemble members are marked dead,
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>
+calls a special member of <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a>
+with a name that is the best python joke ever:
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="mspasspy.util.Undertaker.Undertaker.bring_out_your_dead"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bring_out_your_dead</span></code></a>.
+The dead members are separated from those marked live and
+passed in a serial loop to <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bury</span></code></a>.
+If <code class="code docutils literal notranslate"><span class="pre">return_data</span></code> is set True, the member vector is replaced with
+a smaller version with the dead removed.</p></li>
+<li><p>Saves of both atomic an ensemble data have a <code class="code docutils literal notranslate"><span class="pre">cremate</span></code> option.
+When set True dead data will be cleared without a trace.</p></li>
+</ol>
+<p>Since V2 of MsPASS the recommended way to terminate a parallel
+processing sequence is to use the mspass
+<a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data" title="mspasspy.io.distributed.write_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_distributed_data</span></code></a> function.
+It handles dead data the same way as
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a> described above.</p>
+<p>Finally, users are warned that data that are passed through a reduce operator
+will normally discard dead data with no trace.  If your workflow has a
+reduce operator, it is recommended that you use the inline methods for
+handling dead data described in the next section immediately before
+the reduce operator is called.</p>
+</section>
+<section id="handling-dead-data-as-an-intermediate-step">
+<h3>Handling Dead Data as an Intermediate Step<a class="headerlink" href="#handling-dead-data-as-an-intermediate-step" title="Link to this heading">#</a></h3>
+<p>If your workflow has edit procedures that kill a significant fraction
+of your dataset, you should consider using the MsPASS
+facility for handling dead data within a processing sequence.
+The main tool for doing so are methods of the
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a> class.
+The class name is a programming joke, but the name is descriptive;  its job
+is to deal with dead data.  The class interacts with a Database and has
+three methods that are most useful for any MsPASS workflow.</p>
+<ol class="arabic simple">
+<li><p>The <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bury</span></code></a> method
+is the normal tool of choice to handle dead data.   It has the
+behavior noted above creating a document in the <code class="code docutils literal notranslate"><span class="pre">cemetery</span></code>
+collection for every dead datum.  For atomic data the return
+is a copy of the input object with the sample data cleared and
+the objects <code class="code docutils literal notranslate"><span class="pre">npts</span></code> attribute is set to 0.   For ensembles,
+this method returns a copy of the ensemble with the dead
+members completely removed.   A <code class="code docutils literal notranslate"><span class="pre">cemetery</span></code> document is
+saved for each datum removed from the ensemble.</p></li>
+<li><p>The <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate" title="mspasspy.util.Undertaker.Undertaker.cremate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cremate</span></code></a> method
+can be used if you do not want to preserve the error messages that
+caused kills.   With atomic data it returns the smallest ashes
+possible; a default constructed instance of the parent data object.
+For ensembles dead data are completely removed.</p></li>
+<li><p>The <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="mspasspy.util.Undertaker.Undertaker.bring_out_your_dead"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bring_out_your_dead</span></code></a> method,
+will raise an exception if it receives anything but an ensemble.
+It returns two ensembles:  one with all the live and one
+with all the dead data.  It is actually used internally by
+both the <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bury</span></code></a>
+and <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate" title="mspasspy.util.Undertaker.Undertaker.cremate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cremate</span></code></a> methods
+when the input is an ensemble.</p></li>
+<li><p><a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.mummify" title="mspasspy.util.Undertaker.Undertaker.mummify"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mummify</span></code></a> is useful for
+reducing the memory footprint of a dataset while preserving the data
+that is normally saved in <code class="code docutils literal notranslate"><span class="pre">cemetery</span></code> at the end of a workflow.
+It does so by only clearing the sample data arrays and setting the
+<code class="code docutils literal notranslate"><span class="pre">npts</span></code> attribute for dead data to 0.   With ensembles the
+algorithm runs through all members clear the sample arrays of all
+members marked dead.</p></li>
+</ol>
+<p>The following is a sketch of a typical use of an instance of
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a> within a workflow.
+A key point is an instance of the class has to be instantiated
+prior to the data processing workflow steps.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">stedronsky</span> <span class="o">=</span> <span class="n">Undertaker</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>  <span class="c1"># db is an instance of Database created earlier</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">query</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">customfunction</span><span class="p">)</span>  <span class="c1"># some custom function that may kill</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">squad</span><span class="p">)</span>  <span class="c1"># kills with an instance of the FiringSquad editor</span>
+<span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">bury</span><span class="p">)</span>
+<span class="c1"># other processing commands would go here.</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="importing_data.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Importing Data</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="data_editing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Data Editing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptions-and-error-handlers">Exceptions and Error Handlers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-logger">Error Logger</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kills">Kills</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#concepts">Concepts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#database-handling-of-dead-data">Database handling of dead data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-dead-data-as-an-intermediate-step">Handling Dead Data as an Intermediate Step</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/handling_errors.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/handling_errors.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

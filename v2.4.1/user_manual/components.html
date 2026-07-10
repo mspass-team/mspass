@@ -1,0 +1,870 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MsPASS Components &#8212; MsPASS 2.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=e9ebdb8f"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/components';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Running MsPASS on a Desktop Computer" href="../getting_started/mspass_desktop.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">MsPASS Components</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mspass-components">
+<span id="id1"></span><h1>MsPASS Components<a class="headerlink" href="#mspass-components" title="Link to this heading">#</a></h1>
+<section id="mspass-services">
+<h2>MsPASS Services<a class="headerlink" href="#mspass-services" title="Link to this heading">#</a></h2>
+<p>Much of the modern IT environment centers around the abstract concept of
+a “service”.  That concept has evolved for decades and is, in fact, a
+central focus of cloud systems.   You can read more about that in
+<a class="reference external" href="https://aws.amazon.com/what-is/service-oriented-architecture/">an introduction to service-oriented architecture</a>.
+For the purpose of this manual, you should understand that a service
+is a version of a black box.   If you put in something it understands it
+will spit out an answer you can use.   If you give it something it doesn’t
+understand it will give you some kind of error.</p>
+<p>With that brief overview, MsPASS always expects to
+have access to three primary services:</p>
+<ol class="arabic simple">
+<li><p>A <em>database service</em> that uses the MongoDB API
+(Application Programming Interface).</p></li>
+<li><p>A <em>scheduler service</em> to manage tasks to be executed on the generic
+concept of a “cluster” of multiple processors.   The default MsPASS
+scheduler is <a class="reference external" href="https://www.dask.org/">dask</a>
+but the framework also supports
+<a class="reference external" href="https://spark.apache.org/docs/latest/api/python/index.html">pyspark</a>.</p></li>
+<li><p>A <em>frontend</em> service that runs a compatible version of python.  Normally
+that is an instance of a <a class="reference external" href="https://jupyter.org/">jupyter server</a> that creates
+a user interface you can work with interactively.   Note that large
+jobs on HPC systems are normally run in a mode where there technically is
+not a “frontend service” but the batch job just runs a simple python
+interpretter to drive the workflow.  You should think of jupyter as
+more like a gateway that allows you to run MsPASS interactively.</p></li>
+</ol>
+</section>
+<section id="launching-mspass-services">
+<h2>Launching MsPASS services<a class="headerlink" href="#launching-mspass-services" title="Link to this heading">#</a></h2>
+<p>A “service” requires some piece of software to be running somewhere that
+your workflow can access.   That software can be remote, such as in a web
+application, or on the same system where your job is running.  In all
+cases that application is normally called a “server”.   For example,
+most database services are implemented with a “database server” including
+MongoDB used in MsPASS.</p>
+<p>How the services/servers are launched is system dependent.  You may be
+able to connect to a running instance of an appropriate server, but in
+most cases you need to launch them outside the python script or
+jupyter notebook that defines your workflow.  For that reason,
+MsPASS has a set of “launchers”:</p>
+<ol class="arabic simple">
+<li><p>When you are running on a desktop/laptop system we recommend you use the
+<cite>mspass-desktop</cite> command line tool described in <a class="reference internal" href="../getting_started/mspass_desktop.html#mspass-desktop"><span class="std std-ref">Running MsPASS on a Desktop Computer</span></a>.</p></li>
+<li><p>When running on an HPC system the recommended way to handle launching
+is with the python <cite>HPCClusterLauncher</cite> class.  Setting up MsPASS to run
+on an HPC platform is described in <a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html#deploy-mspass-on-hpc"><span class="std std-ref">Deploying MsPASS on an HPC cluster</span></a>.</p></li>
+<li><p>Running MsPASS on a cloud system can be simpler or harder depending on
+how much work someone else has done for you.   Earthscope
+<a class="reference external" href="https://www.earthscope.org/data/geolab/">GeoLab</a>
+automates launching the “frontend” service by operating as a JupyterHub
+gateway.   At the time this page was written,
+they had a running instance of dask as the “scheduler service”.
+You then need only connect to it with the right incantation.
+The “database service” there needs to be launched manually.
+To see how to launch the database server on GeoLab,
+see the jupyter notebooks for the
+course we taught in 2025 found in
+<a class="reference external" href="https://github.com/mspass-team/mspass_tutorial/tree/master/Earthscope2025">this section</a>
+of the MsPASS tutorials, GitHub repository.
+If you are launching a custom cloud setup, all three services need to be
+launched manually through a system dependent mechanism.   Good luck with
+that unless you have a lot of help from knowledgeable people.</p></li>
+</ol>
+</section>
+<section id="client-concepts">
+<h2>Client concepts<a class="headerlink" href="#client-concepts" title="Link to this heading">#</a></h2>
+<p>Most modern “services”, including all those in MsPASS, require a <em>client</em>
+to interact with any service.  A <em>client</em> is a piece of software that runs
+under the control of your user credentials that rigidly enforces the rules
+the service enforces to interact with it.   A client is always essential in
+a multiuser system to keep user A from colliding with user B.</p>
+<p>In a python application, which is what a “MsPASS workflow” is, a particular
+type of client is generally defined by a python class.  An instance of
+that client is created by invoking the class constructor to create the
+object that is the client.  For example, most user’s of MsPASS are familiar
+with the obspy FDSN web services client.   The stock incantation to create
+one is</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy.clients.fdsn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">webclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;EARTHSCOPE&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note it is critical to recognize that clients all assume there is a
+server/service it will be asked to access.   A particular instance
+may need data to tell it where that service is running.  For the
+obspy example above that “data” is the magic string “EARTHSCOPE”.
+If you dig into their code, you will find “EARTHSCOPE” is just an alias that
+triggers a connection setup to a service managed by Earthscope.
+The point is instantiating a client of any kind
+normally requires an exchange of computer bodily fluids between
+your code (the client) and the service.  With python much of that
+data is often defaulted but you may need a complicated incantation.
+For instance, at the time of this writing this is the incantation
+required to interact with Amazon’s S3 store system where Earthscope
+is migrating all the waveform data they manage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">earthscope_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">EarthScopeClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">EarthScopeClient</span><span class="p">()</span>
+<span class="n">creds</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_aws_credentials</span><span class="p">()</span>
+
+<span class="n">S3_ACCESS_POINT</span> <span class="o">=</span> <span class="s2">&quot;earthscope-mseed-res-na3mtd4fq5kz7pntcyr1uh46use2a--ol-s3&quot;</span>
+<span class="n">BUCKET</span> <span class="o">=</span> <span class="n">S3_ACCESS_POINT</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span>
+  <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">creds</span><span class="o">.</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+  <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">creds</span><span class="o">.</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+  <span class="n">aws_session_token</span><span class="o">=</span><span class="n">creds</span><span class="o">.</span><span class="n">aws_session_token</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">s3_client</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+                 <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+                 <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span>
+                     <span class="n">request_checksum_calculation</span><span class="o">=</span><span class="s2">&quot;when_required&quot;</span><span class="p">,</span>
+                     <span class="n">response_checksum_validation</span><span class="o">=</span><span class="s2">&quot;when_required&quot;</span><span class="p">,</span>
+                 <span class="p">),</span>
+             <span class="p">)</span>
+</pre></div>
+</div>
+<p>That code creates an instance of a “client” for interacting with S3
+data.  The object created is referenced above with the symbol <cite>s3_client</cite>.</p>
+</section>
+<section id="the-mspass-client">
+<h2>The MsPASS Client<a class="headerlink" href="#the-mspass-client" title="Link to this heading">#</a></h2>
+<p>Because the MsPASS framework depends upon three “services” a starting point for
+all MsPASS workflows is to set up the clients that the workflow will need to run.
+We simplify that process by defining a MsPASS client that
+is best thought of as a container holding clients needed to operate MsPASS.
+As a result almost all MsPASS workflow examples you will will see in this
+manual and in the tutorials begin with some variation of this incantation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>That example uses the defaults for the constructor, but
+as you can see from the
+<a class="reference external" href="https://www.mspass.org/python_api/mspasspy.client.html">docstring</a>
+there are optional arguments
+to define connection data for “database” and “scheduler” services.</p>
+<p>There are two “getter” methods that are used in most MsPASS workflows.
+The first is the one to fetch the database client:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dbclient</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>which does what the method name implies - set the symbol <cite>dbclient</cite> as
+a reference to a running database client.   The database client itself is
+not always needed so many workflows call the following that uses the
+client under the hood:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydb&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which instantiates a handle to particular set of data defined in
+this example with the string “mydb”.</p>
+<p>Finally, some workflows need to interact with the “scheduler” service.
+The most common example is the dask schedule has a facility for
+monitoring a job in real time called
+<a class="reference external" href="https://docs.dask.org/en/stable/dashboard.html">dask diagnostics</a>.
+For that reason, you will see many example MsPASS jupyter notebooks that
+contain this construct in a code box:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
+<span class="n">dask_client</span>
+</pre></div>
+</div>
+<p>When used in a jupyter notebook the last line generates a block of
+hypertext that contains connection data to link to dask diagnostics.
+The object defined above by the <cite>dask_client</cite> symbol also contains
+a long list of methods described in the dask documenation.</p>
+<p>Notice the mspass client does not have a method to fetch the “frontend”.
+The reason is that in MsPASS the “frontend” is, by definition, the
+thing used to run your workflow.   In python class lingo the “frontend” is “self”.
+Note also that the API for the mspass client emphasizes an important
+assumption to always keep in mind.   That is, the mspass framework
+assumes the database and scheduler services are available to the workflow.
+If that assumption is invalid, your job will fail.</p>
+</section>
+<section id="clients-in-a-parallel-setting">
+<h2>Clients in a Parallel Setting<a class="headerlink" href="#clients-in-a-parallel-setting" title="Link to this heading">#</a></h2>
+<p>The “P” in MsPASS stands for “parallel”.   Currently MsPASS is the
+only general-purpose package for handling seismology data that
+provides mechanisms for generic parallel processing.   The
+key component to do that is the “scheduler” service.
+That service abstracts the idea of parallel processing.
+For details the reader can consult numerous online sources for
+general concepts and the
+ref:<cite>parallel_processing</cite> section of this user manual.
+This section of this manual is a classic example of the reason why
+hypertext is better than a linear manual for a system like MsPASS.
+If you are not familiar with parallel processing concepts you may
+need to do some auxiliary study to comprehend the rest of this
+page.</p>
+<p>A parallel environment presents special problems for a system like
+MsPASS that depends on a service like a MonogDB database server.
+The reasons is that the abstraction of parallel “workers” used by
+scheduler services (aka dask or pyspark) treat the workers as
+independent entities that are stupid and know only information you feed them.
+As a result, if a worker needs to access a MongoDB server it needs to be
+told how to do that.  The simplest, stateless way to do that would be to
+instantiate an instance of a database client on each call to a processing
+function needing database access.   You might guess and would be right
+that that is a really really bad idea if your workflow is processing a large
+number of data that would require that to be done for every datum.
+In fact, timing data show instantiating a database client takes a significant
+fraction of 1 s on most systems.   Even a fraction of a second times a million
+is a very long time.</p>
+<p>To solve this issue, earlier versions of MsPASS simply serialized the
+database client.  We found we could get by with that for a while until
+we scaled up processing to the order of millions of data objects.
+That turned out to eventually crash the database server from a
+“too many open files” error caused by the server not releasing
+connections each serialized client initiated.  There is currently
+no solution to this problem with pyspark.   With dask we found a solution
+in what they call a
+<a class="reference external" href="https://distributed.dask.org/en/stable/plugins.html">worker plugin</a>.
+Later versions of MsPASS define a python class called
+<cite>MongoDBWorker</cite> that is a child of dask’s <cite>WorkerPlugin</cite>.   To use
+this feature all parallel workflows should contain a variant of the
+following before doing any parallel database operations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">MongoDBWorker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
+<span class="n">parallel_dbworker</span> <span class="o">=</span> <span class="n">MongoDBWorker</span><span class="p">(</span><span class="n">mspass_client</span><span class="p">)</span>
+<span class="n">dask_client</span><span class="o">.</span><span class="n">register_worker_plugin</span><span class="p">(</span><span class="n">parallel_dbworker</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>What that does is instantiate an instance of a MongoDB client
+on each worker that is kept memory resident in the worker.
+Further, if the worker dies the client is recreated when the
+scheduler relaunches the worker.   We have found this approach is
+more stable and has improved the performance of parallel workflows
+because each worker client doesn’t normally have to create any
+new connections to the server.</p>
+<p>All mspass functions that use database services
+(notably waveform data readers and writers) handle interaction
+with the parallel plugin automatically.  If you are developing a
+custom processing function that has a database handle as an
+argument you need to deal with this issue.  The following
+skeleton example illustrates how to handle that situation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_dbhandle</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">myfunction</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">dbname</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Example function illustrating use of fetch_dbhandle.</span>
+
+<span class="sd">  This example would return a TimeSeriesEnsemble of data</span>
+<span class="sd">  yielded by a query defined by arg0.  It is a simple replacement</span>
+<span class="sd">  for read_distibuted_data.</span>
+
+<span class="sd">  Note dbname is a string defining a particular database the server</span>
+<span class="sd">  will need to access.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>
+  <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+  <span class="c1"># proper form would trap a null return here - omitted for simplicity</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">ens</span>
+</pre></div>
+</div>
+<p>The key point here is that with that construct <cite>myfunction</cite> can
+be run in a parallel constuct using map-reduce or the Futures interface
+(see <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a>).   The essential thing to do is to send the
+function only the database name and then use the <cite>fetch_dbhandle</cite> inside
+the function to create the database handle to the database the name references.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Another example of a client that needs to be handled carefully
+in parallel is the an s3 client like the example earlier in this page.
+A prototype for a worker plugin similar to the database client described
+above has been developed.   You may find a final implementation in
+the latest version of MsPASS.   As is normal this page may be
+behind that development.</p>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="introduction.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Introduction</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../getting_started/mspass_desktop.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Running MsPASS on a Desktop Computer</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspass-services">MsPASS Services</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launching-mspass-services">Launching MsPASS services</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#client-concepts">Client concepts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-mspass-client">The MsPASS Client</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#clients-in-a-parallel-setting">Clients in a Parallel Setting</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/components.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/components.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

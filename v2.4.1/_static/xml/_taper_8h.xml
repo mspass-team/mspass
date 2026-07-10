@@ -1,0 +1,558 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="_taper_8h" kind="file" language="C++">
+    <compoundname>Taper.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">vector</includes>
+    <includes local="no">boost/archive/text_iarchive.hpp</includes>
+    <includes local="no">boost/archive/text_oarchive.hpp</includes>
+    <includes local="no">boost/serialization/base_object.hpp</includes>
+    <includes local="no">boost/serialization/shared_ptr.hpp</includes>
+    <includes local="no">boost/serialization/vector.hpp</includes>
+    <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
+    <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
+    <includedby refid="_c_n_r3_c_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</includedby>
+    <includedby refid="_c_n_r_decon_engine_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNRDeconEngine.h</includedby>
+    <includedby refid="_taper_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h</label>
+        <link refid="_taper_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>mspass/seismic/BasicTimeSeries.h</label>
+        <link refid="_basic_time_series_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>mspass/seismic/CoreSeismogram.h</label>
+        <link refid="_core_seismogram_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>mspass/seismic/Seismogram.h</label>
+        <link refid="_seismogram_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>mspass/seismic/SlownessVector.h</label>
+        <link refid="_slowness_vector_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>mspass/utility/ProcessingHistory.h</label>
+        <link refid="_processing_history_8h_source"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>mspass/utility/SphericalCoordinate.h</label>
+        <link refid="_spherical_coordinate_8h_source"/>
+      </node>
+      <node id="30">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="31">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="32">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="4">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="5">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="6">
+        <label>boost/serialization/base_object.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="39">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="7">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="8">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="41">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="42">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="43">
+        <label>boost/uuid/uuid_serialize.hpp</label>
+      </node>
+      <node id="18">
+        <label>exception</label>
+      </node>
+      <node id="21">
+        <label>fstream</label>
+      </node>
+      <node id="19">
+        <label>iostream</label>
+      </node>
+      <node id="22">
+        <label>list</label>
+      </node>
+      <node id="23">
+        <label>map</label>
+      </node>
+      <node id="12">
+        <label>math.h</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="24">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="25">
+        <label>set</label>
+      </node>
+      <node id="26">
+        <label>sstream</label>
+      </node>
+      <node id="16">
+        <label>string</label>
+      </node>
+      <node id="27">
+        <label>typeinfo</label>
+      </node>
+      <node id="37">
+        <label>unistd.h</label>
+      </node>
+      <node id="3">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h</label>
+        <link refid="_taper_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
+        <link refid="_c_n_r3_c_decon_8h_source"/>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNRDeconEngine.h</label>
+        <link refid="_c_n_r_decon_engine_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h</label>
+        <link refid="_frequency_domain_g_i_d_decon_8h_source"/>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h</label>
+        <link refid="_general_iter_decon_8h_source"/>
+      </node>
+      <node id="5">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h</label>
+        <link refid="_time_domain_g_i_d_decon_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public">mspass::algorithms::BasicTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_linear_taper" prot="public">mspass::algorithms::LinearTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_cosine_taper" prot="public">mspass::algorithms::CosineTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_vector_taper" prot="public">mspass::algorithms::VectorTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_top_mute" prot="public">mspass::algorithms::TopMute</innerclass>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
+    <innernamespace refid="namespacemspass_1_1algorithms">mspass::algorithms</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_TAPER_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_TAPER_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#include<sp/>&lt;math.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_iarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_oarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/base_object.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/shared_ptr.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/vector.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Seismogram.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms<sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23" refid="classmspass_1_1algorithms_1_1_basic_taper" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref><sp/>{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="26" refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4227e073cf362b77e163faea881bb84" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4227e073cf362b77e163faea881bb84" kindref="member">BasicTaper</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kindref="member">head</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" kindref="member">tail</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kindref="member">all</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="32" refid="classmspass_1_1algorithms_1_1_basic_taper_1ac68777236f5c051c487a18ff652420ba" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ac68777236f5c051c487a18ff652420ba" kindref="member">~BasicTaper</ref>()<sp/>{};</highlight></codeline>
+<codeline lineno="34" refid="classmspass_1_1algorithms_1_1_basic_taper_1ab4399e7277aec39a56b017d156838d8b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ab4399e7277aec39a56b017d156838d8b" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>&amp;d)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="36" refid="classmspass_1_1algorithms_1_1_basic_taper_1af7be5cccae05c468002776a4fceaf77a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1af7be5cccae05c468002776a4fceaf77a" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;d)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="38" refid="classmspass_1_1algorithms_1_1_basic_taper_1a1aafe6a155d954150e1105bbf9b9bd66" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a1aafe6a155d954150e1105bbf9b9bd66" kindref="member">enable_head</ref>()<sp/>{<sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kindref="member">head</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;<sp/>};</highlight></codeline>
+<codeline lineno="40" refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4cc68faa949932e653804bfc5db42ce" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4cc68faa949932e653804bfc5db42ce" kindref="member">disable_head</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kindref="member">head</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kindref="member">all</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="45" refid="classmspass_1_1algorithms_1_1_basic_taper_1a04b2cdddaa30789f37be9c6346a3689b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a04b2cdddaa30789f37be9c6346a3689b" kindref="member">enable_tail</ref>()<sp/>{<sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" kindref="member">tail</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;<sp/>};</highlight></codeline>
+<codeline lineno="47" refid="classmspass_1_1algorithms_1_1_basic_taper_1aade23966f66e7d1b741e6e8ee2dbde90" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1aade23966f66e7d1b741e6e8ee2dbde90" kindref="member">disable_tail</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" kindref="member">tail</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kindref="member">all</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="52" refid="classmspass_1_1algorithms_1_1_basic_taper_1a16b1f6b4866b298466e1fd388597d507" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a16b1f6b4866b298466e1fd388597d507" kindref="member">head_is_enabled</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kindref="member">head</ref><sp/>||<sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kindref="member">all</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="59" refid="classmspass_1_1algorithms_1_1_basic_taper_1a02092ec778f1e289956bbfde3eff7bcd" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a02092ec778f1e289956bbfde3eff7bcd" kindref="member">tail_is_enable</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" kindref="member">tail</ref><sp/>||<sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kindref="member">all</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>These<sp/>virtual<sp/>methods<sp/>are<sp/>a<sp/>bit<sp/>of<sp/>a<sp/>design<sp/>flaw<sp/>as<sp/>they<sp/>don&apos;t</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/><sp/>apply<sp/>well<sp/>to<sp/>the<sp/>vector<sp/>taper,<sp/>but<sp/>we<sp/>implement<sp/>them<sp/>there<sp/>to<sp/>just</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"><sp/><sp/>throw<sp/>an<sp/>exception<sp/>*/</highlight></codeline>
+<codeline lineno="69" refid="classmspass_1_1algorithms_1_1_basic_taper_1a55c51763d7c820c6a4595127768e8d5f" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a55c51763d7c820c6a4595127768e8d5f" kindref="member">get_t0head</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="71" refid="classmspass_1_1algorithms_1_1_basic_taper_1ade8769ae7f4508ff3eb71afe057035ac" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ade8769ae7f4508ff3eb71afe057035ac" kindref="member">get_t1head</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>A<sp/>taper<sp/>can<sp/>be<sp/>head,<sp/>tail,<sp/>or<sp/>all.<sp/><sp/>For<sp/>efficiency<sp/>it<sp/>is<sp/>required</highlight></codeline>
+<codeline lineno="75"><highlight class="comment"><sp/><sp/>implementations<sp/>set<sp/>these<sp/>three<sp/>booleans.<sp/><sp/><sp/>head<sp/>or<sp/>tail<sp/>may<sp/>be<sp/>true.</highlight></codeline>
+<codeline lineno="76"><highlight class="comment"><sp/><sp/>all<sp/>means<sp/>a<sp/>single<sp/>function<sp/>is<sp/>needed<sp/>to<sp/>defne<sp/>the<sp/>taper.<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kindref="member">head</ref>;<sp/></highlight></codeline>
+<codeline lineno="78" refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" kindref="member">tail</ref>;<sp/></highlight></codeline>
+<codeline lineno="79" refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kindref="member">all</ref>;<sp/></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">boost::serialization::access;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive<sp/>&amp;ar,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kindref="member">head</ref>;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" kindref="member">tail</ref>;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kindref="member">all</ref>;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="89"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="96" refid="classmspass_1_1algorithms_1_1_linear_taper" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_linear_taper" kindref="compound">LinearTaper</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref><sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper" kindref="compound">LinearTaper</ref>();</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper" kindref="compound">LinearTaper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1head,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1tail,</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0tail);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>&amp;d);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;d);</highlight></codeline>
+<codeline lineno="113" refid="classmspass_1_1algorithms_1_1_linear_taper_1a0b48a3c90385cff894c9c1be8c6f3436" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper_1a0b48a3c90385cff894c9c1be8c6f3436" kindref="member">get_t0head</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t0head;<sp/>};</highlight></codeline>
+<codeline lineno="115" refid="classmspass_1_1algorithms_1_1_linear_taper_1a56c92176f8b7c425c58f11227a216e81" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper_1a56c92176f8b7c425c58f11227a216e81" kindref="member">get_t1head</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t1head;<sp/>};</highlight></codeline>
+<codeline lineno="117" refid="classmspass_1_1algorithms_1_1_linear_taper_1a499085a4672f02cbe889daab211f4ca4" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper_1a499085a4672f02cbe889daab211f4ca4" kindref="member">get_t0tail</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t0tail;<sp/>};</highlight></codeline>
+<codeline lineno="119" refid="classmspass_1_1algorithms_1_1_linear_taper_1aed2b9f6a0a29a592b8ab0d191af5a935" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper_1aed2b9f6a0a29a592b8ab0d191af5a935" kindref="member">get_t1tail</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t1tail;<sp/>};</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,<sp/>t1head,<sp/>t1tail,<sp/>t0tail;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">boost::serialization::access;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive<sp/>&amp;ar,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;boost::serialization::base_object&lt;BasicTaper&gt;(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>t0head;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>t1head;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>t1tail;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>t0tail;</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="132"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="141" refid="classmspass_1_1algorithms_1_1_cosine_taper" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_cosine_taper" kindref="compound">CosineTaper</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref><sp/>{</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper" kindref="compound">CosineTaper</ref>();</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper" kindref="compound">CosineTaper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1head,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1tail,</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0tail);</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>need<sp/>to<sp/>post<sp/>to<sp/>history<sp/>using<sp/>new<sp/>feature*/</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper_1ac9c6bbea89be35e99f72d987d52510d4" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>&amp;d);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper_1ac9c6bbea89be35e99f72d987d52510d4" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;d);</highlight></codeline>
+<codeline lineno="158" refid="classmspass_1_1algorithms_1_1_cosine_taper_1abab71d6fc9bf3e6413c831899f6078ef" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper_1abab71d6fc9bf3e6413c831899f6078ef" kindref="member">get_t0head</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t0head;<sp/>};</highlight></codeline>
+<codeline lineno="160" refid="classmspass_1_1algorithms_1_1_cosine_taper_1af5f878917867d868c49965e92b997664" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper_1af5f878917867d868c49965e92b997664" kindref="member">get_t1head</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t1head;<sp/>};</highlight></codeline>
+<codeline lineno="162" refid="classmspass_1_1algorithms_1_1_cosine_taper_1a594bd7ad57eb9215fbae7a5ce7dbcf66" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper_1a594bd7ad57eb9215fbae7a5ce7dbcf66" kindref="member">get_t0tail</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t0tail;<sp/>};</highlight></codeline>
+<codeline lineno="164" refid="classmspass_1_1algorithms_1_1_cosine_taper_1a3af25f446ce03410487efdf1ca16ecd3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper_1a3af25f446ce03410487efdf1ca16ecd3" kindref="member">get_t1tail</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t1tail;<sp/>};</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,<sp/>t1head,<sp/>t1tail,<sp/>t0tail;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">boost::serialization::access;</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive<sp/>&amp;ar,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;boost::serialization::base_object&lt;BasicTaper&gt;(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>t0head;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>t1head;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>t1tail;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>t0tail;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="177"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="183" refid="classmspass_1_1algorithms_1_1_vector_taper" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_vector_taper" kindref="compound">VectorTaper</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref><sp/>{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper" kindref="compound">VectorTaper</ref>();</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper" kindref="compound">VectorTaper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>taperdata);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper_1a0513879267986e1c1c52e35b3519687b" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>&amp;d);</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper_1a0513879267986e1c1c52e35b3519687b" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;d);</highlight></codeline>
+<codeline lineno="193" refid="classmspass_1_1algorithms_1_1_vector_taper_1aee8397b62578221b5165497286941863" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper_1aee8397b62578221b5165497286941863" kindref="member">disable</ref>()<sp/>{<sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kindref="member">all</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;<sp/>};</highlight></codeline>
+<codeline lineno="195" refid="classmspass_1_1algorithms_1_1_vector_taper_1a942c9e116af34bf2e55a69f4fccc3f85" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper_1a942c9e116af34bf2e55a69f4fccc3f85" kindref="member">enable</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(taper.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kindref="member">all</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="200" refid="classmspass_1_1algorithms_1_1_vector_taper_1a475440fb90c185abd98cde4f70009c7c" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper_1a475440fb90c185abd98cde4f70009c7c" kindref="member">get_taper</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>taper;<sp/>};</highlight></codeline>
+<codeline lineno="202" refid="classmspass_1_1algorithms_1_1_vector_taper_1af4d087c6e3af62c4279e73a843144176" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper_1af4d087c6e3af62c4279e73a843144176" kindref="member">get_t0head</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;get_t0head<sp/>not<sp/>implemented<sp/>for<sp/>VectorTaper&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="207" refid="classmspass_1_1algorithms_1_1_vector_taper_1a3e34ba1539ae7b1567bbe0bbb7a8ec10" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper_1a3e34ba1539ae7b1567bbe0bbb7a8ec10" kindref="member">get_t1head</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;get_t1head<sp/>not<sp/>implemented<sp/>for<sp/>VectorTaper&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/>taper;</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">boost::serialization::access;</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive<sp/>&amp;ar,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;boost::serialization::base_object&lt;BasicTaper&gt;(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>taper;</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="220"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="237" refid="classmspass_1_1algorithms_1_1_top_mute" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref><sp/>{</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref>();</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>type);</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref><sp/>&amp;parent);</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1a2876093ac8e1862b706848170ff5060b" kindref="member">~TopMute</ref>();</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref><sp/>&amp;<ref refid="classmspass_1_1algorithms_1_1_top_mute_1a1e540792dcf890d85dcf762cfde24ee9" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref><sp/>&amp;parent);</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ad573529bb5a0e2eed0a1f8c704b81fd6" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>&amp;d);</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ad573529bb5a0e2eed0a1f8c704b81fd6" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;d);</highlight></codeline>
+<codeline lineno="271" refid="classmspass_1_1algorithms_1_1_top_mute_1a14ab2f6a0d8ca0af6744bd40a608ceaa" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1a14ab2f6a0d8ca0af6744bd40a608ceaa" kindref="member">get_t0</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>taper-&gt;get_t0head();<sp/>};</highlight></codeline>
+<codeline lineno="274" refid="classmspass_1_1algorithms_1_1_top_mute_1aba2e555b9a97ff006033d39d7b31267b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1aba2e555b9a97ff006033d39d7b31267b" kindref="member">get_t1</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>taper-&gt;get_t1head();<sp/>};</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1a3e947b3a9c6098695c60bdf3b559bd18" kindref="member">taper_type</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"></highlight></codeline>
+<codeline lineno="279"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>use<sp/>a<sp/>shared_ptr<sp/>to<sp/>the<sp/>base<sp/>class.<sp/><sp/>That<sp/>allows<sp/>inheritance<sp/>to</highlight></codeline>
+<codeline lineno="281"><highlight class="comment"><sp/><sp/>handle<sp/>the<sp/>actual<sp/>form<sp/>-<sp/>a<sp/>classic<sp/>oop<sp/>use<sp/>of<sp/>a<sp/>base<sp/>class.<sp/>the<sp/>shared_ptr</highlight></codeline>
+<codeline lineno="282"><highlight class="comment"><sp/><sp/>allows<sp/>us<sp/>to<sp/>get<sp/>around<sp/>an<sp/>abstract<sp/>base<sp/>problem.<sp/><sp/><sp/>May<sp/>be<sp/>other<sp/>solutions</highlight></codeline>
+<codeline lineno="283"><highlight class="comment"><sp/><sp/>but<sp/>this<sp/>should<sp/>be<sp/>ok.<sp/><sp/>There<sp/>may<sp/>be<sp/>a<sp/>problem<sp/>in<sp/>parallel<sp/>environment,</highlight></codeline>
+<codeline lineno="284"><highlight class="comment"><sp/><sp/>however,<sp/>as<sp/>not<sp/>sure<sp/>how<sp/>this<sp/>would<sp/>be<sp/>handled<sp/>by<sp/>spark<sp/>or<sp/>dask.<sp/><sp/><sp/>this<sp/>is</highlight></codeline>
+<codeline lineno="285"><highlight class="comment"><sp/><sp/>in<sp/>that<sp/>pickable<sp/>realm.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;BasicTaper&gt;<sp/>taper;</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>I<sp/>tried<sp/>this<sp/>but<sp/>couldn&apos;t<sp/>make<sp/>it<sp/>work.<sp/><sp/><sp/>It<sp/>compiles<sp/>but<sp/>dies<sp/>at</highlight></codeline>
+<codeline lineno="288"><highlight class="comment"><sp/><sp/>runtime<sp/>with<sp/>mysterious<sp/>errors<sp/>for<sp/>me.<sp/><sp/><sp/>Internet<sp/>conversations<sp/>suggest</highlight></codeline>
+<codeline lineno="289"><highlight class="comment"><sp/><sp/>shared_ptr<sp/>data<sp/>with<sp/>polymorphic<sp/>types<sp/>like<sp/>this<sp/>is<sp/>problematic.</highlight></codeline>
+<codeline lineno="290"><highlight class="comment"><sp/><sp/>For<sp/>mspass<sp/>the<sp/>python<sp/>bindings<sp/>with<sp/>pickle<sp/>are<sp/>more<sp/>what<sp/>is<sp/>needed<sp/>anyway</highlight></codeline>
+<codeline lineno="291"><highlight class="comment"><sp/><sp/>so<sp/>serialization<sp/>of<sp/>TopMute<sp/>is<sp/>purely<sp/>done<sp/>in<sp/>the<sp/>pybind11<sp/>wrappers.</highlight></codeline>
+<codeline lineno="292"><highlight class="comment"><sp/><sp/>Turns<sp/>out<sp/>to<sp/>be<sp/>easy<sp/>because<sp/>the<sp/>TopMute<sp/>taper<sp/>is<sp/>actually<sp/>define<sp/>donly</highlight></codeline>
+<codeline lineno="293"><highlight class="comment"><sp/><sp/>by<sp/>two<sp/>paramters<sp/>(t0head<sp/>and<sp/>t1head).</highlight></codeline>
+<codeline lineno="294"><highlight class="comment"><sp/><sp/>friend<sp/>class<sp/>boost::serialization::access;</highlight></codeline>
+<codeline lineno="295"><highlight class="comment"><sp/><sp/>template&lt;class<sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="296"><highlight class="comment"><sp/><sp/>void<sp/>serialize(Archive<sp/>&amp;<sp/>ar,<sp/>const<sp/>unsigned<sp/>int<sp/>version)</highlight></codeline>
+<codeline lineno="297"><highlight class="comment"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="298"><highlight class="comment"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>taper;</highlight></codeline>
+<codeline lineno="299"><highlight class="comment"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="300"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="302"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="303"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>End<sp/>guard</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,1310 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CRUD Operations in MsPASS &#8212; MsPASS 2.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=e9ebdb8f"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/CRUD_operations';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />
+    <link rel="prev" title="Database Concepts" href="database_concepts.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">CRUD Operations in MsPASS</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="crud-operations-in-mspass">
+<span id="crud-operations"></span><h1>CRUD Operations in MsPASS<a class="headerlink" href="#crud-operations-in-mspass" title="Link to this heading">#</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>The acronym CRUD is often used as a mnemonic in books and online tutorials
+teaching database concepts.  CRUD stands for Create-Read-Update-Delete.
+It is a useful mnemonic because it summarizes the four main things any database system
+must accomplish cleanly.  This section is organized into subsections on
+each of the topics defined by CRUD.  At the end of this section we
+summarize some common options in CRUD operations.</p>
+<p>The most common database operations are defined as methods in a class
+we give the obvious name Database.  Most MsPASS jobs need to the have following
+incantation at the top of the python job script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="s1">&#39;database_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where the second argument on Database, <code class="code docutils literal notranslate"><span class="pre">'database_name'</span></code>,
+is a name you chose for the dataset you are working with.
+For the remainder of this section we will use the symbol “db” as
+defined, but as in any programming language you need to recognize the
+symbol can be anything you as the user find sensible. “db” is just our
+choice.</p>
+<p>Unlike relational database systems, a schema is not required by
+MongoDB.   However, for reasons outlined in the section
+<a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">Data Object Design Concepts</span></a> a schema feature
+was added as a component of MsPASS.  We emphasize the
+schema in this design, however, can be thought of as more
+like guidelines than rigid rules.  The default waveform collection
+for most examples is <code class="code docutils literal notranslate"><span class="pre">wf_TimeSeries</span></code>.  Workflows that handle
+three-component bundles can use the same <code class="code docutils literal notranslate"><span class="pre">Database</span></code> handle and
+pass <code class="code docutils literal notranslate"><span class="pre">collection=&quot;wf_Seismogram&quot;</span></code> to the read and write methods
+where that collection is required.</p>
+</section>
+<section id="create">
+<h2>Create<a class="headerlink" href="#create" title="Link to this heading">#</a></h2>
+<p>We tag all methods of the <code class="code docutils literal notranslate"><span class="pre">Database</span></code> class that do “Create”
+operations with the synonymous word “save”.   Here we list the most
+important save methods with a brief description of each method.  Consult
+the docstring pages for detailed and most up to date usage:</p>
+<ol class="arabic">
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data()</span></code></a> is the primary
+waveform writer.  The first argument can be any of the core seismic
+data objects defined in MsPASS:  <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>, <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>, or
+<code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.  Here is an example usage for a single
+miniseed trace:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example assumes filename contains one channel of data in</span>
+<span class="c1"># miniseed format</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;testfile.msd&#39;</span>
+<span class="n">dstrm</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;MSEED&#39;</span><span class="p">)</span>
+<span class="c1"># A stream is a list of obspy Trace objects - get the first</span>
+<span class="n">dtr</span> <span class="o">=</span> <span class="n">dstrm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># This mspass function converts a Trace to our native TimeSeries</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">dtr</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> stores all Metadata except those linked to
+normalized collections (<code class="code docutils literal notranslate"><span class="pre">source</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and/or
+<code class="code docutils literal notranslate"><span class="pre">site</span></code>) with no safety checks.  We discuss additional common
+options in a later section.  The default return value is the
+<code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> or list of <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> values for the waveform
+documents it writes.  Set <code class="code docutils literal notranslate"><span class="pre">return_data=True</span></code> when an
+intermediate save needs the updated data object returned to the workflow.</p>
+<p>When <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> is passed an ensemble, it writes each live member
+as an atomic datum.  Ensemble Metadata are copied to each member before
+the member is saved.  A common pattern for miniseed data is to bundle
+single-component data into three-component seismograms before saving:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># d is a TimeSeriesEnsemble loaded earlier in the workflow.</span>
+<span class="n">d3c</span> <span class="o">=</span> <span class="n">bundle_seed_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d3c</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.bundle_seed_data" title="mspasspy.algorithms.bundle.bundle_seed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">bundle_seed_data()</span></code></a> for details
+on the bundling step.  Older ensemble-specific write helpers are
+backward-compatibility wrappers; new code should use <code class="code docutils literal notranslate"><span class="pre">save_data</span></code>.</p>
+</li>
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_catalog" title="mspasspy.db.database.Database.save_catalog"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_catalog()</span></code></a> should be
+viewed mostly as a convenience method to build
+the <code class="code docutils literal notranslate"><span class="pre">source</span></code> collection from QUAKEML data downloaded from FDSN data
+centers via obspy’s web services functions.   <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> can be
+thought of as a converter that translates the contents of a QUAKEML
+file or string for storage as a set of MongoDB documents in the <code class="code docutils literal notranslate"><span class="pre">source</span></code>
+collection.  We used obspy’s <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code> object as an intermediary to
+avoid the need to write our own QUAKEML parser.   As with
+<code class="code docutils literal notranslate"><span class="pre">save_data</span></code>
+the easiest way to understand the usage would be this example derived from
+our <em>getting_started</em> tutorial.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;IRIS&quot;</span><span class="p">)</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2011-03-11T05:46:24.0&#39;</span><span class="p">)</span>
+<span class="n">starttime</span> <span class="o">=</span> <span class="n">t0</span><span class="o">-</span><span class="mf">3600.0</span>
+<span class="n">endtime</span> <span class="o">=</span> <span class="n">t0</span><span class="o">+</span><span class="p">(</span><span class="mf">7.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">24.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">3600.0</span><span class="p">)</span>
+<span class="n">lat0</span> <span class="o">=</span> <span class="mf">38.3</span>
+<span class="n">lon0</span> <span class="o">=</span> <span class="mf">142.5</span>
+<span class="n">minlat</span> <span class="o">=</span> <span class="n">lat0</span><span class="o">-</span><span class="mf">3.0</span>
+<span class="n">maxlat</span> <span class="o">=</span> <span class="n">lat0</span><span class="o">+</span><span class="mf">3.0</span>
+<span class="n">minlon</span> <span class="o">=</span> <span class="n">lon0</span><span class="o">-</span><span class="mf">3.0</span>
+<span class="n">maxlon</span> <span class="o">=</span> <span class="n">lon0</span><span class="o">+</span><span class="mf">3.0</span>
+<span class="n">minmag</span> <span class="o">=</span> <span class="mf">6.5</span>
+<span class="n">cat</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_events</span><span class="p">(</span><span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">,</span>
+                        <span class="n">minlatitude</span><span class="o">=</span><span class="n">minlat</span><span class="p">,</span> <span class="n">minlongitude</span><span class="o">=</span><span class="n">minlon</span><span class="p">,</span>
+                        <span class="n">maxlatitude</span><span class="o">=</span><span class="n">maxlat</span><span class="p">,</span> <span class="n">maxlongitude</span><span class="o">=</span><span class="n">maxlon</span><span class="p">,</span>
+                                <span class="n">minmagnitude</span><span class="o">=</span><span class="n">minmag</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">save_catalog</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This particular example pulls 11 large aftershocks of the 2011 Tohoku
+Earthquake.</p>
+</li>
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_inventory" title="mspasspy.db.database.Database.save_inventory"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_inventory()</span></code></a> is similar
+in concept to <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code>, but instead of
+translating data for source information it translates information to
+MsPASS for station metadata.  The station information problem is slightly
+more complicated than the source problem because of an implementation
+choice we made in MsPASS.   That is, because a primary goal of MsPASS
+was to support three-component seismograms as a core data type, there
+is a disconnect in what metadata is required to support a TimeSeries
+versus a Seismogram object.   We handle this by defining two different,
+but similar MongoDB collections:  <code class="code docutils literal notranslate"><span class="pre">channel</span></code> for TimeSeries data and
+<code class="code docutils literal notranslate"><span class="pre">site</span></code> for Seismogram objects.  The name for this method contains the
+keyword “inventory” because like <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> we use an obspy
+python class as an intermediary.  The reasons is similar; obspy had
+already solved the problem of downloading station metadata from
+FDSN web services with their
+<a class="reference external" href="https://docs.obspy.org/packages/obspy.core.inventory.html">read_inventory function</a>.
+As with <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> <code class="code docutils literal notranslate"><span class="pre">save_inventory</span></code> can be thought of as a translator
+from data downloaded with web services to the form needed in MsPASS.
+It may be helpful to realize that Obspy’s Inventory object is actually
+a python translation of the data structure defined by the
+<a class="reference external" href="https://www.fdsn.org/xml/station/">FDSN StationXML</a>
+standardized format defined for web service requests for station metadata.
+Like <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> an example from the getting started tutorial
+should be instructive:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inv</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_stations</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="s1">&#39;TA&#39;</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">save_inventory</span><span class="p">(</span><span class="n">inv</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This example extracts all stations with the “network code” of “TA”
+(the Earthscope transportable array).  A complication of station
+metadata that differs from source data is that station metadata is
+time variable.  The reason is that sensors change, three-component sensors
+are reoriented, digitizers change, etc.  That means station metadata
+have a time span for which they are valid that has to be handled to
+assure we associate the right metadata with any piece of data.</p>
+<p>In MsPASS we translate the StationXML data to documents stored in two
+collections:  <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">channel</span></code>.  Both collections contain the
+attributes <code class="code docutils literal notranslate"><span class="pre">starttime</span></code> and <code class="code docutils literal notranslate"><span class="pre">endtime</span></code> that define the time interval for which
+that document’s data are valid.  <code class="code docutils literal notranslate"><span class="pre">site</span></code> is simpler.  It mainly contains
+station location data defined with three standard attribute keys:
+<code class="code docutils literal notranslate"><span class="pre">lat</span></code>, <code class="code docutils literal notranslate"><span class="pre">lon</span></code>, and <code class="code docutils literal notranslate"><span class="pre">elev</span></code>.  We store all geographic coordinates (i.e. lat and lon)
+as decimal degrees and elevation (elev) in km.   The <code class="code docutils literal notranslate"><span class="pre">channel</span></code> collection
+contains station location information but it also contains two additional
+important pieces of metadata:  (1) orientation information defined by
+the keys <code class="code docutils literal notranslate"><span class="pre">hang</span></code> and <code class="code docutils literal notranslate"><span class="pre">vang</span></code>, and (2) full response information.
+We store response data in MongoDB as a pickle image of the data stored
+in the StationXML data as translated by obspy.   In the read section
+below we describe how to retrieve response data from <code class="code docutils literal notranslate"><span class="pre">channel</span></code>.</p>
+<p>Finally, we note a key feature of the <code class="code docutils literal notranslate"><span class="pre">save_inventory</span></code> method:
+it enforces a seed convention to avoid saving duplicate documents.
+As noted earlier the SEED standard uses the keys we call net, sta, chan,
+and loc along with a time interval to define a unique block of
+receiver metadata.   The <code class="code docutils literal notranslate"><span class="pre">save_inventory</span></code> method enforces
+the unique combination of these keys in a save.  It always will
+refuse to add an entry it interprets as a pure duplicate document.
+If you need to modify an existing site or channel
+collection that has invalid documents you will need to write a custom function to override that
+behaviour or rebuild the collection as needed with web services.</p>
+</li>
+</ol>
+</section>
+<section id="read">
+<h2>Read<a class="headerlink" href="#read" title="Link to this heading">#</a></h2>
+<p>The Read operation is the inverse of save (create).  The core reader was
+designed to simplify the process of reading the core data types of MsPASS:
+<code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>, <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>, and
+<code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.  As with the save operators we discuss here
+the key methods, but refer the reader to the sphinx documentation for full
+usage.</p>
+<ol class="arabic">
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data()</span></code></a> is the core
+waveform reader.  Its required first argument can be any of the
+following:</p>
+<ol class="arabic simple">
+<li><p>A MongoDB <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code>.  This reads one atomic datum from the
+waveform collection selected by the <code class="code docutils literal notranslate"><span class="pre">collection</span></code> argument.
+It is convenient but slower than cursor-driven reads because it
+requires an extra database query per datum.</p></li>
+<li><p>A MongoDB document represented as a python <code class="code docutils literal notranslate"><span class="pre">dict</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> object.  This is the preferred serial pattern
+when iterating over a MongoDB cursor.</p></li>
+<li><p>A <code class="code docutils literal notranslate"><span class="pre">pymongo.cursor.Cursor</span></code>.  This reads all documents returned
+by the cursor and constructs a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>, depending on the selected collection.</p></li>
+</ol>
+<p>The most common serial pattern is to iterate over a cursor and pass
+each document to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="n">Some</span> <span class="n">MongoDB</span> <span class="n">query</span> <span class="nb">dict</span> <span class="n">entry</span><span class="o">...</span><span class="p">}</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use <code class="code docutils literal notranslate"><span class="pre">collection=&quot;wf_Seismogram&quot;</span></code> when reading three-component
+seismograms, or another waveform collection name such as
+<code class="code docutils literal notranslate"><span class="pre">wf_miniseed</span></code> when appropriate.</p>
+<p>The data objects in MsPASS are stored internally as C++ objects with
+multiple elements illustrated in the figure below.   Although these
+objects should be thought of as a single entity the individual
+parts are handled differently in reading because they define different concepts
+and are subject to different read, write, and storage rules.
+<a class="reference internal" href="#crud-operations-figure1"><span class="std std-numref">Fig. 13</span></a> illustrates this fragmentation:</p>
+<figure class="align-center" id="id1">
+<span id="crud-operations-figure1"></span><a class="reference internal image-reference" href="../_images/CRUD_operations_figure1.png"><img alt="../_images/CRUD_operations_figure1.png" src="../_images/CRUD_operations_figure1.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 13 </span><span class="caption-text">Schematic diagram of how different parts of a data object are handled.
+The red box around the center of the figure shows a schematic of the
+data components when a data object is constructed in memory.  The
+boxes in the right-hand (black) box illustrate that the different
+pieces of the object are normally stored in different places.
+This example shows all the components stored within MongoDB
+(the black box), but we note sample data may also be stored as
+files in a file system or in cloud containers.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The key point of this figure is that the waveform data is treated differently
+from the Metadata and two auxiliary items we call ProcessingHistory and the
+error log (elog).  Waveform data is currently stored either internally in
+MongoDB’s gridfs storage or in external files.  Documents in the wf collection for
+the data type being read (wf_TimeSeries or wf_Seismogram) contain only
+data we store as Metadata.  A more extensive discussion of Metadata and
+how we use it can be found <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">here</span></a>.
+That section also gives details about ProcessingHistory and the error
+log and the reasons they are part of MsPASS.</p>
+<p>By default <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> reads Metadata in what we call “promiscuous” mode.
+That means it takes in all metadata stored in the wf collection at which
+it is is pointed and loads the results into the objects Metadata container
+with no type checking or filtering.  Alternatives are “cautious”
+and “pedantic”.   Both of the later enforce the type and name constraints defined
+by the schema.   The difference is that in “pedantic” mode any
+conflicts in data type stored versus what is expected will cause the
+return to be marked dead.  In “cautious” mode the reader will attempt
+to convert any mismatched types and mark the return dead only if the
+conversion is not possible (e.g. a string like “xyz” cannot normally
+be converted to an integer and a python list cannot be converted to
+a float.)  Guidelines for how to use these different modes are:</p>
+<ol class="arabic simple">
+<li><p>Use “promiscuous” mode when the wf collection to be read is known
+to be clean.  That mode is the default because it is faster to
+run because all the safeties are bypassed.  The potential cost is that
+some members of the data set could be killed on input.
+That potential problem can normally be eliminated by running the
+<code class="code docutils literal notranslate"><span class="pre">clean</span></code> method described in a section below.</p></li>
+<li><p>Use “cautious” for data saved without an intervening <code class="code docutils literal notranslate"><span class="pre">clean</span></code>
+operation, especially if the workflow contains an experimental
+algorithm.</p></li>
+<li><p>The “pedantic” mode is mainly of use for data export where a
+type mismatch could produce invalid data required by another package.</p></li>
+</ol>
+<p>Passing a cursor directly to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> constructs an ensemble.
+The example code below assumes the variable <code class="code docutils literal notranslate"><span class="pre">source_id</span></code> was
+defined earlier, is a valid <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> in the <code class="code docutils literal notranslate"><span class="pre">source</span></code>
+collection, and has been cross-referenced into <code class="code docutils literal notranslate"><span class="pre">wf_TimeSeries</span></code>.
+Notice we include a size check with the MongoDB function
+<code class="code docutils literal notranslate"><span class="pre">count_documents</span></code> to impose constraints on the query. That is
+always good practice.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}</span>
+<span class="n">ndocs</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">ndocs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No data found for source_id = &quot;</span><span class="p">,</span> <span class="n">source_id</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">ndocs</span> <span class="o">&gt;</span> <span class="n">TOOBIG</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of documents matching source_id=&quot;</span><span class="p">,</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">&quot; is &quot;</span><span class="p">,</span> <span class="n">ndocs</span><span class="p">,</span>
+          <span class="s2">&quot;Exceeds the internal limit on the ensemble size=&quot;</span><span class="p">,</span> <span class="n">TOOBIG</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>A workflow that needs to read and process a large data sets in
+a parallel environment should use
+the parallel equivalent of <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> called
+<a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data" title="mspasspy.io.distributed.read_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a>.  MsPASS
+supports two parallel frameworks called
+SPARK and DASK.   Both abstract the concept of the parallel data set in
+a container they call an RDD and Bag respectively.   Both are best thought
+of as a handle to the entire data set that can be passed between
+processing functions.   The <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> method is critical
+to improve performance of a parallel workflow.  The use of storage
+in MongoDB’s gridfs in combination with SPARK or DASK
+are known to help reduce io bottlenecks
+in a parallel environment.  SPARK and DASK have internal mechanisms to schedule
+IO to optimize throughput, particularly with reads made through the gridfs
+mechanism we use as the default data storage.  <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code>
+provides the mechanism to accomplish that.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> is not a method of <code class="code docutils literal notranslate"><span class="pre">Database</span></code>; it
+is a separate function in <code class="code docutils literal notranslate"><span class="pre">mspasspy.io.distributed</span></code>.  Its first
+argument can be a <code class="code docutils literal notranslate"><span class="pre">Database</span></code> handle, a dataframe representation of
+a waveform collection, or a list of ensemble-defining queries.  The
+common pattern for reading a subset of a waveform collection is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="n">Some</span> <span class="n">MongoDB</span> <span class="n">query</span> <span class="nb">dict</span> <span class="n">entry</span><span class="o">...</span><span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">,</span>
+    <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The output is a Dask bag by default or a Spark RDD when
+<code class="code docutils literal notranslate"><span class="pre">scheduler=&quot;spark&quot;</span></code>.  See <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a>,
+<a class="reference internal" href="parallel_io.html#parallel-io"><span class="std std-ref">Parallel IO in MsPASS</span></a>, and
+<a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data" title="mspasspy.io.distributed.read_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a> for more
+complete parallel workflow examples.</p>
+</li>
+</ol>
+</section>
+<section id="update">
+<h2>Update<a class="headerlink" href="#update" title="Link to this heading">#</a></h2>
+<p>Because of the way we stored seismic data in MsPASS (see figure above)
+the concept of an update makes sense only for Metadata.
+The update concept makes no sense for ProcessingHistory and error log data.
+Hence, the history and elog collections, that hold that data, should never
+be updated.   No MsPASS supported algorithms will do that, but we
+emphasize that constraint because you as the owner of the dataset could
+(incorrectly) modify history or elog with calls to MongoDB’s api.</p>
+<p>As noted elsewhere Metadata loaded with data objects in MsPASS can come
+from one of two places:  (1) attributes loaded directly with the atomic data from
+the unique document in a wf collection with which that data is associated,
+and (2) “normalized” data loaded through a cross reference ID from one of the
+standardized collection in MsPASS (currently <code class="code docutils literal notranslate"><span class="pre">site</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and <code class="code docutils literal notranslate"><span class="pre">source</span></code>).
+In a waveform processing job (i.e. python driver script) the metadata
+extracted from normalized collections should be treated as immutable.
+In fact, when schema validation tests are enabled for save operations
+(see above) any accidental changes to any normalized attributes will not be
+saved but will be flagged with error log entries during the save.
+In most cases regular attributes from normalized data (e.g. source_lat and
+source_lon used for an earthquake epicenter) are silently ignored in an
+update.  Trying to alter a normalization id field (i.e. source_id, site_id,
+or channel_id) is always treated as a serious error that invalidates the
+data.  The following two rules summarize these idea in a more concise form:</p>
+<ul class="simple">
+<li><p><strong>Update Rule 1</strong>:  Processing workflows should never alter any database
+attribute marked readonly or loaded from a normalization collection.</p></li>
+<li><p><strong>Update Rule 2</strong>:  Processing workflows must never alter a cross-referencing
+id field.   Any changes to cross-referencing ids defined in the schema will
+cause the related data to be marked dead.</p></li>
+</ul>
+<p>These rules apply to both updates and writes.  How violations of the rules
+are treated on writes or updates depends on the setting of the <code class="code docutils literal notranslate"><span class="pre">mode</span></code> argument
+common to all update and write methods described in more detail in a section
+below.</p>
+</section>
+<section id="delete">
+<h2>Delete<a class="headerlink" href="#delete" title="Link to this heading">#</a></h2>
+<p>A delete operation is much more complicated in MsPASS than what you would
+find as a type example in any textbook on database theory.  In a
+relational system delete normally means removing a single tuple.
+In MongoDB delete is more complicated because it is
+common to delete only a subset of the contents of a given document (the equivalent
+of a relational tuple).  The figure above shows that with MsPASS we have
+the added complexity of needing to handle data spread across multiple MongoDB
+collections and (sometimes) external files.  The problem with connected
+collections is the same as that a relational system has to handle with
+multiple relations that are commonly cross-referenced to build a
+relational join.  The external file problem is familiar to any user
+that has worked with a CSS3.0 relational database schema like Antelope.</p>
+<p>In MsPASS we adopt these rules to keep delete operations under control.</p>
+<ul class="simple">
+<li><p><strong>Delete Rule 1</strong>:  Normalization collection documents should never be
+deleted during a processing run.  Creation of these collections should
+always be treated as a preprocessing step.</p></li>
+<li><p><strong>Delete Rule 2</strong>:  Any deletions of documents in normalization collections should
+be done through one of the MongoDB APIs.  If such housecleaning is
+needed it is the user’s responsibility to assure this does not leave
+unresolved cross-references to waveform data.</p></li>
+<li><p><strong>Delete Rule 3</strong>:  Deletes of waveform data, wf collections, history,
+and error log data are best done through the mspass Database
+handle.  Custom cleanup is an advanced topic that must be handled
+with caution.</p></li>
+</ul>
+<p>We trust rules 1 and 2 require no further comment.  Rule 3, however,
+needs some clarification to understand how we handle deletes.
+A good starting point is to look at the signature of the simple core delete
+method of the Database class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">delete_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">id</span><span class="p">,</span><span class="n">remove_unreferenced_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">clear_elog</span><span class="o">=</span><span class="kc">False</span><span class="p">):)</span>
+</pre></div>
+</div>
+<p>As with the read methods id is the ObjectID of the wf collection document
+that references the data to be deleted.
+Similarly, the idea of the <code class="code docutils literal notranslate"><span class="pre">clear_history</span></code> and <code class="code docutils literal notranslate"><span class="pre">clear_elog</span></code>
+may be apparent from the name.  When true all documents linked to the
+waveform data being deleted in the history and elog collections (respectively)
+will also be deleted.  If either are false, debris can be left behind
+in the elog and history collections.  On the other hand, setting either
+true will result in a loss of information that might be needed to address
+problems during processing.  Furthermore, both are only relevant to
+fully or partially processed data.   In general, we recommend the default
+for any cleanups applied within a workflow.  Set clear_elog true only in
+post processing cleanup after you are confident there are not serious
+errors that need to be traced.  Set clear_history True only if you have
+no interest in retaining the object level history.  The default is True
+because we view object level history preservation as a last step to
+provide a mechanism for others to reproduce your work.</p>
+<p>The main complexity in this method is behind the boolean argument with the name
+<code class="code docutils literal notranslate"><span class="pre">remove_unreferenced_files</span></code>.  First, recognize this argument is completely
+ignored if the waveform data being referenced is stored internally in
+MongoDB in the gridfs file system.  In that situation delete_data
+will remove the sample data as well as the document in wf that id defines.
+The complexity enters if the data are stored as external files.  The
+atomic delete_data method of Database is an expensive operation that should be
+avoided within a workflow or on large datasets.  The reason is that
+each call for deleting an atomic object (defined by its id) requires a
+second query to the wf collection involved to search for any other
+data with an exact match to two attributes we used to define a
+single data file:  <code class="code docutils literal notranslate"><span class="pre">dir</span></code> which is a directory name and <code class="code docutils literal notranslate"><span class="pre">dfile</span></code> which is the
+name of the file at leaf node of the file system tree.  (CSS3.0 users
+are familiar with these attribute names.  We use the same names as the concept here
+is identical to the CSS3.0’s use.)  Only when the secondary query finds
+no matching values for <code class="code docutils literal notranslate"><span class="pre">dir</span></code> and <code class="code docutils literal notranslate"><span class="pre">dfile</span></code> will the file be deleted.
+You should recognize that if, as is strongly advised, data are organized in
+a smaller number of larger files deletes of this kind can leave a lot of
+debris.   For example, it is easy to produce examples where deleting thousands of
+files in a dataset with millions of files removes few if any files.  On the
+other hand, the common old SAC model of one waveform per file is an abomination
+for storing millions of waveforms on any HPC system.   If your application
+requires frequent delete operations for cleanup during a workflow
+we strongly advise you store all your data with the
+gridfs option.</p>
+</section>
+<section id="key-io-concepts">
+<h2>Key IO Concepts<a class="headerlink" href="#key-io-concepts" title="Link to this heading">#</a></h2>
+<section id="mspass-chemistry">
+<h3>MsPASS Chemistry<a class="headerlink" href="#mspass-chemistry" title="Link to this heading">#</a></h3>
+<p>In this section we expand on some concepts the user needs to understand
+in interacting with the io system in MsPASS.  If we repeat things it means
+they are important, not that we were careless in writing this document.</p>
+<p>It might be useful to think of data in MsPASS with an analogy from
+chemistry:  Ensemble data are analogous to molecules make up of a
+chain of atoms, the atoms are our “Atomic” data objects (TimeSeries or
+Seismogram objects), and each atom can be broken into a set of subatomic
+particles.  The figure above illustrates the subatomic idea visually.
+We call these “subatomic particles”
+Metadata, waveform data, error log, and (processing) history.  The subatomic
+particle have very different properties.</p>
+<ol class="arabic simple">
+<li><p><em>Metadata</em> are generalized header data.  Our Metadata concept maps closely
+to the concepts of a python dict.  There are minor differences described
+elsewhere.  For database interaction the most important concept is that
+Metadata, like a dict, is a way to index a piece of data with a name-value
+pair.   A fundamental reason MongoDB was chosen for data management in
+MsPASS is that a MongoDB document maps almost exactly into a python dict
+and by analogy our Metadata container.</p></li>
+<li><p><em>waveform data</em> are the primary data MsPASS was designed to support.
+Waveform data is the largest volume of information, but is different in
+that it has a more rigid structure;  TimeSeries waveform data are universally
+stored in memory as a vector, and Seismogram data are most rationally (although not
+universally) stored as a matrix.  All modern computer systems have
+very efficient means of moving contiguous blocks of data from storage to
+memory so reading waveform data is a very different problem than
+reading Metadata when they are fragmented as in MsPASS. Note that
+traditional waveform handling uses a fixed format with a header and
+data section to exploit the efficiency of reading contiguous memory blocks.
+That is why traditional formats like SAC and SEGY have a fixed header/data
+sections that define “the data”.   To make MsPASS generic that paradigm
+had to be broken so it is important to recognize in MsPASS
+waveform data are completely disaggregated from the other data components
+we use for defining our data objects.</p></li>
+<li><p><em>error log</em> data has yet another fundamentally different structure.
+First of all, our normal goal in any processing system is to minimize
+the number of data objects that have any error log entries at all.
+After all, an error log entry means something may be wrong that
+invalidated the data or make the results questionable.  We structure
+error logs internally as a linked list.   There is an order because
+multiple errors define a chain in the order they were posted.   The order,
+however, is of limited use.  What is important in a processing workflow is
+that nonfatal errors can be posted to the error log and are accumulated
+as the data move through a processing chain.  That means all log entries
+must make it clear what algorithm posted the error.  We handle that
+by having all MsPASS supported processing functions post error messages
+that have a unique tag back to the process that generated them.</p></li>
+<li><p><em>processing history</em> is an optional component of MsPASS processing that
+is designed to preserve the sequence of data processing steps required to
+produce a processed waveform saved by the system.  The details of the
+data structures used to preserve that history is a lengthy topic best
+discussed elsewhere.  For this section the key point is that preserving
+the history chain is an optional save parameter.  Whenever a save operation
+for history is initiated the accumulated history chain is dumped to
+the database, the history chain container is cleared, and then redefined
+with a hook back to the data that was just saved.</p></li>
+</ol>
+<p>In MsPASS Metadata are further subdivided into three additional subsets
+that are handled differently through the schema definition:</p>
+<ol class="arabic simple">
+<li><p>An attribute can be marked read-only in the schema.   As the
+name implies that means they are never expected to be altered in a
+workflow.</p></li>
+<li><p>A special form of read-only attributes are attributes loaded by
+readers from normalized collections.  Such attributes are never saved
+by atomic object writers and the normalized collection (i.e. source, site,
+and channel) are always treated as strictly read only.</p></li>
+<li><p>Normalization requires a cross-referencing method.   In MsPASS we
+normally uses the ObjectID of the document in the normalizing collection
+and store that attribute using a key with a common structure:
+<code class="code docutils literal notranslate"><span class="pre">collection_id</span></code> where “collection” is a variable and “_id” is literal.
+(e.g. the linking key for the source collection is “source_id”).
+We use that approach because in MongoDB an ObjectID is guaranteed to
+provide a unique index.   That allows the system be more generic.
+Hence, unlike FDSN data centers that depend upon the SEED format in
+MsPASS net, sta, chan, loc (the core miniseed keys)
+are baggage for joining the site or channel
+collections to a set of waveform data.  We have functions for
+linking seed data with net, sta, chan, and loc keys to build links
+but the links are still best defined by ObjectIDs.   An example of why this
+is more generic is to contrast SEED data to something like a CMP
+reflection data set.  In a CMP survey geophone locations are never
+given names but are indexed by something else like a survey flag
+position.   We support CMP data with the same machinery as SEED
+data because the link is through the ObjectID.  The process of
+defining the geometry (site and/or channel) just requires a different
+cross-referencing algorithm. Because of their central role in
+providing such cross references a normalization id is treated
+as absolutely immutable in a workflow.  If a writer detects a linking
+id was altered the datum with which it is associated will be marked
+bad (dead) and the waveform data will not be saved.</p></li>
+</ol>
+</section>
+<section id="save-concepts">
+<h3>Save Concepts<a class="headerlink" href="#save-concepts" title="Link to this heading">#</a></h3>
+<p>Waveform save methods begin with this axiom:  a save operation should
+never abort for anything but a system error.   That means the definition of
+success is not black and white.  There are a range of known and probably
+as yet unknown ways data can acquire inconsistencies that are problems of
+varying levels of severity.  Here is the range of outcomes in increasing
+order severity:</p>
+<ol class="arabic simple">
+<li><p>No problems equal to complete success.</p></li>
+<li><p>Problems that could be repaired automatically.  Such errors always
+generate error log entries, but the errors are judged to
+be harmless.   A good example is automatic type conversion from an
+integer to a floating point number.</p></li>
+<li><p>Errors that are recoverable but leave anomalies in the database.
+An example is the way read_only data and normalized attributes are handled if
+the writer detects that they have changed in the workflow.  When that
+happens the revised data are saved to the related wf collection with a
+an altered key and a more serious error is logged.</p></li>
+<li><p>Unrecoverable MsPASS errors that might be called an unforgivable sin.
+At present the only unforgivable sin is changing a cross-referencing id.
+If a writer detects that cross-referencing ObjectID has been altered the
+data will be marked dead and the Metadata document will be written to
+a special collection called “graveyard”.</p></li>
+</ol>
+<ol class="arabic simple" start="4">
+<li><p>Unrecoverable (fatal) errors will abort a workflow.   At present that
+should only happen from system generated errors that throw an
+unexpected exception in python.   If you encounter any errors that
+causes a job to abort, the standard python handlers should post an
+informative error.  If you find the error should be recoverable, you
+can and should write a python error handler by surrounding the problem
+section with a <em>try-except</em> block.</p></li>
+</ol>
+<p>Save operations by default apply only limited safeties defined by items 3-4
+above.  Those are all required because if they were ignored the database
+could be corrupted.   Safeties defined by item 2 are optional to make save
+operations faster, although users are warned we may change that option
+as we acquire more timing data.</p>
+<p>In a save operation error log data is always saved.   The log entries are
+linked to wf collections with another ObjectID with the standard naming
+convention for cross-reference keys.  That is, wf_TimeSeries_id and
+wf_Seismogram_id for TimeSeries and Seismogram data respectively.</p>
+<p>Data marked dead are handled specially.  For such data the sample data will be
+throw away.  The Metadata for dead data are saved in the elog collection
+document associated with the datum as a subdocument accessible with the
+key “tombstone”.  That provides a simple query mechanism to
+show only the most serious errors from a processing run.   Specifically,
+this code fragment will print all error messages associated with
+dead data with a crude tag of seed net, sta, starttime before each
+list of elog messages:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This needs to be checked for correctness - done while off the grid</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;$def&#39;</span> <span class="p">:</span> <span class="s1">&#39;tombstone&#39;</span><span class="p">}</span>
+<span class="n">cursor</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+  <span class="n">wfmd</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;tombstone&#39;</span><span class="p">]</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error log contents for this Seismogram marked dead:&#39;</span><span class="p">,</span>
+     <span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">],</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">],</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;startime&#39;</span><span class="p">])</span>
+  <span class="n">err</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;logdata&#39;</span><span class="p">]</span>
+  <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">err</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note the above is minimal to be concise.  A good report would contain
+additional entries from the tombstone contents and additional components of
+the container defined the symbol “e”.</p>
+<p>Saving history data is optional.  When enabled the history chain contents
+are dumped to this history collection, the history container is cleared, and
+then initialized with a reference to the saved entry and the data
+redefined as what we call an “ORIGIN”.  The clear process is done because of
+a concern that history data could, in some instances, potentially cause
+a memory bloat with iterative processing.</p>
+</section>
+<section id="read-concepts">
+<h3>Read concepts<a class="headerlink" href="#read-concepts" title="Link to this heading">#</a></h3>
+<p>Reads have to construct a valid data object and are subject to different
+constraints.  We believe it is most instructive to describe these in the order
+they are handled during construction.</p>
+<ol class="arabic simple">
+<li><p>Construction of TimeSeries or Seismogram objects are driven by
+document data read from the wf_TimeSeries or wf_Seismogram collection
+respectively.   By default the entire contents of each document
+are loaded into Metadata with no safety checks (defined
+above as “promiscuous mode”).  Options allow Metadata type checks to be enabled
+against the schema.  In addition, one can list a set of keys that should
+be dropped in the read.</p></li>
+<li><p>By default normalized Metadata can only be loaded through cross-referencing id
+keys (currently source_id, site_id, and/or channel_id but more may be added).
+The set of which collections are to be loaded are controlled by optional
+parameters in each reader.  An important constraint is that for all
+normalized collections defined as required, if the cross-referencing
+key is not defined a reader will ignore that datum.  Atomic
+<code class="code docutils literal notranslate"><span class="pre">read_data</span></code> calls silently signal that condition by returning
+<code class="code docutils literal notranslate"><span class="pre">None</span></code>.  Ensemble reads through <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> and distributed
+reads through <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> normally silently skip such
+data.  That model is intentional because it allows initial loading of a
+large data set with unresolvable anomalies that prevent one or more of
+the cross-referencing ids from being defined.</p></li>
+<li><p>The waveform data is read and the data object is constructed.  If that process fails the data
+will be marked dead and an error log posted with the reason (e.g. a
+file not found message).</p></li>
+<li><p>If the sample date read is successful the error log will normally be empty
+after any read.</p></li>
+<li><p>If processing history is desired the <code class="code docutils literal notranslate"><span class="pre">load_history</span></code> option needs to be
+set true.  In a reader the only action this creates is initialization of the
+ProcessingHistory component of the data with a record providing a unique
+link back to the data just read.</p></li>
+</ol>
+<p>We reiterate that the overall behavior of all readers are controlled by the
+<code class="code docutils literal notranslate"><span class="pre">mode=</span></code> argument common to all.  The current options are: <code class="code docutils literal notranslate"><span class="pre">promiscuous</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">cautious</span></code>, and <code class="code docutils literal notranslate"><span class="pre">pedantic</span></code>.   Detailed descriptions of what each mean are
+given above and in the sphynx documentation generated from docstrings.</p>
+</section>
+<section id="update-concepts">
+<h3>Update Concepts<a class="headerlink" href="#update-concepts" title="Link to this heading">#</a></h3>
+<p>As noted above an update is an operation that can be made only to
+Metadata.  In MsPASS Metadata map directly into MongoDB’s document concept
+of name-value pairs, while the waveform data are stored in some version of
+a file. We know of two common application for a pure Metadata update
+without an associated save of the waveform data.</p>
+<ol class="arabic simple">
+<li><p>A processing step that computes something that can be conveniently
+stored as Metadata.  Examples are automated phase pickers,
+amplitude measurements and assorted QC metrics.</p></li>
+<li><p>Pure Metadata operations.  e.g. most reflection processing systems
+have some form of generic metadata calculator of various levels of
+sophistication.  The most flexible can take multiple Metadata (header)
+values and use them to compute a set a different value.   Such
+operations do not alter the waveform data but may require a
+database update to preserve the calculation.   An example is an
+active source experiment where receiver coordinates can often be
+computed from survey flag numbers or some other independent counter.
+In MsPASS Metadata calculations are particularly easy and thus likely
+because python is used as the job control language.   (Classical seismic
+reflection systems and programs like SAC use a custom interpreter.)</p></li>
+</ol>
+<p>Updates to data that only involve Metadata changes should obey this rule:</p>
+<ul class="simple">
+<li><p><strong>Update Rule 3:</strong>  Updates for Seismogram and TimeSeries object Metadata should be done
+through the <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code> method of <code class="code docutils literal notranslate"><span class="pre">Database</span></code>.  Updates to
+other collections should use the pymongo API.</p></li>
+</ul>
+<p>As noted elsewhere numerous online and printed documentation exists for MongoDB
+that you should refer to when working directly with database collections.
+As the rule states when you need to save the results of a pure Metadata change
+within a workflow (e.g. posting a phase pick) use the <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code>
+method of <code class="code docutils literal notranslate"><span class="pre">Database</span></code>.   That method has two standard arguments already
+discussed above:   (1) <code class="code docutils literal notranslate"><span class="pre">mode</span></code>, and (2) <code class="code docutils literal notranslate"><span class="pre">collection</span></code>.
+Three others are important for controlling the behavior of updates:</p>
+<ol class="arabic simple">
+<li><p><strong>ignore_metadata_changed_test</strong> is a boolean that is False by default.
+We know of no example where setting this argument True in a update would
+be advised (it exists as an option only to streamline create operations that
+are run through the same method.).  The Metadata container does bookkeeping
+that marks which, if any, key-value pairs in the container have been
+altered since the data was loaded (constructed).  The <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code>
+normally uses that feature to reduce the size of the update transaction by
+only submitting updates for key-value pairs marked changed.   Setting this
+argument True would most likely be harmless, but would also add inefficiency.</p></li>
+<li><p><strong>exclude_keys</strong> is an optional list of keys for the  Metadata container that the method
+should not try to update.   Use of this option is rare.   An example where it
+might be useful is if some function altered a Metadata value that is known
+to be incorrect.</p></li>
+<li><p><strong>data_tag</strong> was discussed above for save/create operations.  When the
+entire contents of a TimeSeries or Seismogram object are being saved the
+tag serves as a mark for saves to distinguish those data from the
+starting data or other intermediate saves.  In a pure update, however, the
+meaning is different.  The data_tag argument is used any data updated
+will have the associated tag in the database changed to the string
+specified in the call to <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code>.  The default is to
+do nothing to any existing tag (i.e. the tag is not updated).</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="database_concepts.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Database Concepts</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mongodb_and_mspass.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Using MongoDB with MsPASS</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create">Create</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read">Read</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#update">Update</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delete">Delete</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-io-concepts">Key IO Concepts</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspass-chemistry">MsPASS Chemistry</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#save-concepts">Save Concepts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#read-concepts">Read concepts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#update-concepts">Update Concepts</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/CRUD_operations.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/CRUD_operations.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

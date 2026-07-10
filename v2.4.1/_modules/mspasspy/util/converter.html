@@ -1,0 +1,1543 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mspasspy.util.converter &#8212; MsPASS 2.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=e9ebdb8f"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mspasspy/util/converter';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../../../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.util.converter</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mspasspy.util.converter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for converting to and from MsPASS data types.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy.core</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">dask.dataframe</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">daskdf</span>
+
+    <span class="n">__mspasspy_has_dask</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">__mspasspy_has_dask</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">AntelopePf</span><span class="p">,</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_CoreSeismogram</span><span class="p">,</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+    <span class="n">Keywords</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ExtractComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">has_live_data</span>
+
+
+<div class="viewcode-block" id="dict2Metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.dict2Metadata">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dict2Metadata</span><span class="p">(</span><span class="n">dic</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to convert Python dict data to Metadata.</span>
+
+<span class="sd">    pymongo returns a Python dict container from find queries to any collection.</span>
+<span class="sd">    Simple type in returned documents can be converted to Metadata</span>
+<span class="sd">    that are used as headers in the C++ components of mspass.</span>
+
+<span class="sd">    :param dict: Python dict to convert</span>
+<span class="sd">    :type dict: dict</span>
+<span class="sd">    :return: Metadata object translated from d</span>
+<span class="sd">    :rtype: :class:`~mspasspy.ccore.Metadata`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># dict.toMetadata = dict2Metadata</span>
+
+
+<div class="viewcode-block" id="Metadata2dict">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Metadata2dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Metadata2dict</span><span class="p">(</span><span class="n">md</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a Metadata object to a Python dict.</span>
+
+<span class="sd">    This is the inverse of dict2Metadata.  It converts a Metadata object to</span>
+<span class="sd">    a Python dict. Note that Metadata behavies like dict, so this conversion</span>
+<span class="sd">    is usually not necessay.</span>
+
+<span class="sd">    :param md: Metadata object to convert.</span>
+<span class="sd">    :type md: :class:`~mspasspy.ccore.Metadata`</span>
+<span class="sd">    :return: Python dict equivalent to md.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></div>
+
+
+
+<span class="n">Metadata</span><span class="o">.</span><span class="n">todict</span> <span class="o">=</span> <span class="n">Metadata2dict</span>
+
+
+<div class="viewcode-block" id="AntelopePf2dict">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.AntelopePf2dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">AntelopePf2dict</span><span class="p">(</span><span class="n">pf</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a AntelopePf object to a Python dict.</span>
+<span class="sd">    This converts a AntelopePf object to a Python dict by recursively</span>
+<span class="sd">    decoding the tbls.</span>
+<span class="sd">    :param pf: AntelopePf object to convert.</span>
+<span class="sd">    :type md: :class:`~mspasspy.ccore.AntelopePf`</span>
+<span class="sd">    :return: Python dict equivalent to md.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">tbl_keys</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">tbl_keys</span><span class="p">()</span>
+    <span class="n">arr_keys</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">arr_keys</span><span class="p">()</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">tbl_keys</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">get_tbl</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">arr_keys</span><span class="p">:</span>
+        <span class="n">pf_branch</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">branch_dict</span> <span class="o">=</span> <span class="n">AntelopePf2dict</span><span class="p">(</span><span class="n">pf_branch</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch_dict</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+<span class="n">AntelopePf</span><span class="o">.</span><span class="n">todict</span> <span class="o">=</span> <span class="n">AntelopePf2dict</span>
+
+
+<div class="viewcode-block" id="TimeSeries2Trace">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeries2Trace">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">TimeSeries2Trace</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a TimeSeries object to an obspy Trace object.</span>
+
+<span class="sd">    MsPASS can handle scalar data either as an obspy Trace object or</span>
+<span class="sd">    as with the mspass TimeSeries object.  The capture nearly the same</span>
+<span class="sd">    concepts.  The main difference is that TimeSeries support the</span>
+<span class="sd">    error logging and history features of mspass while obspy, which is</span>
+<span class="sd">    a separate package, does not.  Obspy has a number of useful</span>
+<span class="sd">    algorithms that operate on scalar data, however, so it is frequently</span>
+<span class="sd">    useful to switch between Trace and TimeSeries formats.  The user is</span>
+<span class="sd">    warned, however, that converting a TimeSeries to a Trace object</span>
+<span class="sd">    with this function will result in the loss of any error log information.</span>
+<span class="sd">    For production runs unless the data set is huge, we recommend saving</span>
+<span class="sd">    the intermediate result AFTER calling this function if there is any</span>
+<span class="sd">    possibility there are errors posted on any data.  We say after because</span>
+<span class="sd">    some warning errors from this function may be posted in elog.  Since</span>
+<span class="sd">    python uses call by reference d may thus be altered.</span>
+
+<span class="sd">    :param ts: is the TimeSeries object to be converted</span>
+<span class="sd">    :type ts: :class:`~mspasspy.ccore.TimeSeries`</span>
+<span class="sd">    :return: an obspy Trace object from conversion of d.  An empty Trace</span>
+<span class="sd">        object will be returned if d was marked dead</span>
+<span class="sd">    :rtype: :class:`~obspy.core.trace.Trace`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dresult</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Trace</span><span class="p">()</span>
+    <span class="n">dresult</span><span class="o">.</span><span class="n">dead_mspass</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># Silently return an empty trace object if the data are marked dead now</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ts</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dresult</span>
+    <span class="c1"># We first deal with attributes in BasicTimeSeries that have to</span>
+    <span class="c1"># be translated into an obspy stats dictionary like object</span>
+    <span class="n">dresult</span><span class="o">.</span><span class="n">dead_mspass</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">npts</span>
+    <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+    <span class="c1"># It appears obspy computes endtime - this throws an AttributeError if</span>
+    <span class="c1"># included. Ratained for reference to keep someone from putting this back</span>
+    <span class="c1"># dresult.stats[&#39;endtime&#39;]=obspy.core.UTCDateTime(ts.endtime())</span>
+    <span class="c1"># todo relative time attribute</span>
+    <span class="c1"># These are required by obspy but optional in mspass.  Hence, we have</span>
+    <span class="c1"># to extract them with caution.  Note defaults are identical to</span>
+    <span class="c1"># Trace constructor</span>
+
+    <span class="c1"># Check for &quot;sampling_rate&quot; attribute</span>
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">):</span>
+        <span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
+        <span class="c1"># Check if sampling_rate is consistent with 1/dt</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sampling_rate</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">:</span>
+            <span class="c1"># Record inconsistency in error log (elog)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;sampling_rate inconsistent with 1/dt; updating to 1/dt&quot;</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;TimeSeries2Trace&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+        <span class="c1"># Update sampling_rate to 1/dt</span>
+        <span class="n">ts</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">ts</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">ts</span><span class="o">.</span><span class="n">dt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Set sampling_rate to 1/dt</span>
+        <span class="n">ts</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">ts</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">ts</span><span class="o">.</span><span class="n">dt</span>
+
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">net</span><span class="p">):</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;network&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">net</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;network&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">sta</span><span class="p">):</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">sta</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span><span class="p">):</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">loc</span><span class="p">):</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">loc</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;calib&quot;</span><span class="p">):</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;calib&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="c1"># We have to copy other metadata to preserve them too.  That is</span>
+    <span class="c1"># complicated by the fact that some (notably endtime) are read only</span>
+    <span class="c1"># and will abort the program if we just naively copy them.</span>
+    <span class="c1"># The list below are the keys to exclude either because they</span>
+    <span class="c1"># are computed by Trace (i.e. endtime) or are already set above</span>
+    <span class="n">do_not_copy</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;delta&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sampling_rate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;npts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;starttime&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;endtime&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;network&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;station&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;channel&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;calib&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="n">do_not_copy</span><span class="p">):</span>
+            <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="c1"># dresult.data = np.ndarray(ts.npts)</span>
+    <span class="c1"># for i in range(ts.npts):</span>
+    <span class="c1"># dresult.data[i] = ts.data[i]</span>
+    <span class="n">dresult</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dresult</span></div>
+
+
+
+<span class="n">TimeSeries</span><span class="o">.</span><span class="n">toTrace</span> <span class="o">=</span> <span class="n">TimeSeries2Trace</span>
+
+
+<div class="viewcode-block" id="Seismogram2Stream">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Seismogram2Stream">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Seismogram2Stream</span><span class="p">(</span>
+    <span class="n">sg</span><span class="p">,</span> <span class="n">chanmap</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">],</span> <span class="n">hang</span><span class="o">=</span><span class="p">[</span><span class="mf">90.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">vang</span><span class="o">=</span><span class="p">[</span><span class="mf">90.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="p">):</span>
+    <span class="c1"># fixme hang and vang parameters</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a mspass::Seismogram object to an obspy::Stream with 3 components split apart.</span>
+
+<span class="sd">    mspass and obspy have completely incompatible approaches to handling three</span>
+<span class="sd">    component data.  obspy uses a Stream object that is a wrapper around and</span>
+<span class="sd">    a list of Trace objects.  mspass stores 3C data bundled into a matrix</span>
+<span class="sd">    container.   This function takes the matrix container apart and produces</span>
+<span class="sd">    the three Trace objects obspy want to define 3C data.   The caller is</span>
+<span class="sd">    responsible for how they handle bundling the output.</span>
+
+<span class="sd">    A very dark side of this function is any error log entries in the part</span>
+<span class="sd">    mspass Seismogram object will be lost in this conversion as obspy</span>
+<span class="sd">    does not implement that concept.  If you need to save the error log</span>
+<span class="sd">    you will need to save the input of this function to MongoDB to preserve</span>
+<span class="sd">    the errorlog it may contain.</span>
+
+<span class="sd">    :param sg: is the Seismogram object to be converted</span>
+<span class="sd">    :type sg: :class:`~mspasspy.ccore.Seismogram`</span>
+<span class="sd">    :param chanmap:  3 element list of channel names to be assigned components</span>
+<span class="sd">    :type chanmap: list</span>
+<span class="sd">    :param hang:  3 element list of horizontal angle attributes (azimuth in degrees)</span>
+<span class="sd">      to be set in Stats array of output for each component.  (default is</span>
+<span class="sd">      for cardinal directions)</span>
+<span class="sd">    :type hang: list</span>
+<span class="sd">    :param vang:  3 element list of vertical angle (theta of spherical coordinates)</span>
+<span class="sd">      to be set in Stats array of output for each component.  (default is</span>
+<span class="sd">      for cardinal directions)</span>
+<span class="sd">    :type vang: list</span>
+<span class="sd">    :return: obspy Stream object containing a list of 3 Trace objects in</span>
+<span class="sd">       mspass component order. Presently the data are ALWAYS returned to</span>
+<span class="sd">       cardinal directions (see above). It will be empty if sg was marked dead</span>
+<span class="sd">    :rtype: :class:`obspy.core.stream.Stream`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dresult</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="p">()</span>
+    <span class="n">dresult</span><span class="o">.</span><span class="n">dead_mspass</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># Note this logic will silently return an empty Stream object if the</span>
+    <span class="c1"># data are marked dead</span>
+    <span class="k">if</span> <span class="n">sg</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">dead_mspass</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">uuids</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
+        <span class="n">logstuff</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">elog</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">_ExtractComponent</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">put_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span><span class="p">,</span> <span class="n">chanmap</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="n">hang</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="n">vang</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="c1"># ts is a CoreTimeSeries but we need to add a few things to</span>
+            <span class="c1"># make it mesh with TimeSeries2Trace</span>
+            <span class="n">tsex</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">uuids</span><span class="p">)</span>
+            <span class="n">tsex</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">logstuff</span>
+            <span class="n">dobspy</span> <span class="o">=</span> <span class="n">TimeSeries2Trace</span><span class="p">(</span><span class="n">tsex</span><span class="p">)</span>
+            <span class="n">dresult</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dobspy</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">tc</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Trace</span><span class="p">()</span>
+            <span class="n">tc</span><span class="o">.</span><span class="n">dead_mspass</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">dresult</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dresult</span></div>
+
+
+
+<span class="n">Seismogram</span><span class="o">.</span><span class="n">toStream</span> <span class="o">=</span> <span class="n">Seismogram2Stream</span>
+
+
+<div class="viewcode-block" id="Trace2TimeSeries">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Trace2TimeSeries">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Trace2TimeSeries</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert an obspy Trace object to a TimeSeries object.</span>
+
+<span class="sd">    An obspy Trace object mostly maps directly into the mspass TimeSeries</span>
+<span class="sd">    object with the stats of Trace mapping (almost) directly to the TimeSeries</span>
+<span class="sd">    Metadata object that is a base class to TimeSeries.  A deep copy of the</span>
+<span class="sd">    data vector in the original Trace is made to the result. That copy is</span>
+<span class="sd">    done in C++ for speed (we found a 100+ fold speedup using that mechanism</span>
+<span class="sd">    instead of a simple python loop)  There is one important type collision</span>
+<span class="sd">    in copying obspy starttime and endtime stats fields.  obspy uses their</span>
+<span class="sd">    UTCDateTime object to hold time but TimeSeries only supports an epoch</span>
+<span class="sd">    time (UTCDateTime.timestamp) so the code here has to convert from the</span>
+<span class="sd">    UTCDateTime to epoch time in the TimeSeries.  Note in a TimeSeries</span>
+<span class="sd">    starttime is the t0 attribute.</span>
+
+<span class="sd">    The biggest mismatch in Trace and TimeSeries is that Trace has no concept</span>
+<span class="sd">    of object level history as used in mspass.   That history must be maintained</span>
+<span class="sd">    outside obspy.  To maintain full history the user must pass the</span>
+<span class="sd">    history maintained externally through the optional history parameter.</span>
+<span class="sd">    The contents of history will be loaded directly into the result with</span>
+<span class="sd">    no sanity checks.</span>
+
+<span class="sd">    :param trace: obspy trace object to convert</span>
+<span class="sd">    :type trace: :class:`~obspy.core.trace.Trace`</span>
+<span class="sd">    :param history:  mspass ProcessingHistory object to post to result.</span>
+<span class="sd">    :return: TimeSeries object derived from obpsy input Trace object</span>
+<span class="sd">    :rtype: :class:`~mspasspy.ccore.TimeSeries`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The obspy trace object stats attribute only acts like a dictionary</span>
+    <span class="c1"># we can&#39;t use it directly but this trick simplifies the copy to</span>
+    <span class="c1"># mesh with py::dict for pybind11 - needed in TimeSeries constructor below</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+    <span class="c1"># These tests are excessively paranoid since starttime and endtime</span>
+    <span class="c1"># are required attributes in Trace, but better save in case</span>
+    <span class="c1"># someone creates one outside obspy</span>
+    <span class="k">if</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span>
+        <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">timestamp</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># We have to set this to something if it isn&#39;t set or</span>
+        <span class="c1"># the TimeSeries constructor may abort</span>
+        <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="c1"># we don&#39;t require endtime in TimeSeries so ignore if it is not set</span>
+    <span class="k">if</span> <span class="s2">&quot;endtime&quot;</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
+    <span class="n">h</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">timestamp</span>
+    <span class="c1">#</span>
+    <span class="c1"># these define a map of aliases to apply when we convert to mspass</span>
+    <span class="c1"># metadata from trace - we redefined these names but others could</span>
+    <span class="c1"># surface as obspy evolves independently from mspass</span>
+    <span class="n">mspass_aliases</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">sta</span>
+    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s2">&quot;network&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">net</span>
+    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">loc</span>
+    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">mspass_aliases</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">h</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">alias_key</span> <span class="o">=</span> <span class="n">mspass_aliases</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">h</span><span class="p">[</span><span class="n">alias_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">dout</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">history</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dout</span><span class="o">.</span><span class="n">load_history</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+    <span class="n">dout</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+    <span class="c1"># The following dead_mspass attribute is used by our decorator API</span>
+    <span class="c1"># to determine whether an object was dead before the conversion.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">dead_mspass</span><span class="p">:</span>
+            <span class="n">dout</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">dout</span></div>
+
+
+
+<span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Trace</span><span class="o">.</span><span class="n">toTimeSeries</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span>
+
+
+<div class="viewcode-block" id="Stream2Seismogram">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Stream2Seismogram">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Stream2Seismogram</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">master</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">azimuth</span><span class="o">=</span><span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="n">dip</span><span class="o">=</span><span class="s2">&quot;dip&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert obspy Stream to a Seismogram.</span>
+
+<span class="sd">    Convert an obspy Stream object with 3 components to a mspass::Seismogram</span>
+<span class="sd">    (three-component data) object.  This implementation actually converts</span>
+<span class="sd">    each component first to a TimeSeries and then calls a C++ function to</span>
+<span class="sd">    assemble the complete Seismogram.   This has some inefficiencies, but</span>
+<span class="sd">    the assumption is this function is called early on in a processing chain</span>
+<span class="sd">    to build a raw data set.</span>
+
+<span class="sd">    :param st: input obspy Stream object.  The object MUST have exactly 3 components</span>
+<span class="sd">        or the function will throw a AssertionError exception.  The program is</span>
+<span class="sd">        less dogmatic about start times and number of samples as these are</span>
+<span class="sd">        handled by the C++ function this python script calls.  Be warned,</span>
+<span class="sd">        however, that the C++ function can throw a MsPASSrror exception that</span>
+<span class="sd">        should be handled separately.</span>
+<span class="sd">    :param master: a Seismogram is an assembly of three channels composed created from</span>
+<span class="sd">        three TimeSeries/Trace objects.   Each component may have different</span>
+<span class="sd">        metadata (e.g. orientation data) and common metadata (e.g. station</span>
+<span class="sd">        coordinates).   To assemble a Seismogram a decision has to be made on</span>
+<span class="sd">        which component has the definitive common metadata.   We use a simple</span>
+<span class="sd">        algorithm and clone the data from one component defined by this index.</span>
+<span class="sd">        Must be 0,1, or 2 or the function wil throw a RuntimeError.  Default is 0.</span>
+<span class="sd">    :param cardinal: boolean used to define one of two algorithms used to assemble the</span>
+<span class="sd">        bundle.  When true the three input components are assumed to be in</span>
+<span class="sd">        cardinal directions (x1=positive east, x2=positive north, and x3=positive up)</span>
+<span class="sd">        AND in a fixed order of E,N,Z. Otherwise the Metadata fetched with</span>
+<span class="sd">        the azimuth and dip keys are used for orientation.</span>
+<span class="sd">    :param azimuth: defines the Metadata key used to fetch the azimuth angle</span>
+<span class="sd">       used to define the orientation of each component Trace object.</span>
+<span class="sd">       Default is &#39;azimuth&#39; used by obspy.   Note azimuth=hang in css3.0.</span>
+<span class="sd">       Cannot be aliased - must be present in obspy Stats unless cardinal is true</span>
+<span class="sd">    :param dip:  defines the Metadata key used to fetch the vertical angle orientation</span>
+<span class="sd">        of each data component.  Vertical angle (vang in css3.0) is exactly</span>
+<span class="sd">        the same as theta in spherical coordinates.  Default is obspy &#39;dip&#39;</span>
+<span class="sd">        key. Cannot be aliased - must be defined in obspy Stats unless</span>
+<span class="sd">        cardinal is true</span>
+
+<span class="sd">    :raise: Can throw either an AssertionError or MsPASSrror(currently defaulted to</span>
+<span class="sd">        pybind11&#39;s default RuntimeError.  Error message can be obtained by</span>
+<span class="sd">        calling the what method of RuntimeError).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># First make sure we have exactly 3 components</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;Stream length must be EXACTLY 3 for 3-components&quot;</span>
+    <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">master</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;master argument must be 0, 1, or 2&quot;</span>
+
+    <span class="c1"># if all traces are dead in a stream, it should be converted to a dead seismogram</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dead_mspass</span><span class="p">:</span>
+                <span class="n">size</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">()</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="n">res</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># Complicated logic here, but the point is to make sure the azimuth</span>
+    <span class="c1"># attribute is set. The cardinal part is to override the test if</span>
+    <span class="c1"># we can assume he components are ENZ</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cardinal</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">azimuth</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span>
+            <span class="ow">or</span> <span class="n">azimuth</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span>
+            <span class="ow">or</span> <span class="n">azimuth</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Stream2Seismogram:  Required attribute &quot;</span>
+                <span class="o">+</span> <span class="n">azimuth</span>
+                <span class="o">+</span> <span class="s2">&quot; must be in mdother list&quot;</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cardinal</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dip</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span> <span class="ow">or</span> <span class="n">dip</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span> <span class="ow">or</span> <span class="n">dip</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Stream2Seismogram:  Required attribute &quot;</span>
+                <span class="o">+</span> <span class="n">dip</span>
+                <span class="o">+</span> <span class="s2">&quot; must be in mdother list&quot;</span>
+            <span class="p">)</span>
+    <span class="c1"># Outer exception handler to handle range of possible errors in</span>
+    <span class="c1"># converting each component.  Note we pass an empty list for mdother</span>
+    <span class="c1"># and aliases except the master</span>
+    <span class="n">bundle</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">bundle</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="c1"># The constructor we use below has frozen names hang for azimuth and</span>
+    <span class="c1"># vang for what obspy calls dip.   Copy to those names - should work</span>
+    <span class="c1"># even if the hang and vang are the names although with some inefficiency</span>
+    <span class="c1"># assume that would not be normal so avoid unnecessary code</span>
+    <span class="k">if</span> <span class="n">cardinal</span><span class="p">:</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">hang</span> <span class="o">=</span> <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="n">azimuth</span><span class="p">)</span>
+            <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="n">hang</span><span class="p">)</span>
+            <span class="n">vang</span> <span class="o">=</span> <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="n">dip</span><span class="p">)</span>
+            <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="n">vang</span><span class="p">)</span>
+    <span class="c1"># Assume now bundle contains all the pieces we need.   This constructor</span>
+    <span class="c1"># for _CoreSeismogram should then do the job</span>
+    <span class="c1"># This may throw an exception, but we require the caller to handle it</span>
+    <span class="c1"># All errors returned by this constructor currenlty leave the data INVALID</span>
+    <span class="c1"># so handler should discard anything with an error</span>
+    <span class="n">dout</span> <span class="o">=</span> <span class="n">_CoreSeismogram</span><span class="p">(</span><span class="n">bundle</span><span class="p">,</span> <span class="n">master</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="s2">&quot;INVALID&quot;</span><span class="p">)</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">toSeismogram</span> <span class="o">=</span> <span class="n">Stream2Seismogram</span>
+
+
+<div class="viewcode-block" id="TimeSeriesEnsemble2Stream">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeriesEnsemble2Stream">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">TimeSeriesEnsemble2Stream</span><span class="p">(</span><span class="n">tse</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a timeseries ensemble to stream.  Always copies</span>
+<span class="sd">    all ensemble Metadata to tse members before conversion.   That is</span>
+<span class="sd">    necessary to avoid loss of data in the case where the only copy is</span>
+<span class="sd">    stored in the ensemble&#39;s metadata.</span>
+
+<span class="sd">    :param tse: timeseries ensemble</span>
+<span class="sd">    :return: converted stream</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="p">()</span>
+    <span class="c1"># Save the set of keys in ensemble metadata and post the list</span>
+    <span class="c1"># to ensmeble md with a special key.  The inverse function</span>
+    <span class="c1"># looks for that special list and uses it to restore the</span>
+    <span class="c1"># ensemble&#39;s metadata.  That handling is similar to how we handle</span>
+    <span class="c1"># dead on atomic data.  Note _get_ensemble_md is not a C function but</span>
+    <span class="c1"># defined only in the pybind11 wrappers</span>
+    <span class="n">md</span> <span class="o">=</span> <span class="n">tse</span><span class="o">.</span><span class="n">_get_ensemble_md</span><span class="p">()</span>
+    <span class="c1"># Having this as const in is a maitenanc issue.  Shouldn&#39;t be a problem</span>
+    <span class="c1"># provided no other file uses this key.  For now it is self contained in</span>
+    <span class="c1"># this module.</span>
+    <span class="n">tse</span><span class="p">[</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="c1"># This pushes all conents of ensemble md to all members. That includes</span>
+    <span class="c1"># the scratch list we just posted. inverse needs to clear the temp</span>
+    <span class="n">tse</span><span class="o">.</span><span class="n">sync_metadata</span><span class="p">()</span>
+    <span class="c1"># Remover the temporary from the ensemble metadata or the return</span>
+    <span class="c1"># will be inconsistent with the input</span>
+    <span class="n">tse</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tse</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TimeSeries2Trace</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<span class="n">TimeSeriesEnsemble</span><span class="o">.</span><span class="n">toStream</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble2Stream</span>
+
+
+<div class="viewcode-block" id="list2Ensemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.list2Ensemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">list2Ensemble</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a list of TimeSeries or Seismograms to a corresponding type of Ensemble.</span>
+<span class="sd">    This function will make copies of all the data, to create a new Ensemble.</span>
+<span class="sd">    Note that the Ensemble&#39;s Metadata will always be copied from the first member.</span>
+<span class="sd">    If the keys argument is specifid, it will only copy the keys specified.</span>
+<span class="sd">    If a key does not exist in the first member, it will be skipped and leave a complaint in the error log of the ensemble.</span>
+
+<span class="sd">    :param l: a list of TimeSeries or Seismograms</span>
+<span class="sd">    :param keys: a list of keys to be copied from the first object to the Ensemble&#39;s Metadata</span>
+<span class="sd">    :return: converted TimeSeriesEnsemble or SeismogramEnsemble</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Seismogram</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="s2">&quot;list2Ensemble: The elements of the list needs to be TimeSeries or Seismogram but &#39;</span><span class="si">{}</span><span class="s2">&#39; is given&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;list2SeismogramEnsemble&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;key: &#39;</span><span class="si">{}</span><span class="s2">&#39; not found in the first element&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">),</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">update_metadata</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">update_metadata</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<div class="viewcode-block" id="Pf2AttributeNameTbl">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Pf2AttributeNameTbl">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Pf2AttributeNameTbl</span><span class="p">(</span><span class="n">pf</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;attributes&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function will parse a pf file to extract a tbl with a specific</span>
+<span class="sd">    key and return a data structure that defines the names and types of</span>
+<span class="sd">    each column in the input file.</span>
+
+<span class="sd">    The structure returned is a tuple with three components:</span>
+<span class="sd">        1 (index 0) python array of attribute names in the original tbl order</span>
+<span class="sd">          This is used to parse the text file so the order matters a lot.</span>
+<span class="sd">        2 (index 1) parallel array of type names for each attribute.</span>
+<span class="sd">          These are actual python type objects that can be used as the</span>
+<span class="sd">          second arg of isinstance.</span>
+<span class="sd">        3 (index 2) python dictionary keyed by name field that defines</span>
+<span class="sd">          what a null value is for this attribute.</span>
+
+<span class="sd">    :param pf:  AntelopePf object to be parsed</span>
+<span class="sd">    :param tag:  &amp;Tbl tag for section of pf to be parsed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tbl</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">get_tbl</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">nullvalues</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tbl</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">typenamein</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>  <span class="c1"># allows upper or lower case in names</span>
+        <span class="k">if</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span> <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;str&quot;</span><span class="p">:</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s2">&quot;foobar&quot;</span><span class="p">)</span>
+            <span class="n">nullval</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;integer&quot;</span> <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;int&quot;</span> <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;long&quot;</span><span class="p">:</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">nullval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;float&quot;</span>
+            <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;double&quot;</span>
+            <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;real&quot;</span>
+            <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;epochtime&quot;</span>
+        <span class="p">):</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">nullval</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span> <span class="ow">or</span> <span class="n">typenamein</span> <span class="o">==</span> <span class="s2">&quot;boolean&quot;</span><span class="p">:</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">nullval</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;parse_attribute_name_tbl:  unsupported data type file=&quot;</span> <span class="o">+</span> <span class="n">typenamein</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span>
+        <span class="n">nullvalues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nullval</span><span class="p">)</span>
+
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">nulls</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">nulls</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">nullvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">names</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">,</span> <span class="n">nulls</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="Textfile2Dataframe">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Textfile2Dataframe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Textfile2Dataframe</span><span class="p">(</span>
+    <span class="n">filename</span><span class="p">,</span>
+    <span class="n">separator</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span>
+    <span class="n">type_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">header_line</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">attribute_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">rename_attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">attributes_to_use</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">one_to_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">insert_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Import a text file representation of a table and store its</span>
+<span class="sd">    representation as a pandas dataframe.</span>
+<span class="sd">    Note that even in the parallel environment, a dask dataframe will be</span>
+<span class="sd">    transfered back to a pandas dataframe for the consistency.</span>
+
+<span class="sd">    :param filename:  path to text file that is to be read to create the</span>
+<span class="sd">      table object that is to be processed (internally we use pandas or</span>
+<span class="sd">      dask dataframes)</span>
+<span class="sd">    :param separator: The delimiter used for seperating fields,</span>
+<span class="sd">      the default is r&quot;\\s+&quot;, which is the regular expression of &quot;one or more</span>
+<span class="sd">      spaces&quot;.</span>
+<span class="sd">      For csv file, its value should be set to &#39;,&#39;.</span>
+<span class="sd">      This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.</span>
+<span class="sd">      To learn more details about the usage, check the following links:</span>
+<span class="sd">      https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</span>
+<span class="sd">      https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</span>
+<span class="sd">    :param type_dict: pairs of each attribute and its type, usedd to validate</span>
+<span class="sd">      the type of each input item</span>
+<span class="sd">    :param header_line: defines the line to be used as the attribute names for</span>
+<span class="sd">      columns, if is &lt; 0, an attribute_names is required. Please note that if an</span>
+<span class="sd">      attribute_names is provided, the attributes defined in header_line will</span>
+<span class="sd">      always be override.</span>
+<span class="sd">    :param attribute_names: This argument must be either a list of (unique)</span>
+<span class="sd">      string names to define the attribute name tags for each column of the</span>
+<span class="sd">      input table.   The length of the array must match the number of</span>
+<span class="sd">      columns in the input table or this function will throw a MsPASSError</span>
+<span class="sd">      exception.   This argument is None by default which means the</span>
+<span class="sd">      function will assume the line specified by the &quot;header_line&quot; argument as</span>
+<span class="sd">      column headers defining the attribute name.  If header_line is less</span>
+<span class="sd">      than 0 this argument will be required.  When header_line is &gt;= 0</span>
+<span class="sd">      and this argument (attribute_names) is defined all the names in</span>
+<span class="sd">      this list will override those stored in the file at the specified</span>
+<span class="sd">      line number.</span>
+<span class="sd">    :param  rename_attributes:   This is expected to be a python dict</span>
+<span class="sd">      keyed by names matching those defined in the file or attribute_names</span>
+<span class="sd">      array (i.e. the panda/dataframe column index names) and values defining</span>
+<span class="sd">      strings to use to override the original names.   That usage, of course,</span>
+<span class="sd">      is most common to override names in a file.  If you want to change all</span>
+<span class="sd">      the name use a custom attributes_name array as noted above.  This</span>
+<span class="sd">      argument is mostly to rename a small number of anomalous names.</span>
+<span class="sd">    :param attributes_to_use:  If used this argument must define a list of</span>
+<span class="sd">      attribute names that define the subset of the dataframe dataframe</span>
+<span class="sd">      attributes that are to be saved.  For relational db users this is</span>
+<span class="sd">      effectively a &quot;select&quot; list of attribute names.  The default is</span>
+<span class="sd">      None which is taken to mean no selection is to be done.</span>
+<span class="sd">    :param one_to_one: is an important boolean use to control if the</span>
+<span class="sd">      output is or is not filtered by rows.  The default is True</span>
+<span class="sd">      which means every tuple in the input file will create a single row in</span>
+<span class="sd">      dataframe. (Useful, for example, to construct an wf_miniseed</span>
+<span class="sd">      collection css3.0 attributes.)  If False the (normally reduced) set</span>
+<span class="sd">      of attributes defined by attributes_to_use will be filtered with the</span>
+<span class="sd">      panda/dask dataframe drop_duplicates method.  That approach</span>
+<span class="sd">      is important, for example, to filter things like Antelope &quot;site&quot; or</span>
+<span class="sd">      &quot;sitechan&quot; attributes created by a join to something like wfdisc and</span>
+<span class="sd">      saved as a text file to be processed by this function.</span>
+<span class="sd">    :param parallel:  When true we use the dask dataframe operation.</span>
+<span class="sd">      The default is false meaning the simpler, identical api panda</span>
+<span class="sd">      operators are used.</span>
+<span class="sd">    :param insert_column: a dictionary of new columns to add, and their value(s).</span>
+<span class="sd">      If the content is a single value, it can be passed to define a constant value</span>
+<span class="sd">      for the entire column of data. The content can also be a list, in that case,</span>
+<span class="sd">      the list should contain values that are to be set, and it must be the same</span>
+<span class="sd">      length as the number of tuples in the table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">attribute_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">attribute_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="p">):</span>  <span class="c1">#   If given attribute_names, header_line would be overriden</span>
+        <span class="n">header_line</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">header_line</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">header_line</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="p">):</span>  <span class="c1">#   Header_line not given, using attribute_names</span>
+        <span class="k">if</span> <span class="n">parallel</span> <span class="ow">and</span> <span class="n">__mspasspy_has_dask</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">daskdf</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">attribute_names</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING:  No dask detected. Running pandas dataframe&quot;</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">attribute_names</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1">#   header_line is given and attribute_names is not given</span>
+        <span class="k">if</span> <span class="n">parallel</span> <span class="ow">and</span> <span class="n">__mspasspy_has_dask</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">daskdf</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header_line</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING:  No dask detected. Running pandas dataframe&quot;</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">separator</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header_line</span><span class="p">)</span>
+
+    <span class="c1">#   Convert data in each column to the type given in type_dict</span>
+    <span class="k">if</span> <span class="n">type_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">type_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+                <span class="n">df</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">attributes_to_use</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">attributes_to_use</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">one_to_one</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+
+    <span class="c1">#   Intentionally left to last as the above can reduce the size of df</span>
+    <span class="k">if</span> <span class="n">rename_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">rename_attributes</span><span class="p">)</span>
+
+    <span class="c1">#   Add new columns to the dataframe</span>
+    <span class="k">if</span> <span class="n">insert_column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">insert_column</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="c1">#   Transfer dask dataframe back to pandas dataframe to keep the consistency in internal representation</span>
+    <span class="k">if</span> <span class="n">parallel</span> <span class="ow">and</span> <span class="n">__mspasspy_has_dask</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">ens</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Small helper for converting from Stream to either of the</span>
+<span class="sd">    mspass ensemble objects.   Returns a list of keys from the first</span>
+<span class="sd">    live member using the internal key CONVERTER_ENSEMBLE_KEYS.</span>
+<span class="sd">    Normally should return a list of any ensemble keys.  If the</span>
+<span class="sd">    special key is not found it returns an empty list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="c1"># need this to handle ensembles with all dead members</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Stream2TimeSeriesEnsemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Stream2TimeSeriesEnsemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a stream to timeseries ensemble.</span>
+<span class="sd">    :param stream: stream input</span>
+<span class="sd">    :return: converted timeseries ensemble</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+    <span class="n">tse</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">tse</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">stream</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="c1"># potential dead loss problem is resolved by saving the info in converted objects</span>
+
+    <span class="c1"># Handle the ensemble metadata.   The little helper we call here</span>
+    <span class="c1"># get the list set with CONVERTER_ENSEMBLE_KEYS.</span>
+    <span class="n">enskeys</span> <span class="o">=</span> <span class="n">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">tse</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">enskeys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">post_ensemble_metadata</span><span class="p">(</span><span class="n">tse</span><span class="p">,</span> <span class="n">enskeys</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tse</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">):</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">has_live_data</span><span class="p">(</span><span class="n">tse</span><span class="p">):</span>
+        <span class="n">tse</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">tse</span></div>
+
+
+
+<span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">toTimeSeriesEnsemble</span> <span class="o">=</span> <span class="n">Stream2TimeSeriesEnsemble</span>
+
+
+<div class="viewcode-block" id="SeismogramEnsemble2Stream">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.SeismogramEnsemble2Stream">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">SeismogramEnsemble2Stream</span><span class="p">(</span><span class="n">sge</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a seismogram ensemble to stream</span>
+<span class="sd">    :param sge: seismogram ensemble input</span>
+<span class="sd">    :return: stream</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This uses the same approach as TimeSeriesEnsemblet2Stream to handle</span>
+    <span class="c1"># ensemble metadata.  See comments there for potential maintenanc issues</span>
+    <span class="n">md</span> <span class="o">=</span> <span class="n">sge</span><span class="o">.</span><span class="n">_get_ensemble_md</span><span class="p">()</span>
+    <span class="n">sge</span><span class="p">[</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">sge</span><span class="o">.</span><span class="n">sync_metadata</span><span class="p">()</span>
+    <span class="c1"># as above remove this temporary from sge or it alters the</span>
+    <span class="c1"># input - python gives us a pointer to this thing so it is mutable</span>
+    <span class="n">sge</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">sg</span> <span class="ow">in</span> <span class="n">sge</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">+=</span> <span class="n">Seismogram2Stream</span><span class="p">(</span><span class="n">sg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<span class="n">SeismogramEnsemble</span><span class="o">.</span><span class="n">toStream</span> <span class="o">=</span> <span class="n">SeismogramEnsemble2Stream</span>
+
+
+<div class="viewcode-block" id="Stream2SeismogramEnsemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Stream2SeismogramEnsemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Stream2SeismogramEnsemble</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a stream to seismogram ensemble.</span>
+<span class="sd">    :param stream: stream input</span>
+<span class="sd">    :return: converted seismogram ensemble</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)):</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">stream</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="p">:</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="c1"># fixme cardinal</span>
+    <span class="c1"># Handle the ensemble metadata.   The little helper we call here</span>
+    <span class="c1"># get the list set with CONVERTER_ENSEMBLE_KEYS.  The</span>
+    <span class="c1"># code here is identical to that for TimeSeriesEnsemble version</span>
+    <span class="c1"># because the ensemble containers have parallel symbols and the atomic</span>
+    <span class="c1"># members are close relatives</span>
+    <span class="n">enskeys</span> <span class="o">=</span> <span class="n">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">enskeys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">post_ensemble_metadata</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">enskeys</span><span class="p">)</span>
+    <span class="c1"># By default the above leaves copies of the ensemble md in each member</span>
+    <span class="c1"># Treat that a ok, but we do need to clear the temporary we posted</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">):</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">has_live_data</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span> <span class="o">=</span> <span class="n">Stream2SeismogramEnsemble</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_all_members_match</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a helper function for below.  I scans ens to assure all members</span>
+<span class="sd">    of the ensemble have the same value for the requested key. It uses</span>
+<span class="sd">    the python operator == for testing.  That can fail for a variety of</span>
+<span class="sd">    reasons the &quot;match&quot; may be overly restrictive for some types of data</span>
+<span class="sd">    linked to key.</span>
+
+<span class="sd">    :param ens:  ensemble data to scan.  Function will throw a MsPASS error if</span>
+<span class="sd">      the data this symbol is associated with is not a mspass ensemble object.</span>
+<span class="sd">    :param key:  key whose values are to be tested for all members of ens.</span>
+<span class="sd">    :return:  True of all members match, false if there are any differences.</span>
+<span class="sd">      Note if a key is not defined in a live member the result will be false.</span>
+<span class="sd">      Dead data are ignored.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="n">nlive</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">nlive</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">val0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">val0</span> <span class="o">!=</span> <span class="n">val</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+                    <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="s2">&quot;_all_members_match:  input is not a mspass ensemble object&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid&quot;</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="post_ensemble_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.post_ensemble_metadata">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">post_ensemble_metadata</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">check_all_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">clean_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It may be necessary to call this function after conversion from</span>
+<span class="sd">    an obspy Stream to one of the mspass Ensemble classes.  This function</span>
+<span class="sd">    is necessary because a mspass Ensemble has a concept not part of the</span>
+<span class="sd">    obspy Stream object.  That is, mspass ensembles have a global</span>
+<span class="sd">    Metadata container.  That container is expected to contain Metadata</span>
+<span class="sd">    common to all members of the ensemble.  For example, for data from</span>
+<span class="sd">    a single earthquake it would be sensible to post the source location</span>
+<span class="sd">    information in the ensemble metadata container rather than</span>
+<span class="sd">    having duplicates in each member.</span>
+
+<span class="sd">    Two different approaches can be used to do this copy.  The faster,</span>
+<span class="sd">    but least reliable method is to simply copy the values from the first</span>
+<span class="sd">    member of the ensemble.  That approach is enabled by default.</span>
+<span class="sd">    It is completely reliable when used after a conversion from an obspy</span>
+<span class="sd">    Stream but ONLY if the data began life as a mspass ensemble with</span>
+<span class="sd">    exactly the same keys set as global.   The type example of that</span>
+<span class="sd">    is after an obspy algorithm is applied to a mspass ensemble</span>
+<span class="sd">    via the mspass decorators.</span>
+
+<span class="sd">    A more cautious algorithm can be enabled by setting check_all_members</span>
+<span class="sd">    True. In that mode the list of keys received is tested with a</span>
+<span class="sd">    not equal test for against each member.  Note we do not do anything</span>
+<span class="sd">    fancy with floating point data to allow for finite precision.</span>
+<span class="sd">    The reason is Metadata float values are normally expected to be</span>
+<span class="sd">    constant data.  In that case an != test will yield false when the</span>
+<span class="sd">    comparison is between two copies.  The not equal test may fail, however,</span>
+<span class="sd">    if used with computed floating point numbers.   An example where</span>
+<span class="sd">    that is possible would be spatial gathers like PP data assembled by</span>
+<span class="sd">    midpoint coordinates.  If you need to build gathers in such a context</span>
+<span class="sd">    we recommend you use an integer image point tied to a specialized</span>
+<span class="sd">    document collection in MongoDB that defines the geometry of that</span>
+<span class="sd">    point.  There may be other examples, but the point is don&#39;t trust</span>
+<span class="sd">    computed floating point values to work.  It will also not work if</span>
+<span class="sd">    the values of a key-value pair don&#39;t support an != comparison.</span>
+<span class="sd">    That could be common if the value request for copy was a python object.</span>
+
+<span class="sd">    :param ens:  ensemble data to be processed.  The function will throw</span>
+<span class="sd">      a MsPASSError exception of ens is not either a TimeSeriesEnsemble or a</span>
+<span class="sd">      SeismogramEnsemble.</span>
+<span class="sd">    :param keys:  is expected to be a list of metadata keys (required to be</span>
+<span class="sd">      strings) that are to be copied from member metadata to ensemble</span>
+<span class="sd">      metadata.</span>
+<span class="sd">    :param check_all_members:  switch controlling method used to extract</span>
+<span class="sd">      metadata that is to be copied (see above for details). Default is False</span>
+<span class="sd">    :param clean_members:  when true data copied to ensemble metadata</span>
+<span class="sd">      will be removed from all members.  This option is only allowed</span>
+<span class="sd">      if check_all_members is set True.  It will be silently ignored if</span>
+<span class="sd">      check_all_members is False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;post_ensemble_metadata&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                            <span class="n">alg</span>
+                            <span class="o">+</span> <span class="s2">&quot;:  no data matching requested key=&quot;</span>
+                            <span class="o">+</span> <span class="n">k</span>
+                            <span class="o">+</span> <span class="s2">&quot; Cannot post to ensemble&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Invalid&quot;</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">check_all_members</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">_all_members_match</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                            <span class="n">alg</span>
+                            <span class="o">+</span> <span class="s2">&quot;:  Data mismatch data members with key=&quot;</span>
+                            <span class="o">+</span> <span class="n">k</span>
+                            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  In check_all_members mode all values associated with this key must match&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Invalid&quot;</span><span class="p">,</span>
+                        <span class="p">)</span>
+            <span class="k">if</span> <span class="n">clean_members</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">ens</span><span class="o">.</span><span class="n">update_metadata</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="n">alg</span>
+            <span class="o">+</span> <span class="s2">&quot;:  Illegal data received.  This function runs only on mspass ensemble objects&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Invalid&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

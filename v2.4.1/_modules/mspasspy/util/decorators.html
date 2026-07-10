@@ -1,0 +1,1662 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mspasspy.util.decorators &#8212; MsPASS 2.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=e9ebdb8f"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mspasspy/util/decorators';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../../../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.util.decorators</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mspasspy.util.decorators</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">decorator</span><span class="w"> </span><span class="kn">import</span> <span class="n">decorator</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream2Seismogram</span><span class="p">,</span> <span class="n">Trace2TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">number_live</span>
+
+<span class="c1"># from mspasspy.global_history.manager import GlobalHistoryManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_helper</span>
+
+<span class="c1"># Arg0/arg1/arg2 passed to wrapper try blocks must be one of these to use elog/ensemble_error.</span>
+<span class="n">_MSPASS_WRAPPER_DATA_TYPES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_function_accepts_argument</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return True if func explicitly declares argument name.</span>
+
+<span class="sd">    This uses the code object instead of inspect.signature because these</span>
+<span class="sd">    decorators are used in tight Dask map loops.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cache_key</span> <span class="o">=</span> <span class="s2">&quot;_mspass_accepts_&quot;</span> <span class="o">+</span> <span class="n">name</span>
+    <span class="n">cached</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cached</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cached</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;__code__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">code</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">accepts</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">narguments</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">co_argcount</span> <span class="o">+</span> <span class="n">code</span><span class="o">.</span><span class="n">co_kwonlyargcount</span>
+        <span class="n">accepts</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">code</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">[:</span><span class="n">narguments</span><span class="p">]</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">,</span> <span class="n">accepts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">accepts</span>
+
+
+<span class="nd">@decorator</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mspass_func_wrapper</span><span class="p">(</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator wrapper to adapt a simple function to the mspass parallel processing framework.</span>
+
+<span class="sd">    This decorator can be used to adapt a processing function to the</span>
+<span class="sd">    mspass framework.  It can be used to handle the following nonstandard</span>
+<span class="sd">    functionality that would not appear in a function outside of mspass:</span>
+<span class="sd">        1.  This decorator can make a function dogmatic about the type of arg0.</span>
+<span class="sd">            A processing function in mspass normally requires arg0 to be a</span>
+<span class="sd">            seismic data type.   If the function being decorated handles</span>
+<span class="sd">            arg0 propertly add `checks_arg0_type=True` to the functions</span>
+<span class="sd">            kwargs list.  That will assure the error handler used by the</span>
+<span class="sd">            function itself will be used instead of the generic wrapper code.</span>
+<span class="sd">            When False (the default) this decorator will always throw a</span>
+<span class="sd">            TypeError with a generic message if arg0 is invalid.</span>
+<span class="sd">        2.  MsPASS data objects all use the concept of the boolean &quot;live&quot;</span>
+<span class="sd">            as a way to mark a datum as valid (dead means it is bad).</span>
+<span class="sd">            MsPASS functios should normally kill a problem datum and</span>
+<span class="sd">            not throw exceptions for anything but system level error</span>
+<span class="sd">            like a malloc error. A properly designed function</span>
+<span class="sd">            has a test for dead data immediately after verifying</span>
+<span class="sd">            arg0 is valid and testing of &quot;data.live&quot; is a valid thing to</span>
+<span class="sd">            do.  To assure that doesn&#39;t happen if checks_arg0_type is</span>
+<span class="sd">            false and the test for a valid type yields success</span>
+<span class="sd">            (i.e. find data is a valid seismic object) a test for</span>
+<span class="sd">            live will data will be done and the functionw will immediately</span>
+<span class="sd">            return a datum marked dead.  If set True, the default, we let</span>
+<span class="sd">            the functions dead data handler do the task.</span>
+<span class="sd">        3.  MsPASS data object have an internal mechanism to preserve</span>
+<span class="sd">            object-level history that records the sequence of algorithms</span>
+<span class="sd">            applied to a piece of data to get it to it&#39;s current stage</span>
+<span class="sd">            This decorator adds that functionality through three kwarg</span>
+<span class="sd">            values: `object_history`,`alg_id&#39;, and `alg_name&#39;.  `object_history`</span>
+<span class="sd">            is  boolean that enables (if True) or disables (False - default)</span>
+<span class="sd">            that mechanism.   The other two are tags.   See the User</span>
+<span class="sd">            Manual for more details.</span>
+<span class="sd">        4.  MsPASS data are either &quot;atomic&quot; (TimeSeries or Seismogram) or</span>
+<span class="sd">            &quot;ensembles&quot; (TimeSeriesEnseble and SeismogramEnsemble).</span>
+<span class="sd">            &quot;ensembles&quot;, however, are a conainer holding one or more</span>
+<span class="sd">            atomic objects.  Processing algorithms may require only atomic</span>
+<span class="sd">            or ensemble objects.  For algorithms that expect atomic data,</span>
+<span class="sd">            however, it is common to need to apply the same function to</span>
+<span class="sd">            all ensemble &quot;members&quot; (the set of atomic objects that define the</span>
+<span class="sd">            ensemble).   Some processing functions are designed to handle</span>
+<span class="sd">            either but some aren&#39;t.  If a function is set up to hanlde</span>
+<span class="sd">            ensembles, the `handles_ensembles` boolean should be set True.</span>
+<span class="sd">            That is set True because a well designed algorithm for use with</span>
+<span class="sd">            MsPASS should do that.  Set `handles_ensembles=False` if the</span>
+<span class="sd">            function is set up to only handle atomic data.  In that situation</span>
+<span class="sd">            the decorator will handle ensembles by setting up a loop to</span>
+<span class="sd">            call the decorated function for each enemble member.</span>
+<span class="sd">        5.  The boolean `inplace_return` should be set True on a function</span>
+<span class="sd">            that it set up like a FORTRAN subroutine or a C void return.</span>
+<span class="sd">            i.e. it doesn&#39;t return anything but alters data internally.</span>
+<span class="sd">            In that situation the decorator returns arg0 that is assumed to</span>
+<span class="sd">            have been altered by the function.</span>
+<span class="sd">        6.  Use `function_return_key` if a function doesn&#39;t return a seismic</span>
+<span class="sd">            data object at all but computes something returned as a value.</span>
+<span class="sd">            If used that capability allows a return value to be mapped into</span>
+<span class="sd">            the Metadata container of the input data object and set with</span>
+<span class="sd">            the specified key.</span>
+
+<span class="sd">    Finally, this decorator has a standardized behavior for handling</span>
+<span class="sd">    ensembles that is not optional.  If the input is an ensemble it is</span>
+<span class="sd">    not at all uncommon to have an algorithm kill all ensemble members.</span>
+<span class="sd">    The ensemble container has a global &quot;live&quot; attribute that this decorator</span>
+<span class="sd">    will set False (i.e. define as dead) if all the member object are marked</span>
+<span class="sd">    dead.</span>
+
+<span class="sd">    :param func: target function</span>
+<span class="sd">    :param data: arg0 of function call being decorated.  This symbol is</span>
+<span class="sd">      expected to point to an input data that is expected to be a MsPASS</span>
+<span class="sd">      data object i.e. TimeSeries, Seismogram, Ensemble.</span>
+<span class="sd">    :param args: extra positional arguments for decorated function</span>
+<span class="sd">    :param object_history:  boolean used to enable or disable</span>
+<span class="sd">       object level history for this function.  When False (default)</span>
+<span class="sd">       object-level history is not enabld for this function.  When</span>
+<span class="sd">       set True the decorator will add object history history th e</span>
+<span class="sd">       name of the function and the value of alg_id.</span>
+<span class="sd">       Object level history is disabled by default for efficiency.</span>
+<span class="sd">       If object_history is set True and the string passed</span>
+<span class="sd">       as alg_id is defined (not None which is the default) each</span>
+<span class="sd">       Seismogram or TimeSeries object will attempt to</span>
+<span class="sd">       save the history through a new_map operation.</span>
+<span class="sd">       If the history chain is empty this will silently generate</span>
+<span class="sd">       an error posted to error log on each object.</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func</span>
+<span class="sd">      while preserving the history.</span>
+<span class="sd">    :type alg_id: str (e.g. str of an ObjectId)</span>
+<span class="sd">    :param alg_name: alternative name to assign the algorithm.  If not</span>
+<span class="sd">      defined (set as None) the name of the decorated function is used.</span>
+<span class="sd">    :type alg_name: :class:`str` or None (default)</span>
+<span class="sd">    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.</span>
+<span class="sd">      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions</span>
+<span class="sd">      but the function returns before attempting any calculations.</span>
+<span class="sd">    :param inplace_return: when func is an in-place function that doesn&#39;t return anything, but you want to</span>
+<span class="sd">       return the origin data (for example, in map-reduce), set inplace_return as true.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">       return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">       define the key used to set that field in the data that is returned.</span>
+<span class="sd">       This feature should normally be considered as a way to wrap an existing</span>
+<span class="sd">       algorithm that you do not wish to alter, but which returns something useful.</span>
+<span class="sd">       In principle that return can be almost anything, but we recommend this feature</span>
+<span class="sd">       be limited to only simple types (i.e. int, float, etc.).  The decorator makes</span>
+<span class="sd">       o type checks so the caller is responsible for assuring what is posted will not cause</span>
+<span class="sd">       downstream problems.  The default for this parameter is None, which</span>
+<span class="sd">       is taken to mean any return of the wrapped function will be ignored.  Note</span>
+<span class="sd">       that when function_return_key is anything but None, it is assumed the</span>
+<span class="sd">       returned object is the (usually modified) data object.  NOTE:  this</span>
+<span class="sd">       options is NOT supported for ensembles.   If you set this value for</span>
+<span class="sd">       ensemble input this decorator will throw a ValueError exception.</span>
+<span class="sd">    :param handles_ensembles:  set True (default) if the function this is applied to</span>
+<span class="sd">      can hangle ensemble objects directly.   When False</span>
+<span class="sd">      this decorator applies the atomic function to each ensemble member in</span>
+<span class="sd">      a loop over membes.</span>
+<span class="sd">    :param kwargs: extra kv arguments</span>
+<span class="sd">    :return: modified seismic data object.  Can be a different type than</span>
+<span class="sd">       the input.   If function_return_key is used only the Metadata</span>
+<span class="sd">       container  should be altered.  On RuntimeError, MsPASSError (non-Fatal),</span>
+<span class="sd">       or generic Exception, arg0 is logged, killed, and returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Add an error trap for arg0 if this function doesn&#39;t do that</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">checks_arg0_type</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;mspass_func_wrapper only accepts mspass object as data input</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type of arg0=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">data</span>
+    <span class="k">if</span> <span class="n">function_return_key</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Usage error:  &quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;function_return_key was defined as </span><span class="si">{}</span><span class="s2"> but input type is an ensemble.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">function_return_key</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;That options is not allowed for ensembles in any function&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="k">if</span> <span class="n">object_history</span> <span class="ow">and</span> <span class="n">alg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">alg_name</span> <span class="o">+</span> <span class="s2">&quot;: object_history was true but alg_id not defined&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dryrun</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="c1"># reverse logic a bit confusing but idea is to do nothing if</span>
+    <span class="c1"># handles_dead_data is true assuming the function will handle dead</span>
+    <span class="c1"># data propertly</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">handles_dead_data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+        <span class="n">run_only_once</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">handles_ensembles</span><span class="p">:</span>
+            <span class="n">run_only_once</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">run_only_once</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># we only get here if checks_arg0_type is True and the</span>
+        <span class="c1"># type is bad - with this logic func will be called and</span>
+        <span class="c1"># we assume it throws an exception</span>
+        <span class="n">run_only_once</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">_function_accepts_argument</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;alg_name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;alg_name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;alg_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg_name</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">run_only_once</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+                <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">function_return_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function_return_key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">function_return_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="n">alg_name</span><span class="p">,</span>
+                        <span class="s2">&quot;Illegal type received for function_return_key argument=&quot;</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">function_return_key</span><span class="p">))</span>
+                        <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Return value not saved in Metadata&quot;</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace_return</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="n">alg_name</span><span class="p">,</span>
+                        <span class="s2">&quot;Inconsistent arguments; inplace_return was set False and function_return_key was not None.</span><span class="se">\n</span><span class="s2">Assuming inplace_return == True is correct&quot;</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="n">data</span>
+            <span class="k">elif</span> <span class="n">inplace_return</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">res</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># this block is only for ensembles - the run_only_once boolean</span>
+            <span class="c1"># means we enter here only if this is an ensmble and the</span>
+            <span class="c1"># boolean handles_ensembles is false</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                <span class="c1"># We need to operate on the member directly or its reference</span>
+                <span class="n">d_member</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="c1"># Call the function for its side effects (in-place)</span>
+                <span class="c1"># or for its return value</span>
+                <span class="n">return_value</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">d_member</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace_return</span><span class="p">:</span>
+                    <span class="c1"># If not in-place, we assume the return value</span>
+                    <span class="c1"># is the new/modified object and we must reassign it.</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">return_value</span>
+
+                <span class="c1"># If inplace_return IS true, we assume d_member was</span>
+                <span class="c1"># modified in-place and the return_value is None.</span>
+                <span class="c1"># We DO NOT reassign data.member[i], as the reference</span>
+                <span class="c1"># d_member already points to the modified object.</span>
+
+                <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+                    <span class="c1"># Log history on the (potentially modified) member</span>
+                    <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
+
+            <span class="c1"># mark ensmeble killed by all applications of func as dead</span>
+            <span class="n">N_live</span> <span class="o">=</span> <span class="n">number_live</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">N_live</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;function killed all ensemble members.  Marking ensemble dead&quot;</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+
+            <span class="c1"># Note the in place return concept does not apply to</span>
+            <span class="c1"># ensemles - all are in place by defintion if passed through</span>
+            <span class="c1"># this wrapper</span>
+            <span class="k">return</span> <span class="n">data</span>
+    <span class="c1"># On failure log arg0, kill it, and return it so callers never see implicit None.</span>
+    <span class="c1"># Fatal MsPASSError is re-raised and does not use this handler.</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="nd">@decorator</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mspass_func_wrapper_multi</span><span class="p">(</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">data1</span><span class="p">,</span>
+    <span class="n">data2</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is</span>
+<span class="sd">    this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented</span>
+<span class="sd">    here. The same processing history and error logs will be duplicated and stored in both of the input.</span>
+
+<span class="sd">    :param func: target function</span>
+<span class="sd">    :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
+<span class="sd">    :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
+<span class="sd">    :param args: extra arguments</span>
+<span class="sd">    :param object_history: True to preserve this processing history in the data object, False not to. object_history</span>
+<span class="sd">     and alg_id are intimately related and control how object level history is handled.</span>
+<span class="sd">     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed</span>
+<span class="sd">     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to</span>
+<span class="sd">     save the history through a new_map operation.   If the history chain is empty this will silently generate</span>
+<span class="sd">     an error posted to error log on each object.</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.</span>
+<span class="sd">      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions</span>
+<span class="sd">      but the function returns before attempting any calculations.</span>
+<span class="sd">    :param kwargs: extra kv arguments</span>
+<span class="sd">    :return: the output of func.  On RuntimeError, MsPASSError (non-Fatal), or</span>
+<span class="sd">      generic Exception, both inputs are logged, killed, and data1 is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;mspass_func_wrapper_multi only accepts mspass object as data input</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type of arg0=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">)))</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">data2</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;mspass_func_wrapper_multi only accepts mspass object as data input&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="k">if</span> <span class="n">object_history</span> <span class="ow">and</span> <span class="n">alg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">alg_name</span> <span class="o">+</span> <span class="s2">&quot;: object_history was true but alg_id not defined&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dryrun</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
+
+    <span class="k">if</span> <span class="n">is_input_dead</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">):</span>
+        <span class="k">return</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="c1"># On failure log each input, kill both, and return data1 so callers never see implicit None.</span>
+    <span class="c1"># Fatal MsPASSError is re-raised and does not use this handler.</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">data2</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
+
+
+<span class="nd">@decorator</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mspass_method_wrapper</span><span class="p">(</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">selfarg</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator wrapper to adapt a class method function to the mspass parallel processing framework.</span>
+
+<span class="sd">    This function serves as a decorator wrapper, which is widely used in the mspasspy library.</span>
+<span class="sd">    It is used to wrap class methods which implement a method that does something</span>
+<span class="sd">    to a mspass data object that is assumed to be passed as arg0 of the method.</span>
+<span class="sd">    This decorator executes the target method on the input data.  It is used</span>
+<span class="sd">    mainly to reduce duplicate code to perserve history and error logs</span>
+<span class="sd">    with mspass object.</span>
+
+<span class="sd">    A large fraction of algorithms used in mspass are &quot;atomic&quot; meaning</span>
+<span class="sd">    they only operator on TimeSeries and/or Seismogram objects.   In mspass</span>
+<span class="sd">    an &quot;ensemble&quot; is a container with multiple atomic objects.  This decorator</span>
+<span class="sd">    can then also be used to adapt an atomic algorithm to work automatically</span>
+<span class="sd">    with ensembles.   When using the decorator if the funtion being decorated</span>
+<span class="sd">    works only on atomic data set the boolean `handles_ensembles` should be</span>
+<span class="sd">    set as False.   True, which is the default, should be used functions that</span>
+<span class="sd">    handle ensembles automatically.</span>
+
+
+<span class="sd">    :param func: target function</span>
+<span class="sd">    :param selfarg:  the self pointer for the class with which this method is associated</span>
+<span class="sd">    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
+<span class="sd">    :param args: extra arguments</span>
+<span class="sd">    :param object_history: True to preserve this processing history in the data object, False not to. object_history</span>
+<span class="sd">       and alg_id are intimately related and control how object level history is handled.</span>
+<span class="sd">       Object level history is disabled by default for efficiency.  If object_history is set True and the string passed</span>
+<span class="sd">       as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to</span>
+<span class="sd">       save the history through a new_map operation.   If the history chain is empty this will silently generate</span>
+<span class="sd">       an error posted to error log on each object.</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.</span>
+<span class="sd">      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions</span>
+<span class="sd">      but the function returns before attempting any calculations.</span>
+<span class="sd">    :param inplace_return: when func is an in-place function that doesn&#39;t return anything, but you want to</span>
+<span class="sd">       return the origin data (for example, in map-reduce), set inplace_return as true.</span>
+<span class="sd">    :param function_return_key:  Some functions one might want to wrap with this decorator</span>
+<span class="sd">       return something that is appropriate to save as Metadata.  If so, use this argument to</span>
+<span class="sd">       define the key used to set that field in the data that is returned.</span>
+<span class="sd">       This feature should normally be considered as a way to wrap an existing</span>
+<span class="sd">       algorithm that you do not wish to alter, but which returns something useful.</span>
+<span class="sd">       In principle that return can be almost anything, but we recommend this feature</span>
+<span class="sd">       be limited to only simple types (i.e. int, float, etc.).  The decorator makes</span>
+<span class="sd">       no type checks so the caller is responsible for assuring what is posted will not cause</span>
+<span class="sd">       downstream problems.  The default for this parameter is None, which</span>
+<span class="sd">       is taken to mean any return of the wrapped function will be ignored.  Note</span>
+<span class="sd">       that when function_return_key is anything but None, it is assumed the</span>
+<span class="sd">       returned object is the (usually modified) data object.</span>
+<span class="sd">     :param handles_ensembles:  set True (default) if the function this is applied to</span>
+<span class="sd">       can hangle ensemble objects directly.   When False this decorator</span>
+<span class="sd">       applies the atomic function to each ensemble member in</span>
+<span class="sd">       a loop over members.</span>
+<span class="sd">    :param kwargs: extra kv arguments</span>
+<span class="sd">    :return: origin data or the output of func.  On RuntimeError, MsPASSError</span>
+<span class="sd">       (non-Fatal), or generic Exception, arg0 is logged, killed, and returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Add an error trap for arg0 if this function doesn&#39;t do that</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">checks_arg0_type</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;mspass_method_wrapper only accepts mspass object as data input</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type of arg0=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">data</span>
+
+    <span class="c1"># if not defined</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
+        <span class="c1"># This obscure construct sets arg_name to the class name.</span>
+        <span class="c1"># str is needed as type alone returns a type class.  str makes it a name</span>
+        <span class="c1"># although the name is a bit ugly.</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">selfarg</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">object_history</span> <span class="ow">and</span> <span class="n">alg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">alg_name</span> <span class="o">+</span> <span class="s2">&quot;: object_history was true but alg_id not defined&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">function_return_key</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Usage error:  &quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;function_return_key was defined as </span><span class="si">{}</span><span class="s2"> but input type is an ensemble.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">function_return_key</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;That options is not allowed for ensembles in any class method&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dryrun</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
+
+    <span class="c1"># reverse logic a bit confusing but idea is to do nothing if</span>
+    <span class="c1"># handles_dead_data is true assuming the function will handle dead</span>
+    <span class="c1"># data propertly</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">handles_dead_data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+        <span class="n">run_only_once</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">handles_ensembles</span><span class="p">:</span>
+            <span class="n">run_only_once</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">run_only_once</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># we only get here if checks_arg0_type is True and the</span>
+        <span class="c1"># type is bad - with this logic func will be called and</span>
+        <span class="c1"># we assume it throws an exception</span>
+        <span class="n">run_only_once</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">run_only_once</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">selfarg</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+                <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">function_return_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function_return_key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">function_return_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="n">alg_name</span><span class="p">,</span>
+                        <span class="s2">&quot;Illegal type received for function_return_key argument=&quot;</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">function_return_key</span><span class="p">))</span>
+                        <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Return value not saved in Metadata&quot;</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace_return</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="n">alg_name</span><span class="p">,</span>
+                        <span class="s2">&quot;Inconsistent arguments; inplace_return was set False and function_return_key was not None.</span><span class="se">\n</span><span class="s2">Assuming inplace_return == True is correct&quot;</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="n">data</span>
+            <span class="k">elif</span> <span class="n">inplace_return</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">res</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># this block is only for ensembles - the run_only_once boolean</span>
+            <span class="c1"># means we enter here only if this is an ensmble and the</span>
+            <span class="c1"># boolean handles_ensembles is false</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                <span class="c1"># alias to make logic clearer</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">selfarg</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace_return</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+                <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+                    <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
+
+            <span class="c1"># mark ensmeble killed by all applications of func as dead</span>
+            <span class="n">N_live</span> <span class="o">=</span> <span class="n">number_live</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">N_live</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;function killed all ensemble members.  Marking ensemble dead&quot;</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="c1"># Note the in place return concept does not apply to</span>
+            <span class="c1"># ensembles - all are in place by defintion if passed through</span>
+            <span class="c1"># this wrapper</span>
+            <span class="k">return</span> <span class="n">data</span>
+    <span class="c1"># On failure log arg0, kill it, and return it so callers never see implicit None.</span>
+    <span class="c1"># Fatal MsPASSError is re-raised and does not use this handler.</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+
+<div class="viewcode-block" id="is_input_dead">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.is_input_dead">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_input_dead</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A helper method to see if any mspass objects in the input parameters are dead. If one is dead,</span>
+<span class="sd">    we should keep silent, i.e. no longer perform any further operations on this dead mspass object.</span>
+<span class="sd">    Note for an ensemble object, only if all the objects of it are dead, we mark them as dead,</span>
+<span class="sd">    otherwise they are still alive.</span>
+
+<span class="sd">    :param args: any parameters.</span>
+<span class="sd">    :param kwargs: any key-word parameters.</span>
+<span class="sd">    :return: True if there is a dead mspass object in the parameters, False if no mspass objects in the input parameters</span>
+<span class="sd">     or all of them are still alive.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="ow">and</span> <span class="n">arg</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)</span> <span class="ow">and</span> <span class="n">arg</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+            <span class="c1"># Check the ensemble&#39;s own flag first</span>
+            <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="c1"># This logic is: if all members are dead, return True.</span>
+            <span class="c1"># If any live member is found, return False.</span>
+            <span class="n">all_dead</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">arg</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ts</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                    <span class="n">all_dead</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">all_dead</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">all_dead</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">seis</span> <span class="ow">in</span> <span class="n">arg</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">seis</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                    <span class="n">all_dead</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">all_dead</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">Seismogram</span><span class="p">)</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">all_dead</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ts</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                    <span class="n">all_dead</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">all_dead</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">all_dead</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">seis</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">seis</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                    <span class="n">all_dead</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">all_dead</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="timeseries_copy_helper">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_copy_helper">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">timeseries_copy_helper</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="c1"># keys in this list are ignored - for now only one but made a list</span>
+    <span class="c1"># to simplify additions later</span>
+    <span class="n">metadata_to_ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">]</span>
+    <span class="n">ts1</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">npts</span>
+    <span class="n">ts1</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">ts1</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">tref</span>
+    <span class="n">ts1</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">live</span>
+    <span class="n">ts1</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">t0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ts2</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># other metadata copy</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
+            <span class="c1"># because this is used only in decorator we can assure</span>
+            <span class="c1"># overrides are consistent</span>
+            <span class="n">ts1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="c1"># We need to clear this/these too as if they were already there the</span>
+    <span class="c1"># above logic preserves them</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ts1</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">ts1</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">ts1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="timeseries_ensemble_copy_helper">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_ensemble_copy_helper">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">timeseries_ensemble_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="p">,</span> <span class="n">es2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copy converted time-series ensemble state back to the original object.</span>
+
+<span class="sd">    :param es1: destination ensemble originally supplied by the caller.</span>
+<span class="sd">    :param es2: source ensemble reconstructed after conversion.</span>
+<span class="sd">    :return: ``None``; ``es1`` is modified in place.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+        <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="c1"># fixme: not sure in what algorithm the length of es1 and es2 would be different</span>
+    <span class="c1"># also, the following does not address uninitiated history issues in the extended elements</span>
+    <span class="c1"># same problem applies to the seismogram_ensemble_copy_helper</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
+        <span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="p">:])</span></div>
+
+
+
+<span class="nd">@decorator</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">timeseries_as_trace</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This decorator converts all the mspasspy TimeSeries objects in user inputs (*args and **kargs)</span>
+<span class="sd">    to trace objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
+<span class="sd">    the trace objects will be converted back by overriding the data and metadata of the origin mspasspy objects. This</span>
+<span class="sd">    wrapper makes it easy to process mspasspy objects using Obspy methods.</span>
+
+<span class="sd">    :param func: target func</span>
+<span class="sd">    :param args: extra arguments</span>
+<span class="sd">    :param kwargs: extra kv arguments</span>
+<span class="sd">    :return: the output of func</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_input_dead</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">converted_args</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted_args_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">converted_kwargs_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toTrace</span><span class="p">())</span>
+            <span class="n">converted_args_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toTrace</span><span class="p">()</span>
+            <span class="n">converted_kwargs_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">converted_args</span><span class="p">,</span> <span class="o">**</span><span class="n">converted_kwargs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+        <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span>
+
+
+<div class="viewcode-block" id="seismogram_copy_helper">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_copy_helper">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">seismogram_copy_helper</span><span class="p">(</span><span class="n">seis1</span><span class="p">,</span> <span class="n">seis2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copy converted seismogram state back to the original object.</span>
+
+<span class="sd">    :param seis1: destination seismogram originally supplied by the caller.</span>
+<span class="sd">    :param seis2: source seismogram reconstructed after conversion.</span>
+<span class="sd">    :return: ``None``; ``seis1`` is modified in place.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># keys in this list are ignored - for now only one but made a list</span>
+    <span class="c1"># to simplify additions later</span>
+    <span class="n">metadata_to_ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">]</span>
+    <span class="n">seis1</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">npts</span>
+    <span class="n">seis1</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">seis1</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">tref</span>
+    <span class="n">seis1</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">live</span>
+    <span class="n">seis1</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">t0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">seis2</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># other metadata copy</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
+            <span class="c1"># because this is used only in decorator we can assure</span>
+            <span class="c1"># overrides are consistent</span>
+            <span class="n">seis1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="c1"># We need to clear this/these too as if they were already there the</span>
+    <span class="c1"># above logic preserves them</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">seis1</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">seis1</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">seis1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="seismogram_ensemble_copy_helper">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_ensemble_copy_helper">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">seismogram_ensemble_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="p">,</span> <span class="n">es2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copy converted seismogram ensemble state back to the original object.</span>
+
+<span class="sd">    :param es1: destination ensemble originally supplied by the caller.</span>
+<span class="sd">    :param es2: source ensemble reconstructed after conversion.</span>
+<span class="sd">    :return: ``None``; ``es1`` is modified in place.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+        <span class="n">seismogram_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
+        <span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="p">:])</span></div>
+
+
+
+<span class="nd">@decorator</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">seismogram_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This decorator converts all the mspasspy Seismogram objects in user inputs (*args and **kargs)</span>
+<span class="sd">    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
+<span class="sd">    the stream objects will be converted back by overriding the data and metadata of the origin mspasspy objects.</span>
+
+<span class="sd">    :param func: target func</span>
+<span class="sd">    :param args: extra arguments</span>
+<span class="sd">    :param kwargs: extra kv arguments</span>
+<span class="sd">    :return: the output of func</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_input_dead</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">converted_args</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">converted_args_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted_kwargs_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">Seismogram</span><span class="p">):</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
+            <span class="n">converted_args_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">Seismogram</span><span class="p">):</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+            <span class="n">converted_kwargs_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">converted_args</span><span class="p">,</span> <span class="o">**</span><span class="n">converted_kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">converted</span><span class="p">:</span>
+        <span class="c1"># todo save relative time attribute</span>
+        <span class="c1"># fixme cardinal here</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+            <span class="n">seis</span> <span class="o">=</span> <span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">seis</span><span class="o">.</span><span class="n">data</span>
+            <span class="c1"># metadata copy</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">seis</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+            <span class="n">seis</span> <span class="o">=</span> <span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">seis</span><span class="o">.</span><span class="n">data</span>
+            <span class="c1"># metadata copy</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">seis</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">res</span>
+
+
+<span class="nd">@decorator</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">timeseries_ensemble_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs (*args and **kargs)</span>
+<span class="sd">    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
+<span class="sd">    the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</span>
+
+<span class="sd">    :param func: target func</span>
+<span class="sd">    :param args: extra arguments</span>
+<span class="sd">    :param kwargs: extra kv arguments</span>
+<span class="sd">    :return: the output of func</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_input_dead</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">converted_args</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">converted_args_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted_kwargs_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
+            <span class="n">converted_args_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+            <span class="n">converted_kwargs_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">converted_args</span><span class="p">,</span> <span class="o">**</span><span class="n">converted_kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">converted</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+            <span class="n">tse</span> <span class="o">=</span> <span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toTimeSeriesEnsemble</span><span class="p">()</span>
+            <span class="n">timeseries_ensemble_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tse</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+            <span class="n">tse</span> <span class="o">=</span> <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toTimeSeriesEnsemble</span><span class="p">()</span>
+            <span class="n">timeseries_ensemble_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">tse</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span>
+
+
+<span class="nd">@decorator</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">seismogram_ensemble_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This decorator converts all the mspasspy Seismogram ensemble objects in user inputs (*args and **kargs)</span>
+<span class="sd">    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
+<span class="sd">    the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</span>
+
+<span class="sd">    :param func: target func</span>
+<span class="sd">    :param args: extra arguments</span>
+<span class="sd">    :param kwargs: extra kv arguments</span>
+<span class="sd">    :return: the output of func</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_input_dead</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">converted_args</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">converted_args_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted_kwargs_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">converted</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
+            <span class="n">converted_args_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+            <span class="n">converted_kwargs_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">converted_args</span><span class="p">,</span> <span class="o">**</span><span class="n">converted_kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">converted</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+            <span class="n">seis_e</span> <span class="o">=</span> <span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span><span class="p">()</span>
+            <span class="n">seismogram_ensemble_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">seis_e</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+            <span class="n">seis_e</span> <span class="o">=</span> <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span><span class="p">()</span>
+            <span class="n">seismogram_ensemble_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">seis_e</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span>
+
+
+<span class="nd">@decorator</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mspass_reduce_func_wrapper</span><span class="p">(</span>
+    <span class="n">func</span><span class="p">,</span>
+    <span class="n">data1</span><span class="p">,</span>
+    <span class="n">data2</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1</span>
+<span class="sd">    and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1</span>
+<span class="sd">    and data2. Other functionalities are the same as mspass_func_wrapper.</span>
+
+<span class="sd">    :param func: target function</span>
+<span class="sd">    :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
+<span class="sd">    :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
+<span class="sd">    :param args: extra arguments</span>
+<span class="sd">    :param object_history: True to preserve this processing history in the data object, False not to. object_history</span>
+<span class="sd">     and alg_id are intimately related and control how object level history is handled.</span>
+<span class="sd">     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed</span>
+<span class="sd">     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to</span>
+<span class="sd">     save the history through a new_reduce operation. If the history chain is empty this will silently generate</span>
+<span class="sd">     an error posted to error log on each object.</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.</span>
+<span class="sd">      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions</span>
+<span class="sd">      but the function returns before attempting any calculations.</span>
+<span class="sd">    :param kwargs: extra kv arguments</span>
+<span class="sd">    :return: the output of func.  On RuntimeError, logged MsPASSError</span>
+<span class="sd">      (Informational or Debug), or generic Exception, both inputs are killed</span>
+<span class="sd">      and data1 is returned; other MsPASSError severities are re-raised.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;data2 has a different type as data1&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only mspass objects are supported in reduce wrapped methods&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">object_history</span> <span class="ow">and</span> <span class="n">alg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">alg_name</span> <span class="o">+</span> <span class="s2">&quot;: object_history was true but alg_id not defined&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dryrun</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="c1"># On failure log both inputs, kill both, and return data1 so callers never see implicit None.</span>
+    <span class="c1"># mspass_reduce_func_wrapper MsPASSError: only Informational/Debug are logged here; others re-raise.</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">!=</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span>
+            <span class="ow">and</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">!=</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Debug</span>
+        <span class="p">):</span>
+            <span class="k">raise</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">data2</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
+
+
+<span class="c1"># @decorator</span>
+<span class="c1"># def mspass_func_wrapper_global_history(func, *args, global_history=None, **kwargs):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This decorator helps the global history manager to log down the usage of any mspasspy function if global history manager provided,</span>
+<span class="c1">#     and then execute the func with the user inputs.</span>
+
+<span class="c1">#     :param func: target func</span>
+<span class="c1">#     :param args: extra arguments</span>
+<span class="c1">#     :param global_history: global history manager object passed to save the usage of this function to database</span>
+<span class="c1">#     :type global_history: :class:`mspasspy.global_history.manager.GlobalHistoryManager`</span>
+<span class="c1">#     :param kwargs: extra kv arguments</span>
+<span class="c1">#     :return: the output of func</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     if global_history:</span>
+<span class="c1">#         if not isinstance(global_history, GlobalHistoryManager):</span>
+<span class="c1">#             raise TypeError(&quot;only an object with the type GlobalHistoryManager should be passes as an argument as global_history.&quot;)</span>
+
+<span class="c1">#         alg_name = func.__name__</span>
+<span class="c1">#         # get the whole map algorithm string</span>
+<span class="c1">#         alg_string = getsource(func)</span>
+<span class="c1">#         # extract parameters</span>
+<span class="c1">#         args_str = &quot;,&quot;.join(f&quot;{value}&quot; for value in args)</span>
+<span class="c1">#         kwargs_str = &quot;,&quot;.join(f&quot;{key}={value}&quot; for key, value in kwargs.items())</span>
+<span class="c1">#         parameters = args_str</span>
+<span class="c1">#         if kwargs_str:</span>
+<span class="c1">#             parameters += &quot;,&quot; + kwargs_str</span>
+
+<span class="c1">#         # get the alg_id if exists, else create a new one</span>
+<span class="c1">#         alg_id = global_history.get_alg_id(alg_name, parameters)</span>
+<span class="c1">#         if not alg_id:</span>
+<span class="c1">#             alg_id = ObjectId()</span>
+<span class="c1">#         global_history.logging(alg_id, alg_name, parameters)</span>
+
+<span class="c1">#     return func(*args, **kwargs)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

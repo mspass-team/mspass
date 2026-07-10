@@ -1,0 +1,172 @@
+:root {
+  --pst-color-primary: #27627a;
+  --pst-color-secondary: #6b705c;
+  --pst-color-accent: #b45f3a;
+  --pst-color-link: #1f6f8b;
+  --pst-color-link-hover: #164f63;
+  --pst-font-family-base-system: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --pst-font-family-heading: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --pst-font-family-monospace-system: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+html[data-theme="dark"] {
+  --pst-color-primary: #7bb6ca;
+  --pst-color-secondary: #adb591;
+  --pst-color-accent: #e09a79;
+  --pst-color-link: #8ac7dd;
+  --pst-color-link-hover: #b9dfeb;
+}
+
+.bd-page-width {
+  max-width: 118rem;
+}
+
+.bd-main .bd-content .bd-article-container {
+  max-width: 92rem;
+}
+
+.bd-main .bd-content .bd-article {
+  line-height: 1.62;
+}
+
+.bd-sidebar-primary,
+.bd-sidebar-secondary {
+  font-size: 0.94rem;
+}
+
+.bd-sidebar-primary,
+.bd-sidebar-secondary {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.bd-sidebar-primary::-webkit-scrollbar,
+.bd-sidebar-secondary::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+}
+
+.bd-header .navbar-brand {
+  font-weight: 700;
+}
+
+.bd-header .navbar-brand img {
+  max-height: 2.75rem;
+}
+
+.mspass-home-banner {
+  display: block;
+  margin: 0 auto 1.5rem;
+  max-width: 64rem;
+  width: 100%;
+}
+
+.bd-header .navbar-nav > .nav-item > .nav-link {
+  font-weight: 600;
+}
+
+.sig,
+.highlight,
+pre {
+  border-radius: 6px;
+}
+
+.sig {
+  overflow-x: auto;
+}
+
+.pst-scrollable-table-container {
+  overflow-x: auto;
+}
+
+table.docutils,
+table.autosummary,
+table.longtable {
+  width: 100%;
+}
+
+table.docutils th,
+table.docutils td {
+  vertical-align: top;
+}
+
+.mspass-doxygen-frame {
+  background: var(--pst-color-background);
+  border: 1px solid var(--pst-color-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+  display: block;
+  max-width: 100%;
+}
+
+.bd-sidebar-primary .bd-links__title {
+  color: var(--pst-color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+}
+
+.bd-sidebar-primary .bd-toc-item {
+  max-height: none;
+}
+
+.bd-sidebar-primary .bd-sidenav {
+  margin-bottom: 1.25rem;
+}
+
+.bd-sidebar-primary .bd-sidenav p.caption {
+  color: var(--pst-color-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 1rem 0 0.25rem;
+}
+
+.bd-sidebar-primary .bd-sidenav .nav-link {
+  border-radius: 4px;
+  line-height: 1.25;
+  padding-bottom: 0.28rem;
+  padding-top: 0.28rem;
+}
+
+.bd-sidebar-primary .bd-sidenav .active > .nav-link,
+.bd-sidebar-primary .bd-sidenav .current > .nav-link {
+  background: rgba(39, 98, 122, 0.12);
+  color: var(--pst-color-primary);
+  font-weight: 700;
+}
+
+html[data-theme="dark"] .bd-sidebar-primary .bd-sidenav .active > .nav-link,
+html[data-theme="dark"] .bd-sidebar-primary .bd-sidenav .current > .nav-link {
+  background: rgba(123, 182, 202, 0.16);
+}
+
+@media (min-width: 960px) {
+  .bd-sidebar-primary {
+    flex-basis: 20rem;
+    max-width: 20rem;
+  }
+}
+
+.bd-header .bd-navbar-elements .nav-link,
+.bd-header .bd-navbar-elements .dropdown-toggle {
+  font-size: 0.94rem;
+}
+
+.bd-header .bd-navbar-elements .dropdown-menu {
+  border-radius: 6px;
+}
+.mspass-doxygen-graph {
+  background: #f6f8fa;
+  border-radius: 6px;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 0.75rem;
+}
+
+html[data-theme="dark"] img.mspass-doxygen-graph {
+  background: transparent !important;
+  filter: invert(0.94) hue-rotate(180deg) saturate(0.8) brightness(1.08) contrast(0.96) !important;
+}

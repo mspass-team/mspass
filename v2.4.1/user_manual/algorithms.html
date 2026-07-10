@@ -1,0 +1,1093 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Algorithms &#8212; MsPASS 2.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=e9ebdb8f"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/algorithms';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Deconvolution Operators" href="deconvolution.html" />
+    <link rel="prev" title="What database schema should I use?" href="schema_choices.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Algorithms</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="algorithms">
+<span id="id1"></span><h1>Algorithms<a class="headerlink" href="#algorithms" title="Link to this heading">#</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>This page is a quick reference to algorithms available in MsPASS.
+The functions described here are all algorithms for handling MsPASS
+seismic data objects.   Utility functions for other objectives are described
+elsewhere.</p>
+<p>The API of all the functions described here is standardized.   Key features
+to be aware of are:</p>
+<ol class="arabic simple">
+<li><p>All functions assume arg0 is a seismic data object.</p></li>
+<li><p>Some functions can handle all data types and some are more restictive.
+The tables below provides a quick reference in addition to the docstrings.</p></li>
+<li><p>All functions enforce the data type of arg0 and will throw a TypeError
+exception for any mismatch.</p></li>
+<li><p>All implement the dead/live concept.  In particular, all have the behavior
+that if the data object passed as arg0 is marked dead it immediately
+returns.  If the type of input and output are the same the return is
+identical to the input.   If the type changes and an input datum is
+marked dead the output will be a default constructed version of the output type
+with a copy of the Metadata from the input and a copy of the input’s error
+log.</p></li>
+<li><p>All functions that are intrinsically atomic (i.e. operates on <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>
+and/or <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects) also work ensembles.   In MsPASS an
+ensemble is just a container with one or more atomic data stored under the
+common symbol <code class="code docutils literal notranslate"><span class="pre">member</span></code>.  (e.g. if e is a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>,
+then e.member[i] is the ith component <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> object.) Atomic
+algorithms applied to ensemble are always done as a loop over the
+<code class="code docutils literal notranslate"><span class="pre">member</span></code> array.</p></li>
+<li><p>No MsPASS will throw an exception except for a usage error or a system
+level failure that is unrecoverable.   When an individual datum has
+issues that don’t allow the algorithm to work with the specified
+inputs (e.g. windowing when the window range is outside the time range of
+the data) the datum will be killed with a message posted to the object’s
+error log.</p></li>
+</ol>
+<p>This document is organized as a set of tables with hyperlinks to the docstrings
+for each algorithm function.</p>
+</section>
+<section id="processing-functions">
+<h2>Processing Functions<a class="headerlink" href="#processing-functions" title="Link to this heading">#</a></h2>
+<p>These algorithms have a function form to allow their use in parallel map
+operations.   They are functions that have one or more seismic data
+objects as inputs and return the output of the algorithm.  The output
+may or may not be the same type.   Some are wrappers
+for obspy functions, some are written in C++ with python wrappers, and
+some are pure C++ functions with python bindings.   Note the name field in the
+table below is a hyperlink to the docstring for that function.</p>
+<p>Note also if an input or output are listed as <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> it
+will also process a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> with a loop.
+Similarly, if input or output is listed as  <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> the
+function will also process a <code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code> with a loop.
+When input or output are listed as “any” it means any seismic data
+type is handled.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-number">Table 3 </span><span class="caption-text">Processing Functions</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Synopsis</p></th>
+<th class="head"><p>Inputs</p></th>
+<th class="head"><p>Outputs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate" title="mspasspy.algorithms.signals.correlate"><code class="xref py py-func docutils literal notranslate"><span class="pre">correlate</span></code></a></p></td>
+<td><p>Cross-correlate pair of signals (obspy)</p></td>
+<td><p>TimeSeries</p></td>
+<td><p>TimeSeries</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate_stream_template" title="mspasspy.algorithms.signals.correlate_stream_template"><code class="xref py py-func docutils literal notranslate"><span class="pre">correlate_stream_template</span></code></a></p></td>
+<td><p>obspy correlation of many with a template</p></td>
+<td><p>TimeSeriesEnsemble(arg)),TimeSeries(arg1)</p></td>
+<td><p>TimeSeriesEnsemble</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate_template" title="mspasspy.algorithms.signals.correlate_template"><code class="xref py py-func docutils literal notranslate"><span class="pre">correlate_template</span></code></a></p></td>
+<td><p>obspy single channel correlation against a template</p></td>
+<td><p>TimeSeries</p></td>
+<td><p>TimeSeries</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.detrend" title="mspasspy.algorithms.signals.detrend"><code class="xref py py-func docutils literal notranslate"><span class="pre">detrend</span></code></a></p></td>
+<td><p>obspy detrend algorithm</p></td>
+<td><p>TimeSeries</p></td>
+<td><p>TimeSeries</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.filter" title="mspasspy.algorithms.signals.filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter</span></code></a></p></td>
+<td><p>obspy time-invariant filter function</p></td>
+<td><p>All</p></td>
+<td><p>Same as input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.interpolate" title="mspasspy.algorithms.signals.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate</span></code></a></p></td>
+<td><p>obspy function to resample using interpolation</p></td>
+<td><p>TimeSeries</p></td>
+<td><p>TimeSeries</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData" title="mspasspy.algorithms.window.WindowData"><code class="xref py py-func docutils literal notranslate"><span class="pre">WindowData</span></code></a></p></td>
+<td><p>Cut a smaller window from a larger segment</p></td>
+<td><p>All</p></td>
+<td><p>Same as input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge</span></code></a></p></td>
+<td><p>Combine a set of segments into one</p></td>
+<td><p>TimeSeriesEnsemble (member vector)</p></td>
+<td><p>TimeSeries</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.scale" title="mspasspy.algorithms.window.scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">scale</span></code></a></p></td>
+<td><p>scale data to specified level with a specified amplitude metric</p></td>
+<td><p>Any</p></td>
+<td><p>Same as input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC" title="mspasspy.algorithms.snr.broadband_snr_QC"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadband_snr_QC</span></code></a></p></td>
+<td><p>Computes a series of snr-based amplitude metrics and posts them to output Metadata</p></td>
+<td><p>TimeSeries or Seismogram</p></td>
+<td><p>Same as input (Metadata altered)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.arrival_snr" title="mspasspy.algorithms.snr.arrival_snr"><code class="xref py py-func docutils literal notranslate"><span class="pre">arrival_snr</span></code></a></p></td>
+<td><p>Computes a series of snr-based amplitude metrics relative to an Extarrival time</p></td>
+<td><p>TimeSeries</p></td>
+<td><p>TimeSeries (Metadata altered)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code></p></td>
+<td><p>Computes a set of broadband snr estimates in the frequency domain</p></td>
+<td><p>TimeSeries</p></td>
+<td><p>[dict,ErrorLogger]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.ArrivalTimeReference" title="mspasspy.ccore.algorithms.basic.ArrivalTimeReference"><code class="xref py py-func docutils literal notranslate"><span class="pre">ArrivalTimeReference</span></code></a></p></td>
+<td><p>Shifts time 0 to arrival time defined by a Metadata key</p></td>
+<td><p>Seismogram or SeismogramEnsemble</p></td>
+<td><p>Same as input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.agc" title="mspasspy.ccore.algorithms.basic.agc"><code class="xref py py-func docutils literal notranslate"><span class="pre">agc</span></code></a></p></td>
+<td><p>Applies an automatic gain control operator with a specified duration</p></td>
+<td><p>Seismogram</p></td>
+<td><p>TimeSeries of gains, Seismogram input altered in place</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.repair_overlaps" title="mspasspy.ccore.algorithms.basic.repair_overlaps"><code class="xref py py-func docutils literal notranslate"><span class="pre">repair_overlaps</span></code></a></p></td>
+<td><p>Repair overlapping data segments</p></td>
+<td><p>list of TimeSeries</p></td>
+<td><p>TimeSeries</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.seed_ensemble_sort" title="mspasspy.ccore.algorithms.basic.seed_ensemble_sort"><code class="xref py py-func docutils literal notranslate"><span class="pre">seed_ensemble_sort</span></code></a></p></td>
+<td><p>Sorts an ensemble into net:sta:chan:loc order</p></td>
+<td><p>TimeSeriesEnsemble</p></td>
+<td><p>TimeSeriesEnsemble</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.splice_segments" title="mspasspy.ccore.algorithms.basic.splice_segments"><code class="xref py py-func docutils literal notranslate"><span class="pre">splice_segments</span></code></a></p></td>
+<td><p>Splice a list of TimeSeries objects into a continuous single TimeSeries</p></td>
+<td><p>list of TimeSeries</p></td>
+<td><p>TimeSeries</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">bundle</span></code></p></td>
+<td><p>Bundle a TimeSeriesEnsemble into a SeismogramEnsemble</p></td>
+<td><p>TimeSeriesEnsemble</p></td>
+<td><p>SeismogramEnsemble</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.BundleSEEDGroup" title="mspasspy.algorithms.bundle.BundleSEEDGroup"><code class="xref py py-func docutils literal notranslate"><span class="pre">BundleSEEDGroup</span></code></a></p></td>
+<td><p>Bundle a list of TimeSeries into a Seismogram object</p></td>
+<td><p>list of TimeSeries</p></td>
+<td><p>Seismogram</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ExtractComponent" title="mspasspy.algorithms.basic.ExtractComponent"><code class="xref py py-func docutils literal notranslate"><span class="pre">ExtractComponent</span></code></a></p></td>
+<td><p>Extract one component from a Seismogram or SeismogramEnsemble</p></td>
+<td><p>Seismogram or SeismogramEnsemble</p></td>
+<td><p>TimeSeries or TimeSeriesEnsemble</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ator" title="mspasspy.algorithms.basic.ator"><code class="xref py py-func docutils literal notranslate"><span class="pre">ator</span></code></a></p></td>
+<td><p>Change from UTC to relative time standard</p></td>
+<td><p>any</p></td>
+<td><p>same as input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rtoa" title="mspasspy.algorithms.basic.rtoa"><code class="xref py py-func docutils literal notranslate"><span class="pre">rtoa</span></code></a></p></td>
+<td><p>Change from relative to UTC time standard</p></td>
+<td><p>any</p></td>
+<td><p>same as input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate" title="mspasspy.algorithms.basic.rotate"><code class="xref py py-func docutils literal notranslate"><span class="pre">rotate</span></code></a></p></td>
+<td><p>Generic coordinate rotation</p></td>
+<td><p>Seismogram or SeismogramEnsemble</p></td>
+<td><p>same as input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate_to_standard" title="mspasspy.algorithms.basic.rotate_to_standard"><code class="xref py py-func docutils literal notranslate"><span class="pre">rotate_to_standard</span></code></a></p></td>
+<td><p>Restore data to cardinal directions</p></td>
+<td><p>Seismogram or SeismogramEnsemble</p></td>
+<td><p>same as input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform" title="mspasspy.algorithms.basic.transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform</span></code></a></p></td>
+<td><p>Apply a general transformation matrix to 3C data</p></td>
+<td><p>Seismogram or SeismogramEnsemble</p></td>
+<td><p>same as input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.linear_taper" title="mspasspy.algorithms.basic.linear_taper"><code class="xref py py-func docutils literal notranslate"><span class="pre">linear_taper</span></code></a></p></td>
+<td><p>Apply a one-sided, linear taper</p></td>
+<td><p>any</p></td>
+<td><p>same as input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.cosine_taper" title="mspasspy.algorithms.basic.cosine_taper"><code class="xref py py-func docutils literal notranslate"><span class="pre">cosine_taper</span></code></a></p></td>
+<td><p>Apply a one-sided, cosine taper</p></td>
+<td><p>any</p></td>
+<td><p>same as input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.vector_taper" title="mspasspy.algorithms.basic.vector_taper"><code class="xref py py-func docutils literal notranslate"><span class="pre">vector_taper</span></code></a></p></td>
+<td><p>Apply a taper defined by a vector of samples</p></td>
+<td><p>any</p></td>
+<td><p>same as input</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="nonstandard-processing-functions">
+<h2>Nonstandard Processing Functions<a class="headerlink" href="#nonstandard-processing-functions" title="Link to this heading">#</a></h2>
+<p>The next table is similar to above, but the inputs or outputs are not seismic
+data objects.   They are used internally by some functions and can have
+utility for writing custom functions that use them inside another algorithm.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-number">Table 4 </span><span class="caption-text">Nonstandard Processing Functions</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Synopsis</p></th>
+<th class="head"><p>Inputs</p></th>
+<th class="head"><p>Outputs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">BandwidthStatisticsBandwidthStatistics</span></code></p></td>
+<td><p>Compute statistical summary of snr in a passband returned by EstimateBandwidth</p></td>
+<td><p>BandwidthData object</p></td>
+<td><p>Metadata</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.EstimateBandwidth" title="mspasspy.ccore.algorithms.amplitudes.EstimateBandwidth"><code class="xref py py-func docutils literal notranslate"><span class="pre">EstimateBandwidth</span></code></a></p></td>
+<td><p>Estimate signal bandwidth estimate of power spectra of signal and noise</p></td>
+<td><p>PowerSpectra of signal and noise windows</p></td>
+<td><p>BandwidthData - input for BandwidthStatisics</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">MADAmplitude</span></code></p></td>
+<td><p>Calculate amplitude with the MAD metric</p></td>
+<td><p>TimeSeries or Seismogram</p></td>
+<td><p>float</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">PeakAmplitude</span></code></p></td>
+<td><p>Calculate amplitude with the peak absolute value</p></td>
+<td><p>TimeSeries or Seismogram</p></td>
+<td><p>float</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">PercAmplitude</span></code></p></td>
+<td><p>Calculate amplitude at a specified percentage level</p></td>
+<td><p>TimeSeries or Seismogram</p></td>
+<td><p>float</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">RMSAmplitude</span></code></p></td>
+<td><p>Calculate amplitude with the RMS metric</p></td>
+<td><p>TimeSeries or Seismogram</p></td>
+<td><p>float</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.snr" title="mspasspy.algorithms.snr.snr"><code class="xref py py-func docutils literal notranslate"><span class="pre">snr</span></code></a></p></td>
+<td><p>Compute one of several possible time-domain signal-to-noise ratio metrics</p></td>
+<td><p>TimeSeries or Seismogram</p></td>
+<td><p>float</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="processing-objects">
+<h2>Processing Objects<a class="headerlink" href="#processing-objects" title="Link to this heading">#</a></h2>
+<p>This collection of things are “processing objects” meaning they implement
+processing using a C++ or python class that has a method that runs
+an algorithm on seismic data.  All are effectively functions that
+take inputs and emit an output.  The only difference is the syntax
+of a “method” compared to a simple function.  They also have the
+same API guarantees listed at the beginning of this section
+(i.e. the list of items in the first section).</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id4">
+<caption><span class="caption-number">Table 5 </span><span class="caption-text">Processing Objects</span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 9.1%" />
+<col style="width: 63.6%" />
+<col style="width: 9.1%" />
+<col style="width: 9.1%" />
+<col style="width: 9.1%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class Name</p></th>
+<th class="head"><p>Synopsis</p></th>
+<th class="head"><p>Processing method</p></th>
+<th class="head"><p>Inputs</p></th>
+<th class="head"><p>Outputs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add" title="mspasspy.algorithms.edit.Add"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add</span></code></a></p></td>
+<td><p>Add a constant to a metadata value</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2" title="mspasspy.algorithms.edit.Add2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add2</span></code></a></p></td>
+<td><p>Add two metadata values</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.ChangeKey" title="mspasspy.algorithms.edit.ChangeKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChangeKey</span></code></a></p></td>
+<td><p>Change key associated with a value</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide" title="mspasspy.algorithms.edit.Divide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Divide</span></code></a></p></td>
+<td><p>Divide a metadata value by a constant</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide2" title="mspasspy.algorithms.edit.Divide2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Divide2</span></code></a></p></td>
+<td><p>Divide one metadata value by another</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide" title="mspasspy.algorithms.edit.IntegerDivide"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntegerDivide</span></code></a></p></td>
+<td><p>Apply integer divide operator to a metadata value</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2" title="mspasspy.algorithms.edit.IntegerDivide2"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntegerDivide2</span></code></a></p></td>
+<td><p>Apply integer divide operator to two metadata values</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod" title="mspasspy.algorithms.edit.Mod"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mod</span></code></a></p></td>
+<td><p>Change a key to value mod constant</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod2" title="mspasspy.algorithms.edit.Mod2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mod2</span></code></a></p></td>
+<td><p>Set a field as mod division of a pair of values</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply" title="mspasspy.algorithms.edit.Multiply"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiply</span></code></a></p></td>
+<td><p>Change a key to value times constant</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2" title="mspasspy.algorithms.edit.Multiply2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiply2</span></code></a></p></td>
+<td><p>Set a field as produce of a pair of values</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2" title="mspasspy.algorithms.edit.Multiply2"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetValue</span></code></a></p></td>
+<td><p>Set a field to a constant</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract" title="mspasspy.algorithms.edit.Subtract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subtract</span></code></a></p></td>
+<td><p>Change a key to value minus a constant</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract2" title="mspasspy.algorithms.edit.Subtract2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subtract2</span></code></a></p></td>
+<td><p>Set a field as difference of a pair of values</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.erase_metadata" title="mspasspy.algorithms.edit.erase_metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">erase_metadata</span></code></a></p></td>
+<td><p>Clear all defined values of a specified key</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperatorChain" title="mspasspy.algorithms.edit.MetadataOperatorChain"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperatorChain</span></code></a></p></td>
+<td><p>Apply a chain of metadata calculators</p></td>
+<td><p>apply</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.FiringSquad" title="mspasspy.algorithms.edit.FiringSquad"><code class="xref py py-class docutils literal notranslate"><span class="pre">FiringSquad</span></code></a></p></td>
+<td><p>Apply a series of kill operators</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataDefined" title="mspasspy.algorithms.edit.MetadataDefined"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataDefined</span></code></a></p></td>
+<td><p>Kill if a key-value pair is defined</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataUndefined" title="mspasspy.algorithms.edit.MetadataUndefined"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataUndefined</span></code></a></p></td>
+<td><p>Kill if a key-value pair is not defined</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataEQMetadataEQ</span></code></p></td>
+<td><p>Kill a datum if a value is equal to constant</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataNEMetadataNE</span></code></p></td>
+<td><p>Kill a datum if a value is not equal to constant</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGE" title="mspasspy.algorithms.edit.MetadataGE"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataGE</span></code></a></p></td>
+<td><p>Kill if a value is greater than or equal to a constant</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGT" title="mspasspy.algorithms.edit.MetadataGT"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataGT</span></code></a></p></td>
+<td><p>Kill if a value is greater than a constant</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLE" title="mspasspy.algorithms.edit.MetadataLE"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataLE</span></code></a></p></td>
+<td><p>Kill if a value is less than or equal to a constant</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLT" title="mspasspy.algorithms.edit.MetadataLT"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataLT</span></code></a></p></td>
+<td><p>Kill if a value is less than a constant</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataInterval" title="mspasspy.algorithms.edit.MetadataInterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataInterval</span></code></a></p></td>
+<td><p>Kill for value relative to an interval</p></td>
+<td><p>kill_if_true</p></td>
+<td><p>any</p></td>
+<td><p>Edited version of input</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="deconvolution-algorithms">
+<h2>Deconvolution algorithms<a class="headerlink" href="#deconvolution-algorithms" title="Link to this heading">#</a></h2>
+<p>MsPASS has a specialized algorithms module on “deconvolution”.  Users
+should recognize that currently the module has algorithms for “deconvolution”
+in form of estimation of so called “receiver functions”.  Receiver functions
+are a special type of deconvolution useful only, at present anyway, for
+application to teleseismic body wave phase data.</p>
+<p>A suite of “conventional” scalar methods are available through two different
+mechanisms:</p>
+<ol class="arabic simple">
+<li><p>The wrapper function <code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.alorithms.RFdeconProcessor.RFdecon()</span></code>
+is a functional form that can be used directly in map operators.</p></li>
+<li><p>The <cite>RFdecon</cite> function instantiates an instance of the class
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor" title="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor</span></code></a>
+in each call to the function.  It is more efficient (i.e. faster)
+to instantiate a single instance of this class and run it’s
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply" title="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply()</span></code></a>
+method, especially for multitaper methods that require computing
+the Slepian tapers.</p></li>
+</ol>
+<p>See the docstrings with links above for usage.</p>
+<p>A different, unpublished (aka experimental) algorithm called
+“Colored Noise Regularized Three Component Decon “ is
+implemented in the C++ class
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine" title="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine</span></code></a>.
+There are two python functions that utilize the “engine”:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.CNRDecon.CNRRFDecon" title="mspasspy.algorithms.CNRDecon.CNRRFDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.CNRDecon.CNRRFDecon</span></code></a> uses the
+CNR algorithm to estimate conventional “receiver functions” where
+each 3C station is deconvolved independently.</p></li>
+<li><p>The same engine
+is used for an array version called
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.CNRDecon.CNRArrayDecon" title="mspasspy.algorithms.CNRDecon.CNRArrayDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.CNRDecon.CNRArrayDecon</span></code></a></p></li>
+</ol>
+<p>See the mspass deconvolution tutorial for guidance on using these
+experimental algorithms.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="schema_choices.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">What database schema should I use?</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="deconvolution.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Deconvolution Operators</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#processing-functions">Processing Functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonstandard-processing-functions">Nonstandard Processing Functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#processing-objects">Processing Objects</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deconvolution-algorithms">Deconvolution algorithms</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/algorithms.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/algorithms.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

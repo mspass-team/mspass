@@ -1,0 +1,1946 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mspasspy.util &#8212; MsPASS 2.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=e9ebdb8f"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'python_api/mspasspy.util';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mspasspy.workflow" href="mspasspy.workflow.html" />
+    <link rel="prev" title="mspasspy.reduce" href="mspasspy.reduce.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Python API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.util</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mspasspy-util">
+<h1>mspasspy.util<a class="headerlink" href="#mspasspy-util" title="Link to this heading">#</a></h1>
+<section id="module-mspasspy.util.converter">
+<span id="converter"></span><h2>converter<a class="headerlink" href="#module-mspasspy.util.converter" title="Link to this heading">#</a></h2>
+<p>Functions for converting to and from MsPASS data types.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.AntelopePf2dict">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">AntelopePf2dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#AntelopePf2dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.AntelopePf2dict" title="Link to this definition">#</a></dt>
+<dd><p>Converts a AntelopePf object to a Python dict.
+This converts a AntelopePf object to a Python dict by recursively
+decoding the tbls.
+:param pf: AntelopePf object to convert.
+:type md: <code class="xref py py-class docutils literal notranslate"><span class="pre">AntelopePf</span></code>
+:return: Python dict equivalent to md.
+:rtype: dict</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.Metadata2dict">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">Metadata2dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Metadata2dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.Metadata2dict" title="Link to this definition">#</a></dt>
+<dd><p>Converts a Metadata object to a Python dict.</p>
+<p>This is the inverse of dict2Metadata.  It converts a Metadata object to
+a Python dict. Note that Metadata behavies like dict, so this conversion
+is usually not necessay.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>md</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code>) – Metadata object to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Python dict equivalent to md.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.Pf2AttributeNameTbl">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">Pf2AttributeNameTbl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'attributes'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Pf2AttributeNameTbl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.Pf2AttributeNameTbl" title="Link to this definition">#</a></dt>
+<dd><p>This function will parse a pf file to extract a tbl with a specific
+key and return a data structure that defines the names and types of
+each column in the input file.</p>
+<dl class="simple">
+<dt>The structure returned is a tuple with three components:</dt><dd><dl class="simple">
+<dt>1 (index 0) python array of attribute names in the original tbl order</dt><dd><p>This is used to parse the text file so the order matters a lot.</p>
+</dd>
+<dt>2 (index 1) parallel array of type names for each attribute.</dt><dd><p>These are actual python type objects that can be used as the
+second arg of isinstance.</p>
+</dd>
+<dt>3 (index 2) python dictionary keyed by name field that defines</dt><dd><p>what a null value is for this attribute.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pf</strong> – AntelopePf object to be parsed</p></li>
+<li><p><strong>tag</strong> – &amp;Tbl tag for section of pf to be parsed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.Seismogram2Stream">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">Seismogram2Stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chanmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['E',</span> <span class="pre">'N',</span> <span class="pre">'Z']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[90.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[90.0,</span> <span class="pre">90.0,</span> <span class="pre">0.0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Seismogram2Stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.Seismogram2Stream" title="Link to this definition">#</a></dt>
+<dd><p>Convert a mspass::Seismogram object to an obspy::Stream with 3 components split apart.</p>
+<p>mspass and obspy have completely incompatible approaches to handling three
+component data.  obspy uses a Stream object that is a wrapper around and
+a list of Trace objects.  mspass stores 3C data bundled into a matrix
+container.   This function takes the matrix container apart and produces
+the three Trace objects obspy want to define 3C data.   The caller is
+responsible for how they handle bundling the output.</p>
+<p>A very dark side of this function is any error log entries in the part
+mspass Seismogram object will be lost in this conversion as obspy
+does not implement that concept.  If you need to save the error log
+you will need to save the input of this function to MongoDB to preserve
+the errorlog it may contain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sg</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code>) – is the Seismogram object to be converted</p></li>
+<li><p><strong>chanmap</strong> (<em>list</em>) – 3 element list of channel names to be assigned components</p></li>
+<li><p><strong>hang</strong> (<em>list</em>) – 3 element list of horizontal angle attributes (azimuth in degrees)
+to be set in Stats array of output for each component.  (default is
+for cardinal directions)</p></li>
+<li><p><strong>vang</strong> (<em>list</em>) – 3 element list of vertical angle (theta of spherical coordinates)
+to be set in Stats array of output for each component.  (default is
+for cardinal directions)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>obspy Stream object containing a list of 3 Trace objects in
+mspass component order. Presently the data are ALWAYS returned to
+cardinal directions (see above). It will be empty if sg was marked dead</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">obspy.core.stream.Stream</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.SeismogramEnsemble2Stream">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">SeismogramEnsemble2Stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#SeismogramEnsemble2Stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.SeismogramEnsemble2Stream" title="Link to this definition">#</a></dt>
+<dd><p>Convert a seismogram ensemble to stream
+:param sge: seismogram ensemble input
+:return: stream</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.Stream2Seismogram">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">Stream2Seismogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">st</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">master</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cardinal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">azimuth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'azimuth'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dip'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Stream2Seismogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.Stream2Seismogram" title="Link to this definition">#</a></dt>
+<dd><p>Convert obspy Stream to a Seismogram.</p>
+<p>Convert an obspy Stream object with 3 components to a mspass::Seismogram
+(three-component data) object.  This implementation actually converts
+each component first to a TimeSeries and then calls a C++ function to
+assemble the complete Seismogram.   This has some inefficiencies, but
+the assumption is this function is called early on in a processing chain
+to build a raw data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>st</strong> – input obspy Stream object.  The object MUST have exactly 3 components
+or the function will throw a AssertionError exception.  The program is
+less dogmatic about start times and number of samples as these are
+handled by the C++ function this python script calls.  Be warned,
+however, that the C++ function can throw a MsPASSrror exception that
+should be handled separately.</p></li>
+<li><p><strong>master</strong> – a Seismogram is an assembly of three channels composed created from
+three TimeSeries/Trace objects.   Each component may have different
+metadata (e.g. orientation data) and common metadata (e.g. station
+coordinates).   To assemble a Seismogram a decision has to be made on
+which component has the definitive common metadata.   We use a simple
+algorithm and clone the data from one component defined by this index.
+Must be 0,1, or 2 or the function wil throw a RuntimeError.  Default is 0.</p></li>
+<li><p><strong>cardinal</strong> – boolean used to define one of two algorithms used to assemble the
+bundle.  When true the three input components are assumed to be in
+cardinal directions (x1=positive east, x2=positive north, and x3=positive up)
+AND in a fixed order of E,N,Z. Otherwise the Metadata fetched with
+the azimuth and dip keys are used for orientation.</p></li>
+<li><p><strong>azimuth</strong> – defines the Metadata key used to fetch the azimuth angle
+used to define the orientation of each component Trace object.
+Default is ‘azimuth’ used by obspy.   Note azimuth=hang in css3.0.
+Cannot be aliased - must be present in obspy Stats unless cardinal is true</p></li>
+<li><p><strong>dip</strong> – defines the Metadata key used to fetch the vertical angle orientation
+of each data component.  Vertical angle (vang in css3.0) is exactly
+the same as theta in spherical coordinates.  Default is obspy ‘dip’
+key. Cannot be aliased - must be defined in obspy Stats unless
+cardinal is true</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raise<span class="colon">:</span></dt>
+<dd class="field-even"><p>Can throw either an AssertionError or MsPASSrror(currently defaulted to
+pybind11’s default RuntimeError.  Error message can be obtained by
+calling the what method of RuntimeError).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.Stream2SeismogramEnsemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">Stream2SeismogramEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Stream2SeismogramEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.Stream2SeismogramEnsemble" title="Link to this definition">#</a></dt>
+<dd><p>Convert a stream to seismogram ensemble.
+:param stream: stream input
+:return: converted seismogram ensemble</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.Stream2TimeSeriesEnsemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">Stream2TimeSeriesEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Stream2TimeSeriesEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.Stream2TimeSeriesEnsemble" title="Link to this definition">#</a></dt>
+<dd><p>Convert a stream to timeseries ensemble.
+:param stream: stream input
+:return: converted timeseries ensemble</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.Textfile2Dataframe">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">Textfile2Dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\\s+'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_use</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_to_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Textfile2Dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.Textfile2Dataframe" title="Link to this definition">#</a></dt>
+<dd><p>Import a text file representation of a table and store its
+representation as a pandas dataframe.
+Note that even in the parallel environment, a dask dataframe will be
+transfered back to a pandas dataframe for the consistency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – path to text file that is to be read to create the
+table object that is to be processed (internally we use pandas or
+dask dataframes)</p></li>
+<li><p><strong>separator</strong> – The delimiter used for seperating fields,
+the default is r”s+”, which is the regular expression of “one or more
+spaces”.
+For csv file, its value should be set to ‘,’.
+This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
+To learn more details about the usage, check the following links:
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html">https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</a>
+<a class="reference external" href="https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html">https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</a></p></li>
+<li><p><strong>type_dict</strong> – pairs of each attribute and its type, usedd to validate
+the type of each input item</p></li>
+<li><p><strong>header_line</strong> – defines the line to be used as the attribute names for
+columns, if is &lt; 0, an attribute_names is required. Please note that if an
+attribute_names is provided, the attributes defined in header_line will
+always be override.</p></li>
+<li><p><strong>attribute_names</strong> – This argument must be either a list of (unique)
+string names to define the attribute name tags for each column of the
+input table.   The length of the array must match the number of
+columns in the input table or this function will throw a MsPASSError
+exception.   This argument is None by default which means the
+function will assume the line specified by the “header_line” argument as
+column headers defining the attribute name.  If header_line is less
+than 0 this argument will be required.  When header_line is &gt;= 0
+and this argument (attribute_names) is defined all the names in
+this list will override those stored in the file at the specified
+line number.</p></li>
+<li><p><strong>rename_attributes</strong> – This is expected to be a python dict
+keyed by names matching those defined in the file or attribute_names
+array (i.e. the panda/dataframe column index names) and values defining
+strings to use to override the original names.   That usage, of course,
+is most common to override names in a file.  If you want to change all
+the name use a custom attributes_name array as noted above.  This
+argument is mostly to rename a small number of anomalous names.</p></li>
+<li><p><strong>attributes_to_use</strong> – If used this argument must define a list of
+attribute names that define the subset of the dataframe dataframe
+attributes that are to be saved.  For relational db users this is
+effectively a “select” list of attribute names.  The default is
+None which is taken to mean no selection is to be done.</p></li>
+<li><p><strong>one_to_one</strong> – is an important boolean use to control if the
+output is or is not filtered by rows.  The default is True
+which means every tuple in the input file will create a single row in
+dataframe. (Useful, for example, to construct an wf_miniseed
+collection css3.0 attributes.)  If False the (normally reduced) set
+of attributes defined by attributes_to_use will be filtered with the
+panda/dask dataframe drop_duplicates method.  That approach
+is important, for example, to filter things like Antelope “site” or
+“sitechan” attributes created by a join to something like wfdisc and
+saved as a text file to be processed by this function.</p></li>
+<li><p><strong>parallel</strong> – When true we use the dask dataframe operation.
+The default is false meaning the simpler, identical api panda
+operators are used.</p></li>
+<li><p><strong>insert_column</strong> – a dictionary of new columns to add, and their value(s).
+If the content is a single value, it can be passed to define a constant value
+for the entire column of data. The content can also be a list, in that case,
+the list should contain values that are to be set, and it must be the same
+length as the number of tuples in the table.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.TimeSeries2Trace">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">TimeSeries2Trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#TimeSeries2Trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.TimeSeries2Trace" title="Link to this definition">#</a></dt>
+<dd><p>Converts a TimeSeries object to an obspy Trace object.</p>
+<p>MsPASS can handle scalar data either as an obspy Trace object or
+as with the mspass TimeSeries object.  The capture nearly the same
+concepts.  The main difference is that TimeSeries support the
+error logging and history features of mspass while obspy, which is
+a separate package, does not.  Obspy has a number of useful
+algorithms that operate on scalar data, however, so it is frequently
+useful to switch between Trace and TimeSeries formats.  The user is
+warned, however, that converting a TimeSeries to a Trace object
+with this function will result in the loss of any error log information.
+For production runs unless the data set is huge, we recommend saving
+the intermediate result AFTER calling this function if there is any
+possibility there are errors posted on any data.  We say after because
+some warning errors from this function may be posted in elog.  Since
+python uses call by reference d may thus be altered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ts</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code>) – is the TimeSeries object to be converted</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an obspy Trace object from conversion of d.  An empty Trace
+object will be returned if d was marked dead</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.TimeSeriesEnsemble2Stream">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">TimeSeriesEnsemble2Stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tse</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#TimeSeriesEnsemble2Stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.TimeSeriesEnsemble2Stream" title="Link to this definition">#</a></dt>
+<dd><p>Convert a timeseries ensemble to stream.  Always copies
+all ensemble Metadata to tse members before conversion.   That is
+necessary to avoid loss of data in the case where the only copy is
+stored in the ensemble’s metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tse</strong> – timeseries ensemble</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>converted stream</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.Trace2TimeSeries">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">Trace2TimeSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Trace2TimeSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.Trace2TimeSeries" title="Link to this definition">#</a></dt>
+<dd><p>Convert an obspy Trace object to a TimeSeries object.</p>
+<p>An obspy Trace object mostly maps directly into the mspass TimeSeries
+object with the stats of Trace mapping (almost) directly to the TimeSeries
+Metadata object that is a base class to TimeSeries.  A deep copy of the
+data vector in the original Trace is made to the result. That copy is
+done in C++ for speed (we found a 100+ fold speedup using that mechanism
+instead of a simple python loop)  There is one important type collision
+in copying obspy starttime and endtime stats fields.  obspy uses their
+UTCDateTime object to hold time but TimeSeries only supports an epoch
+time (UTCDateTime.timestamp) so the code here has to convert from the
+UTCDateTime to epoch time in the TimeSeries.  Note in a TimeSeries
+starttime is the t0 attribute.</p>
+<p>The biggest mismatch in Trace and TimeSeries is that Trace has no concept
+of object level history as used in mspass.   That history must be maintained
+outside obspy.  To maintain full history the user must pass the
+history maintained externally through the optional history parameter.
+The contents of history will be loaded directly into the result with
+no sanity checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trace</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>) – obspy trace object to convert</p></li>
+<li><p><strong>history</strong> – mspass ProcessingHistory object to post to result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TimeSeries object derived from obpsy input Trace object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.dict2Metadata">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">dict2Metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#dict2Metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.dict2Metadata" title="Link to this definition">#</a></dt>
+<dd><p>Function to convert Python dict data to Metadata.</p>
+<p>pymongo returns a Python dict container from find queries to any collection.
+Simple type in returned documents can be converted to Metadata
+that are used as headers in the C++ components of mspass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dict</strong> (<em>dict</em>) – Python dict to convert</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Metadata object translated from d</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.list2Ensemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">list2Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#list2Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.list2Ensemble" title="Link to this definition">#</a></dt>
+<dd><p>Convert a list of TimeSeries or Seismograms to a corresponding type of Ensemble.
+This function will make copies of all the data, to create a new Ensemble.
+Note that the Ensemble’s Metadata will always be copied from the first member.
+If the keys argument is specifid, it will only copy the keys specified.
+If a key does not exist in the first member, it will be skipped and leave a complaint in the error log of the ensemble.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l</strong> – a list of TimeSeries or Seismograms</p></li>
+<li><p><strong>keys</strong> – a list of keys to be copied from the first object to the Ensemble’s Metadata</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>converted TimeSeriesEnsemble or SeismogramEnsemble</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.converter.post_ensemble_metadata">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.converter.</span></span><span class="sig-name descname"><span class="pre">post_ensemble_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_all_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#post_ensemble_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.converter.post_ensemble_metadata" title="Link to this definition">#</a></dt>
+<dd><p>It may be necessary to call this function after conversion from
+an obspy Stream to one of the mspass Ensemble classes.  This function
+is necessary because a mspass Ensemble has a concept not part of the
+obspy Stream object.  That is, mspass ensembles have a global
+Metadata container.  That container is expected to contain Metadata
+common to all members of the ensemble.  For example, for data from
+a single earthquake it would be sensible to post the source location
+information in the ensemble metadata container rather than
+having duplicates in each member.</p>
+<p>Two different approaches can be used to do this copy.  The faster,
+but least reliable method is to simply copy the values from the first
+member of the ensemble.  That approach is enabled by default.
+It is completely reliable when used after a conversion from an obspy
+Stream but ONLY if the data began life as a mspass ensemble with
+exactly the same keys set as global.   The type example of that
+is after an obspy algorithm is applied to a mspass ensemble
+via the mspass decorators.</p>
+<p>A more cautious algorithm can be enabled by setting check_all_members
+True. In that mode the list of keys received is tested with a
+not equal test for against each member.  Note we do not do anything
+fancy with floating point data to allow for finite precision.
+The reason is Metadata float values are normally expected to be
+constant data.  In that case an != test will yield false when the
+comparison is between two copies.  The not equal test may fail, however,
+if used with computed floating point numbers.   An example where
+that is possible would be spatial gathers like PP data assembled by
+midpoint coordinates.  If you need to build gathers in such a context
+we recommend you use an integer image point tied to a specialized
+document collection in MongoDB that defines the geometry of that
+point.  There may be other examples, but the point is don’t trust
+computed floating point values to work.  It will also not work if
+the values of a key-value pair don’t support an != comparison.
+That could be common if the value request for copy was a python object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ens</strong> – ensemble data to be processed.  The function will throw
+a MsPASSError exception of ens is not either a TimeSeriesEnsemble or a
+SeismogramEnsemble.</p></li>
+<li><p><strong>keys</strong> – is expected to be a list of metadata keys (required to be
+strings) that are to be copied from member metadata to ensemble
+metadata.</p></li>
+<li><p><strong>check_all_members</strong> – switch controlling method used to extract
+metadata that is to be copied (see above for details). Default is False</p></li>
+<li><p><strong>clean_members</strong> – when true data copied to ensemble metadata
+will be removed from all members.  This option is only allowed
+if check_all_members is set True.  It will be silently ignored if
+check_all_members is False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.util.db_utils">
+<span id="db-utils"></span><h2>db_utils<a class="headerlink" href="#module-mspasspy.util.db_utils" title="Link to this heading">#</a></h2>
+<p>Database utility functions for parallel processing support.</p>
+<p>This module provides utilities for handling database connections in both
+serial and parallel (Dask worker) contexts.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.util.db_utils.MongoDBWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.db_utils.</span></span><span class="sig-name descname"><span class="pre">MongoDBWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbclient_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbclient'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#MongoDBWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.MongoDBWorker" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerPlugin</span></code></p>
+<p>Dask worker plugin to manage MongoDB client per worker.</p>
+<p>Creates a DBClient instance for each worker and stores it in worker.data.
+This ensures each worker has its own database connection to prevent
+connection leaks when Database objects are serialized to workers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mspass_client</strong> – MSPASS <a class="reference internal" href="mspasspy.client.html#mspasspy.client.Client" title="mspasspy.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> (or any object
+with <code class="docutils literal notranslate"><span class="pre">get_database_client()</span></code> returning a <a class="reference internal" href="mspasspy.db.html#mspasspy.db.client.DBClient" title="mspasspy.db.client.DBClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBClient</span></code></a>).
+The worker uses that client’s <code class="docutils literal notranslate"><span class="pre">_mspass_db_host</span></code> for per-worker connections.</p></li>
+<li><p><strong>dbclient_key</strong> – Key under <code class="docutils literal notranslate"><span class="pre">worker.data</span></code> for the created <a class="reference internal" href="mspasspy.db.html#mspasspy.db.client.DBClient" title="mspasspy.db.client.DBClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBClient</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.db_utils.MongoDBWorker.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#MongoDBWorker.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.MongoDBWorker.setup" title="Link to this definition">#</a></dt>
+<dd><p>Called when worker starts - create DBClient for this worker.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.db_utils.MongoDBWorker.teardown">
+<span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#MongoDBWorker.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.MongoDBWorker.teardown" title="Link to this definition">#</a></dt>
+<dd><p>Called when worker shuts down - cleanup if needed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.db_utils.fetch_dbhandle">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.db_utils.</span></span><span class="sig-name descname"><span class="pre">fetch_dbhandle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbname_or_handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#fetch_dbhandle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.fetch_dbhandle" title="Link to this definition">#</a></dt>
+<dd><p>Fetch a Database handle from dbname_or_handle.</p>
+<p>This function provides a unified way to get a Database instance.  In parallel mode
+(Dask worker), it fetches the DBClient from the worker plugin to avoid serializing
+Database/DBClient objects.  In serial mode, it returns the provided Database instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dbname_or_handle</strong> (str or <a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>) – Either a string (database name) or a Database instance.
+If a string is provided, the function assumes it’s being called in a Dask worker
+context and will get the DBClient from worker.data[“dbclient”].</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> instance</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ValueError if dbname_or_handle is neither a string nor a Database instance,
+or if called with a string outside of a Dask worker context.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.util.decorators">
+<span id="decorators"></span><h2>decorators<a class="headerlink" href="#module-mspasspy.util.decorators" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.decorators.is_input_dead">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">is_input_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#is_input_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.is_input_dead" title="Link to this definition">#</a></dt>
+<dd><p>A helper method to see if any mspass objects in the input parameters are dead. If one is dead,
+we should keep silent, i.e. no longer perform any further operations on this dead mspass object.
+Note for an ensemble object, only if all the objects of it are dead, we mark them as dead,
+otherwise they are still alive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – any parameters.</p></li>
+<li><p><strong>kwargs</strong> – any key-word parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if there is a dead mspass object in the parameters, False if no mspass objects in the input parameters
+or all of them are still alive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.decorators.seismogram_copy_helper">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seis2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_copy_helper" title="Link to this definition">#</a></dt>
+<dd><p>Copy converted seismogram state back to the original object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seis1</strong> – destination seismogram originally supplied by the caller.</p></li>
+<li><p><strong>seis2</strong> – source seismogram reconstructed after conversion.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>; <code class="docutils literal notranslate"><span class="pre">seis1</span></code> is modified in place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.decorators.seismogram_ensemble_copy_helper">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_ensemble_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">es1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">es2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_ensemble_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_ensemble_copy_helper" title="Link to this definition">#</a></dt>
+<dd><p>Copy converted seismogram ensemble state back to the original object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>es1</strong> – destination ensemble originally supplied by the caller.</p></li>
+<li><p><strong>es2</strong> – source ensemble reconstructed after conversion.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>; <code class="docutils literal notranslate"><span class="pre">es1</span></code> is modified in place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.decorators.timeseries_copy_helper">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_copy_helper" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.decorators.timeseries_ensemble_copy_helper">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_ensemble_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">es1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">es2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_ensemble_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_ensemble_copy_helper" title="Link to this definition">#</a></dt>
+<dd><p>Copy converted time-series ensemble state back to the original object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>es1</strong> – destination ensemble originally supplied by the caller.</p></li>
+<li><p><strong>es2</strong> – source ensemble reconstructed after conversion.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>; <code class="docutils literal notranslate"><span class="pre">es1</span></code> is modified in place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.util.Janitor">
+<span id="janitor"></span><h2>Janitor<a class="headerlink" href="#module-mspasspy.util.Janitor" title="Link to this heading">#</a></h2>
+<p>Created on Wed Nov 13 14:56:53 2024</p>
+<p>&#64;author: pavlis</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.Janitor.</span></span><span class="sig-name descname"><span class="pre">Janitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keepers_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TimeSeries_keepers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Seismogram_keepers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_keepers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_ensemble_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generic handler to clean up the Metadata namespace of a MsPASS data object.</p>
+<p>In data processing it is common for Metadata attributes to become
+inconsistent with the data.   An example is a “chan” attribute makes
+no sense if the data have passed through an algorithm to convert a set
+of TimeSeries objects into Seismogram objects.  The name of the class
+is meant as a memory device that the object is used to clear attributes
+that are junk/trash that need to be removed.</p>
+<p>There are two fundamentally different conceptual ways for the Janitor
+to handle the trash.  First, is to discard them forever.   That is the
+approach of the method called <cite>clean</cite>.  When <cite>clean</cite> is called on a
+datum the inconsistent attributes (trash) are thrown away
+(like garbage sent to a landfill).  The alternative is the to
+bag up the garbage and put it somewhere until you are ready to
+deal with it.  That s the idea of the two methods called
+<cite>collect_trash</cite> and <cite>bag_trash</cite>.   <cite>collect_trash</cite> removes
+trash attributes from the object but returns the trash in
+a container (implmented a dictonary).   The <cite>bag_trash</cite> takes
+the result from <cite>collect_trash</cite> and posts it back to the
+object as a subdocument (a python dictionary) with a specified
+key.  That mode can be useful for an experimental algorithm where
+you may need to pull some trash from the bag later but need to
+get the debris out of the way for understanding.</p>
+<p>Handling of ensemles is potentially ambiguous as both the ensemble
+container itself and all the members have a Metadata container.
+For that reason the class has a seperate set of keys that define
+attributes to be retained for ensembles.   The default for enssembles
+is an empty list because in most cases the ensemble metadata is
+loaded from a normalizing collection and does not need to be retained.
+(e.g. source attributes for a common source gather)</p>
+<p>This class can be thought of as an inline version of the
+<cite>clean</cite> and <cite>clean_collection</cite> methods of
+<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.  That is, the database
+versions can be used to do a similar operation of data previously
+stored in MongoDB.   This methds of this class would normally occur as the
+function in a map operator or in an assignment in a serial loop.</p>
+<p>The defaults for the class are designed to be appropriate for
+stock use.  The variable args for the constructor can be used to
+override the list of attribute keys that the Janitor should treat
+as not junk.  The default are loaded from a yaml file.   You can also
+change the namespace by specifying an alterate name for the yaml file.
+The file is expected to contain keys to retain with the dictionary
+keys “TimeSeries” and “Seismogram”.   See the default in
+mspass/data/yaml/Janitor.yaml to see the format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keeper_file</strong> (<em>string defining yaml file name.  Default is None
+which assumed a default path</em><em> of </em><em>$MSPASS_HOME/data/yaml/Janitor.yaml.</em>) – yaml file containing the keys to be retained
+for TimeSeries and Seismogram objects.</p></li>
+<li><p><strong>TimeSeries_keepers</strong> (<em>assumeed to be a list</em><em> of </em><em>strings</em><em> of
+</em><em>attributes to be retained for TimeSeries objects.
+Default is None which causes this
+argument to be ignored and using the yaml file to define the
+list</em><em> of </em><em>attributes to be retained.</em>) – Use to override list defined in yaml
+file for TimeSeries objects.  If defined, it
+should be list of attributes to be retained.  Use this option
+with caution as the list is not checked for required Metadata.
+Use the default yaml file for guidance.</p></li>
+<li><p><strong>Seismogram_keepers</strong> (<em>assumeed to be a list</em><em> of </em><em>strings</em><em> of
+</em><em>attributes to be retained.  Default is None which causes this
+argument to be ignored and using the yaml file to define the
+list</em><em> of </em><em>attributes to be retained.</em>) – Use to override list defined in yaml file
+for Seismogram objects.  If defined, it should
+be a list of  attributes to be retained.  Use this option
+with caution as the list is not checked for required Metadata.
+Use the default yaml file for guidance.</p></li>
+<li><p><strong>ensemble_keepers</strong> (<em>list</em><em> of </em><em>strings defining keys</em><em> of
+</em><em>attributes that should not be treated as junk and retained.</em>) – Use to override the content of a
+yaml file.   If defined it replaces the yaml file defnition of
+what attribute keys should be retained.</p></li>
+<li><p><strong>process_ensemble_members</strong> – boolean controlling behavior
+with ensemble objects.  With ensembles there are two possible
+definitions of what Metadata container is to be cleaned.  That is,
+the ensemble itself has a Metadata container and each atomic
+member has a Metdata container.  When True the cleaning opeators
+are applied to the members.  When False the ensemble container is
+handled if the datum is an ensemble.  This argument is ignored
+when processing atomic data.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor.add2keepers">
+<span class="sig-name descname"><span class="pre">add2keepers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keeper_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'atomic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor.add2keepers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor.add2keepers" title="Link to this definition">#</a></dt>
+<dd><p>Adds a new key to the namespace for a data type.</p>
+<p>It is often useful to extend the namespace during processing
+without having to create a special instance of a Janitor from
+a yaml file.   Use this method to add a key to the list of
+attributes defined as a keeper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – key of the attribute to add to a the list of keeper
+names in this Janitor.   Note if the name already exists in
+the list this method does nothing.</p></li>
+<li><p><strong>keeper_type</strong> (<em>str</em><em> (</em><em>default &quot;atomic&quot;</em><em>)</em>) – defines the data to to which key should be
+added.  Normal use is one the following keywword whose use
+should be clear:  “TimeSeries”,”Seismogam”, and “ensemble”.
+Also accepts the special keyword “atomic” which means the
+key is added to the list of keepers for both TimeSeries and
+Seismogram objects.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor.bag_trash">
+<span class="sig-name descname"><span class="pre">bag_trash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trashbag_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'trash'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_trashbag_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ensemble_trash'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor.bag_trash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor.bag_trash" title="Link to this definition">#</a></dt>
+<dd><p>This method bundles up trash in a python dictionary and posts it
+back to the datum with a specified key.   This allows the
+trash data to be retained but put into the auxiliary trash bag
+container to simplify the datum’s Metadata namespace.  The idea
+is to allow an algorithm to pull junk from the trashcan if necesary
+at a later stage.</p>
+<p>Note for ensembles there are two different entities that are handled
+separately.   Any attributes in the ensemble’s Metadata are
+processed against self.ensemble_keepers and any junk is bagged into
+a dictionary stored back in to the ensemble’s Metadata container
+with the key defined by the ensemble_trashbag_key.   Members
+are only processed if self.prococss_ensemble_members is True.
+When True the members will also be passed through this
+method with the handling depending on the type of the members.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datum</strong> (Must be a MsPASS data object
+(<cite>TimeSeries</cite>,`Seismogram`, <cite>TimeSeriesEnsemble</cite>, or <cite>SeismogramEnsemle</cite>)
+or this method will raise a MsPASSError exception marked Fatal.) – MsPASS data objet to be processed.</p></li>
+<li><p><strong>trashbag_key</strong> (<em>str</em><em> (</em><em>default &quot;trash&quot;</em><em>)</em>) – dictinary key used to post the trash bag
+for atomic data or the members of ensembles when self.process_ensemble_members
+is True.</p></li>
+<li><p><strong>ensemble_trashbag_key</strong> (<em>str</em><em> (</em><em>default &quot;ensemble_trash&quot;</em>) – dictionary key to use post the
+trashbag dictionary constructed from an ensemble’s Metadata
+container.  Ignored for atomic data.  Note this key should
+be distinct from trashbag_key or the member trashbags will be
+overwritten by the ensemble trashbag if the ensemble is saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor.clean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor.clean" title="Link to this definition">#</a></dt>
+<dd><p>Process datum to remove all Metadata with keys not defined in
+this instance of Janitor.  Returns the datum with the attributes
+it treats as junk removed.  For ensembles if
+self.process_ensemble_members s True the operation will be appplied
+on all ensemble members.  When False the Metadata container will
+be altered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>datum</strong> – data objet to be processed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor.collect_trash">
+<span class="sig-name descname"><span class="pre">collect_trash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datum</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor.collect_trash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor.collect_trash" title="Link to this definition">#</a></dt>
+<dd><p>Processes datum by extracting attributes that this
+instance of Janitor does not define as a keeper.  It then
+clears the attributes it treats as junk before returning
+the attributes it cleared in a python dictionary.   When
+run on ensembles the self.ensemble_keeper slist is used to
+edit the ensemble Metadata container.   When datum is
+an ensemble the ensemble members are not altered.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.MiniseedJanitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.Janitor.</span></span><span class="sig-name descname"><span class="pre">MiniseedJanitor</span></span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#MiniseedJanitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.MiniseedJanitor" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.util.Janitor.Janitor" title="mspasspy.util.Janitor.Janitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Janitor</span></code></a></p>
+<p>Convenience class for handling data read from wf_miniseed.</p>
+<p>Data loaded from miniseed files in MsPASS tend to have some debris
+that is not needed once the data are loaded into memory for processng.
+This is a conveniene class that loads a different yaml file to
+create a stock Janitor for handling data loaded from wf_miniseed.</p>
+<p>WARNING:  use this class only on data immediately after loading
+from wf_miniseed.  It will eliminate miniseed specific debris that
+is a perfect example of why a Janitor is useful.   It should not, however,
+be used after any processing that loads additional attributes or
+it will almost certainly delete useful attributes.</p>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.util.logging_helper">
+<span id="logging-helper"></span><h2>logging_helper<a class="headerlink" href="#module-mspasspy.util.logging_helper" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.logging_helper.ensemble_error">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.logging_helper.</span></span><span class="sig-name descname"><span class="pre">ensemble_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_severity=&lt;ErrorSeverity.Invalid:</span> <span class="pre">1&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/logging_helper.html#ensemble_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.logging_helper.ensemble_error" title="Link to this definition">#</a></dt>
+<dd><p>This is a small helper function useful for error handlers in except
+blocks for ensemble objects.  If a function is called on an ensemble
+object that throws an exception this function will post the message
+posted to all ensemble members.  It silently does nothing if the
+ensemble is empty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>err_severity</strong> – severity of the error, default as ErrorSeverity.Invalid.</p></li>
+<li><p><strong>d</strong> – is the ensemble data to be handled. It print and error message
+and returns doing nothing if d is not one of the known ensemble
+objects.</p></li>
+<li><p><strong>alg</strong> – is the algorithm name posted to elog on each member</p></li>
+<li><p><strong>message</strong> – is the string posted to all members
+(Note due to a current flaw in the api we don’t have access to the
+severity attribute.  For now this always set it Invalid)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.logging_helper.info">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.logging_helper.</span></span><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/logging_helper.html#info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.logging_helper.info" title="Link to this definition">#</a></dt>
+<dd><p>This helper function is used to log operations in processing history of mspass object.
+Per best practice, every operations happen on the mspass object should be logged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – the mspass data object</p></li>
+<li><p><strong>alg_id</strong> – an id designator to uniquely define an instance of algorithm.</p></li>
+<li><p><strong>alg_name</strong> – the name of the algorithm that used on the mspass object.</p></li>
+<li><p><strong>target</strong> – if the mspass data object is an ensemble type, you may use target as index to
+log on one specific object in the ensemble. If target is not specified, all the objects in the ensemble
+will be logged using the same information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.logging_helper.reduce">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.logging_helper.</span></span><span class="sig-name descname"><span class="pre">reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/logging_helper.html#reduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.logging_helper.reduce" title="Link to this definition">#</a></dt>
+<dd><p>This function replicates the processing history of data2 onto data1, which is a common use case
+in reduce stage. If data1 is dead, it will keep silent, i.e. no history will be replicated. If data2 is dead,
+the processing history will still be replicated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data1</strong> – Mspass object</p></li>
+<li><p><strong>data2</strong> – Mspass object</p></li>
+<li><p><strong>alg_id</strong> – The unique id of that user gives to the algorithm.</p></li>
+<li><p><strong>alg_name</strong> – The name of the reduce algorithm that uses this helper function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.util.seismic">
+<span id="seismic"></span><h2>seismic<a class="headerlink" href="#module-mspasspy.util.seismic" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.ensemble_time_range">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">ensemble_time_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inner'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow"><span class="pre">TimeWindow</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#ensemble_time_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.ensemble_time_range" title="Link to this definition">#</a></dt>
+<dd><p>Scans a Seismic data ensemble returning a measure of the
+time span of members.   The metric returned ban be either
+smallest time range containing all the data, the range
+defined by the minimum start time and maximum endtime,
+or an average defined by either the median or the
+arithmetic mean of the vector of startime and endtime
+values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite>.) – ensemble container to be scanned for
+time range.</p></li>
+<li><p><strong>metric</strong> – <p>measure to use to define the time range.
+Accepted values are:</p>
+<ul>
+<li><p>”inner” - (default) return range defined by largest
+start time to smallest end time.</p></li>
+<li><p>”outer” - return range defined by minimum start time and
+largest end time (maximum time span of data)</p></li>
+<li><p>”median” - return range as the median of the extracted
+vectors of start time and end time values.</p></li>
+<li><p>”mean” - return range as arithmetic average of
+start and end time vectors</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>TimeWindow</cite> object with start and end times.  If the
+ensemble has all dead member the default constructed TimeWindow
+object will be returned which has zero length.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.has_live_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">has_live_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#has_live_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.has_live_data" title="Link to this definition">#</a></dt>
+<dd><p>Check if an ensemble has any live data and return True if it does.</p>
+<p>This function simply scans the member vector of ensemble and returns
+True the first time it finds a datum marked live. That is much
+faster with large ensembles than an alternative to using <code class="docutils literal notranslate"><span class="pre">number_live</span></code>
+and using the result to set an ensemble live or dead. The normal
+use of this function is to call it after accumulating a set of atomic
+data into an ensemble.  An empty ensemble container is always marked
+dead until explicitly set live.   Hence, after adding data to such
+a container run this with a construct like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">has_live_data</span><span class="p">(</span><span class="n">ensemble</span><span class="p">):</span>
+    <span class="n">ensemble</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note this function will throw a TypeError exception if ensemble is
+anything but a TimeSeriesEnsemble or SeismogramEnsemble.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ensemble</strong> – input ensemble to be scanned</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.number_live">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">number_live</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#number_live"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.number_live" title="Link to this definition">#</a></dt>
+<dd><p>Scans an ensemble and returns the number of live members.  If the
+ensemble is marked dead it immediately return 0.  Otherwise it loops
+through the members countinng the number live.
+:param ensemble:  ensemble to be scanned
+:type ensemble:  Must be a <cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite> or
+it will throw a TypeError exception.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.print_metadata">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">print_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#print_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.print_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Prints Metadata stored in the object passed as arg0 (d) as json
+format output with indentation defined by the optional
+indent argument.  Indent is always on and defaults to 2 characters.
+The purpose of this function is to standardize printing
+the Metadata contents of any MsPASS data object.   It has the
+beneficial side effect of producing the same print for
+documents (python dictionaries) retrieved directly from MongoDB.</p>
+<p>It is important to realize that when applied to a
+<cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite> only the ensemble
+Metadata container will be printed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (any subclass of <cite>mspasspy.ccore.Metadata</cite> or a
+python dictionary (the container used for documents returned
+by pymongo).  If d is anything else a TypeError exception
+will be thrown.) – datum for which the Metadata is to be printed.</p></li>
+<li><p><strong>indent</strong> (<em>integer</em><em> (</em><em>default 2</em><em>)</em>) – indentation argument for json printing</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.regularize_sampling">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">regularize_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nsamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort_on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#regularize_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.regularize_sampling" title="Link to this definition">#</a></dt>
+<dd><p>This is a utility function that can be used to validate that all the members
+of an ensemble have a sample interval that is indistinguishable from a specified
+constant (dt_expected)   The test for constant is soft to allow handling
+data created by some older digitizers that skewed the recorded sample interval to force
+time computed from N*dt to match time stamps on successive data packets.
+The formula used is the datum dt is declared constant if the difference from
+the expected dt is less than or equal to dt_expected/2*(Nsamp-1).  That means
+the computed endtime difference from that using dt_expected is less than
+or equal to dt/2.</p>
+<p>The function by default will kill members that have mismatched sample
+intervals and log an informational message to the datum’s elog container.
+In this mode the entire ensemble can end up marked dead if all the members
+are killed (That situation can easily happen if the entire data set has the wrong dt.);
+If the argument <cite>abort_on_errors</cite> is set True a ValueError exception will be
+thrown if ANY member of the input ensemble.</p>
+<p>An important alternative to this function is to pass a data set
+through the MsPASS <cite>resample</cite> function found in mspasspy.algorithms.resample.
+That function will guarantee all live data have the same sample interval
+and not kill them like this function will.   Use this function for
+algorithms that can’t be certain the input data will have been resampled
+and need to be robust for what might otherwise be considered a user error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite>.   The
+function does not test for type and will abort with an undefined method
+error if sent anything else.) – ensemble container of data to be scanned for irregular
+sampling.</p></li>
+<li><p><strong>dt_expected</strong> (<em>float</em>) – constant data sample interval expected.</p></li>
+<li><p><strong>Nsamp</strong> (<em>integer</em>) – Nominal number of samples expected in the ensemble members.
+This number is used to compute the soft test to allow for slippery clocks
+discussed above.   (Default 10000) e = regularize_sampling(e,dt)
+assert e.live</p></li>
+<li><p><strong>abort_on_error</strong> (<em>boolean</em>) – Controls what the function does if it
+encountered a datum with a sample interval different that dt_expected.
+When True the function aborts with a ValueError exception if ANY
+ensemble member does not have a matching sample interval.  When
+False (the default) the function uses the MsPASS error logging
+to hold a message an kills any member datum with a problem.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.sort_ensemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">sort_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nullvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_dead</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#sort_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.sort_ensemble" title="Link to this definition">#</a></dt>
+<dd><p>Sorts members of an ensemble by a single Metadata key value.</p>
+<p>For graphical QC one often needs to sort an ensemble by a metadata
+attribute to appraise how the attribute relates to a graphical
+display of that data.   This function does that with a memory
+intensive algorithm the makes a copy of the input that is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite>) – input to be sorted</p></li>
+<li><p><strong>key</strong> (<em>string</em>) – key of Metadata attribute whose value is to be used for sorting</p></li>
+<li><p><strong>nullvaue</strong> – value assigned for sort for any ensemble member for
+which a value is not defined for the sort key.</p></li>
+<li><p><strong>ascending</strong> – boolean defining direction of sort.  When True
+sort is in ascending order.  False returns data sorted in descending order.</p></li>
+<li><p><strong>drop_dead</strong> – when True (default) any ensemble member marked dead will
+be not appear in the output.  When False dead data will get an implicit
+value defined by “nullvalue”.   Where the dead appear will depend upon
+what that value is relative to the valid values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.util.seispp">
+<span id="seispp"></span><h2>seispp<a class="headerlink" href="#module-mspasspy.util.seispp" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seispp.index_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seispp.</span></span><span class="sig-name descname"><span class="pre">index_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filebase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbname_or_handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'d3C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seispp.html#index_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seispp.index_data" title="Link to this definition">#</a></dt>
+<dd><p>Import function for data from antelope export_to_mspass.</p>
+<p>This function is an import function for Seismogram objects created
+by the antelope program export_to_mspass.  That program writes
+header data as a yaml file and the sample data as a raw binary
+fwrite of the data matrix (stored in fortran order but written
+as a contiguous block of 3*npts (number of samples) double values.
+This function parses the yaml file and adds three critical metadata
+entries:  dfile, dir, and foff. To get foff values the function
+reads the binary data file and gets foff values by calls to tell.
+It then writes these entries into MongoDB in the wf collection
+of a database.   Readers that want to read this raw data will
+need to use dir, dfile, and foff to find the right file and read point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filebase</strong> – is the base name of the dataset to be read and indexed.
+The function will look for filebase.yaml for the header data and
+filebase.ext (Arg 3 defaulting to d3C).</p></li>
+<li><p><strong>dbname_or_handle</strong> – Either a string (database name) or a Database instance.
+In parallel mode, pass the database name (string) to avoid serializing Database objects.</p></li>
+<li><p><strong>ext</strong> – is the file extension for the sample data (default is ‘d3C’).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.util.Undertaker">
+<span id="undertaker"></span><h2>Undertaker<a class="headerlink" href="#module-mspasspy.util.Undertaker" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.Undertaker.</span></span><span class="sig-name descname"><span class="pre">Undertaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regular_data_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cemetery'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aborted_data_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abortions'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to handle dead data. Results are stored to two spcial
+collections defined by default as “cemetery”, for regular dead bodies,
+and “abortions” for those defined as abortions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbin</strong> (the constructor for this class only tests for that the
+handle is an instance of pymongo’s Database class.  The MsPASS
+version of Database extends the pymongo version.  Thsi particular
+class references only two methods of Database: (1) the private
+method <cite>_save_elog</cite> and (2) the private method <cite>_save_history</cite>.
+Technically an alternative extension of pymongo’s Database
+class that implements those two methods would be plug compatible.
+User’s who might want to pull MsPASS apart and use this class
+separately could do so with an alternative Database extension than
+MsPaSs.) – Should be an instance of  mspasspy.db.Database that is
+used to save the remains of any bodies.</p></li>
+<li><p><strong>regular_data_collection</strong> (<em>string</em>) – collection where we bury regular
+dead bodies.  Default “cemetery”</p></li>
+<li><p><strong>aborted_data_collection</strong> (<em>string</em>) – collection where aborted data documents
+are buried.   Default “abortions”</p></li>
+<li><p><strong>data_tag</strong> – tag to attach to each document.  Normally would
+be the same as the data_tag used for a particular save operation
+for data not marked dead.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.bring_out_your_dead">
+<span class="sig-name descname"><span class="pre">bring_out_your_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bury</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mummify_atomic_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bring_out_your_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="Link to this definition">#</a></dt>
+<dd><p>Seperate an ensemble into live and dead members.  Result is
+returned as a pair (tuple) of two ensembles.   First (0 component)
+is a copy of the input with the dead bodies removed.  The second
+(component 1) has the same ensemble Metadata as the input but only
+contains dead members - like the name implies stolen from a great line in
+the Monty Python movie “Search for the Holy Grail”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – must be either a TimeSeriesEnsemble or SeismogramEnsemble of
+data to be processed.</p></li>
+<li><p><strong>bury</strong> – if true the bury method will be called on the
+ensemble of dead data before returning.   Note a limitation of
+using this method is there is no way to save the optional
+history data via this method.  If you need to save history
+run this with bury=False and then run bury with save_history
+true on the dead ensemble.   There is also no way to specify
+an alternative to the default collection name of “cemetery”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>python list with two elements. 0 is ensemble with live data
+and 1 is ensemble with dead data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>python list with two components</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.bury">
+<span class="sig-name descname"><span class="pre">bury</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mummify_atomic_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bury"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bury" title="Link to this definition">#</a></dt>
+<dd><p>Handles dead data by saving a subset of content to database.</p>
+<p>MsPASS makes extensive use of the idea of “killing” data as a
+way to say it is bad and should not be considered further in
+any analysis.   There is a need to record what data was killed
+and it is preferable to do so without saving the entire
+data object.  (That is the norm in seismic reflection processing
+where data marked dead are normally carried through until
+removed through a process like a stack.)  This method
+standardizes the method of how to do that and what is saved
+as the shell of a dead datum.  That “shell” is always a minimum
+of two things:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>All elog entries - essential to understand why datum was killed</p></li>
+<li><p>The content of the Metadata container saved under a
+subdocument called “tombstone”.</p></li>
+</ol>
+</div></blockquote>
+<p>If save_history is set True and the datum has history records
+they will also be saved.</p>
+<p>It is important to realize this method acts like an overloaded
+c++ method in that it accepts multiple data types, but handles
+them differently.</p>
+<ol class="arabic simple">
+<li><p>Atomic data (TimeSeries or Seismogram) marked dead
+generate a document saved to the specified collection and
+an (optional) history document.   If the mummify_atomic_data
+parameter is set True (the default) the returned copy of the
+data will be processed with the “mummify” method of this class.
+(That means the sample data are discarded and the array is set
+to zero length).</p></li>
+<li><p>Ensembles have to handle two different situations.   If the
+entire ensemble is marked dead, all members are treated as
+dead and then processed through this method by a recursive
+call on each member.   In that situation an empty ensemble
+is returned with only ensemble metadata not empty.  If the
+ensemble is marked live the code loops over members
+calling this method recusively only on dead data.   In
+that situation the ensemble returned is edited with
+all dead data removed.   (e.g. if we started with 20 members
+and two were marked dead, the return would have 18 members.)</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mspass_object</strong> (<em>Must be a MsPASS seismic data object</em><em>
+(</em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><em>TimeSeries</em></a><em>, </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><em>Seismogram</em></a><em>, </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><em>TimeSeriesEnsemble</em></a><em>, or </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><em>SeismogramEnsemble</em></a><em>)
+or </em><em>the method will throw a TypeError.</em>) – datum to be processed</p></li>
+<li><p><strong>save_history</strong> – If True and a datum has the optional history
+data stored with it, the history data will be stored in a
+MongoDB collection hard wired into the _save_history method of
+Database.  Default is False</p></li>
+<li><p><strong>mummify_atomic_data</strong> – When True (default) atomic data
+marked dead will be passed through self.mummify to reduce
+memory use of the remains.   This parameter is ignored for ensembles.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.bury_the_dead">
+<span class="sig-name descname"><span class="pre">bury_the_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mummify_atomic_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bury_the_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bury_the_dead" title="Link to this definition">#</a></dt>
+<dd><p>Depricated method exactly equivalent to new, and shorter name of
+simply <cite>bury</cite>.   With context as a member of Undertaker the
+long name was redundnant.  Note the call sequence is exactly
+the same as bury.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.cremate">
+<span class="sig-name descname"><span class="pre">cremate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.cremate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.cremate" title="Link to this definition">#</a></dt>
+<dd><p>Like bury but nothing is preserved of the dead.</p>
+<p>Fpr atomic data it returns a default constructed (empty)
+copy of the container matching the original type.
+That avoids downstream type collisions if this method is
+called in parallel workflow to release memory.
+This method is most appropriate for ensembles.  In that case, it
+returns a copy of the ensemble with all dead data removed.
+(i.e. they are ommited from the returned copy leaving no trace.)
+If an ensemble is marked dead the return is an empty ensemble
+containing only ensemble Metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mspass_object</strong> – Seismic data object.   If not a MsPASS
+seismic data object a TypeError will be thrown.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.handle_abortion">
+<span class="sig-name descname"><span class="pre">handle_abortion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_or_datum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.handle_abortion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.handle_abortion" title="Link to this definition">#</a></dt>
+<dd><p>Standardized method to handle what we call abortions (see class overview).</p>
+<p>This method standardizes handling of abortions.  They are always
+saved as a document in a collection set by the constructor
+(self.aborted_data_collection) that defaults to “abortions”.
+The documents saved have up to 4 key-value pairs:</p>
+<ul class="simple">
+<li><p>“tombstone” - contents are a subdocument (dict) of the
+wf document that was aborted during construction.</p></li>
+<li><p>“logdata” - any error log records left by the reeader that failed.</p></li>
+<li><p>“type” -  string describing the expected type of data object
+that a reader was attempting to construct.   In rare
+situations it could be set to “unknown” if
+Undertaker._handle_abortion is called on a raw document
+and type is not set (see parameters below)</p></li>
+<li><p>“data_tag” - optional processing stage or job tag set on this
+Undertaker instance.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc_or_datum</strong> (Must be one of <cite>TimeSeries</cite>, <cite>Seismogram</cite>, <cite>Metadata</cite>,
+or a python dict.   For the seismic data objects any content in
+the ErrorLogger will be saved.   For dict input an application
+should post a message to the dict with some appropriate (custom)
+key to preserve a cause for the abortion.) – container defining the aborted fetus.</p></li>
+<li><p><strong>type</strong> – string description of the type of data object
+to associate with dict input.  Default for this parameter is None
+and it is not referenced at all for normal input of TimeSeries
+and Seismogram objects.  It is ONLY referenced if arg0 is a
+dict. If type is None and the input is a dict the value assigned to
+the “type” key in the abortions document is “unknown”.   The
+escape for “unknown” makes the method bombproof but may make the
+saved documents ambiguous.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Exception<span class="colon">:</span></dt>
+<dd class="field-even"><p>throws a TypeError if arg0 does not obey type
+list described above.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.mummify">
+<span class="sig-name descname"><span class="pre">mummify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.mummify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.mummify" title="Link to this definition">#</a></dt>
+<dd><p>Reduce memory use associated with dead data.</p>
+<p>For atomic data objects if they are marked dead
+the data vector/matrix is set to zero length releasing
+the dynamically allocated memory.  For Ensembles if
+the entire ensemble is marked dead all members are
+killed and this method calls itself on each member.
+For normal ensembles with mixed live and dead data
+only the data marked dead are muffified.</p>
+<p>Handling of</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mspass_object</strong> – datum to be processed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mspasspy.reduce.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mspasspy.reduce</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mspasspy.workflow.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mspasspy.workflow</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-mspasspy.util.converter">converter</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.AntelopePf2dict"><code class="docutils literal notranslate"><span class="pre">AntelopePf2dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.Metadata2dict"><code class="docutils literal notranslate"><span class="pre">Metadata2dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.Pf2AttributeNameTbl"><code class="docutils literal notranslate"><span class="pre">Pf2AttributeNameTbl()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.Seismogram2Stream"><code class="docutils literal notranslate"><span class="pre">Seismogram2Stream()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.SeismogramEnsemble2Stream"><code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble2Stream()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.Stream2Seismogram"><code class="docutils literal notranslate"><span class="pre">Stream2Seismogram()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.Stream2SeismogramEnsemble"><code class="docutils literal notranslate"><span class="pre">Stream2SeismogramEnsemble()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.Stream2TimeSeriesEnsemble"><code class="docutils literal notranslate"><span class="pre">Stream2TimeSeriesEnsemble()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.Textfile2Dataframe"><code class="docutils literal notranslate"><span class="pre">Textfile2Dataframe()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.TimeSeries2Trace"><code class="docutils literal notranslate"><span class="pre">TimeSeries2Trace()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.TimeSeriesEnsemble2Stream"><code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble2Stream()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.Trace2TimeSeries"><code class="docutils literal notranslate"><span class="pre">Trace2TimeSeries()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.dict2Metadata"><code class="docutils literal notranslate"><span class="pre">dict2Metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.list2Ensemble"><code class="docutils literal notranslate"><span class="pre">list2Ensemble()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.converter.post_ensemble_metadata"><code class="docutils literal notranslate"><span class="pre">post_ensemble_metadata()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-mspasspy.util.db_utils">db_utils</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.db_utils.MongoDBWorker"><code class="docutils literal notranslate"><span class="pre">MongoDBWorker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.db_utils.MongoDBWorker.setup"><code class="docutils literal notranslate"><span class="pre">MongoDBWorker.setup()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.db_utils.MongoDBWorker.teardown"><code class="docutils literal notranslate"><span class="pre">MongoDBWorker.teardown()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.db_utils.fetch_dbhandle"><code class="docutils literal notranslate"><span class="pre">fetch_dbhandle()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-mspasspy.util.decorators">decorators</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.decorators.is_input_dead"><code class="docutils literal notranslate"><span class="pre">is_input_dead()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.decorators.seismogram_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_copy_helper()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.decorators.seismogram_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_ensemble_copy_helper()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.decorators.timeseries_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_copy_helper()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.decorators.timeseries_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_copy_helper()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-mspasspy.util.Janitor">Janitor</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Janitor.Janitor"><code class="docutils literal notranslate"><span class="pre">Janitor</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Janitor.Janitor.add2keepers"><code class="docutils literal notranslate"><span class="pre">Janitor.add2keepers()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Janitor.Janitor.bag_trash"><code class="docutils literal notranslate"><span class="pre">Janitor.bag_trash()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Janitor.Janitor.clean"><code class="docutils literal notranslate"><span class="pre">Janitor.clean()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Janitor.Janitor.collect_trash"><code class="docutils literal notranslate"><span class="pre">Janitor.collect_trash()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Janitor.MiniseedJanitor"><code class="docutils literal notranslate"><span class="pre">MiniseedJanitor</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-mspasspy.util.logging_helper">logging_helper</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.logging_helper.ensemble_error"><code class="docutils literal notranslate"><span class="pre">ensemble_error()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.logging_helper.info"><code class="docutils literal notranslate"><span class="pre">info()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.logging_helper.reduce"><code class="docutils literal notranslate"><span class="pre">reduce()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-mspasspy.util.seismic">seismic</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.seismic.ensemble_time_range"><code class="docutils literal notranslate"><span class="pre">ensemble_time_range()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.seismic.has_live_data"><code class="docutils literal notranslate"><span class="pre">has_live_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.seismic.number_live"><code class="docutils literal notranslate"><span class="pre">number_live()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.seismic.print_metadata"><code class="docutils literal notranslate"><span class="pre">print_metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.seismic.regularize_sampling"><code class="docutils literal notranslate"><span class="pre">regularize_sampling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.seismic.sort_ensemble"><code class="docutils literal notranslate"><span class="pre">sort_ensemble()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-mspasspy.util.seispp">seispp</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.seispp.index_data"><code class="docutils literal notranslate"><span class="pre">index_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-mspasspy.util.Undertaker">Undertaker</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Undertaker.Undertaker"><code class="docutils literal notranslate"><span class="pre">Undertaker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead"><code class="docutils literal notranslate"><span class="pre">Undertaker.bring_out_your_dead()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Undertaker.Undertaker.bury"><code class="docutils literal notranslate"><span class="pre">Undertaker.bury()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Undertaker.Undertaker.bury_the_dead"><code class="docutils literal notranslate"><span class="pre">Undertaker.bury_the_dead()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Undertaker.Undertaker.cremate"><code class="docutils literal notranslate"><span class="pre">Undertaker.cremate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Undertaker.Undertaker.handle_abortion"><code class="docutils literal notranslate"><span class="pre">Undertaker.handle_abortion()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.util.Undertaker.Undertaker.mummify"><code class="docutils literal notranslate"><span class="pre">Undertaker.mummify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/python_api/mspasspy.util.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/python_api/mspasspy.util.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>mspass::algorithms::deconvolution::BasicDeconOperator</compoundname>
+    <derivedcompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</derivedcompoundref>
+    <includes refid="_basic_decon_operator_8h" local="no">BasicDeconOperator.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1a84111e230a365037569b17b2ca693100" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void mspass::algorithms::deconvolution::BasicDeconOperator::changeparameter</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;md)=0</argsstring>
+        <name>changeparameter</name>
+        <qualifiedname>mspass::algorithms::deconvolution::BasicDeconOperator::changeparameter</qualifiedname>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a94e40750a8f60dfdcb6695fb74fec1ee">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1aa67cf7c3d4fee9b6a59c3bde54efceb5">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a86b91406f4bd73b8da5b6d66ac85930a">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a9bff7dc7ae52a16530537b02a63c5c57">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1ae578cc62d08ce8c629999db6cccf4d76">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a8cf90914fa1571e88978b0b810fad805">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aec73707c1062cb14a7d0226ef045a4cb">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a4c359d9b0db253b3e31e57d42e53ebcd">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1ad6c091c6aed8b1c774ea40819ec30373">changeparameter</reimplementedby>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+<para>Update operator parameters from a Metadata container. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="10" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1aaf5d01a101bc30f52cd0a54509417ac9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual mspass::algorithms::deconvolution::BasicDeconOperator::~BasicDeconOperator</definition>
+        <argsstring>()</argsstring>
+        <name>~BasicDeconOperator</name>
+        <qualifiedname>mspass::algorithms::deconvolution::BasicDeconOperator::~BasicDeconOperator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Virtual destructor for derived deconvolution operators. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="12" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" bodystart="12" bodyend="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Abstract interface for deconvolution operators configurable by Metadata. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass::algorithms::deconvolution::LeastSquareDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>mspass::algorithms::deconvolution::MultiTaperXcorDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>mspass::algorithms::deconvolution::NoiseStableDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::ScalarDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>mspass::algorithms::deconvolution::TimeDomainGIDDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>mspass::algorithms::deconvolution::WaterLevelDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="7" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" bodystart="7" bodyend="13"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1a84111e230a365037569b17b2ca693100" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::BasicDeconOperator</scope><name>changeparameter</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1aaf5d01a101bc30f52cd0a54509417ac9" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::BasicDeconOperator</scope><name>~BasicDeconOperator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

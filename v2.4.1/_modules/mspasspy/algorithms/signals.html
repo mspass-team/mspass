@@ -1,0 +1,1112 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mspasspy.algorithms.signals &#8212; MsPASS 2.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=e9ebdb8f"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mspasspy/algorithms/signals';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../../../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.algorithms.signals</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mspasspy.algorithms.signals</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">obspy.signal.filter</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy.signal.detrend</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy.signal.cross_correlation</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy.signal.interpolation</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy.core.utcdatetime</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">mspass_func_wrapper</span><span class="p">,</span>
+    <span class="n">mspass_func_wrapper_multi</span><span class="p">,</span>
+    <span class="n">timeseries_as_trace</span><span class="p">,</span>
+    <span class="n">seismogram_as_stream</span><span class="p">,</span>
+    <span class="n">timeseries_ensemble_as_stream</span><span class="p">,</span>
+    <span class="n">seismogram_ensemble_as_stream</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream2Seismogram</span><span class="p">,</span> <span class="n">Stream2TimeSeriesEnsemble</span>
+
+
+<div class="viewcode-block" id="filter">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.filter">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="nd">@timeseries_as_trace</span>
+<span class="nd">@seismogram_as_stream</span>
+<span class="nd">@timeseries_ensemble_as_stream</span>
+<span class="nd">@seismogram_ensemble_as_stream</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies a time invariant filter to a MsPASS data object.</span>
+
+<span class="sd">    This entry is a wrapper around the obspy filter function.  It accepts the</span>
+<span class="sd">    same arguments as the obspy function and runs the same implementation</span>
+<span class="sd">    with the same idiosyncracies of their implementation.   Refer to their</span>
+<span class="sd">    documentation for details, but because this function is so fundamental</span>
+<span class="sd">    for data processing we note a few key points.</span>
+
+<span class="sd">    The &quot;type&quot; argument is required by their implementation and must be one</span>
+<span class="sd">    of the following:  *bandpass*, *lowpass*, or *highpass*.  A confusing</span>
+<span class="sd">    feature is that different kwarg values are required for different values</span>
+<span class="sd">    of &quot;type&quot; that are not consistent.   Requirements for the different</span>
+<span class="sd">    acceptable values of &quot;type&quot; are:</span>
+
+<span class="sd">    - If `type==&quot;bandpass&quot;` you must specify `freqmin` and `freqmax` values for</span>
+<span class="sd">      the passband with units of Hz.  You can optionally change the (integer)</span>
+<span class="sd">      value `corners` to specify the number of poles of the Butterworth</span>
+<span class="sd">      filter this option implies.   Note there is also a `zerophase` boolean</span>
+<span class="sd">      that if set True (default is false for minimum phase) causes the function</span>
+<span class="sd">      to apply a zerophase Butterworth instead of the default minimum phase</span>
+<span class="sd">      version.</span>
+<span class="sd">    - If `type==&quot;lowpass&quot;` you must specify only one corner but with a different</span>
+<span class="sd">      keyword of `freq`.   `corners` and `zerophase` are the same same as for</span>
+<span class="sd">      the &quot;bandpass&quot; option.  Again this option implies a Butterworth filter.</span>
+<span class="sd">    - If `type==&quot;highpass&quot;` the function behaves like &quot;lowpass&quot; except the</span>
+<span class="sd">      value of `freq` is the low frequency corner versus the high frequency</span>
+<span class="sd">      corner for lowpass.   `corners` and `zerophase` are the same same as for</span>
+<span class="sd">      the &quot;bandpass&quot; option.  Again this option implies a Butterworth filter.</span>
+
+<span class="sd">    There are also `bandstop`, `lowpass_fir`, `lowpass_cheby_2`, and</span>
+<span class="sd">    `remez_fir` options for the &quot;type&quot; argument.   See the obspy documentation</span>
+<span class="sd">    if you want to use these more obscure options.</span>
+
+<span class="sd">    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
+<span class="sd">    :param type: type of filter, &#39;bandpass&#39;, &#39;bandstop&#39;, &#39;lowpass&#39;, &#39;highpass&#39;, &#39;lowpass_cheby_2&#39;, &#39;lowpass_fir&#39;,</span>
+<span class="sd">      &#39;remez_fir&#39;. as noted above You can refer to</span>
+<span class="sd">      `Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html&gt;` for details.</span>
+<span class="sd">    :type type: str</span>
+<span class="sd">    :param args: extra arguments - see above as type value determines what is required here.</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper.</span>
+<span class="sd">    :param options: extra kv options</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>  <span class="c1"># inplace filtering</span></div>
+
+
+
+<div class="viewcode-block" id="detrend">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.detrend">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="nd">@timeseries_as_trace</span>
+<span class="nd">@seismogram_as_stream</span>
+<span class="nd">@timeseries_ensemble_as_stream</span>
+<span class="nd">@seismogram_ensemble_as_stream</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">detrend</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;dtrend&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function removes a trend from the data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,</span>
+<span class="sd">    so the processing history and error logs can be preserved.</span>
+
+<span class="sd">    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
+<span class="sd">    :param type: type of filter, &#39;simple&#39;, &#39;linear&#39;, &#39;constant&#39;, &#39;polynomial&#39;, &#39;spline&#39;. You can refer to</span>
+<span class="sd">     `Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.detrend.html&gt;` for details.</span>
+<span class="sd">    :type type: str</span>
+<span class="sd">    :param args: extra arguments</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper.</span>
+<span class="sd">    :param options: extra kv options</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="interpolate">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.interpolate">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="nd">@timeseries_as_trace</span>
+<span class="nd">@seismogram_as_stream</span>
+<span class="nd">@timeseries_ensemble_as_stream</span>
+<span class="nd">@seismogram_ensemble_as_stream</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">sampling_rate</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;weighted_average_slopes&quot;</span><span class="p">,</span>
+    <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">npts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">time_shift</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function interpolates data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,</span>
+<span class="sd">    so the processing history and error logs can be preserved.</span>
+
+<span class="sd">    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
+<span class="sd">    :param sampling_rate: The new sampling rate in Hz.</span>
+<span class="sd">    :param args: extra arguments.</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
+<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param inplace_return: True to return data in mspass_func_wrapper.</span>
+<span class="sd">    :param method: One of &quot;linear&quot;, &quot;nearest&quot;, &quot;zero&quot;, &quot;slinear&quot;, &quot;quadratic&quot;, &quot;cubic&quot;, &quot;lanczos&quot;,</span>
+<span class="sd">     or &quot;weighted_average_slopes&quot;. You can refer to</span>
+<span class="sd">     `Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.interpolate.html&gt;` for details.</span>
+<span class="sd">    :type method: str</span>
+<span class="sd">    :param starttime: The start time (or timestamp) for the new interpolated stream.</span>
+<span class="sd">     Will be set to current start time of the data if not given.</span>
+<span class="sd">    :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime` or int</span>
+<span class="sd">    :param npts: The new number of samples. Will be set to the best fitting number to retain the current end time</span>
+<span class="sd">     of the trace if not given.</span>
+<span class="sd">    :type npts: int</span>
+<span class="sd">    :param time_shift: Shift the trace by adding time_shift to the starttime. The time shift is always given in seconds.</span>
+<span class="sd">     A positive shift means the data is shifted towards the future, e.g. a positive time delta.</span>
+<span class="sd">     Note that this parameter solely affects the metadata. The actual interpolation of the underlaying data is governed</span>
+<span class="sd">     by the parameters sampling_rate, starttime and npts.</span>
+<span class="sd">    :param kwargs: extra kv arguments</span>
+<span class="sd">    :return: None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+        <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">time_shift</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="correlate">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate">[docs]</a>
+<span class="nd">@mspass_func_wrapper_multi</span>
+<span class="nd">@timeseries_as_trace</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlate</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">,</span>
+    <span class="n">shift</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;correlate&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">demean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="o">=</span><span class="s2">&quot;naive&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cross-correlation of two signals up to a specified maximal shift.</span>
+
+<span class="sd">    :param a: first signal</span>
+<span class="sd">    :param b: second signal</span>
+<span class="sd">    :param shift: Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or</span>
+<span class="sd">        2*shift samples. The sample with zero shift will be in the middle.</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to :class:`~mspasspy.util.decorators.mspass_func_wrapper_multi`.</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
+<span class="sd">    :param demean: Demean data beforehand.</span>
+<span class="sd">    :param normalize: Method for normalization of cross-correlation. One of &#39;naive&#39; or None (True and False are</span>
+<span class="sd">        supported for backwards compatibility). &#39;naive&#39; normalizes by the overall standard deviation. None does not normalize.</span>
+<span class="sd">    :param method: Method to use to calculate the correlation. &#39;direct&#39;: The correlation is determined directly from</span>
+<span class="sd">        sums, the definition of correlation. &#39;fft&#39; The Fast Fourier Transform is used to perform the correlation more</span>
+<span class="sd">        quickly. &#39;auto&#39; Automatically chooses direct or Fourier method based on an estimate of which is faster.</span>
+<span class="sd">        (Only available for SciPy versions &gt;= 0.19. For older Scipy version method defaults to &#39;fft&#39;.)</span>
+<span class="sd">    :type a: :class:`~mspasspy.ccore.seismic.TimeSeries`</span>
+<span class="sd">    :type b: :class:`~mspasspy.ccore.seismic.TimeSeries`</span>
+<span class="sd">    :type shift: int</span>
+<span class="sd">    :type demean: bool</span>
+<span class="sd">    :type method: str</span>
+<span class="sd">    :return: cross-correlation function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">demean</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">method</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="correlate_template">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate_template">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="nd">@timeseries_as_trace</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlate_template</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">template</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;correlate_template&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;valid&quot;</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">,</span>
+    <span class="n">demean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Correlate a time series against a template signal.</span>
+
+<span class="sd">    This is an MsPASS wrapper around</span>
+<span class="sd">    :func:`obspy.signal.cross_correlation.correlate_template`.  MsPASS</span>
+<span class="sd">    :class:`TimeSeries` inputs are converted to ObsPy ``Trace`` objects for</span>
+<span class="sd">    the call.</span>
+
+<span class="sd">    :param data: input data to search.</span>
+<span class="sd">    :type data: :class:`mspasspy.ccore.seismic.TimeSeries`</span>
+<span class="sd">    :param template: template signal to correlate with ``data``.</span>
+<span class="sd">    :type template: :class:`mspasspy.ccore.seismic.TimeSeries`</span>
+<span class="sd">    :param object_history: enable MsPASS object-history logging.</span>
+<span class="sd">    :param alg_name: algorithm name stored in object history.</span>
+<span class="sd">    :param alg_id: optional algorithm id stored in object history.</span>
+<span class="sd">    :param dryrun: validate wrapper behavior without changing data.</span>
+<span class="sd">    :param mode: correlation mode passed to ObsPy.</span>
+<span class="sd">    :param normalize: normalization mode passed to ObsPy.</span>
+<span class="sd">    :param demean: when True remove means before correlation.</span>
+<span class="sd">    :param method: correlation method passed to ObsPy.</span>
+<span class="sd">    :return: correlation sequence returned by ObsPy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate_template</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">demean</span><span class="p">,</span> <span class="n">method</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="correlate_stream_template">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate_stream_template">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="nd">@timeseries_ensemble_as_stream</span>
+<span class="nd">@seismogram_as_stream</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlate_stream_template</span><span class="p">(</span>
+    <span class="n">stream</span><span class="p">,</span>
+    <span class="n">template</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;correlate_stream_template&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">template_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Correlate a multichannel data object against a stream template.</span>
+
+<span class="sd">    This wrapper converts MsPASS ensemble or seismogram inputs to ObsPy</span>
+<span class="sd">    ``Stream`` objects, calls</span>
+<span class="sd">    :func:`obspy.signal.cross_correlation.correlate_stream_template`, and</span>
+<span class="sd">    converts the result back to an MsPASS container selected by</span>
+<span class="sd">    ``return_type``.</span>
+
+<span class="sd">    :param stream: input :class:`Seismogram` or :class:`TimeSeriesEnsemble`.</span>
+<span class="sd">    :param template: template stream-compatible object.</span>
+<span class="sd">    :param object_history: enable MsPASS object-history logging.</span>
+<span class="sd">    :param alg_name: algorithm name stored in object history.</span>
+<span class="sd">    :param alg_id: optional algorithm id stored in object history.</span>
+<span class="sd">    :param dryrun: validate wrapper behavior without changing data.</span>
+<span class="sd">    :param template_time: optional template reference time passed to ObsPy.</span>
+<span class="sd">    :param return_type: ``&quot;seismogram&quot;`` or ``&quot;timeseries_ensemble&quot;``.</span>
+<span class="sd">    :param handles_dead_data: wrapper flag declaring dead-data handling.</span>
+<span class="sd">    :param kwargs: additional wrapper options.</span>
+<span class="sd">    :return: converted correlation result.</span>
+<span class="sd">    :rtype: :class:`mspasspy.ccore.seismic.Seismogram` or</span>
+<span class="sd">        :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`</span>
+<span class="sd">    :raises TypeError: if ``return_type`` is not supported.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate_stream_template</span><span class="p">(</span>
+        <span class="n">stream</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">template_time</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;seismogram&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;timeseries_ensemble&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only seismogram and timeseries_ensemble types are supported&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="correlation_detector">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlation_detector">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="nd">@timeseries_ensemble_as_stream</span>
+<span class="nd">@seismogram_as_stream</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlation_detector</span><span class="p">(</span>
+    <span class="n">stream</span><span class="p">,</span>
+    <span class="n">templates</span><span class="p">,</span>
+    <span class="n">heights</span><span class="p">,</span>
+    <span class="n">distance</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;correlation_detector&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">template_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">template_magnitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">template_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">similarity_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">details</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run ObsPy&#39;s correlation detector on MsPASS data.</span>
+
+<span class="sd">    Input data and templates are converted to ObsPy streams before calling</span>
+<span class="sd">    :func:`obspy.signal.cross_correlation.correlation_detector`.  The</span>
+<span class="sd">    returned detections and similarity traces keep ObsPy&#39;s native return</span>
+<span class="sd">    shape.</span>
+
+<span class="sd">    :param stream: input :class:`Seismogram` or :class:`TimeSeriesEnsemble`.</span>
+<span class="sd">    :param templates: iterable of template objects convertible to ObsPy</span>
+<span class="sd">        streams.</span>
+<span class="sd">    :param heights: detection threshold or thresholds passed to ObsPy.</span>
+<span class="sd">    :param distance: minimum separation between detections passed to ObsPy.</span>
+<span class="sd">    :param object_history: enable MsPASS object-history logging.</span>
+<span class="sd">    :param alg_name: algorithm name stored in object history.</span>
+<span class="sd">    :param alg_id: optional algorithm id stored in object history.</span>
+<span class="sd">    :param dryrun: validate wrapper behavior without changing data.</span>
+<span class="sd">    :param template_times: optional template times passed to ObsPy.</span>
+<span class="sd">    :param template_magnitudes: optional template magnitudes passed to ObsPy.</span>
+<span class="sd">    :param template_names: optional template names passed to ObsPy.</span>
+<span class="sd">    :param similarity_func: optional ObsPy similarity function.</span>
+<span class="sd">    :param details: optional ObsPy details flag.</span>
+<span class="sd">    :param plot: optional ObsPy plotting flag or target.</span>
+<span class="sd">    :param return_type: retained for backward compatibility; ignored because</span>
+<span class="sd">        ObsPy returns detection dictionaries rather than waveform streams.</span>
+<span class="sd">    :param handles_dead_data: wrapper flag declaring dead-data handling.</span>
+<span class="sd">    :param kwargs: additional options passed to ObsPy.</span>
+<span class="sd">    :return: tuple ``(detections, similarities)`` returned by ObsPy.  The</span>
+<span class="sd">        detections are dictionaries describing each match and the similarities</span>
+<span class="sd">        are ObsPy similarity traces.</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tem_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>
+        <span class="n">tem_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
+    <span class="n">detections</span><span class="p">,</span> <span class="n">sims</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlation_detector</span><span class="p">(</span>
+        <span class="n">stream</span><span class="p">,</span>
+        <span class="n">tem_list</span><span class="p">,</span>
+        <span class="n">heights</span><span class="p">,</span>
+        <span class="n">distance</span><span class="p">,</span>
+        <span class="n">template_times</span><span class="p">,</span>
+        <span class="n">template_magnitudes</span><span class="p">,</span>
+        <span class="n">template_names</span><span class="p">,</span>
+        <span class="n">similarity_func</span><span class="p">,</span>
+        <span class="n">details</span><span class="p">,</span>
+        <span class="n">plot</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">detections</span><span class="p">,</span> <span class="n">sims</span></div>
+
+
+
+<div class="viewcode-block" id="templates_max_similarity">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.templates_max_similarity">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="nd">@timeseries_ensemble_as_stream</span>
+<span class="nd">@seismogram_as_stream</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">templates_max_similarity</span><span class="p">(</span>
+    <span class="n">st</span><span class="p">,</span>
+    <span class="n">time</span><span class="p">,</span>
+    <span class="n">streams_templates</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;templates_max_similarity&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the maximum similarity across multiple templates.</span>
+
+<span class="sd">    :param st: input :class:`Seismogram` or :class:`TimeSeriesEnsemble`.</span>
+<span class="sd">    :param time: time at which similarity is evaluated.</span>
+<span class="sd">    :param streams_templates: template objects convertible to ObsPy streams.</span>
+<span class="sd">    :param object_history: enable MsPASS object-history logging.</span>
+<span class="sd">    :param alg_name: algorithm name stored in object history.</span>
+<span class="sd">    :param alg_id: optional algorithm id stored in object history.</span>
+<span class="sd">    :param dryrun: validate wrapper behavior without changing data.</span>
+<span class="sd">    :param handles_dead_data: wrapper flag declaring dead-data handling.</span>
+<span class="sd">    :return: maximum similarity value returned by ObsPy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tem_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">streams_templates</span><span class="p">:</span>
+        <span class="n">tem_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">templates_max_similarity</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">tem_list</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="xcorr_3c">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.xcorr_3c">[docs]</a>
+<span class="nd">@mspass_func_wrapper_multi</span>
+<span class="nd">@seismogram_as_stream</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">xcorr_3c</span><span class="p">(</span>
+    <span class="n">st1</span><span class="p">,</span>
+    <span class="n">st2</span><span class="p">,</span>
+    <span class="n">shift_len</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;xcor_3c&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">full_xcorr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">abs_max</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cross-correlate two three-component seismograms.</span>
+
+<span class="sd">    This is an MsPASS wrapper for</span>
+<span class="sd">    :func:`obspy.signal.cross_correlation.xcorr_3c`.  Inputs are converted</span>
+<span class="sd">    to ObsPy ``Stream`` objects before correlation.</span>
+
+<span class="sd">    :param st1: first three-component seismogram.</span>
+<span class="sd">    :param st2: second three-component seismogram.</span>
+<span class="sd">    :param shift_len: maximum sample shift.</span>
+<span class="sd">    :param object_history: enable MsPASS object-history logging.</span>
+<span class="sd">    :param alg_name: algorithm name stored in object history.</span>
+<span class="sd">    :param alg_id: optional algorithm id stored in object history.</span>
+<span class="sd">    :param dryrun: validate wrapper behavior without changing data.</span>
+<span class="sd">    :param components: component codes passed to ObsPy; defaults to</span>
+<span class="sd">        ``[&quot;Z&quot;, &quot;N&quot;, &quot;E&quot;]``.</span>
+<span class="sd">    :param full_xcorr: when True return the full cross-correlation function.</span>
+<span class="sd">    :param abs_max: when True choose the absolute maximum correlation.</span>
+<span class="sd">    :return: ObsPy cross-correlation result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">xcorr_3c</span><span class="p">(</span>
+        <span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">shift_len</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">full_xcorr</span><span class="p">,</span> <span class="n">abs_max</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="xcorr_max">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.xcorr_max">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="nd">@timeseries_as_trace</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">xcorr_max</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;xcor_max&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">abs_max</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the maximum of a cross-correlation sequence.</span>
+
+<span class="sd">    :param data: cross-correlation sequence as a :class:`TimeSeries` or</span>
+<span class="sd">        compatible object converted to an ObsPy ``Trace``.</span>
+<span class="sd">    :param object_history: enable MsPASS object-history logging.</span>
+<span class="sd">    :param alg_name: algorithm name stored in object history.</span>
+<span class="sd">    :param alg_id: optional algorithm id stored in object history.</span>
+<span class="sd">    :param dryrun: validate wrapper behavior without changing data.</span>
+<span class="sd">    :param abs_max: when True choose the absolute maximum correlation.</span>
+<span class="sd">    :param handles_dead_data: wrapper flag declaring dead-data handling.</span>
+<span class="sd">    :return: sample shift and correlation value returned by ObsPy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">xcorr_max</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">abs_max</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="xcorr_pick_correction">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.xcorr_pick_correction">[docs]</a>
+<span class="nd">@mspass_func_wrapper_multi</span>
+<span class="nd">@timeseries_as_trace</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">xcorr_pick_correction</span><span class="p">(</span>
+    <span class="n">trace1</span><span class="p">,</span>
+    <span class="n">trace2</span><span class="p">,</span>
+    <span class="n">pick1</span><span class="p">,</span>
+    <span class="n">pick2</span><span class="p">,</span>
+    <span class="n">t_before</span><span class="p">,</span>
+    <span class="n">t_after</span><span class="p">,</span>
+    <span class="n">cc_maxlag</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;xcorr_pick_correction&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="nb">filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">filter_options</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate differential pick correction by cross-correlation.</span>
+
+<span class="sd">    This is an MsPASS wrapper for</span>
+<span class="sd">    :func:`obspy.signal.cross_correlation.xcorr_pick_correction`;</span>
+<span class="sd">    :class:`TimeSeries` inputs are converted to ObsPy ``Trace`` objects.</span>
+
+<span class="sd">    :param trace1: first waveform.</span>
+<span class="sd">    :param trace2: second waveform.</span>
+<span class="sd">    :param pick1: pick time on ``trace1``.</span>
+<span class="sd">    :param pick2: pick time on ``trace2``.</span>
+<span class="sd">    :param t_before: window start time before each pick.</span>
+<span class="sd">    :param t_after: window end time after each pick.</span>
+<span class="sd">    :param cc_maxlag: maximum lag allowed for the correction.</span>
+<span class="sd">    :param object_history: enable MsPASS object-history logging.</span>
+<span class="sd">    :param alg_name: algorithm name stored in object history.</span>
+<span class="sd">    :param alg_id: optional algorithm id stored in object history.</span>
+<span class="sd">    :param dryrun: validate wrapper behavior without changing data.</span>
+<span class="sd">    :param filter: optional ObsPy filter name.</span>
+<span class="sd">    :param filter_options: filter options passed to ObsPy.</span>
+<span class="sd">    :param plot: optional ObsPy plotting flag.</span>
+<span class="sd">    :param filename: optional output filename for plots.</span>
+<span class="sd">    :return: pick correction and correlation coefficient returned by ObsPy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">xcorr_pick_correction</span><span class="p">(</span>
+        <span class="n">pick1</span><span class="p">,</span>
+        <span class="n">trace1</span><span class="p">,</span>
+        <span class="n">pick2</span><span class="p">,</span>
+        <span class="n">trace2</span><span class="p">,</span>
+        <span class="n">t_before</span><span class="p">,</span>
+        <span class="n">t_after</span><span class="p">,</span>
+        <span class="n">cc_maxlag</span><span class="p">,</span>
+        <span class="nb">filter</span><span class="p">,</span>
+        <span class="n">filter_options</span><span class="p">,</span>
+        <span class="n">plot</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

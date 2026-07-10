@@ -1,0 +1,2044 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Database Concepts &#8212; MsPASS 2.4.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=e9ebdb8f"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_manual/database_concepts';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CRUD Operations in MsPASS" href="CRUD_operations.html" />
+    <link rel="prev" title="MsPASS Virtual Cluster Concepts" href="../getting_started/getting_started_overview.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Database Concepts</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Database Concepts</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="database-concepts">
+<span id="id1"></span><h1>Database Concepts<a class="headerlink" href="#database-concepts" title="Link to this heading">#</a></h1>
+</section>
+<section id="prof-gary-l-pavlis">
+<h1>Prof. Gary L. Pavlis<a class="headerlink" href="#prof-gary-l-pavlis" title="Link to this heading">#</a></h1>
+<section id="overview-roadmap">
+<h2>Overview/roadmap<a class="headerlink" href="#overview-roadmap" title="Link to this heading">#</a></h2>
+<p>Expect this section to be merger of several existing sections.
+This section will need to guide reader on access points.
+Need to use interal hyperlinks to keys section headings.
+note it can be read linearly or nonlinearly with links but design is
+a linear read.  Use the index for entry during use for reminders.</p>
+</section>
+<section id="fundamentals">
+<h2>Fundamentals<a class="headerlink" href="#fundamentals" title="Link to this heading">#</a></h2>
+<p>Wikepedia provides the following generic definition of a
+<a class="reference external" href="https://en.wikipedia.org/wiki/Database">database</a>:</p>
+<div class="line-block">
+<div class="line">In computing, a database is an organized collection of data or a type
+of data store based on the use of a database management system (DBMS),
+the software that interacts with end users, applications,
+and the database itself to capture and analyze the data.</div>
+</div>
+<p>Prior to MsPASS two approaches were used in Seismology to define a
+“Database” in this generic sense:</p>
+<ol class="arabic simple">
+<li><p>The earliest systems for managing waveform data emerged from real-time
+monitoring and analysis systems developed in the later 1970s and early
+1980s.   Those systems used the then revolutionary concept
+of tree structure of a unix file system to manage waveform data.
+It is not commonly appreciated that that approach is an
+implementation of the oldest form of database called called
+a <a class="reference external" href="https://en.wikipedia.org/wiki/Hierarchical_database_model">hierarchic database model</a>,
+which dates back to the concepts developed by IBM in the 1960s.
+The only reason that is important is that a large fraction of
+research code in seismology use files and file naming conventions
+to manage waveform data.   In addition, a relic still exists
+even to S3 object names Earthscope, SCEDC, and NCEDC all use
+that mirror unix path names.  Type example is day files for
+continuous data.</p></li>
+<li><p>The nuclear monitoring community of seismology was an early
+adopter (early 1980s) of the then revolutionary concept of
+<a class="reference external" href="https://en.wikipedia.org/wiki/Relational_database">relational database systems</a>.
+Since then relational databases have become the foundation of a large
+fraction of information technology platforms across a wide range of
+fields.   Today relational databases are a workhorse in all seismology
+data centers and most operational seismic networks.  To most seismologists,
+however, the database is an engine under the hood of an information
+system we interact with only through a simplified interface.</p></li>
+</ol>
+<p>MsPASS uses a more recent development with a package called
+<a class="reference external" href="https://www.mongodb.com/">MongoDB</a>.  MongoDB is an implementation of
+what is called a “document database”.   The name is misleading because
+it has far more utility than providing a way to manage documents.
+There is a lot more information about MongoDB in this manual and
+and a truly vast amount of documentation on the web.   A few key
+points, however, are worth emphasizing about MongoDB and MsPaSS:</p>
+<ul class="simple">
+<li><p>I would assert that MongoDB is a perfect database engine for
+a system like MsPASS designed for research applications. The reason is
+that MongoDB is so much more flexible than a relational database system.
+Relational databases demand data be organized as a table format that
+is quite rigid.   MongoDB documents, in contrast, are a loose
+collection of “key-value pairs” than can hold almost anything.
+That is extremely important in a research setting where a new idea
+may not mesh with an existing relational database tables.   In MongoDB
+all you need to do is add a new key to hold a new concept and you
+can mix it with older stuff.</p></li>
+<li><p>A MongoDB “document” maps almost exactly into a python dictionary.
+We exploit that in MsPASS to create a very flexible way to store
+auxiliary data (“metadata”) in the same container as the waveform
+sample data.  The result is a generalization of the ancient
+(from the days of magnetic tape storage) concept of a data “header”.
+We use MongoDB in MsPASS to store data that in a seismic reflection
+systems today are commonly stored as relational database tables.
+MongoDB documents are functionally the same, but I reiterate they
+are extensible and not frozen as they are in something like a
+file format like SEGY.</p></li>
+<li><p>MongoDB has a clean interface to python called
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/">pymongo</a>.
+Experienced python programmers will find the interface easy to use
+as it involves a small number of class methods and input and most of the
+output as python dictionaries or lists of python dictionaries or other
+things.</p></li>
+</ul>
+<p>A final point in this overview is that most modern database systems,
+including MongoDB, use a
+<a class="reference external" href="https://en.wikipedia.org/wiki/Client%E2%80%93server_model">client-server model</a>.
+More about this
+topic is found in the <a class="reference internal" href="components.html#mspass-components"><span class="std std-ref">MsPASS Components</span></a> section.   MsPASS
+packages up components in a single client.  Most MsPASS jobs begin with a
+version of the following stock incantation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydb&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where the above sets the symbol <cite>dbclient</cite> to reference a handle to
+the MongoDB client.   Many workflows don’t need the client itself, but
+most will need the line that sets the symbol <cite>db</cite> to reference a handle
+used to interact with MongoDB components called “collections”.</p>
+<p>Parallel jobs face a challenge where multiple “workers” may need to
+interact with the database server simultaneously.  Furthermore, in a modern
+cluster each worker is independent.   Significant effort is required to
+launch a client and initiate connections to the server.  Any parallel
+application requiring database access would be very very slow if a new
+client had to be instantiated for each new parallel task.   MsPASS solves
+that problem by using a feature of dask called a
+<a class="reference external" href="https://docs.dask.org/en/stable/customize-initialization.html">worker plugin</a>.
+We have found that parallel database access requires the
+use of such a plugin.  Naive uses will either perform badly or
+just fail.   For details about clients, in general, see <a class="reference internal" href="components.html#mspass-components"><span class="std std-ref">MsPASS Components</span></a>.
+For this topic, there are two axioms:</p>
+<ol class="arabic simple">
+<li><p>If your workflow requires database access during the run, you must
+use the dask scheduler.   We have been unable to discover a comparable feature in
+pyspark to dask’s worker plugin.</p></li>
+<li><p>All parallel jobs require creating the worker plugin and pushing it to
+all workers using a variation of the following code fragment:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mdbu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db_plugin</span> <span class="o">=</span> <span class="n">mdbu</span><span class="o">.</span><span class="n">MongoDBWorker</span><span class="p">(</span><span class="n">mspass_client</span><span class="p">)</span>
+<span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
+<span class="n">dask_client</span><span class="o">.</span><span class="n">register_plugin</span><span class="p">(</span><span class="n">db_plugin</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="seismology-data">
+<h2>Seismology Data<a class="headerlink" href="#seismology-data" title="Link to this heading">#</a></h2>
+<p>A database is an organized collection of information so the reader needs to first
+understand what data MsPASS was designed to manage.  MsPASS considers
+managing waveform data to be it’s primary mission.  What we mean by “waveform data”,
+however, has some secondary classifications and nuances I discuss below.
+MsPASS treats everything except waveform data as
+“Metadata”, which in the MsPASS perspective means any data not a required
+element of a generic piece of waveform data.   MsPASS has well defined
+procedure to manage three types of Metadata:  auxiliary waveform metadata,
+receiver metadata, and source metadata.   I define what I mean by those
+terms and expand on what I mean in subsections below.</p>
+<section id="auxiliary-waveform-metadata">
+<h3>Auxiliary waveform metadata<a class="headerlink" href="#auxiliary-waveform-metadata" title="Link to this heading">#</a></h3>
+<p>At the lowest level, single channel of a piece of waveform data is stored as a
+vector of sample amplitudes.  That data is completely useless without
+three required attributes:  (1) the sample interval/rate, (2) the number
+of samples (length) of the data vector, and (3) the time standard and
+what the time is of the first sample in that vector.   Anything else
+you need to know about that waveform is “Metadata”.   That includes
+a very long list of seismology concepts like SEED net codes that aren’t
+required unless the parent data format is SEED.   Even then they aren’t
+required but a feature of that datum and best treated as Metadata.</p>
+<p>The traditional way of handling seismology Metadata borrowed a concept
+from seismic reflection processing commonly called a “header”.   Many
+readers are familiar with SAC files.  SAC files define a fixed data structure
+with a fixed block of data (632 bytes to be precise)
+at the beginning of the file that defined the “header”.
+In SAC the “header” is followed by the sample data in time order.
+The “header” has a frozen set of attributes that must be located
+in specific slots (byte offsets from 0 in computing jargon)
+in the header.  MsPASS does not use a fixed header structure but
+generalizes the concept to the <cite>Metadata</cite> container.  In object
+oriented programming jargon all MsPASS seismic data objects “are” Metadata
+(i.e. they inherit a data type called Metadata).  SAC uses that same
+concept but the difference is that Metadata to SAC maps fixed memory
+slots to a particular set of attributes.  In MsPASS we use a more
+modern, generic approach with key-value pairs.   That is,
+MsPASS Metadata is a container that allows access to attibute with
+a key.  What that means, in practice, is that MsPASS data objects
+can act like python dictionaries.   e.g. the following is a sample
+code block to access SEED net codes from a seismic data object
+defined with a generic symbol “d”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+<span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+<span class="n">chan</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>I inflicted all that on you to make two key points:</p>
+<ol class="arabic simple">
+<li><p>The approach we developed for MsPASS is completely generic.
+The “header” can be minimal or expand to be huge depending on the needs
+of the processing workflow.</p></li>
+<li><p>The data objects loaded for processing in MsPASS do not mix up
+required data and Metadata.   Required data are attributes of the object.
+Everything else has to be stored as Metadata.   I know of no other
+implementation that does this cleanly.   Note commerical seismic reflection processing
+systems, although very clean and efficient, never have this feature.
+They are designed to handle a special class of
+seismic data - a seismic reflection experiment.  Many of us have had the
+bad experience of trying to adapt a seismic reflection package to handle
+earthquake data and found what can be called a collision of concept.
+i.e. there are metadata attributes needed for handling earthquake
+data for which a seismic reflection system has no concept what you mean.
+A case in point are the seed net codes like the example above.
+For decades IRIS-PASSCAL stuffed data into a modified SEGY format output
+and inserted SEED station codes in unused SEGY header slots.  That was
+functional, but produced code that was anything but generic.</p></li>
+</ol>
+<p>The generic header (Metadata) was an early design feature of MsPASS.
+We originally thought we could just stuff all Metadata into
+a single MongoDB document and use MongoDB to manage the information held
+in those documents.  Early design work, however, quickly reminded us that
+that model would have created a huge inefficiency.   Two of the most
+commonly required set of attributes for processing are highly redundant
+if you have to store them as metadata for each waveform:   (a) receiver
+attributes and (b) source attributes.   Anyone who has ever tried to
+set station and source coordinates in a million SAC files can
+immediately understand this problem.   For the rest of you, the point is
+that a typical seismology data set a million waveforms would typically
+be associated with tens or a few hundred stations.   That is many
+orders of magnitude of redundancy and duplicating that same data for
+every datum in storage is very inefficient and creates many potential
+problems.   For that reason, MsPASS treats source and receiver data
+specially as described in the next two sections.   A key point,
+however, is that everything else is treated as Metdata and stored in
+MongoDB documents.  A convention we adopted in MsPASS is that
+collections that contain documents with data that can be used to
+construct a valid seismic data object have a name that begins
+with “wf”.   (Standard ones are “wf_miniseed”,”wf_TimeSeries”, and
+“wf_Seismogram”)   Auxiliary attributes stored their are open-ended
+but each of the standard ones have a schema that defines the namespace
+of what each key means for that collection.   We expand on that topic
+below after discussing how we handle source and receiver metadata.</p>
+</section>
+<section id="source-metadata">
+<h3>Source metadata<a class="headerlink" href="#source-metadata" title="Link to this heading">#</a></h3>
+<p>Any event-based seismology processing is guaranteed to need some
+basic source information.   The standard MongoDB collection to hold that
+data is referenced with the “source” collection.   Details about the
+standard namespace for source metadata and tools for creating and
+managing that data are described below.</p>
+</section>
+<section id="receiver-metadata">
+<h3>Receiver metadata<a class="headerlink" href="#receiver-metadata" title="Link to this heading">#</a></h3>
+<p>I know of no scientifically useful example of a workflow that
+does not require basic information about the sensors/stations/receivers
+that collected a particular datum.   The most basic data is location
+information, but many seismology applications require detailed
+sensor response metadata.   No matter what is required, during processing
+of a waveform most workflows require information about
+receiver metadata.  As noted the receiver attributes, however, are
+always redundant and best managed independently from waveform data.
+Like the source problem, the details of how to create and manage
+this information are below and elsewhere in this manual.   The key
+point to recognize here is that like the source data receiver data is
+managed outside waveform collections (those with a name starting with “wf”)
+and workflows need to link with that data through a different process
+MongoDB calls “normalization”.   Details of that topic are found
+in <a class="reference internal" href="normalization.html#normalization"><span class="std std-ref">Normalization</span></a>.</p>
+</section>
+</section>
+<section id="managing-large-data-objects">
+<h2>Managing Large Data objects<a class="headerlink" href="#managing-large-data-objects" title="Link to this heading">#</a></h2>
+<p>A final generic concept in how MsPASS handles waveform data is that
+like every other practical system we are aware of MsPASS manages
+Metadata storage separately from the more voluminous sample data.
+One way of thinking of this is that MsPASS has no intrinsic data format.
+All standard formats are either an import detail or a data export problem.
+The objective of all readers is to create a one or more valid
+data objects in memory.  That can be done directly with a formatted
+reader or indirectly by reading data previously loaded into system
+and managed by the MsPASS database.   Once loaded into memory all data is the same
+except for what Metadata is loaded with it.</p>
+<section id="formatted-data">
+<h3>Formatted data<a class="headerlink" href="#formatted-data" title="Link to this heading">#</a></h3>
+<p>There are two ways one can manage formatted data:</p>
+<ol class="arabic simple">
+<li><p>Read the files sequentially into memory, translate the reader’s output
+to one or more MsPASS data objects, and save the result with a native
+MsPASS writer.  This, for example, is the recommended way to handle SAC
+files.  There is no simple function to do that, but the process is easily
+done with obspy’s sac reader and a converter method to a MsPASS TimeSeries
+object.</p></li>
+<li><p>Index the formatted data and have the workflow read the and translate
+the raw data into MsPASS data objects.   That is, for example the
+recommended approach for starting a workflow with raw miniseed data.
+Numerous examples are found in the
+<a class="reference external" href="https://github.com/mspass-team/mspass_tutorial">MsPASS tutorials repository</a>.
+That approach is particularly useful for data storage as most miniseed
+data uses compression to reduce data storage size by nearly a factor of 10.</p></li>
+</ol>
+</section>
+<section id="external-data-storage-within-mspass">
+<h3>External Data Storage within MsPASS<a class="headerlink" href="#external-data-storage-within-mspass" title="Link to this heading">#</a></h3>
+<p>Most MsPASS processing workflows can be reduced to one or more blocks
+of python code that can be summarized in three steps:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">Read</span> <span class="n">data</span> <span class="kn">from</span><span class="w"> </span><span class="nn">storage</span> <span class="n">to</span> <span class="n">create</span> <span class="n">a</span> <span class="n">seismic</span> <span class="n">data</span> <span class="nb">object</span>
+<span class="mf">2.</span> <span class="n">Run</span> <span class="n">a</span> <span class="n">series</span> <span class="n">of</span> <span class="n">algorithms</span> <span class="n">on</span> <span class="n">that</span> <span class="n">data</span>
+<span class="mf">3.</span> <span class="n">Save</span> <span class="n">the</span> <span class="n">results</span> <span class="n">to</span> <span class="n">external</span> <span class="n">storage</span>
+</pre></div>
+</div>
+<p>Step 1 can be done by reading from formatted files as noted above, but
+usually involves accessing data previously exposed to the system or
+written by a version of step 3 in some previous processing run.
+To clarify, an example of “being exposed to the system” is the standard
+way of handling miniseed data.  Here is an example from the mspass tutorial
+repository from the “PrecoursePreprocessing.ipynb” file used to import
+a set of miniseed files into the MsPASS system:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dask.bag</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dbg</span>
+
+<span class="n">current_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_directory</span><span class="p">,</span> <span class="s1">&#39;wf&#39;</span><span class="p">)</span>
+<span class="n">dfilelist</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span> <span class="k">as</span> <span class="n">entries</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="n">dfilelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dfilelist</span><span class="p">)</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">dbg</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">dfilelist</span><span class="p">)</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">mydata</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">index_mseed_file</span><span class="p">,</span><span class="nb">dir</span><span class="o">=</span><span class="nb">dir</span><span class="p">)</span>
+<span class="n">index_return</span> <span class="o">=</span> <span class="n">mydata</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The key point here is work done by the <cite>index_mseed_file</cite>
+method of the MsPASS Database object (referenced above with the symbol <cite>db</cite>).
+It extracts the minimal Metadata stored with miniseed files and
+writes one MongoDB document containing that metadata and file index
+information that defines a range of bytes that can be used to
+construct a single TimeSeries object.   The following example
+should make that clearer.  It is an example of the content of a
+document created with index_miniseed in json format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="s2">&quot;S06&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="s2">&quot;XX&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="s2">&quot;LHZ&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;sampling_rate&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+ <span class="s2">&quot;delta&quot;</span><span class="p">:</span> <span class="mf">0.002</span><span class="p">,</span>
+ <span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="mf">1765652830.0</span><span class="p">,</span>
+ <span class="s2">&quot;last_packet_time&quot;</span><span class="p">:</span> <span class="mf">1765749357.864</span><span class="p">,</span>
+ <span class="s2">&quot;foff&quot;</span><span class="p">:</span> <span class="mi">862246686</span><span class="p">,</span>
+ <span class="s2">&quot;nbytes&quot;</span><span class="p">:</span> <span class="mi">114463232</span><span class="p">,</span>
+ <span class="s2">&quot;npts&quot;</span><span class="p">:</span> <span class="mi">48264000</span><span class="p">,</span>
+ <span class="s2">&quot;endtime&quot;</span><span class="p">:</span> <span class="mf">1765749357.998</span><span class="p">,</span>
+ <span class="s2">&quot;storage_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;mseed&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/N/project/MtCarmel/MtCarmel_rawdata/453041443/20251214215554&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;dfile&quot;</span><span class="p">:</span> <span class="s2">&quot;seis009Z.MiniSeed&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;time_standard&quot;</span><span class="p">:</span> <span class="s2">&quot;UTC&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the above document were loaded into a python script
+which we referenced with the symbol <cite>doc</cite>, the datum it references
+could be read with the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When that line completes <cite>d</cite> would contain a <cite>TimeSeries</cite> object
+for the station “S06” and channel “LHZ” defined in <cite>doc</cite> and time range
+defined by <cite>starttime</cite> to <cite>endtime</cite> stored as epoch times seed above.
+The reader keys on the
+<cite>“format”: “mseed”</cite> which triggers a formatted read starting
+at byte offset <cite>“foff”: 862246686</cite> for a span of <cite>“nbytes”: 114463232</cite>.   That loads
+the sample data into the array defined by <cite>d.data</cite>.
+The Metadata of <cite>d</cite> is copy of that above.  e.g. you
+would find that after that read completed <cite>d[“sta”]</cite> is “S06”
+and <cite>d[“chan”]</cite> is “LHZ”.</p>
+<p>The reader should note that the <cite>“format”: “mseed”</cite> line
+is not the default for data storage.   The default is <cite>binary</cite>
+(note if <cite>format</cite> is not defined the default is <cite>binary</cite>).
+<cite>binary</cite> tells the reader the to use the low level C function called
+<a class="reference external" href="https://www.tutorialspoint.com/c_standard_library/c_function_fread.htm">fread</a>
+to load the <cite>data</cite> array in a TimeSeries or Seismogram objects being
+constructed by the reader.  The reason for using a raw binary reader
+as opposed to storage with something like miniseed is IO speed.
+We know of no faster mechanism to read a block of array data that
+is independent of system architecture.  Note you pay for speed in
+external storage cost compared to miniseed.   That is, miniseed compression
+reduces storage to approximately one byte per sample while internal
+arrays in MsPASS all use 64 bit (8 byte) floating point numbers.   Hence,
+data stored as <cite>binary</cite> require roughly 8 times as much storage as
+the same data stored in miniseed.   The read/write times, however, are
+much much less for binary data.  How much less is system dependent.</p>
+<p>A second critical attribute in that sample document above is the
+line:  <cite>“storage_mode”: “file”</cite>.  When that line is found in a MongoDB
+wf document, the reader will always look for three attributes that
+are always required to be with it:   (1) <cite>dir</cite> defines the directory
+where that data file (2) <cite>dfile</cite> is found in a file system.  <cite>foff</cite> (3) is
+then the number of bytes to skip at the head of the file to get to
+the relevant data.  If <cite>storage_mode</cite> is undefined or set to <cite>gridfs</cite>
+it means the sample data are stored and managed by MongoDB.
+To the reader that makes little difference in how it behaves.   It simply
+references a different IO system to use to load the data array.  Some key
+points noted elsewhere in this manual are important to emphasize about
+gridfs storage:</p>
+<ol class="arabic simple">
+<li><p>We have found for most systems gridfs storage is much slower than
+file-based IO.  There are multiple technical reasons for that which are
+a side issue for the topic here.</p></li>
+<li><p>The data stored on gridfs will live on the same file system as the data used to
+define the MongoDB database.  Large data sets require care to make sure
+the data fit in available external storage.  If you use gridfs storage
+you put “all your eggs in one basket”.  Whether that is appropriate is
+dependent upon your local computing setup.  A common desktop configuration
+today is to have a mix of solid state disks and slower, but cheaper
+magnetic disks.   In that situation, the database is best kept on the
+solid state disk while the more voluminous sample data can be stored
+on the magnetic disk file system.   That type of split is not possible
+with gridfs.</p></li>
+<li><p>Large scale cleanup is often easier with files than gridfs storage.
+To understand the reasons see the section <a class="reference internal" href="CRUD_operations.html#crud-operations"><span class="std std-ref">CRUD Operations in MsPASS</span></a> of
+this manual.</p></li>
+</ol>
+<p>The other thing to understand about MsPASS external storage is the
+inverse of reading - writing  (step 3 in the pseudocode above).
+A writer needs to create a MongoDB document that has all the information
+a reader needs to construct a valid atomic data object.
+That means the standard MsPASS writer (the <cite>save_data</cite> method of <cite>Database</cite>)
+has to do the following:   (a) save all the sample data to gridfs
+or a file name defined by some mechanism, (b) copy all Metadata
+from the datum to a python dictionary, (c) load the required data
+attributes (e.g. sample rate) into that same dictionary, (d) load
+essential data needed to locate where the sample data was just written
+(e.g. file name <cite>dfile</cite>), and (e) save that dictionary as a MongoDB document.</p>
+<p>The most critical point to keep in mind about seismic data
+storage in MsPASS is that sample data are handled independently from
+Metadata and required data attributes (i.e. sample rate, npts, and start time).
+Even with a format like miniseed or SAC that have headers that contain
+some useful Metadata, a reader can be expected to largely ignore that
+data stored externally on an headers.  The assumption is that a function
+like the <cite>index_mseed_file</cite> method will have been used previously to
+extract that Metadata and build one document for each atomic
+data object in the dataset being analyzed.  The default <cite>binary</cite> data is the
+most extreme as that format depends solely on the database documents
+to supply the required attributes and Metadata.   That works because all
+MsPASS readers use this pseudocode to create atomic data objects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="p">)</span> <span class="n">load</span> <span class="n">document</span> <span class="p">(</span><span class="n">dictionary</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">database</span>
+<span class="mi">2</span><span class="p">)</span> <span class="n">Use</span> <span class="n">that</span> <span class="n">dictionary</span> <span class="n">to</span> <span class="n">construct</span> <span class="n">an</span> <span class="n">template</span> <span class="k">for</span> <span class="n">the</span> <span class="nb">object</span><span class="o">.</span>
+   <span class="n">Specifically</span><span class="p">,</span> <span class="n">TimeSeries</span> <span class="ow">and</span> <span class="n">Seismogram</span> <span class="n">objects</span> <span class="n">have</span> <span class="n">a</span>
+   <span class="n">constructor</span> <span class="n">that</span> <span class="ow">is</span> <span class="n">called</span> <span class="n">directly</span> <span class="n">to</span> <span class="n">create</span> <span class="n">the</span> <span class="nb">object</span> <span class="n">valid</span>
+   <span class="k">except</span> <span class="n">the</span> <span class="n">data</span> <span class="n">arrays</span> <span class="n">are</span> <span class="n">created</span> <span class="n">but</span> <span class="n">initialized</span> <span class="n">to</span> <span class="nb">all</span> <span class="n">zeros</span>
+<span class="mi">3</span><span class="p">)</span> <span class="n">A</span> <span class="n">sample</span> <span class="n">reader</span> <span class="ow">is</span> <span class="n">called</span> <span class="n">to</span> <span class="n">load</span> <span class="n">sample</span> <span class="n">data</span> <span class="kn">from</span><span class="w"> </span><span class="nn">external</span>
+   <span class="n">storage</span> <span class="n">into</span> <span class="n">the</span> <span class="n">objects</span> <span class="n">data</span> <span class="n">array</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>That complexity is a necessary evil to allow MsPASS to be very flexible
+about how sample data is handled.  It also allows the Metadata stored on
+in the MongoDB database to be altered as needed without having to touch
+the sample data.   e.g. a nearly universal starting point with
+miniseed data is to run the function
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize_mseed" title="mspasspy.db.normalize.normalize_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.db.normalize.normalize_mseed()</span></code></a> on the output of
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.index_mseed_file()</span></code>.
+That modifies “wf_miniseed” documents creating cross-referencing keys
+to the “site” and “channel” collections.   The attributes added are not
+at all related to the SEED standard but are essential to utilize the
+data effectively.   That strategy of adding to Metadata as needed is
+an essential one for any functional seismic processing system.</p>
+</section>
+</section>
+<section id="schema">
+<h2>Schema<a class="headerlink" href="#schema" title="Link to this heading">#</a></h2>
+<section id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h3>
+<p>The above discussion of how seismic data are handled in MsPASS shows
+the central role that Metadata stored as documents in MongoDB are to
+how the system works.   One way to say that is if you don’t build
+the MongoDB documents correctly you can’t do anything.
+If the documents you create are flawed, you will get nothing but
+errors when a reader tries to use them.
+Because MongoDB documents are a container that reference a particular thing as a
+key-value pairs, it means you must know what key to use to get what you want.
+We thus enter the world of what is called a “schema” in database jargon.</p>
+<p>Wikipedia defines a database schema as follows:</p>
+<div class="line-block">
+<div class="line">The term “<a class="reference external" href="https://en.wiktionary.org/wiki/schema">schema</a>”
+refers to the organization of data as a blueprint of how the database
+is constructed (divided into database tables in the case of <a class="reference external" href="https://en.wikipedia.org/wiki/Relational_databases">relational
+databases</a>)
+the schema defines a set of attributes, tables (relations), and how
+they can be linked (joined).</div>
+</div>
+<p>As this definition states, in a relational database like CSS3.0 the
+schema defines a set of attributes, tables (relations), and a how they are
+linked (joined).   MsPASS uses a “nonSQL database”, which means the interaction
+is not with Structured Query Language (SQL).  As discussed above an
+numerous other places in this manual the lowest common denominator
+in MongoDB is a key-value pair.   A MongoDB <em>document</em> is a set of key-value
+pairs, a <em>collection</em> is a set of documents, and “a database” is a set of
+collections organized under a single name tag.  Readers familiar
+with relatioal databases may find it convenient to think of a
+collection as the equivalent of a table (relation) and a given document
+is comparable to a database row (tuple).</p>
+<p>I inflicted all that on you to help you understand that a “schema” is
+an essential starting point for a relational database,
+but it less essential with MongoDB.  With an RDBMS
+the structure of those tables must be defined before they can be used.
+MongoDB is much less restictive.  You can throw pretty much anything
+into a MongoDB document and as long as it can be expressed as a key-value
+pair you can save that attribute.
+That means it is technically possible to create “documents”
+with drastically different contents and store them in the same collection.
+For something like MsPASS, however, that would be a really bad idea
+as it would be like mixing English and Chinese text in the same book.
+Hence, a way of saying what a schema in MsPASS is a set of keywords
+you need to use to reference a concept the Metadata value it references defines.
+The miniseed document example above provides some examples.
+The keyword “delta” in MsPASS defines the time interval the
+sample data in the waveform the document references.   All valid waveform
+documents MUST contain that key-value pair.  Many of the other key-value
+pairs in that document are necessary for that piece of data but not
+always required.  e.g. “sta” and “chan” are SEED concepts that are
+not really essential unless you are working with FDSN data.
+The implication of that for a “schema” in MongoDB is that all you absolutely
+have to agree on is what each key references and what the thing it returns
+should be.  If you are familiar with the term “ontology” you might find it
+helpful to think of a MongoDB schema as an implementation of a simple ontology and not
+a rigid specification of a table structure that is required in
+a relational database.</p>
+<p>The details of the mspass schema definition are given in the
+related section of this manual at <a class="reference internal" href="../mspass_schema/mspass_schema.html#mspass-schema"><span class="std std-ref">MsPASS Schema</span></a>.
+That section includes tables that show the standard
+metadata keys, the type of the datum with which they should be linked,
+and the concept that the value should represent.
+When you are developing a
+workflow you may find it useful to have that table at your disposal.
+Alternatively, in the modern world with AI agents integrated into
+search engines, you can simply ask you favorite AI a question like
+the following:
+“What is the Metadata key in MsPASS to reference the data sample interval?”.
+For the most common cases you should get a reasonable response including
+a summary longer than the cryptic summary in the tables of
+<a class="reference internal" href="../mspass_schema/mspass_schema.html#mspass-schema"><span class="std std-ref">MsPASS Schema</span></a>.</p>
+<p>We close this section by noting that a schema is not required by
+MongoDB. As we discussed in detail in <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">Data Object Design Concepts</span></a>
+MsPASS data objects are implemented in C++.   Strong typing in C++
+makes a schema a necessary evil to make the system more robust.
+A schema also provides a necessary central location to define the
+namespace of what kind of content is expected for a particular key.
+The rest of this section defines the details of how that is applied in
+MsPASS.</p>
+</section>
+<section id="design-concepts">
+<h3>Design Concepts<a class="headerlink" href="#design-concepts" title="Link to this heading">#</a></h3>
+<p>A properly designed database schema needs to prioritize the problem it
+aims to solve.   The schema for MsPASS was aimed to address the
+following design goals:</p>
+<ol class="arabic simple">
+<li><p><em>Efficient flow through Spark and DASK.</em> A key reason MongoDB was chosen as
+the database engine for MsPASS was that it is cleanly integrated with
+Spark and DASK.   Nonetheless, the design needs to minimize database
+transaction within a workflow.   Our aim was to try to limit database
+transaction to reading input data, saving intermediate results, and
+saving a final result.</p></li>
+<li><p><em>KISS (Keep It Simple Stupid).</em> Experience has shown clearly that
+complex relational schemas like CSS3.0 have many, sometimes subtle,
+issues that confound beginners.  A case in point is that large
+organizations commonly have a team of database managers to maintain
+the integrity of their database and optimize performance.   An
+important objective of our design is to keep it simple so scientists
+do not have to become database managers to work with the system.</p></li>
+<li><p><em>Efficient and robust handling of three-component seismograms.</em>
+Although MsPASS supports <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">scalar seismic
+data,</span></a> our view is that the
+greater need in the community is an efficient system for handling 3C
+data.   In reality, our schema design ended up completely neutral on
+this point; scalar and 3C data are handled identically.  The only
+differences is what attributes (Metadata) are required for each data type.</p></li>
+<li><p><em>Provide a clean mechanism to manage static metadata.</em> MsPASS is a
+system designed to process a “data set”, which means the data are
+preassembled, validated, and then passed into a processing chain.
+The first two steps (assembly and validation) are standalone tasks
+that require assembly of waveform data and a heterogenous collection
+of metadata from a range of sources.   Much of that problem has been
+the focus of extensive development work by IRIS and the FDSN.
+Furthermore, obspy already had a well-developed, solid system
+for interaction with FDSN web services.  We saw no reason to
+“reinvent the wheel” and lean heavily on obspy’s web service tools
+for assembling data from FDSN sources.  The MsPASS schema for
+receiver metadata can, in fact, be thought of a little more than a
+dialect of StationXML.   Similarly, the MsPASS schema for source
+metadata can be thought of as a dialect of QuakeML.
+Furthermore, because we utilized obspy’s web service tools the
+python objects obspy defines for storing source and receiver metadata
+are mostly echoed in the schema.</p></li>
+<li><p><em>Extensible.</em> A DBMS cannot be too rigid in a research environnment,
+or it will create barriers to progress.  This is especially important to MsPASS as our
+objective is to produce a system for seismic research, not a
+production system for repetitive processing of the similar data.
+Seismic reflection processing and seismic network catalog
+preparation are two examples of repetitive processing in
+seismology.  In both areas traditional relational database management
+systems have proven merit. A research system needs greater flexility to
+handle unanticipated new ideas and approaches without starting from
+scratch.  A goals was to provide a mechanism for users to extend
+the database with little to no impact on the core system.</p></li>
+</ol>
+<div class="line-block">
+<div class="line">On the other hand, we have explicitly avoided worrying about problems
+we concluded were already solved.  These are:</div>
+</div>
+<ol class="arabic simple">
+<li><p><em>Catalog preparation.</em>   At this time a primary job of most
+operational seismic networks of all scales is preparation of a
+catalog of seismic events and linking that information to data used
+to generate the event location and source parameters.  There are
+multiple commercial and government supported systems for solving
+this problem.   We thus treat catalog data as an import problem.</p></li>
+<li><p><em>Real time processing</em>.   Although there are elements of MsPASS that
+are amenable to near real time processing of streaming data, we view
+real time processing as another solved problem outside the scope of
+this system.</p></li>
+</ol>
+</section>
+</section>
+<section id="schema-in-mspass">
+<h2>Schema in MsPASS<a class="headerlink" href="#schema-in-mspass" title="Link to this heading">#</a></h2>
+<section id="id2">
+<h3>Overview<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<div class="line-block">
+<div class="line">We reiterate the important concept that in
+MongoDB a <em>collection</em> is roughly equivalent to a table (relation)
+in a relational database.  Each collection holds one or more <em>documents</em>.
+A single document is roughly equivalent to a tuple in a relational database.
+In this section we describe how we group documents into collections defined
+in MsPASS.   These collections and the attributes they contain are the
+<em>schema</em> for MsPASS.  In this section we describe how the schema of MsPASS is
+defined and used to maintain the integrity of a database.
+An important feature of MsPASS is that the schema is more of a set of
+guidelines than a set of rigid rules.  MsPASS provides a mechanism for
+how rigidly any rules are enforced we will also describe below.</div>
+</div>
+</section>
+<section id="some-key-concepts">
+<h3>Some Key Concepts<a class="headerlink" href="#some-key-concepts" title="Link to this heading">#</a></h3>
+<section id="objectid">
+<h4>ObjectId<a class="headerlink" href="#objectid" title="Link to this heading">#</a></h4>
+<p>MongoDB collections always utilize a unique identifier they call an
+<code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> to provide a bombproof, unique identifier for a single document
+in a collection.  MongoDB automatically generates one id with the special
+name <code class="code docutils literal notranslate"><span class="pre">_id</span></code> whenever a new document is added to a collection.   That
+attribute is also automatically indexed so queries using it as a key are
+always fast.  An important
+thing to realize is that two absolutely identical documents, which can readily
+be saved from a python dict or our Metadata container, can be saved to
+a collection and they will be treated as different because they will each
+get a different <code class="code docutils literal notranslate"><span class="pre">_id</span></code> assigned.   That is good or bad depending on the
+perspective.  It can be bad in an application where duplicates
+create a problem, but we assert that for most data processing it is
+a good thing.  We contrast this with the experience we have had with relational
+databases where a job can abort on a write because of a duplicate
+database key problem.  That never happens with MongoDB, but the flip side
+of the coin is it is very easy to unintentionally save pure duplicates.</p>
+<p>Because ObjectIds are guaranteed to be unique we use them extensively inside
+MsPASS to provide indices and especially as a tool to create cross-references
+to common data like station and source Metadata.</p>
+<p>ObjectIds are stored in MongoDB as a binary object we normally store in
+its raw form using pymongo.  Users should be aware that a human readable
+form can be obtain in python by using the str attribute of ObjectId class.  (i.e. if
+<code class="code docutils literal notranslate"><span class="pre">myid</span></code> is an ObjectId loaded from MongoDB, the readable form is <code class="code docutils literal notranslate"><span class="pre">myid.str</span></code>)
+For more on ObjectIds the following site is a good <a class="reference external" href="https://www.tutorialspoint.com/mongodb/mongodb_objectid.htm">introduction</a>.</p>
+</section>
+<section id="normalized-data">
+<h4>Normalized Data<a class="headerlink" href="#normalized-data" title="Link to this heading">#</a></h4>
+<p>When we started this development we planned to create a purely flat
+Metadata space through what MongoDB calls an <em>embedded data model</em>.
+As we gained experience on the system, however, we realized all seismology
+Metadata was better suited to make more use of what MongoDB’s documentation
+calls a <em>normalized data model</em>.  The generic concepts these terms
+describe can be found <a class="reference external" href="https://www.tutorialspoint.com/mongodb/mongodb_data_modeling.htm">here</a>.</p>
+<p>At this time there are three sets of Metadata we handle by normalization.
+They are familiar concepts to anyone familiar with the relational database
+schema CSS3.0 used, for example, in Antelope.  The concepts involved are:</p>
+<ul class="simple">
+<li><p><em>Station (instrument) related Metadata.</em>   These are described below and actually
+define two collections with the names <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">channel</span></code>.  The
+distinctions are a bit subtle and better left to the more detailed
+discussion below.</p></li>
+<li><p><em>Source related Metadata.</em>   Any event driven processing needs information
+about seismic sources that are associated with the signals to be
+analyzed.  That data is stored in this collection.</p></li>
+</ul>
+<p>A common feature of all “normalized” collection data is that they define a
+subset of data that is are shared by many waveforms.  In that situation it
+is more efficient in both storage and database maintenance to keep the
+related data together.  Readers familiar with relational systems
+understand this same concept as our site, channel, and source collections
+are similar to the CSS3.0 site, sitechan, and origin tables respectively.</p>
+<p>A key feature of normalized data is we need a fast index to link the
+normalized data to our waveform data.  In all cases we use the ObjectId of
+the normalized collection as the index.   As noted above all documents in
+MongoDB automatically are assigned an ObjectId accessible with key
+<code class="code docutils literal notranslate"><span class="pre">_id</span></code>.  For all normalized Metadata we use a convention wherein we
+store the ObjectId of a related document in another collection using
+a composite key name constructed as <code class="code docutils literal notranslate"><span class="pre">collection_id</span></code>, where <code class="code docutils literal notranslate"><span class="pre">collection</span></code>
+is the name of the collection and <code class="code docutils literal notranslate"><span class="pre">_id</span></code> is a literal meant to imply
+an ObjectId normally accessible through the “_id” key.   For example,
+we use <code class="code docutils literal notranslate"><span class="pre">site_id</span></code> to refer to documents in the <code class="code docutils literal notranslate"><span class="pre">site</span></code> collection.
+That means that when <code class="code docutils literal notranslate"><span class="pre">site_id</span></code> appears in another collection it is a
+reference to the ObjectId (referenced directly with alternate key <code class="code docutils literal notranslate"><span class="pre">_id</span></code>
+in the site collection) of the related document in the <code class="code docutils literal notranslate"><span class="pre">site</span></code> collection.</p>
+<p>The major motivation for using the normalized data model for handling
+source and receiver metadata is the data involved have two important
+properties.   First, since MsPASS was designed as a system for efficiently
+handling an assembled data set, the data these collections can be treated
+as static (immutable) within a workflow.   Waveform data readers must thus do
+what is MongoDB’s version of a database join between the waveform collection
+and one or more of the normalizing collections.   Second, in every case
+we know the source and receiver metadata are small compared to any
+data set for which one would need to use the parallel processing machinery
+of MsPASS.  That means the time to query the normalizing collections is
+always expected to be much smaller than the time to query a waveform collection that often
+has millions of documents. Although experience showed that expectation was
+true, we also found there are situations where embedded database operations
+can be a bottleneck in a workflow.   For that reason we developed a set of
+normalization classes in python that cache tables of attributes needed for
+normalization.   That idea is described below in the
+<a class="reference internal" href="normalization.html#normalization"><span class="std std-ref">Normalization</span></a> section.   The key idea of the normalization
+components of MsPASS is that in modern computers with massive memory
+it is preferable to preload normalizing data into memory than
+require millions of queries of small collections.</p>
+</section>
+</section>
+<section id="waveform-processing">
+<h3>Waveform Processing<a class="headerlink" href="#waveform-processing" title="Link to this heading">#</a></h3>
+<section id="concepts">
+<h4>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">#</a></h4>
+<p>A first-order concept in our database design is that a processing workflows
+should driven by one primary collection.  We emphasize that idea by
+stating this rule:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Rule 1:</dt><dd><p>Before running any workflow the input waveform collection
+must be populated to define all Metadata required to run the workflow.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>That means there is normally a significant <em>preprocessing</em> effort
+required to prepare the dataset.  What that means is data dependent
+and dependent on what processing you need to do.   Standard MongoDB
+tools and some Database extensions in MsPASS simplify this process,
+but do not remove the burden.
+We also would emphasize that preparing data for processing gets increasingly
+complicated as the size of a dataset grows as the probability of an
+unanticipated data problem increase with the size of a dataset.  Never underestimate the
+universal concept of <a class="reference external" href="https://www.dictionary.com/browse/murphy-s-law">Murphy’s Law</a>.
+For that reason we recommend all MsPASS processing workflows be broken
+into at least two pieces:
+(1) a preprocessing sequence that builds a clean database to drive (2) the
+python code that defines your data processing workflow.</p>
+<p>With that background, there are two collections used to manage waveform data.
+They are called <code class="code docutils literal notranslate"><span class="pre">wf_TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">wf_Seismogram</span></code>.
+These two collection are the primary work areas to assemble a working data set.
+We elected to keep data describing each of the two atomic data types in MsPASS,
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>
+and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>,
+in two different collections.  The
+main reason we made the decision to create two collections instead of one
+is that there are some minor differences in the Metadata that would
+create inefficiencies if we mixed the two data types in one place.
+If an algorithm needs to have inputs of both TimeSeries and Seismogram
+objects (e.g. array deconvolution where a TimeSeries defines the source
+wavelet and the data to be deconvolved are Seismogram object) it can still
+be handled, but the queries can actually happen faster because they
+can be issue against two smaller sets.</p>
+<p>The key point about the use of the wf collections is that all serial processing
+can be reduced to this pseudocode logic:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="p">)</span> <span class="n">Create</span> <span class="n">database</span> <span class="n">handle</span>
+<span class="mi">2</span><span class="p">)</span> <span class="n">Point</span> <span class="n">the</span> <span class="n">handle</span> <span class="n">at</span> <span class="n">wf_Seismogram</span> <span class="ow">or</span> <span class="n">wf_TimeSeries</span> <span class="k">as</span> <span class="n">appropriate</span>
+<span class="mi">3</span><span class="p">)</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">MongoDB</span> <span class="n">cursor</span> <span class="p">(</span><span class="n">find</span> <span class="nb">all</span> <span class="ow">or</span> <span class="n">issue</span> <span class="n">a</span> <span class="n">query</span><span class="p">)</span>
+<span class="mi">4</span><span class="p">)</span> <span class="n">foreach</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+    <span class="mi">1</span><span class="n">i</span><span class="p">)</span>  <span class="n">Create</span> <span class="n">a</span> <span class="n">datum</span> <span class="n">d</span> <span class="kn">from</span><span class="w"> </span><span class="nn">x</span>
+    <span class="mi">1</span><span class="n">i</span><span class="p">)</span>  <span class="n">Run</span> <span class="n">a</span> <span class="n">sequnce</span> <span class="n">of</span> <span class="n">functions</span> <span class="n">on</span> <span class="n">d</span>
+    <span class="mi">2</span><span class="n">i</span><span class="p">)</span>  <span class="n">Save</span> <span class="n">the</span> <span class="n">result</span>
+</pre></div>
+</div>
+<p>Parallel jobs are very similar but require creation of an RDD or Dask bag
+to drive the processing.  Our parallel api, described elsewhere
+(<a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a>)
+simplifies the conversion from a serial to parallel job.  In any case,
+the equivalent parallel pseudocode logic is this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="p">)</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">memory</span> <span class="n">resident</span> <span class="n">database</span> <span class="n">client</span> <span class="n">on</span> <span class="n">each</span> <span class="n">worker</span>
+<span class="mi">2</span><span class="p">)</span> <span class="n">Create</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">documents</span>
+<span class="mi">3</span><span class="p">)</span> <span class="n">Create</span> <span class="n">an</span> <span class="n">RDD</span> <span class="ow">or</span> <span class="n">dask</span> <span class="n">bag</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="nb">list</span>
+<span class="mi">4</span><span class="p">)</span> <span class="n">Run</span> <span class="n">a</span> <span class="n">parallel</span> <span class="n">reader</span>
+<span class="mi">5</span><span class="p">)</span> <span class="n">Run</span> <span class="n">a</span> <span class="n">sequence</span> <span class="n">of</span> <span class="nb">map</span> <span class="n">operators</span> <span class="k">as</span> <span class="ow">in</span> <span class="n">step</span> <span class="mi">1</span><span class="n">i</span> <span class="n">of</span> <span class="n">the</span> <span class="n">serial</span> <span class="n">algorithm</span>
+<span class="mi">6</span><span class="p">)</span> <span class="n">Save</span> <span class="n">results</span> <span class="k">with</span> <span class="n">a</span> <span class="n">parallel</span> <span class="n">writer</span>
+</pre></div>
+</div>
+<p>Where step 1) is described in <a class="reference internal" href="components.html#mspass-components"><span class="std std-ref">MsPASS Components</span></a>.  More about what all
+that means can be found in <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a>.</p>
+<p>A simple perspective on the difference is that the loop for the serial
+job becomes is implied in the parallel job.  The list of
+documents drives a parallel pipeline job running sequence
+read-process-write on each item.   More complex workflows are
+possible, but that basic sequence is very common.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the simple sequence for parallel processing noted above is
+useful conceptually, we have found that with seismology data that
+approach works only for small datasets without a lot of difficult
+tuning of dask or spark.  The reason is that the input of a small
+volume of data defined by a list of documents misleads the scheduler
+about the memory requirements of the workflow.   Processing
+large data sets (meaning large enough that they can’t fit is cluster memory)
+will almost always abort on a memory fault if a simple pipeline
+(series of map operators) like above is used.   A generic solution
+was developed for newer versions of MsPASS in a generic
+function called <a class="reference internal" href="../python_api/mspasspy.workflow.html#mspasspy.workflow.sliding_window_pipeline" title="mspasspy.workflow.sliding_window_pipeline"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.workflow.sliding_window_pipeline()</span></code></a>.
+See the docstring and <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a> for more on this topic.</p>
+</div>
+</section>
+</section>
+<section id="waveform-data-storage">
+<h3>Waveform Data Storage<a class="headerlink" href="#waveform-data-storage" title="Link to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The material in this subsection repeats more introductory versions
+of the same concepts earlier in this document.  It was retained
+during revisions of the manual because it is more-or-less a target
+for a “find out more about topic x” for waveform data storage.</p>
+</div>
+<section id="id3">
+<h4>Overview<a class="headerlink" href="#id3" title="Link to this heading">#</a></h4>
+<p>All seismogram read operations access one of the wf Collections.
+The default behavior is to read all key-value pairs in a single document
+and insert most of the attributes into the Metadata for one
+TimeSeries or Seismogram objects.  Normalized data (see above) are
+loaded automatically by default.</p>
+<p>Writers are more complicated because they may have to deal with any
+newly generated attributes and potentially fundamental changes in the
+nature of the waveform we want to index.  <em>e.g.</em>, a stack can become
+completely inconsistent with the concept of a station name and may
+require creation of a different set of attributes like a point
+in space to define what it is.  If the concept matches an existing
+schema attribute that existing key should be used.  If not, the user
+can and should define their own attribute that will automatically be saved.
+The only limitation is that if the key is not defined in the wf schema
+the automatic type conversions will not be feasible.  Similarly, NEVER EVER
+write a new attribute to an datum’s Metadata if the key is already defined
+in the schema.  Doing so will guarantee downstream problems.</p>
+<p>Users must also realize that the sample data in Seismogram or TimeSeries objects
+can be constructed from <code class="code docutils literal notranslate"><span class="pre">wf</span></code> documents in one of two ways.  First, the sample data
+can be stored in the more conventional method of CSS3.0 based systems
+as external files.   In this case, we use the same construct as CSS3.0 where
+the correct information is defined by three attribures:  <code class="code docutils literal notranslate"><span class="pre">dir</span></code>, <code class="code docutils literal notranslate"><span class="pre">dfile</span></code>, and
+<code class="code docutils literal notranslate"><span class="pre">foff</span></code>.   Unlike CSS3.0 MsPASS currently requires external file data to be
+stored as native 64 bit floating point numbers.   We force that restriction
+for efficiency as the <code class="code docutils literal notranslate"><span class="pre">Seismogram.data</span></code> array and the <code class="code docutils literal notranslate"><span class="pre">TimeSeries.data</span></code>
+vector can then be read and written with fread and fwrite respectively from
+the raw buffers.  The alternative (second) method for storing sample data
+in MsPASS is through a mechanism called <code class="code docutils literal notranslate"><span class="pre">gridfs</span></code> in MongoDB.  This
+section expands on usage of these two mechanisms.</p>
+</section>
+<section id="gridfs-storage">
+<h4>gridfs storage<a class="headerlink" href="#gridfs-storage" title="Link to this heading">#</a></h4>
+<p>When data are saved to gridfs, MongoDB will automatically create two
+collections it uses to maintain the integrity of the data stored there.
+They are called <code class="code docutils literal notranslate"><span class="pre">fs.files</span></code> and <code class="code docutils literal notranslate"><span class="pre">fs.chunks</span></code>.   Any book on MongoDB and
+any complete online source will discuss details of gridfs and these
+two collections.  A useful example is this <a class="reference external" href="https://www.tutorialspoint.com/mongodb/mongodb_gridfs.htm">tutorial</a>.</p>
+<blockquote>
+<div></div></blockquote>
+<p>You, as a user, do not normally need to interact with these collections
+directly.   The database readers and writers handle the bookkeeping
+for you by maintaining an index in either of the wf collections to
+link to the gridfs collections.   Cross-referencing ids and special
+attributes are defined in the schema documentation.</p>
+</section>
+<section id="file-storage">
+<h4>File storage<a class="headerlink" href="#file-storage" title="Link to this heading">#</a></h4>
+<p>The alternative storage model is external files.  We use the same
+concepts to manage data in external files as CSS3.0.  Data in file
+storage is managed by four attributes:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">dir</span></code> a directory path identifier in a file system.  We assume all
+users are familiar with this concept.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">dfile</span></code> the “file name” that defines the leaf of the directory (path)
+tree structure.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">foff</span></code> is a byte offset to the start of the data of interest.
+Classic earthquake data formats like SAC do not use this concept and
+put only one seismogram in each file.  Multiple objects can be stored
+in a single file using common dir and dfile fields but different foff
+values.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">nbytes</span></code> or <code class="code docutils literal notranslate"><span class="pre">npts</span></code> are attributes closely related to <code class="code docutils literal notranslate"><span class="pre">foff</span></code>.   They
+define the size of the block of data that needs to be read from the
+position of <code class="code docutils literal notranslate"><span class="pre">foff</span></code>.</p></li>
+</ol>
+</div></blockquote>
+<p>Both TimeSeries and Seismograms use a data array that is a contiguous
+memory block.  The default storage mode for external files is a raw
+binary memory image saved by writing the memory buffer to the external
+file (defined by <code class="code docutils literal notranslate"><span class="pre">dir</span></code> and <code class="code docutils literal notranslate"><span class="pre">dfile</span></code>) using the low level C fwrite function
+that is wrapped in the python standard by the <code class="code docutils literal notranslate"><span class="pre">write</span></code> method of
+standard file handles described in many tutorials like this <a class="reference external" href="https://docs.python.org/3/tutorial/inputoutput.html).">one</a>.</p>
+<blockquote>
+<div></div></blockquote>
+<p>A TimeSeries object stores data as vector of binary “double” values, which for
+decades now has implied an 8 byte floating point number stored in the IEEE
+format.  (Note historically that was not true.   In the early days of
+computers there were major differences in binary representations of
+real numbers.   We make an assumption in MsPASS that the machines in the
+cluster used for processing have the same architecture and the content of
+a binary doubles is
+identical on all machines.)  Similarly, a Seismogram stores data in a
+contiguous buffer of memory but the memory block is 3 x <code class="code docutils literal notranslate"><span class="pre">npts</span></code> doubles.
+The buffer order in what numpy calls FORTRAN order meaning the matrix is
+stored with the row index fastest (also called column order).  In any case,
+key point is that for efficiency the data for a Seismogram is also
+read and written using low level binary <code class="code docutils literal notranslate"><span class="pre">read</span></code> and <code class="code docutils literal notranslate"><span class="pre">write</span></code> methods of the
+python file handle class.</p>
+</section>
+<section id="summary">
+<h4>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h4>
+<p>The main idea you as a user will need to understand is that a single
+document in one of the wf collections contains all the information
+needed to reconstruct the object (the read operation) that is the
+same as that saved there previously (the save operation).  The
+name-value pairs of each document stored in a wf collection are either
+loaded directly as Metadata or used internally to load other Metadata
+attributes or to guide readers for the sample data.   Readers
+handle which storage model to use automatically.</p>
+<p>Writers create documents in a wf collection that allow you to recreate the
+saved data with a reader.  The write process has some complexities
+a reader does not have to deal with.   That is, writers have more options
+to deal with (notably the storage mode) that control their behavior and
+have to handle potential inconsistencies created by a processing
+workflow.  The <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> class (described in more detail below) manages
+automatically mapping Metadata to database attributes where possible.
+To avoid fatal write errors we emphasize the following as a rule:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Rule 2:</dt><dd><p>Make sure any custom Metadata keys do not match existing MsPASS schema keys.
+If you change the meaning or data type stored with that key,
+you can create any range of downstream problems and could abort the
+final save of your results.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+</section>
+<section id="elog">
+<h3>elog<a class="headerlink" href="#elog" title="Link to this heading">#</a></h3>
+<p>The elog collection holds log messages that should
+automatically be posted and saved in a MsPASS workflow.  The elog
+collection saves any entries in ErrorLogger objects that are
+contained in all seismic data objects.   The
+main idea of an ErrorLogger is a mechanism to post errors of any level
+of severity to the data with which the error is associated, preserve a
+record that can be used by the user to debug the problem, and allow
+the entire job to run to completion even if the error made one or more data
+invalid.  More details about this idea can be found in the <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">Data
+Objects</span></a> section.
+Error log entries are automatically saved when any live datum is
+handed to the <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.save_data()</span></code></a> method.
+The documents saved in the elog collection have the attribute <cite>wf_id</cite> that contains the
+<code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> of the saved waveform that contained that error.</p>
+<p>A special case is data killed during processing.   Any datum from a MsPASS
+processing module that was killed should contain an elog entry that the
+level <code class="code docutils literal notranslate"><span class="pre">Invalid</span></code>.   The sample data in killed Seismogram or TimeSeries data
+is not guaranteed to be valid, and may, in fact, be empty.   Hence, killed
+data have to be handled specially.   The error logs from killed data
+will appear in a different collection called the <cite>cemetery</cite> described
+below.</p>
+</section>
+<section id="history">
+<h3>history<a class="headerlink" href="#history" title="Link to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Readers are warned that this section is based on a poorly tested component
+of MsPASS.  The history collection is the database storage area for a concept in
+MsPASS we developed to track object-level processing history.   The
+facility is integrated into the code base, but users are warned it
+has not be extensively tested on any large data set.</p>
+</div>
+<p>An important requirement to create a reproducible result from
+data is a mechanism to create a full history that can be used to recreate
+a workflow.  The same mechanism provides a way for you to know the sequence
+of processing algorithms that have been applied with what tunable parameters
+to produce results stored in the database.  The history collection stores this
+information.   Most users should never need to interact directly with this
+collection so we omit any details of the history collection contents from
+this manual.  Users may, however, need to understand the concepts described
+in <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">Data Object Design Concepts</span></a>.</p>
+</section>
+<section id="normalizing-collections">
+<h3>Normalizing collections<a class="headerlink" href="#normalizing-collections" title="Link to this heading">#</a></h3>
+<section id="site-and-channel">
+<h4>site and channel<a class="headerlink" href="#site-and-channel" title="Link to this heading">#</a></h4>
+<p>The <code class="code docutils literal notranslate"><span class="pre">site</span></code> collection is intended as a largely static table
+that can be used to
+<a class="reference external" href="https://docs.mongodb.com/manual/core/data-model-design/">normalize</a>
+a wf collection.   The name is (intentionally) identical to the CSS3.0
+site table.   It’s role is similar, but not identical to the CSS3.0
+table.  Similarly, <code class="code docutils literal notranslate"><span class="pre">channel</span></code> plays the same role as the <code class="code docutils literal notranslate"><span class="pre">sitechan</span></code>
+table in CSS3.0.  They are similar in the sense that <code class="code docutils literal notranslate"><span class="pre">site</span></code> is
+used to find the spatial location of a recording instrument.
+In the same way <code class="code docutils literal notranslate"><span class="pre">channel</span></code> acts like <code class="code docutils literal notranslate"><span class="pre">sitechan</span></code> in that it is used
+to define the orientation of a particular single channel of seismic
+data and response data.   Both collections, however, mix in concepts CSS3.0 stores
+in a collection of static tables used for maintaining station metadata.
+Antelope users will know these as the collection of tables generated
+when <a class="reference external" href="https://brtt.com">sd2db</a> is run on a SEED file from an FDSN
+data center.  We expand on this below, but the following are useful
+summaries for Antelope and obspy users:</p>
+<ul class="simple">
+<li><p>Antelope user’s should think of the channel collection as nearly identical
+to the CSS3.0 sitechan table with response data handled through obspy.</p></li>
+<li><p>Obspy users can think of both <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">sitechan</span></code> as a way to
+manage the same information obspy handles with their
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html">Inventory</a>
+object.  In fact, channel documents produced from
+<a class="reference external" href="https://www.fdsn.org/xml/station/">StationXML</a>
+files contain an image of an obspy
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.channel.Channel.htmlobject">Channel</a>
+object saved with pickle.</p></li>
+</ul>
+<p>We emphasize that <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">channel</span></code> support SEED indexed metadata, but
+they do not demand it.  We use the <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> of documents in both
+collections as the primary cross-referencing key.  The <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> keys are
+referenced in collections outside of <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">channel</span></code>
+(i.e. wf_TimeSeries and wf_Seismogram) with the keys <code class="code docutils literal notranslate"><span class="pre">site_id</span></code> and <code class="code docutils literal notranslate"><span class="pre">chan_id</span></code>
+respectively.</p>
+<p>Although those <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> values can be thought of as primary keys, we provide
+some support for two alternative indexing methods.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>SEED net, sta, chan, loc keys</em>.  Any data obtained from FDSN
+data centers like IRIS-DMC distribute data in the SEED
+(Standard for the Exchange of Earthquake Data) or miniSEED
+format.  MiniSEED data is SEED data with minimal metadata.
+The primary keys SEED uses to define a specfic channel of data are
+three string attributes: (1) a network code referred to as <code class="code docutils literal notranslate"><span class="pre">net</span></code> in
+MsPASS, (2) a station code (<code class="code docutils literal notranslate"><span class="pre">sta</span></code>), (3) a channel (<code class="code docutils literal notranslate"><span class="pre">chan</span></code>), and
+a “location” code (<code class="code docutils literal notranslate"><span class="pre">loc</span></code>).   <code class="code docutils literal notranslate"><span class="pre">site</span></code> documents extracted from StationXML
+files will always contain <code class="code docutils literal notranslate"><span class="pre">net</span></code>, <code class="code docutils literal notranslate"><span class="pre">sta</span></code>, and <code class="code docutils literal notranslate"><span class="pre">loc</span></code> names while
+<code class="code docutils literal notranslate"><span class="pre">channel</span></code> documents add the <code class="code docutils literal notranslate"><span class="pre">chan</span></code> attibute.  For documents generated
+from StationXML keys (3 keys for <code class="code docutils literal notranslate"><span class="pre">site</span></code> and 4 for <code class="code docutils literal notranslate"><span class="pre">channel</span></code>) can
+be properly viewed as alternate keys to locate documents related to a
+particular station (<code class="code docutils literal notranslate"><span class="pre">site</span></code>) or channel (<code class="code docutils literal notranslate"><span class="pre">channel</span></code>).  With SEED data it
+is important to realize that those keys are frequently not sufficient
+to locate a single document.  All SEED-based data (StationXML) also
+use a pair of time range attributes that we call <code class="code docutils literal notranslate"><span class="pre">starttime</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">endtime</span></code>.   Both are unix epoch times that define a time span for which
+the associated document’s data are valid.   These are used for a whole
+range of practical issues in recording of continuous data, but the
+key point is any query for a unique document in both the <code class="code docutils literal notranslate"><span class="pre">site</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">channel</span></code> collection require a time stamp that needs to be tested
+against a time range defined by <code class="code docutils literal notranslate"><span class="pre">starttime</span></code> and <code class="code docutils literal notranslate"><span class="pre">endtime</span></code>.</p></li>
+<li><p>We also provide some limited support for a form of spatial query.
+The use of a spatial query was a design decision based
+on the author’s experiences using CSS3.0’s site table as implemented
+in Antelope.   Antelope uses the station name and a time period as a
+key to find location information for a waveform.   That model works
+well for bulletin preparation but creates a dilemma for processed
+waveforms;  the concept of a “station name” is meaningless for many
+types of processed waveform.  Two type examples, are a phased array
+beam and Common Conversion Point (CCP) stacks of receiver functions.
+On the other hand, many such processed waveforms have a space concept
+that needs to be preserved.  Hence, the location information in the
+collection may relate to some more abstract point like  piercing point
+for a CCP stack.   In this mode the <code class="code docutils literal notranslate"><span class="pre">Object_Id</span></code> stored as <code class="code docutils literal notranslate"><span class="pre">site_id</span></code>
+or <code class="code docutils literal notranslate"><span class="pre">chan_id</span></code> is the only index. The difference is geospatial queries
+in MongoDB can be used as an alternate index.  We note that
+geospatial queries can also be used on <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">channel</span></code> collections
+created with StationXML files too provided the user constructs the
+index required to do that.   See
+<a class="reference external" href="https://github.com/mspass-team/mspass_tutorial/blob/master/Earthscope2024/Session2.ipynb">an example notebook</a>
+in our tutorial repository.</p></li>
+</ul>
+</div></blockquote>
+<p>A spatial query to link anything to a point in the <code class="code docutils literal notranslate"><span class="pre">site</span></code> or <code class="code docutils literal notranslate"><span class="pre">channel</span></code> collection has
+two complexities:  (1) all spatial queries require a uncertainty
+specification that are data and implementation dependent, and (2)
+sometimes, but not always, a vertical position (site_elev) needs to be
+defined.  The first is readily solved with the geospatial indexing
+capabilities of MongoDB.   Geospatial queries can define a radius of
+uncertainty to efficiently find one or more documents linked to a
+circle defined relative to a query point.  The size of such a circle
+is always a data dependent choice;  a scientist working with free
+oscillations of the earth require station coordinates with minimal
+precision, while an active source experiment often requires submeter
+location precision.   We treat vertical positions differently.  The
+common key to define vertical position is <code class="code docutils literal notranslate"><span class="pre">site_elev</span></code> or <code class="code docutils literal notranslate"><span class="pre">chan_elev</span></code>.
+How to handle
+vertical position is application dependent.  <em>e.g.</em> to look up the
+location of an operational GSN station, it may be necessary to
+distinguish borehole and vault instruments that are deployed at many
+stations.   In contrast, a point defined by piercing points for a CCP
+stack would normally be assumed referenced to a common, fixed depth so
+site_elev may not even be needed.  We deal with this complexity by a
+defining another rule that user’s need to recognize and abide by:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Rule 3:</dt><dd><p>The site and channel collections should only contain metadata relevant to
+the data set.   Unused documents are not a problem but waste space.
+Missing metadata is a problem as it will always lead to dropped data.
+Assembly of a working data set requires linking documents in <code class="code docutils literal notranslate"><span class="pre">site</span></code>
+and/or <code class="code docutils literal notranslate"><span class="pre">channel</span></code> to wf_Seismogram documents and channel to wf_TimeSeries
+using keys <code class="code docutils literal notranslate"><span class="pre">site_id</span></code> and <code class="code docutils literal notranslate"><span class="pre">chan_id</span></code> respectively.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>MsPASS has some supported functions to aid in building the site and channel
+collections and building links to wf collections.   The details are best
+obtained from the docstrings for functions in <code class="code docutils literal notranslate"><span class="pre">mspasspy.db.database</span></code>.
+The primary tool for FDSN data is
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.save_inventory()</span></code> which can be used to
+save an obspy <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object obtained from an FDSN server
+via web services.   Experience has shown that data is best custom loaded
+for each data set as needed to assure the most up-to-date metadata is loaded
+from the original source.  You can find numerous examples of how to do that
+in the mspass tutorials repository.</p>
+<p>As noted earlier <code class="code docutils literal notranslate"><span class="pre">site</span></code> is a near match in concept to the css3.0 table
+with the same name, but <code class="code docutils literal notranslate"><span class="pre">channel</span></code> is is more than its closes analog in
+css3.0 called sitechan.   The key difference between <code class="code docutils literal notranslate"><span class="pre">channel</span></code> and sitechan
+is that <code class="code docutils literal notranslate"><span class="pre">channel</span></code> contains not just orientation information, but <strong>may</strong>
+contain all the metadata needed to define the response characteristics of the
+channel to which it is linked.  We stress <strong>may</strong> because for a generic
+processing system response information must be optional.   Traditional reflection
+processing has, at best, only limited response information (e.g. the
+sensor corner frequency is an optional parameter in SEGY) and a large fraction of
+processing functions have not need for detailed response data.  In contrast,
+some common applications like moment tensor inversions and surface wave dispersion
+measurements demand detailed response metadata.   We address this problem
+by leaning heavily on the existing infrastructure for handling response data
+in obspy.   That is, obspy defines a python class they call <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code>.
+The <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> class is a complicated data structure that is best thought of,
+in fact, as a image of the data structure defined by an FDSN StationXML file.
+Embedded in that mess is the response data, but obspy has build a clean
+api to obtain the response information from the <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code>.   In MsPASS
+we handle this problem by storing a pickle image of the <code class="code docutils literal notranslate"><span class="pre">Response</span></code> object
+related to that channel.</p>
+<p>Finally, we emphasize that if your final processing workflow requires
+metadata in <code class="code docutils literal notranslate"><span class="pre">site</span></code> and/or <code class="code docutils literal notranslate"><span class="pre">channel</span></code> you must complete preprocessing to
+define linking ids in wf_Seismogram and/or wf_TimeSeries.  Any incomplete
+entries will be dropped in final processing.
+Conversely, if your workflow
+does not require any receiver related Metadata (rare), these collections
+do not need to be dealt with at all.
+If your data source originated as miniseed, the simplest way to guarantee
+the cross-references exist is to run the function
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize_mseed" title="mspasspy.db.normalize.normalize_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.db.normalize.normalize_mseed()</span></code></a> on your working database.</p>
+</section>
+<section id="source">
+<h4>source<a class="headerlink" href="#source" title="Link to this heading">#</a></h4>
+<p>The source collection has much in common with site, but
+has two fundamental differences:  (1) the origin time of each source
+needs to be specified, and (2) multiple estimates are frequently
+available for the same source.</p>
+<p>The origin time issue is a more multifaceted problem that it might at
+first appear.  The first is that MongoDB, like ArcGIS, is map-centric
+and stock geospatial queries lack a depth attribute, let alone a time
+variable.   Hence, associating a waveform to a source position defined
+in terms of hypocenter coordinates (<code class="code docutils literal notranslate"><span class="pre">latitude</span></code>, <code class="code docutils literal notranslate"><span class="pre">longitude</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">depth</span></code>, and <code class="code docutils literal notranslate"><span class="pre">time</span></code> attributes in <code class="code docutils literal notranslate"><span class="pre">source</span></code>) requires a multistage query that can
+potentially be very slow for a large data set.</p>
+<p>The other issue that distinguishes origin time is that it’s accuracy
+is data dependent.   With earthquakes are always estimated by an
+earthquake location algorithm, while with active source it normally
+measured directly.  The complexity with active source data is a
+classic case distinguishing “precision” from “accuracy”.   Active
+source times relative to the start time of a seismogram may be very
+precise but not accurate.  A type example is multichannel data where
+time 0 of each seismogram is defined by the shot time, but the
+absolute time linked to that shot may be poorly constrained.   We
+address this problem in MsPASS through the concept of UTC versus
+“Relative” time definined in all MsPASS data objects.  See the <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">Data
+Object section</span></a> on BasicTimeSeries
+for more on this topic.</p>
+<p>A final point about the source table is the issue of multiple
+estimates of the same event.   The CSS3.0 has an elaborate mechanism
+for dealing with this issue involving three closely related tables
+(relations):  event, origin, assoc, and arrival.   The approach we
+take in MsPASS is to treat that issue as somebody else’s problem.
+Thus, for the same reason as above we state rule 4 which is very
+similar to rule 3:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Rule 4:</dt><dd><p>The source collection should contain any useful source
+positions that define locations in space and time (attributes
+<code class="code docutils literal notranslate"><span class="pre">source_lat</span></code>, <code class="code docutils literal notranslate"><span class="pre">source_lon</span></code>, <code class="code docutils literal notranslate"><span class="pre">source_depth</span></code>, and <code class="code docutils literal notranslate"><span class="pre">source_time</span></code>).  Linking
+each document in a wf collection to the desired point in the source
+collection is a preprocessing step to define a valid dataset.
+The link should always be done with by inserting the <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> of
+the appropriate document in <code class="code docutils literal notranslate"><span class="pre">source</span></code> as in wf_Seismogram or
+wf_TimeSeries with the key <code class="code docutils literal notranslate"><span class="pre">source_id</span></code>.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>A first-order limitation this imposes on MsPASS is that it means that
+normal behavior should be that there is a one-to-one mapping of a single
+<code class="code docutils literal notranslate"><span class="pre">source</span></code> document to a given wf document as defined by the <code class="code docutils literal notranslate"><span class="pre">source_id</span></code> key.
+Note MongoDB is flexible enough that it would be possible to support
+multiple event location estimates for each wf document but that is not
+a feature we have elected to support.  As noted other places we consider the
+catalog preparation problem a solved problem with multiple solutions.</p>
+<p>A final point about <code class="code docutils literal notranslate"><span class="pre">source</span></code> is that we emphasize normalizing <code class="code docutils literal notranslate"><span class="pre">source</span></code>
+by defining <code class="code docutils literal notranslate"><span class="pre">source_id</span></code> values in wf collections should always be thought of
+as an (optional) preprocessing step.   If your workflow requires source
+information, you must complete the association of records in source to
+wf_Seismogram and/or wf_TimeSeries documents before your primary processing.
+Any entries not associated will be likely be dropped.</p>
+</section>
+<section id="cemetery">
+<h4>cemetery<a class="headerlink" href="#cemetery" title="Link to this heading">#</a></h4>
+<p>The <em>cemetery</em> collection organizes data “killed” and saved during
+a processing workflow.   The kill concept is discussed in multiple
+contexts in this manual, but the fundamental idea is a mechanism to
+exclude data that cause problems or are otherwise “bad” the
+results of the processing.  One normally wants to know what
+data were “killed” and why.   The <em>cemetery</em> collection holds
+that information.</p>
+<p><em>cemetery</em> documents have two parts:  (1) a set of key-value pairs
+identical to those found in the <em>elog</em> collection, and (2)
+a subdocument with the key “tombstone”.   The “tombstone” content
+is a dump of the entire Metadata container of the datum marked
+dead.</p>
+</section>
+<section id="history-object-and-history-global">
+<h4>history_object and history_global<a class="headerlink" href="#history-object-and-history-global" title="Link to this heading">#</a></h4>
+<p>An important requirement to create a reproducible result from
+data is a mechanism to create a full history that can be used to recreate
+a workflow.  The same mechanism provides a way for you to know the sequence
+of processing algorithms that have been applied with what tunable parameters
+to produce results stored in the database.  The history collections stores this
+information.   Most users should never need to interact directly with this
+collection so we defer any details of how these are stored and managed to
+the reference manual.   The assumption you as a reader need to understand is
+that the default behavior of all MsPASS modules is to not preserve history.
+The idea is that when you need to retain that information you would rerun
+the workflow with history saving enabled for each processing step.
+Examples where this might be needed are preparing a final dataset to link to
+a publication or as an archive you expect to need to work with at a later date.</p>
+</section>
+</section>
+</section>
+<section id="id4">
+<h2>Summary<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>The details above may obscure a few critical points about what the
+database in MsPASS does for you and what you must keep in mind to use
+is correctly.</p>
+<ul class="simple">
+<li><p>All parallel workflows should normally be driven by data assembled into
+the wf_TimeSeries and/or wf_Seismogram collections.  Subsets (or all) of
+one of these collections define a parallel dataset that is the
+normal input for any parallel job.</p></li>
+<li><p>The Database api simplifies the processing of reading and writing.
+We abstract the always complex process of reading and writing to <code class="code docutils literal notranslate"><span class="pre">save</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">read</span></code> methods of the python class Database.  See the Python API section
+for details.</p></li>
+<li><p>Assembling the wf_Seismogram and/or wf_TimeSeries collection should
+always be viewed as a preprocessing step to build a clean dataset.  That
+model is essential for efficiency because all the complexity of real
+data problems cannot be anticipated and are best treated as a special
+problem you as a user are responsible for solving.</p></li>
+<li><p>Assembling the metadata stored in <code class="code docutils literal notranslate"><span class="pre">site</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and/or <code class="code docutils literal notranslate"><span class="pre">source</span></code>
+is also always treated as a preprocessing problem.   Linking of these
+normalized collections to wf_Seismogram and/or wf_TimeSeries is
+required if the associated metadata is needed in your workflow.</p></li>
+</ul>
+</section>
+<section id="advanced-topics">
+<h2>Advanced Topics<a class="headerlink" href="#advanced-topics" title="Link to this heading">#</a></h2>
+<section id="importing-data-formats-other-than-miniseed">
+<h3>Importing Data Formats other than miniSEED<a class="headerlink" href="#importing-data-formats-other-than-miniseed" title="Link to this heading">#</a></h3>
+<section id="id5">
+<h4>Overview<a class="headerlink" href="#id5" title="Link to this heading">#</a></h4>
+<p>We use the MongoDB database to manage waveform data import.  Waveform data
+import should always be understood as another component of preprocessing
+needed to assemble a working data set.   The reason we are dogmatic on that
+principle is that our TimeSeries and Seismogram containers were designed to
+be totally generic, while every single data format we know of has
+implicit assumptions about the nature of the data.   For example, SEGY
+has intrinsic assumptions that the data are multichannel, seismic-reflection data and
+SEED was designed for archive of permanent observatory data.
+We discuss import methods currently available in MsPASS in separate
+sections below.</p>
+</section>
+<section id="seed-and-miniseed">
+<h4>SEED and MiniSEED<a class="headerlink" href="#seed-and-miniseed" title="Link to this heading">#</a></h4>
+<p>The Standard for the Exchange of Earthquake Data (SEED) format is the primary
+format used by global data centers in seismology.   It has also become
+a common format for raw data handling from portable earthquake recording
+instruments supplied by the IRIS-PASSCAL program.   The most complete
+support for data import in MsPASS is based on SEED and/or so called
+miniSEED (miniseed) data.  For those unfamiliar with these terms miniseed
+is a subset of SEED data that contains only the minimal metadata required
+to define a set of data contained in package of data.  (We say “package”
+instead of “file” because miniseed can and has been used as a network
+transfer format because the data bundled into a serial string of packets.
+For more details about SEED and miniseed can be found
+<a class="reference external" href="https://ds.iris.edu/ds/nodes/dmc/data/formats/seed/">here</a> ).</p>
+<p>The recommended way to handle miniseed data is to utilize the
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.index_mseed_file()</span></code></a> method
+similar to the example give above.   As noted, that builds an
+queriable index that can be used to load raw data into a workflow
+without altering that data at all.  I reiterate, however, that
+mseed data has the bare minimum Metadata stored with it.
+A workable wf_miniseed collection pretty much always needs to
+have additional metadata added to every wf_miniseed document
+for it to be useful as input to a processing workflow.</p>
+</section>
+<section id="other-waveform-formats">
+<h4>Other waveform formats<a class="headerlink" href="#other-waveform-formats" title="Link to this heading">#</a></h4>
+<p>MsPASS technically has support a long list of data formats
+that are supported by the obspy
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html">read</a>
+function.  MsPASS does not, however, have a simplified interface to
+work with other formats comparable to
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.index_mseed_file()</span></code></a>.   Instead,
+the recommended approach is to use obspy’s read function with the
+desired format set for running the read function.   Here, for example,
+is the skeleton of a serial script to read a directory of many SAC files and load
+them into MsPASS:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">msapsspy.converters.Trace2TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.Client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">mspass_client</span><span class="o">=</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;myproject&quot;</span><span class="p">)</span>
+<span class="n">data_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(</span><span class="s2">&quot;./wf_SAC&quot;</span><span class="p">)</span>
+<span class="n">save_directory</span><span class="o">=</span><span class="s2">&quot;./wf_TimeSeries&quot;</span>
+<span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;SACfileimages_raw.dat&quot;</span>
+<span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="n">data_directory</span><span class="p">)</span> <span class="k">as</span> <span class="n">entries</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;SAC&quot;</span><span class="p">)</span>
+        <span class="c1"># obspy.read always returns a Stream object</span>
+        <span class="c1"># SAC files always have only one datum per file</span>
+        <span class="c1"># used d[0] to extract that as a Trace object this function requires</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1">#  this function needs to be supplied by user</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">change_sac_metadata_keys</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span>
+               <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
+               <span class="n">storage_mode</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">,</span>
+               <span class="nb">dir</span><span class="o">=</span><span class="n">save_directory</span><span class="p">,</span>
+               <span class="n">dfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">,</span>
+               <span class="p">)</span>
+</pre></div>
+</div>
+<p>Note a few things about this script:</p>
+<ol class="arabic simple">
+<li><p>I’ve used obspy to handle the formatted reading.</p></li>
+<li><p>I use the MsPASS converter <code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.converters.Trace2TimeSeries()</span></code>
+to convert the Trace object obspy.read returns into a TimeSeries.</p></li>
+<li><p>Trace2TimeSeries handles conversion of required Metadata from the
+Trace object to those required by TimeSeries but the content of the
+Trace.stats dictionary are copied verbatim to the Metadata container
+of the TimeSeries it returns.  For that reason, most workflows
+will want to write a custom python function to implement the
+function I called <cite>change_sac_metadata_keys</cite>.  What that is depends on
+what metadata are stored in your sac files that you need to extract.</p></li>
+</ol>
+<p>A related point about the above example indirectly highlights an
+important detail about handling formatted data like SAC.   A fundamental
+problem with SAC files in modern computing environments is that the
+format is completely inappropriate for large data sets.  The reason
+is that data stored as SAC file creates serious scalability problems
+because of the rigid one file per single channel record requirement of the
+format.
+I had an example once where simply deleting a data set with the
+order of a million files took days to complete on an HPC system.
+The reason is that the virtual file systems defined on modern
+HPC clusters are not the same as a real file system on a desktop.
+They are actually very large arrays of file systems that provide a
+programming interface to an application to support programming
+io libraries. The simple operation of open, read, close of a file
+in that environment can be very slow.   Do that a million times and
+nothing works well.  There are also examples where people have crashed
+an entire HPC cluster with a parallel job that flooded the io
+system with request for too many different files at once.
+For that reason an important feature of that template code above is
+that all the data being converted are saved to only one file.
+That has the further benefit of making it easier to clean up
+your workspace when raw processing finishes.</p>
+<p>Finally, formats other than SAC that obspy.read handles can be
+imported by minor variants of the above template.
+The obvious first thing is to change the “format” argument
+for the format being loaded.  The more subtle issue is that many
+formats are not like SAC and contain many pieces so
+obspy.read returns a Stream object with many components.
+The easiest way to handle that is to replace
+<cite>Trace2TimeSeries</cite> with the related <cite>Stream2TimeSeriesEnsemble</cite>.
+As the name implies the later returns a <cite>TimeSeriesEnsemble</cite>.
+You would then need replace <cite>change_sac_metadata_keys</cite> to
+point to a different function that handled the ensemble correctly
+and did a similar metadata key conversion.  Since
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.save_data()</span></code> handles TimeSeriesEnsembles
+directly the only issue on the last lines is if you want to
+handle the external storage differently than as single file.
+e.g. data organized by a set of large ensembles like event files
+are often appropriate to store with one file per ensemble.
+The details depend on the layout of data and how it will
+be processed after being loaded.  See the sections <a class="reference internal" href="io.html#io"><span class="std std-ref">I/O in MsPASS</span></a>
+and <a class="reference internal" href="parallel_io.html#parallel-io"><span class="std std-ref">Parallel IO in MsPASS</span></a> for potentially useful guidance.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../getting_started/getting_started_overview.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">MsPASS Virtual Cluster Concepts</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="CRUD_operations.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">CRUD Operations in MsPASS</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Database Concepts</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#prof-gary-l-pavlis">Prof. Gary L. Pavlis</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-roadmap">Overview/roadmap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamentals">Fundamentals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#seismology-data">Seismology Data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#auxiliary-waveform-metadata">Auxiliary waveform metadata</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#source-metadata">Source metadata</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#receiver-metadata">Receiver metadata</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-large-data-objects">Managing Large Data objects</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#formatted-data">Formatted data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#external-data-storage-within-mspass">External Data Storage within MsPASS</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#schema">Schema</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#design-concepts">Design Concepts</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#schema-in-mspass">Schema in MsPASS</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Overview</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#some-key-concepts">Some Key Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#objectid">ObjectId</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#normalized-data">Normalized Data</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#waveform-processing">Waveform Processing</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#concepts">Concepts</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#waveform-data-storage">Waveform Data Storage</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Overview</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#gridfs-storage">gridfs storage</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#file-storage">File storage</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#elog">elog</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#history">history</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#normalizing-collections">Normalizing collections</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#site-and-channel">site and channel</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#source">source</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cemetery">cemetery</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#history-object-and-history-global">history_object and history_global</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-topics">Advanced Topics</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-data-formats-other-than-miniseed">Importing Data Formats other than miniSEED</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Overview</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seed-and-miniseed">SEED and MiniSEED</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#other-waveform-formats">Other waveform formats</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/user_manual/database_concepts.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_manual/database_concepts.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>
