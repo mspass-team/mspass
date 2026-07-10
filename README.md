@@ -1,8 +1,8 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/source/_static/images/logos/mspass-banner-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="docs/source/_static/images/logos/mspass-banner-light.png">
-    <img alt="MsPASS — Massive Parallel Analysis System for Seismologists" src="docs/source/_static/images/logos/mspass-banner-light.png" width="900">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mspass-team/mspass/master/docs/source/_static/images/logos/mspass-banner-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/mspass-team/mspass/master/docs/source/_static/images/logos/mspass-banner-light.png">
+    <img alt="MsPASS — Massive Parallel Analysis System for Seismologists" src="https://raw.githubusercontent.com/mspass-team/mspass/master/docs/source/_static/images/logos/mspass-banner-light.png" width="900">
   </picture>
 </p>
 
