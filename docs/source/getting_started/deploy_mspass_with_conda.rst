@@ -1,82 +1,202 @@
 .. _deploy_mspass_with_conda:
 
-Deploy MsPASS with Conda
-===========================
+Install the MsPASS Conda package
+================================
 
-Installing the MsPASS Conda package
--------------------------------------
+The Conda distribution installs the ``mspasspy`` Python package and its
+compiled extension into a local environment.  It is a good fit when you want
+to import MsPASS from your own scripts, notebooks, or development tools and
+will manage the runtime services yourself.
 
-MsPASS is available as a Conda package, offering a convenient method for installing a local copy suitable for desktop environments.
-This installation method is ideal for users primarily focused on development, although it may also be beneficial in other scenarios.
-This guide focuses on setting up MsPASS for desktop usage.
+This is intentionally a narrower path than the :ref:`desktop quick start
+<quick_start>`.  Installing the package does **not** start MongoDB, a Dask
+scheduler, a Spark master, workers, or JupyterLab.  Use the quick start when
+you want a complete local runtime instead of separately managed components.
 
-First Steps: Installing Conda
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Prerequisites
+-------------
 
-Before installing MsPASS, ensure you have a Conda distribution installed. If not, follow the system-specific instructions provided by Anaconda:
+Before starting, you need:
 
-- For a comprehensive setup on personal devices, a full installation of Anaconda is recommended. Visit the `Anaconda installation guide <https://docs.anaconda.com/free/anaconda/install/>`_ for detailed instructions.
-- For shared systems, lighter versions such as `Miniconda <https://docs.anaconda.com/free/miniconda/miniconda-install/>`_ or `Mamba <https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html>`_ are advised.
+* A working Conda client.  If ``conda --version`` does not succeed, follow the
+  `official Conda installation instructions
+  <https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html>`__
+  and initialize Conda for your shell.
+* Network access to the ``mspass`` and ``conda-forge`` channels.
+* An ``mspasspy`` build that matches your operating system, architecture, and
+  chosen Python version.  Check the actual builds on the `MsPASS Anaconda
+  Cloud page <https://anaconda.org/mspass/mspasspy>`__ before pinning a Python
+  version.  The current source metadata requires Python 3.10 or newer, but
+  that requirement alone does not guarantee that a package was published for
+  every platform and Python combination.
 
-Creating an Isolated Environment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The commands below use a POSIX shell and name the environment
+``mspass_env``.  You can choose a different environment name.
 
-To prevent conflicts with pre-existing Python packages, it is strongly advised to create a separate Conda environment for MsPASS:
+Create the environment and install MsPASS
+------------------------------------------
 
-1. Ensure you are in the base environment, then create a new environment named ``mspass_env`` (you can choose a different name if preferred):
-
-   .. code-block:: bash
-
-       conda create --name mspass_env
-
-2. Activate the new environment:
-
-   .. code-block:: bash
-
-       conda activate mspass_env
-
-Adding Necessary Channels
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To install MsPASS successfully, add the required channels to your Conda configuration:
+Create a new environment and install ``mspasspy`` in one transaction:
 
 .. code-block:: bash
 
-    conda config --add channels mspass
-    conda config --add channels conda-forge
+   conda create --name mspass_env \
+       --override-channels \
+       --channel mspass \
+       --channel conda-forge \
+       mspasspy
+   conda activate mspass_env
 
-Installing MsPASS
-~~~~~~~~~~~~~~~~~
+The channel options apply only to this command; they do not add entries to
+your user-wide Conda configuration.  ``--override-channels`` also prevents
+unrelated channels already listed in that configuration from participating in
+the solve.  Omit that option if your site requires an administrator-provided
+mirror, but do not run ``conda config --add channels ...`` merely for this
+installation.
 
-With the environment set and channels added, you can now install MsPASS:
+Unless you have confirmed that a matching build exists, let Conda select a
+compatible Python version.  Keep source checkouts and user-site packages out
+of this environment so that they do not shadow the installed package.
+
+Verify the installation
+-----------------------
+
+Run the following check after activation.  It verifies the interpreter and
+package locations, imports the native extension, and loads the default schema
+bundled in the package.  It does not require MongoDB to be running.
 
 .. code-block:: bash
 
-    conda install -y mspasspy
+   python - <<'PY'
+   import os
+   import sys
+   from importlib.metadata import version
+   from pathlib import Path
 
-The MsPASS Conda package is available on `Anaconda Cloud <https://anaconda.org/mspass/mspasspy>`_ and supports multiple platforms including Linux and macOS (both Intel and ARM architectures).
+   import mspasspy
+   from mspasspy.ccore.seismic import TimeSeries
+   from mspasspy.db.schema import DatabaseSchema
 
-Define MSPASS_HOME
-------------------
+   prefix = Path(os.environ["CONDA_PREFIX"]).resolve()
+   package_dir = Path(mspasspy.__file__).resolve().parent
+   try:
+       package_dir.relative_to(prefix)
+   except ValueError as error:
+       raise SystemExit(
+           f"MsPASS was imported from {package_dir}, outside {prefix}"
+       ) from error
 
-MsPASS requires specific data from the ``data/yaml`` directory found in the MsPASS code repository.
-Download a local copy of the repository and set the ``MSPASS_HOME`` environment variable to this directory or to a custom location if you prefer.
-Ensure the variable is correctly set in your shell's initialization file.
+   TimeSeries()
+   DatabaseSchema()
+   print("Python:", sys.executable)
+   print("mspasspy:", version("mspasspy"))
+   print("package:", package_dir)
+   PY
 
-Setting up MongoDB
-------------------
+The Python executable and package path should both be inside the active Conda
+environment.  If the package path instead names a source checkout or a user
+site such as ``~/.local``, leave that directory, clear any stale
+``PYTHONPATH``, reactivate the environment, and run the check again.  See
+:ref:`Advanced Setup Considerations <advanced_setup_considerations>` before
+using a source build or editable installation.
 
-MsPASS workflows typically utilize MongoDB.
-Setting up a MongoDB instance on your desktop is easier using the standard MsPASS Docker container:
+When ``MSPASS_HOME`` is needed
+------------------------------
 
-1. Open a terminal and navigate to the directory you wish to use for MongoDB data storage.
-   When launched, the MsPASS container will automatically create a ``data`` directory for workspace and a ``logs`` directory for server logs.
+Do not set ``MSPASS_HOME`` just to import ``mspasspy``.  The Conda package
+includes its ``data/yaml`` and ``data/pf`` resources.  Python loaders such as
+the default database schema and ``Janitor`` use those installed resources when
+``MSPASS_HOME`` is unset.
 
-2. Execute the following Docker command to start the MongoDB server within the MsPASS container:
+Some older and C++-backed paths still resolve defaults through
+``$MSPASS_HOME/data``.  These include the C++ metadata-definition and
+attribute-map loaders and parameter-file defaults used by the Antelope/CSS
+interfaces.  If your workflow uses one of those paths, point ``MSPASS_HOME``
+at the installed ``mspasspy`` package directory for the current shell:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-       docker run --env MSPASS_ROLE=db -p 27017:27017 --mount src=`pwd`,target=/home,type=bind mspass/mspass
+   export MSPASS_HOME="$(python -c 'from pathlib import Path; import mspasspy; print(Path(mspasspy.__file__).resolve().parent)')"
+   test -f "${MSPASS_HOME}/data/yaml/mspass.yaml"
+   test -f "${MSPASS_HOME}/data/pf/attribute_maps.pf"
 
-Note that the ``-p`` option is essential to expose the MongoDB server port (27017) for external access.
-If port 27017 is already in use on your system, modify this parameter as necessary.
+A repository clone is not required merely to supply those installed data
+files.  If you intentionally maintain custom schema or parameter files under
+another ``data`` tree, set ``MSPASS_HOME`` to the parent of that tree instead
+and treat those files as part of your workflow configuration.
+
+MongoDB and schedulers are separate services
+---------------------------------------------
+
+The package includes client-side libraries such as PyMongo and Dask.  It does
+not install or launch a ``mongod`` server, start a Dask scheduler or workers,
+or provide a running Spark service.  A successful import therefore confirms
+the package installation only; it does not confirm that a database or
+distributed-compute service is reachable.
+
+For an integrated MongoDB, scheduler, worker, and JupyterLab environment, use
+the :ref:`desktop quick start <quick_start>`.  If you already operate those
+services, configure your MsPASS code with their addresses according to your
+deployment.
+
+Optional local MongoDB helper
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you need only a local MongoDB server and already have Docker, the MsPASS
+image's ``db`` role starts MongoDB without starting a scheduler, workers, or
+JupyterLab.  The following example publishes MongoDB only on the host loopback
+interface and stores its database and logs in a named volume:
+
+.. code-block:: bash
+
+   docker volume create mspass-conda-mongodb
+   docker run --name mspass-conda-mongodb --detach \
+       --env MSPASS_ROLE=db \
+       --publish 127.0.0.1:27017:27017 \
+       --mount type=volume,source=mspass-conda-mongodb,target=/home \
+       mspass/mspass:latest
+
+The container startup script writes the database below ``/home/db/data`` and
+logs below ``/home/logs``; both persist in ``mspass-conda-mongodb``.  Binding
+to ``127.0.0.1`` avoids exposing an unauthenticated development database on
+other host interfaces.  This is a single-host development service, not a
+production MongoDB deployment.
+
+If host port ``27017`` is already in use, change only the host side of the
+publication, for example to ``--publish 127.0.0.1:27018:27017``, and use the
+same host port in the client URI below (``mongodb://127.0.0.1:27018``).
+
+After activating ``mspass_env``, verify the service through the MsPASS client:
+
+.. code-block:: bash
+
+   python - <<'PY'
+   from mspasspy.db.client import DBClient
+
+   client = DBClient(
+       "mongodb://127.0.0.1:27017",
+       serverSelectionTimeoutMS=5000,
+   )
+   print(client.admin.command("ping"))
+   client.close()
+   PY
+
+Stop the container without deleting the named volume, and restart it later,
+with:
+
+.. code-block:: console
+
+   docker stop --timeout 60 mspass-conda-mongodb
+   docker start mspass-conda-mongodb
+
+Where to go next
+----------------
+
+* Use the :ref:`desktop quick start <quick_start>` for the complete local
+  runtime and the safest first user experience.
+* Read :ref:`Advanced Setup Considerations
+  <advanced_setup_considerations>` before building from a checkout or mixing
+  Conda with local source installs.
+* Continue with :ref:`Database Concepts <database_concepts>` for MsPASS's data
+  model and :ref:`CRUD Operations in MsPASS <CRUD_operations>` for practical
+  database access patterns.

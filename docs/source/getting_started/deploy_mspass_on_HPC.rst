@@ -80,7 +80,8 @@ components in that diagram need to come into existence.
     to a standard "container".   On desktop systems the standard
     application to run a container is a package called
     `docker <https://docs.docker.com/get-docker/>`__.   For a variety of
-    reasons docker is not used on HPC clusters.  Instead the standard
+    reasons Docker is usually not permitted on multiuser HPC compute nodes.
+    Instead the standard
     container launcher on HPC is
     `apptainer <https://apptainer.org/documentation/>`__.
     (Note until around 2023 this application was called *singularity*.
@@ -117,15 +118,18 @@ Common Requirement
 At the time of this writing a software package called
 `apptainer <https://apptainer.org/documentation/>`__
 is the standard application for launching containerized applications
-like MsPASS on HPC clusters.   HPC systems do not use docker for security
-reasons because docker defaults to allowing processes in the container
-to run as root.  Apptainer, however, is compatible with docker
+like MsPASS on HPC clusters.  Most multiuser centers do not permit the Docker
+daemon on compute nodes because of its privilege model.  Apptainer, however,
+is compatible with Docker images
 in the sense that it can pull containers constructed with docker and
 build a file to run on the HPC cluster.   That is the approach we use
 in this section.
 
-Your first step is to login to a "head node", which means the host name
-you use to login to the cluster.
+Your first step is to log in to a login node (also called a head node), which
+is the host you use to access the cluster.  Treat login nodes as a lightweight
+preparation and job-submission environment.  Run MsPASS, container builds that
+consume substantial CPU or I/O, and interactive debugging only in a scheduled
+compute-node allocation, unless your center explicitly permits otherwise.
 HPC clusters commonly support a wide range of applications.
 As a result, all HPC clusters we
 know of have a software management system that controls what software
@@ -142,19 +146,22 @@ building a local instance of MsPASS that doesn't use the container if
 apptainer is a problem.   That is not recommended for a variety of reasons
 but is possible.
 
-Once your shell knows about apptainer you will need to create an instance of the MsPASS
-container.  Unless you have a quota problem we recommend you put
-the container file in the directory `~/mspass/containers`.   Assuming that
-directory exists the following commands can be used to generate your
-working copy of the MsPASS container:
+Once your shell knows about Apptainer you will need to create an instance of
+the MsPASS container.  Store the image on a shared filesystem intended for
+large project artifacts and visible from every compute node; ``$HOME`` and
+node-local temporary storage are usually poor choices.  Customize the first
+line below for your site.  Run the build on a workstation or in a scheduled
+compute allocation if it is too intensive for the center's login-node policy.
 
 .. code-block::
 
-    cd ~/mspass/containers
+    export MSPASS_IMAGE_DIR=/path/to/shared/mspass/containers
+    mkdir -p "$MSPASS_IMAGE_DIR"
+    cd "$MSPASS_IMAGE_DIR"
     apptainer build mspass_latest.sif docker://mspass/mspass
 
-When the command exits you should now see the file "mspass_latest.sif"
-in the current directory ("~mspass/containers" for the example).
+When the command exits you should now see the file ``mspass_latest.sif``
+in ``$MSPASS_IMAGE_DIR``.
 Note this is different from docker.  Docker caches container data in its
 own work space.  Apptainer creates a file, which in the case above
 we called "mspass_latest.sif", containing the data required to launch
@@ -175,36 +182,32 @@ python package called :code:`mspass_launcher`.   If you are reading this
 you have probably already used this package to install
 :code:`mspass-desktop`.
 
-First you should check what the default python interpreter is for your installation
-using
+First check which Python interpreter you will use to run the launcher:
+
 .. code-block::
 
   python --version
 
-If the version is less than 3.10 we recommend you enable a higher version.
-A typical example with module is the following:
+The published ``mspass-launcher`` 0.1.1 package declares Python 3.7 or newer;
+it does not require Python 3.10 or the ``match`` statement.  Prefer a current
+Python version supported by your center.  A typical module command is:
 
 .. code-block::
 
   module load python/3.10.10
 
-where the actual tag you will use after "python" is likely different.
-Be aware the version must 3.10 or higher as this package uses
-the :code:`match-case` construct that was not available prior to 3.10.
+where the available version tag is site-specific.
 There are other options with virtual environments
 (notably :code:`pyenv` and :code:`conda env`),
-but you should use
-that approach only if you are familiar with how to work with virtual
-environments.
+which can avoid conflicts with system packages.
 
-We then recommend you install :code:`mspass_launcher` as a "local" package
-with pip as follows
+Install ``mspass-launcher`` for that same interpreter as follows:
 
 .. code-block::
 
-  pip install --user mspass_launcher
+  python -m pip install --user mspass-launcher
 
-If you are using a virtual environment run pip in the desired environment.
+If you are using a virtual environment, activate it and omit ``--user``.
 
 ~~~~~~~~~~~~~~~~~~~~~~
 Configuration
@@ -214,10 +217,13 @@ file.  The normal expectation is that file has the magic
 name :code:`HPCClusterLauncher.yaml` and an instance of that file
 is present in the job's run directory.
 If a colleague at your institution has run MsPASS we advise you to
-use it as a starting point.   If not, copy the master from the package
-install directory (see internet sources on where a --user packages are installed)
-or download the master from GitHub
-`here <https://github.com/mspass-team/mspass_launcher/blob/main/src/mspass_launcher/data/yaml/HPCClusterLauncher.yaml>`__.
+use it as a starting point.  Otherwise, copy the template installed with the
+same ``mspass-launcher`` version that will run the job.  Release 0.1.1 and the
+current development branch use different configuration keys, so do not pair a
+PyPI installation with an unversioned ``main``-branch template.  The
+`release 0.1.1 template
+<https://github.com/mspass-team/mspass_launcher/blob/v0.1.1/src/mspass_launcher/data/yaml/HPCClusterLauncher.yaml>`__
+is available for the published release.
 
 Edit that file for your installation and the requirements of your
 workflow.   Details on how to do that
@@ -253,7 +259,7 @@ where *working_directory* and the name "myscript.py" would by customized.
 Note the :code:`HPCClusterLauncher.run` method works with either
 a pure python script as in the above example or for a jupyter notebook
 file  (".ipynb" file name).   We reiterate, however, that a notebook
-file must be "runable" without intervention.
+file must be runnable without intervention.
 
 Finally, you should also be aware that
 the constructor for the :code:`HPCClusterLauncher` object uses
@@ -262,32 +268,34 @@ MsPASS for a range of projects you will likely develop multiple configuration
 files that specify, for example, different numbers of workers.  You
 can specify an alternative configuration file by giving a path to that
 file as arg0 or via the kwarg with key "configuration_file".
-For example, if you had a "configurations" directory in your home directory
-with an alternate file "quartz_4_node.yaml" you could change that line of the
-script to the following:
+For example, if you had a ``configurations`` directory in your home directory
+with an alternate file ``quartz_4_node.yaml``, expand the home-directory marker
+before passing it to the launcher:
 
 .. code-block::
 
-  launcher = hpc.HPCClusterLauncher("~/configurations/quartz_4_node.yaml")
+  import os
+  configuration_file = os.path.expanduser("~/configurations/quartz_4_node.yaml")
+  launcher = HPCClusterLauncher(configuration_file)
 
 or alternatively
 
 .. code-block::
 
-  launcher = hpc.HPCClusterLauncher(configuration_file="~/configurations/quartz_4_node.yaml")
+  launcher = HPCClusterLauncher(configuration_file=configuration_file)
 
 ~~~~~~~~~~~~~~~~~~~~~~
 Job submission
 ~~~~~~~~~~~~~~~~~~~~~~
 Once you have a "job script" like the example above prepared you
-need to "submit" the job to the cluster.   The command you use to do that
-will depend on the job scheduler used on that cluster.
-A common example today is a "slurm", but others are similar.
+need to "submit" the job to the cluster.  ``HPCClusterLauncher`` currently
+supports only Slurm, although other launch approaches may support other batch
+schedulers.
 The only difference is the incantations used to define resources
 and the command tool used to submit or monitor the progress of a job.
 
 As an example, assume the "job script" we prepared has the file name
-"myproject.job".  If you login to a head node on the cluster
+"myproject.job".  If you log in to a login node on the cluster
 and cd to the directory where the job script is located you
 would submit it with "slurm" as follows:
 
@@ -306,8 +314,9 @@ Understanding the python submission
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The way the :code:`HPCClusterLauncher` object works is
 potentially confusing because an instance of the class has to
-manage the virtual cluster it launches and submit jobs to that
-cluster.   A wiring diagram may aid your understanding is
+manage the virtual cluster it launches and run a workflow on that
+cluster.  Slurm submission happens before the launcher starts; the launcher
+itself does not submit the Slurm job.  A wiring diagram may aid your understanding and is
 seen below in Figure :numref:`hpclauncherconcepts`.
 
 .. _hpclauncherconcepts:
@@ -370,11 +379,25 @@ instead of python to handle the launch process.  You may prefer this
 approach if you are an expert bash programmer or have used MsPASS
 previously in this mode.
 
+.. warning::
+
+   The checked-in ``scripts/template`` and ``scripts/tacc_examples`` files are
+   historical starting points, not current turnkey job scripts.  They still
+   contain Stampede2 queue and hostname settings, legacy Singularity module
+   names, direct reverse tunnels, and MPI launch syntax that is not portable.
+   In particular, the
+   `current TACC launching guidance
+   <https://docs.tacc.utexas.edu/hpc/stampede3/#running>`__ requires ``ibrun``
+   rather than ``mpirun`` or ``mpiexec``.  Reconcile every resource directive, module,
+   filesystem path, tunnel, and process launcher with current site
+   documentation before submitting one of these scripts.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Get a Copy of Configuration Scripts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-You may first want to search the suite of configuration scripts found
-on github `here <https://github.com/mspass-team/mspass/tree/master/scripts>`__
+You may first want to search the
+`MsPASS configuration scripts
+<https://github.com/mspass-team/mspass/tree/master/scripts>`__
 If the system you are using has a folder there you should download the
 scripts from the appropriate folder and you should be able to proceed
 without having to dig too deep into this section.
@@ -395,7 +418,7 @@ working with MsPASS on that system.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Build MsPASS Container with Apptainer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-You will need to build an apptainer file.  The process for this options
+You will need to build an Apptainer file.  The process for this option
 is identical to that described above.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -481,9 +504,10 @@ you can use in this definition.  If so insert that path for this parameter.
 The next line, which sets the environment variable `APPTAINER_BIND`,
 is a bit more obscure.   Full understanding of why that incatation
 is necessary requires the
-concept of how to "bind" a file system to the container.   A starting
-point is the apptainer documentation found
-`here <https://docs.sylabs.io/guides/3.5/user-guide/bind_paths_and_mounts.html>`__.
+concept of how to "bind" a file system to the container.  A starting
+point is the
+`Apptainer bind-path documentation
+<https://apptainer.org/docs/user/latest/bind_paths_and_mounts.html>`__.
 Briefly, the idea is much like a file system "mount" in unix.
 The comma separated list of directory names will be visible to your
 application as if it were a local file system.
@@ -491,11 +515,10 @@ For the example above, that means
 your python script can open files in directories "/N/slate/pavlis" or
 "/N/scratch/pavlis".   Provided you have write permission to those directories
 you can also create file(s) and subdirectories under that mount point.
-Finally, note it is possible to also mount a file system on one of two
-standard mount points in the container:   "/mnt" and "/home".
-That can be convenient, for example, to utilize a database created with docker
-where files were similarly "bound" to /home so that "dir" entries in wf
-database collections do not resolve.
+You can also use ``source:destination`` bind syntax when the host and
+container paths should differ.  Be cautious about binding over ``/home`` or
+another directory already populated in the image, because the bind hides the
+image's original contents at that destination.
 
 The four variables `MSPASS_WORK_DIR, MSPASS_DB_DIR, MSPASS_LOG_DIR`, and,
 `MSPASS_WORKER_DIR` define key directories needs to work.  There use is
@@ -516,10 +539,8 @@ as follows:
     named subdirectory under the one defined for `MSPASS_LOG_DIR`.
     If this variable is not set it defaults to
     `$MSPASS_WORK_DIR/logs`
--   `MSPASS_WORKER_DIR` is used by dask/Spark as a scratch workspace.
-    Currently that workspace is always in a subdirectory with the
-    path `$MSPASS_WORKER_DIR/work`.   If this variable is not set it defaults to
-    `$MSPASS_WORK_DIR/work`
+-   `MSPASS_WORKER_DIR` is used by Dask/Spark as a scratch workspace.
+    If this variable is not set it defaults to ``$MSPASS_WORK_DIR/work``.
 
 `HOSTNAME_BASE` should be set to the network subnet name the cluster runs in.
 That is usually necessary because all clusters we know of use a shortened
@@ -543,8 +564,8 @@ you are the first to use mspass on a cluster.
 job_script.sh
 """""""""""""""""""
 `job_script.sh` is the shell script you submit that runs your "job" on
-the cluster.   Standard usage with slurm as the workload manager to run
-the workflow in the jupyter notebook file `myworkflow.ipynd` is;
+the cluster.   Standard usage with Slurm as the workload manager to run
+the workflow in the Jupyter notebook file `myworkflow.ipynb` is:
 
 .. code-block::
 
@@ -555,7 +576,7 @@ and the notebook file, `myworkflow.ipynb`, are present in the
 directory defined by `MSPASS_WORK_DIR`.
 
 The only thing you would normally need to change in `job_script.sh` are
-the run parameters passed to slumm with the `#SBATCH` lines at the top
+the run parameters passed to Slurm with the `#SBATCH` lines at the top
 of the file.  There are always cluster-dependent options you will need to
 understand before running a large job.    Consult local documentation
 before setting these directives and submitting your first job.
@@ -579,6 +600,11 @@ Furthermore, the complexity of ths section should be a warning that this
 entire process is not a good idea, at least for getting strarted,
 unless you have no other option.
 
+Prefer a center-supported portal or a scheduler-backed interactive allocation.
+For example, current TACC systems provide Jupyter through the TACC Analysis
+Portal.  Never start Jupyter, MsPASS services, or a container workflow directly
+on a shared login node.
+
 The procedure for running MsPASS interactively is similar to that
 for running containers on a desktop system found in :ref:`command_line_docker_desktop_operation`.
 There are two key differences:  (1) you launch MsPASS with apptainer
@@ -598,12 +624,13 @@ mode with slurm would be to enter the following command:
 
     sbatch single_node.sh
 
-You should then use the `squeue` slurm command to monitor when your job
+You should then use the `squeue` Slurm command to monitor when your job
 starts or watch for the appearance of the output file defined by slurm
 commands in `single_node.sh`.  Typically use the unix `cat` command to print the
 output file.   The output is similar to what one sees with docker run.
-The following is an example output generated this way
-on the Indiana University cluster called "carbonate"::
+The following is retained as historical example output generated in 2023
+on the Indiana University cluster called "carbonate"; its Singularity version,
+module list, Jupyter version, hostnames, and URLs are not current instructions::
 
   singularity version 3.6.4 loaded.
   Currently Loaded Modulefiles:
@@ -636,20 +663,17 @@ last few lines.  For the above example the key line is::
 
   [I 10:44:16.974 NotebookApp] http://c4:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
 
-In this case `c4` is the hostname that for this cluster was shortened for
-simplicity of communication within the cluster.  If connecting from outside
-the cluster, which would be the norm, for this example we would need to
-modify that url.   Your use will vary, but in this case the connection
-would use the following url::
+In this case `c4` was the shortened hostname used inside that cluster.  At the
+time of this historical example, the site's network mapping used the following
+URL::
 
   http://c4.uits.iu.edu:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
 
-Thanks to cut-paste standard graphical manipulation today as usual that is
-the best way to pass that messy URL to a browser.   We emphasize the detailed URL you would used
-is heavily site dependent.  There can be a great deal more complexity than this
-simplified example where all we change is the hostname.   You can universally
-expect to need a more complex mapping to get the remote connection from
-your browser through the cluster firewall.   The mechanism may be defined in
+Do not infer a current connection recipe from that URL.  Use the site's portal
+or documented SSH-forwarding procedure, keep the Jupyter token secret, and do
+not expose Jupyter or the unauthenticated Dask dashboard on a public or shared
+interface.  The detailed URL is heavily site dependent.  There can be a great
+deal more complexity than this simplified historical example.  The mechanism may be defined in
 the script defined by `MSPASS_RUNSCRIPT`, but it might not be either.
 Some guidance can be found in the networking configuration subsection below and
 by looking at other implementation found on in the scripts directory
@@ -660,15 +684,15 @@ started with slurm.  When you finish the interactive work you
 should kill your running "job" immediately.   If you don't the node will sit around
 doing nothing until the time limit you specified expires.   If you ignore
 this warning you can quickly burn your entire allocation with no results.
-With slurm the way to terminate an interactive job is:
+With Slurm the way to terminate a job that you own is:
 
 .. code-block::
 
     squeue -u myusername
     scancel jobid
 
-Where you would run that pair of commands sequentially.  For the first Substitute
-your user name.  The output will show an "id" with a format something like this::
+Run that pair of commands sequentially, substituting your user name in the
+first.  The output will show an ID with a format something like this::
 
   JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
   3298684   general   mspass   pavlis  R       4:33      1 c4
@@ -676,37 +700,36 @@ your user name.  The output will show an "id" with a format something like this:
 For this example `jobid` is 3298684.  That job is "killed" by the command
 `scancel 3298684`.
 
-Finally, some clusters have a simplified procedure to run interactive jobs
-through some form of "gateway".   For example, Indiana University has
-a "Research Desktop" (RED) system that provides a way to run a window on your
-local system that makes appear like a linux desktop.   In that case,
-running an interactive job is exactly like running with docker except
-you use singularity/apptainer and can run jobs on many nodes.
-In addition, the batch submission is not necessary and you can run
-the configuration shell script interactively.  For the RED example you
-can explicitly launch and "interactive job" that creates a terminal
-window.  Inside that terminal you can then run:
+Finally, some clusters provide a simplified procedure to run interactive jobs
+through a portal or science gateway.  A historical Indiana University example
+used a "Research Desktop" (RED) system that provided a remote Linux desktop.  In that case,
+running an interactive job is similar to running a container on a desktop,
+except the portal must first allocate one or more compute nodes.
+After the portal or scheduler has allocated a compute node, you can run the
+configuration shell script interactively.  Do not source it in a terminal that
+is still attached to a shared login or gateway node.  Inside the allocated
+compute-node terminal you can then run:
 
 .. code-block::
 
      source single_node.sh
 
 which should generate an output similar to that above for the sbatch example.
-Connection to the jupyter notebook server is then simple via a web browser
-running on top of the gateway.
+Connect to Jupyter only through the mechanism documented by that gateway.
 
-If running on distributed nodes, when starting the DB Client, the host name
-should be specified, it is defined as the environment variable MSPASS_SCHEDULER_ADDRESS.
+If running on distributed nodes, a manually constructed database client should
+use the database host defined by ``MSPASS_DB_ADDRESS`` (not the scheduler
+address).
 For example:
 
 .. code-block:: python
 
     from mspasspy.db.client import DBClient
     import os
-    dbclient=DBClient(os.environ.get("MSPASS_SCHEDULER_ADDRESS"))
+    dbclient=DBClient(os.environ.get("MSPASS_DB_ADDRESS"))
 
-Here the primary node is MSPASS_SCHEDULER_ADDRESS, and the frontend is
-running on the node, it should be specified explicitly.
+The standard launch scripts set both service addresses for the frontend; they
+may happen to name the same primary node, but they have different meanings.
 
 .. _hpc_shell_configuration_files:
 
@@ -742,8 +765,8 @@ they enable are the followings:
 - *db* creates and manages the MongoDB server
 - *scheduler* is the dask or spark manager that controls data flow to and from workers
 - *worker* task that do all the computational task.
-- *frontend* is the jupyter notebook server,
-  which means it also is the home of the master python script that drives your workflow.
+- *frontend* runs Jupyter for an interactive session or the master Python
+  script for a batch workflow.
 
 Note the configuration illustrated in :numref:`HPC_config_figure1`
 is a graphical illustration of that created with the template `run_mspass.sh`
@@ -782,9 +805,9 @@ that are used when each instance of the container is launched:
 -  The run command is preceded by a set of shell variable definitions
    that all begin with the keyword `APPTAINERENV`.   An odd feature of
    apptainer is any shell symbol it detects that begin with
-   `APPTAINERENV` have that keyword stripped and the result posted to
+   ``APPTAINERENV_`` have that prefix stripped and the result posted to
    a shell environment variable that is available to the container boot script,
-   which in mspass is called `start-mspass-sh`,
+   which in MsPASS is called ``start-mspass.sh``,
    (That shell script is not something you as user would ever change but
    it may be instructive to look at that file to understand this setup.
    That file can be found in the mspass github site at the top of the directory
@@ -807,7 +830,7 @@ Launching Workers
 """""""""""""""""
 Launching workers is linked to a fundamental problem you will face
 in adapting the template script to a different cluster:   node-to-node
-communications.   There are three low-level issues you will need to
+communications.   There are two low-level issues you will need to
 understand before proceeding:
 
 #. How are nodes addressed?  i.e. what symbolic name does node A need to know to talk to node B?
@@ -839,7 +862,7 @@ it may not be required on your site as it is common to use only the base
 name to reference nodes.
 
 The second line, which truly deserved the incantation title,
-sets the shell variable `WORKER_LIST` to a white-space delimited list of
+sets the shell variable `WORKER_LIST` to a comma-delimited list of
 the hostname of all nodes allocated to this job
 excluding the node running the script (result of the hostname command).
 To help clarify here is the section of output produced by this
@@ -860,15 +883,15 @@ follows immediately after the above:
     APPTAINERENV_MSPASS_ROLE=worker \
     mpiexec -n $((SLURM_NNODES-1)) -host $WORKER_LIST $SING_COM &
 
-This uses the openmpi command line tool `mpiexec` to launch the
+This historical template uses the Open MPI command-line tool `mpiexec` to launch the
 container on all the nodes except the first one in the list.
-We are only using mpi as a convenient way to launch background
-processes on nodes slurm assigns to the job.  An alternative
-that might be preferable at other sites is do the same thing with a
-shell loop and calls to ssh.   The mpi implementation shown here, however,
-is known to work and one or more versions of mpi are universally available
-at HPC centers at the time this manual was written.  Hence, you the odds
-are high you will not need to modify this line.
+MPI is used only as a convenient way to launch background processes on nodes
+Slurm assigned to the job.  This syntax is site- and MPI-specific: current
+TACC systems require ``ibrun`` and explicitly advise against ``mpirun`` or
+``mpiexec``.  Other centers may require ``srun`` or another approved launcher.
+Do not replace it with ad hoc SSH commands, and never launch work on nodes
+outside the active allocation.  Expect to modify and test this line for the
+target system.
 
 Communications
 """"""""""""""
@@ -877,8 +900,8 @@ issues about how networking is implemented on your cluster.  There are
 two different issues you may need to consider:
 
 #.  Are there any network communication restrictions between compute nodes?
-    `Dask <https://dask-chtc.readthedocs.io/en/latest/networking.html>`__
-    and `spark <https://www.ibm.com/docs/en/zpfas/1.1.0?topic=spark-configuring-networking-apache>`__
+    `Dask <https://distributed.dask.org/en/stable/network.html>`__
+    and `Spark <https://spark.apache.org/docs/latest/security.html>`__
     have different communication setups described in the links in this
     sentence.  The general pattern seems to be that clusters are normally
     configured to have completely open communication between nodes
@@ -895,7 +918,7 @@ two different issues you may need to consider:
     These are an important tool to understand bottlenecks in a parallel workflow that
     are limiting performance.  For dask diagnostics to work you will need to
     connect on some port (default is 8787) to the node running the scheduler.
-    The fundamental problem both connection face is that cluster are
+    The fundamental problem both connections face is that clusters are
     normally accessible from outside
     only through "login nodes" (also sometimes called head nodes).
     The login nodes are sometimes called a network "gateway" to the cluster,
@@ -904,11 +927,18 @@ two different issues you may need to consider:
     the very kind of complexity discussed in this section for normal
     humans.
 
-Our template script addresses item 2 by a variant of that
-describe in
-`this dask package extension documentation <https://dask-chtc.readthedocs.io/en/latest/networking.html>`__.
-That source has some useful background to explain the following
-approach we use in our template run_mspass.sh script:
+The historical template addressed item 2 with reverse SSH tunnels.  The
+following block is retained to explain that design, not as a current recipe.
+
+.. warning::
+
+   Do not copy this block without approval and current instructions from your
+   computing center.  It assumes a Stampede2-era compute-node naming scheme,
+   four specifically named login nodes, and reverse forwards whose remote bind
+   address is not explicit.  Depending on the login server's SSH policy, this
+   can expose Jupyter or the unauthenticated Dask dashboard on a shared host.
+   Current TACC users should prefer the
+   `TACC Analysis Portal <https://docs.tacc.utexas.edu/tutorials/TAP/>`__.
 
 .. code-block::
 
@@ -924,33 +954,21 @@ approach we use in our template run_mspass.sh script:
     ssh -q -f -g -N -R $STATUS_PORT:$NODE_HOSTNAME:8787 $LOGIN_NODE_BASENAME$i
   done
 
-The complexity of the first section using perl solves a potential problem
-automatically.   Because login nodes are nearly always shared by multiple
-users a fixed port for a connection to the login can easily cause a
-mysterious collision if two people attempt to use the same port to
-access the login node.   The approach used here is that used at TACC.
-The perl command converts the compute node's hostname to a port number.
-Since while you run your job you are the only one who can access that node
-that will guarantee a unique connection.   That approach may not work
-at other sites.  A simpler solution that might be suitable for many
-sites is to just set LOGIN_PORT and STATUS_PORT to some fixed numbers
-known to not collide with any services on the login node.
+The first section using Perl attempted to avoid a port collision on a shared
+login node.  The historical TACC example converted the compute node's hostname
+to a port number because the allocated compute-node name was unique to the job.
+This is not a portable way to reserve a port.  Do not select fixed ports on a
+shared host or expose a reverse forward unless the site documents that
+procedure.
 
-The second section above (i.e. the part below the blank line)
-solves a second potential problem.   A large cluster
-will always have multiple login/head nodes.  The example in the template file is
-set for TACC where there are four login nodes with names
-login1, login2, login3, and login4.  Thus, above we set
-`NUMBER_LOGIN_NODES` to 4 and the shell variable `LOGIN_NODE_BASENAME` to
-"login".   You will need to change those two variables to the
-appropriate number and name for your cluster.   The ssh lines in the
-for loop set up what is called an ssh tunnel from the compute node
-to all the login nodes.   It is necessary to create that in the job script
-as the job scheduler normally assigns the you to the least busy login
-node when you try to connect to one of them.   The mechanism above allows
-you to access the jupyter notebook listening on port 8888 to the port
-number created in the earlier incantation from the compute node name.
-Similarly the dask status port 8787 is mapped to the value of $STATUS_PORT.
+The second section handled a historical environment with four login nodes
+named login1 through login4.  The SSH lines set up reverse tunnels from the
+compute node to those login nodes.  Modern centers commonly route login
+connections with DNS or a load balancer; Slurm does not choose the login node.
+If a center still supports this design, follow its current instructions,
+explicitly bind the remote listening address to loopback, and omit the
+irrelevant ``-g`` option.  In the old mapping, Jupyter port 8888 was forwarded
+to ``LOGIN_PORT`` and Dask dashboard port 8787 to ``STATUS_PORT``.
 
 We emphasize that none of the network complexity is required in two situations
 we know of:
@@ -960,10 +978,10 @@ we know of:
     In fact, we recommend you prepare a separate run script, which you
     might call `run_mspass_batch.sh` that simply deletes all the
     network stuff above.
-2.  Some sites may have a science gateway setup to provide a mechanism to
+2.  Some sites may have a science gateway or portal that provides a mechanism to
     run jobs interactively on the cluster.  The example noted earlier used
     at Indiana called "RED" is an example.   With RED you launch a window on
     your desktop that behaves as if you were at the system console for the
-    login node.   In that situation the ssh tunnel stuff is not necessary.
-    A web browser running in the RED window can connect directly with
-    port 8888 and port 8787 on the compute node once the job starts.
+    login node.  In that situation user-created SSH tunnels may not be
+    necessary.  Follow current gateway documentation rather than assuming
+    that ports 8888 and 8787 are directly reachable.
