@@ -1,202 +1,378 @@
 .. _mspass_desktop:
 
-Running MsPASS on a Desktop Computer
-=====================================
+Run MsPASS with the Optional Desktop Launcher
+==============================================
 
-Install MsPASS Desktop Application
-------------------------------------
-Install docker
-~~~~~~~~~~~~~~~~
-The desktop application to launch MsPASS requires :code:`docker desktop`.  If
-docker is not already installed on your desktop machine you will need to do so.
-Docker is free for non-commercial users.
-Installers for all standard desktop operating systems can be found on the
-`docker web site <https://docs.docker.com/get-docker/>`__.
+Start with the :ref:`desktop quick start <quick_start>`.  It is the shortest
+path to a first MsPASS session and confirms that Docker, the MsPASS image, and
+the project-directory mount work on your computer.
 
-Launch docker
-~~~~~~~~~~~~~~~
-Documentation for operating docker for each platform can be found
-on hyperlinks from the download page.   Note on linux docker
-implementation is normally set up as a daemon and managed with command line tools.
-After an initial install on linux you may need to reboot your desktop or
-manually start the daemon.
-MacOS and Windows use a graphical user interface that you may need to
-launch manually by the usual double-click or start procedure for
-applications.  See the docker documentation for guidance on your platform.
+This page describes an optional graphical alternative.  The
+`mspass_launcher project
+<https://github.com/mspass-team/mspass_launcher>`__ is maintained separately
+from MsPASS and installs the ``mspass-desktop`` command.  Its window starts
+the same kinds of containerized services that the command-line guides manage.
 
-Get the MsPASS container
-~~~~~~~~~~~~~~~~~~~~~~~~~
-Use the command line interface to "pull" the MsPASS container using
-the following incantation:
+.. important::
 
-.. code-block::
+   Docker Desktop and ``mspass_launcher`` are different programs.  Docker
+   Desktop provides the Docker engine and management interface on supported
+   desktop systems.  ``mspass_launcher`` is a separate Python package whose
+   GUI sends commands to Docker.  Installing either one does not install the
+   other.  Linux users may use Docker Engine instead of Docker Desktop, but
+   the launcher still requires the Docker Compose v2 command.
 
-    docker pull mspass/mspass
+Prerequisites
+-------------
 
-Verify python version
-~~~~~~~~~~~~~~~~~~~~~~
-The MsPASS desktop application requires a version of python of
-3.10 or above.  Verify what you have running as follows:
+Before installing the launcher:
 
-.. code-block::
+* Complete the :ref:`desktop quick start <quick_start>`, or at least confirm
+  that ``docker version`` can reach the Docker server and that ``docker
+  compose version`` succeeds.
+* Use a host Python installation with Tk support.  The launcher window runs
+  on the host; Python inside the MsPASS container does not provide that
+  window.  This command is a quick import check:
 
-  python --version
+  .. code-block:: console
 
-If necessary, upgrade your version of python to 3.10 or above.   Note if you
-use a python virtual environment management package like conda or pyenv, which we would
-advise, you may want to create a :code:`mspass` environment that uses an acceptable version
-of python and runs the rest of this procedure from that environment.
+     python -c "import tkinter; print(tkinter.TkVersion)"
 
-Install mspass-desktop
-~~~~~~~~~~~~~~~~~~~~~~~~
-If you are using an pyenv or conda make sure the appropriate environment is
-active.  You can then install the mspass desktop application with pip
-as follows:
+* Make enough CPU, memory, and disk space available for MongoDB, JupyterLab,
+  a Dask scheduler, and Dask workers to run together.
 
-.. code-block::
+The launcher is an external package, so consult its `project page
+<https://github.com/mspass-team/mspass_launcher>`__ for current Python and
+platform support rather than assuming that the requirements of a particular
+release still apply.
 
-  pip install mspass_launcher
+Install the launcher in an isolated environment
+-----------------------------------------------
 
-If you aren't using anaconda or pyenv with a special virtual environment, we suggest you use this variant:
+Use a launcher-specific virtual environment so that its Python dependencies
+do not modify the environment used for other projects.
 
-.. code-block::
+On Linux or macOS, run:
 
-  pip install --user mspass_launcher
+.. code-block:: bash
 
-That will install the package under :code:`~/.local`, which is usually appropriate for a single user desktop.
+   python -m venv "$HOME/.venvs/mspass-launcher"
+   source "$HOME/.venvs/mspass-launcher/bin/activate"
+   python -m pip install mspass_launcher
+   mspass-desktop --help
 
+On Windows PowerShell, run:
 
-Running mspass-desktop
-------------------------
-Use the terminal application on your platform and navigate
-(i.e. use the cd command) to the working directory for your data set.
+.. code-block:: powershell
 
-  .. note::
-    Currently there is no control where files written by mspass are written.
-    All are relative to the working directory from which you launch
-    mspass-desktop.   The application will create a `data` directory
-    which contains the database files, `logs` which contains log files
-    written by the different services run under docker compose, and a `work`
-    directory used as scratch space by dask.  It also creates an empty
-    `scoped` directory that is not used for this application of the
-    MsPASS framework.
+   python -m venv "$HOME\.venvs\mspass-launcher"
+   & "$HOME\.venvs\mspass-launcher\Scripts\Activate.ps1"
+   python -m pip install mspass_launcher
+   mspass-desktop --help
 
-Use the command line tool to launch the graphical user interface as follows:
+Activate this environment again before each launcher session.  The final
+command verifies that the ``mspass-desktop`` entry point is available without
+starting the cluster.
 
-  .. code-block::
+Choose the project directory
+----------------------------
 
-    mspass-desktop
+Create or select a dedicated host directory for the project, then change to
+it *before* starting ``mspass-desktop``.  You can reuse the directory created
+by the quick start.
 
-That should bring up the following window:
+The launcher's default Compose configuration bind-mounts the directory from
+which it was started at ``/home`` in the containers.  Consequently, a
+notebook, script, or result saved under ``/home`` is stored in the host
+project directory and remains there after the containers stop.  Do not assume
+that files written elsewhere inside a container are persistent.  Return to
+the same host directory when continuing that project in a later session.
+
+With the current MsPASS image defaults, the services also create these
+launcher-managed directories under the host project directory:
+
+``db/``
+   Persistent MongoDB files, including the database under ``db/data/``.
+
+``logs/``
+   MongoDB, scheduler, and worker logs.
+
+``work/``
+   Dask worker scratch files.  Treat this as temporary operational storage,
+   not as the only copy of an input or result.
+
+Stop the launcher before copying ``db/`` for backup or moving the project
+directory.  Do not delete files under ``db/`` while MongoDB is running.
+
+Start the launcher
+------------------
+
+Start Docker, activate the launcher's virtual environment, and change to the
+project directory.  Then run:
+
+.. code-block:: console
+
+   mspass-desktop
+
+The initial window should resemble the following figure.  All four service
+states are ``Down``, and only **Launch** is available.
 
 .. _desktop_startup_window:
 
 .. figure:: ../_static/figures/desktop_startup_window.png
-    :width: 600px
-    :align: center
+   :width: 600px
+   :align: center
 
-    Initial window created by running mspass-desktop.   Note only the
-    launch button is active and all the status widgets are red to
-    indicate that service is down.
+   Initial ``mspass-desktop`` window before the services are started.
 
-Push the "Launch" button and the display should change to something similar
-to the following:
+Select **Launch** and allow the containers time to start.  The status row
+reports the MongoDB, scheduler, worker, and frontend services independently.
+Each one should eventually report ``running`` on a green background.
 
 .. _desktop_operating_window:
 
 .. figure:: ../_static/figures/desktop_operating_window.png
-  :width: 600px
-  :align: center
+   :width: 600px
+   :align: center
 
-  MsPASS desktop window with all services running.   Note the status
-  widgets show green when that service is running.  If any turn red
-  during operation the system will be be functional.
+   Launcher window after all four services report that they are running.
 
-For interactive use with jupyter lab, push the "Jupyter" button.   It
-should launch a browser tab with jupyter lab running.
+Do not begin a workflow if a required service remains ``Down`` or reports a
+different state.  Review the terminal that started ``mspass-desktop`` before
+using the troubleshooting suggestions below.
 
-Note that after pushing the "Jupyter" button the center frame of the GUI
-with the label "Jupyter URL" should contain the text of the URL that
-defines a connection to the jupter server.   If the jupyter auto launch fails you can
-copy that url and paste it into a browser window to obtain a jupyter
-lab window for running mspass.
+.. note::
 
-If you have an existing python script you want to just run, push the
-"Run" button on the MsPASS desktop GUI.  That will create a new window
-that should look like the following:
+   In ``mspass_launcher`` 0.1.1, a status background can remain green after
+   its text changes away from ``running``.  Treat the status text as
+   authoritative and confirm an unexpected state with ``docker ps``.
+
+.. warning::
+
+   The launcher's default Compose file publishes MongoDB, Dask, and Jupyter
+   ports on all host network interfaces and uses a well-known Jupyter
+   password.  Use it only on a trusted computer and network.  Before running
+   on an untrusted network, customize a project-local copy of the Compose
+   configuration as described below, or use a command-line workflow that
+   binds ports explicitly to ``127.0.0.1``.
+
+Open JupyterLab
+---------------
+
+Select **Jupyter** after all services are running.  The launcher attempts to
+open JupyterLab in a browser and writes the connection address into the
+**Jupyter URL** field.  Browser auto-launch is platform- and
+configuration-dependent.  If no browser window opens, copy the complete URL
+from that field and paste it into a browser on the same computer.
+
+The URL may contain an access token.  Treat the complete URL as a credential:
+do not post it in an issue, log excerpt, or shared message.  Save notebooks
+and results under Jupyter's ``/home`` directory so they remain in the host
+project directory.
+
+Open the Dask dashboard
+-----------------------
+
+Select **Diagnostics** after the services report that they are running.  The
+launcher attempts to open the Dask dashboard in a browser.  With the default
+configuration, you can open ``http://localhost:8787/status`` manually if the
+browser does not open.  The dashboard reports connected workers, running
+tasks, and memory use; it is diagnostic information rather than a substitute
+for saving application output.
+
+Run an existing Python script
+-----------------------------
+
+Select **Run** to open the script window:
 
 .. _desktop_run_window:
 
 .. figure:: ../_static/figures/desktop_run_window.png
+   :align: center
 
-   Window launched by run button.
+   Window opened by the **Run** control.
 
-Enter the name of your script in the box with the label
-"File name of python file to be run" and push the "Run it" button.
-Any output of that script will appear in the terminal window from which
-you launched mspass-desktop.   If you need to capture the output
-consider using a tool like the unix "script" command.
+The first field is a directory *inside the container*.  Leave it as ``/home``
+for a script stored at the top level of the host project directory.  Enter
+only the script's file name, such as ``analysis.py``, in the second field and
+select **Run it**.  For ``scripts/analysis.py`` in the project directory, use
+``/home/scripts`` and ``analysis.py``.
 
-Potential Issues
-------------------
-GUI launches but is incomplete
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-There is a known problem with :code:`mspass-desktop` running on MacOS
-created by a classic python package collision with the
-:code:`tkinter` module used to drive the :code:`mspass-desktop` GUI.
-If you are using an Apple computer and have an issue consult
-`this issue page <https://github.com/mspass-team/mspass_launcher/issues/7>`__ 
-on GitHub for possible solutions.
+The launcher runs the script with Python in the scheduler service and prints
+its standard output and error output in the terminal from which
+``mspass-desktop`` was started.  Keep that terminal open.
 
-Need to Edit Configuration Files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In most cases the default configuration files will not need to be changed.
-If you encounter problems with the launching or running :code:`mspass-desktop`,
-you may want to look through the configuration files and see if
-editing the files could provide a solution,
+.. important::
 
-If you need to alter the master configuration files, we recommend you
-first copy the master files somewhere else in case you need to restore the
-originals.
-By default, the application will look for a directory
-:code:`./data/yaml` where "." is the location where the python library
-code for :code:`mspass_launcher` was installed by pip.  After making a
-copy the simplest approach is to edit the files there directly.
+   In ``mspass_launcher`` 0.1.1, the **Run** control targets the
+   ``mspass-scheduler`` service, but the packaged Compose file does not give
+   that service ``MSPASS_DB_ADDRESS`` or ``MSPASS_SCHEDULER_ADDRESS``.  A
+   script that constructs ``Client()`` without arguments therefore tries the
+   wrong database location and does not connect to the already-running Dask
+   scheduler.  Initialize it with the service addresses explicitly:
 
-We can anticipate the following that might prove necessary:
+   .. code-block:: python
 
-1.  The :code:`DesktopCluster.yaml` file is read directly by
-    :code:`docker compose` to launch the local cluster service needed to
-    run MsPASS.   If something goes wrong launching when
-    :code:`docker compose`  launches the containers, which hopefully will
-    be clear from error messages, you may need to edit this file.
-    Consult the `docker compose documentation <https://docs.docker.com/compose/>`__ for guidance.
-2.  The :code:`MsPASSDesktopGUI.yaml` file has a few parameters you may want
-    to customize:
+      from mspasspy.client import Client
 
-    -  The *web_browser* attribute is "firefox" by default.   If you want to
-       use a different browser enter a different name after the
-       *web_browser* keyword.  "Safari" (Note capital S) is known
-       to work on MacOS, but anything else will be an adventure.  Note a key
-       thing is the name needs to resolvable by the command line interface.
-       Note, especially, that for a Mac that is not just the browser name.
-       e.g. on a Mac you would open firefox from a terminal this way:
-       :code:`open -a firefox`.   The Windows interface is currently
-       adventure land.
-    -  The two attributes *minimum_window_size_x* and *minimum_window_size_y*
-       set the base GUI size in pixels.   If you have an unusually high
-       resolution or low resolution screen, you may want to change these
-       attributes.  The most likely service to cause a problem is the
-       MongoDB container which is known to take a few seconds to launch
-       on most desktops.
-    -  The default for *engine_startup_delay_time* is fairly conservative and
-       causes a delay you will notice in launching the GUI.   If you have a
-       fast machine that is usually lightly loaded you could try reducing the
-       default if you are impatient.   If the launching process throws a python
-       error exception hinting at a startup issue, consider increasing this
-       parameter.
-    -  The default for *status_monitor_time_interval* is 10 s.  That parameter
-       defines how frequently the services launched by :code: `docker compose`
-       are checked for state-of-health.   That checking does not seem to be a
-       heavy load so reducing that interval might be helpful if you are having
-       a problem with a crashing container.
+      client = Client(
+          database_host="mspass-db",
+          scheduler="dask",
+          scheduler_host="mspass-scheduler",
+      )
+
+   A project-local ``DesktopCluster.yaml`` can instead add
+   ``MSPASS_DB_ADDRESS: mspass-db`` and
+   ``MSPASS_SCHEDULER_ADDRESS: mspass-scheduler`` to the scheduler service's
+   environment.  The Jupyter frontend already receives both addresses.
+
+Prefer the
+:ref:`command-line Docker workflow <run_mspass_with_docker>` or the
+:ref:`Docker Compose deployment <deploy_mspass_with_docker_compose>` for
+repeatable automation, custom service settings, or long unattended runs.
+
+Shut down cleanly
+-----------------
+
+Save notebooks and wait for scripts to finish before stopping the services.
+The GUI provides two related controls:
+
+* **Shutdown** stops the Compose services and returns the window to its
+  initial state, ready for another **Launch**.  If you are finished, close
+  that idle window with the normal window control.
+* **Exit**, while the services are running, stops them and closes the launcher
+  in one action.
+
+Use one of these controls while the GUI is responsive.  Do not rely on
+closing the terminal or window to clean up running containers.  After an
+unexpected exit, inspect Docker with ``docker ps`` or Docker Desktop's
+container view before starting another session.
+
+Troubleshooting
+---------------
+
+``mspass-desktop`` is not found
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Activate the same virtual environment used for installation, then check the
+package with:
+
+.. code-block:: console
+
+   python -m pip show mspass_launcher
+   mspass-desktop --help
+
+If ``pip show`` cannot find the package, confirm that ``python`` identifies
+the intended environment and repeat the installation with that Python's
+``python -m pip`` command.
+
+The GUI does not open
+~~~~~~~~~~~~~~~~~~~~~
+
+Rerun the Tk import check under `Prerequisites`_ above.  If it fails, install
+Tk support for the host Python distribution or choose a Python installation
+that includes it.  Run ``mspass-desktop`` from a graphical desktop session,
+not a headless terminal.
+
+On macOS, a partial or malformed window can also indicate a conflict between
+the selected Python distribution and Tk.  Compare the symptoms with
+`mspass_launcher issue 7
+<https://github.com/mspass-team/mspass_launcher/issues/7>`__ before changing
+the Python environment; the issue describes one historical failure mode, not
+a workaround that applies to every current macOS installation.
+
+Docker commands fail or services stay down
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Run these checks in the same terminal used to start the launcher:
+
+.. code-block:: console
+
+   docker version
+   docker compose version
+   docker ps
+
+A missing Docker server section usually means Docker Desktop or Docker Engine
+is not running.  A permission error means the current account cannot access
+the Docker service.  Follow the installation's documented permission model;
+do not work around it by running the graphical launcher as an administrator
+or with ``sudo``.
+
+Also inspect the launcher's terminal output for a port conflict or a service
+startup error.  The default configuration uses host ports ``27017``, ``8786``,
+``8787``, and ``8888``.  If another application needs one of those ports, use
+the command-line or Compose guides linked below for an explicit configuration
+rather than editing files inside the launcher's installed Python package.
+
+JupyterLab does not open automatically
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Wait until the frontend reports ``running``, select **Jupyter**, and copy the
+complete address from **Jupyter URL** into a browser.  If the field remains
+empty or the address does not connect, review the launcher terminal without
+sharing any token-bearing URL.
+
+Launcher-specific behavior or configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Do not edit YAML files under ``site-packages`` in place; an upgrade can
+replace them.  The launcher searches the current directory and its
+``data/yaml`` subdirectory before falling back to its packaged defaults.  To
+customize it safely, copy both ``MsPASSDesktopGUI.yaml`` and
+``DesktopCluster.yaml`` from the installed package into ``data/yaml`` under
+the host project directory, edit those copies, and continue to start the
+launcher from that project directory.
+
+To locate the packaged defaults in the active launcher environment, run:
+
+.. code-block:: console
+
+   python -c "import mspass_launcher, pathlib; print(pathlib.Path(mspass_launcher.__file__).parent / 'data' / 'yaml')"
+
+``MsPASSDesktopGUI.yaml`` controls the following launcher behavior:
+
+* ``docker_compose_yaml_file`` selects the Compose file.  Keep it pointed at
+  the project-local ``DesktopCluster.yaml`` unless you intentionally use a
+  different file.
+* ``web_browser`` names the browser command used for automatic Jupyter and
+  dashboard launch; the current packaged default is ``firefox``.  Manual URLs
+  still work if browser launch is unsupported.
+* ``minimum_window_size_x`` and ``minimum_window_size_y`` set the minimum GUI
+  layout dimensions in pixels; both currently default to ``1000``.
+* ``engine_startup_delay_time`` controls the initial wait before service
+  checks and currently defaults to five seconds.  Increase it if a slower
+  machine checks the containers too early.
+* ``status_monitor_time_interval`` controls how often the GUI refreshes
+  service status and currently defaults to ten seconds.
+
+``DesktopCluster.yaml`` controls the images, mounts, ports, and service
+environment.  The GUI expects the service names ``mspass-db``,
+``mspass-scheduler``, ``mspass-worker``, and ``mspass-frontend``; do not rename
+them in a launcher configuration.  Before selecting **Launch**, validate
+Compose edits with
+``docker compose --file data/yaml/DesktopCluster.yaml config``.  After
+upgrading ``mspass_launcher``, compare your copies with the new packaged
+defaults before reusing them.
+
+Check the current `mspass_launcher documentation
+<https://github.com/mspass-team/mspass_launcher>`__ and search its `issue
+tracker <https://github.com/mspass-team/mspass_launcher/issues>`__ for
+platform-specific GUI, browser, shutdown, or configuration problems.  When
+reporting a problem, remove Jupyter tokens and other project-sensitive data
+from logs and screenshots.
+
+Command-line alternatives
+-------------------------
+
+The graphical launcher is not required to use MsPASS:
+
+* :ref:`MsPASS Desktop Quick Start <quick_start>` is the recommended first
+  run.
+* :ref:`Run MsPASS with Docker <run_mspass_with_docker>` documents the
+  detailed single-container workflow and common failures.
+* :ref:`Command Line Docker Desktop Operation
+  <command_line_docker_desktop_operation>` gives a broader command-line
+  overview.
+* :ref:`Deploy MsPASS with Docker Compose
+  <deploy_mspass_with_docker_compose>` covers explicit multi-container
+  configuration and management.

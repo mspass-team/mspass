@@ -1,189 +1,360 @@
 .. _run_mspass_with_docker:
 
-:orphan:
-
 Run MsPASS with Docker
 ======================
+
+This page expands the :ref:`desktop quick start <quick_start>` into a
+repeatable, single-container workflow.  The default MsPASS image starts
+JupyterLab, MongoDB, a Dask scheduler, and a Dask worker together.  This
+all-in-one mode is well suited to learning MsPASS and to interactive work on
+one computer.
+
+The examples use the Docker command-line interface so that the same workflow
+works with Docker Desktop and Docker Engine.  They keep the container attached
+to the terminal, which makes startup messages and a clean shutdown easy to
+observe.
 
 Prerequisites
 -------------
 
-Docker is required in normal use to run MsPASS on desktop systems.
-The alternative is a more complicated installation of the components
-built from source as described on
-`this wiki page <https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__.
-Docker is the piece of software you will use to run and manage
-any containers on your desktop system.
+Before starting, you need:
 
-Docker is well-supported on all current desktop operating systems and
-has simple install procedures described in detail in the
-product's documentation found `here <https://docs.docker.com/get-docker/>`__
-The software can currently be downloaded at no cost, but you must have
-administrative privileges to install the software.
-The remainder of this page assumes you have successfully installed
-docker.  For Windows or Apple user's it may be convenient to launch the
-"docker desktop" as an alternative to command line tools.
+* Docker Desktop on Windows, macOS, or Linux, or Docker Engine on Linux.  Use
+  the `official Docker installation guide
+  <https://docs.docker.com/get-started/get-docker/>`__ for your platform.
+* Permission to run Docker commands.  On Windows and macOS, start Docker
+  Desktop before opening a terminal.  On Linux, make sure the Docker service
+  is running and that your account has the required access.
+* An existing, writable project directory with enough free space for your
+  notebooks, waveform files, MongoDB database, logs, and temporary worker
+  files.
+* Enough memory and CPU capacity for JupyterLab, MongoDB, and Dask to run at
+  the same time.  Docker Desktop users can review the resource allocation in
+  Docker Desktop settings.
 
-Download MsPASS Container
--------------------------
+Confirm that both the Docker client and its server are available:
 
-The MsPASS container image is built and hosted on `Docker Hub <https://hub.docker.com/r/mspass/mspass>`__.
-It is also available in the `GitHub Container Registry <https://github.com/mspass-team/mspass/pkgs/container/mspass>`__.
-Once you have docker setup properly, use the following command in a terminal
-to download the MsPASS image from Docker Hub to your local machine:
+.. code-block:: bash
 
-.. code-block::
+   docker version
 
-    docker pull mspass/mspass
+The command should display both ``Client`` and ``Server`` sections.  A
+server-connection error usually means that Docker Desktop or the Docker Engine
+service is not running, or that the current account lacks permission to use
+it.
 
-Be patient the first time you issue this command for your systems
-as this can take a few minutes depending on your internet speed.
-Note you can run this command from anywhere and the files are stored in
-a system directory (folder) whose location depends upon the host
-operating system.   Be aware that the MsPASS container will consume of the order of
-500 Mb of disk space on your system disk so you should be sure you are not
-pushing the limits of your system disk.
-When you pull the container docker loads data only in a
-system dependent data space so you will not see anything happen
-in the directory where you run this command.  The recommended way to
-manage disk usage is through docker desktop or docker command line
-tools.   See docker's documentation for information now how to do that.
+Pull or update the MsPASS image
+-------------------------------
 
-It can be confusing to understand where data is stored in a containerized environment
-because file paths are always mapped from local file path names to
-container file names.  They are usually different.
-In the discussion below files names we reference that reside inside a container will be set in italics.
-File names on the physical system will be referred to with a normal font text.
+The primary image is published on `Docker Hub
+<https://hub.docker.com/r/mspass/mspass>`__.  Pull the current image before the
+first run and whenever you want to update MsPASS:
 
+.. code-block:: bash
 
-Run MsPASS Container in All-in-one Mode
----------------------------------------
+   docker pull mspass/mspass:latest
 
-Most MsPASS processing on a desktop begins by running a variant of the
-following on the command line:
+The same image is also published through the `GitHub Container Registry
+<https://github.com/mspass-team/mspass/pkgs/container/mspass>`__.  If you use
+that registry, substitute ``ghcr.io/mspass-team/mspass:latest`` in both the
+``docker pull`` and ``docker run`` commands on this page.
 
-.. code-block::
+``latest`` follows the most recently published default image.  For a
+reproducible project, select an available release tag in the registry and use
+that tag consistently instead.  Pulling a newer image does not modify an
+already-created container; recreate the container as described in
+:ref:`docker_image_update` to use the new image.
 
-    docker run -p 8888:8888 --mount src=/Users/myusername/myproject,target=/home,type=bind mspass/mspass
+Docker stores images in its own data area, not in the directory where the pull
+command is run.  ``docker system df`` reports the disk space used by local
+images, containers, and volumes.
 
-The ``-p 8888:8888`` argument maps port ``8888`` on your system to the container's ``8888`` port.
-That pair of arguments are needed to allow your local web browser to
-connect to the Juypter notebook server running in the container.
-``8888`` is the default port for the Jupyter Notebook frontend.
-If there are collisions with ``8888`` port on your system (uncommon),
-change the first number
-to "map" the local system port number to ``8888`` in the container.
-For example,  if you use ``-p 9999:8888`` the URL you use to connect to the
-Jupyter notebook would need to be altered to use ``9999`` as the port number
+Prepare a project directory and bind mount
+------------------------------------------
 
-The lengthy incantation in the argument following the  ``--mount``
-argument is used to "map" a local file system path to a
-defined mount point in the container.
-In this example the local system directory, "/Users/myusername/myproject",
-will be mapped to the directry called */home* in the container.
-*/home* is a standard mount point
-directory on the unix system the container runs.
-An standard alternative is */mnt*, but most people prefer
-*/home* as the name makes more sense.
-That mapping is necessary
-to save your results to your local system.   Without the
-``--mount`` incantation any results
-you produce in a run will disappear when the container exits.
+Choose one host directory as the root of the project.  It can contain
+notebooks and input data before MsPASS starts.  The directory must already
+exist because Docker's ``--mount`` form reports an error for a missing bind
+source.
 
-A useful, alternative way to launch docker on a linux or MacOS system
-is to use the shell ``cd`` command in the terminal you are using to make
-your project directory the "current directory".   Then you can
-cut-and-paste the following variation of the above into that terminal
-window and */home* in the container will be mapped to your
-"current directory":
+The launch command maps that host directory to ``/home`` inside the container:
 
-.. code-block::
+.. code-block:: text
 
-    docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
+   --mount "type=bind,source=/absolute/path/to/project,target=/home"
 
-When the container boots it splashes a bunch of text to the terminal from
-which it was launched announcing successful launching of
-required MsPAS components.
-The last part of the output will look something
-like this
+Replace ``/absolute/path/to/project`` with the absolute path on the host.  Keep
+the full mount specification quoted, especially when a path contains spaces.
+For example, a Windows PowerShell path can be written as
+``source=C:\Users\you\mspass-project``.
 
-.. code-block::
+If the terminal is already in the project directory, these shell-specific
+forms avoid typing the full path:
 
-    [I 11:02:38.655 NotebookApp] Serving notebooks from local directory: /home
-    [I 11:02:38.655 NotebookApp] Jupyter Notebook 6.2.0 is running at:
-    [I 11:02:38.655 NotebookApp] http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-    [I 11:02:38.656 NotebookApp]  or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-    [I 11:02:38.656 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-    [C 11:02:38.673 NotebookApp]
+* Linux or macOS shell: ``source=${PWD}``
+* Windows PowerShell: ``source=$($PWD.Path)``
 
-        To access the notebook, open this file in a browser:
-            file:///root/.local/share/jupyter/runtime/nbserver-57-open.html
-        Or copy and paste one of these URLs:
-            http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-         or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+For example, the complete Linux or macOS mount argument is
+``--mount "type=bind,source=${PWD},target=/home"``.
 
-Use the standard cut-and-paste operation to paste the URL beginning with ``http://127.0.0.1:8888``
-to your favorite web browser (Note if you need to use port mapping, which is
-not common, you would need to change the 8888 to the mapped value - 9999 in the
-example above.).   That URL should resolve and a Jupyter notebook home page
-should come up in the browser.
-This page assumes you know where to go from here.
-If you are not familiar with Jupyter Notebook, refer to the
-`documentation found here <https://jupyter-notebook.readthedocs.io/en/stable/ui_components.html>`__ .
+The bind mount is read-write.  Processes in the container can therefore
+create, change, and remove files in the host project directory.  This access
+is required for normal MsPASS operation; keep unrelated or sensitive files
+outside that directory.
 
-The root directory of the notebook contains three different directories, *db*, *logs*, and *work*,
-that will have been created in your working directory the first time you launch
-the mspass container in that directory.
-*db* contains MongoDB's database files.
-*logs* contains the logs generated by the database, the scheduler, and the worker.
-*work* is a local scratch space used by dask/spark.
-Other files in your project data should also show up in the file browser.
-(Note if you do not use the ``--mount`` option everything shown on the home
-page will disappear when the contaienr is exited.  The default is what it
-is because the majority of "dockerized" applications are run as background
-processes and that approach makes cleanup automatic. That mode is
-rarely useful on a desktop use with MsPASS.)
-Normal use at this point is to open an existing notebook to be run
-(double-click the notebook's file name) or create one with the `New` button
-on the notebook home page.
+Launch MsPASS
+-------------
 
-A final point worth noting is that it is often useful when working
-interactively with mspass on a desktop to open a "Terminal" in the
-container.  The `New` button has a `Terminal` item in addition to the
-`Python 3` button that is used to create a new notebook.  If you select
-`Terminal` you will get a black web browser window (usually a tab on any
-newer browser) with the cryptic ``#`` prompt of the default Bourne shell.
-Most users will want to immediately launch a ``bash`` (Note we do not currently
-have any other advanced shell commands in the mspass container.) shell
-instead of the more primitive sh. i.e. we recommend you type ``bash`` in the
-new terminal window as it gives you things like line editing not available with
-the old-school Bourne shell.   Be warned that with docker you are running as
-root in the container.   You can thus run sysadmin commands.  That can be
-useful, but it is a sharp knife that can cut you.   Be sure you know what
-you are doing before you alter any files with bash commands in this
-terminal.   A more standard use is to run common monitoring commands like
-``top`` to monitor memory and cpu usage by the container.
+Run the following command after replacing the source path with your project
+directory:
 
-If you are using dask on a desktop, we have found many algorithms perform
-badly because of a subtle issue with python and threads.   That is, by
-default dask uses a "thread pool" for workers with the number of threads
-equal to the number of cores defined for the docker container.
-Threading with python is subject to poor performance because of
-something called the Global Interpreter Lock (GIL) that causes multithread
-python functions to not run in parallel at all with dask.  The solution
-is to tell dask to run each worker task as a "process" not a thread.
-(Note pyspark does this by default.)  A way to do that with dask is to
-launch docker with the following variant of above:
+.. code-block:: bash
 
-.. code-block::
+   docker run --name mspass-local --publish 127.0.0.1:8888:8888 --mount "type=bind,source=/absolute/path/to/project,target=/home" mspass/mspass:latest
 
-    docker run -p 8888:8888 -e MSPASS_WORKER_ARG="--nworkers 4 --nthreads 1" --mount src=`pwd`,target=/home,type=bind mspass/mspass
+This is the canonical quick-start launch with a few operational safeguards:
 
-where the value after `--nworkers` should be the number of worker tasks
-you want to have the container run.   Normally that would be the number of
-cores defined for the container which be default is less than the number of
-cores for the machine running docker.
+* ``--name mspass-local`` gives the container a stable name for later
+  ``logs``, ``stop``, and ``start`` commands.
+* ``--publish 127.0.0.1:8888:8888`` maps JupyterLab to port ``8888`` only on
+  the local computer.  It does not intentionally expose JupyterLab to other
+  computers on the network.
+* ``--mount ...`` makes the project directory persistent at ``/home``.
+* Omitting ``--rm`` keeps the stopped container available for a later
+  ``docker start``.
 
-Finally, to exit close any notebook windows and the Jupyter notebook
-home page.   You will usually need to type a `ctrl-C` in the terminal
-window you used to launch mpass via docker.
+The command runs in the foreground and prints the service logs.  Initial
+startup can take a little time while MongoDB and Dask become ready.  Keep this
+terminal open while using MsPASS.
+
+If host port ``8888`` is already in use, select another host port while
+leaving the container port unchanged.  This example uses host port ``9999``:
+
+.. code-block:: text
+
+   --publish 127.0.0.1:9999:8888
+
+Connect to JupyterLab
+---------------------
+
+Near the end of the startup output, JupyterLab prints one or more URLs that
+contain a temporary access token.  Open the URL beginning with
+``http://127.0.0.1:8888/`` in a browser on the same computer.  Treat the token
+as a credential and do not post or share the full URL.
+
+If the launch terminal is no longer visible, display the output from another
+terminal:
+
+.. code-block:: bash
+
+   docker logs --tail 100 mspass-local
+
+When a different host port is used, preserve the path and token from the
+printed URL but replace its port with the host port.  For the earlier example,
+open ``http://127.0.0.1:9999/lab?token=...``.
+
+JupyterLab's file browser starts at ``/home``, so it shows the contents of the
+host project directory.  Open an existing notebook or use the launcher to
+create a notebook, console, or terminal.  The `JupyterLab interface guide
+<https://jupyterlab.readthedocs.io/en/stable/user/interface.html>`__ explains
+the workspace if it is unfamiliar.
+
+A JupyterLab terminal opens a Bash shell *inside the container*, not on the
+host.  In the standard image that shell runs as ``root`` and therefore has
+administrative access inside the container as well as read-write access to the
+bind-mounted project directory.  It is useful for inspecting logs or running
+monitoring commands such as ``top``, but use system-administration commands
+carefully: changes under ``/home`` also change the host files.
+
+Persistent data layout
+----------------------
+
+The startup script uses the mounted ``/home`` directory as the MsPASS working
+directory.  On the first run it creates service directories alongside the
+project files:
+
+``db/``
+   Persistent MongoDB files.  The database storage itself is under
+   ``db/data/``.
+
+``logs/``
+   MongoDB, Dask scheduler, and Dask worker logs.  These files are useful when
+   a service does not start or exits unexpectedly.
+
+``work/``
+   Dask or Spark worker scratch space.  Its contents are operational temporary
+   data, not the authoritative copy of project results.
+
+Notebooks, waveform files, and other project content remain elsewhere under
+the same host directory.  Because all of these paths are bind-mounted,
+stopping or removing the container does not delete them.  By contrast, a run
+without the bind mount stores its state only in the container and is not a
+safe persistent workflow.
+
+Stop MsPASS before copying ``db/`` for backup or moving the project directory;
+copying live MongoDB files can produce an inconsistent backup.  Do not
+manually delete files under ``db/data/`` to solve a startup problem without
+first preserving a copy and understanding the database consequences.
+
+Routine operations: inspect, stop, and restart
+----------------------------------------------
+
+Show the current and stopped container records:
+
+.. code-block:: bash
+
+   docker ps --all --filter "name=^/mspass-local$"
+
+Follow the live logs from another terminal with:
+
+.. code-block:: bash
+
+   docker logs --follow mspass-local
+
+``Ctrl-C`` stops only the log-following command in that terminal.  It does not
+stop a container that was started elsewhere.
+
+To stop the foreground launch, press ``Ctrl-C`` once in its terminal and allow
+the cleanup messages to finish.  The MsPASS entrypoint shuts down MongoDB and
+the worker processes before exiting.  From another terminal, request the same
+graceful stop with a longer timeout than Docker's usual default:
+
+.. code-block:: bash
+
+   docker stop --timeout 60 mspass-local
+
+Avoid killing the container or immediately pressing ``Ctrl-C`` again during
+normal shutdown, because doing so can interrupt database cleanup.
+
+Restart the same container with its original port, mount, image, and
+environment settings, and attach it to the terminal:
+
+.. code-block:: bash
+
+   docker start --attach mspass-local
+
+Close active notebooks before stopping the container.  Files saved in the
+mounted project directory remain available after a restart.
+
+.. _docker_image_update:
+
+Use a newly pulled image
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+An existing container remains tied to the image from which it was created.
+After saving work, stop and remove that container, pull the desired image, and
+run the launch command again:
+
+.. code-block:: bash
+
+   docker stop --timeout 60 mspass-local
+   docker rm mspass-local
+   docker pull mspass/mspass:latest
+
+Removing ``mspass-local`` does not remove the bind-mounted project directory.
+Recreate it with the same ``docker run`` command under :ref:`Launch MsPASS
+<run_mspass_with_docker>`, changing the image tag or options if needed.
+
+Optional Dask worker tuning
+---------------------------
+
+Python-heavy functions can run more effectively as multiple single-threaded
+Dask worker processes than as one multithreaded worker because of Python's
+Global Interpreter Lock.  To request four worker processes with one thread
+each, add this option before the image name in the ``docker run`` command:
+
+.. code-block:: text
+
+   --env "MSPASS_WORKER_ARG=--nworkers 4 --nthreads 1"
+
+Choose a worker count that fits the CPUs and memory assigned to Docker, and
+leave capacity for MongoDB, JupyterLab, the operating system, and other
+applications.  More workers are not always faster; benchmark a representative
+workflow and reduce the count if the system starts swapping or becomes
+unresponsive.
+
+The entrypoint also accepts ``MSPASS_DASK_WORKER_MEMORY_LIMIT``.  Its default
+value of ``0`` disables Dask's per-worker memory limit.  Advanced users can set
+an explicit value such as ``2GB`` with another ``--env`` option, but the limit
+must be practical for every worker process:
+
+.. code-block:: text
+
+   --env "MSPASS_DASK_WORKER_MEMORY_LIMIT=2GB"
+
+Environment options are fixed when a container is created.  Remove and
+recreate ``mspass-local`` to change them; ``docker start`` reuses the original
+settings.
+
+Troubleshooting
+---------------
+
+Docker cannot connect to the server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Start Docker Desktop, or start the Docker Engine service on Linux, and rerun
+``docker version``.  On Linux, a permission error for the Docker socket is an
+account or installation configuration issue; follow the post-install guidance
+for the installed Docker distribution rather than running the MsPASS
+container with unrelated workarounds.
+
+The container name is already in use
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``docker run`` cannot create a second container named ``mspass-local``.  Use
+``docker ps --all`` to inspect the existing one.  Restart it with ``docker
+start --attach mspass-local``, or stop and remove it before creating a
+replacement.
+
+Port 8888 is unavailable
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Another application or container is using the host port.  Change only the
+host side of the publication, for example to
+``--publish 127.0.0.1:9999:8888``, and use port ``9999`` in the browser URL.
+
+The project is missing or the mount is denied
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Confirm that the source is an existing absolute path and that the full
+``--mount`` value is quoted.  Docker Desktop may ask permission to share a
+host directory or drive.  Also confirm that the host account can read and
+write the project directory.  On Linux, files created by the container can
+have container-user ownership; inspect ownership before changing permissions
+recursively.
+
+JupyterLab does not appear
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Run ``docker ps --all`` to see whether the container is still running, then
+read ``docker logs --tail 100 mspass-local``.  Look first for a bind-mount
+error, a port conflict, an out-of-memory termination, or a MongoDB error in
+``logs/mongo_log``.  If startup is simply still in progress, wait for the
+token-bearing JupyterLab URL rather than opening an unauthenticated URL.
+
+The machine becomes slow or the worker exits
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Check Docker's CPU and memory allocation and monitor the container with
+``docker stats mspass-local``.  Reduce ``--nworkers``, stop other
+memory-intensive applications, or increase Docker Desktop's resources when
+the host has capacity.  Review the Dask worker log in ``logs/`` for the
+specific failure.
+
+Next steps
+----------
+
+* Work through the `MsPASS tutorial notebooks
+  <https://github.com/mspass-team/mspass_tutorial>`__ from a project directory
+  mounted at ``/home``.
+* Use the :ref:`MsPASS Desktop guide <mspass_desktop>` if you prefer a
+  graphical launcher.
+* Use the :ref:`Docker Compose deployment guide
+  <deploy_mspass_with_docker_compose>` when you want independently managed
+  database, scheduler, worker, and frontend containers.
+* Read the :ref:`virtual-cluster overview <getting_started_overview>` before
+  moving beyond a single computer, and follow the :ref:`HPC deployment guide
+  <deploy_mspass_on_HPC>` for a batch-scheduled cluster.
+* Contributors who need a source build can follow the `MsPASS source-build
+  instructions
+  <https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__.

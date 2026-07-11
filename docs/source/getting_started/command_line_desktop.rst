@@ -1,366 +1,176 @@
 .. _command_line_docker_desktop_operation:
 
-Command Line Docker Desktop Operation
-=========================================
-Overview
-------------
-Most desktop users will likely want to use the
-:code:`mspass_desktop` application described
-in :ref:`this section of the MsPASS documentation<mspass_desktop>`.
-If you have problems with installing or operating that graphical
-interface application or if you just prefer to do things
-from the command line you need to reference this document.
+Advanced Docker CLI and Compose Overview
+========================================
 
-MsPASS can be run on Desktop computers via the
-`docker desktop application <https://docs.docker.com/get-docker/>`__
-using a unix shell.   There are two different ways to
-do that described in separate subsections below:
-(1) with a single, albeit complex command line incantation, or
-(2) a procedure using a the "compose" option of the docker
-application.
+This page helps desktop users choose a MsPASS container workflow and maps the
+most common Docker operations between the single-container and Docker Compose
+forms.  It is an orientation and operations reference, not a second launch
+tutorial.  Follow the linked guide for the complete setup, persistence, and
+troubleshooting instructions for the workflow you choose.
 
-Installing and Launching Docker Desktop
------------------------------------------
-
-Docker is required in normal use to run MsPASS on desktop systems.
-The alternative is a more complicated installation of the components
-built from source as described on
-`this wiki page <https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__.
-Docker is the piece of software you will use to run and manage
-any containers on your desktop system.
-
-Docker is well-supported on all current desktop operating systems and
-has simple install procedures described in detail in the
-product's documentation found `here <https://docs.docker.com/get-docker/>`__
-The software can currently be downloaded at no cost, but you must have
-administrative privileges to install the software.
-The remainder of this page assumes you have successfully installed
-docker.  For Windows or Apple user's it may be convenient to launch the
-"docker desktop" as an alternative to command line tools.
-On those platforms the docker daemon is launched by the usual method
-and runs under a graphical interface displayed on your desktop.
-For linux, once installed docker runs as a daemon process automatically launched
-when the system boots.   On linux systems only the command line interface
-is available to manage containers.
-
-Download MsPASS Container
+Choose a desktop workflow
 -------------------------
 
-The MsPASS container image is built and hosted on `Docker Hub <https://hub.docker.com/r/mspass/mspass>`__.
-It is also available in the `GitHub Container Registry <https://github.com/mspass-team/mspass/pkgs/container/mspass>`__.
-Once you have docker setup properly, use the following command in a terminal
-to download the MsPASS image from Docker Hub to your local machine:
+.. list-table::
+   :header-rows: 1
+   :widths: 20 35 45
 
-.. code-block::
+   * - Workflow
+     - Choose it when
+     - Continue with
+   * - Single container
+     - You want the shortest command-line path for learning, notebooks, or
+       interactive work on one computer.  MongoDB, JupyterLab, the Dask
+       scheduler, and a Dask worker run in one container.
+     - :ref:`Run MsPASS with Docker <run_mspass_with_docker>` is the canonical
+       launch and troubleshooting guide and is the recommended CLI starting
+       point for most desktop users.
+   * - MsPASS Desktop
+     - You prefer a graphical launcher and service-status display instead of
+       managing containers in a terminal.
+     - :ref:`Running MsPASS on a Desktop Computer <mspass_desktop>` covers the
+       launcher installation and graphical workflow.
+   * - Docker Compose
+     - You need the database, scheduler, worker, and frontend in separately
+       managed containers, or you want service-level logs and worker scaling
+       on one Docker host.
+     - :ref:`Deploy MsPASS with Docker Compose
+       <deploy_mspass_with_docker_compose>` is the canonical multi-container
+       guide and documents the shipped ``compose.yaml`` file.
 
-    docker pull mspass/mspass
+Docker Compose separates services, but it does not by itself create a
+multi-host cluster.  For work across compute nodes, start with the
+:ref:`virtual-cluster concepts <getting_started_overview>` and then use the
+:ref:`HPC deployment guide <deploy_mspass_on_HPC>`.
 
-Be patient the first time you issue this command for your systems
-as this can take a few minutes depending on your internet speed.
-Note you can run this command from anywhere and the files are stored in
-a system directory (folder) whose location depends upon the host
-operating system.   Be aware that the MsPASS container will consume of the order of
-500 Mb of disk space on your system disk so you should be sure you are not
-pushing the limits of your system disk.
-When you pull the container, docker loads data only in a
-system dependent data space so you will not see anything happen
-in the directory where you run this command.  The recommended way to
-manage disk usage is through docker desktop or docker command line
-tools.   See docker's documentation for information now how to do that.
+Shared prerequisites
+--------------------
 
-It can be confusing to understand where data is stored in a containerized environment
-because file paths are always mapped from local file path names to
-container file names.  They are usually different.
-In the discussion below files names we reference that reside inside a container will be set in italics.
-File names on the physical system will be referred to with a normal font text.
+All three desktop workflows require a running Docker service.  Install Docker
+Desktop or Docker Engine by following the `official Docker installation guide
+<https://docs.docker.com/get-started/get-docker/>`__, then confirm that the
+client can reach the server:
 
-Option 1:  launching with docker run command
------------------------------------------------
+.. code-block:: bash
 
-To run MsPASS from the command line cd to a writable directory at the
-top of a directory tree where you the data for your project are located.
-Most MsPASS processing is then initiated with a variant of the
-following on the command line:
+   docker version
 
-.. code-block::
+The output should include both ``Client`` and ``Server`` sections.  Compose
+users must also have the Compose v2 plugin:
 
-    docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
+.. code-block:: bash
 
-The ``-p 8888:8888`` argument maps port ``8888`` on your system to the container's ``8888`` port.
-That pair of arguments are needed to allow your local web browser to
-connect to the Juypter notebook server running in the container.
-``8888`` is the default port for the Jupyter Notebook frontend.
-If there are collisions with ``8888`` port on your system (uncommon),
-change the first number
-to "map" the local system port number to ``8888`` in the container.
-For example,  if you use ``-p 9999:8888`` the URL you use to connect to the
-Jupyter notebook would need to be altered to use ``9999`` as the port number
+   docker compose version
 
-The lengthy incantation in the argument following the  ``--mount``
-argument is used to "map" a local file system path to a
-defined mount point in the container.
-In this example the "current directory" for the launching shell
-is defined with the shell incantation `pwd`.  The command
-will be map the current directory to */home* in the container.
-*/home* is a standard mount point
-directory on the unix system the container runs.
-That mapping is necessary
-to save your results to your local system.   Without the
-``--mount`` incantation any results
-you produce in a run will disappear when the container exits.
+Before launching MsPASS, choose a dedicated writable project directory and
+make enough disk space, memory, and CPU capacity available for the database,
+JupyterLab, and Dask.  Docker Desktop users may need to adjust those resources
+in Docker Desktop settings.
 
-You can also substitute the full path to a local directory
-in place of `pwd`.   In that case, you would not need to cd to
-the desired directory first.  You must, however, have write protection
-for that directory.
+Persistence and access boundaries
+----------------------------------
 
-When the container boots it splashes a bunch of text to the terminal from
-which it was launched announcing successful launching of
-required MsPASS components.
-The last part of the output will look something
-like this
+The documented single-container and Compose workflows bind-mount the host
+project directory at ``/home`` in the container.  The current MsPASS startup
+script uses that location as its Docker working directory and creates these
+service directories as needed:
 
-.. code-block::
+``db/``
+   MongoDB database files.
 
-    [I 11:02:38.655 NotebookApp] Serving notebooks from local directory: /home
-    [I 11:02:38.655 NotebookApp] Jupyter Notebook 6.2.0 is running at:
-    [I 11:02:38.655 NotebookApp] http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-    [I 11:02:38.656 NotebookApp]  or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-    [I 11:02:38.656 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-    [C 11:02:38.673 NotebookApp]
+``logs/``
+   MongoDB, scheduler, and worker logs.
 
-        To access the notebook, open this file in a browser:
-            file:///root/.local/share/jupyter/runtime/nbserver-57-open.html
-        Or copy and paste one of these URLs:
-            http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-         or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+``work/``
+   Worker scratch files, not the authoritative copy of project results.
 
-Use the standard cut-and-paste operation to paste the URL beginning with ``http://127.0.0.1:8888``
-to your favorite web browser (Note if you need to use port mapping, which is
-not common, you would need to change the 8888 to the mapped value - 9999 in the
-example above.).   That URL should resolve and a Jupyter notebook home page
-should come up in the browser.
-This page assumes you know where to go from here.
-If you are not familiar with Jupyter Notebook, refer to the
-`documentation found here <https://jupyter-notebook.readthedocs.io/en/stable/ui_components.html>`__ .
+Files in the bind-mounted directory remain on the host when a container is
+stopped or removed.  Files written elsewhere in a container are not a
+persistence strategy and may disappear when that container is recreated.
+Stop MsPASS before copying ``db/`` for backup so that MongoDB is not being
+modified during the copy.
 
-The root directory of the notebook contains three different directories,
-*db*, *logs*, and *work*,
-that will have been created in your working directory the first time you launch
-the mspass container in that directory.
-*db* contains MongoDB's database files.
-*logs* contains the logs generated by the database, the scheduler, and the worker.
-*work* is a local scratch space used by dask/spark.
-Other files in your project data should also show up in the file browser.
-(Note if you do not use the ``--mount`` option everything shown on the home
-page will disappear when the contaienr is exited.  The default is what it
-is because the majority of "dockerized" applications are run as background
-processes and that approach makes cleanup automatic. That mode is
-rarely useful on a desktop use with MsPASS.)
-Normal use at this point is to open an existing notebook to be run
-(double-click the notebook's file name) or create one with the `New` button
-on the notebook home page.
+A bind mount is also a read-write access grant: processes and interactive
+shells in the container can change or delete host files under the project
+directory.  Mount only the project data that MsPASS needs, keep unrelated or
+sensitive files outside that directory, and use normal host backups.
 
-A final point worth noting is that it is often useful when working
-interactively with mspass on a desktop to open a "Terminal" in the
-container.  The `New` button has a `Terminal` item in addition to the
-`Python 3` button that is used to create a new notebook.  If you select
-`Terminal` you will get a black web browser window (usually a tab on any
-newer browser) with the cryptic ``#`` prompt of the default Bourne shell.
-Most users will want to immediately launch a ``bash`` (Note we do not currently
-have any other advanced shell commands in the mspass container.) shell
-instead of the more primitive sh. i.e. we recommend you type ``bash`` in the
-new terminal window as it gives you things like line editing not available with
-the old-school Bourne shell.   Be warned that with docker you are running as
-root in the container.   You can thus run sysadmin commands.  That can be
-useful, but it is a sharp knife that can cut you.   Be sure you know what
-you are doing before you alter any files with bash commands in this
-terminal.   A more standard use is to run common monitoring commands like
-``top`` to monitor memory and cpu usage by the container.
+Network and credential safety
+-----------------------------
 
-If you are using dask on a desktop, we have found many algorithms perform
-badly because of a subtle issue with python and threads.   That is, by
-default dask uses a "thread pool" for workers with the number of threads
-equal to the number of cores defined for the docker container.
-Threading with python is subject to poor performance because of
-something called the Global Interpreter Lock (GIL) that causes multithread
-python functions to not run in parallel at all with dask.  The solution
-is to tell dask to run each worker task as a "process" not a thread.
-(Note pyspark does this by default.)  A way to do that with dask is to
-launch docker with the following variant of above:
+Prefer loopback-only port publications such as ``127.0.0.1:8888:8888`` for a
+desktop workflow.  The single-container guide uses that form.  The shipped
+``data/yaml/compose.yaml`` instead publishes JupyterLab, MongoDB, and Dask
+ports on all host interfaces, uses the known Jupyter password ``mspass``, and
+does not configure MongoDB authentication.  Treat that file as a local or
+trusted-network example.  The :ref:`Compose deployment guide
+<deploy_mspass_with_docker_compose>` explains the loopback bindings and
+password changes to make before use on an untrusted network.
 
-.. code-block::
+Treat a Jupyter token or password as a credential.  Do not post a token-bearing
+URL in a shared log or expose the service ports through a firewall without an
+appropriate authentication and network-security plan.
 
-    docker run -p 8888:8888 -e MSPASS_WORKER_ARG="--nworkers 4 --nthreads 1" --mount src=`pwd`,target=/home,type=bind mspass/mspass
+Common command translation
+--------------------------
 
-where the value after `--nworkers` should be the number of worker tasks
-you want to have the container run.   Normally that would be the number of
-cores defined for the container which be default is less than the number of
-cores for the machine running docker.
+The commands below assume that the single-container guide created a running
+container named ``mspass-local`` or that the current directory contains the
+``compose.yaml`` used to start the Compose project.  The detailed guides own
+the launch, restart, image-update, and configuration procedures.
 
-Finally, to exit close any notebook windows and the Jupyter notebook
-home page.   You will usually need to type a `ctrl-C` twice in the terminal
-window you used to launch mpass via docker to force the container to exit.
+.. list-table::
+   :header-rows: 1
+   :widths: 16 42 42
 
-Option 2:  The docker compose command
----------------------------------------
-Using the standard configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * - Operation
+     - Single container
+     - Docker Compose
+   * - Show status, including stopped containers
+     - ``docker ps --all --filter "name=^/mspass-local$"``
+     - ``docker compose ps --all``
+   * - Read recent frontend logs
+     - ``docker logs --tail 100 mspass-local``
+     - ``docker compose logs --tail 100 mspass-frontend``
+   * - Open a diagnostic shell
+     - ``docker exec --interactive --tty mspass-local bash``
+     - ``docker compose exec mspass-frontend bash``
+   * - Run ``/home/myjob.py`` with the service connection settings
+     - In a JupyterLab terminal, run ``python /home/myjob.py``.
+     - ``docker compose exec mspass-frontend python /home/myjob.py``
+   * - Request a graceful stop
+     - ``docker stop --timeout 60 mspass-local``
+     - ``docker compose stop --timeout 60``
 
-The :code:`docker run` command is good for a quick start or for testing, but
-the complex incantation makes it less desirable for repeated use.
-For those who want to run MsPASS repeatedly and not use the :code:`mspass-desktop`
-GUI, the :code:`docker compose` command described in this section may
-be of interest.
+The Compose script command intentionally uses ``mspass-frontend``.  In the
+shipped configuration, that service receives both ``MSPASS_DB_ADDRESS`` and
+``MSPASS_SCHEDULER_ADDRESS``; ``mspass-scheduler`` does not receive the
+database address.
 
-To use :code:`docker compose` you will need a configuration file
-in the "yaml" (Yet Another Markup Language) format.   The following
-example should work for most desktop/laptop systems.
+``exec`` requires a running container.  The current standard image starts
+``exec`` commands as ``root`` inside the container.  That is not the same as
+host ``root``, but the process can still change or delete host files through
+the read-write project bind mount.  Use an interactive shell carefully.
+Changes made outside ``/home`` from such a shell are container-local and may
+be lost on recreation.  In Compose, ``stop`` preserves the service containers
+so that ``docker compose start`` can restart them; ``docker compose down``
+removes the service containers and their network but leaves the bind-mounted
+project files on the host.
 
-.. literalinclude:: ../../../data/yaml/compose.yaml
-   :language: yaml
-   :linenos:
-   :caption: Standard compose.yaml file to run dask as four services on a destkop.
+Where to go next
+----------------
 
-To get started with :code:`docker compose` the easiest solution is to use the
-cut-and-paste in the box above and save the content to your project
-directory to a file you could save as "compose.yaml".   In a terminal
-cd to the project directory and issue this command:
-
-.. code-block::
-
-    docker compose up -d
-
-You can expect an output similar to the following:
-
-.. code-block::
-
-  [+] Running 5/5
-  ✔ Network downloads_default               Created                         0.0s
-  ✔ Container downloads-mspass-scheduler-1  Started                         0.3s
-  ✔ Container downloads-mspass-db-1         Started                         0.3s
-  ✔ Container downloads-mspass-frontend-1   Started                         0.4s
-  ✔ Container downloads-mspass-worker-1     Started                         0.4s
-
-where the "downloads" prefix on the tags above will be the name of your run directory.
-The example above was run from the "Downloads"directory.
-
-It is usually advisable to verify all the containers are still running with
-this command:
-
-.. code-block::
-
-     docker compose ps
-
-which should yield an output similar to the following:
-
-.. code-block::
-
-  NAME                           IMAGE           COMMAND                  SERVICE            CREATED              STATUS                    PORTS
-  downloads-mspass-db-1          mspass/mspass   "/usr/sbin/tini -s -…"   mspass-db          About a minute ago   Up 38 seconds (healthy)   0.0.0.0:27017->27017/tcp
-  downloads-mspass-frontend-1    mspass/mspass   "/usr/sbin/tini -s -…"   mspass-frontend    About a minute ago   Up 38 seconds             0.0.0.0:8888->8888/tcp, 27017/tcp
-  downloads-mspass-scheduler-1   mspass/mspass   "/usr/sbin/tini -s -…"   mspass-scheduler   About a minute ago   Up 38 seconds (healthy)   0.0.0.0:8786-8787->8786-8787/tcp, 27017/tcp
-  downloads-mspass-worker-1      mspass/mspass   "/usr/sbin/tini -s -…"   mspass-worker      About a minute ago   Up 38 seconds             27017/tcp
-
-To get the url information needed to connect to the jupyter server
-issue the following command:
-
-.. code-block::
-
-    docker compose logs mspass-frontend | grep http
-
-The output should contain one of the url's you can use to connect to jupyter.
-
-If you want to just run a python script, you can submit it to be run
-from the command line.  e.g. assuming the containers are all running
-and the python script to be run is "myjob.py", that script can be
-run as follows:
-
-.. code-block::
-
-    docker compose exec mspass-scheduler python myjob.py
-
-When finished, you should shut the system down cleanly with the following
-command issued from the same project directory:
-
-.. code-block::
-
-    docker compose down
-
-Configuration File Content
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-An important benefit of :code:`docker compose` is that it emphasizes
-that MsPASS can be abstracted as four distince "services".
-The yaml file explicitly defines that with the *services* key at the top
-of the file.   The individual service name tags are defined by
-the indentation structure of the yaml.  They are the four names shown from
-output examples above:  *mspass-db, mspass-scheduler, mspass-worker,* and
-*mspass-frontend*.   You should realize that if running with
-MsPASS with :code:`docker compose` you are running four different instance
-of the MsPASS container with each instance running only one service.
-That is in contrast to the :code:`docker run` approach where only
-a single instance of the container is running and that instance is
-running all four of these "services".  In a desktop environment the two
-approaches are functionally similar.   The :code:`docker compose` approach
-has a small memory penalty but has the main advantage of being
-more configurable via the yaml configuration file.
-
-Configuration parameters you may need to change follow.  If a parameter
-is not listed the best advice is to not change it unless you have
-a good reason to do so.
-
-- *volumes* appears in all four services.  It defines what directories
-  are to be mounted where on each container.   Functionally the line
-  "${PWD}/:/home" in the default yaml file serves the same function as the
-  following in the :code:`docker run` incantation above:
-  "--mount src=`pwd`,target=/home,type=bind".   i.e. both tell docker to
-  mount the current directory on "/home" in the container.   The most
-  likely situation where this parameter would need to change is if you
-  have waveform data on a second file system distinct from where you
-  want to store the database.   That would be common, for example, on a
-  desktop with a SSD disk used to store system files and the MongoDB
-  database, but with a secondary, larger, slower magnetic disk used to
-  store the more voluminous waveform data.   The current MsPASS container
-  has only one alternative mount point to "/home"; the other stock ubuntu
-  generic mount point "/mnt".   The syntax for that is to add a yaml
-  list following the *volumes* key.  For example, if we wanted to add
-  a mount for a local file system called /data to the container /mnt
-  directory that section of the yaml file would look like this:
-
-.. code-block::
-
-    volumes:
-      - ${PWD}/:/home
-      - /data:/mnt
-
-- *image* is the name tag for the docker container being run.   There are
-  multiple tags for different versions and a "dev" version found
-  `here <https://github.com/mspass-team/mspass/pkgs/container/mspass>`__ .
-  If you need to run a different instance of the container you will
-  need to change the value associated with *image* in the file.
-- The *mspass-worker* service has an attibute with the key
-  *MSPASS_WORKER_ARG*.  For most uses we would advise setting the
-  valued of "--nworkers" to the number of cores on the desktop system.
-  Reduce this value if you need to do other work on the system you
-  are using while mspass is running.
-- Each service except *mspass-worker* have a *port* parameter.   You
-  should only change one of those attribute if you encounter a communication
-  problem created by a firewall that requires port mapping.  That is unlikely
-  to ever be an issue with the *mspass-scheduler* or *mspass-db* as in
-  this mode communications are always between processes running on the
-  same system.  The most likely, but still rare, issue could be the
-  ports for *mspass-frontend*.  The jupyter server in the container
-  runs on port 8888.  If you are connecting to a machine remotely to run
-  mspass with :code:`docker compose` you may need to do port mapping
-  if 8888 is blocked by a firewall.
-
-Advanced Options
-~~~~~~~~~~~~~~~~~~~
-
-The :code:`docker compose` approach provides a rich collection of options
-beyond those illustrated in our default configuration file shown above.
-More examples can be found in the MsPASS GitHub repository in the
-*data/yaml* directory.  The most important example there is
-*docker-compose_spark.yaml* which shows how to launch a pyspark cluster.
-The default shown above will run the dask scheduler.
+* Use the :ref:`single-container Docker guide <run_mspass_with_docker>` for
+  image selection, cross-platform bind-mount syntax, Dask worker tuning, and
+  detailed troubleshooting.
+* Use the :ref:`Docker Compose deployment guide
+  <deploy_mspass_with_docker_compose>` for configuration validation, service
+  logs, secure port changes, scaling, and lifecycle management.
+* Read :ref:`Advanced Setup Considerations <advanced_setup_considerations>`
+  when you need to manage source or Python-environment installations, or the
+  :ref:`Conda installation guide <deploy_mspass_with_conda>` when containers
+  are not the right fit.
+* Move to the :ref:`virtual-cluster concepts <getting_started_overview>` and
+  :ref:`HPC deployment guide <deploy_mspass_on_HPC>` before adapting a
+  desktop workflow to a batch-scheduled or multi-node system.

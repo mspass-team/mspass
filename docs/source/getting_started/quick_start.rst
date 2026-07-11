@@ -1,82 +1,149 @@
 .. _quick_start:
 
-:orphan:
+MsPASS Desktop Quick Start
+==========================
 
-Getting Started in a Nutshell
-===============================
+This page gets MsPASS running on one desktop or laptop with Docker and
+JupyterLab.  It is intended for a first local run, not for a multi-node
+cluster deployment.
 
-Overview
+Prerequisites
 -------------
-This section is a concise summary of steps required to run a MsPASS.
-It has limited explanations for what is done at each step.   The main use
-is as a quick reminder for experienced users and as the starting point
-for the impatient.  This summary assumes you are running on a desktop
-using docker.   It is not appropriate if you are running on a cluster
-with multiple nodes.  If that is your situation, you should refer to
-the appropriate, longer sections of the `Getting Started` section.
 
-1. Install docker
+You need:
+
+* Docker Desktop on macOS or Windows, or Docker Engine on Linux.  Install it
+  with the `official Docker instructions
+  <https://docs.docker.com/get-started/get-docker/>`__.
+* A terminal and a writable project directory.
+* Port ``8888`` available on the host.
+
+Start Docker Desktop on macOS or Windows before continuing.  On Linux, make
+sure the Docker daemon is running and that your account can run ``docker``.
+Confirm the installation with:
+
+.. code-block:: console
+
+   docker version
+
+Create a project directory
+--------------------------
+
+MsPASS writes notebooks, data, database files, logs, and worker scratch files
+under its ``/home`` directory.  Bind-mount a host project directory there so
+those files remain after the container stops.
+
+If you already have a project directory, such as the top level of a cloned
+MsPASS tutorial repository, use that directory and skip the creation commands.
+
+On Linux or macOS, use a POSIX shell:
+
+.. code-block:: bash
+
+   mkdir -p "$HOME/mspass-project"
+   cd "$HOME/mspass-project"
+
+On Windows, use PowerShell:
+
+.. code-block:: powershell
+
+   New-Item -ItemType Directory -Force "$HOME\mspass-project" | Out-Null
+   Set-Location "$HOME\mspass-project"
+
+The run commands below use the shell's absolute current-directory value and
+quote the complete mount specification.  This safely handles paths containing
+spaces and avoids legacy backtick command substitution around ``pwd``.
+Docker Desktop may ask you to approve access to the selected host directory.
+
+Pull the MsPASS image
 ---------------------
-Fetch and install docker following instructions on the
-`docker web site <https://docs.docker.com/get-docker/>`__.
 
-2. Launch docker desktop (MacoOS and Windows)
----------------------------------------------
-MacOS and Windows have a GUI application (Icon tagged "Docker") that you will
-need to launch unless it is already running.
+Download the current image from Docker Hub.  Running this command again later
+refreshes the local image when a newer one is available.
 
-3. Get or Refresh the container (optional)
--------------------------------------------
-If you have not run MsPASS before you will need to get the docker container
-from the standard repository.  Alternatively if you want to get the most
-recent updates you may also need to do this step.
+.. code-block:: console
 
-.. code-block::
+   docker pull mspass/mspass:latest
 
-    docker pull mspass/mspass
+Run MsPASS
+----------
 
-4. Launch the container
--------------------------
-Launch whatever version of a "terminal" is used on your platform.
-Decide what directory (folder) you want to use as a working directory.
-If you are running one of our tutorials use the top-level of the tutorials
-repository. Otherwise, use whatever is appropriate for your setup.
-Make whatever you choose your current directory and run this incantation:
+From the project directory, run the command for your terminal.
 
-.. code-block::
+Linux or macOS:
 
-    docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
+.. code-block:: bash
 
-This should generate a stream of output ending in something like the following:
+   docker run --name mspass-quickstart --rm --publish 127.0.0.1:8888:8888 --mount "type=bind,source=${PWD},target=/home" mspass/mspass:latest
 
-.. code-block::
+Windows PowerShell:
 
-    [I 11:02:38.655 NotebookApp] Serving notebooks from local directory: /home
-    [I 11:02:38.655 NotebookApp] Jupyter Notebook 6.2.0 is running at:
-    [I 11:02:38.655 NotebookApp] http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-    [I 11:02:38.656 NotebookApp]  or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-    [I 11:02:38.656 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-    [C 11:02:38.673 NotebookApp]
+.. code-block:: powershell
 
-        To access the notebook, open this file in a browser:
-            file:///root/.local/share/jupyter/runtime/nbserver-57-open.html
-        Or copy and paste one of these URLs:
-            http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-         or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+   docker run --name mspass-quickstart --rm --publish 127.0.0.1:8888:8888 --mount "type=bind,source=$($PWD.Path),target=/home" mspass/mspass:latest
 
-.. warning::
-  The start line using the unix shell trick with `pwd` can fail in some situations if
-  the path to which it resolves has a space bar character (" ") such as "My Documents".
-  If that happens choose a different work directory or replace `pwd` in the
-  incantation above with the space escaped (e.g. "My\\ Documents").
+Leave this terminal open.  The container starts MongoDB, a local Dask
+scheduler and worker, and JupyterLab.  First startup can take a little while.
 
-5. Connect to the container with a web browser
---------------------------------------------------
-If you don't have one running already, launch your favorite web browser.  Use
-cut-and-paste or type one of the http addresses in the output into the url
-box of the browser. That should launch the jupyter lab control panel.  If you
-are not familiar with jupyter lab or jupyter notebook you will need to refer
-to tutorials for that application.  The jupyter developer's introduction
-can be found
-`here <http://justinbois.github.io/bootcamp/2020_fsri/lessons/l01_welcome.html>`__.
-There are many other tutorials easily found with a web search.
+``--publish 127.0.0.1:8888:8888`` binds JupyterLab only to the host's
+loopback interface, keeping it local to this computer.  If you intentionally
+need a different host port or network binding, consult :ref:`Run MsPASS with
+Docker <run_mspass_with_docker>` before changing this option.
+
+Open JupyterLab
+---------------
+
+Watch the terminal output for the Jupyter URL containing a generated token.
+It will resemble:
+
+.. code-block:: text
+
+   http://127.0.0.1:8888/lab?token=<generated-token>
+
+Copy the complete ``127.0.0.1:8888`` URL, including the ``token`` query, into
+a browser on the same computer.  The actual token is unique to this run; do
+not copy the placeholder above.  If Jupyter also prints a URL containing a
+container hostname, use the ``127.0.0.1`` URL for this local setup.
+
+Keep your work
+--------------
+
+In Jupyter, ``/home`` is the project directory you created on the host.
+Notebooks and results saved there are immediately visible in
+``mspass-project`` outside the container.  MsPASS also creates ``db``,
+``logs``, and ``work`` subdirectories there.  Do not delete or move those
+directories while MsPASS is running.
+
+The ``--rm`` option removes the stopped container, but it does not remove
+files in the bind-mounted project directory.  Reusing the same directory on
+the next run restores access to your notebooks and local database files.
+
+Stop MsPASS
+-----------
+
+Save your notebooks, return to the terminal running Docker, and press
+``Ctrl-C``.  Allow the shutdown messages to finish before closing the
+terminal.  If that terminal is no longer available, stop the named container
+from another terminal and allow time for service cleanup:
+
+.. code-block:: console
+
+   docker stop --timeout 60 mspass-quickstart
+
+Where to go next
+----------------
+
+* Continue with :ref:`Run MsPASS with Docker <run_mspass_with_docker>` for a
+  detailed explanation of the single-container workflow, port and network
+  binding choices, worker configuration, and troubleshooting.
+* See :ref:`Command Line Docker Desktop Operation
+  <command_line_docker_desktop_operation>` for the broader command-line and
+  Docker Compose overview, or :ref:`Deploy MsPASS with Docker Compose
+  <deploy_mspass_with_docker_compose>` for the multi-container configuration.
+* Work through the `MsPASS tutorial notebooks
+  <https://github.com/mspass-team/mspass_tutorial>`__.
+* Use the :ref:`MsPASS User Manual <user_manual_introduction>` for the data
+  model, database, processing, and error-handling concepts.
+* For multi-node work, start with :ref:`MsPASS Virtual Cluster Concepts
+  <getting_started_overview>` and the :ref:`HPC deployment guide
+  <deploy_mspass_on_HPC>`.
