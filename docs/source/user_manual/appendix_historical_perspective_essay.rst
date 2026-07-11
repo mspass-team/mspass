@@ -2,17 +2,24 @@
 
 :orphan:
 
-Historical Perspective on Seismology Formats and Vestigal IO Concepts
-========================================================================
+Historical Perspective on Seismology Formats and Vestigial I/O Concepts
+=========================================================================
 
-The idea of this section is for it to be an appendix with my name
-attached and a warning it is part essay and part educational material.
+.. note::
 
-May want to start with a autobiograph8cal sketch noting my 50 yr history in computing
-Key points are:
+   This unpublished page is an outline for a proposed appendix.  It is excluded
+   from the built documentation until the essay is complete.
 
-- linear files and impact on common Formats
-- miniseed first format to break the linear file model
-- format is not the data is a key idea of MsPASS abstractions
-- modern systems have fully abstracted io complexities; a common misunderstanding of many scientists
-- point to another planned new section on io that covers modern abstractions:  files on disk, files in a lustre type system, and cloud storage.
+The proposed section would be an attributed essay combined with educational
+material.  It may begin with an autobiographical sketch noting the author's
+50-year history in scientific computing.
+
+The planned topics are:
+
+- Linear files and their influence on common formats.
+- miniSEED as an early format that moved beyond a simple linear-file model.
+- "Format is not the data" as a key idea behind MsPASS abstractions.
+- The way modern systems abstract I/O complexity, which is commonly
+  misunderstood in scientific software.
+- A companion section on modern I/O abstractions: local files, parallel file
+  systems such as Lustre, and cloud object storage.

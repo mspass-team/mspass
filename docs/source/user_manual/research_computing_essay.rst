@@ -7,6 +7,12 @@ MsPASS as a Research Computing Framework
 An essay by *Gary L. Pavlis*
 --------------------------------
 
+.. note::
+
+   This historical essay is intentionally excluded from the published manual.
+   It is retained as background material while its time-sensitive software and
+   computing comparisons are reviewed for a future edition.
+
 Overview
 -------------
 MsPASS was designed as a framework to support research computing.
@@ -290,8 +296,9 @@ tuning your workflow to run on a large cluster with hundreds to thousands
 of cores at your disposal.
 
 If that situation describes what you are facing, the best advice I have
-for you is to first read some keys sections of this manual to be sure you
+for you is to first read some key sections of this manual to be sure you
 understand some fundamentals:
+
 - :ref:`parallel_processing` reviews key concepts in what modern clusters are
   and how they area abstracted in MsPASS.
 - :ref:`io` discusses key concepts of how input/output work on modern
@@ -312,7 +319,7 @@ understand some fundamentals:
 
 Once you know the fundamentals the best thing to do is use a subset of
 a massive data set to tune your workflow.   Use tools like
-`dask diagnostics<https://docs.dask.org/en/stable/diagnostics-distributed.html>`_
+`Dask diagnostics <https://docs.dask.org/en/stable/diagnostics-distributed.html>`__
 to evaluate how effectively your test data set utilize CPU resources
 within available memory constraints.
 A well balanced workflow will use close to 100% cpu on all workers most of the
