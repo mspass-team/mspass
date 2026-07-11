@@ -26,14 +26,20 @@ services:
       MSPASS_ROLE: scheduler
       MSPASS_SCHEDULER: spark
       SPARK_MASTER_PORT: 7077
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 10s
   
   mspass-worker:
     image: mspass/mspass
     volumes:
       - "${PWD}:/home"
-    command: dockerize -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
     depends_on:
-      - mspass-scheduler
+      mspass-scheduler:
+        condition: service_healthy
     environment:
       MSPASS_ROLE: worker
       MSPASS_SCHEDULER: spark
@@ -43,16 +49,17 @@ services:
     image: mspass/mspass
     volumes:
       - "${PWD}:/home"
-    command: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
     ports:
       - 8888:8888
     depends_on:
-      - mspass-dbmanager
-      - mspass-scheduler
+      mspass-db:
+        condition: service_healthy
+      mspass-scheduler:
+        condition: service_healthy
     environment:
       MSPASS_ROLE: frontend
       MSPASS_SCHEDULER: spark
       MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
-      MSPASS_DB_ADDRESS: mspass-dbmanager
+      MSPASS_DB_ADDRESS: mspass-db
       MSPASS_JUPYTER_PWD: mspass
       JUPYTER_PORT: 8888
