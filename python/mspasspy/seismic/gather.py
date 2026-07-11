@@ -152,33 +152,34 @@ def extractMemberMetadataFromOldEnsemble(ensemble_object):
 
 class BasicGather(ABC):
     """
-    Base class for new MsPASS ensemble class that utilizes array
-    implementations to store the data.  The implementtion may or may not
+    Base class for a MsPASS ensemble class that uses array
+    implementations to store the data.  The implementation may or may not
     provide for arrays that are too large to fit in memory.
-    That behavior should be controlled by parameters on constructin.
+    That behavior is controlled by constructor parameters.
 
-    The data object defined by this class and it's children needs to be
+    The data object defined by this class and its children is
     understood as appropriate only for ensemble data that satisfy several
     restrictions that the current MsPASS ensemble objects
-    (TimeSeriesEnsemble and SeismogramEnsemble) do not rqequire:
-        1.  All the data have the same sample rate.
-        2.  Each signal has the same number of samples.
-        3.  The data cannot have gaps.   Data with gaps neeed to be discarded
-            or patched (e.g. with a gap fill) before being loaded into
-            one of these contaienrs.
+    (TimeSeriesEnsemble and SeismogramEnsemble) do not require:
+
+    1. All data have the same sample rate.
+    2. Each signal has the same number of samples.
+    3. The data cannot have gaps.  Data with gaps need to be discarded or
+       patched (for example, with a gap fill) before being loaded into one of
+       these containers.
 
     Methods for this base class are largely getters and setters for
-    univeral parameters that match the above.  It must be understood that
+    universal parameters that match the above.  It must be understood that
     with this design the base class is an incomplete skeleton that
-    is fleshed out by subclasses.   This clsss has some virtual methods
+    is fleshed out by subclasses.  This class has some virtual methods
     (defined with the ABC @abstractmethod decorator) and a set of methods
-    that would never work if only the base class were contructed
-    (not allowed because of the virtual meethods).  In particular, the
-    way the base class handle metadata is potnetially confusing because
+    that would never work if only the base class were constructed
+    (not allowed because of the virtual methods).  In particular, the
+    way the base class handles metadata is potentially confusing because
     the base class constructor only defines stubs for the data used to
     hold member and ensemble metadata
 
-    A design issue for discussionis is whether not a gather should implement
+    A design issue is whether a gather should implement
     the ator and rota functionality of BasicTimeSeries.   The cost is
     tiny up front and retrofitting after that fact might cause a lot of
     headaches.
@@ -258,11 +259,11 @@ class BasicGather(ABC):
           be defined as a nptsXnumber_members FORTRAN order numpy array.
           Other obvious choices are "dask" or "zarr"  List of acceptable
           options to be determined
-         :type array_type:  string that must match keywords
+        :type array_type: string that must match a supported keyword
 
-        :param is_compact: if true, the member data are stored in row major
-        order, which means they are stored in adjacent memory locations.
-        otherwise, the data are stored in column major order.
+        :param is_compact: if true, the member data are stored in row-major
+          order, which means they are stored in adjacent memory locations.
+          Otherwise, the data are stored in column-major order.
         :type is_compact: boolean
 
         :param npartitions: The number of desired partitions for Dask or xarray.
@@ -1080,8 +1081,8 @@ class Gather(BasicGather):
         (like start:end in F90 or matlab).
 
         :param start:   the start index of the subset
-        :param end: specifies the index where the subset ends (but
-        excluding the value at this index, just like array's slicing)
+        :param end: specifies the index where the subset ends, excluding the
+          value at this index just like array slicing.
         """
         new_input_data = self.member_data[start:end]
         new_member_metadata = self.member_metadata[start:end]
@@ -1263,8 +1264,8 @@ class SeismogramGather(BasicGather):
         (like start:end in F90 or matlab).
 
         :param start:   the start index of the subset
-        :param end: specifies the index where the subset ends (but
-        excluding the value at this index, just like array's slicing)
+        :param end: specifies the index where the subset ends, excluding the
+          value at this index just like array slicing.
         """
         new_input_data = self.member_data[start:end]
         new_member_metadata = self.member_metadata[start:end]
@@ -1315,10 +1316,16 @@ class SeismogramGather(BasicGather):
 
 def read_basic_array_ensemble(db, ensemble_object, object_id):
     """
-    read the array from database and dump data to the ensemble object
-    object_id: the MongoDB object id of the ensemble to be read from the disk. The object is unique
-            and provides a one-to-one mapping to the ensemble's metadata and member data.
-    the schema for ensemble doc:
+    Read an array from the database into an ensemble object.
+
+    :param db: database containing the ``ensemble`` collection.
+    :param ensemble_object: object that receives the stored metadata and data.
+    :param object_id: MongoDB identifier of the ensemble document.  The
+      identifier provides a one-to-one mapping to the ensemble metadata and
+      member data.
+
+    The ensemble document schema is::
+
         _id : unique id
         metadata : a dict that stores the ensemble's metadata
         member_metadata : a list of metadata for each member
@@ -1345,10 +1352,16 @@ def read_basic_array_ensemble(db, ensemble_object, object_id):
 
 def write_basic_array_ensemble(db, ensemble_object, object_id):
     """
-    write the data of ensemble_object to the storage, and save the metadata
-    object_id: the MongoDB object id of the ensemble to be read from the disk. The object is unique
-            and provides a one-to-one mapping to the ensemble's metadata and member data.
-    the schema for ensemble doc:
+    Write an ensemble object's data and metadata to storage.
+
+    :param db: database containing the ``ensemble`` collection.
+    :param ensemble_object: object whose metadata and data are written.
+    :param object_id: MongoDB identifier of the ensemble document.  The
+      identifier provides a one-to-one mapping to the ensemble metadata and
+      member data.
+
+    The ensemble document schema is::
+
         _id : unique id
         metadata : a dict that stores the ensemble's metadata
         member_metadata : a list of metadata for each member
