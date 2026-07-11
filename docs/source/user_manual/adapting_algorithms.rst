@@ -7,14 +7,14 @@ Purpose
 -----------------------
 
 The purpose of this document is to describe how an existing algorithm written
-in C/C++ or python can be adapted to the MsPASS framework.  The ideas should
+in C/C++ or Python can be adapted to the MsPASS framework.  The ideas should
 also readily be adapted to Fortran algorithms as well, but the authors have
 no experience at this point in adapting Fortran code.  If this grows as we
 hope someone in the community with experience adapting Fortran to python
 may want to modify this document to describe how to do that.
 
 The audience of this document is assumed to be core MsPASS developers who are
-working directly with the MsPASS git repository.  The examples all show
+working directly with the MsPASS Git repository.  The examples all show
 how to add an algorithm to become a full component of MsPASS.   Eventually
 a parallel document will be needed to produce a private, custom module that
 can work as a custom extension of MsPASS.
@@ -40,23 +40,22 @@ framework.
   but is usually a mix of simple parameters and arbitrarily complex object.
   In most cases the arguments would be typical python key-default value pairs.
 
-* All data passed in and out of any such function must have support for
-  "pickle".   This is trivial for simple types like integers and floats, but
-  is not a given for an arbitrary data structure.  Support for pickle is required
-  if the algorithm is to be run under spark because in a multiprocessor
-  environment the scheduler has to automatically move data between
-  processing nodes.  Spark does this under the hood with pickle.
+* All data passed in and out of any such function must be serializable by the
+  selected distributed framework.  This is trivial for simple types like
+  integers and floats, but is not a given for an arbitrary data structure.
+  Both Dask and Spark may move functions, arguments, and results between
+  worker processes, using pickle-compatible serialization where appropriate.
 
 * The algorithm must not use any graphical displays or interactive user
   input of any kind.  MsPASS is designed for massive processing in a background
   mode.  Graphical displays and interactive inputs are not compatible with this
   model.
 
-* The algorithm must never throw an unhandled exception or abort for
-  any reason other than a fatal system error.  Unhandled exceptions on
-  one piece of data can abort an entire job, so bombproof implementations
-  are essential.   We describe some tricks below to assure this constraint is
-  satisfied.
+* Expected data errors must not escape and abort a distributed job.  MsPASS
+  algorithms normally log the error in the datum's ``elog``, mark unusable
+  data dead, and return it.  The standard decorators catch ``RuntimeError``,
+  non-fatal ``MsPASSError``, and other ordinary exceptions.  Fatal
+  ``MsPASSError`` and system-level interrupts still propagate by design.
 
 Optional but recommended
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -100,8 +99,9 @@ segment of data.
 For us the cleanest starting point for this goal was an existing C++
 function in the seispp library that Pavlis had used extensively for
 some time.   The prototype for this function can be found at the
-Antelope User's group contrib repository in the file
-`slice_and_dice.cpp <https://github.com/antelopeusersgroup/antelope_contrib/blob/master/lib/seismic/libseispp/slice_and_dice.cc>`__
+Antelope Users Group contrib repository in
+`slice_and_dice.cc
+<https://github.com/antelopeusersgroup/antelope_contrib/blob/master/lib/seismic/libseispp/slice_and_dice.cc>`__.
 
 We retained the original function interface:
 
@@ -110,94 +110,90 @@ We retained the original function interface:
   TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw);
   ThreeComponentSeismogram WindowData(const ThreeComponentSeismogram& parent, const TimeWindow& tw);
 
-with two changes.
+The current MsPASS interface makes two relevant changes.
 
-1.  What we call a Seismogram in MsPASSs had the excessively verbose name ThreeComponentSeismogram in the older SEISPP library.
+1.  What MsPASS calls a ``Seismogram`` had the longer name
+    ``ThreeComponentSeismogram`` in SEISPP.
 
-2.  To simplify the binding code in pybind11 (see below) we changed the name for the Seismogram version.
+2.  C++ overloads both variants under the name ``WindowData``.  The pybind11
+    layer exposes distinct internal Python names because Python does not
+    dispatch overloads by static argument type.
 
-The MsPASS C++ version of these two functions became the following (we include the doxygen
-comments for reference):
+The public-object overloads are currently declared as follows:
 
-.. code-block:: c
+.. code-block:: cpp
 
-  /*! \brief Extracts a requested time window of data from a parent TimeSeries object.
-  It is common to need to extract a smaller segment of data from a larger
-  time window of data.  This function accomplishes this in a nifty method that
-  takes advantage of the methods contained in the BasicTimeSeries object for
-  handling time.
-  \return new Seismgram object derived from  parent but windowed by input
-        time window range.
-  \exception MsPASSError object if the requested time window is not inside data range
-  \param parent is the larger TimeSeries object to be windowed
-  \param tw defines the data range to be extracted from parent.
-  */
-  TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw);
-  /*! \brief Extracts a requested time window of data from a parent Seismogram object.
-  It is common to need to extract a smaller segment of data from a larger
-  time window of data.  This function accomplishes this in a nifty method that
-  takes advantage of the methods contained in the BasicTimeSeries object for
-  handling time.
-  \return new Seismgram object derived from  parent but windowed by input
-        time window range.
-  \exception MsPASSError object if the requested time window is not inside data range
-  \param parent is the larger Seismogram object to be windowed
-  \param tw defines the data range to be extracted from parent.
-  */
-  Seismogram WindowData3C(const Seismogram& parent, const TimeWindow& tw);
+  mspass::seismic::TimeSeries
+  WindowData(const mspass::seismic::TimeSeries& parent,
+             const mspass::algorithms::TimeWindow& tw);
+
+  mspass::seismic::Seismogram
+  WindowData(const mspass::seismic::Seismogram& parent,
+             const mspass::algorithms::TimeWindow& tw);
+
+There are also overloads for ``CoreTimeSeries`` and ``CoreSeismogram``.  The
+public ``TimeSeries`` and ``Seismogram`` variants handle an invalid window by
+returning dead data with an ``elog`` entry; the Core variants can throw
+``MsPASSError``.
 
 A nontrivial detail we will not inflict on the reader is how we modified
 the original code to MsPASS libraries.  In addition to name changes
 there are some major differences in the API for TimeSeries and Seismogram
 objects from their ancestors (TimeSeries and ThreeComponentSeismogram).
-The current version of the implementations of these two algorithms can be
-found `here <https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc>`__.
+The current implementations are in
+`slice_and_dice.cc
+<https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc>`__.
 
 MsPASS uses the `pybind11 package <https://pybind11.readthedocs.io/en/stable/>`
-to bind C++ or C code for use by the python interpreter.  For the present
-all C/C++ code is bound to a single module we call mspasspy.ccore.
-The details of the build system used in MsPASS are best discussed in a
-separate document (Need a link here eventually).  This particular example
-required adding the above function prototype definitions to
-`this include file <https://github.com/mspass-team/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h>`__
-and the C++ function code `here <https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc>`__.
+to bind C++ or C code for use by the Python interpreter.  ``mspasspy.ccore``
+is a package containing several compiled extension modules; this example is
+bound in ``mspasspy.ccore.algorithms.basic``.  See
+:ref:`advanced_setup_considerations` for the source-build workflow.  A new
+C++ algorithm must also be added to the appropriate CMake source/extension
+target.  This example declares its prototypes in
+`algorithms.h
+<https://github.com/mspass-team/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h>`__
+and implements them in the ``slice_and_dice.cc`` file linked above.
 
 Creating the python bindings for these two functions required inserting the
-following blocks in the binding code for the algorithms module found
-`here <https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/basic_py.cc>`__:
+following blocks in
+`basic_py.cc
+<https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/basic_py.cc>`__:
 
-.. code-block:: c
+.. code-block:: cpp
 
-  m.def("_WindowData",&mspass::WindowData,"Reduce data to window inside original",
-    py::return_value_policy::copy,
-    py::arg("d"),
-    py::arg("twin") )
-  ;
-  m.def("_WindowData3C",&mspass::WindowData3C,"Reduce data to window inside original",
-    py::return_value_policy::copy,
-    py::arg("d"),
-    py::arg("twin") )
-  ;
+  m.def("_WindowData",
+        py::overload_cast<const TimeSeries&, const TimeWindow&>(&WindowData),
+        "Reduce data to window inside original",
+        py::return_value_policy::copy,
+        py::arg("d"),
+        py::arg("twin"));
+
+  m.def("_WindowData3C",
+        py::overload_cast<const Seismogram&, const TimeWindow&>(&WindowData),
+        "Reduce data to window inside original",
+        py::return_value_policy::copy,
+        py::arg("d"),
+        py::arg("twin"));
 
 We note a few details about this block of code:
 
-1. The :code:`m` symbol is defined earlier in this file as a tag for the module to which we aim to bind this function.
-   It is defined earlier in the file with this construct:
+1. The :code:`m` symbol is the pybind11 module object.  This file defines it
+   with:
 
-   .. code-block:: c
+   .. code-block:: cpp
 
-    PYBIND11_MODULE(ccore,m)
+      PYBIND11_MODULE(basic, m)
 
-   That is, this construct defines the symbol :code:`m` as an abstraction for the
-   python module ccore.
+   The module then sets its full Python name to
+   ``mspasspy.ccore.algorithms.basic``.
 
-2. The actual C++ function names are "WindowData" and "WindowData3C", but
-   we change the names here to "_WindowData" and "_WindowData3C" respectively.
-   We recommend that convention as it is conventional in python, although not really
-   rigidly enforced by the language, to assume a symbol with one or
-   leading underscores is "for internal use"
-   (see e.g. obspy documentation or
-   `this nice overview <https://www.datacamp.com/community/tutorials/role-underscore-python>`__).
+2. Both C++ overloads are named ``WindowData``.  ``py::overload_cast`` selects
+   the desired signature and the binding exposes ``_WindowData`` and
+   ``_WindowData3C``.  A leading underscore conventionally marks a Python
+   symbol as non-public; see the
+   `Python tutorial on private names
+   <https://docs.python.org/3/tutorial/classes.html#private-variables>`__.
    That usage is appropriate here as our next step will be to write a master python
    wrapper used as a front end to simplify the user api to this pair of
    functions that implement the same conceptual algorithm on two different types of
@@ -210,8 +206,72 @@ We note a few details about this block of code:
    wrapped the functions with a name containing a leading underscore.)
 
 
-Example 2:  Pure Python Function
------------------------------------
+Example 2: Python front end and decorators
+------------------------------------------
 
-Example 3:  More complicated mixed C++ and python example - scale function
----------------------------------------------------------------------------
+The public implementation is
+:func:`mspasspy.algorithms.window.WindowData`.  Its internal
+``WindowDataAtomic`` helper dispatches ``TimeSeries`` to ``_WindowData`` and
+``Seismogram`` to ``_WindowData3C``.  The public function adds ensemble
+handling, short-segment policies, error logging, and object-history support.
+It is decorated with
+:func:`~mspasspy.util.decorators.mspass_func_wrapper`.
+
+A new atomic function commonly starts with this pattern:
+
+.. code-block:: python
+
+   from mspasspy.util.decorators import mspass_func_wrapper
+
+   @mspass_func_wrapper
+   def my_algorithm(
+       data,
+       parameter,
+       *args,
+       object_history=False,
+       alg_name="my_algorithm",
+       alg_id=None,
+       dryrun=False,
+       handles_ensembles=False,
+       checks_arg0_type=False,
+       handles_dead_data=False,
+       **kwargs,
+   ):
+       return _bound_algorithm(data, parameter)
+
+With these settings, the decorator validates arg0, returns dead input without
+calling the function, and applies the atomic function to each ensemble member.
+Set ``handles_ensembles=True`` only when the function itself implements
+ensemble behavior.  Use ``inplace_return=True`` for a function that mutates
+arg0 and returns ``None``.  Object history is off by default; when callers set
+``object_history=True``, they must also supply ``alg_id``.  For a class method
+whose first data argument follows ``self``, use
+:func:`~mspasspy.util.decorators.mspass_method_wrapper`.  Functions consuming
+two MsPASS data objects require
+:func:`~mspasspy.util.decorators.mspass_func_wrapper_multi` or explicit error
+and history handling.
+
+Example 3: Mixed C++ and Python scale function
+----------------------------------------------
+
+:func:`mspasspy.algorithms.window.scale` is a more complicated current
+example.  It dispatches atomic and ensemble inputs to bindings in
+``mspasspy.ccore.algorithms.amplitudes``, validates method-specific arguments,
+updates ``calib`` metadata, and uses ``mspass_func_wrapper`` for common
+history, dry-run, and error behavior.  Study the
+`Python front end
+<https://github.com/mspass-team/mspass/blob/master/python/mspasspy/algorithms/window.py>`__
+together with the
+`amplitude bindings
+<https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/amplitudes_py.cc>`__;
+neither layer alone defines the complete public contract.
+
+Validation
+----------
+
+After changing a binding, rebuild or reinstall MsPASS in the active source
+environment, verify that the compiled symbol imports from its full
+``mspasspy.ccore`` submodule, and add focused C++ and Python tests.  For this
+example, ``python/tests/algorithms/test_window.py`` exercises the public
+wrapper, while the C++ implementation and binding source should be covered by
+the relevant native tests and an import check.

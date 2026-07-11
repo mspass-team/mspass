@@ -1,373 +1,368 @@
 .. _data_editing:
 
 Data Editing
-=======================
-Concepts
-------------
-MsPASS uses an idea that was been a part of seismic reflection from the
-earliest days of digital processing of seismic signals commonly called
-trace editing.   Trace editing means removing "bad" data from subsequent
-processing where the meaning of "bad" is based on some computed metric or
-human editing using a graphical user interface.   In all cases, the decision
-of "good" or "bad" is not grey but a black and white (boolean) decision.
-We implement this concept in MsPASS through a boolean `live` attribute
-that is a component of all MsPASS data objects (i.e. both atomic data
-TimeSeries and Seismogram as well as ensembles of same).   Any MsPASS
-data object can be "killed" by calling it's `kill` method.   Algorithms
-can and always should test the attribute `live` to verify the data object
-has data that can be viewed as valid.  No algorithm should ever assume
-data marked dead (live set False) can be used for any further processing.
+============
 
-In MsPASS we abstract the process of defining "trace editing" through
-a standardized API.  In this section of the manual we describe how to
-use the generic metrics that are part of MsPASS.   We also show how
-users can add custom metrics by either computing custom Metadata or
-running an inline computation on the sample data.
+Concepts
+--------
+
+MsPASS uses an idea that has been part of seismic-reflection processing since
+the earliest days of digital signal processing: *trace editing*.  Trace
+editing removes "bad" data from subsequent processing, where "bad" can be
+defined by a computed metric or by human editing in a graphical interface.
+The decision is boolean: a datum is either accepted or rejected.
+
+MsPASS implements this model with the boolean ``live`` attribute carried by
+every MsPASS data object: atomic
+:py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and
+:py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects, and their
+corresponding ensembles.  Calling an object's ``kill`` method marks it dead.
+Algorithms should test ``live`` (or ``dead()``) and must not assume that the
+sample data in a dead object remain usable.
+
+MsPASS standardizes trace-editing decisions through the
+:py:class:`Executioner<mspasspy.algorithms.edit.Executioner>` API.  This
+section describes the supplied Metadata-based tests and shows how a custom
+metric computed from sample data can feed those tests.
 
 MsPASS Trace Editing Algorithms
-----------------------------------
+-------------------------------
 
-Simple Comparison operators - example for starters
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
+Simple comparison example
++++++++++++++++++++++++++
 
-All the algorithms currently implemented in MsPASS use another model
-borrowed from seismic reflection processing.  That is, the editing is
-driven by tests of the values of one or more "header" (As noted
-elsewhere MsPASS data defined a generalized "header" we call Metadata)
-attributes.   That means all standard numeric comparison operators
-(in python the ``>``, ``<``, ``<=``, ``>=``, ``==``, and ``!=`` operators).
+The supplied editors follow another model borrowed from seismic-reflection
+processing: editing based on "header" values.  MsPASS generalizes a header as
+the Metadata container on every data object.  The simple editors apply one of
+Python's comparison operators (``>``, ``<``, ``<=``, ``>=``, ``==``, or
+``!=``) to one Metadata value and a constant threshold.
 
-Before defining the abstraction and the common API it is, perhaps, more
-instructive to give an example.   Suppose we wanted to exclude
-all data from processing that have an estimated bandwidth less than 12 dB
-(2 octaves).   The following is an example serial job looping over an entire
-dataset defined by Seismogram objects:
-
-.. code-block:: python
-
-  # ... Preceding code: import commands and creating database handle db ...
-
-  editor = MetadataLT("bandwidth",12.0)
-  query = {}   # Change to a MongoDB query to process data subset
-  cursor = db.wf_Seismogram.find(query)
-  for doc in cursor:
-    d = db.read_data(doc)
-    d = arrival_snr_QC(d)
-    d = editor(d)
-
-
-We made this example as simple as possible by using all defaults for the
-function ``arrival_snr_QC``.   That function has many options and depends upon
-a detail that the example assumes was previously computed;  the Metadata attribute
-"Parrival" is assumed to have been set to a time within the time interval
-spanned by each datum.  The key step for the concepts of this section
-is the creation of the python class
-``MetadataLT`` in the first line.  The name is meant to be mnemonic for
-using a Metadata test with the "Less Than (FORTRAN LT or python <)" operation
-using the value stored in Metadata with the key "bandwidth".
-We directly call the ``MetadataLT`` object, which is equivalent to calling the``kill_if_true`` method, to implement the test.
-That method will return a version of ``d`` marked dead if the value of "bandwidth" is less than 12.0.
-
-For completeness here is a parallel version of
-that same script using dask:
+Suppose a workflow should reject data with an estimated bandwidth below 12
+dB (approximately two octaves).  The current SNR estimator stores its result
+as a dictionary under the default ``"Parrival"`` Metadata key, so the helper
+below promotes the nested ``"bandwidth"`` result to a top-level key before
+the editor tests it.  This serial example assumes each Seismogram already has
+a measured P-arrival time under ``"Ptime"``:
 
 .. code-block:: python
 
-  editor = MetadataLT("bandwidth", 12.0)
-  query = {}
-  seisbag = db.read_distributed_data(db, query)
-  seisbag = seisbag.map(arrival_snr_QC)
-  seisbag = seisbag.map(editor)
+    from mspasspy.algorithms.edit import MetadataLT
+    from mspasspy.algorithms.snr import broadband_snr_QC
 
 
-where we also removed the comments and omit the (required to do anything)
-call to ``seisbag.compute()`` because this example would always be
-most appropriate as a section inside a workflow. 
+    def measure_bandwidth(d):
+        d = broadband_snr_QC(
+            d,
+            use_measured_arrival_time=True,
+            measured_arrival_time_key="Ptime",
+        )
+        if d.live and d.is_defined("Parrival"):
+            d["bandwidth"] = d["Parrival"]["bandwidth"]
+        return d
 
-All Simple Comparison Operators
-+++++++++++++++++++++++++++++++++
-All the simple comparison operators using tests against a Metadata single attribute
-Have the same, common API with the following elements:
 
-#. All operators are implemented as a subclass of an (abstract) base class called
-   Executioner.
-#. All operators have and one and only one constructor.
-#. All the constructors of this set have have two required, positional argument.  The
-   first is the Metadata key whose value is to compared.  The second (argument
-   1 starting from 0) must contain the (constant) value for the comparison.
-   In the example above the key
-   is "bandwidth" and the test value is 12.0.
-#. All operators have an optional ``verbose`` boolean argument.  When set True all kills
-   will generate an informational error log entry with a detailed message
-   on why the datum was killed.   The default, in all cases, verbose is False because
-   trace editing of large data sets can produce bloated error logs
-   when done in verbose mode.  We judged the possibility of filling the file system
-   and crashing a bigger issue than losing a kill record.  Needless to say, if
-   understanding reasons for why individual data are killed is important you
-   should turn on verbose.
-#. All operators have names of the form ``MetadataXX`` with ``Metadata`` a fixed string and
-   XX the Fortranish name for the corresponding comparison operation.  For
-   instance, in the example above we used ``MetadataLT`` which means the
-   comparison used is the python ``<`` operator that FORTRAN would call ``.LT.``.
-#. All operators implement the (required) method ``kill_if_true``.   As the name implies
-   that method kills the datum if the conditional defined in construction of
-   the object resolves true.   For our example above that means if ``x`` is the value
-   extracted from Metadata and ``a`` is the boundary set as arg1 in the constructor,
-   the datum is killed if ``x<a``.  This method always returns a copy of the
-   data passed to it marked dead or alive depending on the outcome of the
-   test.  That is essential for use of the function in a map operator like
-   our parallel example above. All operators will throw a MsPASSError exception
-   if the data received is not one of the data objects known to MsPASS.
-   All implementations also silently do nothing if the input is already marked
-   dead.
-#. As a convenience the base class implements the ``__call__`` method.
-   In this case the ``__call__`` method can be thought of as shorthand for the
-   ``kill_if_true`` method.   We used this feature in the example above
-   by using the form ``d = editor(d)`` that is a shorthand for the more
-   explicit but verbose ``d = editor.kill_if_true(d)``.
+    editor = MetadataLT("bandwidth", 12.0)
+    query = {}  # Replace with a MongoDB query to process a subset.
+    cursor = db["wf_Seismogram"].find(query)
+    for doc in cursor:
+        d = db.read_data(doc, collection="wf_Seismogram")
+        d = measure_bandwidth(d)
+        d = editor.kill_if_true(d)
 
-The following is a table of the names of all the simple comparison functions
-using the common API.   In each cell ``x`` is the value extracted from
-Metadata and ``a`` is the boundary value for the comparison test.
-We emphasize that in all cases the ``kill_if_true`` method, or the function
-form, kills the datum if the test shown resolves as True.
 
-.. list-table:: Simple Metadata-based Edit Classes
-   :widths: 50 50
+:py:func:`broadband_snr_QC<mspasspy.algorithms.snr.broadband_snr_QC>` has
+many other options.  With the arguments above, ``"Ptime"`` is the input
+arrival-time key and ``"Parrival"`` is the output subdocument key.  The
+:py:class:`MetadataLT<mspasspy.algorithms.edit.MetadataLT>` instance kills a
+live datum when its top-level ``"bandwidth"`` value is less than 12.0.
+
+The same operations can be mapped over a Dask bag:
+
+.. code-block:: python
+
+    from mspasspy.io.distributed import read_distributed_data
+
+    editor = MetadataLT("bandwidth", 12.0)
+    query = {}
+    seisbag = read_distributed_data(
+        db,
+        query=query,
+        collection="wf_Seismogram",
+    )
+    seisbag = seisbag.map(measure_bandwidth)
+    seisbag = seisbag.map(editor.kill_if_true)
+
+
+The example intentionally omits ``seisbag.compute()`` because these maps are
+normally steps within a larger lazy workflow.
+
+.. important::
+
+   Use ``kill_if_true`` explicitly in assignments and parallel maps.  Although
+   ``Executioner`` currently defines ``__call__``, that method does not return
+   the edited object or forward options such as ``apply_to_members``.
+   Consequently, ``d = editor(d)`` and ``bag.map(editor)`` produce ``None``
+   results in the current implementation.
+
+All simple comparison editors
++++++++++++++++++++++++++++++
+
+The simple comparison editors share these properties:
+
+#. Each is a subclass of ``Executioner``.
+#. Its constructor takes a Metadata ``key``, a constant comparison ``value``,
+   and the optional boolean ``verbose=False``.
+#. Its ``kill_if_true`` method mutates the input object in place when the test
+   succeeds and returns that same object, which makes the method suitable for
+   a map operation.  It does not make a data copy.
+#. A dead input is returned unchanged.  An input that is not an MsPASS data
+   object raises a fatal
+   :py:class:`MsPASSError<mspasspy.ccore.utility.MsPASSError>`.
+#. A missing comparison key leaves the datum live and unchanged.  Use
+   :py:class:`MetadataUndefined<mspasspy.algorithms.edit.MetadataUndefined>`
+   when a missing value should instead reject the datum.
+#. With ``verbose=True``, every kill adds an ``Informational`` error-log entry
+   explaining the decision.  The default is quiet because editing a large
+   data set can otherwise create very large error logs.
+
+If ``x`` is the Metadata value and ``a`` is the constant supplied to the
+constructor, the available comparisons are shown below.  The two-letter class
+suffix is the conventional mnemonic for the comparison (for example, ``LT``
+means "less than" and ``GE`` means "greater than or equal").
+
+.. list-table:: Simple Metadata-based edit classes
+   :widths: 55 45
    :header-rows: 1
 
-   * - Class name
-     - Kill Test
-   * - MetadataGT
-     - x >  a
-   * - MetadataGE
-     - x >= a
-   * - MetadataEQ
-     - x == a
-   * - MetadataNE
-     - x != a
-   * - MetadataLT
-     - x < a
-   * - MetadataLE
-     - x <= a
-
-The constructors for all simple comparison testers have this the following,
-common signature:
-
-.. code-block:: python
-
-  def __init__(self, key, value, verbose=False):
-
-
-where ``key`` is the Metadata key used to fetch the data for ``x`` in the
-table above and `value` is the value assigned to ``a``.
-
-The verbose flag is a common argument for all the MsPASS metadata-based
-testers.   Normally (default ``verbose=False``) kills are done silently.
-When set true all kills will generate an ``Informational`` elog entry with
-a detailed message giving the details of why the datum was killed.
-
-Existence Tests
-++++++++++++++++++++++
-Unlike classical header implementations that have fixed slots that
-always have data in them, Metadata is open-ended.  That means data for a particular
-key may or may not exist.   We thus supply two existence classes.
-The class names are ``MetadataDefined`` and ``MetadataUndefined``.   The
-``kill_if_true`` methods for these each kill a datum if a key loaded in
-on construction exists or does not exist respectively.   Both
-have constructors with this signature:
-
-.. code-block:: python
-
-  def __init__(self, key, verbose=False):
-
-
-where ``key`` is the Metadata key that is to be tested by the kill_if_true
-method.  verbose is as noted above for the simple comparison testers.
-
-``MetadataUndefined`` is a particularly important editor to prefilter data
-prior to running one or more processing functions.   If a function requires
-one or more metadata attributes ``MetadataUndefined`` can be used to
-filter out all data that would cause that algorithm to fail anyway.
-
-Interval Comparison
-++++++++++++++++++++++++
-
-Another common test for editing data is filtering data defined by
-a range of values.   A type example is P wave receiver functions that
-commonly only use data with epicentral distances between about 30 and 100 degrees.
-Another would be the size of some amplitude metric defined by a range of positive values.
-A way to accomplish that within a workflow without using multiple simple
-comparison operators is to apply an interval filter that
-kills data outside a specified range.
-
-There are two complications in defining a range test.  First, there are two
-mirror-image tests:   is the value to be tested inside an interval or
-outside the interval.
-The second is should the test be inclusive of the edges?  i.e. should the
-tests be ``<=`` or just ``<`` (similarly ``>=`` or ``>``)?   That could have been done with
-nine different classes for all the possible combinations of the three boolean
-variables it takes to define all the possibilities or a ``FiringSquad``
-instance as describd below.  As a convenience we implemented
-a single class called `MetadataInterval` with three boolean values defined
-in the constructor.  The constructor has this signature:
-
-.. code-block:: python
-
-  def __init__(self, key, lower_endpoint, upper_endpoint,
-    use_lower_edge=True, use_upper_edge=True, kill_if_outside=True, verbose=False):
-
-
-The three booleans (``use_upper_edge``, ``use_lower_edge``, and ``kill_if_outside``)
-determine how equality with the edges is handled and if the test is "inside" or
-"outside" the specified range.  These are defined in the table below noting
-that in the table ``a=lower_endpoint`` and ``b=upper_endpoint``.  In all cases
-True means if the test is true the datum will be marked dead.
-
-.. list-table:: MetadataInterval operators
-   :widths: 30 30 30 30
-   :header-rows: 1
-
-   * - use_lower_edge
-     - use_upper_edge
-     - inside_test
+   * - Class
      - Kill test
-   * - True
-     - True
-     - True
-     - a <= x <= b
-   * - False
-     - True
-     - True
-     - a < x <= b
-   * - True
-     - False
-     - True
-     - a <= x < b
-   * - False
-     - False
-     - True
-     - a < x < b
-   * - True
-     - True
-     - False
-     - x <= a and x >= b
-   * - False
-     - True
-     - False
-     - x < a and x >= b
-   * - True
-     - False
-     - False
-     - x <= a and x > b
-   * - False
-     - False
-     - False
-     - x < a and x > b
+   * - :py:class:`MetadataGT<mspasspy.algorithms.edit.MetadataGT>`
+     - ``x > a``
+   * - :py:class:`MetadataGE<mspasspy.algorithms.edit.MetadataGE>`
+     - ``x >= a``
+   * - :py:class:`MetadataEQ<mspasspy.algorithms.edit.MetadataEQ>`
+     - ``x == a``
+   * - :py:class:`MetadataNE<mspasspy.algorithms.edit.MetadataNE>`
+     - ``x != a``
+   * - :py:class:`MetadataLT<mspasspy.algorithms.edit.MetadataLT>`
+     - ``x < a``
+   * - :py:class:`MetadataLE<mspasspy.algorithms.edit.MetadataLE>`
+     - ``x <= a``
 
-
-
-Defining Multiple Editors
-++++++++++++++++++++++++++++++
-
-The final Metadata-based editor in MsPASS was given the name ``FiringSquad``.
-Although the name is admittedly a bit tongue-in-cheek, the imagery the name
-provokes describes the function well:  a datum facing a firing squad
-is facing multiple executioner who may or may not kill you.   This class
-has a signature similar to the other Metadata-based editors:
+Their common constructor signature is:
 
 .. code-block:: python
 
-   class FiringSquad(Executioner):
+    Editor(key, value, verbose=False)
 
-Meaning it inherits the base class `Executioner` and requires a custom
-implementation of the `kill_if_true` method. It can be used alone in
-a workflow exactly like the single test functions described above.
-A `FiringSquad` is simply a way to apply multiple Metadata tests
-in a single function call to the `kill_if_true` method.
 
-As with MetadataInterval
-the constructor is different and has this signature:
+Here, ``Editor`` is one of the six classes in the table, ``key`` identifies
+the Metadata value ``x``, and ``value`` supplies ``a``.
 
-.. code-block:: python
+Atomic data and ensembles
++++++++++++++++++++++++++
 
-  def __init__(self, executioner_list, verbose=False):
-
-where ``executioner_list`` is expected to be any iterable container made up
-only of python classes that are subclasses of Executioner. (All the classes
-covered in this document are subclasses of Executioner.)  Verbose has the
-same meaning as described above with an important exception.  It is not
-global but refers only to errors internal to ``FiringSquad``.  Any testers
-needing a verbose option enabled will need to have the verbose option
-specified during their construction.
-
-When the ``kill_if_true`` method is called for this class the list of
-executioners are called in order defined by the list.  The victim cannot
-be hit by more than one bullet.  Once a datum is killed the ``kill_if_true``
-method returns the body and drops further tests.
-
-A feature of a ``FiringSquad`` not enabled in any of the other classes described
-in this document is that it implements operator ``+=``.  The += operator
-can be used is to append an
-additional test to an existing ``FiringSquad``.   e.g. suppose we had a workflow
-that creates a ``FiringSquad`` associated with the symbol ``squad``.  The
-following example creates a ``<=`` test against the Metadata key "mad_snr" and
-adds it to the list of test in ``squad``:
+Every supplied ``kill_if_true`` implementation accepts
+``apply_to_members=False``.  Atomic inputs ignore this option.  For an
+ensemble, the default applies the test to the ensemble's own Metadata and can
+therefore kill the entire ensemble.  Set ``apply_to_members=True`` to apply
+the editor serially to each live member instead:
 
 .. code-block:: python
 
-  maddog = MetadataLE("mad_snr",4.0)
-  squad += maddog
+    ensemble = editor.kill_if_true(ensemble, apply_to_members=True)
 
-Finally, note it is possible to have recursive ``FiringSquad`` tests.  That is, a
-``FiringSquad`` can itself contain another ``FiringSquad`` as one of the
-tests set in the ``executioner_list`` passed on construction.
 
-How to Implement an Extension
+Choose this flag deliberately: member Metadata and ensemble Metadata are
+different containers.
+
+Existence tests
++++++++++++++++
+
+Unlike classical headers with fixed slots, Metadata is open-ended, so a key
+may or may not exist.  MsPASS supplies two explicit existence editors:
+
+* :py:class:`MetadataDefined<mspasspy.algorithms.edit.MetadataDefined>` kills
+  a datum when the key exists.
+* :py:class:`MetadataUndefined<mspasspy.algorithms.edit.MetadataUndefined>`
+  kills a datum when the key does not exist.
+
+Both use the constructor form:
+
+.. code-block:: python
+
+    Editor(key, verbose=False)
+
+
+``MetadataUndefined`` is especially useful as a prefilter.  If a later
+algorithm requires one or more Metadata attributes, it can reject deficient
+inputs before they reach code that cannot operate without those values.
+
+Interval comparison
++++++++++++++++++++
+
+A common edit retains values in a range, such as P-wave receiver functions
+with epicentral distances between roughly 30 and 100 degrees, or data whose
+amplitude-quality metric lies within an acceptable positive range.  The
+:py:class:`MetadataInterval<mspasspy.algorithms.edit.MetadataInterval>` class
+combines lower- and upper-bound comparisons so that a workflow does not need
+multiple simple editors.
+
+An interval has three boolean choices: whether each edge is included and
+whether values outside or inside the resulting interval are killed.  Those
+three choices have eight possible combinations, all supported by this
+constructor:
+
+.. code-block:: python
+
+    MetadataInterval(
+        key,
+        lower_endpoint,
+        upper_endpoint,
+        use_lower_edge=True,
+        use_upper_edge=True,
+        kill_if_outside=True,
+        verbose=False,
+    )
+
+
+Let ``a`` be ``lower_endpoint``, ``b`` be ``upper_endpoint``, and ``x`` be
+the Metadata value.  ``use_lower_edge=True`` includes ``x == a`` in the
+interval, while ``use_upper_edge=True`` includes ``x == b``.  The exact kill
+tests are:
+
+.. list-table:: ``MetadataInterval`` behavior
+   :widths: 22 22 24 32
+   :header-rows: 1
+
+   * - ``use_lower_edge``
+     - ``use_upper_edge``
+     - ``kill_if_outside``
+     - Kill test
+   * - ``True``
+     - ``True``
+     - ``True``
+     - ``x < a or x > b``
+   * - ``False``
+     - ``True``
+     - ``True``
+     - ``x <= a or x > b``
+   * - ``True``
+     - ``False``
+     - ``True``
+     - ``x < a or x >= b``
+   * - ``False``
+     - ``False``
+     - ``True``
+     - ``x <= a or x >= b``
+   * - ``True``
+     - ``True``
+     - ``False``
+     - ``a <= x <= b``
+   * - ``False``
+     - ``True``
+     - ``False``
+     - ``a < x <= b``
+   * - ``True``
+     - ``False``
+     - ``False``
+     - ``a <= x < b``
+   * - ``False``
+     - ``False``
+     - ``False``
+     - ``a < x < b``
+
+As with the simple comparison editors, an undefined ``key`` leaves the datum
+unchanged.  Pair ``MetadataInterval`` with ``MetadataUndefined`` if absence
+must also cause rejection.
+
+Defining multiple editors
++++++++++++++++++++++++++
+
+:py:class:`FiringSquad<mspasspy.algorithms.edit.FiringSquad>` applies
+multiple ``Executioner`` instances in one ``kill_if_true`` call.  Its
+constructor is:
+
+.. code-block:: python
+
+    FiringSquad(executioner_list)
+
+
+Pass a reusable iterable such as a list or tuple containing only
+``Executioner`` instances.  A one-shot generator should not be used: the
+current constructor iterates once to validate its contents and again to copy
+them.  A non-``Executioner`` element raises a fatal ``MsPASSError``.
+``FiringSquad`` itself has no ``verbose`` constructor argument;
+configure ``verbose`` on each component editor that should log its kills.
+
+The component editors run in the order supplied.  Once one kills the datum,
+the loop stops and later tests are skipped.  Ordering therefore matters when
+verbose logs are used: the first failing test is the recorded cause.
+
+``FiringSquad`` also implements ``+=`` to append a test.  For example, this
+adds a ``<= 4.0`` test for ``"mad_snr"`` to an existing ``squad``:
+
+.. code-block:: python
+
+    maddog = MetadataLE("mad_snr", 4.0)
+    squad += maddog
+
+
+A ``FiringSquad`` is itself an ``Executioner``, so its input list may contain
+another ``FiringSquad``.  It also supports ``apply_to_members=True`` with the
+same ensemble semantics described above.
+
+Related Metadata transformations
 --------------------------------
-Before considering developing an extension editor consider seriously if
-what you need can be accomplished with one of two alternatives:
 
-#.  Can the test be cast into a composite ``FiringSquad`` with the right components.
-#.  If you need to compute some nonstandard quantity from the sample data ask
-    yourself if the result can be reduced to a small set of numbers that can
-    be saved as Metadata with nonstandard keys?
-    If so, you can focus on the unique calculations and
-    have the code post the results to Metadata.
-    There is a high probability you can then
-    use one or more of the classes described above to apply the needed
-    test.
+Executioners decide whether data remain live; they do not provide general
+Metadata mutation.  For renaming or setting keys, constant and two-key
+arithmetic, and ordered transformation chains, see :ref:`header_math`.  The
+corresponding API includes
+:py:class:`ChangeKey<mspasspy.algorithms.edit.ChangeKey>`,
+:py:class:`SetValue<mspasspy.algorithms.edit.SetValue>`, the arithmetic
+``MetadataOperator`` subclasses, and
+:py:class:`MetadataOperatorChain<mspasspy.algorithms.edit.MetadataOperatorChain>`.
+For deleting a list of keys, see
+:py:func:`erase_metadata<mspasspy.algorithms.edit.erase_metadata>`.
 
-Anyone familiar with a basic understanding of
-inheritance in an object-oriented language in general and python in particular
-will recognize our implementation of all the classes described above as
-textbook applications of inheritance.  A custom extension that can plug into
-this same class structure must do two things:
+How to implement an extension
+-----------------------------
 
-#.   The class declaration must declare it to be a subclass of ``Executioner``.
-#.   The class MUST implement a custom ``kill_if_true`` method.
+Before writing a custom editor, consider two simpler alternatives:
 
-In addition, almost any implementation will require a base constructor
-(i.e. the line ``def __init__(self,...args..):``)
-defining internal parameters that define the boundaries of the kill test.
-The ``kill_if_true`` method would normally use "self" parameters set by the
-constructor.
+#. Can the test be expressed as a ``FiringSquad`` of existing editors?
+#. If a nonstandard quantity must be computed from sample data, can the result
+   be reduced to a small set of values stored in Metadata?  If so, keep the
+   unique computation in a normal function and apply the supplied Metadata
+   editors afterward, as in the bandwidth example above.
 
-Some key points about extensions:
+A custom editor that participates in the same API must:
 
-*  Our examples all use attributes fetched from Metadata.  That is NOT a
-   requirement.  Many algorithms are possible that would compute a test
-   directly from sample data.  Be warned, however, that different MsPASS data objects all have
-   fundamentally different sample data organizations.  Hence, a class that
-   handles sample data would require a test for the unique data to which
-   it could be applied.
-*  Our examples are dogmatic in requiring the data be MsPASS data objects.
-   That is required because the implementation uses the kill method that
-   the caller can be assured is part of the data object received.  Extensions
-   that can plug in cleanly (e.g. as a member of a ``FiringSquad``) should do
-   the same test for MsPASS data objects.  That test is standardized in the
-   base class method ``input_is_valid``.   Use of that method in
-   extensions is strongly advised to avoid unexpected aborts.
-*  Consider implementing the verbose option as described here for consistency.
-*  As with many things like this the best way to see how to build is an
-   extension is to use the class implementations described above as examples.
+#. subclass ``Executioner``; and
+#. implement ``kill_if_true``.
+
+Most implementations also need a constructor that saves the thresholds or
+other parameters used by ``kill_if_true``.  Follow the supplied editors for
+the wrapper signature, ensemble handling, dead-data handling, return value,
+``MsPASSError`` behavior, and optional verbose logging.  In particular, return
+the input object after mutating it rather than making an expensive waveform
+copy.
+
+Some additional design points are important:
+
+* Metadata-only tests are not required.  A custom editor may compute a metric
+  directly from samples, but it must account for the different sample-data
+  organizations of ``TimeSeries``, ``Seismogram``, and ensemble objects.
+* A compatible editor should validate that its input is one of the supported
+  MsPASS data types before relying on methods such as ``kill``.  The helper
+  used internally by this module is private; extension code should not treat
+  it as a stable public API.
+* If the editor supports ensembles, define clearly whether it tests ensemble
+  Metadata or individual members and follow the established
+  ``apply_to_members`` convention.
+* Consider a ``verbose=False`` option and use the inherited ``log_kill``
+  method for consistent error-log entries.
+* Use the current implementations in ``mspasspy.algorithms.edit`` as working
+  examples, and add focused tests for live inputs, dead inputs, missing keys,
+  both interval edges where relevant, and ensemble behavior.

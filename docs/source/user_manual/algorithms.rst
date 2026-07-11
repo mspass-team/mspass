@@ -4,35 +4,40 @@ Algorithms
 ===============================
 Overview
 -----------
-This page is a quick reference to algorithms available in MsPASS.
+This page is a curated quick reference to commonly used algorithms available in MsPASS.
 The functions described here are all algorithms for handling MsPASS
 seismic data objects.   Utility functions for other objectives are described
 elsewhere.
 
-The API of all the functions described here is standardized.   Key features
-to be aware of are:
+The :doc:`generated Python algorithms API <../python_api/mspasspy.algorithms>`
+is the complete reference for additional specialized routines and current
+signatures.
 
-#.  All functions assume arg0 is a seismic data object.
-#.  Some functions can handle all data types and some are more restictive.
-    The tables below provides a quick reference in addition to the docstrings.
-#.  All functions enforce the data type of arg0 and will throw a TypeError
-    exception for any mismatch.
-#.  All implement the dead/live concept.  In particular, all have the behavior
-    that if the data object passed as arg0 is marked dead it immediately
-    returns.  If the type of input and output are the same the return is
-    identical to the input.   If the type changes and an input datum is
-    marked dead the output will be a default constructed version of the output type
-    with a copy of the Metadata from the input and a copy of the input's error
-    log.
-#.  All functions that are intrinsically atomic (i.e. operates on :code:`TimeSeries`
-    and/or :code:`Seismogram` objects) also work ensembles.   In MsPASS an
+Most high-level Python processing functions use MsPASS decorators to provide a
+common API.  Low-level C++ bindings and helper functions can differ, so the
+linked docstring remains authoritative.  Key conventions are:
+
+#.  Most high-level processing functions take a seismic data object as arg0.
+    Multi-input algorithms and the nonstandard functions listed below are
+    exceptions.
+#.  Some functions can handle all data types and some are more restrictive.
+    The tables below provide a quick reference in addition to the docstrings.
+#.  Wrapped functions validate arg0 either in the decorator or in the function.
+    Invalid usage normally raises :code:`TypeError` or :code:`ValueError`.
+#.  High-level processing functions implement the dead/live concept.  A dead
+    input normally returns without numerical processing.  Consult the linked
+    docstring for type-changing and multi-input functions.
+#.  Decorated functions that are intrinsically atomic (i.e. operate on
+    :code:`TimeSeries` and/or :code:`Seismogram` objects) can also be applied to
+    ensembles.   In MsPASS an
     ensemble is just a container with one or more atomic data stored under the
     common symbol :code:`member`.  (e.g. if e is a :code:`TimeSeriesEnsemble`,
     then e.member[i] is the ith component :code:`TimeSeries` object.) Atomic
     algorithms applied to ensemble are always done as a loop over the
     :code:`member` array.
-#.  No MsPASS will throw an exception except for a usage error or a system
-    level failure that is unrecoverable.   When an individual datum has
+#.  High-level wrappers normally convert recoverable per-datum failures into a
+    killed datum with an error-log entry.  Usage errors, fatal failures, and
+    direct calls to low-level bindings can still raise exceptions.  When an individual datum has
     issues that don't allow the algorithm to work with the specified
     inputs (e.g. windowing when the window range is outside the time range of
     the data) the datum will be killed with a message posted to the object's
@@ -51,12 +56,9 @@ for obspy functions, some are written in C++ with python wrappers, and
 some are pure C++ functions with python bindings.   Note the name field in the
 table below is a hyperlink to the docstring for that function.
 
-Note also if an input or output are listed as :code:`TimeSeries` it
-will also process a :code:`TimeSeriesEnsemble` with a loop.
-Similarly, if input or output is listed as  :code:`Seismogram` the
-function will also process a :code:`SeismogramEnsemble` with a loop.
-When input or output are listed as "any" it means any seismic data
-type is handled.
+The input and output columns describe each row explicitly.  "Any" means any of
+the four MsPASS seismic data types.  Some decorated atomic functions also loop
+over the matching ensemble type; confirm that behavior in the linked docstring.
 
 .. list-table:: Processing Functions
    :widths: 10 70 10 10
@@ -68,35 +70,35 @@ type is handled.
      - Outputs
    * - :py:func:`correlate<mspasspy.algorithms.signals.correlate>`
      - Cross-correlate pair of signals (obspy)
-     - TimeSeries
-     - TimeSeries
+     - TimeSeries, TimeSeries
+     - numpy.ndarray
    * - :py:func:`correlate_stream_template<mspasspy.algorithms.signals.correlate_stream_template>`
      - obspy correlation of many with a template
-     - TimeSeriesEnsemble(arg)),TimeSeries(arg1)
-     - TimeSeriesEnsemble
+     - Seismogram or TimeSeriesEnsemble, plus template
+     - Seismogram or TimeSeriesEnsemble
    * - :py:func:`correlate_template<mspasspy.algorithms.signals.correlate_template>`
      - obspy single channel correlation against a template
-     - TimeSeries
-     - TimeSeries
+     - TimeSeries, TimeSeries template
+     - numpy.ndarray
    * - :py:func:`detrend<mspasspy.algorithms.signals.detrend>`
      - obspy detrend algorithm
-     - TimeSeries
-     - TimeSeries
+     - Any
+     - Same as input
    * - :py:func:`filter<mspasspy.algorithms.signals.filter>`
      - obspy time-invariant filter function
      - All
      - Same as input
    * - :py:func:`interpolate<mspasspy.algorithms.signals.interpolate>`
      - obspy function to resample using interpolation
-     - TimeSeries
-     - TimeSeries
+     - Any
+     - Same as input
    * - :py:func:`WindowData<mspasspy.algorithms.window.WindowData>`
      - Cut a smaller window from a larger segment
      - All
      - Same as input
    * - :py:func:`merge<mspasspy.algorithms.window.merge>`
      - Combine a set of segments into one
-     - TimeSeriesEnsemble (member vector)
+     - list of TimeSeries
      - TimeSeries
    * - :py:func:`scale<mspasspy.algorithms.window.scale>`
      - scale data to specified level with a specified amplitude metric
@@ -107,10 +109,10 @@ type is handled.
      - TimeSeries or Seismogram
      - Same as input (Metadata altered)
    * - :py:func:`arrival_snr<mspasspy.algorithms.snr.arrival_snr>`
-     - Computes a series of snr-based amplitude metrics relative to an Extarrival time
+     - Computes a series of snr-based amplitude metrics relative to an arrival time
      - TimeSeries
      - TimeSeries (Metadata altered)
-   * - :py:func:`FD_snr_estimator<mspasspy.algorithms.snr_FD_snr_estimator>`
+   * - :py:func:`FD_snr_estimator<mspasspy.algorithms.snr.FD_snr_estimator>`
      - Computes a set of broadband snr estimates in the frequency domain
      - TimeSeries
      - [dict,ErrorLogger]
@@ -125,16 +127,16 @@ type is handled.
    * - :py:func:`repair_overlaps<mspasspy.ccore.algorithms.basic.repair_overlaps>`
      - Repair overlapping data segments
      - list of TimeSeries
-     - TimeSeries
+     - list of TimeSeries
    * - :py:func:`seed_ensemble_sort<mspasspy.ccore.algorithms.basic.seed_ensemble_sort>`
      - Sorts an ensemble into net:sta:chan:loc order
      - TimeSeriesEnsemble
-     - TimeSeriesEnsemble
+     - None (input reordered in place)
    * - :py:func:`splice_segments<mspasspy.ccore.algorithms.basic.splice_segments>`
      - Splice a list of TimeSeries objects into a continuous single TimeSeries
      - list of TimeSeries
-     - TimeSeries
-   * - :py:func:`bundle<mspasspy.algorithms.bundle.bundle>`
+     - TimeSeriesWGaps
+   * - :py:func:`bundle_seed_data<mspasspy.algorithms.bundle.bundle_seed_data>`
      - Bundle a TimeSeriesEnsemble into a SeismogramEnsemble
      - TimeSeriesEnsemble
      - SeismogramEnsemble
@@ -178,6 +180,10 @@ type is handled.
      - Apply a taper defined by a vector of samples
      - any
      - same as input
+   * - :py:func:`erase_metadata<mspasspy.algorithms.edit.erase_metadata>`
+     - Clear all values associated with specified Metadata keys
+     - Any
+     - Same as input
 
 Nonstandard Processing Functions
 -----------------------------------
@@ -193,14 +199,14 @@ utility for writing custom functions that use them inside another algorithm.
      - Synopsis
      - Inputs
      - Outputs
-   * - :py:func:`BandwidthStatisticsBandwidthStatistics<mspasspy.ccore.algorithms.amplitudes.BandwidthStatisticsBandwidthStatistics>`
+   * - :py:func:`BandwidthStatistics<mspasspy.ccore.algorithms.amplitudes.BandwidthStatistics>`
      - Compute statistical summary of snr in a passband returned by EstimateBandwidth
-     - BandwidthData object
+     - Two PowerSpectrum objects and BandwidthData
      - Metadata
-   * - :py:func:`EstimateBandwidth<mspasspy.ccore.algorithms.amplitudes.EstimateBandwidth>`
+   * - :py:func:`EstimateBandwidth<mspasspy.algorithms.snr.EstimateBandwidth>`
      - Estimate signal bandwidth estimate of power spectra of signal and noise
-     - PowerSpectra of signal and noise windows
-     - BandwidthData - input for BandwidthStatisics
+     - PowerSpectrum objects for signal and noise
+     - BandwidthData - input for BandwidthStatistics
    * - :py:func:`MADAmplitude<mspasspy.ccore.algorithms.amplitudes.MADAmplitude>`
      - Calculate amplitude with the MAD metric
      - TimeSeries or Seismogram
@@ -292,11 +298,11 @@ same API guarantees listed at the beginning of this section
      - any
      - Edited version of input
    * - :py:class:`Multiply2<mspasspy.algorithms.edit.Multiply2>`
-     - Set a field as produce of a pair of values
+     - Set a field as the product of a pair of values
      - apply
      - any
      - Edited version of input
-   * - :py:class:`SetValue<mspasspy.algorithms.edit.Multiply2>`
+   * - :py:class:`SetValue<mspasspy.algorithms.edit.SetValue>`
      - Set a field to a constant
      - apply
      - any
@@ -308,11 +314,6 @@ same API guarantees listed at the beginning of this section
      - Edited version of input
    * - :py:class:`Subtract2<mspasspy.algorithms.edit.Subtract2>`
      - Set a field as difference of a pair of values
-     - apply
-     - any
-     - Edited version of input
-   * - :py:class:`erase_metadata<mspasspy.algorithms.edit.erase_metadata>`
-     - Clear all defined values of a specified key
      - apply
      - any
      - Edited version of input
@@ -336,12 +337,12 @@ same API guarantees listed at the beginning of this section
      - kill_if_true
      - any
      - Edited version of input
-   * - :py:class:`MetadataEQMetadataEQ<mspasspy.algorithms.edit.MetadataEQMetadataEQ>`
+   * - :py:class:`MetadataEQ<mspasspy.algorithms.edit.MetadataEQ>`
      - Kill a datum if a value is equal to constant
      - kill_if_true
      - any
      - Edited version of input
-   * - :py:class:`MetadataNEMetadataNE<mspasspy.algorithms.edit.MetadataNEMetadataNE>`
+   * - :py:class:`MetadataNE<mspasspy.algorithms.edit.MetadataNE>`
      - Kill a datum if a value is not equal to constant
      - kill_if_true
      - any
@@ -380,18 +381,19 @@ in form of estimation of so called "receiver functions".  Receiver functions
 are a special type of deconvolution useful only, at present anyway, for
 application to teleseismic body wave phase data.
 
-A suite of "conventional" scalar methods are available through two different
-mechanisms:
+A suite of conventional scalar and generalized iterative methods is available
+through two different mechanisms:
 
-1.  The wrapper function :py:func:`mspasspy.alorithms.RFdeconProcessor.RFdecon`
+1.  The wrapper function :py:func:`mspasspy.algorithms.RFdeconProcessor.RFdecon`
     is a functional form that can be used directly in map operators.
-2.  The `RFdecon` function instantiates an instance of the class
+2.  By default, `RFdecon` instantiates an instance of the class
     :py:class:`mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor`
     in each call to the function.  It is more efficient (i.e. faster)
-    to instantiate a single instance of this class and run it's
+    to instantiate a single processor and pass it through the ``engine``
+    argument on repeated calls, especially for methods with significant setup
+    costs.  The processor's lower-level
     :py:meth:`mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply`
-    method, especially for multitaper methods that require computing
-    the Slepian tapers.
+    method is also available for specialized workflows.
 
 See the docstrings with links above for usage.
 
@@ -401,12 +403,12 @@ implemented in the C++ class
 :py:class:`mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine`.
 There are two python functions that utilize the "engine":
 
-#.  :py:class:`mspasspy.algorithms.CNRDecon.CNRRFDecon` uses the
+#.  :py:func:`mspasspy.algorithms.CNRDecon.CNRRFDecon` uses the
     CNR algorithm to estimate conventional "receiver functions" where
     each 3C station is deconvolved independently.
 #.  The same engine
     is used for an array version called
-    :py:class:`mspasspy.algorithms.CNRDecon.CNRArrayDecon`
+    :py:func:`mspasspy.algorithms.CNRDecon.CNRArrayDecon`
     
-See the mspass deconvolution tutorial for guidance on using these
-experimental algorithms.
+See :doc:`Deconvolution Operators <deconvolution>` for conventional, CNR, and
+generalized iterative deconvolution guidance.
