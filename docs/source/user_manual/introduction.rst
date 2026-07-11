@@ -1,149 +1,111 @@
 .. _user_manual_introduction:
 
 Introduction
-=================================
+============
 
-MsPASS Features
-~~~~~~~~~~~~~~~~
+MsPASS (Massive Parallel Analysis System for Seismologists) is an open-source
+framework for research workflows that process and manage collections of
+seismic waveforms.  It brings seismic data objects, database-backed metadata,
+processing functions, and parallel execution together behind a Python
+interface.  This makes it possible to develop a workflow on a small data set
+and then apply the same processing model to a larger collection.  Although
+MsPASS is designed around seismology, its audience also includes exploration
+geophysicists and researchers in other fields whose sampled-data problems fit
+the data models described in this manual.  Because research workflows vary,
+the interfaces favor flexible composition instead of prescribing one
+processing pipeline.
 
-MsPASS is an acronymn that stands for Massively Parallel Analysis System for Seismologists.
-Some key features of MsPASS are the following:
+MsPASS is most useful when a project needs to combine data from different
+sources, keep waveform metadata queryable, apply a repeatable sequence of
+algorithms, and retain information about data-specific failures.  It is not a
+turnkey platform for continuous acquisition, real-time alerting, or seismic
+network operations.  It also does not hide every detail of MongoDB, the
+selected parallel scheduler, or the system on which a workflow runs.  Users
+should validate a workflow and its scientific assumptions locally before
+scaling it to a cluster.
 
--   As the name suggests MsPASS is a domain-specific package for seismologists.
-    We emphasize, however, that our definition of seismologists is
-    broad.  It includes exploration geophysicists and anyone in any field that
-    needs to work with data that match the data models described in this
-    manual.
+How the pieces fit together
+---------------------------
 
--   It is essential that all users or potential user understand that MsPASS
-    was designed as a package to support *research* in seismology NOT
-    a *mission* like seismic network operations.  As a result MsPASS design
-    was shaped by several key axioms:
+MsPASS uses several established technologies, each with a distinct role:
 
-    *  It must be as generic as possible.   That is essential to support basic research
-       that is open-ended and wildly variable.
-    *  It needs to be fully open-source so it is available to the entire
-       seismology community worldwide. Cost should not be a barrier to creativity.
-    *  It must be flexible enough to support the wide range of approaches
-       to utilizing seismic waveform data.  Flexibility is more important than
-       efficiency but assume scalability can make up for inefficiency in
-       problems that are often one up solutions.
+* **Python** is the workflow language and the main user-facing API.  Workflows
+  can run in Jupyter notebooks, Python scripts, or non-interactive batch jobs.
+* **C++** implements the core seismic data objects and selected numerical
+  components, exposed through Python bindings.  The principal objects are
+  ``TimeSeries`` and ``Seismogram`` plus ensemble containers.  Each object can
+  carry waveform samples, flexible metadata, an error log, and optional
+  processing history.  The bound classes and functions are exposed below the
+  ``mspasspy.ccore`` package.  See :ref:`seismic data object concepts
+  <data_object_design_concepts>`.
+* **MongoDB** provides document-oriented storage and queries for metadata and
+  the records associated with waveform data.  MsPASS supplies schema and
+  database interfaces, but realistic data selection and inspection can still
+  require MongoDB query dictionaries.  Basic familiarity with that query
+  language is therefore useful.  Start with :ref:`database concepts
+  <database_concepts>`.
+* **Dask and Spark** provide scheduler and distributed-collection abstractions.
+  Dask is the default; Spark is also supported.  MsPASS processing functions
+  are designed to compose with their map-and-reduce style of execution.  The
+  :ref:`parallel processing guide <parallel_processing>` explains when and how
+  to use that layer.
+* **Containers** package MsPASS and its runtime dependencies for common
+  desktop, cluster, and hosted deployments.  A container simplifies setup,
+  but the database, scheduler, storage, and compute resources still need an
+  appropriate configuration.  See :ref:`the MsPASS component model
+  <mspass_components>` before planning a multi-service deployment.
+* **ObsPy** supplies widely used seismological formats and algorithms.  MsPASS
+  includes converters and wrappers so that many ObsPy operations can
+  participate in MsPASS workflows.  The :ref:`ObsPy integration guide
+  <obspy_interface>` describes the conversions and their limitations.
 
--   Few seismologists have strong expertise in modern information technology.
-    Furthermore, installing a software package can prove challenging today
-    even on a desktop on which you may have special privileges.  On large high performance (HPC)
-    systems installation is usually impossible to install special software
-    without a long string of
-    meetings and correspondence with system managers.  For this reason MsPASS uses
-    modern container technology to simplify installation.  That allows you
-    as the user to install MsPASS without system privileges.  Containers are
-    also essential for operating the package in a cloud system.
+Errors and processing history
+-----------------------------
 
--   Another keyword in the acronym is "parallel".  Computer technology reached
-    the physical limit of single CPU computers many years ago.  NO existing
-    open-source package for handling earthquake data provided consistent,
-    generic support for parallel processing until MsPASS.
+One malformed datum should not necessarily terminate a large parallel job.
+MsPASS data objects therefore carry an error log and a live/dead state.
+Compatible processing functions can record a problem on the affected object
+and mark unusable data dead, allowing downstream operations to skip it without
+discarding the diagnostic record.  For live data, the standard
+:py:meth:`~mspasspy.db.database.Database.save_data` path automatically writes
+nonempty logs to the ``elog`` collection and links them to the saved waveform.
+Dead-data records follow a separate burial or cremation policy.  Unhandled or
+fatal errors can still stop a workflow; the :ref:`error-handling guide
+<handling_errors>` explains the expected behavior and severity levels.
 
--   A first order goal of MsPASS was building
-    a consistent framework to allow scalability from a single desktop
-    machine with multiple cores to a giant cloud-based or HPC system. In MsPASS
-    we developed a simplified API for running processing in parallel.
-    The API makes it relatively easy to prototype a workflow with a test data set before
-    porting it to a large cluster to handle a more massive processing job.
+Jupyter notebooks can preserve executable code together with explanatory
+narrative.  Processing history is a separate, complementary facility.  Global
+history can record algorithms and parameters used by a job, while object-level
+history can record the processing path of an individual datum when enabled.
+The standard processing wrappers leave object-level history disabled by
+default, so a workflow that needs it must enable it explicitly for each
+relevant step.  These records can support auditing and reproducibility, but
+they do not by themselves capture every dependency or scientific decision in
+a project.  See
+:ref:`processing history concepts <processing_history_concepts>` for the data
+model and current scope.
 
--   MsPASS uses an integrated database management system that
-    was known previously to perform well in a massively parallel environment.
-    We use a stable, open-source system called MongoDB.  Our database API
-    aims to abstract interactions with MongoDB as much as possible, but
-    some knowledge of the query language used by MongoDB will be required to
-    use the package effectively.  There are several published books on MongoDB and
-    extensive documentation and tutorials are available online for the package.  Web
-    searches for MongoDB commands or a book at your side are an essential tool for
-    working with MsPASS at any level.
+A recommended learning path
+---------------------------
 
--   MsPASS uses python as the job control language.  This is in contrast to
-    traditional programs like SAC or older seismic processing systems that
-    use a custom command interpreter.   We assert that custom languages
-    like that in SAC or even the unix shell will become the equivalent of
-    Latin as a language in the coming years.  Python has emerged as the
-    most common glue language used within open-source software packages.  It was
-    our choice as the driver language for MsPASS because of community
-    experience in python thanks to packages like `Obspy <https://docs.obspy.org/>`__.
+The manual does not need to be read cover to cover.  The sequence below is a
+practical starting route; after that, use the tutorials, cross-references, and
+topic pages as questions arise.
 
--   Although python has huge advantages as "glue language" and as a way to
-    quickly develop prototypes, it also has a serious limitation.   Python,
-    like matlab's command line language, is an interpreted language.  That means
-    it is essentially compiled on the fly.  Some classes of algorithms
-    will run orders of magnitude faster if implemented in a compiled language
-    like C/C++ or FORTRAN compared to python.  For this reason, we implemented
-    core data objects in C++.  Any python package with any hope of
-    performance follows this same model.  `Obspy <https://docs.obspy.org/>`__
-    does this by manipulating
-    sample data with numpy and some core C libraries.
-    `Antelope <https://www.brtt.com>`__ python
-    does this as well by implementing core functions in C. We follow this
-    model. Python functions and classes implemented in C/C++ are all
-    found in the MsPASS hierarchy as all modules under mspasspy.ccore.
-
--   Errors are a universal issue in large-scale data processing.   As the
-    size of a data set increases it is becomes an increasingly difficult to
-    guarantee all the data are "clean".  By that, we mean one or more
-    algorithms may treat a particular data problem as an unrecoverable error.  Handling
-    errors in a large scale processing environment is problematic for a long
-    list of reasons.  We solve this problem in MsPASS by having error logs be an
-    intrinsic part of the data.   That approach is actually essential to
-    preserve errors using Spark and DASK.  It would be very difficult to
-    sort out problems from verbose log files that would otherwise be saved and
-    interleaved in a scratch, logs directory if we used simpler print statements.
-    Instead in MsPASS the error messages posted to any data object are automatically saved in the
-    database when the data object is saved with cross-references to the data with
-    which that error was associated.  In addition,
-    following a well-established approach
-    used is seismic reflection systems since the 1960s, MsPASS provides a
-    integrated "kill" mechanism that allows data to be carried along
-    but ignored.  That model maps well to massively parallel scheduling
-    because dead data are treated like live data but they just process faster.
-
--   MsPASS promotes reproducible science through two different mechanism:
-
-    1.  The standard frontend is a `jupyter lab <https://jupyterlab.readthedocs.io/en/latest/>`__ interface.   Jupyter
-        notebooks are a proven, useful mechanism to support reproducible
-        calculations and document what exactly was done without major
-        headaches.
-    2.  MsPaSS has an embedded processing history  capability.
-        The goal of that component of MsPASS is to ultimately allow
-        publication of the processing workflow used in a scientific paper that
-        would allow the reader to reproduce the data that paper used.  At this
-        time that part of the system remains incomplete.
-        For that reason (and for efficiency) MsPASS processing functions make
-        handling history optional and by default it is turned off.  If the system
-        grows as we hope that limitation will disappear.
-
--   The design of MsPASS has stressed leading edge but not bleeding edge open-source
-    technologies.  MsPASS was assembled from
-    a long list of general purpose, open-source packages.
-    Some are C/C++ libraries that
-    are linked with code in the ccore modules (e.g. `boost <https://www.boost.org/>`__
-    and the `GNU Scientific Library <https://www.gnu.org/software/gsl/>`__).
-    and some are python packages like ObsPy.
-
-Getting Started
-~~~~~~~~~~~~~~~~~~~
-
-The first step to use MsPASS is to install a local copy that you can use
-for initial experimentation.
-:ref:`Click here <mspass_desktop>` for desktop installation instructions.
-
-We have an extensive set of tutorials based on jupyter notebooks
-found `here <https://github.com/mspass-team/mspass_tutorial>`__.
-For most people these are a good way to learn the package on their own.
-
-Organization of User Manual
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The titles of the sections of this manual should serve as guides for
-how to learn more about a topic of interest.   Except for this section the
-manual is not intended to be read in the order of the topics posted as
-hypertext in the contents page.  A learning model most people find most
-effective is to work through the tutorials and reading sections of this
-manual as questions arise or by following hypertext links from the tutorials.
+1. Use the :ref:`desktop quick start <quick_start>` to run a small local
+   environment and confirm that its persistent project directory is working.
+2. Read :ref:`the MsPASS component model <mspass_components>` and
+   :ref:`seismic data object concepts <data_object_design_concepts>` to learn
+   the vocabulary used throughout the manual.
+3. Continue with :ref:`database concepts <database_concepts>` and the
+   :ref:`error-handling guide <handling_errors>` before importing or processing
+   a substantial data set.
+4. Work through the `MsPASS tutorial notebooks
+   <https://github.com/mspass-team/mspass_tutorial>`__ with a small data set,
+   using the manual to explore each concept in more depth.
+5. After the serial workflow is scientifically correct, read the
+   :ref:`parallel processing guide <parallel_processing>` and the relevant
+   deployment pages before increasing its scale.
+6. Consult the :doc:`Python API <../python_api/index>` while writing workflows.
+   The :doc:`C++ API <../cxx_api/index>` is primarily useful when extending the
+   core data model or compiled implementation.

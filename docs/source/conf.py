@@ -181,9 +181,6 @@ templates_path = ["_templates"]
 exclude_patterns = [
     "that_style",
     "**/_build",
-    "getting_started/deploy_mspass_with_docker_compose.rst",
-    "getting_started/quick_start.rst",
-    "getting_started/run_mspass_with_docker.rst",
     "user_manual/appendix_historical_perspective_essay.rst",
     "user_manual/research_computing_essay.rst",
 ]
