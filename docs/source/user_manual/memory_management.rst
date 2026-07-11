@@ -19,11 +19,11 @@ an RDD by Spark and a bag by Dask) are a significant fraction of any nodes
 memory.
 
 In this document we discuss pitfalls we are aware of in
-memory management with MsPASS.  This document is focused mainly on dask
+memory management with MsPASS.  This document is focused mainly on Dask
 because we have more experience using it.
-The main dask document on dask memory management is found
+The main Dask document on memory management is found
 `here <https://distributed.dask.org/en/stable/memory.html>`__.
-The comparable page for spark is `here <https://spark.apache.org/docs/latest/tuning.html>`__.
+The comparable page for Spark is `here <https://spark.apache.org/docs/latest/tuning.html>`__.
 As for most heavily used packages like this there are also numerous pages
 on the topic that will quickly bury you with a web search.   We produced this
 document to help you wade through the confusion by focusing on the practical
@@ -68,26 +68,35 @@ branches) with the first task being a read operation and the last being
 a write (save) operation.
 
 To clarify that abstract idea consider a concrete example.   The
-code box below is a dask implementation of a simple job with
+code box below is a Dask implementation of a simple job with
 7 steps:   query database to define the dataset, read data,
 detrend, bandpass filter, window around P arrival time,
-compute signa-to-noise estimates, and
+compute signal-to-noise estimates, and
 save result.   Here is a sketch of the workflow omitting complexities of
 imports and initializations:
 
 .. code-block:: python
 
-   # assume database handle, db, and query are defined earlier
-   cursor = db.wf_miniseed.find(query)
+   from mspasspy.algorithms.signals import detrend, filter
+   from mspasspy.algorithms.snr import arrival_snr
+   from mspasspy.algorithms.window import WindowData
+   from mspasspy.io.distributed import read_distributed_data
+
+   # Assume database handle db, query, nwin, and swin are defined earlier.
    # Npartitions assumed defined in initializations - see text below for
    # what this defines and why it is important for memory management
-   mybag = read_distributed_data(db,cursor,npartitions=Npartitions)
+   mybag = read_distributed_data(
+       db,
+       query=query,
+       collection="wf_miniseed",
+       npartitions=Npartitions,
+   )
    mybag = mybag.map(detrend)
-   mybag = mybag.map(filter,type="bandpass",freqmin=0.01,freqmax=1.5)
-   mybag = mybag.map(WindowData,-200.0,200.0)
+   mybag = mybag.map(filter, type="bandpass", freqmin=0.01, freqmax=1.5)
+   mybag = mybag.map(WindowData, -200.0, 200.0)
    # assume nwin and swin defined initialization
-   mybag = mybag.map(arrival_snr,noise_window=nwin,signal_window=swin)
-   mybag = mybag.map(db.save_data,data_tag="step1",return_data=False)
+   mybag = mybag.map(arrival_snr, noise_window=nwin, signal_window=swin)
+   mybag = mybag.map(db.save_data, data_tag="step1", return_data=False)
    mybag.compute()
 
 This simple workflow consists only of map operators and is terminated by
@@ -111,7 +120,7 @@ The DAG for this workflow is illustrated below
     number of processors match the number of partitions each processor would
     be assigned 1/5th of the data.  Termination of the workflow with a database
     save (`save_data`) makes each pipeline largely independent of the others and
-    can improve performance as not processor has to wait for another except in
+    can improve performance because no processor has to wait for another except in
     competition for attention from the database server.
 
 Now remember that a bag (RDD in spark) can be conceptualized as a
@@ -129,13 +138,13 @@ too large can overwhelm the scheduler requiring it to handle a potentially
 massive DAG.  The reasons, as you can see in the figure, is that the DAG
 size for a pure map workflow like this scales by the number of
 partitions (`Npartitions` in the python code above).   The effort required to
-do the bookeeping for a million partitions differs dramatically from
+do the bookkeeping for a million partitions differs dramatically from
 that required to do a few hundred.
 On the other hand, because the memory
 use for the processing scales with the memory required to load each partition
 small numbers of partitions used with a huge dataset can, at best,
-degrade performance and at worse crash the workflow from a memory fault.
-Using our cutsy eating an elephant analogy, the issue can be stated this way.
+degrade performance and, at worst, crash the workflow from a memory fault.
+Using our informal eating-an-elephant analogy, the issue can be stated this way.
 If you eat an elephant one atom at a time and then try to
 reassemble the elephant the problem is overwhelming.  On the other hand, if
 you cut the elephant up into chunks that are too big to handle, you can't
@@ -204,12 +213,13 @@ that are worth mentioning:
    There are also more subtle issues with threading related to the python GIL
    (Global Interpreter Lock).   Pure python function work badly with worker
    threads because each thread shares a common GIL.
-   The defaults, however, are clear.  For dask each worker container
-   (running in a node by itself) will use a thread pool with the number of
-   worker threads equal to the number of CPUs assigned to the container.
-   That is normally the number of cores on that physical node.  Pyspark,
-   in contrast, seems to always use one process per worker and default
-   is less subject to the GIL locking problem.
+   The exact worker/process/thread layout is deployment-specific.  Current
+   MsPASS launch configurations explicitly set worker counts and resource
+   limits rather than relying on one universal Dask or Spark default.  Inspect
+   the scheduler dashboard and the applicable deployment guide before using
+   thread count in a memory estimate.  Python-heavy work is often better
+   served by more processes with fewer threads, while compiled operations that
+   release the GIL may benefit from threads.
 -  Both dask and spark have tunable features for memory management and the
    way scheduling is handled.   In dask they are optional arguments to the
    constructor for the dask client object.   For spark it is defined in
@@ -251,7 +261,7 @@ limits of both node and total memory pools.  If they are asked to do
 something impossible, like unintentionally asking the system to fit an
 entire data set in cluster memory, we have seen them fail and abort.
 Even worse is that when prototyping a workflow on a desktop outside
-of the containerized environement we have seen
+of the containerized environment we have seen
 dask crash the system by overwhelming memory.
 (Note this never seems to happen running in a container which is
 a type example of why containers are the norm for cloud systems.)
@@ -287,11 +297,9 @@ as warnings for desktop use:
    If your job aborts with a memory fault, first try closing every other
    application and running the job again with the system memory monitor
    tool running simultaneously.
--  Running MsPASS under docker with normal memory parameters should never
-   actually crash your system.   The reason is docker by default will only
-   allow the container to utilize some fraction of system memory.
-   Memory allocation failures are then relative to container size not
-   system memory size.
+-  A container memory limit can protect the host by confining an
+   out-of-memory failure to the container.  Do not assume Docker imposes a
+   safe limit automatically; verify the limits in the active deployment.
 
 In working with very large data sets there is the added constraint of
 what file systems are available to store the starting waveform data,
@@ -358,7 +366,7 @@ through a feature called `return_value_policy` described
 At the time this manual section was written we were actively working
 to get this setting right on all the C++ data objects, but be warned
 residual problems may exist.   If you experience memory bloat problems
-please report this to us wo we will try to fix the issue as quickly as possible.
+please report it so we can investigate the issue.
 
 bag/RDD Partitions and Pure Map Workflows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -372,6 +380,11 @@ important subset of possible workflows.
 
 We need to first define some symbols we use for formulas we
 develop below:
+
+The formulas are sizing heuristics.  They omit Python/C++ object overhead,
+temporary arrays created by individual algorithms, serialization buffers, and
+scheduler prefetching.  Measure representative partitions on the target
+deployment before choosing production settings.
 
 -  Let :math:`N` denote the number of data objects loaded into the
    workflows bag/RDD.
@@ -434,9 +447,9 @@ and for Seismogram objects
 
   S_{seis} = 24 N_s + S_{header}
 
-For pure map operator jobs we have found dask, at least, always reduces the
-workflow to a pipeline that moves data as illustrated in the animated gif
-figure above.
+Pure map workflows can often be optimized into a pipeline resembling the
+animated figure above.  This is a useful planning model, not a guarantee of
+the scheduler's execution order or peak memory use.
 
 The pipeline structure reduces memory use to a small, integer multiple, which we
 will call :math:`N_c` for number of copies, of the input object size.   i.e. as
@@ -458,7 +471,7 @@ to define the following nondimensional number:
 .. math::
 
   K_{map} = \frac{\frac{S_{worker}}{N_{threads}}}{\frac{N S_d}{N_{partitions}}}
-  = \frac{S_{worker} N_{partitions}}{N_{theads} N S_d}
+  = \frac{S_{worker} N_{partitions}}{N_{threads} N S_d}
 
 where :math:`S_d` denotes the data object size for each component.
 In MsPASS :math:`S_d` is :math:`S_{ts}` for TimeSeries data and
@@ -468,26 +481,29 @@ implicit in the data partitioning.
 
 The same formula can be applied to ensembles, but the computation of
 :math:`S_d` requires a different formula given in the section below
-on ensembles.  :math:`K_c` is best thought of as a nondimensional
+on ensembles.  :math:`K_{map}` is best thought of as a nondimensional
 number that characterizes the memory requirements for a pure map,
 workflow implemented by a pipeline with :math:`N_{threads}`
-working on blocks of data with size defined by :math:`S_d N_{partitions}`.
+working on an estimated per-partition block of size
+:math:`N S_d/N_{partitions}`.
 If the ratio is large
 spilling is unlikely.   When the ratio is less than one spilling is
 likely.  In the worst case, a job may fail completely with a memory
-fault when :math:`K_c` is small.  As stated repeatedly in this section
+fault when :math:`K_{map}` is small.  As stated repeatedly in this section
 this issue is a work in progress at the time of this writing, but
 from our experience for a typical work flow you should aim to tune the
-workflow to have :math:`K_c` be of the order of 2 or more to avoid
+workflow to have :math:`K_{map}` be of the order of 2 or more to leave
+headroom and reduce the risk of
 spilling.  Workflows with highly variable memory requirements within
 a pipeline (e.g. anytime a smaller waveform segment is cut from
-larger ones.) may allow smaller values of :math:`K_c`, particularly if
+larger ones) may allow smaller values of :math:`K_{map}`, particularly if
 the initial read is the throttle on throughput.
 
-The main way to control :math:`K_c` is to set :math:`N_{partitions}`
+The main way to control :math:`K_{map}` is to set :math:`N_{partitions}`
 when you create a bag/RDD.   In MsPASS that is normally set by
-using the `number_partitions` optional argument in the `read_distributed_data`
-function.   Any other approach requires advanced configuration options
+using the ``npartitions`` optional argument in :py:func:`read_distributed_data
+<mspasspy.io.distributed.read_distributed_data>`.
+Other approaches require advanced configuration options
 described in documentation for dask and spark.
 
 Reduce Operations
@@ -498,14 +514,14 @@ that most seismic processing workflows are most effectively expressed
 as a chain of map operators applied to a bag/RDD.   There are, however,
 two common algorithms that can be expressed as "reduce" operators:
 (1) one-pass stacking (i.e. an average that does not require an
-interative loop such as an M-estimator.), and (2) forming ensembles on the
+iterative loop such as an M-estimator), and (2) forming ensembles on the
 fly from a bag/RDD of atomic data.  These two examples have fundamentally different
 memory constraints.
 
 A stacking algorithm that produces a smaller number of output signals
 than inputs, which is the norm, is less subject to memory issues.
 That is particularly true if the termination of the workflow saves
-the stacked data to a databases.   To be more concrete, here is
+the stacked data to a database.   To be more concrete, here is
 a sketch of a simple stacking algorithm summing common source gathers
 aligned by a P wave arrival time defined in each object's Metadata
 container with the key "Ptime".  The data are grouped for the
@@ -520,25 +536,42 @@ reduce(fold) operation by the Metadata key `source_id`:
     # A more robust version should test for validity - here assume data
     # was preprocessed to be clean
     t0 = d["Ptime"]
-    return d.ator(t0)
+    d.ator(t0)
+    return d
+
   def key_func(d):
     """
     Used in foldby to define group operation - here with source_id
     """
     return d["source_id"]
 
+  def fold_result_data(item):
+    """Extract the stacked datum from Dask's (key, value) result."""
+    return item[1]
+
+  from mspasspy.algorithms.window import WindowData
+  from mspasspy.io.distributed import read_distributed_data
   from mspasspy.reduce import stack
   # Assumes data was preprocessed to be clean and saved with this tag
-  query={"data_tag" : "read_to_stack_data"}
-  cursor = db.wf_TimeSeries.find({})
+  query = {"data_tag": "read_to_stack_data"}
   # assumes npartitions is set earlier in the code - see text for discussion
-  mybag = read_distributed_data(db,cursor,number_partitions=npartions)
+  mybag = read_distributed_data(
+      db,
+      query=query,
+      collection="wf_TimeSeries",
+      npartitions=npartitions,
+  )
   mybag = mybag.map(ator_by_Ptime)
-  mybag = mybag.map(WindowData,-5.0,30.0)
-  # foldby is dask method of bag - pyspark has a different function mame
-  mybag = mybag.foldby(keyfunc, stack)
-  mybag = mybag.map(db.save_data,data_tag="stacked_data")
-  resulst = mybag.compute()
+  mybag = mybag.map(WindowData, -5.0, 30.0)
+  # foldby is a Dask Bag method; Spark uses different grouping operations.
+  mybag = mybag.foldby(key_func, stack)
+  mybag = mybag.map(fold_result_data)
+  mybag = mybag.map(
+      db.save_data,
+      data_tag="stacked_data",
+      return_data=False,
+  )
+  results = mybag.compute()
 
 The DAG for this workflow with 2 sources and 5 partitions looks like this:
 
@@ -558,10 +591,10 @@ The DAG for this workflow with 2 sources and 5 partitions looks like this:
     makes that data available for processing by other tasks.   Processing
     tasks are illustrated by black rectangles with arrows joining them
     to other tasks that illustrate the DAG for this workflow.
-    Note that in this case each partition has to be linked to each
-    instance of the stack task.   This illustrates why the scheduler has
-    to keep all data in memory before running the stack process as the
-    foldby function has no way of knowing what data is in what partition.
+    Records from every partition may contribute to each stack key.  The
+    scheduler therefore has to shuffle and retain intermediate accumulators
+    until grouped reductions complete; it does not necessarily hold the
+    entire input dataset in memory at once.
 
 We emphasize the following that are the lessons you should learn from
 the above:
@@ -570,7 +603,7 @@ the above:
    "reduce" operation:  (1) a function defining how data to be
    stacked are grouped, and (2) a function telling dask how the data object
    are to be combined.  The first is the small function we created
-   called `keyfunc` that returns the value of the `source_id`.  The second
+   called `key_func` that returns the value of the `source_id`.  The second
    is the mspass stack function which will function correctly as a
    "reduce" operator (For more on that topic see the section titled :ref:`parallel_processing`.)
 -  In this workflow the left side of the graph is a
@@ -584,11 +617,13 @@ the above:
 -  Our example above shows a best practice that would be normal use for
    any stack algorithm.  That is, the final operator is a call to the
    `save_data` method of the database handle (`db` symbol in this example).
-   The default behavior of `save_data` is to return only the ObjectId
-   of the inserted waveform document.
+   With its default ``return_data=False`` and ``return_list=["_id"]``,
+   `save_data` returns a small dictionary containing the inserted waveform
+   document's ObjectId.
    As a result, on the last line when the `compute` method is
-   called, dask initiates the calculations and arranges to have
-   the output of `save_data` returned to the scheduler node.   That approach
+   called, Dask initiates the calculations and arranges to have
+   the small dictionaries returned by `save_data` (``{"_id": ...}`` by
+   default) collected on the client.  That approach
    is useful to reduce memory use in the scheduler node and data traffic
    as calling the output of the `compute` method is the content of the
    bag converted to a python list.   If the output is known to be small
@@ -606,15 +641,15 @@ the above:
    is the memory requirements.   The intermediate step, in this workflow,
    of creating the bag of `stack` outputs should, ideally, fit in memory
    to reduce the chances of significant "spilling" by workers assigned the
-   `stack` task.   The reason is that the grouping function implicit in
-   the above workflow cannot know until the entire input bag is processed
-   where to send all the outputs of the map operations.   The stack outputs
-   have to be held somewhere until the left side of the DAG completes.
+   `stack` task.  The grouping operation must route records to per-key
+   accumulators across partitions.  Those accumulators and shuffle buffers
+   consume memory until their reductions complete.
 -  A final memory issue is the requirements for handling the input.
    As above the critical, easily set option is the value assigned to the `npartitions`
    parameter.   We recommend computing the value of :math:`K_{map}` with
    the formula above and setting up the run to assure
-   :math:`K_{map}<1`.  Unless the average number of inputs to `stack` are
+   :math:`K_{map}>1`; a larger safety factor such as 2 is a more conservative
+   starting point.  Unless the average number of inputs to `stack` is
    small that should normally also guarantee the output of the `stack`
    task would not spill.
 
@@ -674,32 +709,39 @@ data logically organized as by source:
 
 .. code-block:: python
 
-  #imports would normally be here - omitted for brevity
+  from mspasspy.algorithms.bundle import bundle_seed_data
+  from mspasspy.algorithms.signals import detrend
+  from mspasspy.db.normalize import MiniseedMatcher
+  from mspasspy.io.distributed import read_distributed_data
+
   def make_source_id_queries(db):
     """
     Demonstrates how to generate a list of queries to use as
     input for read_distributed_data to build a bag of ensembles.
     """
     srcidlist = db.wf_miniseed.distinct("source_id")
-    querylist = list()
-    for id in srcidlist:
-      query = {"source_id" : id}
-      querylist.append(query)
-    return querylist
+    return [{"source_id": source_id} for source_id in srcidlist]
 
   # Initialization code for database handle (db) would normally be here
-  matcher = MiniseedMatcher(db)
+  matcher = MiniseedMatcher(
+      db,
+      collection="channel",
+      attributes_to_load=[
+          "_id", "starttime", "endtime", "lat", "lon", "elev", "hang", "vang"
+      ],
+  )
   querylist = make_source_id_queries(db)  # defined above
   number_partitions = len(querylist)
-  mybag = read_distributed_data(querylist,
-              db,
-              collection="wf_miniseed",
-              npartitions=number_partitions,
-              )
-  mybag = mybag.map(detrend)  # not required but more efficiently done at this stage
-  mybag = mybag.map(normalize,matcher)  # needed to define orientation attributes
+  mybag = read_distributed_data(
+      querylist,
+      db=db,
+      collection="wf_miniseed",
+      normalize=[matcher],
+      npartitions=number_partitions,
+  )
+  mybag = mybag.map(detrend)  # optional, but efficient at this stage
   mybag = mybag.map(bundle_seed_data)
-  mybag = mybag.map(db.save_data)
+  mybag = mybag.map(db.save_data, return_data=False)
   mybag.compute()
 
 
@@ -710,7 +752,10 @@ the `TimeSeries` and assembles the appropriate group of three such
 objects into `Seismogram` objects.   The example shows the simplest approach
 to reduce memory use.  We create the dask bag with the `read_distributed_data`
 function.  We pass it the optional parameter
-`npartitions` set so each enemble is treated as a single partition.
+``npartitions`` set so each ensemble query is treated as a single partition.
+That isolates the memory required by one ensemble, but a very large query list
+can impose excessive scheduler overhead.  Tune the partition count rather
+than applying this one-query-per-partition rule mechanically.
 If the ensemble size is large (:math:`K_{map}<1`) three approaches can be considered
 to improve performance.
 
@@ -721,12 +766,14 @@ to improve performance.
     with `WindowData` as used in the earlier example could reduce the data
     size by an order of magnitude.
 #.  Although we've never tried this, it should be feasible to create a
-    sequence of MongoDB queries that would sort miniseed data appropriately
-    and group them into smaller bundles of the order of 3 that could be
-    scanned and "bundled" into atomic `Seismogram` objects with the
-    function :code:`BundleSeedGroup`.  That workflow would be similar to
-    the one above but the list of queries passed to `read_distributed_data`
-    would be more complex and usually much larger.
+    sequence of MongoDB queries that sort miniSEED data appropriately and
+    group related channels into small ``TimeSeriesEnsemble`` objects, ideally
+    one three-component group at a time.  Apply the supported
+    :func:`~mspasspy.algorithms.bundle.bundle_seed_data` function to each
+    small ensemble.  That workflow would be similar to the one above, but the
+    query list passed to ``read_distributed_data`` would be more complex and
+    usually much larger.  The compiled ``_BundleSEEDGroup`` helper is private
+    implementation detail and should not be called from user workflows.
 #.  If all else fails the workflow can be run as a serial job.
     For small data sets that can be the best alternative.  For very large
     data sets the time required can be problematic and would only be
@@ -757,10 +804,11 @@ Using MongoDB to Manage Memory
 Users should always keep in mind that the ultimate, scalable solution for
 memory management is the MongoDB database.   If an algorithm applied to
 a dataset is memory intensive one question to consider is if there is a
-solution using MongoDB?  The example immediately above is an example;
-running the lower-level :code:`BundleSeedGroup` could, in principle, be
-used to break the problem into smaller chunks.   With the right incantation sent to
-MongoDB that algorithm is likely a good alternative way to create
+solution using MongoDB?  The example immediately above is an example:
+MongoDB queries can break the input into small channel groups that are read
+as ``TimeSeriesEnsemble`` objects and passed to
+:func:`~mspasspy.algorithms.bundle.bundle_seed_data`.  With the right query,
+that is a scalable way to create
 `Seismogram` objects from single station groups of `TimeSeries` objects.
 
 There are a number of other common algorithms that we know from experience
