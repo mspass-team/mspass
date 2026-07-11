@@ -6,42 +6,42 @@ Graphics in MsPASS
 Overview
 ~~~~~~~~~~~
 
-Data visualization, in general, and graphics to visualize seismic data,
-in particular, are critical elements to understand data and the
-result of a processing workflow.   On the other hand, because of the
-importance of graphical presentation there are a huge number of packages
+Data visualization in general, and graphics for seismic data in particular,
+are critical for understanding data and the results of a processing workflow.
+Because graphical presentation is important, however, there are many packages
 available today to create various types of graphics.   The main goal of
-MsPASS is a framework to support parallel processing to make previously
+MsPASS is to support parallel processing that makes previously
 unfeasible data sets and/or algorithms feasible.  Consequently, in our
 initial development we aimed to provide only basic support for graphics
 of native data types.  Users should understand that custom graphics beyond our
-basic support support is the user's responsibility.  Because of the
-large number of options in existence we believe that is reasonable compromise
+basic support is the user's responsibility.  Because of the
+large number of available options, we believe that is a reasonable compromise
 with finite resources.
 
-The current support for graphics has three component.
+The current support for graphics has three components.
 
 #.  The lowest level support is to use the commonly used package
     called `matplotlib <https://matplotlib.org/>`__.   Because the
-    sample arrays of all seismic objects act like numpy arrays that
+    sample arrays of all seismic objects act like NumPy arrays, that
     is often the simplest mechanism to make a quick plot.  The basics of
     that approach are described below.
-#.  We have plotting classes called :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>`
-    and :py:class:`SectionPlotter<mspasspy.graphics.SectionPlotter>` to plot our native data types.
-#.  As noted elsewhere a core component of MsPASS are fast conversions routines
-    to and from obspy's native data types (:code:`Trace` and :code:`Stream`).
-    That is relevant because obspy's native data types have integrated
-    plot methods that produce wiggle trace plots of seismic data using the
-    matplotlib library.  That is an alternative to making custom
-    matplotlib plots from primitives - item 1.
+#.  We provide plotting classes called
+    :py:class:`SeismicPlotter <mspasspy.graphics.SeismicPlotter>` and
+    :py:class:`SectionPlotter <mspasspy.graphics.SectionPlotter>` for native
+    MsPASS data types.
+#.  As noted elsewhere, MsPASS provides fast conversion routines to and from
+    ObsPy's native :py:class:`Trace <obspy.core.trace.Trace>` and
+    :py:class:`Stream <obspy.core.stream.Stream>` types.  Those classes have
+    integrated plotting methods, providing an alternative to custom Matplotlib
+    plots made from primitives.
 
 Matplotlib graphics
 ~~~~~~~~~~~~~~~~~~~~
-Because data vectors of
+Because the data vectors of
 :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and
 :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects
-act like numpy arrays the symbol defining the data vector
-can be passed directly to matplotlib low-level plotters.
+act like NumPy arrays, the symbol defining the data vector
+can be passed directly to Matplotlib's low-level plotters.
 Here, for example, is a code fragment that would plot the
 data in a :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` object
 with a simple wiggle plot and a time axis with 0 defined as start time.
@@ -50,12 +50,11 @@ with a simple wiggle plot and a time axis with 0 defined as start time.
 
   import matplotlib.pyplot as plt
   import numpy as np
-  ... other code here to define d as a TimeSeries ...
-  d_shifted = ator(d,d.t0)
-  t=np.zeros(d_shifted.npts)
-  for i in range(d_shifted.npts):
-    t[i] = d_shifted.time()
-  plt.plot(t,d_shifted.data)
+
+  # Other code defines d as a TimeSeries.
+  t = np.asarray(d.time_axis()) - d.t0
+  plt.plot(t, np.asarray(d.data))
+  plt.xlabel("Time since first sample (s)")
   plt.show()
 
 Similarly, one way to plot a :py:class:`mspasspy.ccore.seismic.Seismogram`
@@ -65,87 +64,88 @@ object is the following with subplots:
 
   import matplotlib.pyplot as plt
   import numpy as np
-  ... other code here to define d as a TimeSeries ...
-  d_shifted = ator(d,d.t0)
-  t=np.zeros(d_shifted.npts)
-  for i in range(d_shifted.npts):
-    t[i] = d_shifted.time()
-  fig,ax = plt.subplots(3)
-  for i in range(3):
-    ax[i].plot(t,d_shifted.data[i,:])
+
+  # Other code defines d as a Seismogram.
+  t = np.asarray(d.time_axis()) - d.t0
+  data = np.asarray(d.data)
+  fig, axes = plt.subplots(3, sharex=True)
+  for component in range(3):
+    axes[component].plot(t, data[component, :])
+  axes[-1].set_xlabel("Time since first sample (s)")
   plt.show()
 
 A few comments about these examples:
 
-#.  Both use the ator method to shift the time base so 0 is the data
-    starttime.  Without that step the time axis would be useless as it
-    would be in epoch times, which are huge numbers.
-#.  Both define the time axis manually using a loop and the
-    :code:`time` method common to both :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and
-    :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>`.   We have considered adding a
-    :code:`time_axis` method to the API, but the example shows it
-    would be so trivial we viewed it unnecessary baggage for the API.
-#.  Note there are many options in matplotlib that could be used to
-    enhance this plot.  e.g. axis labels, a title, using UTC dates strings
+#.  Both use the ``time_axis`` method shared by
+    :py:class:`TimeSeries <mspasspy.ccore.seismic.TimeSeries>` and
+    :py:class:`Seismogram <mspasspy.ccore.seismic.Seismogram>`.  Subtracting
+    ``d.t0`` makes the first plotted sample zero without changing ``d``.
+    For long UTC records, use Matplotlib's date support or the ObsPy plotting
+    approach described below.
+#.  Matplotlib has many options that can enhance these plots, such as axis
+    labels, titles, UTC date strings
     for the time axis for long records, different symbol styles, etc.
-    The point is that for custom plots matplotlib provides all the tools
+    The point is that for custom plots Matplotlib provides all the tools
     you are likely to need.  In fact, the MsPASS graphics module
-    itself uses matplotlib.
+    itself uses Matplotlib.
 
 Native Graphics
 ~~~~~~~~~~~~~~~~~~~~~~
-The goal of the graphics module in MsPASS was to
-provide simple tools to plot native data types.  We thousands first remind
-the user what is considered "native data" in MsPASS.  They are:
-(1) :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` objects are scalar, uniformly sampled seismic
-seismic signals (a single channel), (2) :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects are
-bundled three-component seismic data, and (3) :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>` and
-:code:`SeismogramEnsemble` objects are logical groupings of the two
+The goal of the graphics module in MsPASS is to
+provide simple tools to plot native data types.  First recall what is considered
+"native data" in MsPASS: (1)
+:py:class:`TimeSeries <mspasspy.ccore.seismic.TimeSeries>` objects are scalar,
+uniformly sampled seismic signals (a single channel), (2)
+:py:class:`Seismogram <mspasspy.ccore.seismic.Seismogram>` objects are bundled
+three-component seismic data, and (3)
+:py:class:`TimeSeriesEnsemble <mspasspy.ccore.seismic.TimeSeriesEnsemble>` and
+:py:class:`SeismogramEnsemble <mspasspy.ccore.seismic.SeismogramEnsemble>`
+objects are logical groupings of the two
 "atomic" objects in their names.
 
-The second issue is what types of plots are most essential?   Our core
-graphics support two plot conventions:
+The next question is which plot conventions are most useful.  The
+graphics module supports two plot conventions:
 
-1.  :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>` plots data in the standard convention used to plot
-    nearly all earthquake data.  :py:class:`SeismicPlotter<mspasspy.graphics.SeismicPlotter>` plots data with
-    time as the x (horizontal axis).
-2.  :py:class:`SectionPlotter<mspasspy.graphics.SectionPlotter>` plots data in the standard convention for seismic
+1.  :py:class:`SeismicPlotter <mspasspy.graphics.SeismicPlotter>` uses the
+    standard convention for most earthquake data, with time on the horizontal
+    axis.
+2.  :py:class:`SectionPlotter <mspasspy.graphics.SectionPlotter>` uses the
+    standard convention for seismic
     reflection data.  Because with seismic reflection data normal moveout
-    corrected time is a proxy for depth it is universal to plot time
+    corrected time is a proxy for depth, it is customary to plot time
     as the y axis (vertical) and running backward from the normal
-    mathematical graphic convention.   i.e. time is always plotted with
-    0 at the top of the plot and the longest travel time at the bottom of
-    the plot.
+    mathematical graphics convention.  Time increases downward; with the
+    usual relative-time input, zero is at the top and the longest travel time
+    is at the bottom.
 
 There are also a number of common ways to plot seismic data.   Our graphics
 classes support the four most common methods:
 
-1.  Many seismologists prefer the simple :code:`wiggle trace (wt)` plot for
+1.  Many seismologists prefer the simple ``wiggle trace (wt)`` plot for
     displaying earthquake signals.  As the name implies the plot is a line
     graphic of the signal.
 2.  The traditional standard plot method for reflection data is usually called a
-    :code:`wiggle trace variable area (wtva)` plot.  As the name implies such plots are
+    ``wiggle trace variable area (wtva)`` plot.  As the name implies such plots are
     first a wiggle trace plot, but the plot adds a "variable area".  The
     "variable area" term means you fill positive values with a color.
-    Traditional plots from past when paper records were the norm is black but
+    Traditional paper plots used black fill, but
     other colors are common in published papers today.  Our plotting
     classes allow changing the fill to any color.
-3.  :code:`image plot (img)` graphics have been the norm in plotting reflection data since
+3.  ``image plot (img)`` graphics have been the norm in plotting reflection data since
     at least the 1990s.  An image plot uses a color map scaled by amplitude.
     These plots are most appropriate for data that are like modern reflection data:
     the data density is high and there is a strong correlation between
     signals plotted side-by-side.
 4.  The most complicated plot is what we call a
-    :code:`wiggle trace variable area with image overlay (wtvaimg)` plot.
-    The best way to understand this plot, and in fact is exactly how it is
-    produced, is first plot the data as an image plot and then overlay a
+    ``wiggle trace variable area with image overlay (wtvaimg)`` plot.
+    This is produced by first plotting the data as an image and then overlaying a
     wiggle trace variable area plot.  It is most appropriate for data that
     have similar waveforms but have a density low enough to resolve the
     individual wiggle traces.
 
-Below are examples of all four types of plots from our graphics tutorial.
-For details of the API and how to use our plotting capabilities is
-to run that tutorial and review the sphynx documentation on the
+Below are examples of all four plot types from the graphics tutorial in the
+`MsPASS tutorial repository <https://github.com/mspass-team/mspass_tutorial>`__.
+For API details, also review the Sphinx documentation for the
 :py:mod:`mspasspy.graphics` module.
 
 .. _wt_figure:
@@ -167,10 +167,10 @@ to run that tutorial and review the sphynx documentation on the
     :width: 600px
     :align: center
 
-    Figure 2.  Example of wiggle variable area trace plot created by
+    Figure 2.  Example of a wiggle trace variable area plot created by
     :py:class:`mspasspy.graphics.SeismicPlotter`.  The data plotted
     are the same as Figure 1.  This type of plot
-    is created with the "style" set to "wtva"
+    is created with the "style" set to "wtva".
     (Set with :py:meth:`mspasspy.graphics.SeismicPlotter.change_style` method)
 
 
@@ -183,7 +183,8 @@ to run that tutorial and review the sphynx documentation on the
     :width: 600px
     :align: center
 
-    Figure 3.  Example of wiggle trace variable area with an image overlay created by
+    Figure 3.  Example of a wiggle trace variable area plot with an image
+    background, created by
     :py:class:`mspasspy.graphics.SeismicPlotter`.  The data plotted
     are the same as Figure 1.  This type of plot
     is created with the "style" set to "wtvaimg".
@@ -205,77 +206,89 @@ to run that tutorial and review the sphynx documentation on the
     (Set with :py:meth:`mspasspy.graphics.SeismicPlotter.change_style` method)
 
 
-Finally, we would note that the plotters automatically handle switching to
-plot all the standard MsPASS data objects.   Some implementation details
-we note are:
+The two plotters share most conventions, but their current handling of native
+types differs in a few important ways:
 
-1.  :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>`  data generate one plot frame with a time axis and
-    a y axis of amplitude.
-2.  :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` data are displayed on one plot frame.  The three
-    components are plotted at equal y intervals in SeismicPlotter
-    (equal x intervals in SectionPlotter) with the x1, x2, x3 components arranged
-    from the bottom up (left to right for SectionPlotter).   There is an option
-    for both types of plots to reverse the order.
-3.  :code:`TimeSeriesEnsmble` data in a SeismicPlotter plot are plotted
-    at equal intervals from the bottom up (i.e. member[0] is at the bottom)
-    of the plot and the last member is a the top.   Similarly, the
-    SectionPlotter plots members at equal intervals ordered from left to right.
-    As with the Seismogram plot the order can be flipped.  We currently have
-    no support for variable spacing of plots used, for example, to plot
-    record sections.   We recommend using other packages for that purpose.
-4.  :code:`SeismogramEnsembles` have the most variance in how they could be
-    plotted.  We chose to always plot such data in three different windows.
-    The graphic for each component is actually done using a same method
-    as that for plotting a TimeSeriesEnsemble.  i.e. the plots generated to
-    plot a SeismogramEnsemble are three instances of plots for TimeSeriesEnsemble
-    data - one for each component.
+1.  :py:class:`SeismicPlotter <mspasspy.graphics.SeismicPlotter>` displays a
+    :py:class:`TimeSeries <mspasspy.ccore.seismic.TimeSeries>` in one figure
+    with time on the x axis and amplitude on the y axis.
+2.  A :py:class:`Seismogram <mspasspy.ccore.seismic.Seismogram>` is displayed
+    by ``SeismicPlotter`` in one figure, with components 0, 1, and 2 at equal
+    vertical intervals from bottom to top.
+3.  :py:class:`TimeSeriesEnsemble <mspasspy.ccore.seismic.TimeSeriesEnsemble>`
+    members are equally spaced.  ``SeismicPlotter`` defaults to member 0 at
+    the bottom and can reverse the order with its ``topdown`` method.
+    :py:class:`SectionPlotter <mspasspy.graphics.SectionPlotter>` places the
+    members from left to right and currently has no public order-reversal or
+    variable-spacing option.  Use a custom Matplotlib plot when physical
+    offsets rather than equal trace spacing are required.
+4.  :py:class:`SeismogramEnsemble <mspasspy.ccore.seismic.SeismogramEnsemble>`
+    data are displayed as three figures, one per component.  Each component
+    figure is produced using the corresponding ``TimeSeriesEnsemble`` path.
 
-A final point is that any plotting of earthquake data nearly always
-requires some form of scaling to prevent some data from clipping while others
-will look like flat lines even if they contain valid data.  The technical reason
-is that the dynamic range of any graphics devices is tiny compared to that
-of modern digital data acquisition systems (about 8 bits for graphics compared
-to 24 bit acquisition that is now the norm for earthquake data).  There is
-an internal scaling parameter that can be used for all graphics, but the
-internal scaling is inflexible.  If the default scaling proves inadequate
-use one of the functions for data scaling in
-:py:mod:`mspasspy.ccore.algorithms.amplitudes`.
+.. warning::
 
-Obspy Graphics
+   Use ``SeismicPlotter`` for atomic ``TimeSeries`` and ``Seismogram`` data.
+   The current ``SectionPlotter`` atomic ``TimeSeries`` path raises an error,
+   and its atomic ``Seismogram`` conversion does not orient the sample matrix
+   as three traces.  Its ensemble paths support all four plot styles described
+   above.
+
+A final point is that plotting earthquake data nearly always requires some
+form of scaling to prevent strong signals from clipping while weaker but valid
+signals look flat.  Both plotters expose ``scale`` and ``normalize`` settings;
+when ``normalize=True``, ``SeismicPlotter`` scales a copy rather than modifying
+the input.  For explicit workflow-controlled scaling, use
+:py:func:`scale <mspasspy.algorithms.window.scale>` before plotting.  It supports
+atomic and ensemble inputs, several amplitude metrics, and section-wide or
+per-member scaling.
+
+ObsPy Graphics
 ~~~~~~~~~~~~~~~~~~~~~~
 
-User's familiar with obspy may, in come cases, prefer to utilize obspy's
-built in graphics.   Obspy's data objects
+Users familiar with ObsPy may prefer to use its built-in graphics.  ObsPy's
+data objects
 (:py:class:`Trace <obspy.core.trace.Trace>`
 and
 :py:class:`Stream <obspy.core.stream.Stream>`)
-have a plot method as a member of the data object.  MsPASS has
-a suite of converters between obspy and MsPASS data objects.
-These converters can be used in plotting scrips like the following:
+have a ``plot`` method.  MsPASS has a suite of converters between ObsPy and
+MsPASS data objects.  These converters can be used in plotting scripts like
+the following:
 
 .. code-block:: python
 
-   # Something above created d as a TimeSeriesEnsemble
-   d_obspy=TimeSeriesEnsemble2Stream(d)
+   from mspasspy.util.converter import TimeSeriesEnsemble2Stream
+
+   # Something above created d as a TimeSeriesEnsemble.
+   d_obspy = TimeSeriesEnsemble2Stream(d)
    d_obspy.plot()
 
+:py:func:`TimeSeriesEnsemble2Stream <mspasspy.util.converter.TimeSeriesEnsemble2Stream>`
+is also installed as the ``TimeSeriesEnsemble.toStream`` method
+when :py:mod:`mspasspy.util.converter` is imported.  The explicit function in
+the example makes the required import and conversion step clear.
 
 
 Extending MsPASS Graphics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-As noted at the beginning of this section the graphics available in
-MsPASS are simple by design.   If you need different graphics capabilities
-you have three different options we are aware of:
+As noted at the beginning of this section, the graphics available in
+MsPASS are simple by design.  If you need different capabilities, there are
+three main options:
 
-#.  Use the matplotlib approach and use one of the many features of
-    matplotlib to create a custom plot.
-#.  Extend the SectionPlotter or SeismicPlotter classes using python's inheritance
+#.  Use Matplotlib's features to create a custom plot.
+#.  Extend :py:class:`SectionPlotter <mspasspy.graphics.SectionPlotter>` or
+    :py:class:`SeismicPlotter <mspasspy.graphics.SeismicPlotter>` using Python's
+    inheritance
     mechanism.  If you look under the hood you will find that both classes use
-    `matplotlib <https://matplotlib.org/stable/index.html>`__ as noted earlier.
-    Although the top level :code:`plot` method returns nothing, the internal
-    methods that function uses all return a matplotlib handle.  Many
-    extensions of our graphics could be implemented by using those
-    plot handles and using additional matplotlib functions to decorate the
-    graphic or create GUI extensions.
+    `Matplotlib <https://matplotlib.org/stable/index.html>`__ as noted earlier.
+    ``SeismicPlotter.plot`` returns ``None``.  Most paths store figure handles
+    accessible through :py:meth:`~mspasspy.graphics.SeismicPlotter.get_plot_gcf` and
+    :py:meth:`~mspasspy.graphics.SeismicPlotter.get_3Censemble_gcf`.
+    For atomic ``TimeSeries`` wiggle plots, use Matplotlib's ``plt.gcf()``;
+    that path does not currently populate ``get_plot_gcf``.
+    ``SectionPlotter.plot`` returns a list containing one figure handle, or
+    three for a ``SeismogramEnsemble``.  These handles can be passed to
+    additional Matplotlib functions to decorate a graphic or build GUI
+    extensions.
 #.  Export the subset of your dataset you want to plot and use a different
     graphics package to make the graphic you need.
