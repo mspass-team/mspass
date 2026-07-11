@@ -268,21 +268,13 @@ MsPASS for a range of projects you will likely develop multiple configuration
 files that specify, for example, different numbers of workers.  You
 can specify an alternative configuration file by giving a path to that
 file as arg0 or via the kwarg with key "configuration_file".
-For example, if you had a ``configurations`` directory in your home directory
-with an alternate file ``quartz_4_node.yaml``, expand the home-directory marker
-before passing it to the launcher:
+For example, pass the absolute path to an alternate file:
 
 .. code-block::
 
-  import os
-  configuration_file = os.path.expanduser("~/configurations/quartz_4_node.yaml")
-  launcher = HPCClusterLauncher(configuration_file)
-
-or alternatively
-
-.. code-block::
-
-  launcher = HPCClusterLauncher(configuration_file=configuration_file)
+  launcher = HPCClusterLauncher(
+      configuration_file="/home/myusername/configurations/quartz_4_node.yaml"
+  )
 
 ~~~~~~~~~~~~~~~~~~~~~~
 Job submission
@@ -303,11 +295,9 @@ would submit it with "slurm" as follows:
 
   sbatch myproject.job
 
-noting the the ".job" in that file name is not required.
+noting that the ".job" in that file name is not required.
 It was done in this illustration to clarify it not a regular bash
-script but a slurm job.  The general approach is the same for
-all other job schedulers but the command to submit the job
-will be different.
+script but a Slurm job.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Understanding the python submission
@@ -382,15 +372,12 @@ previously in this mode.
 .. warning::
 
    The checked-in ``scripts/template`` and ``scripts/tacc_examples`` files are
-   historical starting points, not current turnkey job scripts.  They still
-   contain Stampede2 queue and hostname settings, legacy Singularity module
-   names, direct reverse tunnels, and MPI launch syntax that is not portable.
-   In particular, the
+   historical starting points, not turnkey job scripts.  Their queues, module
+   names, hostnames, tunnels, and process launchers must be adapted to the
+   target system.  For example,
    `current TACC launching guidance
    <https://docs.tacc.utexas.edu/hpc/stampede3/#running>`__ requires ``ibrun``
-   rather than ``mpirun`` or ``mpiexec``.  Reconcile every resource directive, module,
-   filesystem path, tunnel, and process launcher with current site
-   documentation before submitting one of these scripts.
+   rather than ``mpirun`` or ``mpiexec``.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Get a Copy of Configuration Scripts
@@ -502,7 +489,7 @@ institute run MsPASS, there may be a master copy of the MsPASS container
 you can use in this definition.  If so insert that path for this parameter.
 
 The next line, which sets the environment variable `APPTAINER_BIND`,
-is a bit more obscure.   Full understanding of why that incatation
+is a bit more obscure.   Full understanding of why that incantation
 is necessary requires the
 concept of how to "bind" a file system to the container.  A starting
 point is the
@@ -534,7 +521,7 @@ as follows:
     database data.  If this variable is not set it defaults to
     `$MSPASS_WORK_DIR/db`.
 -   `MSPASS_LOG_DIR` is used to write any log files.   In MsPASS that means
-    MongoDB and dask/Spark.  Any application that extends MsPaSS may choose to
+    MongoDB and Dask/Spark.  Any application that extends MsPASS may choose to
     log its own messages there.  If so we recommend creating an appropriately
     named subdirectory under the one defined for `MSPASS_LOG_DIR`.
     If this variable is not set it defaults to
@@ -583,9 +570,9 @@ before setting these directives and submitting your first job.
 
 Running a notebook interactively
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-In some cases is may be necessary or helpful to develop your
+In some cases it may be necessary or helpful to develop your
 workflow, which in the MsPASS case means the code blocks in a
-jupyter notebook, on the cluster.  Even if you developed the notebook
+Jupyter notebook, on the cluster.  Even if you developed the notebook
 on a desktop it is often necessary to run the same test you prototyped on
 the HPC cluster before running a very large job.   The simplest way to
 do that is to just run the notebook as above and verify you got the same
@@ -593,12 +580,9 @@ answer you got on the version you debugged on your desktop.
 You may need to follow the procedure here if you need to do some additional
 interactive debugging or your desktop has limitations (e.g. memory size)
 that you cannot simulate on your desktop.  This section describes
-the basic concepts required to do that.   Details will differ with
-how you communicate with the HPC cluster.  That is, what web browser
-you use on our local to interact with the jupyter notebook server.
-Furthermore, the complexity of ths section should be a warning that this
-entire process is not a good idea, at least for getting strarted,
-unless you have no other option.
+the basic concepts required to do that.  Details depend on how a browser on
+your local computer reaches the Jupyter server.  The complexity is a reason to
+prefer a supported portal when one is available.
 
 Prefer a center-supported portal or a scheduler-backed interactive allocation.
 For example, current TACC systems provide Jupyter through the TACC Analysis
@@ -615,10 +599,10 @@ below for potential networking issues.
 
 We assume that the interactive job you need to run is
 suitable for the all-in-one configuration
-we use in docker.   In that configuration all the individual MsPaSS components
+we use in Docker.  In that configuration all the individual MsPASS components
 are run as different processes in one container on one node.   Our template
 script for setup is called `single_node.sh`.  A method to launch MsPASS in that
-mode with slurm would be to enter the following command:
+mode with Slurm would be to enter the following command:
 
 .. code-block::
 
@@ -670,14 +654,9 @@ URL::
   http://c4.uits.iu.edu:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
 
 Do not infer a current connection recipe from that URL.  Use the site's portal
-or documented SSH-forwarding procedure, keep the Jupyter token secret, and do
-not expose Jupyter or the unauthenticated Dask dashboard on a public or shared
-interface.  The detailed URL is heavily site dependent.  There can be a great
-deal more complexity than this simplified historical example.  The mechanism may be defined in
-the script defined by `MSPASS_RUNSCRIPT`, but it might not be either.
-Some guidance can be found in the networking configuration subsection below and
-by looking at other implementation found on in the scripts directory
-of the mspass github site.
+or documented forwarding procedure, keep the Jupyter token secret, and do not
+expose Jupyter or the Dask dashboard on a shared interface.  Connection details
+are site-dependent; see the networking subsection below.
 
 There is a final, very important warning when running a "job" interactively
 started with slurm.  When you finish the interactive work you
@@ -933,11 +912,8 @@ following block is retained to explain that design, not as a current recipe.
 .. warning::
 
    Do not copy this block without approval and current instructions from your
-   computing center.  It assumes a Stampede2-era compute-node naming scheme,
-   four specifically named login nodes, and reverse forwards whose remote bind
-   address is not explicit.  Depending on the login server's SSH policy, this
-   can expose Jupyter or the unauthenticated Dask dashboard on a shared host.
-   Current TACC users should prefer the
+   computing center.  It assumes obsolete TACC hostnames and reverse forwards
+   that may expose services on a shared host.  Current TACC users should prefer the
    `TACC Analysis Portal <https://docs.tacc.utexas.edu/tutorials/TAP/>`__.
 
 .. code-block::

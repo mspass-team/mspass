@@ -670,13 +670,13 @@ class DictionaryCacheMatcher(BasicMatcher):
         build on this usually will need to do a linear search through the
         list if they need to find a particular instance (e.g. call to find_one).
 
-        :param mspass_object: data object to match against
-          data in cache (i.e. query).
-        :type mspass_object:  must be a valid MsPASS data object.
-          currently that means TimeSeries, Seismogram, TimeSeriesEnsemble,
-          or SeismogramEnsemble.   If it is anything else (e.g. None)
-          this method will return a tuple [None, elog] with elog being
-          a PyErrorLogger with a posted message.
+        :param mspass_object: data object to match against the cached data.
+          It must be a valid MsPASS data object: TimeSeries, Seismogram,
+          TimeSeriesEnsemble, or SeismogramEnsemble.  For any other input
+          type, the method returns ``[None, elog]`` with a
+          :class:`~mspasspy.util.error_logger.PyErrorLogger` explaining the
+          failure.
+        :type mspass_object: Metadata
 
         :return: tuple with two elements.  0 is either a list of valid Metadata
           container(s) or None and 1 is either None or an PyErrorLogger object.

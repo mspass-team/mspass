@@ -1,13 +1,11 @@
 .. _command_line_docker_desktop_operation:
 
-Advanced Docker CLI and Compose Overview
-========================================
+Docker CLI and Compose Overview
+===============================
 
-This page helps desktop users choose a MsPASS container workflow and maps the
-most common Docker operations between the single-container and Docker Compose
-forms.  It is an orientation and operations reference, not a second launch
-tutorial.  Follow the linked guide for the complete setup, persistence, and
-troubleshooting instructions for the workflow you choose.
+This page compares the MsPASS desktop workflows and lists their most common
+Docker commands.  For step-by-step setup, follow the linked guide for the
+workflow you choose.
 
 Choose a desktop workflow
 -------------------------

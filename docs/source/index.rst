@@ -12,11 +12,15 @@ MsPASS Documentation
 ====================
 
 MsPASS (Massive Parallel Analysis System for Seismologists) is an open-source
-framework for seismic data processing and management.  It combines a
-scalable, dataflow-oriented parallel processing model, a NoSQL document-store
-data-management layer, and a container-based virtualization and deployment
-environment.  MsPASS builds on the
-`ObsPy <https://obspy.org/>`__ toolkit and C++ components derived from
+framework for seismic data processing and management.  It has three core
+components:
+
+* A scalable parallel-processing framework based on a dataflow model.
+* A NoSQL document-store data-management system.
+* A container-based environment for deployment and reproducible processing.
+
+MsPASS builds on the `ObsPy <https://obspy.org/>`__ toolkit and C++ components
+derived from
 `SEISPP <http://www.indiana.edu/~pavlab/software/seispp/html/index.html>`__.
 
 Choose your path

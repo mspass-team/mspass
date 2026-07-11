@@ -5,33 +5,19 @@ MsPASS Virtual Cluster Concepts
 
 Audience
 ~~~~~~~~~~~~~~
-This section is mainly for users new to MsPASS needing to run
-the system on an HPC system.  Those readers
-may find the general issue about HPC concepts helpful, but
-how helpful will be entirely dependent upon the background of the reader.
-Parts of this section will also
-be of use to experienced users needing to configure MsPASS for a
-new system.  If that is you, then you may find it useful to
-read this section in combination with the last section of
-the document titled :ref:`deploy_mspass_on_HPC`.
+This section is for:
 
-All readers should note this section leans heavily on several more
-specialized sections for specific environments.   That is, a
-primary design goal of MsPASS was scalability.   MsPASS is known to
-allow prototyping a workflow on a desktop system or an approved interactive compute-node allocation
-and then porting the same python script with minimal changes to run on
-a cluster with hundreds of cores.  To make that work, however,
-requires some up-front work to tell the system how to deal with a
-range of differences that define the system dependencies.
-An idea we will use repeatedly below is that the configuration
-process is used to build a *virtual cluster*.
+* new MsPASS users preparing to work on an HPC system, and
+* experienced users configuring MsPASS for a new system.
 
-Finally, for readers new to MsPASS we advise you to consider
-reading the :ref:`user_manual_introduction` section at the same time
-you read the section here titled `Fundamental Concepts`_.
-We created these sections to help you understand some
-of the fundamentals that shaped the design of MsPASS.
-That background may help you understand material in this document.
+MsPASS is designed so that a workflow prototyped on a desktop or in an
+approved interactive compute-node allocation can move to a larger cluster
+with few Python changes.  The cluster still needs some initial configuration.
+That configuration defines the *virtual cluster* described below.
+
+For practical setup instructions, also read :ref:`deploy_mspass_on_HPC`.
+Readers new to MsPASS may find it helpful to read
+:ref:`user_manual_introduction` alongside `Fundamental Concepts`_.
 
 Fundamental Concepts
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,21 +53,17 @@ severe throttle they impose on what is feasible.
 
 There is one final key point all users must understand about
 the role of parallel processing versus desktop processing.
-A concise summary is this:  if the processing requires human
-intervention it probably should not be done on a cluster.
-That means interactive graphics or a prompt that pauses the workflow,
-not text logs or saved output.
+A concise summary is this: long production runs should not pause for human
+input.  Interactive graphics and prompts are examples; text logs and saved
+output are not.
 The reason, of course, is that human response time to any event
 is at least 9 orders of magnitude slower than a cpu clock cycle.
 We thus assume the batch model of processing for HPC and cluster systems
 wherein a "job" is submitted to a global scheduling system for the cluster.
-Workflows requiring interactive graphics or other human interaction
-are normally best run in an approved interactive compute-node allocation,
-or move the relevant data to your desktop.  Do not run compute-intensive work
-on a login node unless site policy explicitly permits it.  Note a key word
-above is *interactive* graphics.
-Workflows that generate saved graphics are required as end products of
-many workflows and are more than possible through multiple mechanisms.
+Run interactive work in an approved compute-node allocation, or move the
+relevant data to your desktop.  Do not run compute-intensive work on a login
+node unless site policy explicitly permits it.  Saved graphics do not require
+interaction and remain appropriate for batch workflows.
 Alternatively, some institutional setups may allow interactive work on your desktop computer
 accessing the data through a cloud file system, which would have
 very different performance and use restrictions.  A key point

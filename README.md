@@ -38,71 +38,69 @@ For full user and API documentation, visit [mspass.org](https://www.mspass.org/)
 
 MsPASS is distributed through multiple channels with different intended use cases:
 
-1. **Docker (recommended for a complete runtime)**
-   - The image includes MsPASS, MongoDB, Dask, and JupyterLab for a ready-to-run desktop environment.
-   - Published to Docker Hub: [mspass/mspass](https://hub.docker.com/r/mspass/mspass)
-   - Also published to GitHub Container Registry: [ghcr.io/mspass-team/mspass](https://github.com/mspass-team/mspass/pkgs/container/mspass)
+1. **Docker (recommended for most users)**
+	- Primary, fully provisioned runtime path
+	- Published to Docker Hub: [mspass/mspass](https://hub.docker.com/r/mspass/mspass)
+	- Also published to GitHub Container Registry: [ghcr.io/mspass-team/mspass](https://github.com/mspass-team/mspass/pkgs/container/mspass)
 
-2. **Conda (local package environment)**
-   - Installs `mspasspy` in a Conda-managed environment rather than providing the complete container runtime.
-   - Published on Anaconda Cloud: [anaconda.org/mspass/mspasspy](https://anaconda.org/mspass/mspasspy)
+2. **Conda (alternative local package install)**
+	- Published as `mspasspy` on Anaconda Cloud: [anaconda.org/mspass/mspasspy](https://anaconda.org/mspass/mspasspy)
+	- Appropriate when you need a local Conda-managed environment
 
 3. **PyPI (source distribution only)**
-   - The PyPI release is a source distribution (`sdist`), not a prebuilt binary or complete runtime.
-   - Use this channel only when you specifically need the Python source package.
+	- The PyPI release is a source distribution (sdist), not a prebuilt binary runtime
+	- Best suited for packaging workflows and source-based consumers
 
 ## Quick Start (Recommended: Docker)
 
-Install Docker Desktop (or Docker Engine on Linux), then pull the current image:
+Install Docker Desktop (or Docker Engine on Linux), then pull the image:
 
 ```bash
-docker pull mspass/mspass:latest
+docker pull mspass/mspass
 ```
 
-On Linux or macOS, enter a dedicated project directory and launch MsPASS:
+Launch MsPASS in a project directory (Jupyter exposed on port `8888`):
 
 ```bash
-docker run --name mspass-quickstart --rm --publish 127.0.0.1:8888:8888 --mount "type=bind,source=${PWD},target=/home" mspass/mspass:latest
+docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
 ```
 
-This bind-mounts the current directory at `/home`, so choose a writable project directory and keep unrelated or sensitive files elsewhere.
+Then open the Jupyter URL printed in the container logs (typically `http://127.0.0.1:8888/...`).
 
-Open the complete token-bearing JupyterLab URL printed in the container logs (typically `http://127.0.0.1:8888/lab?token=...`). The loopback-only port binding keeps JupyterLab local to your computer.
-
-Windows PowerShell uses different current-directory syntax; follow the [desktop quick start](https://www.mspass.org/getting_started/quick_start.html) for the correct command.
-
-For more control over a single container, use the [single-container Docker guide](https://www.mspass.org/getting_started/run_mspass_with_docker.html). For separately managed services, use the [Docker Compose guide](https://www.mspass.org/getting_started/deploy_mspass_with_docker_compose.html) with the shipped [compose.yaml](data/yaml/compose.yaml).
+For repeated runs and multi-service operation, use Docker Compose. A baseline compose configuration is available in [data/yaml/compose.yaml](data/yaml/compose.yaml).
 
 ## Conda Installation (Alternative)
 
 If you prefer Conda over containers:
 
 ```bash
-conda create --name mspass_env \
-    --override-channels \
-    --channel mspass \
-    --channel conda-forge \
-    mspasspy
+conda create --name mspass_env
 conda activate mspass_env
+conda config --add channels mspass
+conda config --add channels conda-forge
+conda install -y mspasspy
 ```
 
-Conda installs `mspasspy`; it does not start supporting services such as MongoDB. See the [Conda installation guide](https://www.mspass.org/getting_started/deploy_mspass_with_conda.html) for package configuration and database setup. For workflows that need the full local stack, Docker remains the recommended path.
+Conda package: [anaconda.org/mspass/mspasspy](https://anaconda.org/mspass/mspasspy)
+
+Note: many workflows still rely on MongoDB and are easiest to operate via the MsPASS Docker image, even when Python libraries are installed via Conda.
 
 ## PyPI Package Status
 
 MsPASS publishes a **source distribution** to PyPI on tagged releases.
 
-- It is not a prebuilt binary distribution or complete MsPASS runtime.
-- Installation builds the package from source; workflows that use MongoDB or distributed execution need those services configured separately.
-- For a ready-to-run desktop environment, use Docker.
+- This channel is intended for source consumption.
+- It is not the recommended end-user runtime path.
+- For the most complete and reproducible environment, use Docker.
 
 ## Documentation
 
-The [documentation home](https://www.mspass.org/) organizes the guides by user journey. Direct routes:
-
-- Start: [desktop quick start](https://www.mspass.org/getting_started/quick_start.html), [single-container Docker](https://www.mspass.org/getting_started/run_mspass_with_docker.html), [Docker Compose](https://www.mspass.org/getting_started/deploy_mspass_with_docker_compose.html), or the optional [graphical desktop launcher](https://www.mspass.org/getting_started/mspass_desktop.html)
-- Learn: [MsPASS user manual](https://www.mspass.org/user_manual/introduction.html)
-- Reference: [Python API](https://www.mspass.org/python_api/index.html), [C++ API](https://www.mspass.org/cxx_api/index.html), and [database schema](https://www.mspass.org/mspass_schema/mspass_schema.html)
+- Documentation home: [www.mspass.org](https://www.mspass.org/)
+- Running MsPASS on a desktop: [mspass_desktop](https://www.mspass.org/getting_started/mspass_desktop.html)
+- Command-line Docker workflow: [command_line_desktop](https://www.mspass.org/getting_started/command_line_desktop.html)
+- Deploy with Conda: [deploy_mspass_with_conda](https://www.mspass.org/getting_started/deploy_mspass_with_conda.html)
+- Python API reference: [python_api](https://www.mspass.org/python_api/index.html)
+- C++ API reference: [cxx_api](https://www.mspass.org/cxx_api/index.html)
 
 ## Development and Source Builds
 
