@@ -5,17 +5,20 @@ Using ObsPy with MsPASS
 
 Role of ObsPy in MsPASS
 ~~~~~~~~~~~~~~~~~~~~~~~
-The home page for `Obspy <https://docs.obspy.org/>`__ defines the package as follows:
-
-    ObsPy is an open-source project dedicated to provide a Python framework for processing seismological data.
-    It provides parsers for common file formats and seismological signal processing routines which allow the manipulation of seismological time series (see Beyreuther et al. 2010, Megies et al. 2011, Krischer et al. 2015)
+`ObsPy <https://docs.obspy.org/>`__ is an open-source Python framework for
+reading, representing, and processing seismological data.  Its core waveform
+model consists of NumPy-backed :class:`Trace <obspy.core.trace.Trace>` objects
+held in list-like :class:`Stream <obspy.core.stream.Stream>` containers.
 
 Python is sometimes called a "glue language" because of its capability for joining different software packages.
 Our integration of ObsPy in MsPASS is a case in point.
-Some user's may find a good starting point for working with MsPASS is to treat it as a supplement to ObsPy that provides data management and parallel processing support.
-All feasible processing algorithms in ObsPy have MsPASS "wrappers" that provide that support.
+Some users may find a good starting point for MsPASS is to treat it as a
+supplement to ObsPy that provides data management and parallel processing.
+MsPASS ships wrappers for a useful subset of ObsPy algorithms.  Other ObsPy
+operations can be used through the converters described below.
 On the other hand, to interact correctly with the MsPASS framework requires frequent conversion between native ObsPy data objects and MsPASS data objects.
-We have implemented fast algorithms to do those operation, but the performance cost is not zero.
+We have implemented fast algorithms to do those conversions, but the
+performance cost is not zero.
 We describe more details on converters below and how ObsPy processing algorithms can be used in parallel workflows.
 
 Converters
@@ -26,19 +29,24 @@ ObsPy defines two core data objects:
 
 #.  ObsPy :py:class:`Trace <obspy.core.trace.Trace>` containers hold a single channel of seismic data.
     An ObsPy :code:`Trace` maps almost directly into the MsPASS atomic object we call a :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>`.
-    Both containers store sample data in a contiguous block of memory that implement the linear algebra concept of an N-component vector.
-    Both store the sample data as Python float values that always map to 64 bit floating point numbers (double in C/C++).
+    Both containers store samples in a one-dimensional array.  ObsPy exposes a
+    NumPy ``ndarray`` whose dtype can vary with the source data; MsPASS stores
+    samples as C++ ``double`` values, so conversion makes a copy and may cast
+    the dtype.
     Both containers also put auxiliary data used to expand on the definition of what the data are in an indexed container that behaves like a Python dict.
     ObsPy calls that container a :py:class:`Stats <obspy.core.trace.Stats>` attribute.
-    MsPASS defines a similar entity we call :code:`Metadata`.
-    Some users may find it convenient to think of both as a generalized "header" that defines a fixed namespace like that in `Seismic Unix <https://wiki.seismic-unix.org/doku.php>`__.
+    MsPASS defines a similar entity called
+    :py:class:`Metadata<mspasspy.ccore.utility.Metadata>`.
+    Some users may find it convenient to think of both as generalized
+    headers, although unlike a fixed-format header their key sets are
+    extensible.
     From a user's perspective the "headers" in ObsPy and MsPASS behave the same but the API is different.
     In ObsPy the header parameters are stored in an attribute with a different name (Stats) while in MsPASS the dict behavior is part of the TimeSeries object.
     (For those familiar with Object Oriented Programming generic concepts ObsPy views metadata using the concept that a Trace object "has a Stats" container while in MsPASS we say a TimeSeries "is a Metadata".)
 #.  ObsPy :py:class:`Stream <obspy.core.stream.Stream>` containers are little more than a Python list of :code:`Trace` objects.
     A :code:`Stream` is very similar in concept to the MsPASS data object we call a :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>`.
     Both are containers holding a collection of single channel seismic data.
-    In terms of the data they contain there is only one fundamental difference;
+    In terms of the data they contain there is one important difference:
     a :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>` is not just a list of data but it also contains a :code:`Metadata` container that contains attributes common to all members of the ensemble.
 
 There are some major collisions in concept between ObsPy's approach and that we use in MsPASS that impose some limitations on switching between the packages.
@@ -51,7 +59,10 @@ There are some major collisions in concept between ObsPy's approach and that we 
     They only add overhead in constructing ObsPy data objects.
 #.  ObsPy's support for three-component data is mixed in the concept of a :code:`Stream`.
     A novel feature of MsPASS is support for an atomic data class we call a Seismogram that is a container designed for consistent handling of three component data.
-#.  In MsPASS we define a second type of "Ensemble" we call a :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.SeismogramEnsemble>` that is a collection of :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects.
+#.  MsPASS defines a second ensemble type,
+    :py:class:`SeismogramEnsemble<mspasspy.ccore.seismic.SeismogramEnsemble>`,
+    that is a collection of
+    :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects.
     It is conceptually identical to a :py:class:`TimeSeriesEnsemble<mspasspy.ccore.seismic.TimeSeriesEnsemble>` except the members are :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects instead of :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` objects.
 
 The concept collision between Seismograms objects and any ObsPy data creates some limitations in conversions.
@@ -60,21 +71,40 @@ the reverse is not.
 
 With that background the set of converters are:
 
-- :code:`Trace2TimeSeries` and :code:`TimeSeries2Trace` are, as the names imply, converters between the ObsPy Trace and the MsPASS TimeSeries objects.
+- :py:func:`Trace2TimeSeries<mspasspy.util.converter.Trace2TimeSeries>` and
+  :py:func:`TimeSeries2Trace<mspasspy.util.converter.TimeSeries2Trace>` are
+  converters between ObsPy ``Trace`` and MsPASS ``TimeSeries`` objects.
   As noted above that process is relatively straightforward.
-- :code:`Seismogram2Stream` and :code:`Stream2Seismogram` are the converters related to Seismogram objects.
-  The Stream produced by Seismogram2Stream has some predictable restriction.
-  First, the output Trace objects will all have exactly the same start time and number of samples even if raw data from which the data originated had subsample time differences or had irregular lengths.
-  More significant is that not all channel-dependent metadata will be retained.
-  Currently the only retained channel properties are orientation information (:code:`hang` and :code:`vang` attributes).
-  For most users the critical information lost in the opposite conversion (:code:`Stream2Seismogram`) is any system response data.
-  A corollary that follows logically is that if you need to do response corrections for your workflow you need to do so equally on all three components before converting the data to Seismogram objects.
-  Because of complexities in converting from :code:`Stream` to :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` objects we, in fact, do not recommend using :code:`Stream2Seismogram` for that purpose.
-  If the parent data originated as miniSEED from an FDSN data center, a more reliable and flexible algorithm is the :code:`BundleSEEDGroup` function.
+- :py:func:`Seismogram2Stream<mspasspy.util.converter.Seismogram2Stream>` and
+  :py:func:`Stream2Seismogram<mspasspy.util.converter.Stream2Seismogram>`
+  convert three-component data.
+  The ``Stream`` produced by ``Seismogram2Stream`` contains three traces with
+  the same start time and sample count.  Common Seismogram Metadata are copied
+  to every trace; channel names and orientation are assigned from the
+  converter arguments.  Per-channel metadata that were discarded when the
+  original channels were bundled cannot be reconstructed.  In the reverse
+  conversion, common Metadata are cloned from the trace selected by the
+  ``master`` argument, while all three traces supply orientation.  Consequently,
+  correct instrument response on each component before bundling; a bundled
+  Seismogram cannot faithfully represent three different responses.
+  ``Stream2Seismogram`` requires exactly three traces and either valid
+  ``azimuth``/``dip`` metadata or ``cardinal=True`` with E, N, Z order.
+  If the parent data originated as miniSEED,
+  :py:func:`bundle_seed_data<mspasspy.algorithms.bundle.bundle_seed_data>`
+  is the higher-level route for bundling a ``TimeSeriesEnsemble``.
 - The MsPASS ensemble data converters can be used to convert to and from ObsPy :code:`Stream` objects, although with side effects in some situations.
   As with the other converters the (verbose) names are mnemonic for their purpose.
-  :code:`TimeSeriesEnsemble2Stream` and its inverse :code:`Stream2TimeSeriesEnsemble` convert :code:`TimeSeriesEnsembles` to a :code:`Stream` and vice-versa.
-  The comparable functions for :code:`SeismogramEnsembles` are :code:`SeismogramEnsemble2Stream` and :code:`Stream2SeismogramEnsemble`.
+  :py:func:`TimeSeriesEnsemble2Stream<mspasspy.util.converter.TimeSeriesEnsemble2Stream>`
+  and
+  :py:func:`Stream2TimeSeriesEnsemble<mspasspy.util.converter.Stream2TimeSeriesEnsemble>`
+  convert ``TimeSeriesEnsemble`` objects to ``Stream`` and back.
+  The comparable functions are
+  :py:func:`SeismogramEnsemble2Stream<mspasspy.util.converter.SeismogramEnsemble2Stream>`
+  and
+  :py:func:`Stream2SeismogramEnsemble<mspasspy.util.converter.Stream2SeismogramEnsemble>`.
+  The latter consumes consecutive trace triplets as cardinal E, N, Z data;
+  ensure the Stream length is a multiple of three and the order is correct,
+  because trailing traces that do not form a triplet are ignored.
   A complication in the conversion both directions is handling of the ensemble Metadata.
   As noted, that concept does not exist in the Stream object so some compromises were necessary.
   There are tradeoffs in complexity (increasing execution time) and the odds of unexpected changes.
@@ -104,14 +134,18 @@ With that background the set of converters are:
      Ensemble Metadata are like valence electrons that have to be balanced when saved as atoms.
   #. The converters do not test for consistency of member Metadata and the Ensemble Metadata.
      If the member Metadata are different from those of the Ensemble the Ensemble version will silently overwrite that of the members when the data are converted to a Stream.
-     That shouldn't happen if the Ensemble Metadata are what they are asssumed to be - attributes that are the same for all members of the group.
+     That should not happen if Ensemble Metadata contain only attributes that
+     are the same for all members of the group.
 
 A final critical issue about using ObsPy converters is handling of extra concepts that MsPASS data objects contain that are not part of ObsPy.
-That means two elements of atomic data in MsPASS that have no related concept in ObsPy.
-That is, what we call :code:`ErrorLogger` and :code:`ProcessingHistory`.
+Two components of atomic MsPASS data have no direct ObsPy equivalent:
+:py:class:`ErrorLogger<mspasspy.ccore.utility.ErrorLogger>` and
+:py:class:`ProcessingHistory<mspasspy.ccore.utility.ProcessingHistory>`.
 Decorators described in the next section are used to make this conversion happen automatically for ObsPy algorithms applied to MsPASS objects.
-If the converters are used in isolation (e.g. one could easily run several ObsPy algorithms between converters from mspass to ObsPy and back) these extra components will be lost without custom coding to preserve them.
-For this reason we recommend only running ObsPy algorithms through the decorators described in the next section.
+A direct round trip through ObsPy does not carry these components unless the
+caller preserves them separately (``Trace2TimeSeries`` has an optional
+``history`` argument for that specific case).  Prefer the wrappers described
+in the next section when one is available.
 
 Decorated ObsPy Functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,7 +158,7 @@ Consider this small code fragment to apply a bandpass filter to an ObsPy :code:`
 .. code-block:: python
 
    from obspy import read
-   d = read('mydatafile')
+   d = read("mydatafile")[0]
    d.filter('bandpass', freqmin=0.05, freqmax=2.0)
 
 This little fragment uses the typical ObsPy approach of reading data from a file and applying an algorithm in a construct that makes the algorithm look like a method for the data class.
@@ -134,45 +168,54 @@ Hence, a comparable algorithm in MsPASS to the above is the following:
 
 .. code-block:: python
 
-  # in mspass all jobs normally start with an incantation similar to
-  # this to create a database handle which we here link to the symbol db
+  # Create a database handle named db.
   import mspasspy.algorithms.signals as signals
-  from mspasspy.db.client import Client
-  from mspasspy.db.database import Database
-  dbclient = Client()
-  db = Database(dbclient, 'mydata')
+  from mspasspy.db.client import DBClient
+
+  db = DBClient().get_database("mydata")
 
   # These three lines are comparable to ObsPy example above
   doc = db.wf_TimeSeries.find_one()
-  d = db.read_data(doc['_id'])
-  ed = signals.filter(d, 'bandpass', freqmin=0.05, freqmax=2.0)
+  d = db.read_data(doc, collection="wf_TimeSeries")
+  ed = signals.filter(d, "bandpass", freqmin=0.05, freqmax=2.0)
 
 We include the top section of code to emphasize that building a database handle, which above is set to the symbol db, is comparable in some respects to opening a data file.
 That step is hidden in the ObsPy read function behind several layers of functions to make their reader generic.
-In this example data in the file 'mydatafile' is conceptually the same as what we fetch in mspass with the :code:`db.read_data` method call for "doc".
+In this example data in ``mydatafile`` are conceptually comparable to what
+MsPASS fetches with :py:meth:`~mspasspy.db.database.Database.read_data`.
 The :code:`filter` function applied above is an example of one of the ObsPy wrappers.
 It applies exactly the same algorithm as the ObsPy example but automatically handles the conversions from mspass to ObsPy and back again after the function is applied.
-All the ObsPy algorithms found in the :code:`mspasspy.algorithms.signals` module use the same concept.
-All accept any mspass data object for processing.
-Some require multiple input data objects and are more restricitve.
+The wrappers in :py:mod:`mspasspy.algorithms.signals` use this concept, but
+their accepted input types differ.  The filter wrapper accepts all four
+standard MsPASS waveform types.  Some multi-input functions are more
+restrictive.
 For example, the :code:`correlate` function requires two TimeSeries inputs.
 See the :py:mod:`mspasspy.algorithms.signals` documentation for details.
 
 ObsPy Processing in Parallel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The ObsPy decorator allow ObsPy operators to be applied in parallel.
+The ObsPy decorators allow wrapped operations to be applied in parallel.
 For example, the following is a variant of filter algorithm but this example uses the Dask scheduler to process the entire data set:
 
 .. code-block:: python
 
-   # Assume db is created as above
-   from mspasspy.db.database import read_distributed_data
-   cursor = db.wf_TimeSeries.find({})
-   data = read_distributed_data(db, cursor, format='dask')
-   data = data.map(signals.filter, "bandpass", freqmin=0.05, freqmax=2.0).compute()
-   data.compute()
+   # Assume db and signals are created as above.
+   from mspasspy.io.distributed import read_distributed_data
+
+   data = read_distributed_data(
+       db,
+       query={},
+       collection="wf_TimeSeries",
+       scheduler="dask",
+       npartitions=8,
+   )
+   filtered = data.map(
+       signals.filter, "bandpass", freqmin=0.05, freqmax=2.0
+   )
+   result = filtered.compute()
 
 The key thing to note here is that the basic algorithm is identical to above: :code:`read_distributed_data` and :code:`filter`.
 The difference is that the entire data set is read and filtered instead of one TimeSeries/Trace.
-The added incantations are needed to translate the function call to the :code:`map` method of the parallel API, but the basic structure is the same.
+The added calls construct a Dask bag and apply the function with the bag's
+``map`` method, but the processing operation itself is the same.
 For more on parallel processing constructs see :ref:`parallel_processing`.
