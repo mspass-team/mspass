@@ -25,6 +25,58 @@ Choose a writable project directory and run all commands from that directory.
 The shipped configurations mount the current directory at ``/home`` in every
 container, so notebooks, database files, logs, and results remain on the host.
 
+How the containers work together
+--------------------------------
+
+An MsPASS deployment is made from containers with different roles.  Docker
+Compose gives the containers a shared network and starts them with the
+addresses and settings they need to communicate.  Understanding these roles
+is helpful when you read a Compose file or diagnose a service that did not
+start:
+
+* ``frontend`` runs JupyterLab and connects the user's notebook to the
+  database and the parallel scheduler.
+* ``scheduler`` runs either a Dask scheduler or a Spark master.  It assigns
+  parallel work to the workers.
+* ``worker`` runs a Dask worker or Spark worker that performs the computation.
+* ``db`` runs one standalone MongoDB server.  This is the database role used
+  by the standard Dask and Spark examples on this page.
+* ``dbmanager`` runs the MongoDB configuration and routing services for a
+  sharded database.  It is used with one or more ``shard`` containers, not
+  with the standalone ``db`` container.
+* ``shard`` stores part of a sharded MongoDB database.  Multiple shards can
+  distribute a large database across storage devices or hosts.
+* ``all`` combines the frontend, scheduler, worker, and standalone database
+  in one container.  It is the default role used by the simpler
+  :ref:`single-container instructions <run_mspass_with_docker>`.
+
+The image selects a role with the ``MSPASS_ROLE`` environment variable.  The
+other important variables describe the scheduler and connect the services:
+
+* ``MSPASS_SCHEDULER`` selects ``dask`` or ``spark``.  The default is
+  ``dask``.
+* ``MSPASS_SCHEDULER_ADDRESS`` gives workers and the frontend the hostname of
+  the scheduler service.  In the supplied files that hostname is
+  ``mspass-scheduler``.
+* ``MSPASS_DB_ADDRESS`` gives the frontend the hostname of its database
+  service.  It is ``mspass-db`` for a standalone database and
+  ``mspass-dbmanager`` only for the sharded configuration.
+* ``MSPASS_SHARD_LIST`` tells a database manager which shard services belong
+  to the cluster.  Each entry has the form ``name/host:port``.
+* ``MSPASS_SHARD_ID`` gives each shard a unique identity and keeps its data
+  separate when shards share a mounted filesystem.
+* ``MSPASS_JUPYTER_PWD`` optionally sets the Jupyter password.  If it is
+  unset, Jupyter generates a login token and prints it in the frontend log.
+  An empty value permits access without a password and should be used only in
+  an appropriately protected environment.
+
+Several port variables are also available: ``JUPYTER_PORT`` defaults to
+``8888``, ``DASK_SCHEDULER_PORT`` to ``8786``, ``SPARK_MASTER_PORT`` to
+``7077``, and ``MONGODB_PORT`` to ``27017``.  Most users should keep these
+container-side defaults.  If one of those ports is already occupied on the
+host, change the host side of its Compose ``ports`` mapping instead.  Service
+addresses and health checks must agree with any container-side port changes.
+
 Run the Dask configuration
 --------------------------
 

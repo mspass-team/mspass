@@ -287,10 +287,11 @@ The solution is similar to that we used above for `TimeSeries`:
 
 That is, ``DoubleVector`` is replaced by ``dmatrix`` for matrix data.
 
-``dmatrix`` also supports ordinary row and column slices, returning another
-``dmatrix``.  NumPy views remain convenient for advanced indexing.  When a
-result is assigned back, construct a ``dmatrix`` explicitly, require exactly
-three rows, and keep ``npts`` equal to the number of columns:
+``dmatrix`` also supports ordinary row and column slices through its NumPy
+interface; those slices are returned as ``ndarray`` objects rather than as
+another ``dmatrix``.  When a result is assigned back, construct a ``dmatrix``
+explicitly, require exactly three rows, and keep ``npts`` equal to the number
+of columns:
 
 .. code-block:: python
 
