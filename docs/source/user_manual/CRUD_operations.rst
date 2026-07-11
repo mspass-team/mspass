@@ -12,19 +12,20 @@ must accomplish cleanly.  This section is organized into subsections on
 each of the topics defined by CRUD.  At the end of this section we
 summarize some common options in CRUD operations.
 
-The most common database operations are defined as methods in a class
-we give the obvious name Database.  Most MsPASS jobs need to the have following
-incantation at the top of the python job script:
+The most common database operations are methods of the
+:py:class:`~mspasspy.db.database.Database` class.  Most MsPASS jobs need the
+following initialization near the top of the Python job script:
 
 .. code-block:: python
 
     from mspasspy.db.client import DBClient
-    from mspasspy.db.database import Database
-    dbclient = DBClient()
-    db = Database(dbclient, 'database_name')
 
-where the second argument on Database, :code:`'database_name'`,
-is a name you chose for the dataset you are working with.
+    dbclient = DBClient()
+    db = dbclient.get_database("database_name")
+
+where :code:`"database_name"` is a name you chose for the dataset you are
+working with.  Pass the MongoDB URI or host to :code:`DBClient` when the
+server is not reachable through the local default.
 For the remainder of this section we will use the symbol "db" as
 defined, but as in any programming language you need to recognize the
 symbol can be anything you as the user find sensible. "db" is just our
@@ -58,6 +59,9 @@ the docstring pages for detailed and most up to date usage:
 
     .. code-block:: python
 
+        from obspy import read
+        from mspasspy.util.converter import Trace2TimeSeries
+
         # Example assumes filename contains one channel of data in
         # miniseed format
         filename = 'testfile.msd'
@@ -68,13 +72,17 @@ the docstring pages for detailed and most up to date usage:
         d = Trace2TimeSeries(dtr)
         db.save_data(d)
 
-    By default :code:`save_data` stores all Metadata except those linked to
-    normalized collections (:code:`source`, :code:`channel`, and/or
-    :code:`site`) with no safety checks.  We discuss additional common
-    options in a later section.  The default return value is the
-    :code:`ObjectId` or list of :code:`ObjectId` values for the waveform
-    documents it writes.  Set :code:`return_data=True` when an
-    intermediate save needs the updated data object returned to the workflow.
+    By default :code:`save_data` stores Metadata except :code:`_id` and
+    attributes linked to normalized collections (:code:`source`,
+    :code:`channel`, and/or :code:`site`) without schema name or type checks.
+    We discuss additional common
+    options in a later section.  With the default :code:`return_data=False`,
+    the return is a Python dictionary containing :code:`is_live` and any
+    available keys requested by :code:`return_list` (which defaults to
+    :code:`["_id"]`).  For ensembles the default usually returns only
+    :code:`is_live`, because member IDs are not ensemble Metadata.  Set
+    :code:`return_data=True` when an intermediate save needs the edited data
+    object returned to the workflow.
 
     When :code:`save_data` is passed an ensemble, it writes each live member
     as an atomic datum.  Ensemble Metadata are copied to each member before
@@ -82,6 +90,8 @@ the docstring pages for detailed and most up to date usage:
     single-component data into three-component seismograms before saving:
 
     .. code-block:: python
+
+        from mspasspy.algorithms.bundle import bundle_seed_data
 
         # d is a TimeSeriesEnsemble loaded earlier in the workflow.
         d3c = bundle_seed_data(d)
@@ -105,6 +115,9 @@ the docstring pages for detailed and most up to date usage:
 
     .. code-block:: python
 
+        from obspy import UTCDateTime
+        from obspy.clients.fdsn import Client
+
         client = Client("IRIS")
         t0 = UTCDateTime('2011-03-11T05:46:24.0')
         starttime = t0-3600.0
@@ -122,8 +135,11 @@ the docstring pages for detailed and most up to date usage:
                                         minmagnitude=minmag)
         db.save_catalog(cat)
 
-    This particular example pulls 11 large aftershocks of the 2011 Tohoku
-    Earthquake.
+    This example requests magnitude 6.5 and larger events near the 2011 Tohoku
+    earthquake during the following week.  Catalog contents can be revised by
+    the data center, so code should not assume an exact result count.
+    :code:`save_catalog` inserts every event and does not deduplicate the source
+    collection.
 
 3.  :py:meth:`~mspasspy.db.database.Database.save_inventory` is similar
     in concept to :code:`save_catalog`, but instead of
@@ -140,7 +156,8 @@ the docstring pages for detailed and most up to date usage:
     python class as an intermediary.  The reasons is similar; obspy had
     already solved the problem of downloading station metadata from
     FDSN web services with their
-    `read_inventory function <https://docs.obspy.org/packages/obspy.core.inventory.html>`__.
+    `read_inventory function
+    <https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.read_inventory.html>`__.
     As with :code:`save_catalog` :code:`save_inventory` can be thought of as a translator
     from data downloaded with web services to the form needed in MsPASS.
     It may be helpful to realize that Obspy's Inventory object is actually
@@ -152,7 +169,14 @@ the docstring pages for detailed and most up to date usage:
 
     .. code-block:: python
 
-        inv = client.get_stations(network='TA', starttime=starttime, endtime=endtime, format='xml', channel='*')
+        inv = client.get_stations(
+            network="TA",
+            starttime=starttime,
+            endtime=endtime,
+            channel="*",
+            level="response",
+            format="xml",
+        )
         db.save_inventory(inv)
 
     This example extracts all stations with the "network code" of "TA"
@@ -162,6 +186,8 @@ the docstring pages for detailed and most up to date usage:
     are reoriented, digitizers change, etc.  That means station metadata
     have a time span for which they are valid that has to be handled to
     assure we associate the right metadata with any piece of data.
+    By default :code:`save_inventory` excludes the synthetic network code
+    :code:`SY`; pass :code:`networks_to_exclude=None` to include it.
 
     In MsPASS we translate the StationXML data to documents stored in two
     collections:  :code:`site` and :code:`channel`.  Both collections contain the
@@ -174,19 +200,39 @@ the docstring pages for detailed and most up to date usage:
     important pieces of metadata:  (1) orientation information defined by
     the keys :code:`hang` and :code:`vang`, and (2) full response information.
     We store response data in MongoDB as a pickle image of the data stored
-    in the StationXML data as translated by obspy.   In the read section
-    below we describe how to retrieve response data from :code:`channel`.
+    in the StationXML data as translated by obspy.  Retrieve a response for a
+    channel and time with
+    :py:meth:`~mspasspy.db.database.Database.get_response`.
 
     Finally, we note a key feature of the :code:`save_inventory` method:
     it enforces a seed convention to avoid saving duplicate documents.
-    As noted earlier the SEED standard uses the keys we call net, sta, chan,
-    and loc along with a time interval to define a unique block of
-    receiver metadata.   The :code:`save_inventory` method enforces
-    the unique combination of these keys in a save.  It always will
-    refuse to add an entry it interprets as a pure duplicate document.
+    Site uniqueness is based on net, sta, loc, and validity interval; channel
+    uniqueness additionally uses chan.  The :code:`save_inventory` method
+    refuses to add an entry it interprets as a pure duplicate document.
     If you need to modify an existing site or channel
     collection that has invalid documents you will need to write a custom function to override that
     behaviour or rebuild the collection as needed with web services.
+
+4.  :py:func:`~mspasspy.io.distributed.write_distributed_data` is the terminal
+    writer for a Dask bag or Spark RDD.  It initiates the lazy computation and
+    returns ObjectIds for live waveform documents that were saved.  Atomic
+    input produces a list of IDs; ensemble input produces a per-ensemble list
+    of ID lists.  Set :code:`data_are_atomic=False` when the container holds
+    ensembles.  For example:
+
+    .. code-block:: python
+
+        from mspasspy.io.distributed import write_distributed_data
+
+        saved_ids = write_distributed_data(
+            data,
+            db,
+            collection="wf_TimeSeries",
+            data_are_atomic=True,
+        )
+
+    Use :code:`Database.save_data` inside a map operation instead when the
+    workflow needs an intermediate save and continued processing.
 
 Read
 ~~~~~~~
@@ -218,7 +264,7 @@ usage.
 
     .. code-block:: python
 
-        query = {...Some MongoDB query dict entry...}
+        query = {"data_tag": "raw"}
         cursor = db.wf_TimeSeries.find(query)
         for doc in cursor:
             d = db.read_data(doc, collection="wf_TimeSeries")
@@ -263,24 +309,22 @@ usage.
     That means it takes in all metadata stored in the wf collection at which
     it is is pointed and loads the results into the objects Metadata container
     with no type checking or filtering.  Alternatives are "cautious"
-    and "pedantic".   Both of the later enforce the type and name constraints defined
-    by the schema.   The difference is that in "pedantic" mode any
-    conflicts in data type stored versus what is expected will cause the
-    return to be marked dead.  In "cautious" mode the reader will attempt
-    to convert any mismatched types and mark the return dead only if the
-    conversion is not possible (e.g. a string like "xyz" cannot normally
-    be converted to an integer and a python list cannot be converted to
-    a float.)  Guidelines for how to use these different modes are:
+    and "pedantic".  Both of the latter enforce schema names and types and
+    drop undefined attributes.  In "pedantic" mode any type mismatch causes
+    the return to be marked dead.  In "cautious" mode the reader attempts to
+    convert mismatched types; failure kills the datum only for a required
+    attribute, while a nonconvertible optional attribute is retained and does
+    not invalidate the datum.  Guidelines for these modes are:
 
     1.  Use "promiscuous" mode when the wf collection to be read is known
         to be clean.  That mode is the default because it is faster to
         run because all the safeties are bypassed.  The potential cost is that
-        some members of the data set could be killed on input.
-        That potential problem can normally be eliminated by running the
-        :code:`clean` method described in a section below.
-    2.  Use "cautious" for data saved without an intervening :code:`clean`
-        operation, especially if the workflow contains an experimental
-        algorithm.
+        some members of the data set could still be killed by waveform
+        construction or I/O errors.  Schema problems can be found beforehand
+        with :py:meth:`~mspasspy.db.database.Database.verify` or repaired with
+        :py:meth:`~mspasspy.db.database.Database.clean_collection`.
+    2.  Use "cautious" when documents have not been checked against the
+        schema, especially if the workflow contains an experimental algorithm.
     3.  The "pedantic" mode is mainly of use for data export where a
         type mismatch could produce invalid data required by another package.
 
@@ -295,12 +339,13 @@ usage.
     .. code-block:: python
 
         query = {"source_id": source_id}
+        MAX_ENSEMBLE_SIZE = 10000
         ndocs = db.wf_TimeSeries.count_documents(query)
         if ndocs == 0:
             print("No data found for source_id = ", source_id)
-        elif ndocs > TOOBIG:
+        elif ndocs > MAX_ENSEMBLE_SIZE:
             print("Number of documents matching source_id=", source_id, " is ", ndocs,
-                  "Exceeds the internal limit on the ensemble size=", TOOBIG)
+                  "Exceeds the workflow limit on the ensemble size=", MAX_ENSEMBLE_SIZE)
         else:
             cursor = db.wf_TimeSeries.find(query)
             ensemble = db.read_data(cursor, collection="wf_TimeSeries")
@@ -309,8 +354,8 @@ usage.
     a parallel environment should use
     the parallel equivalent of :code:`read_data` called
     :py:func:`~mspasspy.io.distributed.read_distributed_data`.  MsPASS
-    supports two parallel frameworks called
-    SPARK and DASK.   Both abstract the concept of the parallel data set in
+    supports two parallel frameworks, Spark and Dask.  Both abstract the
+    concept of the parallel data set in
     a container they call an RDD and Bag respectively.   Both are best thought
     of as a handle to the entire data set that can be passed between
     processing functions.   The :code:`read_distributed_data` method is critical
@@ -332,7 +377,7 @@ usage.
 
         from mspasspy.io.distributed import read_distributed_data
 
-        query = {...Some MongoDB query dict entry...}
+        query = {"data_tag": "raw"}
         data = read_distributed_data(
             db,
             query=query,
@@ -349,41 +394,45 @@ usage.
 Update
 ~~~~~~
 
-Because of the way we stored seismic data in MsPASS (see figure above)
-the concept of an update makes sense only for Metadata.
-The update concept makes no sense for ProcessingHistory and error log data.
-Hence, the history and elog collections, that hold that data, should never
-be updated.   No MsPASS supported algorithms will do that, but we
-emphasize that constraint because you as the owner of the dataset could
-(incorrectly) modify history or elog with calls to MongoDB's api.
+Most workflow updates change only Metadata and should use
+:py:meth:`~mspasspy.db.database.Database.update_metadata`.  When sample data
+must also be replaced, :py:meth:`~mspasspy.db.database.Database.update_data`
+updates the Metadata, error log, history, and sample data for an atomic
+:code:`TimeSeries` or :code:`Seismogram`.  Its sample-data update currently
+uses GridFS; for file-backed input it writes replacement samples to GridFS and
+updates :code:`storage_mode` rather than overwriting the external file in
+place.  ProcessingHistory and error-log records should be managed through
+these APIs instead of edited directly with PyMongo.
 
 As noted elsewhere Metadata loaded with data objects in MsPASS can come
 from one of two places:  (1) attributes loaded directly with the atomic data from
 the unique document in a wf collection with which that data is associated,
 and (2) "normalized" data loaded through a cross reference ID from one of the
-standardized collection in MsPASS (currently :code:`site`, :code:`channel`, and :code:`source`).
-In a waveform processing job (i.e. python driver script) the metadata
+standardized collections in MsPASS (currently :code:`site`, :code:`channel`,
+and :code:`source`).  In a waveform processing job (i.e. Python driver script) the metadata
 extracted from normalized collections should be treated as immutable.
-In fact, when schema validation tests are enabled for save operations
-(see above) any accidental changes to any normalized attributes will not be
-saved but will be flagged with error log entries during the save.
-In most cases regular attributes from normalized data (e.g. source_lat and
-source_lon used for an earthquake epicenter) are silently ignored in an
-update.  Trying to alter a normalization id field (i.e. source_id, site_id,
-or channel_id) is always treated as a serious error that invalidates the
-data.  The following two rules summarize these idea in a more concise form:
+Attributes with prefixes such as :code:`source_`, :code:`site_`, and
+:code:`channel_` are removed from waveform documents during saves and updates
+unless they are linking ID fields.  Other modified read-only attributes are
+omitted under schema enforcement and generate a complaint in cautious or
+pedantic mode; promiscuous mode intentionally bypasses those schema checks.
+
+Cross-reference fields such as :code:`source_id`, :code:`site_id`, and
+:code:`channel_id` are retained.  The update and save methods do not verify
+that a changed ID resolves to a document in the referenced collection, so a
+bad change can silently corrupt the association.  Use
+:py:meth:`~mspasspy.db.database.Database.check_links` when link integrity is
+in doubt.  The following rules summarize the safe workflow:
 
 * **Update Rule 1**:  Processing workflows should never alter any database
   attribute marked readonly or loaded from a normalization collection.
 
 * **Update Rule 2**:  Processing workflows must never alter a cross-referencing
-  id field.   Any changes to cross-referencing ids defined in the schema will
-  cause the related data to be marked dead.
+  ID field unless intentionally relinking the datum and validating the target.
 
 These rules apply to both updates and writes.  How violations of the rules
-are treated on writes or updates depends on the setting of the :code:`mode` argument
-common to all update and write methods described in more detail in a section
-below.
+are treated on writes or updates depends on the :code:`mode` argument described
+in more detail below.
 
 Delete
 ~~~~~~~~~
@@ -416,30 +465,33 @@ In MsPASS we adopt these rules to keep delete operations under control.
 
 We trust rules 1 and 2 require no further comment.  Rule 3, however,
 needs some clarification to understand how we handle deletes.
-A good starting point is to look at the signature of the simple core delete
-method of the Database class:
+A good starting point is the signature of
+:py:meth:`~mspasspy.db.database.Database.delete_data`:
 
 .. code-block:: python
 
-  def delete_data(self,id,remove_unreferenced_files=False,
-                      clear_history=True,clear_elog=False):)
+  def delete_data(
+      self,
+      object_id,
+      object_type,
+      remove_unreferenced_files=False,
+      clear_history=True,
+      clear_elog=True,
+  ):
+      ...
 
-As with the read methods id is the ObjectID of the wf collection document
-that references the data to be deleted.
+The :code:`object_id` is the ObjectId of the waveform document, and
+:code:`object_type` must be either :code:`"TimeSeries"` or
+:code:`"Seismogram"`; it selects the corresponding waveform collection.
 Similarly, the idea of the :code:`clear_history` and :code:`clear_elog`
 may be apparent from the name.  When true all documents linked to the
 waveform data being deleted in the history and elog collections (respectively)
 will also be deleted.  If either are false, debris can be left behind
 in the elog and history collections.  On the other hand, setting either
 true will result in a loss of information that might be needed to address
-problems during processing.  Furthermore, both are only relevant to
-fully or partially processed data.   In general, we recommend the default
-for any cleanups applied within a workflow.  Set clear_elog true only in
-post processing cleanup after you are confident there are not serious
-errors that need to be traced.  Set clear_history True only if you have
-no interest in retaining the object level history.  The default is True
-because we view object level history preservation as a last step to
-provide a mechanism for others to reproduce your work.
+problems during processing.  Both default to true to perform a complete
+delete and avoid orphaned records.  Set either false only when intentionally
+retaining those records and prepared to manage the broken waveform reference.
 
 The main complexity in this method is behind the boolean argument with the name
 :code:`remove_unreferenced_files`.  First, recognize this argument is completely
@@ -447,20 +499,20 @@ ignored if the waveform data being referenced is stored internally in
 MongoDB in the gridfs file system.  In that situation delete_data
 will remove the sample data as well as the document in wf that id defines.
 The complexity enters if the data are stored as external files.  The
-atomic delete_data method of Database is an expensive operation that should be
+atomic :code:`delete_data` method of :code:`Database` is an expensive operation that should be
 avoided within a workflow or on large datasets.  The reason is that
-each call for deleting an atomic object (defined by its id) requires a
-second query to the wf collection involved to search for any other
+when :code:`remove_unreferenced_files=True`, each call for file-backed data
+requires a second query to the waveform collection to search for any other
 data with an exact match to two attributes we used to define a
 single data file:  :code:`dir` which is a directory name and :code:`dfile` which is the
 name of the file at leaf node of the file system tree.  (CSS3.0 users
 are familiar with these attribute names.  We use the same names as the concept here
-is identical to the CSS3.0's use.)  Only when the secondary query finds
+is identical to the CSS3.0's use.)  Only when that secondary query finds
 no matching values for :code:`dir` and :code:`dfile` will the file be deleted.
 You should recognize that if, as is strongly advised, data are organized in
 a smaller number of larger files deletes of this kind can leave a lot of
-debris.   For example, it is easy to produce examples where deleting thousands of
-files in a dataset with millions of files removes few if any files.  On the
+debris.  For example, deleting thousands of waveform documents whose samples
+share larger files may remove few if any files.  On the
 other hand, the common old SAC model of one waveform per file is an abomination
 for storing millions of waveforms on any HPC system.   If your application
 requires frequent delete operations for cleanup during a workflow
@@ -563,90 +615,75 @@ that are handled differently through the schema definition:
     data because the link is through the ObjectID.  The process of
     defining the geometry (site and/or channel) just requires a different
     cross-referencing algorithm. Because of their central role in
-    providing such cross references a normalization id is treated
-    as absolutely immutable in a workflow.  If a writer detects a linking
-    id was altered the datum with which it is associated will be marked
-    bad (dead) and the waveform data will not be saved.
+    providing such cross references, a normalization ID should normally be
+    treated as immutable in a workflow.  The save and update methods retain
+    these IDs but do not validate their targets; deliberately relink data only
+    with an explicit integrity check.
 
 Save Concepts
 ----------------
 Waveform save methods begin with this axiom:  a save operation should
-never abort for anything but a system error.   That means the definition of
-success is not black and white.  There are a range of known and probably
-as yet unknown ways data can acquire inconsistencies that are problems of
-varying levels of severity.  Here is the range of outcomes in increasing
-order severity:
+not abort an entire workflow for a recoverable problem in one datum.  Invalid
+arguments and unexpected system errors can still raise exceptions.  Datum-level
+schema problems are handled according to :code:`mode`:
 
-1.  No problems equal to complete success.
+1.  With :code:`mode="promiscuous"`, the default for
+    :py:meth:`~mspasspy.db.database.Database.save_data`, schema name, type, and
+    read-only checks are bypassed.  The writer still removes :code:`_id`, strips
+    normalized attributes such as :code:`source_lat`, and handles dead data.
 
-2.  Problems that could be repaired automatically.  Such errors always
-    generate error log entries, but the errors are judged to
-    be harmless.   A good example is automatic type conversion from an
-    integer to a floating point number.
+2.  In :code:`mode="cautious"`, defined values are checked against the schema
+    and converted when possible.  Failure to convert a required value kills
+    the datum.  Modified read-only values are omitted and logged.
 
-3.  Errors that are recoverable but leave anomalies in the database.
-    An example is the way read_only data and normalized attributes are handled if
-    the writer detects that they have changed in the workflow.  When that
-    happens the revised data are saved to the related wf collection with a
-    an altered key and a more serious error is logged.
+3.  In :code:`mode="pedantic"`, any type mismatch kills the datum.  Modified
+    read-only values use the same omission-and-log handling as cautious mode.
 
-4.  Unrecoverable MsPASS errors that might be called an unforgivable sin.
-    At present the only unforgivable sin is changing a cross-referencing id.
-    If a writer detects that cross-referencing ObjectID has been altered the
-    data will be marked dead and the Metadata document will be written to
-    a special collection called "graveyard".
+When :code:`save_data` saves a live datum with error-log entries, it writes
+those entries to :code:`elog` and links them to the waveform document with
+:code:`wf_TimeSeries_id` or :code:`wf_Seismogram_id`.
 
-4.  Unrecoverable (fatal) errors will abort a workflow.   At present that
-    should only happen from system generated errors that throw an
-    unexpected exception in python.   If you encounter any errors that
-    causes a job to abort, the standard python handlers should post an
-    informative error.  If you find the error should be recoverable, you
-    can and should write a python error handler by surrounding the problem
-    section with a *try-except* block.
-
-Save operations by default apply only limited safeties defined by items 3-4
-above.  Those are all required because if they were ignored the database
-could be corrupted.   Safeties defined by item 2 are optional to make save
-operations faster, although users are warned we may change that option
-as we acquire more timing data.
-
-In a save operation error log data is always saved.   The log entries are
-linked to wf collections with another ObjectID with the standard naming
-convention for cross-reference keys.  That is, wf_TimeSeries_id and
-wf_Seismogram_id for TimeSeries and Seismogram data respectively.
-
-Data marked dead are handled specially.  For such data the sample data will be
-throw away.  The Metadata for dead data are saved in the elog collection
-document associated with the datum as a subdocument accessible with the
-key "tombstone".  That provides a simple query mechanism to
-show only the most serious errors from a processing run.   Specifically,
-this code fragment will print all error messages associated with
-dead data with a crude tag of seed net, sta, starttime before each
-list of elog messages:
+Data marked dead are handled specially; their sample data are not saved.  By default
+:py:class:`~mspasspy.util.Undertaker.Undertaker` stores ordinary processing
+deaths in :code:`cemetery` and read-time construction failures in
+:code:`abortions`.  Each document contains Metadata under :code:`tombstone`
+and, when present, a list of error dictionaries under :code:`logdata`.
+For :code:`save_data`, setting :code:`cremate=True` skips burial and suppresses
+both cemetery and abortion records.  This code prints a compact report from
+the default collections:
 
   .. code-block:: python
 
-    # This needs to be checked for correctness - done while off the grid
-    query = {'$def' : 'tombstone'}
-    cursor=db.elog.find(query)
-    for doc in cursor:
-      wfmd=doc['tombstone']
-      print('Error log contents for this Seismogram marked dead:',
-         wfmd['net'],wfmd['sta'],UTCDateTime(wfmd['startime'])
-      err=doc['logdata']
-      for e in err:
-        print(e.message)
+    from obspy import UTCDateTime
 
-Note the above is minimal to be concise.  A good report would contain
-additional entries from the tombstone contents and additional components of
-the container defined the symbol "e".
+    query = {"tombstone": {"$exists": True}}
+    for collection_name in ("cemetery", "abortions"):
+        for doc in db[collection_name].find(query):
+            tombstone = doc.get("tombstone", {})
+            starttime = tombstone.get("starttime")
+            if starttime is not None:
+                starttime = UTCDateTime(starttime)
+            print(
+                collection_name,
+                tombstone.get("net", ""),
+                tombstone.get("sta", ""),
+                starttime,
+            )
+            for entry in doc.get("logdata", []):
+                print(
+                    entry.get("algorithm", ""),
+                    entry.get("badness", ""),
+                    entry.get("error_message", ""),
+                )
 
-Saving history data is optional.  When enabled the history chain contents
-are dumped to this history collection, the history container is cleared, and
-then initialized with a reference to the saved entry and the data
-redefined as what we call an "ORIGIN".  The clear process is done because of
-a concern that history data could, in some instances, potentially cause
-a memory bloat with iterative processing.
+The report is intentionally minimal; applications can select additional
+tombstone fields or filter by :code:`data_tag`.
+
+Saving history data is controlled by :code:`save_history` (currently true by
+default for :code:`save_data`).  When enabled and the history container is not
+empty, the chain is written to :code:`history_object`, cleared from the datum,
+and reinitialized as an origin linked to the saved history.  This bounds memory
+growth in iterative processing.
 
 Read concepts
 -----------------
@@ -662,42 +699,41 @@ they are handled during construction.
     against the schema.  In addition, one can list a set of keys that should
     be dropped in the read.
 
-2.  By default normalized Metadata can only be loaded through cross-referencing id
-    keys (currently source_id, site_id, and/or channel_id but more may be added).
-    The set of which collections are to be loaded are controlled by optional
-    parameters in each reader.  An important constraint is that for all
-    normalized collections defined as required, if the cross-referencing
-    key is not defined a reader will ignore that datum.  Atomic
-    :code:`read_data` calls silently signal that condition by returning
-    :code:`None`.  Ensemble reads through :code:`read_data` and distributed
-    reads through :code:`read_distributed_data` normally silently skip such
-    data.  That model is intentional because it allows initial loading of a
-    large data set with unresolvable anomalies that prevent one or more of
-    the cross-referencing ids from being defined.
+2.  Normalized Metadata are loaded only when the :code:`normalize` or
+    :code:`normalize_ensemble` options request one or more matchers.  Standard
+    ID-based matchers use :code:`source_id`, :code:`site_id`, or
+    :code:`channel_id`; other :class:`~mspasspy.db.normalize.BasicMatcher`
+    implementations can use different matching rules.  Missing-match behavior
+    belongs to the matcher and can log or kill a datum.
 
-3.  The waveform data is read and the data object is constructed.  If that process fails the data
-    will be marked dead and an error log posted with the reason (e.g. a
-    file not found message).
+3.  The waveform data are read and the data object is constructed.  If that
+    process fails, an atomic :code:`read_data` call returns a dead object of the
+    requested type with an error-log entry, rather than :code:`None`.
+    Construction and schema failures are normally marked with
+    :code:`is_abortion=True`.
 
-4.  If the sample date read is successful the error log will normally be empty
-    after any read.
+4.  For a cursor-driven ensemble read, documents rejected during Metadata
+    conversion are omitted from the ensemble and recorded in the
+    :code:`abortions` collection.  The returned ensemble is dead only when no
+    valid members can be constructed.
 
-5.  If processing history is desired the :code:`load_history` option needs to be
+5.  If the sample-data read is successful the error log will normally be empty.
+
+6.  If processing history is desired the :code:`load_history` option needs to be
     set true.  In a reader the only action this creates is initialization of the
     ProcessingHistory component of the data with a record providing a unique
     link back to the data just read.
 
-We reiterate that the overall behavior of all readers are controlled by the
+We reiterate that the overall behavior of all readers is controlled by the
 :code:`mode=` argument common to all.  The current options are: :code:`promiscuous`,
 :code:`cautious`, and :code:`pedantic`.   Detailed descriptions of what each mean are
-given above and in the sphynx documentation generated from docstrings.
+given above and in the Sphinx documentation generated from docstrings.
 
 Update Concepts
 ---------------
-As noted above an update is an operation that can be made only to
-Metadata.  In MsPASS Metadata map directly into MongoDB's document concept
-of name-value pairs, while the waveform data are stored in some version of
-a file. We know of two common application for a pure Metadata update
+The most common update changes only Metadata.  In MsPASS Metadata map directly
+into MongoDB's document concept of name-value pairs, while waveform samples are
+stored separately.  We know of two common applications for a pure Metadata update
 without an associated save of the waveform data.
 
 1.  A processing step that computes something that can be conveniently
@@ -713,41 +749,33 @@ without an associated save of the waveform data.
     active source experiment where receiver coordinates can often be
     computed from survey flag numbers or some other independent counter.
     In MsPASS Metadata calculations are particularly easy and thus likely
-    because python is used as the job control language.   (Classical seismic
+    because Python is used as the job control language.   (Classical seismic
     reflection systems and programs like SAC use a custom interpreter.)
 
 Updates to data that only involve Metadata changes should obey this rule:
 
-* **Update Rule 3:**  Updates for Seismogram and TimeSeries object Metadata should be done
-  through the :code:`update_metadata` method of :code:`Database`.  Updates to
-  other collections should use the pymongo API.
+* **Update Rule 3:**  Updates for Seismogram and TimeSeries object Metadata
+  should use :py:meth:`~mspasspy.db.database.Database.update_metadata`.
+  Updates to other collections should use the PyMongo API.
 
 As noted elsewhere numerous online and printed documentation exists for MongoDB
 that you should refer to when working directly with database collections.
-As the rule states when you need to save the results of a pure Metadata change
-within a workflow (e.g. posting a phase pick) use the :code:`update_metadata`
-method of :code:`Database`.   That method has two standard arguments already
-discussed above:   (1) :code:`mode`, and (2) :code:`collection`.
-Three others are important for controlling the behavior of updates:
+As the rule states, use :code:`update_metadata` to preserve a pure Metadata
+change such as a phase pick.  The input must be a live atomic object with an
+:code:`_id` identifying its waveform document; dead input returns
+:code:`None`.  The Metadata container tracks which keys changed, and only
+those keys are updated by default.  Important controls are:
 
-1. **ignore_metadata_changed_test** is a boolean that is False by default.
-   We know of no example where setting this argument True in a update would
-   be advised (it exists as an option only to streamline create operations that
-   are run through the same method.).  The Metadata container does bookkeeping
-   that marks which, if any, key-value pairs in the container have been
-   altered since the data was loaded (constructed).  The :code:`update_metadata`
-   normally uses that feature to reduce the size of the update transaction by
-   only submitting updates for key-value pairs marked changed.   Setting this
-   argument True would most likely be harmless, but would also add inefficiency.
-2. **exclude_keys** is an optional list of keys for the  Metadata container that the method
-   should not try to update.   Use of this option is rare.   An example where it
-   might be useful is if some function altered a Metadata value that is known
-   to be incorrect.
-3. **data_tag** was discussed above for save/create operations.  When the
-   entire contents of a TimeSeries or Seismogram object are being saved the
-   tag serves as a mark for saves to distinguish those data from the
-   starting data or other intermediate saves.  In a pure update, however, the
-   meaning is different.  The data_tag argument is used any data updated
-   will have the associated tag in the database changed to the string
-   specified in the call to :code:`update_metadata`.  The default is to
-   do nothing to any existing tag (i.e. the tag is not updated).
+1.  :code:`mode` defaults to :code:`"cautious"`; the three modes have the
+    schema behavior described above.
+2.  :code:`collection` selects a nondefault waveform collection when needed.
+3.  :code:`exclude_keys` omits changed keys from the update.
+4.  :code:`force_keys` includes listed keys even when they are not marked
+    modified.
+5.  :code:`normalizing_collections` controls which prefixed normalization
+    attributes are stripped.  Change its default only for a custom schema.
+
+If sample data also changed, use
+:py:meth:`~mspasspy.db.database.Database.update_data`.  That method currently
+updates sample data in GridFS and also accepts :code:`data_tag`; those features
+are not arguments of :code:`update_metadata`.
