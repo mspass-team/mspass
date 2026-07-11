@@ -21,33 +21,27 @@ components:
 
 MsPASS builds on the `ObsPy <https://obspy.org/>`__ toolkit and C++ components
 derived from
-`SEISPP <http://www.indiana.edu/~pavlab/software/seispp/html/index.html>`__.
+`SEISPP <https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/seismic/libseispp>`__.
 
 Choose your path
 ----------------
 
-First-time desktop users
-   Follow the :doc:`desktop quick start <getting_started/quick_start>`, then
-   choose the :doc:`single-container Docker guide
-   <getting_started/run_mspass_with_docker>` or the
-   :doc:`MsPASS Desktop graphical launcher <getting_started/mspass_desktop>`.
-
-Data-processing users
-   Begin with :doc:`seismic data objects
-   <user_manual/data_object_design_concepts>`, continue to
-   :doc:`database concepts <user_manual/database_concepts>`, and then browse
-   the :doc:`processing algorithms <user_manual/algorithms>`.
-
-Cluster deployers
-   Read the :doc:`virtual-cluster concepts
-   <getting_started/getting_started_overview>` before following the
-   :doc:`HPC deployment guide <getting_started/deploy_mspass_on_HPC>` or a
-   platform-specific deployment page.
-
-API readers
-   Go directly to the :doc:`Python API <python_api/index>`,
-   :doc:`C++ API <cxx_api/index>`, or :doc:`MsPASS schema
-   <mspass_schema/mspass_schema>`.
+* **First-time desktop users:** Follow the
+  :doc:`desktop quick start <getting_started/quick_start>`, then choose the
+  :doc:`single-container Docker guide <getting_started/run_mspass_with_docker>`
+  or the :doc:`MsPASS Desktop graphical launcher
+  <getting_started/mspass_desktop>`.
+* **Data-processing users:** Begin with :doc:`seismic data objects
+  <user_manual/data_object_design_concepts>`, continue to
+  :doc:`database concepts <user_manual/database_concepts>`, and then browse
+  the :doc:`processing algorithms <user_manual/algorithms>`.
+* **Cluster deployers:** Read the :doc:`virtual-cluster concepts
+  <getting_started/getting_started_overview>` before following the
+  :doc:`HPC deployment guide <getting_started/deploy_mspass_on_HPC>` or a
+  platform-specific deployment page.
+* **API readers:** Go directly to the :doc:`Python API <python_api/index>`,
+  :doc:`C++ API <cxx_api/index>`, or :doc:`MsPASS schema
+  <mspass_schema/mspass_schema>`.
 
 .. toctree::
    :maxdepth: 1

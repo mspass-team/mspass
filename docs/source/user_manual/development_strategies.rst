@@ -149,7 +149,7 @@ following:
 
     .. code-block:: bash
 
-      docker run --mount type=bind,source=/home/myname/python,target=/mnt -p 8888:8888 mspass/mspass
+      docker run --mount src=/home/myname/python,target=/mnt,type=bind -p 8888:8888 mspass/mspass
 
     To make that module accessible with the same import command as above you
     would need to change the python search path.  For this example, you could

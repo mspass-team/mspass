@@ -1,70 +1,81 @@
 .. _quick_start:
 
 Getting Started in a Nutshell
-=============================
+===============================
 
-This page is the shortest path to running MsPASS on a desktop or laptop with
-Docker.  For a multi-node system, start with :ref:`getting_started_overview`
-instead.
+Overview
+-------------
+This section is a concise summary of steps required to run a MsPASS.
+It has limited explanations for what is done at each step.   The main use
+is as a quick reminder for experienced users and as the starting point
+for the impatient.  This summary assumes you are running on a desktop
+using docker.   It is not appropriate if you are running on a cluster
+with multiple nodes.  If that is your situation, you should refer to
+the appropriate, longer sections of the `Getting Started` section.
 
-1. Install Docker
------------------
+1. Install docker
+---------------------
+Fetch and install docker following instructions on the
+`official Docker instructions
+<https://docs.docker.com/get-started/get-docker/>`__.
 
-Install Docker using the `official instructions
-<https://docs.docker.com/get-started/get-docker/>`__.  On macOS and Windows,
-start Docker Desktop before continuing.
+2. Launch docker desktop (MacoOS and Windows)
+---------------------------------------------
+MacOS and Windows have a GUI application (Icon tagged "Docker") that you will
+need to launch unless it is already running.
 
-2. Choose a working directory
------------------------------
+3. Get or Refresh the container (optional)
+-------------------------------------------
+If you have not run MsPASS before you will need to get the docker container
+from the standard repository.  Alternatively if you want to get the most
+recent updates you may also need to do this step.
 
-Open a terminal and change to the directory where you want to keep your
-notebooks and data.  If you are using an MsPASS tutorial, choose the top-level
-directory of the tutorial repository.
+.. code-block::
 
-3. Get or refresh the container
--------------------------------
+    docker pull mspass/mspass
 
-This step is required the first time and can be repeated to get updates:
+4. Launch the container
+-------------------------
+Launch whatever version of a "terminal" is used on your platform.
+Decide what directory (folder) you want to use as a working directory.
+If you are running one of our tutorials use the top-level of the tutorials
+repository. Otherwise, use whatever is appropriate for your setup.
+Make whatever you choose your current directory and run this incantation:
 
-.. code-block:: console
+.. code-block::
 
-   docker pull mspass/mspass
+    docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
 
-4. Launch MsPASS
-----------------
+This should generate a stream of output ending in something like the following:
 
-On Linux or macOS, run:
+.. code-block::
 
-.. code-block:: console
+    [I 11:02:38.655 NotebookApp] Serving notebooks from local directory: /home
+    [I 11:02:38.655 NotebookApp] Jupyter Notebook 6.2.0 is running at:
+    [I 11:02:38.655 NotebookApp] http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+    [I 11:02:38.656 NotebookApp]  or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+    [I 11:02:38.656 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+    [C 11:02:38.673 NotebookApp]
 
-   docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
-
-Leave the terminal open while MsPASS is running.  The command mounts your
-current working directory as ``/home`` inside the container, so notebooks and
-data saved there remain on your computer after the container stops.
+        To access the notebook, open this file in a browser:
+            file:///root/.local/share/jupyter/runtime/nbserver-57-open.html
+        Or copy and paste one of these URLs:
+            http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
+         or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
 
 .. note::
+  The launch command above uses the Unix shell's ``pwd`` command.  If the
+  working-directory path contains spaces, replace the ``--mount`` argument
+  with ``--mount src="$PWD",target=/home,type=bind``.  Windows PowerShell
+  users should use ``--mount src="$($PWD.Path)",target=/home,type=bind``.
 
-   If the path to your working directory contains spaces, replace ``src=`pwd```
-   with ``src="$PWD"``.  Windows PowerShell users should instead use
-   ``src="$($PWD.Path)"``.
-
-5. Open JupyterLab
-------------------
-
-The terminal output will include one or more web addresses containing a
-generated token.  Copy the complete ``http://127.0.0.1:8888`` address,
-including its token, into a browser on the same computer.
-
-When you finish, save your work, return to the terminal, and press ``Ctrl-C``
-to stop MsPASS.
-
-Next steps
-----------
-
-* :ref:`Run MsPASS with Docker <run_mspass_with_docker>` explains the desktop
-  workflow and troubleshooting in more detail.
-* The `MsPASS tutorial notebooks
-  <https://github.com/mspass-team/mspass_tutorial>`__ provide worked examples.
-* :ref:`MsPASS Virtual Cluster Concepts <getting_started_overview>` introduces
-  cluster deployment.
+5. Connect to the container with a web browser
+--------------------------------------------------
+If you don't have one running already, launch your favorite web browser.  Use
+cut-and-paste or type one of the http addresses in the output into the url
+box of the browser. That should launch the jupyter lab control panel.  If you
+are not familiar with jupyter lab or jupyter notebook you will need to refer
+to tutorials for that application.  The jupyter developer's introduction
+can be found
+`here <http://justinbois.github.io/bootcamp/2020_fsri/lessons/l01_welcome.html>`__.
+There are many other tutorials easily found with a web search.

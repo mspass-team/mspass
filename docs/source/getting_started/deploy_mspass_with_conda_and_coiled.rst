@@ -43,6 +43,10 @@ Authenticate the local client:
 
    coiled login
 
+This command normally opens a browser so you can authenticate the computer
+with your Coiled account.  Complete that login before attempting to create a
+cluster.
+
 Then follow the current `Coiled setup guide
 <https://docs.coiled.io/user_guide/setup/index.html>`__ for your cloud
 provider.  The setup process requests permission before creating identity and
@@ -80,7 +84,10 @@ You can test the connection on a machine where the variable is available:
    db = dbclient["mspass"]
 
 This test does not prove that cloud workers can reach the database.  Test from
-a worker before starting a large job.
+a worker before starting a large job.  Place MongoDB and the workers in
+network locations that can communicate reliably; high latency or limited
+bandwidth between them can dominate a waveform-processing job, especially
+when sample data use GridFS.
 
 4. Create a Dask cluster
 ------------------------
@@ -99,6 +106,12 @@ The basic Coiled workflow is:
 
    future = client.submit(inc, 10)
    print(future.result())  # 11
+
+``n_workers`` controls the initial amount of parallel capacity in this simple
+example.  Increasing it can shorten a CPU-bound workload, but it also creates
+more billable instances and more simultaneous database and storage traffic.
+Start with a small test cluster, measure the workflow, and scale only after the
+software environment, network access, and data paths are working correctly.
 
 The workers must receive an environment containing ``mspasspy``.  Coiled may
 be able to reproduce the active local environment automatically; consult its

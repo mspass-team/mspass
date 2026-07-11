@@ -130,7 +130,9 @@ The first field is the script directory *inside the container*.  For a script
 at the top level of the project directory, leave it as ``/home``.  Enter the
 script name, such as ``analysis.py``, in the second field and select **Run
 it**.  Output appears in the terminal from which ``mspass-desktop`` was
-started.
+started.  If you need a persistent transcript of that output, redirect the
+command's output when launching the GUI or use a terminal-recording tool such
+as the Unix ``script`` command.
 
 .. note::
 
@@ -171,6 +173,39 @@ delay, status interval, and the Compose file used by the launcher.
 ``DesktopCluster.yaml`` controls container images, mounts, ports, and service
 settings.  The launcher expects the service names ``mspass-db``,
 ``mspass-scheduler``, ``mspass-worker``, and ``mspass-frontend``.
+
+The GUI configuration fields most likely to need adjustment are:
+
+``web_browser``
+   Defines the command the launcher uses to open JupyterLab and diagnostics.
+   The value must be resolvable from the command-line environment in which
+   ``mspass-desktop`` runs.  On macOS, for example, launching an application
+   from a terminal may require an ``open -a ...`` command rather than only the
+   application name.
+
+``minimum_window_size_x`` and ``minimum_window_size_y``
+   Set the minimum GUI dimensions in pixels.  Adjust these for an unusually
+   high- or low-resolution display if controls are clipped or the initial
+   window is inconveniently sized.
+
+``engine_startup_delay_time``
+   Sets how long the launcher waits for Docker services during startup.
+   Reducing it can shorten launch time on a fast, lightly loaded computer, but
+   a service may be reported down before it is ready.  Increase it if startup
+   errors consistently occur while MongoDB or another container is still
+   initializing.
+
+``status_monitor_time_interval``
+   Sets how frequently the launcher checks the state of the Compose services.
+   A shorter interval updates a failed-service indicator sooner, while a
+   longer interval reduces polling.  The packaged default historically used a
+   ten-second interval; inspect your installed configuration rather than
+   assuming that value is unchanged.
+
+The Compose configuration is the appropriate place to change published ports,
+host mounts, container images, and service environment variables.  Preserve
+the expected service names unless the launcher configuration is updated at the
+same time.
 
 Validate a modified Compose file before selecting **Launch**:
 

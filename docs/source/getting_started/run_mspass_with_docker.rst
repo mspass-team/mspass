@@ -27,6 +27,9 @@ The MsPASS image is hosted on `Docker Hub
 
 The first download can take a few minutes.  Docker stores the image in its own
 data area, so no files appear in the directory where you run this command.
+The download therefore consumes space in Docker's image store rather than in
+your project directory.  Use Docker Desktop's image view or ``docker image
+ls`` to inspect downloaded images and their sizes.
 The image is also available from the `GitHub Container Registry
 <https://github.com/mspass-team/mspass/pkgs/container/mspass>`__.
 
@@ -39,6 +42,11 @@ terminal, and run:
 .. code-block:: bash
 
    docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
+
+The host computer and the container have separate filesystem namespaces.  A
+path on the host does not automatically exist at the same path inside the
+container.  The mount option explicitly connects the host project directory
+to the container's ``/home`` directory.
 
 The two important options are:
 
@@ -59,6 +67,19 @@ Connect to JupyterLab
 Near the end of the startup output, JupyterLab prints a URL containing an
 access token.  Copy the URL beginning with ``http://127.0.0.1:8888/`` into a
 browser on the same computer.  Do not share the token-bearing URL.
+
+The exact messages and token change from run to run, but the useful portion
+looks similar to this:
+
+.. code-block:: text
+
+   Jupyter Server is running at:
+   http://127.0.0.1:8888/lab?token=ced2d40475df...
+   Use Control-C to stop this server and shut down all kernels.
+
+Wait for this message before trying to connect.  The earlier MongoDB and Dask
+messages show that startup is progressing, but do not mean the web interface
+is ready.
 
 JupyterLab's file browser shows the contents of ``/home``, which is the project
 directory you mounted.  You can open an existing notebook or create a new
@@ -81,13 +102,30 @@ Do not omit the mount option for normal work.  Without it, notebooks, database
 files, and other results remain only inside the container and can be lost when
 the container is removed.
 
+Use a terminal inside JupyterLab
+--------------------------------
+
+The JupyterLab launcher includes a ``Terminal`` option as well as notebook and
+console options.  It opens a shell inside the MsPASS container with ``/home``
+as the project area.  This can be useful for running a Python script, examining
+files, or monitoring CPU and memory with tools such as ``top``.  Type ``bash``
+if the initial shell lacks familiar line editing or other interactive features.
+
+The shell normally runs as ``root`` *inside the container*.  That is not the
+same as being root on the host, but the shell can still modify or delete host
+files through the read-write ``/home`` bind mount.  Use administrative and
+file-removal commands carefully.  Software installed or files created outside
+the mounted directory are container-local and may be lost when the container
+is removed.
+
 Stop MsPASS
 -----------
 
 Save and close active notebooks, then press ``Ctrl-C`` in the terminal that is
 running the container.  Allow the shutdown messages to finish so MongoDB and
 the worker processes can stop cleanly.  Files in the mounted project directory
-remain available for the next run.
+remain available for the next run.  Jupyter may ask you to press ``Ctrl-C`` a
+second time to confirm shutdown.
 
 Other host shells
 -----------------
