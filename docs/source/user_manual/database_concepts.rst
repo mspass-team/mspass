@@ -1,28 +1,22 @@
 .. _database_concepts:
 
 Database Concepts
-========================
-Prof. Gary L. Pavlis
-========================
-Overview/roadmap
-----------------------
-Expect this section to be merger of several existing sections.
-This section will need to guide reader on access points.
-Need to use interal hyperlinks to keys section headings.
-note it can be read linearly or nonlinearly with links but design is
-a linear read.  Use the index for entry during use for reminders.
+=================
+
+This chapter introduces the database model used throughout MsPASS.  It is
+organized as a linear introduction, but the major sections can also be used
+independently: :ref:`database_fundamentals`, :ref:`seismology_data_model`,
+:ref:`waveform_storage_model`, :ref:`database_schema_concepts`, and
+:ref:`database_import_concepts`.
 
 
+
+.. _database_fundamentals:
 
 Fundamentals
 --------------------------------------------
-Wikepedia provides the following generic definition of a
-`database <https://en.wikipedia.org/wiki/Database>`_:
-
-| In computing, a database is an organized collection of data or a type
-  of data store based on the use of a database management system (DBMS),
-  the software that interacts with end users, applications,
-  and the database itself to capture and analyze the data.
+A `database <https://en.wikipedia.org/wiki/Database>`_ is an organized
+collection of data managed by a database management system (DBMS).
 
 Prior to MsPASS two approaches were used in Seismology to define a
 "Database" in this generic sense:
@@ -32,7 +26,7 @@ Prior to MsPASS two approaches were used in Seismology to define a
     1980s.   Those systems used the then revolutionary concept
     of tree structure of a unix file system to manage waveform data.
     It is not commonly appreciated that that approach is an
-    implementation of the oldest form of database called called
+    implementation of the oldest form of database, called
     a `hierarchic database model <https://en.wikipedia.org/wiki/Hierarchical_database_model>`__,
     which dates back to the concepts developed by IBM in the 1960s.
     The only reason that is important is that a large fraction of
@@ -57,11 +51,10 @@ what is called a "document database".   The name is misleading because
 it has far more utility than providing a way to manage documents.
 There is a lot more information about MongoDB in this manual and
 and a truly vast amount of documentation on the web.   A few key
-points, however, are worth emphasizing about MongoDB and MsPaSS:
+points, however, are worth emphasizing about MongoDB and MsPASS:
 
-- I would assert that MongoDB is a perfect database engine for
-  a system like MsPASS designed for research applications. The reason is
-  that MongoDB is so much more flexible than a relational database system.
+- MongoDB is well suited to a research system like MsPASS because it is
+  more flexible than a relational database system.
   Relational databases demand data be organized as a table format that
   is quite rigid.   MongoDB documents, in contrast, are a loose
   collection of "key-value pairs" than can hold almost anything.
@@ -111,35 +104,25 @@ interact with the database server simultaneously.  Furthermore, in a modern
 cluster each worker is independent.   Significant effort is required to
 launch a client and initiate connections to the server.  Any parallel
 application requiring database access would be very very slow if a new
-client had to be instantiated for each new parallel task.   MsPASS solves
-that problem by using a feature of dask called a
+client had to be instantiated for each new parallel task.  MsPASS solves
+that problem for Dask with a
 `worker plugin <https://docs.dask.org/en/stable/customize-initialization.html>`_.
-We have found that parallel database access requires the
-use of such a plugin.  Naive uses will either perform badly or
-just fail.   For details about clients, in general, see :ref:`mspass_components`.
-For this topic, there are two axioms:
+The :class:`~mspasspy.client.Client` automatically registers
+:class:`~mspasspy.util.db_utils.MongoDBWorker` when it creates or connects to
+a Dask scheduler, so applications should not register a second copy.  Each
+worker then owns a database client instead of repeatedly deserializing or
+creating one for every task.  Spark workflows can still use MsPASS's
+distributed readers and writers, but code that obtains the worker-local
+database handle is Dask-specific.  See :ref:`mspass_components` and
+:ref:`parallel_processing` for the supported execution patterns.
 
-1. If your workflow requires database access during the run, you must
-   use the dask scheduler.   We have been unable to discover a comparable feature in
-   pyspark to dask's worker plugin.
-2. All parallel jobs require creating the worker plugin and pushing it to
-   all workers using a variation of the following code fragment:
-
-.. code-block:: python
-
-   import mspasspy.util.db_utils as mdbu
-   from mspasspy.client import Client
-
-   mspass_client = Client()
-   db_plugin = mdbu.MongoDBWorker(mspass_client)
-   dask_client = mspass_client.get_scheduler()
-   dask_client.register_plugin(db_plugin)
+.. _seismology_data_model:
 
 Seismology Data
 ---------------------
 A database is an organized collection of information so the reader needs to first
 understand what data MsPASS was designed to manage.  MsPASS considers
-managing waveform data to be it's primary mission.  What we mean by "waveform data",
+managing waveform data to be its primary mission.  What we mean by "waveform data",
 however, has some secondary classifications and nuances I discuss below.
 MsPASS treats everything except waveform data as
 "Metadata", which in the MsPASS perspective means any data not a required
@@ -176,7 +159,7 @@ oriented programming jargon all MsPASS seismic data objects "are" Metadata
 concept but the difference is that Metadata to SAC maps fixed memory
 slots to a particular set of attributes.  In MsPASS we use a more
 modern, generic approach with key-value pairs.   That is,
-MsPASS Metadata is a container that allows access to attibute with
+MsPASS Metadata is a container that allows access to an attribute with
 a key.  What that means, in practice, is that MsPASS data objects
 can act like python dictionaries.   e.g. the following is a sample
 code block to access SEED net codes from a seismic data object
@@ -188,7 +171,7 @@ defined with a generic symbol "d":
    sta = d["sta"]
    chan = d["chan"]
 
-I inflicted all that on you to make two key points:
+This design has two important consequences:
 
 1.  The approach we developed for MsPASS is completely generic.
     The "header" can be minimal or expand to be huge depending on the needs
@@ -225,12 +208,12 @@ orders of magnitude of redundancy and duplicating that same data for
 every datum in storage is very inefficient and creates many potential
 problems.   For that reason, MsPASS treats source and receiver data
 specially as described in the next two sections.   A key point,
-however, is that everything else is treated as Metdata and stored in
+however, is that everything else is treated as Metadata and stored in
 MongoDB documents.  A convention we adopted in MsPASS is that
 collections that contain documents with data that can be used to
 construct a valid seismic data object have a name that begins
 with "wf".   (Standard ones are "wf_miniseed","wf_TimeSeries", and
-"wf_Seismogram")   Auxiliary attributes stored their are open-ended
+"wf_Seismogram".)  Auxiliary attributes stored there are open-ended,
 but each of the standard ones have a schema that defines the namespace
 of what each key means for that collection.   We expand on that topic
 below after discussing how we handle source and receiver metadata.
@@ -262,8 +245,11 @@ and workflows need to link with that data through a different process
 MongoDB calls "normalization".   Details of that topic are found
 in :ref:`normalization`.
 
+.. _waveform_storage_model:
+
 Managing Large Data objects
 -----------------------------
+
 A final generic concept in how MsPASS handles waveform data is that
 like every other practical system we are aware of MsPASS manages
 Metadata storage separately from the more voluminous sample data.
@@ -298,7 +284,7 @@ External Data Storage within MsPASS
 Most MsPASS processing workflows can be reduced to one or more blocks
 of python code that can be summarized in three steps:
 
-.. code-block:: python
+.. code-block:: text
 
    1. Read data from storage to create a seismic data object
    2. Run a series of algorithms on that data
@@ -318,19 +304,20 @@ a set of miniseed files into the MsPASS system:
    import dask.bag as dbg
 
    current_directory = os.getcwd()
-   dir = os.path.join(current_directory, 'wf')
+   data_directory = os.path.join(current_directory, "wf")
    dfilelist=[]
-   with os.scandir(dir) as entries:
+   with os.scandir(data_directory) as entries:
        for entry in entries:
            if entry.is_file():
                dfilelist.append(entry.name)
    print(dfilelist)
    mydata = dbg.from_sequence(dfilelist)
-   mydata = mydata.map(db.index_mseed_file,dir=dir)
+   mydata = mydata.map(db.index_mseed_file, dir=data_directory)
    index_return = mydata.compute()
 
 The key point here is work done by the `index_mseed_file`
-method of the MsPASS Database object (referenced above with the symbol `db`).
+method of the MsPASS :class:`~mspasspy.db.database.Database` object
+(referenced above with the symbol ``db``).
 It extracts the minimal Metadata stored with miniseed files and
 writes one MongoDB document containing that metadata and file index
 information that defines a range of bytes that can be used to
@@ -366,7 +353,7 @@ could be read with the following:
 
 .. code-block:: python
 
-   d = db.read_data(doc,collection="wf_miniseed")
+   d = db.read_data(doc, collection="wf_miniseed")
 
 When that line completes `d` would contain a `TimeSeries` object
 for the station "S06" and channel "LHZ" defined in `doc` and time range
@@ -379,9 +366,9 @@ The Metadata of `d` is copy of that above.  e.g. you
 would find that after that read completed `d["sta"]` is "S06"
 and `d["chan"]` is "LHZ".
 
-The reader should note that the `"format": "mseed"` line
-is not the default for data storage.   The default is `binary`
-(note if `format` is not defined the default is `binary`).
+The reader should note that the ``"format": "mseed"`` line
+is not the default format.  If ``format`` is absent, the reader assumes
+``binary``.
 `binary` tells the reader the to use the low level C function called
 `fread <https://www.tutorialspoint.com/c_standard_library/c_function_fread.htm>`_
 to load the `data` array in a TimeSeries or Seismogram objects being
@@ -451,7 +438,7 @@ most extreme as that format depends solely on the database documents
 to supply the required attributes and Metadata.   That works because all
 MsPASS readers use this pseudocode to create atomic data objects:
 
-.. code-block:: python
+.. code-block:: text
 
    1) load document (dictionary) from database
    2) Use that dictionary to construct an template for the object.
@@ -467,13 +454,15 @@ in the MongoDB database to be altered as needed without having to touch
 the sample data.   e.g. a nearly universal starting point with
 miniseed data is to run the function
 :py:func:`mspasspy.db.normalize.normalize_mseed` on the output of
-:py:meth:`mspasspy.db.index_mseed_file`.
+:py:meth:`mspasspy.db.database.Database.index_mseed_file`.
 That modifies "wf_miniseed" documents creating cross-referencing keys
 to the "site" and "channel" collections.   The attributes added are not
 at all related to the SEED standard but are essential to utilize the
 data effectively.   That strategy of adding to Metadata as needed is
 an essential one for any functional seismic processing system.
 
+
+.. _database_schema_concepts:
 
 Schema
 ------
@@ -512,7 +501,7 @@ with relatioal databases may find it convenient to think of a
 collection as the equivalent of a table (relation) and a given document
 is comparable to a database row (tuple).
 
-I inflicted all that on you to help you understand that a "schema" is
+This distinction matters because a "schema" is
 an essential starting point for a relational database,
 but it less essential with MongoDB.  With an RDBMS
 the structure of those tables must be defined before they can be used.
@@ -546,13 +535,9 @@ metadata keys, the type of the datum with which they should be linked,
 and the concept that the value should represent.
 When you are developing a
 workflow you may find it useful to have that table at your disposal.
-Alternatively, in the modern world with AI agents integrated into
-search engines, you can simply ask you favorite AI a question like
-the following:
-"What is the Metadata key in MsPASS to reference the data sample interval?".
-For the most common cases you should get a reasonable response including
-a summary longer than the cryptic summary in the tables of
-:ref:`mspass_schema`.
+The schema tables and Python API are the authoritative sources for key names
+and types; generated answers and third-party examples should be checked
+against them.
 
 We close this section by noting that a schema is not required by
 MongoDB. As we discussed in detail in :ref:`data_object_design_concepts`
@@ -676,11 +661,10 @@ to common data like station and source Metadata.
 
 ObjectIds are stored in MongoDB as a binary object we normally store in
 its raw form using pymongo.  Users should be aware that a human readable
-form can be obtain in python by using the str attribute of ObjectId class.  (i.e. if
-:code:`myid` is an ObjectId loaded from MongoDB, the readable form is :code:`myid.str`)
-For more on ObjectIds the following site is a good introduction_.
-
-.. _introduction: https://www.tutorialspoint.com/mongodb/mongodb_objectid.htm
+form can be obtained in Python with :code:`str(myid)`, where :code:`myid`
+is an ObjectId loaded from MongoDB.  See the
+`PyMongo ObjectId API <https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html>`_
+for details.
 
 Normalized Data
 ::::::::::::::::::
@@ -689,10 +673,9 @@ When we started this development we planned to create a purely flat
 Metadata space through what MongoDB calls an *embedded data model*.
 As we gained experience on the system, however, we realized all seismology
 Metadata was better suited to make more use of what MongoDB's documentation
-calls a *normalized data model*.  The generic concepts these terms
-describe can be found here_.
-
-.. _here: https://www.tutorialspoint.com/mongodb/mongodb_data_modeling.htm
+calls a *normalized data model*.  MongoDB's
+`data-modeling documentation <https://www.mongodb.com/docs/manual/data-modeling/>`_
+describes these generic concepts.
 
 At this time there are three sets of Metadata we handle by normalization.
 They are familiar concepts to anyone familiar with the relational database
@@ -854,11 +837,12 @@ Waveform Data Storage
 Overview
 :::::::::::::
 
-All seismogram read operations access one of the wf Collections.
+Native waveform read operations normally access one of the ``wf`` collections.
 The default behavior is to read all key-value pairs in a single document
 and insert most of the attributes into the Metadata for one
-TimeSeries or Seismogram objects.  Normalized data (see above) are
-loaded automatically by default.
+TimeSeries or Seismogram objects.  Normalized data are loaded only when
+requested with the ``normalize`` or ``normalize_ensemble`` arguments to
+:meth:`~mspasspy.db.database.Database.read_data`.
 
 Writers are more complicated because they may have to deal with any
 newly generated attributes and potentially fundamental changes in the
@@ -873,16 +857,16 @@ the automatic type conversions will not be feasible.  Similarly, NEVER EVER
 write a new attribute to an datum's Metadata if the key is already defined
 in the schema.  Doing so will guarantee downstream problems.
 
-Users must also realize that the sample data in Seismogram or TimeSeries objects
-can be constructed from :code:`wf` documents in one of two ways.  First, the sample data
-can be stored in the more conventional method of CSS3.0 based systems
-as external files.   In this case, we use the same construct as CSS3.0 where
-the correct information is defined by three attribures:  :code:`dir`, :code:`dfile`, and
-:code:`foff`.   Unlike CSS3.0 MsPASS currently requires external file data to be
-stored as native 64 bit floating point numbers.   We force that restriction
-for efficiency as the :code:`Seismogram.data` array and the :code:`TimeSeries.data`
-vector can then be read and written with fread and fwrite respectively from
-the raw buffers.  The alternative (second) method for storing sample data
+Users must also realize that the sample data in Seismogram or TimeSeries
+objects can be constructed from :code:`wf` documents in two principal ways.
+First, sample data can be stored in external files.  For native binary
+storage, MsPASS uses the same construct as CSS3.0, with :code:`dir`,
+:code:`dfile`, and :code:`foff`.  Native file data are stored as 64-bit
+floating-point numbers for efficiency, allowing the
+:code:`Seismogram.data` and :code:`TimeSeries.data` buffers to be read and
+written directly.  Formatted files, including miniSEED, can also be read
+through ObsPy when the document supplies a supported ``format`` value.  The
+alternative method for storing sample data
 in MsPASS is through a mechanism called :code:`gridfs` in MongoDB.  This
 section expands on usage of these two mechanisms.
 
@@ -891,10 +875,9 @@ gridfs storage
 When data are saved to gridfs, MongoDB will automatically create two
 collections it uses to maintain the integrity of the data stored there.
 They are called :code:`fs.files` and :code:`fs.chunks`.   Any book on MongoDB and
-any complete online source will discuss details of gridfs and these
-two collections.  A useful example is this tutorial_.
-
-   .. _tutorial: https://www.tutorialspoint.com/mongodb/mongodb_gridfs.htm
+the `MongoDB GridFS documentation
+<https://www.mongodb.com/docs/manual/core/gridfs/>`_ describes these
+collections in detail.
 
 You, as a user, do not normally need to interact with these collections
 directly.   The database readers and writers handle the bookkeeping
@@ -926,10 +909,7 @@ Both TimeSeries and Seismograms use a data array that is a contiguous
 memory block.  The default storage mode for external files is a raw
 binary memory image saved by writing the memory buffer to the external
 file (defined by :code:`dir` and :code:`dfile`) using the low level C fwrite function
-that is wrapped in the python standard by the :code:`write` method of
-standard file handles described in many tutorials like this one_.
-
-   .. _one: https://docs.python.org/3/tutorial/inputoutput.html).
+through MsPASS's native reader and writer implementation.
 
 A TimeSeries object stores data as vector of binary "double" values, which for
 decades now has implied an 8 byte floating point number stored in the IEEE
@@ -988,8 +968,10 @@ invalid.  More details about this idea can be found in the :ref:`Data
 Objects <data_object_design_concepts>` section.
 Error log entries are automatically saved when any live datum is
 handed to the :py:meth:`mspasspy.db.database.Database.save_data` method.
-The documents saved in the elog collection have the attribute `wf_id` that contains the
-:code:`ObjectId` of the saved waveform that contained that error.
+Documents saved in the ``elog`` collection link to the saved waveform with
+the collection-specific key ``wf_TimeSeries_id`` or ``wf_Seismogram_id``.
+The value is the :class:`~bson.objectid.ObjectId` of the waveform document
+that contained the error.
 
 A special case is data killed during processing.   Any datum from a MsPASS
 processing module that was killed should contain an elog entry that the
@@ -1046,13 +1028,13 @@ summaries for Antelope and obspy users:
 * Antelope user's should think of the channel collection as nearly identical
   to the CSS3.0 sitechan table with response data handled through obspy.
 
-* Obspy users can think of both :code:`site` and :code:`sitechan` as a way to
+* ObsPy users can think of :code:`site` and :code:`channel` as a way to
   manage the same information obspy handles with their
   `Inventory <https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html>`__
   object.  In fact, channel documents produced from
   `StationXML <https://www.fdsn.org/xml/station/>`__
   files contain an image of an obspy
-  `Channel <https://docs.obspy.org/packages/autogen/obspy.core.inventory.channel.Channel.htmlobject>`__
+  `Channel <https://docs.obspy.org/packages/autogen/obspy.core.inventory.channel.Channel.html>`__
   object saved with pickle.
 
 We emphasize that :code:`site` and :code:`channel` support SEED indexed metadata, but
@@ -1074,7 +1056,7 @@ some support for two alternative indexing methods.
    MsPASS, (2) a station code (:code:`sta`), (3) a channel (:code:`chan`), and
    a "location" code (:code:`loc`).   :code:`site` documents extracted from StationXML
    files will always contain :code:`net`, :code:`sta`, and :code:`loc` names while
-   :code:`channel` documents add the :code:`chan` attibute.  For documents generated
+   :code:`channel` documents add the :code:`chan` attribute.  For documents generated
    from StationXML keys (3 keys for :code:`site` and 4 for :code:`channel`) can
    be properly viewed as alternate keys to locate documents related to a
    particular station (:code:`site`) or channel (:code:`channel`).  With SEED data it
@@ -1143,7 +1125,7 @@ MsPASS has some supported functions to aid in building the site and channel
 collections and building links to wf collections.   The details are best
 obtained from the docstrings for functions in :code:`mspasspy.db.database`.
 The primary tool for FDSN data is
-:py:meth:`mspasspy.db.database.save_inventory` which can be used to
+:py:meth:`mspasspy.db.database.Database.save_inventory` which can be used to
 save an obspy :code:`Inventory` object obtained from an FDSN server
 via web services.   Experience has shown that data is best custom loaded
 for each data set as needed to assure the most up-to-date metadata is loaded
@@ -1198,7 +1180,7 @@ in terms of hypocenter coordinates (:code:`latitude`, :code:`longitude`,
 :code:`depth`, and :code:`time` attributes in :code:`source`) requires a multistage query that can
 potentially be very slow for a large data set.
 
-The other issue that distinguishes origin time is that it's accuracy
+The other issue that distinguishes origin time is that its accuracy
 is data dependent.   With earthquakes are always estimated by an
 earthquake location algorithm, while with active source it normally
 measured directly.  The complexity with active source data is a
@@ -1307,6 +1289,8 @@ is correctly.
 Advanced Topics
 ---------------
 
+.. _database_import_concepts:
+
 Importing Data Formats other than miniSEED
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1338,7 +1322,7 @@ to define a set of data contained in package of data.  (We say "package"
 instead of "file" because miniseed can and has been used as a network
 transfer format because the data bundled into a serial string of packets.
 For more details about SEED and miniseed can be found
-`here <https://ds.iris.edu/ds/nodes/dmc/data/formats/seed/>`__ ).
+`FDSN miniSEED documentation <https://docs.fdsn.org/projects/miniseed3/>`__ ).
 
 The recommended way to handle miniseed data is to utilize the
 :py:meth:`mspasspy.db.database.Database.index_mseed_file` method
@@ -1366,40 +1350,45 @@ them into MsPASS:
 .. code:: python
 
    import os
-   import obspy
-   import msapsspy.converters.Trace2TimeSeries
-   from mspasspy.Client import Client
+   from pathlib import Path
 
-   mspass_client=Client()
+   import obspy
+
+   from mspasspy.client import Client
+   from mspasspy.util.converter import Trace2TimeSeries
+
+   mspass_client = Client()
    db = mspass_client.get_database("myproject")
-   data_directory = os.getcwd("./wf_SAC")
-   save_directory="./wf_TimeSeries"
-   outfile="SACfileimages_raw.dat"
+   data_directory = Path.cwd() / "wf_SAC"
+   save_directory = str(Path.cwd() / "wf_TimeSeries")
+   os.makedirs(save_directory, exist_ok=True)
+   outfile = "SACfileimages_raw.dat"
    with os.scandir(data_directory) as entries:
        for entry in entries:
-           d = obspy.read(entry,format="SAC")
+           if not entry.is_file():
+               continue
+           stream = obspy.read(entry.path, format="SAC")
            # obspy.read always returns a Stream object
            # SAC files always have only one datum per file
-           # used d[0] to extract that as a Trace object this function requires
-           d = Trace2TimeSeries(d[0])
-           #  this function needs to be supplied by user
+           # use stream[0] to extract the Trace this converter requires
+           d = Trace2TimeSeries(stream[0])
+           # This project-specific function must be supplied by the user.
            d = change_sac_metadata_keys(d)
            db.save_data(d,
-                  collection="wf_TimeSeries",
-                  storage_mode="file",
-                  dir=save_directory,
-                  dfile=outfile,
-                  )
+                        collection="wf_TimeSeries",
+                        storage_mode="file",
+                        dir=save_directory,
+                        dfile=outfile)
 
 Note a few things about this script:
 
 1.  I've used obspy to handle the formatted reading.
-2.  I use the MsPASS converter :py:func:`mspasspy.converters.Trace2TimeSeries`
+2.  The example uses the MsPASS converter
+    :py:func:`mspasspy.util.converter.Trace2TimeSeries`
     to convert the Trace object obspy.read returns into a TimeSeries.
-3.  Trace2TimeSeries handles conversion of required Metadata from the
-    Trace object to those required by TimeSeries but the content of the
-    Trace.stats dictionary are copied verbatim to the Metadata container
-    of the TimeSeries it returns.  For that reason, most workflows
+3.  ``Trace2TimeSeries`` converts required attributes and copies the
+    remaining ``Trace.stats`` entries into the returned ``TimeSeries``
+    Metadata, applying MsPASS aliases where required.  For that reason, most workflows
     will want to write a custom python function to implement the
     function I called `change_sac_metadata_keys`.  What that is depends on
     what metadata are stored in your sac files that you need to extract.
@@ -1433,13 +1422,13 @@ The obvious first thing is to change the "format" argument
 for the format being loaded.  The more subtle issue is that many
 formats are not like SAC and contain many pieces so
 obspy.read returns a Stream object with many components.
-The easiest way to handle that is to replace
-`Trace2TimeSeries` with the related `Stream2TimeSeriesEnsemble`.
-As the name implies the later returns a `TimeSeriesEnsemble`.
+The easiest way to handle that is to replace ``Trace2TimeSeries`` with
+:py:func:`mspasspy.util.converter.Stream2TimeSeriesEnsemble`.
+As the name implies, the latter returns a ``TimeSeriesEnsemble``.
 You would then need replace `change_sac_metadata_keys` to
 point to a different function that handled the ensemble correctly
 and did a similar metadata key conversion.  Since
-:py:meth:`mspasspy.db.database.save_data` handles TimeSeriesEnsembles
+:py:meth:`mspasspy.db.database.Database.save_data` handles TimeSeriesEnsembles
 directly the only issue on the last lines is if you want to
 handle the external storage differently than as single file.
 e.g. data organized by a set of large ensembles like event files
