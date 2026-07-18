@@ -356,6 +356,7 @@ class TestMiniseedMatcher(TestNormalize):
         doc = copy.deepcopy(self.doc)
         del doc["net"]
         broken_ts = self.db.read_data(doc, collection="wf_miniseed")
+        broken_ts.tref = TimeReferenceType.UTC
         cached_retdoc = cached_matcher.find_one(broken_ts)
         db_retdoc = db_matcher.find_one(broken_ts)
         assert cached_retdoc[0] is None
