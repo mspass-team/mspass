@@ -180,7 +180,7 @@ class BasicGather(ABC):
     hold member and ensemble metadata
 
     A design issue is whether a gather should implement
-    the ator and rota functionality of BasicTimeSeries.   The cost is
+    the ``ator`` and ``rtoa`` functionality of BasicTimeSeries.  The cost is
     tiny up front and retrofitting after that fact might cause a lot of
     headaches.
     """

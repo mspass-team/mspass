@@ -512,19 +512,18 @@ Atomic Data Example
 The simplest workflow is one that works only with atomic
 data (i.e. TimeSeries or Seismogram objects).  The example
 example in the Data Model section above is of this type.
-The following fragment is similar with a few additional processing steps.
-It reads all data indexed in the data base as Seismogram objects,
-runs a demean operator,
-runs a simple bandpass filter, windows the data to a smaller range
-defined by the window_seis function defined at he top, it
-using the data start time, and then saves the results.
+The following fragment is similar, with a few additional processing steps.
+It reads the indexed data as Seismogram objects, removes the mean, applies a
+simple bandpass filter, windows each datum relative to its start time, and then
+materializes the results.
 
 .. code-block:: python
 
-  cursor=db.wf_Seismogram.find({})
   # read -> detrend -> filter -> window
   # example uses dask scheduler
-  data = read_distributed_data(db, cursor)
+  data = read_distributed_data(
+      db, query={}, collection="wf_Seismogram", scheduler="dask"
+  )
   data = data.map(signals.detrend,type='demean')
   data = data.map(signals.filter,"bandpass",freqmin=0.01,freqmax=2.0)
   # windowing is relative to start time.  300 s window starting at d.t0+200
@@ -559,8 +558,8 @@ That same workflow using `sliding_window_pipeline` is this:
                        dask_client,
                        db.name)
 
-where in for this case I added the code to instantiate a MsPASS Client
-omitted in the map example.   It illustrates that `sliding_window_pipeline`
+For this case the example includes the code to instantiate a MsPASS Client,
+which was omitted in the map example.  It illustrates that `sliding_window_pipeline`
 requires an instance of the dask client.  With the map version the
 dask client is hidden inside the bag map method.
 
@@ -592,11 +591,11 @@ The comparable code using `sliding_window_pipeline` is:
 
 .. code:: python
 
-  def process_ensemble(query,db.name):
+  def process_ensemble(query, dbname):
     """
     Processing function for submit with ensemble example.
     """
-    db = fetch_dbhandle(db.name)
+    db = fetch_dbhandle(dbname)
     cursor = db.wf_Seismogram.find(query)
     # more robust code would handle a null cursor here - omitted for simplicity
     ens = db.read_data(cursor,collection="wf_Seismogram")
@@ -605,26 +604,26 @@ The comparable code using `sliding_window_pipeline` is:
     # ator and rtoa do not work on ensembles
     # the concept applies only to atomic data
     for i in range(len(ens.member)):
-        d = ens.member[0]  # use d as a shorthand for convenience
+        d = ens.member[i]  # use d as a shorthand for convenience
         d.ator(d.t0)
         d = WindowData(d,200.0,500.0)
-        d.rota()
-        ens.member[0] = d
+        d.rtoa()
+        ens.member[i] = d
     return ens
 
-    import mspasspy.client as msc
-    mspass_client = msc.Client()
-    dask_client = mspass_client.get_scheduler()
-    db = mspass_client.get_database("mydatabase")
-    srcidlist = db.wf_Seismogram.distinct("source_id")
-    querylist=list()
-    for srcid in srcidlist:
-        query = {"source_id" : srcid}
-        querylist.append(query)
-    data_out = sliding_window_pipeline(querylist,
-                            process_ensemble,
-                            dask_client,
-                            db.name)
+  import mspasspy.client as msc
+  mspass_client = msc.Client()
+  dask_client = mspass_client.get_scheduler()
+  db = mspass_client.get_database("mydatabase")
+  srcidlist = db.wf_Seismogram.distinct("source_id")
+  querylist=list()
+  for srcid in srcidlist:
+      query = {"source_id" : srcid}
+      querylist.append(query)
+  data_out = sliding_window_pipeline(querylist,
+                          process_ensemble,
+                          dask_client,
+                          db.name)
 
 HPC deployment
 --------------

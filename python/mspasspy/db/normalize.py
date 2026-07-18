@@ -131,7 +131,7 @@ class BasicMatcher(ABC):
         return self.find_one(d, *args, **kwargs)
 
     @abstractmethod
-    def find(self, mspass_object, *args, **kwargs) -> tuple:
+    def find(self, mspass_object, *args, **kwargs) -> list:
         """
         Abstraction of the MongoDB database find method with the
         matching criteria defined when a concrete instance is instantiated.
@@ -156,7 +156,7 @@ class BasicMatcher(ABC):
         method throw an exception as a use error.  That case should
         use the find_one interface defined below.
 
-        All implementations should return a pair (2 component tuple).
+        All implementations should return a two-element list.
         0 is expected to hold a list of Metadata containers and
         1 is expected to contain either a None type or an PyErrorLogger
         object.   The PyErrorLogger is a convenient way to pass error
@@ -165,12 +165,12 @@ class BasicMatcher(ABC):
         Callers should handle four cases that are possible for a return
         (noting ``[]`` means an empty list and ``[...]`` a list with data):
 
-        - ``([], None)`` means no match was found.
-        - ``([], ErrorLog)`` means failure with an informational message in the
+        - ``[[], None]`` means no match was found.
+        - ``[[], ErrorLog]`` means failure with an informational message in the
           ErrorLog that should be preserved.  The presence of an error
           should imply something went wrong and it was simply a null result.
-        - ``([...], None)`` means success with no detected errors.
-        - ``([...], ErrorLog)`` means valid data were returned but there is a
+        - ``[[...], None]`` means success with no detected errors.
+        - ``[[...], ErrorLog]`` means valid data were returned but there is a
           warning or informational message posted.  In this case handlers
           may want to examine the ErrorSeverity components of the log and
           handle different levels differently  (e.g. Fatal and Informational
@@ -179,7 +179,7 @@ class BasicMatcher(ABC):
         """
 
     @abstractmethod
-    def find_one(self, mspass_object, *args, **kwargs) -> tuple:
+    def find_one(self, mspass_object, *args, **kwargs) -> list:
         """
         Abstraction of the MongoDB database find_one method with the
         matching criteria defined when a concrete instance is instantiated.
@@ -199,7 +199,7 @@ class BasicMatcher(ABC):
         That implementation allows the "collection" to be loaded from
         MongoDB or a pandas DataFrame.
 
-        All implementations should return a pair (2 component tuple).
+        All implementations should return a two-element list.
         0 is expected to hold a Metadata containers that was yielded by
         the match.  It should be returned as None if there is no match.
         1 is expected to contain either a None type or an PyErrorLogger
@@ -208,12 +208,12 @@ class BasicMatcher(ABC):
         with the MsPASS error system than an exception mechanism.
         Callers should handle four cases that are possible for a return:
 
-        - ``(None, None)`` means no match was found.
-        - ``(None, ErrorLog)`` means failure with an informational message in
+        - ``[None, None]`` means no match was found.
+        - ``[None, ErrorLog]`` means failure with an informational message in
           the ErrorLog that the caller may want be preserved or convert to
           an exception.
-        - ``(Metadata, None)`` means success with no detected errors.
-        - ``(Metadata, ErrorLog)`` means valid data was returned but there is a
+        - ``[Metadata, None]`` means success with no detected errors.
+        - ``[Metadata, ErrorLog]`` means valid data was returned but there is a
           warning or informational message posted.  In this case handlers may
           want to examine the ErrorSeverity components of the log and handle
           different levels differently  (e.g. Fatal and Informational should
@@ -339,7 +339,7 @@ class DatabaseMatcher(BasicMatcher):
         """
         Generic database implementation of the find method for this
         abstraction.   It returns what the base class api specifies.
-        That is, normally it returns a tuple with component 0 being
+        That is, normally it returns a two-element list with component 0 being
         a python list of Metadata containers.  Each container holds
         the subset of attributes defined by attributes_to_load and
         (if present) load_if_defined.  The list is the set of all
@@ -367,7 +367,7 @@ class DatabaseMatcher(BasicMatcher):
         """
         if not isinstance(mspass_object, Metadata):
             elog = PyErrorLogger()
-            message = "received invalid data.  Arg0 must be a valid MsPASS data object"
+            message = "received invalid data.  Arg0 must be a Metadata instance"
             elog.log_error(message, ErrorSeverity.Invalid)
         if hasattr(mspass_object, "dead"):
             if mspass_object.dead():
@@ -599,7 +599,7 @@ class DictionaryCacheMatcher(BasicMatcher):
         """
         pass
 
-    def find_one(self, mspass_object) -> tuple:
+    def find_one(self, mspass_object) -> list:
         """
         Implementation of find for generic cached method.   It uses the cache_id
         method to create the indexing string from mspass_object and then returns
@@ -610,19 +610,18 @@ class DictionaryCacheMatcher(BasicMatcher):
         classes.  All extensions need to do is define the cache_id
         and db_make_cache_id algorithms to build that index.
 
-        :param mspass_object:  Any valid MsPASS data object.  That means
-          TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
-          This datum is passed to the (abstract) cache_id method to
-          create an index string and the result is used to fetch the
-          Metadata container matching that key.   What is required of the
-          input is dependent on the subclass implementation of cache_id.
+        :param mspass_object: a Metadata instance to match against the cache.
+          This includes MsPASS atomic and ensemble data objects.  The object
+          is passed to the abstract ``cache_id`` method, so a concrete matcher
+          may require particular Metadata keys or a more specific subtype.
+        :type mspass_object: :class:`~mspasspy.ccore.utility.Metadata`
 
-        :return:  2-component tuple following API specification in BasicMatcher.
+        :return: two-element list following the API specified by BasicMatcher.
           Only two possible results are possible from this implementation:
 
-          - ``(None, ErrorLog)`` means failure with an error message that can
+          - ``[None, ErrorLog]`` means failure with an error message that can
             be passed on if desired or printed.
-          - ``(Metadata, None)`` means success with no detected errors.  The
+          - ``[Metadata, None]`` means success with no detected errors.  The
             Metadata container holds all attributes_to_load and any defined
             load_if_defined values.
 
@@ -652,7 +651,7 @@ class DictionaryCacheMatcher(BasicMatcher):
                 )
                 return [find_output[0][0], elog]
 
-    def find(self, mspass_object) -> tuple:
+    def find(self, mspass_object) -> list:
         """
         Generic implementation of find method for cached tables/collections.
 
@@ -670,15 +669,16 @@ class DictionaryCacheMatcher(BasicMatcher):
         build on this usually will need to do a linear search through the
         list if they need to find a particular instance (e.g. call to find_one).
 
-        :param mspass_object: data object to match against the cached data.
-          It must be a valid MsPASS data object: TimeSeries, Seismogram,
-          TimeSeriesEnsemble, or SeismogramEnsemble.  For any other input
-          type, the method returns ``[None, elog]`` with a
+        :param mspass_object: a Metadata instance to match against the cached
+          data.  This includes MsPASS atomic and ensemble data objects.  A
+          concrete matcher may require particular Metadata keys or a more
+          specific subtype.  For any non-Metadata input, the method returns
+          ``[None, elog]`` with a
           :class:`~mspasspy.util.error_logger.PyErrorLogger` explaining the
           failure.
-        :type mspass_object: Metadata
+        :type mspass_object: :class:`~mspasspy.ccore.utility.Metadata`
 
-        :return: tuple with two elements.  0 is either a list of valid Metadata
+        :return: list with two elements.  0 is either a list of valid Metadata
           container(s) or None and 1 is either None or an PyErrorLogger object.
           There are only two possible returns from this method:
 
@@ -691,7 +691,7 @@ class DictionaryCacheMatcher(BasicMatcher):
         if not isinstance(mspass_object, Metadata):
             elog = PyErrorLogger()
             elog.log_error(
-                "Received datum that was not a valid MsPASS data object",
+                "Received an object that is not a Metadata instance",
                 ErrorSeverity.Invalid,
             )
             return [None, elog]
@@ -959,7 +959,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         )
         self._load_dataframe_cache(df)
 
-    def find(self, mspass_object) -> tuple:
+    def find(self, mspass_object) -> list:
         """
         DataFrame generic implementation of find method.
 
@@ -974,7 +974,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         if not isinstance(mspass_object, Metadata):
             elog = PyErrorLogger(
                 "DataFrameCacheMatcher.find",
-                "Received datum that was not a valid MsPASS data object",
+                "Received an object that is not a Metadata instance",
                 ErrorSeverity.Invalid,
             )
             return [None, elog]
@@ -1038,7 +1038,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                 mdlist.append(md)
             return [mdlist, None]
 
-    def find_one(self, mspass_object) -> tuple:
+    def find_one(self, mspass_object) -> list:
         """
         DataFrame implementation of the find_one method.
 
@@ -2206,12 +2206,11 @@ class EqualityMatcher(DataFrameCacheMatcher):
         can have different keys on the left (mspass_data side is the
         match_keys dictionary key) than the right (dataframe column name).
 
-        :param mspass_object:  Any valid mspass data object with a
-          Metadata container.  The container must contain all the
+        :param mspass_object: a Metadata instance containing all the
           required match keys or the function will return an error condition
-          (see below)
-        :type mspass_object:  TimeSeries, Seismogram, TimeSeriesEnsemble
-          or SeismogramEnsemble object
+          (see below).  MsPASS atomic and ensemble data objects are Metadata
+          subclasses and are therefore accepted.
+        :type mspass_object: :class:`~mspasspy.ccore.utility.Metadata`
 
         :return:  DataFrame containing all data satisying the match
            series of match conditions defined on construction.  Silently
@@ -2738,7 +2737,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
 
         return dfret
 
-    def find_one(self, mspass_object) -> tuple:
+    def find_one(self, mspass_object) -> list:
         """
         Override of find_one method of DataframeMatcher.  The override is
         necessary to handle the ambiguity of a timer interval match for
@@ -2781,8 +2780,8 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
            contains a value associated with the key defined by the
            starttime_key attibute.
 
-        :return: a tuple consistent with the BasicMatcher API definition.
-          (i.e. pair [Metadata,ErrorLogger])
+        :return: a two-element list consistent with the BasicMatcher API
+          definition (that is, ``[Metadata, ErrorLogger]``).
         """
         findreturn = self.find(mspass_object)
         mdlist = findreturn[0]
