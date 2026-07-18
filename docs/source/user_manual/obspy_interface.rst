@@ -153,17 +153,19 @@ The decorated ObsPy functions can be thought of as a way to run ObsPy's function
 That means both atomic data and Ensembles.
 This should be clearer from an example.
 
-Consider this small code fragment to apply a bandpass filter to an ObsPy :code:`Trace` object:
+Consider this small code fragment to apply a bandpass filter to every
+:code:`Trace` in an ObsPy :code:`Stream`:
 
 .. code-block:: python
 
    from obspy import read
-   trace = read("mydatafile")[0]
-   trace.filter('bandpass', freqmin=0.05, freqmax=2.0)
+   stream = read("mydatafile")
+   stream.filter('bandpass', freqmin=0.05, freqmax=2.0)
 
-``obspy.read`` returns a :class:`~obspy.core.stream.Stream`; indexing with
-``[0]`` selects the first :class:`~obspy.core.trace.Trace` for this single-trace
-example.
+``obspy.read`` returns a :class:`~obspy.core.stream.Stream`, and
+``Stream.filter`` applies the filter to each :class:`~obspy.core.trace.Trace`
+it contains.  To filter only one channel, select the desired ``Trace`` from
+the ``Stream`` first.
 
 This little fragment uses the typical ObsPy approach of reading data from a file and applying an algorithm in a construct that makes the algorithm look like a method for the data class.
 That model does not mesh well with parallel schedulers that are a core component of MsPASS.
