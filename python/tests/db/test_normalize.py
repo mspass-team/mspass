@@ -8,10 +8,13 @@ from mspasspy.db.normalize import (
     MiniseedDBMatcher,
     OriginTimeDBMatcher,
     OriginTimeMatcher,
+    ArrivalDBMatcher,
+    ArrivalMatcher,
     normalize_mseed,
     bulk_normalize,
 )
 from mspasspy.ccore.seismic import TimeSeries
+from mspasspy.ccore.utility import Metadata
 
 from mspasspy.db.database import Database
 from mspasspy.db.client import DBClient
@@ -357,6 +360,10 @@ class TestMiniseedMatcher(TestNormalize):
         db_retdoc = db_matcher.find_one(broken_ts)
         assert cached_retdoc[0] is None
         assert db_retdoc[0] is None
+        assert db_retdoc[1] is not None
+        assert "query_generator method failed to generate a valid query" in str(
+            db_retdoc[1].get_error_log()
+        )
 
         #   test with a time, multi doc can't found
         ts_1 = copy.deepcopy(ts)
@@ -656,6 +663,175 @@ class TestEqualityMatcher(TestNormalize):
         db_retdoc = matcher(ts_2)
         assert Metadata_cmp(cached_retdoc[0], db_retdoc[0])
         assert "coords" in cached_retdoc[0]
+
+
+class TestOriginTimeMatcherFindDoc:
+    def test_find_doc_uses_nearest_origin_time(self):
+        sources = pd.DataFrame(
+            [
+                {"time": 97.0, "label": "far"},
+                {"time": 100.0, "label": "nearest"},
+            ]
+        )
+        matcher = OriginTimeMatcher(
+            sources,
+            tolerance=5.0,
+            attributes_to_load=["time", "label"],
+            load_if_defined=[],
+            prepend_collection_name=False,
+        )
+
+        assert matcher.find_doc({"starttime": 100.0}) == {
+            "time": 100.0,
+            "label": "nearest",
+        }
+
+    def test_find_doc_loads_only_defined_optional_attributes(self):
+        sources = pd.DataFrame(
+            [{"time": 100.0, "label": "source", "magnitude": np.nan}]
+        )
+        matcher = OriginTimeMatcher(
+            sources,
+            attributes_to_load=["time", "label"],
+            load_if_defined=["magnitude"],
+            prepend_collection_name=False,
+        )
+
+        expected = {"time": 100.0, "label": "source"}
+        assert matcher.find_doc({"starttime": 100.0}) == expected
+        matcher.cache.loc[0, "magnitude"] = 4.2
+        expected["magnitude"] = 4.2
+        assert matcher.find_doc({"starttime": 100.0}) == expected
+
+
+class TestArrivalMatcher:
+    def setup_method(self):
+        self.arrivals = pd.DataFrame(
+            [
+                {"sta": "AAA", "net": "XX", "time": 101.0, "phase": "P"},
+                {"sta": "AAA", "net": "YY", "time": 102.0, "phase": "S"},
+                {"sta": "BBB", "net": "XX", "time": 103.0, "phase": "P"},
+                {"sta": "AAA", "net": "XX", "time": 200.0, "phase": "late"},
+            ]
+        )
+        self.matcher = ArrivalMatcher(
+            self.arrivals,
+            prepend_collection_name=False,
+        )
+
+    @staticmethod
+    def _atomic(sta="AAA", net=None):
+        datum = TimeSeries(11)
+        datum.dt = 1.0
+        datum.t0 = 100.0
+        datum.set_live()
+        datum["sta"] = sta
+        if net is not None:
+            datum["net"] = net
+        return datum
+
+    def test_default_columns_and_match_filters(self):
+        matches, elog = self.matcher.find(self._atomic(net="XX"))
+        assert elog is None
+        assert len(matches) == 1
+        assert dict(matches[0]) == {"phase": "P", "time": 101.0}
+
+        matches, elog = self.matcher.find(self._atomic())
+        assert elog is None
+        assert len(matches) == 2
+
+        no_match, elog = self.matcher.find(self._atomic(net="ZZ"))
+        assert no_match is None
+        assert elog is not None
+
+    def test_metadata_time_bounds_and_missing_station(self):
+        metadata = Metadata(
+            {
+                "starttime": 100.0,
+                "endtime": 110.0,
+                "sta": "AAA",
+                "net": "YY",
+            }
+        )
+        matches, elog = self.matcher.find(metadata)
+        assert elog is None
+        assert len(matches) == 1
+        assert matches[0]["phase"] == "S"
+
+        metadata.erase("sta")
+        no_match, elog = self.matcher.find(metadata)
+        assert no_match is None
+        assert elog is not None
+
+    def test_dead_input_and_custom_time_column(self):
+        dead = self._atomic()
+        dead.kill()
+        no_match, elog = self.matcher.find(dead)
+        assert no_match is None
+        assert elog is not None
+
+        arrivals = self.arrivals.rename(columns={"time": "pick_time"})
+        matcher = ArrivalMatcher(
+            arrivals,
+            attributes_to_load=["phase"],
+            arrival_time_key="pick_time",
+            prepend_collection_name=False,
+        )
+        matches, elog = matcher.find(self._atomic(net="XX"))
+        assert elog is None
+        assert len(matches) == 1
+        assert dict(matches[0]) == {"phase": "P"}
+
+
+class TestDatabaseMatcherControlFlow:
+    def test_rejects_nonmetadata_input(self):
+        # Invalid input returns before a database handle is needed, so bypass
+        # construction to keep this control-flow regression database-free.
+        matcher = object.__new__(ObjectIdDBMatcher)
+        expected_message = "Arg0 must be a Metadata instance"
+
+        for invalid_input in (None, {}, "not Metadata"):
+            result = matcher.find(invalid_input)
+            assert result[0] is None
+            assert result[1] is not None
+            assert expected_message in str(result[1].get_error_log())
+
+        result = matcher.find_one(None)
+        assert result[0] is None
+        assert result[1] is not None
+        assert expected_message in str(result[1].get_error_log())
+
+    def test_miniseed_find_one_preserves_query_error(self):
+        matcher = object.__new__(MiniseedDBMatcher)
+        matcher.collection = "channel"
+        datum = TimeSeries(1)
+        datum.dt = 1.0
+        datum.t0 = 100.0
+        datum.tref = TimeReferenceType.UTC
+        datum.set_live()
+
+        result = matcher.find_one(datum)
+        assert result[0] is None
+        assert result[1] is not None
+        assert "query_generator method failed to generate a valid query" in str(
+            result[1].get_error_log()
+        )
+
+    def test_arrival_missing_station_rejects_broad_query(self):
+        matcher = object.__new__(ArrivalDBMatcher)
+        matcher.query = {}
+        datum = TimeSeries(1)
+        datum.dt = 1.0
+        datum.t0 = 100.0
+        datum.set_live()
+        datum["net"] = "XX"
+
+        result = matcher.find(datum)
+        assert result[0] is None
+        assert result[1] is not None
+        assert "query_generator method failed to generate a valid query" in str(
+            result[1].get_error_log()
+        )
 
 
 class TestOriginTimeMatcher(TestNormalize):

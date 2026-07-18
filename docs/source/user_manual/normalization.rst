@@ -588,6 +588,8 @@ is a hyperlink to the docstring for the class:
      - Generic equality match of one or more key-value pairs
    * - :py:class:`OriginTimeMatcher <mspasspy.db.normalize.OriginTimeMatcher>`
      - match data with start time defined by event origin time
+   * - :py:class:`ArrivalMatcher <mspasspy.db.normalize.ArrivalMatcher>`
+     - match cached arrival times to waveforms
 
 Currently all of these have database-query versions that differ only
 by having "DB" embedded in the class name
