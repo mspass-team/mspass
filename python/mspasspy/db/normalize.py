@@ -1127,9 +1127,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         # constructor initializes a None default to an empty list
         fulllist = list(
             dict.fromkeys(
-                self.attributes_to_load
-                + self.load_if_defined
-                + self._cache_columns
+                self.attributes_to_load + self.load_if_defined + self._cache_columns
             )
         )
         self.cache = df.reindex(columns=fulllist)[fulllist]
@@ -3289,9 +3287,9 @@ class ArrivalMatcher(DataFrameCacheMatcher):
         if _input_is_atomic(mspass_object):
             stime = mspass_object.t0
             etime = mspass_object.endtime()
-        elif mspass_object.is_defined(
-            self.starttime_key
-        ) and mspass_object.is_defined(self.endtime_key):
+        elif mspass_object.is_defined(self.starttime_key) and mspass_object.is_defined(
+            self.endtime_key
+        ):
             stime = mspass_object[self.starttime_key]
             etime = mspass_object[self.endtime_key]
         else:
@@ -3301,9 +3299,9 @@ class ArrivalMatcher(DataFrameCacheMatcher):
         if sta is None:
             return pd.DataFrame()
 
-        mask = (self.cache["sta"] == sta) & self.cache[
-            self.arrival_time_key
-        ].between(stime, etime, inclusive="both")
+        mask = (self.cache["sta"] == sta) & self.cache[self.arrival_time_key].between(
+            stime, etime, inclusive="both"
+        )
         net = _get_with_readonly_recovery(mspass_object, "net")
         if net is not None:
             mask &= self.cache["net"] == net
