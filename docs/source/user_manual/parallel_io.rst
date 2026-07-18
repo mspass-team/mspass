@@ -361,7 +361,7 @@ wf documents.  In fact, that is the only thing it ever returns.
 That has a very important corollary that all users must realize;
 `write_distributed_data` can ONLY be used as the termination of a
 distinct processing sequence.   It cannot appear as the function to be applied in
-a map operator.   In fact, user's must recognize that unless it
+a map operator.   In fact, users must recognize that unless it
 aborts with a usage exception, `write_distributed_data`
 always calls dask bag's `compute` method or pyspark's rdd `collect` method
 immediately before returning.   That means that `write_distributed_data`

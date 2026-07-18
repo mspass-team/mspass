@@ -33,8 +33,9 @@ types of tabular data:
   component of the larger Antelope software suite.  Those tables are important
   as a number of regional seismic networks use Antelope as their database
   engine.  Furthermore, the Array Network Facility of the EarthScope USArray
-  project used Antelope, and archived CSS3.0 database tables remain accessible
-  from its `event-download site <https://anf.ucsd.edu/tools/events/>`__.
+  project used Antelope.  Its final CSS3.0 event database—including event
+  catalogs, phase arrivals, and waveform metadata—is preserved in the
+  `ANF CSS Event Database archive <https://doi.org/10.17611/DP/EB.1>`__.
   In any case, the key concept to remember is that Antelope/Datascope
   is just a different implementation of a relational database.  Below we
   describe a special interface in MsPASS to import data from Datascope tables.

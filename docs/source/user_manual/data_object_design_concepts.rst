@@ -165,8 +165,8 @@ BasicTimeSeries - Base class of common data characteristics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This base class can be viewed as an answer to this
-question:  What is a time series?   Our design says
-saying all time series data have the following elements:
+question:  What is a time series?   Our design answers that question by
+saying that all time-series data have the following elements:
 
 1. We define a time series as data that has a **fixed sample rate**.  
    Some people extend this definition to arbitrary x-y data, but MsPASS uses

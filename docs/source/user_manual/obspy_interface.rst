@@ -158,8 +158,12 @@ Consider this small code fragment to apply a bandpass filter to an ObsPy :code:`
 .. code-block:: python
 
    from obspy import read
-   d = read("mydatafile")[0]
-   d.filter('bandpass', freqmin=0.05, freqmax=2.0)
+   trace = read("mydatafile")[0]
+   trace.filter('bandpass', freqmin=0.05, freqmax=2.0)
+
+``obspy.read`` returns a :class:`~obspy.core.stream.Stream`; indexing with
+``[0]`` selects the first :class:`~obspy.core.trace.Trace` for this single-trace
+example.
 
 This little fragment uses the typical ObsPy approach of reading data from a file and applying an algorithm in a construct that makes the algorithm look like a method for the data class.
 That model does not mesh well with parallel schedulers that are a core component of MsPASS.

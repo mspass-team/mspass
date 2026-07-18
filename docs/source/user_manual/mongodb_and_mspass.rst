@@ -124,7 +124,7 @@ know of that is also a part of MongoDB is the concept of a "cursor".
 In an RDBMS a cursor
 is a forward-iterator (i.e. it can only be incremented)
 that loops over the set of tuples returned by a query.
-In MongoDB is is more-or-less the same thing with different words.
+In MongoDB it is more-or-less the same thing with different words.
 A MongoDB cursor is a forward-iterator that can be used to work through
 a set of documents returned by a query.  You will see numerous examples
 of using cursors in the MsPASS User's manual and any source discussing

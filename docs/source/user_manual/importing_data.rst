@@ -446,7 +446,7 @@ key-value pairs in one namespace to another.   To utilize this feature for
 a given format you can either create a yaml file defining the aliases or
 hard code the aliases into a python dict set as key:alias.
 
-We close this section by emphasizing that that at this time we have intentionally not
+We close this section by emphasizing that at this time we have intentionally not
 placed a high priority on development of complete tools for importing
 formats other than SEED/miniseed.   We consider this one of the first
 things our user community can do to help expand MsPASS.   If you develop

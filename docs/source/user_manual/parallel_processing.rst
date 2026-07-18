@@ -163,7 +163,7 @@ we here call *d_in*.  The map operator applies the algorithm defined by
 the symbol *signals.filter* to each object in *d_in* and stores the
 output in the created (new) bag *d_out*.    The last line is way you tell dask to
 "go" (i.e. proceed with the calculations) and store the computed result in the *d_compute*.
-The idea and reasons for the concept of of "lazy" or "delayed"
+The idea and reasons for the concept of "lazy" or "delayed"
 operation is discussed at length in various sources on dask (and Spark).
 See the `Dask Bag documentation <https://docs.dask.org/en/stable/bag.html>`__
 for more on lazy or delayed operation.  The final output, which we chose above
@@ -209,10 +209,11 @@ a distributed database save operation.
 
 Reduce/fold operators
 -------------------------
-A second parallel construct we use is the the `Reduce` clause of the `MapReduce`
-paradigm that was a core idea in Hadoop
-(see for example the document in `this link <https://www.talend.com/resources/what-is-mapreduce/>`_ )
-that was the ancestor of both Spark and Dask.
+A second parallel construct we use is the `Reduce` clause of the `MapReduce`
+paradigm that was a core idea in Hadoop (see the `Apache Hadoop MapReduce
+tutorial
+<https://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html>`__).
+Hadoop's MapReduce model was an ancestor of both Spark and Dask.
 
 The generic problem of stacking (averaging) a set of signals
 is an example familiar to all seismologists that can be used to illustrate

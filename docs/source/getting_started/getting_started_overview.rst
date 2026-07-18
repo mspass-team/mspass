@@ -46,7 +46,7 @@ and an associated set of hardware to feed the processor.  Today only
 antique desktops have only one cpu.   Multicore processors are
 now universal other than for specialized hardware like low-power data
 loggers.  The worlds largest "supercomputers" (alias HPC system or cluster)
-have thousands of nodes and tens of thousands of cores, noting that that
+have thousands of nodes and tens of thousands of cores, although this
 sentence is likely to become quickly out of date as the upper limit
 grows yearly.  A special form of computer cluster is what is
 now called "cloud computing".  Cloud systems add a few
@@ -154,7 +154,7 @@ that appear throughout this user's manual are direct consequences of this model:
     what to do.   Less obvious is the fact that all the workers also need
     to communicate with each other as well as the foreman.   The reason is
     that the most common paradigm is worker A finishes task X and passes
-    the result to to worker B to do task Y where in our case X and Y
+    the result to worker B to do task Y where in our case X and Y
     are two different processing algorithms.  As a result interprocesses
     communication is a fundamental requirement to make processing with the
     foreman-worker model possible.

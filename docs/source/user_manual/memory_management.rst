@@ -260,21 +260,17 @@ abstract the cluster and attempt to run a workflow within the physical
 limits of both node and total memory pools.  If they are asked to do
 something impossible, like unintentionally asking the system to fit an
 entire data set in cluster memory, we have seen them fail and abort.
-Even worse is that when prototyping a workflow on a desktop outside
-of the containerized environment we have seen
-dask crash the system by overwhelming memory.
-(Note this never seems to happen running in a container which is
-a type example of why containers are the norm for cloud systems.)
-How to avoid this
-in MsPASS is a work in progress, but is a possibility all users should be
-aware of when working on huge data sets.  We think the worst problems have been eliminated
-by fixing an issue with earlier version of the C++ code that was
-not properly set up to tell dask, at least, how much memory was being
-consumed.  All memory management depends on data objects being
-able to properly report their size and have mechanisms for dask or
-spark to clear memory stored in the data objects when no longer needed.
-If either are not working properly, catastrophic failure is likely
-to eventually occur with upscaling of a workflow.
+Even worse is that when prototyping a workflow on a desktop we have seen
+Dask overwhelm memory and crash the host.  Running in a container prevents
+that outcome only when the container has an effective memory limit; a
+container without such a limit can still exhaust host memory.
+How to avoid this in MsPASS remains an evolving topic that users of very
+large data sets need to monitor carefully.  In particular, do not assume a
+scheduler's managed-memory display accounts exactly for memory owned by
+compiled extension objects.  Configure worker memory limits where the
+deployment supports them, watch both the scheduler dashboard and operating
+system resident-memory measurements, and test representative data before
+scaling up.
 
 At this point it is worth noting a special issue about memory
 management on a desktop system.   Many to most users will likely want to
@@ -311,9 +307,8 @@ or storage capacity.  Thus, there is a
 different "memory" issue for storing original data, the
 MongoDB database, intermediate results, and final results.   That is,
 however, a different topic that is mostly a side issue for the topic
-here of processing memory use.   Dask and spark both assume auxiliary
-storage is always infinite and assume your job will handle any
-i/o errors gracefully or not so gracefully (i.e. aborting the job).
+here of processing memory use.  Local spill and shuffle storage is finite;
+it must be provisioned and monitored, and a full disk can abort a job.
 Where the file systems enter in the memory issue
 is when the system has to do what
 both packages call `spilling`.  A worker
@@ -321,11 +316,11 @@ needs to "spill to disk" if the scheduler pushes data to it and
 there is no space to hold it.   It is appropriate to think of
 "spilling" as a form of virtual memory management.  The main difference is
 that what is "spilled" is not "pages" but data managed by the worker.
-Dask and spark both "spill" data to disk when memory use exceeds some
-high water mark defined by the worker's configuration.   It should be
-obvious that the target for spilling should be the fastest file system
-available that can hold the maximum sized chunk of data that might be
-expected for that workflow.  We discuss how to estimate worker
+Dask workers use configurable managed-memory thresholds to spill data.
+Spark spills particular cached, execution, and shuffle data according to its
+executor and storage configuration; it does not use the same generic worker
+threshold model as Dask.  In either case, use the fastest suitable file system
+that can hold the expected temporary data.  We discuss how to estimate worker
 memory requirements below.
 
 The final generic issue about memory management is a software
@@ -411,13 +406,13 @@ deployment before choosing production settings.
    (in bytes) of string values.  Finally, :math:`N_{other}` is an estimate of the
    size of other data types that might be stored in each objects Metadata
    container (e.g. serialized obspy response object).
--  Let :math:`S_{worker}` denote the available memory (in bytes) for processing in
-   each worker container.   Note that size is always significantly less than
-   the total memory size of a single node.   If one worker is allocated
-   to each node, the available work space is reduced by some fraction
-   defined when the container is launched (implicit in defaults) to
-   allow for use by the host operating system.   Spark and dask also each
-   individually partition up memory for different uses.   The fractions
+-  Let :math:`S_{worker}` denote the effective memory budget (in bytes) for one
+   worker process.  Use the configured worker memory limit when one exists;
+   otherwise estimate this budget from the node or container memory after
+   accounting for the operating system, database and scheduler services,
+   other worker processes, and safety headroom.  There is no universal
+   container-to-node fraction.  Spark and Dask also each partition or track
+   memory for different uses.  The details
    involved are discussed in the documentation pages for
    `Spark <https://spark.apache.org/docs/latest/tuning.html>`__
    and
@@ -429,9 +424,10 @@ deployment before choosing production settings.
    `dask dashboard diagnostics <https://docs.dask.org/en/stable/dashboard.html>`__.
 -  Let :math:`N_{partitions}` define the number of partitions defined for
    the working bag/RDD.
--  Let :math:`N_{threads}` denote the number of threads in the thread pool
-   used by each worker.  For a dedicated HPC node that is normally the
-   number of cores per node.
+-  Let :math:`N_{threads}` denote the configured number of execution threads
+   for each worker.  Do not substitute the node's total core count when a node
+   runs multiple workers; account for both workers per node and threads per
+   worker from the active deployment.
 
 From the above it is useful to define two derived quantities.
 An estimate of the nominal size of TimeSeries objects in a workflow
@@ -451,14 +447,12 @@ Pure map workflows can often be optimized into a pipeline resembling the
 animated figure above.  This is a useful planning model, not a guarantee of
 the scheduler's execution order or peak memory use.
 
-The pipeline structure reduces memory use to a small, integer multiple, which we
-will call :math:`N_c` for number of copies, of the input object size.   i.e. as
-data flows through the pipeline only 2 or 3 copies are held in memory at the
-same time.   However, dask, at least, seems to try to push
-:math:`N_{threads}` objects through the pipeline simultaneously assigning
-one thread per pipeline.  Pyspark seems to do the same thing
-but uses separate processes, by default, for each worker.  That means that
-the multiplier is at least about 2. Actual usage can be dynamic if the
+Observed map pipelines often hold a small integer number of input-sized
+objects per active task.  Using two or three copies is a useful initial sizing
+estimate, not a scheduler guarantee.  Dask may run several tasks concurrently
+per worker according to its configured threads and current scheduling state;
+Spark concurrency follows its executor and core configuration.  Actual usage
+can be dynamic if the
 size of the objects in the pipeline are variable from the very common
 use of one of the time windowing functions.    In our experience workflows
 with variable sized objects have rapidly fluctuating memory use as
@@ -486,18 +480,14 @@ number that characterizes the memory requirements for a pure map,
 workflow implemented by a pipeline with :math:`N_{threads}`
 working on an estimated per-partition block of size
 :math:`N S_d/N_{partitions}`.
-If the ratio is large
-spilling is unlikely.   When the ratio is less than one spilling is
-likely.  In the worst case, a job may fail completely with a memory
-fault when :math:`K_{map}` is small.  As stated repeatedly in this section
-this issue is a work in progress at the time of this writing, but
-from our experience for a typical work flow you should aim to tune the
-workflow to have :math:`K_{map}` be of the order of 2 or more to leave
-headroom and reduce the risk of
-spilling.  Workflows with highly variable memory requirements within
-a pipeline (e.g. anytime a smaller waveform segment is cut from
-larger ones) may allow smaller values of :math:`K_{map}`, particularly if
-the initial read is the throttle on throughput.
+Larger values provide more headroom, while values below one warn that the
+estimated partition block exceeds the estimated per-thread budget.  Treat
+that relationship as a first-pass sizing heuristic: serialization buffers,
+concurrent tasks, unmanaged extension memory, variable object sizes, and
+scheduler decisions can all dominate the estimate.  Start with a conservative
+value such as :math:`K_{map}` of order two, then confirm actual behavior with
+representative data and memory monitoring rather than treating any threshold
+as a guarantee against spilling or failure.
 
 The main way to control :math:`K_{map}` is to set :math:`N_{partitions}`
 when you create a bag/RDD.   In MsPASS that is normally set by
@@ -647,11 +637,12 @@ the above:
 -  A final memory issue is the requirements for handling the input.
    As above the critical, easily set option is the value assigned to the `npartitions`
    parameter.   We recommend computing the value of :math:`K_{map}` with
-   the formula above and setting up the run to assure
-   :math:`K_{map}>1`; a larger safety factor such as 2 is a more conservative
-   starting point.  Unless the average number of inputs to `stack` is
-   small that should normally also guarantee the output of the `stack`
-   task would not spill.
+   the formula above and using :math:`K_{map}>1` (or a larger initial safety
+   factor such as 2) as a starting point.  That does **not** guarantee the
+   reduction will avoid spilling: a heavily populated or skewed key can create
+   an accumulator much larger than the average partition, and shuffle buffers
+   add separate memory pressure.  Estimate the largest per-key accumulator and
+   measure the reduction with representative data.
 
 A second potential form of a "reduce" operation we know of in MsPASS is
 forming ensembles from a bag of atomic objects.   A common example where
@@ -746,10 +737,10 @@ data logically organized as by source:
 
 
 This algorithm uses only map operators but can be very memory intensive if
-the ensembles are large.  The reason is that the function `bundle_seed_data`
-by necessity has to have two copies of the data in memory; it works through
-the `TimeSeries` and assembles the appropriate group of three such
-objects into `Seismogram` objects.   The example shows the simplest approach
+the ensembles are large.  While `bundle_seed_data` assembles groups of three
+`TimeSeries` objects into `Seismogram` objects, input and output structures can
+coexist transiently.  Profile representative ensembles instead of assuming a
+fixed two-copy multiplier.  The example shows the simplest approach
 to reduce memory use.  We create the dask bag with the `read_distributed_data`
 function.  We pass it the optional parameter
 ``npartitions`` set so each ensemble query is treated as a single partition.
@@ -822,16 +813,17 @@ can be handled most easily by utilizing MongoDB.
    a function like dask foldby is subject to the memory issues discussed
    above.   Hence, in our experience using MongoDB is a more scalable approach.
    MongoDB sorting, particularly if used with an appropriate
-   index, is a very efficient way to build a sorted and grouped data set.   We should
-   note that ordered data ALWAYS require data to be grouped and
-   loaded into an ensemble container.  The reason is that dask and spark
-   do not necessarily preserve order in a map operator.  That is, the
-   data in an output bag may be shuffled relative to the input in a map
-   operation.  Hence,
-   processing workflows cannot depend on order as is common practice in
-   all seismic reflection processing packages we are aware of.
-#. Dismantling ensembles into atomic components can only be done at present by
-   saving the ensemble data and then reading it back as atomic objects.
+   index, is a very efficient way to build a sorted and grouped data set.
+   Do not assume a global order is preserved across Dask or Spark partitions.
+   Algorithms that require grouped, ordered inputs should carry explicit keys
+   or order attributes and perform grouping and ordering at a suitable stage;
+   an ensemble is one useful representation, but ordering alone does not
+   require every datum to live in an ensemble.
+#. Ensembles can be dismantled directly by iterating their ``member`` list; a
+   Dask Bag workflow can map ensembles to member lists and flatten the result.
+   Saving and reading the atomic objects back is still useful when a durable
+   checkpoint or a memory-bounded stage boundary is desirable, but it is not
+   the only available mechanism.
 #. As noted in many places in this user's manual MsPASS uses the idea of
    a "live" attribute on the native data objects to flag a datum as bad.
    Such data are carried along in a bag/RDD and consume space because

@@ -30,7 +30,7 @@ objects.  That model simplifies the error handling because the error
 handling model can be stated as two simple rules:
 
 1.  If there is any error that the user needs to be warned about, post
-    an informative message to the error log.  Error are not always black
+    an informative message to the error log.  Errors are not always black
     and white so the message should define the severity level of the error.
 2.  If the error invalidates the data, mark the data dead.  We expand
     on this concept further below in the section titled "Kills".

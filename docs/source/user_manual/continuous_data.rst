@@ -357,7 +357,7 @@ picks.  The main steps are:
 
 1.  ``arrival2list`` loads or constructs the arrival Metadata.  One possible
     source is the CSS3.0 tables in the
-    `ANF event catalog <https://anf.ucsd.edu/tools/events/>`__.  A pandas
+    `ANF CSS Event Database archive <https://doi.org/10.17611/DP/EB.1>`__.  A pandas
     table or a MongoDB ``arrival`` collection could provide the same three
     required values.
 2.  ``query_generator`` constructs one waveform-overlap query per arrival.

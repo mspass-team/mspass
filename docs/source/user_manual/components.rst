@@ -215,8 +215,8 @@ independent entities that are stupid and know only information you feed them.
 As a result, if a worker needs to access a MongoDB server it needs to be
 told how to do that.  The simplest, stateless way to do that would be to
 instantiate an instance of a database client on each call to a processing
-function needing database access.   You might guess and would be right
-that that is a really bad idea if your workflow is processing a large
+function needing database access.  You would be right to conclude that this
+is a bad idea if your workflow is processing a large
 number of data objects and would require that to be done for every datum.
 In fact, timing data show instantiating a database client takes a significant
 fraction of 1 s on most systems.   Even a fraction of a second times a million

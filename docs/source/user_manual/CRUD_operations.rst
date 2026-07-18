@@ -271,7 +271,7 @@ usage.
 
     By default :code:`read_data` reads Metadata in what we call "promiscuous" mode.
     That means it takes in all metadata stored in the wf collection at which
-    it is is pointed and loads the results into the objects Metadata container
+    it is pointed and loads the results into the object's Metadata container
     with no type checking or filtering.  Alternatives are "cautious"
     and "pedantic".   Both of the later enforce the type and name constraints defined
     by the schema.   The difference is that in "pedantic" mode any

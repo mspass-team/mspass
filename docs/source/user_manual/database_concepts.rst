@@ -25,7 +25,7 @@ Prior to MsPASS two approaches were used in Seismology to define a
     monitoring and analysis systems developed in the later 1970s and early
     1980s.   Those systems used the then revolutionary concept
     of tree structure of a unix file system to manage waveform data.
-    It is not commonly appreciated that that approach is an
+    It is not commonly appreciated that this approach is an
     implementation of the oldest form of database, called
     a `hierarchic database model <https://en.wikipedia.org/wiki/Hierarchical_database_model>`__,
     which dates back to the concepts developed by IBM in the 1960s.
@@ -1010,7 +1010,7 @@ site and channel
 
 The :code:`site` collection is intended as a largely static table
 that can be used to
-`normalize <https://docs.mongodb.com/manual/core/data-model-design/>`__
+`normalize <https://www.mongodb.com/docs/manual/data-modeling/>`__
 a wf collection.   The name is (intentionally) identical to the CSS3.0
 site table.   It's role is similar, but not identical to the CSS3.0
 table.  Similarly, :code:`channel` plays the same role as the :code:`sitechan`
@@ -1133,7 +1133,7 @@ from the original source.  You can find numerous examples of how to do that
 in the mspass tutorials repository.
 
 As noted earlier :code:`site` is a near match in concept to the css3.0 table
-with the same name, but :code:`channel` is is more than its closes analog in
+with the same name, but :code:`channel` is more than its closest analog in
 css3.0 called sitechan.   The key difference between :code:`channel` and sitechan
 is that :code:`channel` contains not just orientation information, but **may**
 contain all the metadata needed to define the response characteristics of the
@@ -1181,9 +1181,9 @@ in terms of hypocenter coordinates (:code:`latitude`, :code:`longitude`,
 potentially be very slow for a large data set.
 
 The other issue that distinguishes origin time is that its accuracy
-is data dependent.   With earthquakes are always estimated by an
-earthquake location algorithm, while with active source it normally
-measured directly.  The complexity with active source data is a
+is data dependent.  For earthquakes, origin times are normally estimated by
+an earthquake-location algorithm, while for active-source data they are
+normally measured directly.  The complexity with active-source data is a
 classic case distinguishing "precision" from "accuracy".   Active
 source times relative to the start time of a seismogram may be very
 precise but not accurate.  A type example is multichannel data where
@@ -1208,7 +1208,7 @@ similar to rule 3:
     :code:`source_lat`, :code:`source_lon`, :code:`source_depth`, and :code:`source_time`).  Linking
     each document in a wf collection to the desired point in the source
     collection is a preprocessing step to define a valid dataset.
-    The link should always be done with by inserting the :code:`ObjectId` of
+    The link should be made by inserting the :code:`ObjectId` of
     the appropriate document in :code:`source` as in wf_Seismogram or
     wf_TimeSeries with the key :code:`source_id`.
 
