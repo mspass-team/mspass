@@ -1,0 +1,2040 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mspasspy.seismic.gather &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=bf6741af"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mspasspy/seismic/gather';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.2.dev2" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../../../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/quick_start.html">Get Started</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/getting_started_overview.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/quick_start.html">Get Started</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../getting_started/getting_started_overview.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../../../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../../../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.seismic.gather</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mspasspy.seismic.gather</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dask.array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">da</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dask</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zarr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">DoubleVector</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Metadata</span><span class="p">,</span>
+    <span class="n">MsPASSError</span><span class="p">,</span>
+    <span class="n">AtomicType</span><span class="p">,</span>
+    <span class="n">ErrorSeverity</span><span class="p">,</span>
+    <span class="n">dmatrix</span><span class="p">,</span>
+    <span class="n">ProcessingHistory</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">ErrorLogger</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.resample</span><span class="w"> </span><span class="kn">import</span> <span class="n">resample</span><span class="p">,</span> <span class="n">ScipyDecimator</span><span class="p">,</span> <span class="n">ScipyResampler</span>
+
+
+<div class="viewcode-block" id="isOldEnsembleObject">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.isOldEnsembleObject">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">isOldEnsembleObject</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="n">supported_ensemble_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">supported_ensemble_types</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="isMsPassObject">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.isMsPassObject">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">isMsPassObject</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="extractDataFromMsPassObject">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.extractDataFromMsPassObject">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extractDataFromMsPassObject</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    mspass_object is either a seismogram or a timeseries, mspass_object.data</span>
+<span class="sd">    is a DoubleVector/dmatrix, we want to convert it extract the data from it and</span>
+<span class="sd">    convert it into a numpy array</span>
+<span class="sd">    The return type is np.ndarray</span>
+
+<span class="sd">    :param mspass_object:   Seismogram or TimeSeries to extract data from</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isMsPassObject</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t extract data from the object, not a mspass object&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="resample_ensemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.resample_ensemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resample_ensemble</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper for the resample function defined in resample.py. It would automate</span>
+<span class="sd">    handling of resampling any valid data object to a common sample rate.</span>
+<span class="sd">    User can pass the sample interval for the resampler, if not given by the</span>
+<span class="sd">    user, we would use the sample interval from the first data member.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isOldEnsembleObject</span><span class="p">(</span><span class="n">ens</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t resample the object, not an old ensemble object&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">decimator</span> <span class="o">=</span> <span class="n">ScipyDecimator</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">resampler</span> <span class="o">=</span> <span class="n">ScipyResampler</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resample</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">decimator</span><span class="p">,</span> <span class="n">resampler</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="regularize_ensemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.regularize_ensemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">regularize_ensemble</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A helper function to regularize all the member data in an ensemble.</span>
+<span class="sd">    The purpose of this function is to set all member data to have the same start</span>
+<span class="sd">    time.</span>
+<span class="sd">    By default, the regularization is carried out by simply applying a time window</span>
+<span class="sd">    on each member.</span>
+<span class="sd">    :param regularizer: A function object defined by user that regularize all data</span>
+<span class="sd">    members in the ensemble, it should take only one argument (a timeseries/seismogram)</span>
+<span class="sd">    and return the regularized object.</span>
+<span class="sd">    :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isOldEnsembleObject</span><span class="p">(</span><span class="n">ens</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t resample the object, not an old ensemble object&quot;</span><span class="p">)</span>
+    <span class="n">nmembers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">regularizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmembers</span><span class="p">):</span>
+            <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">regularizer</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">starttime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmembers</span><span class="p">)])</span>
+        <span class="n">endtime</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmembers</span><span class="p">)])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmembers</span><span class="p">):</span>
+            <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ens</span></div>
+
+
+
+<div class="viewcode-block" id="extractDataFromOldEnsemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.extractDataFromOldEnsemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extractDataFromOldEnsemble</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper function to extract data data from an old ensemble object, works by</span>
+<span class="sd">    iterating the member in the ensemble and calling extractDataFromMsPassObject</span>
+<span class="sd">    on each of them.</span>
+
+<span class="sd">    :param ensemble_object: TimeSeriesEnsemble or SeismogramEnsemble</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isOldEnsembleObject</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Can&#39;t extract data from the object, not an old ensemble object&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The input object doesn&#39;t have any member data&quot;</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ensemble_object</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">npts</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">ensemble_object</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">npts</span><span class="p">]</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+        <span class="n">item_data</span> <span class="o">=</span> <span class="n">extractDataFromMsPassObject</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+            <span class="n">item_data</span> <span class="o">=</span> <span class="n">item_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ensemble_object</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
+        <span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">item_data</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+
+<div class="viewcode-block" id="extractMemberMetadataFromOldEnsemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.extractMemberMetadataFromOldEnsemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extractMemberMetadataFromOldEnsemble</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A helper function to extract the member metadata from the old ensemble object</span>
+<span class="sd">    It iterates all the members, reads the metadata and concatenate them into one</span>
+<span class="sd">    single dataframe.</span>
+
+<span class="sd">    :param ensemble_object: TimeSeriesEnsemble or SeismogramEnsemble</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isOldEnsembleObject</span><span class="p">(</span><span class="n">ensemble_object</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Can&#39;t extract metadata from the object, not an old ensemble object&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The input object doesn&#39;t have any member data&quot;</span><span class="p">)</span>
+
+    <span class="n">metadata_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">))</span>
+    <span class="p">]</span>
+    <span class="n">member_metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">metadata_list</span><span class="p">)</span>
+
+    <span class="n">is_live</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">))</span>
+    <span class="p">]</span>
+
+    <span class="n">member_metadata</span><span class="p">[</span><span class="s2">&quot;is_live&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_live</span>
+
+    <span class="k">return</span> <span class="n">member_metadata</span></div>
+
+
+
+<div class="viewcode-block" id="BasicGather">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BasicGather</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for a MsPASS ensemble class that uses array</span>
+<span class="sd">    implementations to store the data.  The implementation may or may not</span>
+<span class="sd">    provide for arrays that are too large to fit in memory.</span>
+<span class="sd">    That behavior is controlled by constructor parameters.</span>
+
+<span class="sd">    The data object defined by this class and its children is</span>
+<span class="sd">    understood as appropriate only for ensemble data that satisfy several</span>
+<span class="sd">    restrictions that the current MsPASS ensemble objects</span>
+<span class="sd">    (TimeSeriesEnsemble and SeismogramEnsemble) do not require:</span>
+
+<span class="sd">    1. All data have the same sample rate.</span>
+<span class="sd">    2. Each signal has the same number of samples.</span>
+<span class="sd">    3. The data cannot have gaps.  Data with gaps need to be discarded or</span>
+<span class="sd">       patched (for example, with a gap fill) before being loaded into one of</span>
+<span class="sd">       these containers.</span>
+
+<span class="sd">    Methods for this base class are largely getters and setters for</span>
+<span class="sd">    universal parameters that match the above.  It must be understood that</span>
+<span class="sd">    with this design the base class is an incomplete skeleton that</span>
+<span class="sd">    is fleshed out by subclasses.  This class has some virtual methods</span>
+<span class="sd">    (defined with the ABC @abstractmethod decorator) and a set of methods</span>
+<span class="sd">    that would never work if only the base class were constructed</span>
+<span class="sd">    (not allowed because of the virtual methods).  In particular, the</span>
+<span class="sd">    way the base class handles metadata is potentially confusing because</span>
+<span class="sd">    the base class constructor only defines stubs for the data used to</span>
+<span class="sd">    hold member and ensemble metadata</span>
+
+<span class="sd">    A design issue is whether a gather should implement</span>
+<span class="sd">    the ``ator`` and ``rtoa`` functionality of BasicTimeSeries.  The cost is</span>
+<span class="sd">    tiny up front and retrofitting after that fact might cause a lot of</span>
+<span class="sd">    headaches.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;</span>
+<span class="s2">        capacity: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        size: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        npts: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        array_type: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        num_components: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        ensemble_metadata: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        member_metadata: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        is_parallel: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        is_compact: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        npartitions: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        elog: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        member_data: </span><span class="si">{}</span><span class="s2">,</span>
+<span class="s2">        column_values: </span><span class="si">{}</span>
+<span class="s2">    &gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elog</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__default_constructor__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">capacity</span><span class="p">,</span>
+        <span class="n">npts</span><span class="p">,</span>
+        <span class="n">num_components</span><span class="p">,</span>
+        <span class="n">array_type</span><span class="p">,</span>
+        <span class="n">is_compact</span><span class="p">,</span>
+        <span class="n">npartitions</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This constructor is used to create an empty object with the given</span>
+<span class="sd">        capacity and size, the main idea of this constructor is to intialize</span>
+<span class="sd">        the fields in the object, including the member data and the metadata.</span>
+<span class="sd">        None of the arguments can be empty.</span>
+
+<span class="sd">        :param capacity: Expected number of signals in the ensemble</span>
+<span class="sd">          to be loaded.  That is, the number of columns in the array</span>
+<span class="sd">          container.   The idea is that we standardize creation of the</span>
+<span class="sd">          work array in this base class.   Concrete implementations are</span>
+<span class="sd">          expected to estimte the size of array needed and then call</span>
+<span class="sd">          this constuctor before filling the array with data based on</span>
+<span class="sd">          the input to the subclass constructor.  e.g. for MsPASS</span>
+<span class="sd">          ensembles that would be set by len(ensemble.member).</span>
+<span class="sd">          The array implementtion is set by the related parameter</span>
+<span class="sd">          array_size.  This parameter is required and there is no</span>
+<span class="sd">          default due to the expected use only by subclasses</span>
+<span class="sd">        :type capacity:  integer</span>
+
+<span class="sd">        :param npts:  length in samples of all members.  This parameter</span>
+<span class="sd">          is required and there is no default due to the expected use only</span>
+<span class="sd">          by subclasses</span>
+<span class="sd">        :type npts:  integer</span>
+
+<span class="sd">        :param num_components:  number of components in one member, 1 for</span>
+<span class="sd">          TimeSeries, and 3 for Seismogram</span>
+<span class="sd">        :type num_components: int</span>
+
+<span class="sd">        :param array_type:  sets the way large arrays are implemented.</span>
+<span class="sd">          Default should by &quot;numpy&quot; which means the sample array will</span>
+<span class="sd">          be defined as a nptsXnumber_members FORTRAN order numpy array.</span>
+<span class="sd">          Other obvious choices are &quot;dask&quot; or &quot;zarr&quot;  List of acceptable</span>
+<span class="sd">          options to be determined</span>
+<span class="sd">        :type array_type: string that must match a supported keyword</span>
+
+<span class="sd">        :param is_compact: if true, the member data are stored in row-major</span>
+<span class="sd">          order, which means they are stored in adjacent memory locations.</span>
+<span class="sd">          Otherwise, the data are stored in column-major order.</span>
+<span class="sd">        :type is_compact: boolean</span>
+
+<span class="sd">        :param npartitions: The number of desired partitions for Dask or xarray.</span>
+<span class="sd">        :type npartitions: :class:`int`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">capacity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">npts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">=</span> <span class="n">array_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">=</span> <span class="n">num_components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span> <span class="o">=</span> <span class="n">is_compact</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span> <span class="o">=</span> <span class="n">npartitions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">supported_array_types</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;numpy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xarray&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_array_types</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;The array type should be one of the follows: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">supported_array_types</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">num_components</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">):</span>  <span class="c1"># For the scalar data, we don&#39;t need to do rearrangement</span>
+            <span class="n">is_compact</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[</span><span class="n">capacity</span><span class="p">,</span> <span class="n">num_components</span><span class="p">,</span> <span class="n">npts</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">is_compact</span>
+            <span class="k">else</span> <span class="p">[</span><span class="n">capacity</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">num_components</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">&quot;xarray&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">()</span>
+            <span class="n">chunksize</span> <span class="o">=</span> <span class="p">[</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">npartitions</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">&quot;numpy&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span><span class="p">:</span>
+            <span class="n">chunksize</span> <span class="o">=</span> <span class="p">[</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">npartitions</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__constructor_from_input_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_data</span><span class="p">,</span>
+        <span class="n">array_type</span><span class="p">,</span>
+        <span class="n">is_compact</span><span class="p">,</span>
+        <span class="n">npartitions</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This constructor is used for converting raw data into the new array based</span>
+<span class="sd">        ensemble, we want to support the following types:</span>
+<span class="sd">        dask array, numpy array</span>
+<span class="sd">        the input data should have the same compact type as this new object</span>
+
+<span class="sd">        :param input_data: the array that stored the member data of the ensemble</span>
+<span class="sd">        most common usage is to pass the data extracted by the helper function.</span>
+<span class="sd">        It supports both dask array and numpy array. We would convert the type if</span>
+<span class="sd">        the input_data&#39;s type is different from the array_type</span>
+<span class="sd">        :type input_data: da.Array or np.ndarray</span>
+
+<span class="sd">        :param array_type:  sets the way large arrays are implemented.</span>
+<span class="sd">          Default should by &quot;numpy&quot; which means the sample array will</span>
+<span class="sd">          be defined as a nptsXnumber_members FORTRAN order numpy array.</span>
+<span class="sd">          Other obvious choices are &quot;dask&quot; or &quot;zarr&quot;  List of acceptable</span>
+<span class="sd">          options to be determined</span>
+<span class="sd">         :type array_type:  string that must match keywords</span>
+
+<span class="sd">        :param is_compact: if true, the member data are stored in row major</span>
+<span class="sd">        order, which means they are stored in adjacent memory locations.</span>
+<span class="sd">        otherwise, the data are stored in column major order.</span>
+<span class="sd">        :type is_compact: boolean</span>
+
+<span class="sd">        :param npartitions: The number of desired partitions for Dask or xarray.</span>
+<span class="sd">        :type npartitions: :class:`int`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">=</span> <span class="n">array_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span> <span class="o">=</span> <span class="n">is_compact</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span> <span class="o">=</span> <span class="n">npartitions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
+
+        <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;The array type should be one of the follows: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">supported_types</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">supported_array_types</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;numpy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xarray&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_array_types</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;The array type should be one of the follows: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">supported_array_types</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">&quot;numpy&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">input_data</span>
+        <span class="k">elif</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">&quot;xarray&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">()</span>
+            <span class="n">chunksize</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">,</span>
+                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">rechunk</span><span class="p">(</span><span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span><span class="p">:</span>
+            <span class="n">chunksize</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">,</span>
+                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">rechunk</span><span class="p">(</span><span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        if is_compact: [size, num_components, npts]</span>
+<span class="sd">        else:          [size, npts, num_components]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__constructor_from_ensemble_obj__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_obj</span><span class="p">,</span>
+        <span class="n">array_type</span><span class="p">,</span>
+        <span class="n">is_compact</span><span class="p">,</span>
+        <span class="n">npartitions</span><span class="p">,</span>
+        <span class="n">resample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">regularize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This constructor is used for converting an old ensemble object to the new</span>
+<span class="sd">        array based ensemble, basically just a wrapper for the construction from</span>
+<span class="sd">        raw data.</span>
+<span class="sd">        :param input_obj:   Seismogram or TimeSeries to extract data from</span>
+<span class="sd">        :param array_type:  sets the way large arrays are implemented.</span>
+<span class="sd">          Default should by &quot;numpy&quot; which means the sample array will</span>
+<span class="sd">          be defined as a nptsXnumber_members FORTRAN order numpy array.</span>
+<span class="sd">          Other obvious choices are &quot;dask&quot; or &quot;zarr&quot;  List of acceptable</span>
+<span class="sd">          options to be determined</span>
+<span class="sd">         :type array_type:  string that must match keywords</span>
+
+<span class="sd">        :param is_compact: if true, the member data are stored in row major</span>
+<span class="sd">        order, which means they are stored in adjacent memory locations.</span>
+<span class="sd">        otherwise, the data are stored in column major order.</span>
+<span class="sd">        :type is_compact: boolean</span>
+
+<span class="sd">        :param npartitions: The number of desired partitions for Dask or xarray.</span>
+<span class="sd">        :type npartitions:  class:`int`</span>
+
+<span class="sd">        :param resample: If True, the data are resampled before stored into the new</span>
+<span class="sd">        object. If false, the data are stored directly without any resampling. Default</span>
+<span class="sd">        value is true.</span>
+<span class="sd">        :type resample: boolean</span>
+
+<span class="sd">        :param dt: sample interval of all data in ensemble.  Default is</span>
+<span class="sd">          None which means it should be taken from the first element in the data.</span>
+<span class="sd">        :type dt:   float</span>
+
+<span class="sd">        :param regularize: If True, the starttime of each data is regularized before</span>
+<span class="sd">        being stored to the object, see regularize_ensemble for more details.</span>
+<span class="sd">        :type regularize: boolean</span>
+
+<span class="sd">        :param regularizer: A function object defined by user that regularize all data</span>
+<span class="sd">        members in the ensemble, it should take only one argument (a timeseries/seismogram)</span>
+<span class="sd">        and return the regularized object. If user doesn&#39;t pass any regularizer, a TimeWindow</span>
+<span class="sd">        would be simply applied to every member.</span>
+<span class="sd">        :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">supported_ensemble_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">supported_ensemble_types</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;The input object should be one of the follows: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">supported_ensemble_types</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">resample</span><span class="p">:</span>
+            <span class="n">input_obj</span> <span class="o">=</span> <span class="n">resample_ensemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">regularize</span><span class="p">:</span>
+            <span class="n">input_obj</span> <span class="o">=</span> <span class="n">regularize_ensemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">regularizer</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__constructor_from_input_data</span><span class="p">(</span>
+                <span class="n">extractDataFromOldEnsemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">),</span>
+                <span class="n">array_type</span><span class="p">,</span>
+                <span class="n">is_compact</span><span class="p">,</span>
+                <span class="n">npartitions</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__constructor_from_input_data</span><span class="p">(</span>
+                <span class="n">extractDataFromOldEnsemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">),</span>
+                <span class="n">array_type</span><span class="p">,</span>
+                <span class="n">is_compact</span><span class="p">,</span>
+                <span class="n">npartitions</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add the ensemble&#39;s metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">input_obj</span><span class="p">)</span>
+
+        <span class="c1"># Extract Member Metadata from old ensemble</span>
+        <span class="c1"># Add the members&#39; metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="n">extractMemberMetadataFromOldEnsemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">capacity</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">,</span>
+        <span class="n">npts</span><span class="p">,</span>
+        <span class="n">num_components</span><span class="p">,</span>
+        <span class="n">npartitions</span><span class="p">,</span>
+        <span class="n">input_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">member_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ensemble_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">resample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">regularize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">array_type</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+        <span class="n">is_compact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">is_parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This base class constructor should take the view that the base</span>
+<span class="sd">        class is the fraework with no data.  That is in line with</span>
+<span class="sd">        BasicTimeSeries and an appropriate launching for subclasses that</span>
+<span class="sd">        define scalar and 3C data as conrete implementations.</span>
+<span class="sd">        A difference here, however, is that constuctor will create the</span>
+<span class="sd">        work array but just not populate it.</span>
+
+<span class="sd">        :param capacity: Expected number of signals in the ensemble</span>
+<span class="sd">          to be loaded.  That is, the number of columns in the array</span>
+<span class="sd">          container.   The idea is that we standardize creation of the</span>
+<span class="sd">          work array in this base class.   Concrete implementations are</span>
+<span class="sd">          expected to estimte the size of array needed and then call</span>
+<span class="sd">          this constuctor before filling the array with data based on</span>
+<span class="sd">          the input to the subclass constructor.  e.g. for MsPASS</span>
+<span class="sd">          ensembles that would be set by len(ensemble.member).</span>
+<span class="sd">          The array implementtion is set by the related parameter</span>
+<span class="sd">          array_size.  This parameter is required and there is no</span>
+<span class="sd">          default due to the expected use only by subclasses</span>
+<span class="sd">        :type capacity:  integer</span>
+
+<span class="sd">        :param npts:  length in samples of all members.  This parameter</span>
+<span class="sd">          is required and there is no default due to the expected use only</span>
+<span class="sd">          by subclasses</span>
+<span class="sd">        :type npts:  integer</span>
+
+<span class="sd">        :param dt:  sample interval of all data in ensemble.  Default is</span>
+<span class="sd">          None which taken to mean it should be derived from the data.</span>
+<span class="sd">        :type dt:  float</span>
+
+<span class="sd">        :param array_type:  sets the way large arrays are implemented.</span>
+<span class="sd">          Default should by &quot;numpy&quot; which means the sample array will</span>
+<span class="sd">          be defined as a nptsXnumber_members FORTRAN order numpy array.</span>
+<span class="sd">          Other obvious choices are &quot;dask&quot; or &quot;zarr&quot;  List of acceptable</span>
+<span class="sd">          options to be determined</span>
+<span class="sd">         :type array_type:  string that must match keywords</span>
+
+<span class="sd">        :param resample: If True, the data are resampled before stored into the new</span>
+<span class="sd">        object. If false, the data are stored directly without any resampling. Default</span>
+<span class="sd">        value is true.</span>
+<span class="sd">        :type resample: boolean</span>
+
+<span class="sd">        :param regularize: If True, the starttime of each data is regularized before</span>
+<span class="sd">        being stored to the object, see regularize_ensemble for more details.</span>
+<span class="sd">        :type regularize: boolean</span>
+
+<span class="sd">        :param regularizer: A function object defined by user that regularize all data</span>
+<span class="sd">        members in the ensemble, it should take only one argument (a timeseries/seismogram)</span>
+<span class="sd">        and return the regularized object. If user doesn&#39;t pass any regularizer, a TimeWindow</span>
+<span class="sd">        would be simply applied to every member.</span>
+<span class="sd">        :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">capacity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+
+        <span class="k">if</span> <span class="n">input_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__constructor_from_ensemble_obj__</span><span class="p">(</span>
+                <span class="n">input_obj</span><span class="o">=</span><span class="n">input_obj</span><span class="p">,</span>
+                <span class="n">array_type</span><span class="o">=</span><span class="n">array_type</span><span class="p">,</span>
+                <span class="n">is_compact</span><span class="o">=</span><span class="n">is_compact</span><span class="p">,</span>
+                <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">,</span>
+                <span class="n">resample</span><span class="o">=</span><span class="n">resample</span><span class="p">,</span>
+                <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+                <span class="n">regularize</span><span class="o">=</span><span class="n">regularize</span><span class="p">,</span>
+                <span class="n">regularizer</span><span class="o">=</span><span class="n">regularizer</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__constructor_from_input_data</span><span class="p">(</span>
+                <span class="n">input_data</span><span class="o">=</span><span class="n">input_data</span><span class="p">,</span>
+                <span class="n">array_type</span><span class="o">=</span><span class="n">array_type</span><span class="p">,</span>
+                <span class="n">is_compact</span><span class="o">=</span><span class="n">is_compact</span><span class="p">,</span>
+                <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">member_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;member metadata should be given&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__default_constructor__</span><span class="p">(</span>
+                <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span>
+                <span class="n">npts</span><span class="o">=</span><span class="n">npts</span><span class="p">,</span>
+                <span class="n">num_components</span><span class="o">=</span><span class="n">num_components</span><span class="p">,</span>
+                <span class="n">array_type</span><span class="o">=</span><span class="n">array_type</span><span class="p">,</span>
+                <span class="n">is_compact</span><span class="o">=</span><span class="n">is_compact</span><span class="p">,</span>
+                <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">npts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">=</span> <span class="n">array_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">=</span> <span class="n">num_components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="n">ensemble_metadata</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="n">member_metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span> <span class="o">=</span> <span class="n">is_parallel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span> <span class="o">=</span> <span class="n">is_compact</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span> <span class="o">=</span> <span class="n">npartitions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># default setting for the metadata</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;is_live&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;is_utc&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
+            <span class="p">}</span>
+
+<div class="viewcode-block" id="BasicGather.append">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.append">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Appends data in mspass_object to internal array object.</span>
+<span class="sd">        For now, we don&#39;t handle resizing similar to std containers in C++</span>
+<span class="sd">        where allocs (in this case a resize) is triggered by filling.</span>
+<span class="sd">        Instead, we would just rely on the xarray/numpy&#39;s append.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">!=</span> <span class="mi">3</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The components number doesn&#39;t match the input object&quot;</span><span class="p">)</span>
+
+        <span class="n">new_data</span> <span class="o">=</span> <span class="n">extractDataFromMsPassObject</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>  <span class="c1"># get the numpy data</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+            <span class="n">new_data</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+                    <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">==</span> <span class="s2">&quot;numpy&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">todict</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.starttime">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.starttime">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">starttime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list (python array) of starttimes.  We should assume</span>
+<span class="sd">        times are always stored as doubles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.column_values">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.column_values">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">column_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the values assigned to the column axis.  These should</span>
+<span class="sd">        default to integers matching the column index values.   They</span>
+<span class="sd">        should be allowed to be anything, however, to handle things</span>
+<span class="sd">        like variable offset record sections.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.set_column_values">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.set_column_values">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_column_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the column values array to the values in x.</span>
+<span class="sd">        :param x: a list of column names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Sanity check: the input be a list</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The column values should be a list&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span> <span class="o">=</span> <span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.dt">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.dt">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the sample rate of the ensemble</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span></div>
+
+
+    <span class="c1"># The following names match BasicTimeSeries because the match in</span>
+    <span class="c1"># concept.  starttime above doesn&#39;t really because in a single object</span>
+    <span class="c1"># t0==starttime is constant.</span>
+<div class="viewcode-block" id="BasicGather.time">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.time">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return time of array position i,j (Note works the same for 3c and</span>
+<span class="sd">        scalar data)</span>
+
+<span class="sd">        :param i:   row index</span>
+<span class="sd">        :type i: int</span>
+<span class="sd">        :param j:   column index</span>
+<span class="sd">        :type j: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># from the definiation in timeseries:</span>
+        <span class="c1"># time(i) = (mt0+mdt*i);</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">()</span> <span class="o">*</span> <span class="n">j</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.sample_number">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.sample_number">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a numpy array of ints of the index position of an ordered pair defined by a time</span>
+<span class="sd">        (row) value and a column value that can be mapped to the</span>
+<span class="sd">        column index.</span>
+<span class="sd">        :param x: a list of column names</span>
+<span class="sd">        :param time: the time (row) value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">column_values</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+        <span class="n">ans</span> <span class="o">=</span> <span class="p">[(</span><span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="p">()[</span><span class="n">ind</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">()</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ans</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.time_is_UTC">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.time_is_UTC">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time_is_UTC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if the time standard for the data is set as UTC</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">[</span><span class="s2">&quot;is_utc&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.time_is_relative">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.time_is_relative">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time_is_relative</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if the time standard for the data is set as relative</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_is_UTC</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.live">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.live">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">live</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return true if jth member is set live.</span>
+<span class="sd">        :param j: index number</span>
+<span class="sd">        :type j: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">&quot;is_live&quot;</span><span class="p">][</span><span class="n">j</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.dead">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.dead">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dead</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return true if jth member is marked dead (opposite of live).</span>
+<span class="sd">        :param j: index number</span>
+<span class="sd">        :type j: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">live</span><span class="p">(</span><span class="n">j</span><span class="p">)</span></div>
+
+
+    <span class="c1"># This next set are s in BasicTimeSeries but all</span>
+<div class="viewcode-block" id="BasicGather.samprate">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.samprate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">samprate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the sample rate of the ensemble</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.rtoa">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.rtoa">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rtoa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the relative time to absolute time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_is_relative</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span> <span class="o">&lt;=</span> <span class="mf">100.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;time shift to return to UTC time is not defined&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># TODO: do we need to check if the items are live or dead here?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">[</span><span class="s2">&quot;is_utc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.ator">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.ator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shift</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the absolut time to relative time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_is_UTC</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span> <span class="o">=</span> <span class="n">shift</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.shift">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.shift">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeshift</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Time shift for all the member in the ensemble</span>
+<span class="sd">        :param timeshift: the shift time range</span>
+<span class="sd">        :type timeshift: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_t0shift</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtoa</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">old_t0shift</span> <span class="o">+</span> <span class="n">timeshift</span><span class="p">)</span></div>
+
+
+    <span class="c1"># The following methods in BasicTimeSeries are optional.  It isn&#39;t</span>
+    <span class="c1"># clear to me if their use is required - at least initially.  With</span>
+    <span class="c1"># python a ddingg methods is not as probematic as a Java or C++</span>
+    <span class="c1"># They are;  time_reference, timetype, set_to, set_tref, and</span>
+    <span class="c1"># set_npts.</span>
+
+    <span class="c1"># An alternative design would be to put these in an intermediate</span>
+    <span class="c1"># class but don&#39;t think that would be useful for a python implementation</span>
+<div class="viewcode-block" id="BasicGather.get_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;dict&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Metadata components of member j.  return_type should</span>
+<span class="sd">        allow optional return as dict or Metadata.  Not clear which should</span>
+<span class="sd">        be default.</span>
+<span class="sd">        :param j: index of member</span>
+<span class="sd">        :type j: int</span>
+<span class="sd">        :param return_type: return type, dict or metadata</span>
+<span class="sd">        :type return_type: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">supported_return_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dict&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">return_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_return_types</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;The return type should be one of the follows: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">supported_return_types</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">ret_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">ret_dict</span> <span class="o">=</span> <span class="n">ret_metadata</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;dict&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ret_dict</span>
+        <span class="k">elif</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">ret_dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.set_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.set_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setter for metadata of member j.   md is the new continer that would</span>
+<span class="sd">        replace current conent.  Most useful for constructors.</span>
+<span class="sd">        :param j: index of member</span>
+<span class="sd">        :type j: int</span>
+<span class="sd">        :param md: the metadata to set, dict or metadata</span>
+<span class="sd">        :type md: dict or metadata</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The metadata should be a dict-like object&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">md_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">md_df</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.edit_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.edit_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">edit_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Differs from set_metadata in that the contents of md are added to</span>
+<span class="sd">        the current and do not fully repalce them.   Needed for updating</span>
+<span class="sd">        metadata after costruction</span>
+<span class="sd">        :param j: index of member</span>
+<span class="sd">        :type j: int</span>
+<span class="sd">        :param md: the metadata to edit, dict or metadata</span>
+<span class="sd">        :type md: dict or metadata</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The metadata should be a dict-like object&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">md</span><span class="p">:</span>
+            <span class="c1"># We assume that user shouldn&#39;t add new metadata</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;key </span><span class="si">{}</span><span class="s2"> is not presented in the member metadata&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.member">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.member">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the data associated with member j.   Virtual method</span>
+<span class="sd">        returns different type for scalar ersus 3c data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.subset">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.subset">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a subset of the data defined by either a collection of</span>
+<span class="sd">        members or a restricted sample range (a form of windowing).</span>
+<span class="sd">        Concrete implementtions can define what this means.   Minimum</span>
+<span class="sd">        usage would be something functionally equivalent to the f90/matlab</span>
+<span class="sd">        synatx of ensemble.member[i:j].   We may also want to be less</span>
+<span class="sd">        generic and require addition methods with other names like</span>
+<span class="sd">        &quot;extract_members&quot; or &quot;window&quot; (time range).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.ensemble_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.ensemble_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ensemble_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;dict&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Like metadata method but returns the ensemble metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">supported_return_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dict&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">return_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_return_types</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;The return type should be one of the follows: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">supported_return_types</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;dict&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span>
+        <span class="k">elif</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">&quot;metadata&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BasicGather.sync_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.sync_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sync_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This would act like the one in Ensemble in C++ copying all the</span>
+<span class="sd">        ensemble key-value pairs to the members.  It is debatable that</span>
+<span class="sd">        this would be needed but would be trivial to implement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">val</span><span class="p">)</span></div>
+
+
+    <span class="c1"># not sure if we can make this member abstract.  It needs to</span>
+    <span class="c1"># be in this design to allow different signatures for scalar and 3c data</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Python version of operator[].   Not sure the declaration as</span>
+<span class="sd">        abstractmethod will work or is even deirable.  I put it hat</span>
+<span class="sd">        way for now as we do want to require thiat method.  For scalar</span>
+<span class="sd">        data it should get two indices while for 3C data it needs 3.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setter by index.   Same issue that is probably isn&#39;t necesessy</span>
+<span class="sd">        in he implementtion to use the abstractmethod eecorator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="Gather">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.Gather">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Gather</span><span class="p">(</span><span class="n">BasicGather</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concrete implementtion for a scalar gather.  This is the array</span>
+<span class="sd">    equivalent of a TimeSeriesEnsemble appropriate when the input matches</span>
+<span class="sd">    the concept of BasicGather.    It follows the OOP stndard pardigm that creation is initialization.  This puts a lot of features in the constructor for the class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">capacity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">npts</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">num_components</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">npartitions</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">input_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">member_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ensemble_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">resample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">regularize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">array_type</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+        <span class="n">is_compact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Because in this design the base class only sets up the workspace</span>
+<span class="sd">        most of the nitty gritty work of building this thig will go here.</span>
+
+<span class="sd">        :param mspss_object:  Should contain the data to be loaded.</span>
+<span class="sd">        :type mspass_object:  should accept TimeSeriesEnsemble or another</span>
+<span class="sd">          Gather object.  Would advise a different class if we wanted to</span>
+<span class="sd">          allow soemthig like a raw matrix as input.  We perhaps should</span>
+<span class="sd">          accept a None and in that situation just create the workspace</span>
+<span class="sd">          of a speciied size and assume the gather will be build by</span>
+<span class="sd">          many calls to append.</span>
+
+<span class="sd">        :param capacity :  expected number of signals the gather</span>
+<span class="sd">          will eventually contain.  If None (default) the size is</span>
+<span class="sd">          determined by the input ensemble.  If nonzero it should be</span>
+<span class="sd">          a positive integer larger than the size of the ensemble passed</span>
+<span class="sd">          as mspass_object.</span>
+<span class="sd">        :type:  integer</span>
+
+<span class="sd">        :param npts:  expected number of samples for all data in the gather</span>
+<span class="sd">          If None, which is the default, it should be estimated from the</span>
+<span class="sd">          input data.  Note mspass_object beng set None and this parameter</span>
+<span class="sd">          or capacity set None should cause an exception to be</span>
+<span class="sd">          raised.  Either that or it should be ignored and a warning</span>
+<span class="sd">          message posted - probably a better idea.</span>
+
+<span class="sd">        dt, array_type are as defined in the</span>
+<span class="sd">        base clsss.  They are passed directly to the base class</span>
+<span class="sd">        construtor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Will directly call the constructor of the base class, but we need</span>
+        <span class="c1"># to do some sanity check first.</span>
+        <span class="k">if</span> <span class="n">input_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The input object should be a TimeSeriesEnsemble&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">input_num_comp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">input_num_comp</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;The input data shape is not valid, should be scalar data&quot;</span>
+                <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">npts</span><span class="o">=</span><span class="n">npts</span><span class="p">,</span>
+            <span class="n">num_components</span><span class="o">=</span><span class="n">num_components</span><span class="p">,</span>
+            <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">,</span>
+            <span class="n">input_data</span><span class="o">=</span><span class="n">input_data</span><span class="p">,</span>
+            <span class="n">input_obj</span><span class="o">=</span><span class="n">input_obj</span><span class="p">,</span>
+            <span class="n">member_metadata</span><span class="o">=</span><span class="n">member_metadata</span><span class="p">,</span>
+            <span class="n">ensemble_metadata</span><span class="o">=</span><span class="n">ensemble_metadata</span><span class="p">,</span>
+            <span class="n">resample</span><span class="o">=</span><span class="n">resample</span><span class="p">,</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">regularize</span><span class="o">=</span><span class="n">regularize</span><span class="p">,</span>
+            <span class="n">regularizer</span><span class="o">=</span><span class="n">regularizer</span><span class="p">,</span>
+            <span class="n">array_type</span><span class="o">=</span><span class="n">array_type</span><span class="p">,</span>
+            <span class="n">is_compact</span><span class="o">=</span><span class="n">is_compact</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Gather.member">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.Gather.member">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the data associated with member j.  Unlike above I suggest</span>
+<span class="sd">        we not do the idea of &quot;data_only&quot;.  Aways return a TimeSeries.</span>
+<span class="sd">        Suggest data method for that purpose</span>
+<span class="sd">        :param j: index</span>
+<span class="sd">        :param j: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;The given index: </span><span class="si">{}</span><span class="s2"> is out of range.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="s2">&quot;Invalid&quot;</span>
+            <span class="p">)</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">j</span><span class="p">)):</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dead</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="Gather.data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.Gather.data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the raw data vector associated with column j.   Defined here</span>
+<span class="sd">        as an ndarray return but probably should be any iterable</span>
+<span class="sd">        container that acts like a vector.</span>
+<span class="sd">        :param j: index</span>
+<span class="sd">        :param j: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;The given index: </span><span class="si">{}</span><span class="s2"> is out of range.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="s2">&quot;Invalid&quot;</span>
+            <span class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">col</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">col</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Gather.subset">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.Gather.subset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Gather&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a subset of the Gather with signals from start to end</span>
+<span class="sd">        (like start:end in F90 or matlab).</span>
+
+<span class="sd">        :param start:   the start index of the subset</span>
+<span class="sd">        :param end: specifies the index where the subset ends, excluding the</span>
+<span class="sd">          value at this index just like array slicing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">new_member_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">new_npartitions</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+        <span class="k">if</span> <span class="n">new_npartitions</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">:</span>
+            <span class="n">npartitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span>
+
+        <span class="n">new_gather</span> <span class="o">=</span> <span class="n">Gather</span><span class="p">(</span>
+            <span class="n">input_data</span><span class="o">=</span><span class="n">new_input_data</span><span class="p">,</span>
+            <span class="n">array_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_type</span><span class="p">,</span>
+            <span class="n">is_compact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">,</span>
+            <span class="n">npartitions</span><span class="o">=</span><span class="n">new_npartitions</span><span class="p">,</span>
+            <span class="n">member_metadata</span><span class="o">=</span><span class="n">new_member_metadata</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_gather</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Index operator to return data value at sample index pos = (i,j).</span>
+<span class="sd">        :param pos: a tuple of index to data value</span>
+<span class="sd">        :type pos: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">newvalue</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Index setter - I think this is the right syntax for two indices.</span>
+<span class="sd">        :param pos: a tuple of index to data value</span>
+<span class="sd">        :type pos: tuple</span>
+<span class="sd">        :param newvalue: the new value to set</span>
+<span class="sd">        :type newvalue: any type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">newvalue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">newvalue</span></div>
+
+
+
+<div class="viewcode-block" id="SeismogramGather">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.SeismogramGather">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SeismogramGather</span><span class="p">(</span><span class="n">BasicGather</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gather for three-component data.  Can only be created from inputs that</span>
+<span class="sd">    satisfy the restrictions of BasicGather.  It is much like Gather</span>
+<span class="sd">    but with a 3D instead of a 2D array holding sample data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">capacity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">npts</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">num_components</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">npartitions</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">input_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">member_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ensemble_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">resample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">regularize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">array_type</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+        <span class="n">is_compact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Because in this design the base class only sets up the workspace</span>
+<span class="sd">        most of the nitty gritty work of building this thig will go here.</span>
+
+<span class="sd">        :param mspss_object:  Should contain the data to be loaded.</span>
+<span class="sd">        :type mspass_object:  should accept TimeSeriesEnsemble or another</span>
+<span class="sd">          Gather object.  Would advise a different class if we wanted to</span>
+<span class="sd">          allow soemthig like a raw matrix as input.  We perhaps should</span>
+<span class="sd">          accept a None and in that situation just create the workspace</span>
+<span class="sd">          of a speciied size and assume the gather will be build by</span>
+<span class="sd">          many calls to append.</span>
+
+<span class="sd">        :param number_members:  expected number of signals the gather</span>
+<span class="sd">          will eventually contain.  If None (default) the size is</span>
+<span class="sd">          determined by the input ensemble.  If nonzero it should be</span>
+<span class="sd">          a positive integer larger than the size of the ensemble passed</span>
+<span class="sd">          as mspass_object.</span>
+<span class="sd">        :type:  integer</span>
+
+<span class="sd">        :param npts:  expected number of samples for all data in the gather</span>
+<span class="sd">          If None, which is the default, it should be estimated from the</span>
+<span class="sd">          input data.  Note mspass_object beng set None and this parameter</span>
+<span class="sd">          or number_members set None should cause an exception to be</span>
+<span class="sd">          raised.  Either that or it should be ignored and a warning</span>
+<span class="sd">          message posted - probably a better idea.</span>
+
+<span class="sd">        dt, array_type, and resize_blocksize are as defined in the</span>
+<span class="sd">        base clsss.  They are passed directly to the base class</span>
+<span class="sd">        construtor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Will directly call the constructor of the base class, but we need</span>
+        <span class="c1"># to do some sanity check first.</span>
+        <span class="k">if</span> <span class="n">input_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The input object should be a TimeSeriesEnsemble&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">input_num_comp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">input_num_comp</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;The input data shape is not valid, should be scalar data&quot;</span>
+                <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">npts</span><span class="o">=</span><span class="n">npts</span><span class="p">,</span>
+            <span class="n">num_components</span><span class="o">=</span><span class="n">num_components</span><span class="p">,</span>
+            <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">,</span>
+            <span class="n">input_data</span><span class="o">=</span><span class="n">input_data</span><span class="p">,</span>
+            <span class="n">input_obj</span><span class="o">=</span><span class="n">input_obj</span><span class="p">,</span>
+            <span class="n">member_metadata</span><span class="o">=</span><span class="n">member_metadata</span><span class="p">,</span>
+            <span class="n">ensemble_metadata</span><span class="o">=</span><span class="n">ensemble_metadata</span><span class="p">,</span>
+            <span class="n">resample</span><span class="o">=</span><span class="n">resample</span><span class="p">,</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="n">regularize</span><span class="o">=</span><span class="n">regularize</span><span class="p">,</span>
+            <span class="n">regularizer</span><span class="o">=</span><span class="n">regularizer</span><span class="p">,</span>
+            <span class="n">array_type</span><span class="o">=</span><span class="n">array_type</span><span class="p">,</span>
+            <span class="n">is_compact</span><span class="o">=</span><span class="n">is_compact</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="SeismogramGather.member">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.SeismogramGather.member">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Seismogram</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the data associated with member j.  Unlike above I suggest</span>
+<span class="sd">        we not do the idea of &quot;data_only&quot;.  Aways return a TimeSeries.</span>
+<span class="sd">        Suggest data method for that purpose</span>
+<span class="sd">        :param j: index</span>
+<span class="sd">        :param j: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;The given index: </span><span class="si">{}</span><span class="s2"> is out of range.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="s2">&quot;Invalid&quot;</span>
+            <span class="p">)</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dead</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="SeismogramGather.data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.SeismogramGather.data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the raw data matrix associated with column j.   Defined here</span>
+<span class="sd">        as an ndarray return but probably should be any iterable</span>
+<span class="sd">        container that acts like a matrix.  Not clear what will be needed to</span>
+<span class="sd">        support large matrix formats.</span>
+<span class="sd">        :param j: index</span>
+<span class="sd">        :param j: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;The given index: </span><span class="si">{}</span><span class="s2"> is out of range.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="s2">&quot;Invalid&quot;</span>
+            <span class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">col</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">col</span></div>
+
+
+<div class="viewcode-block" id="SeismogramGather.subset">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.SeismogramGather.subset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SeismogramGather&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a subset of the Gather with signals from start to end</span>
+<span class="sd">        (like start:end in F90 or matlab).</span>
+
+<span class="sd">        :param start:   the start index of the subset</span>
+<span class="sd">        :param end: specifies the index where the subset ends, excluding the</span>
+<span class="sd">          value at this index just like array slicing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">new_member_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">new_npartitions</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+        <span class="k">if</span> <span class="n">new_npartitions</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">:</span>
+            <span class="n">npartitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span>
+
+        <span class="n">new_gather</span> <span class="o">=</span> <span class="n">SeismogramGather</span><span class="p">(</span>
+            <span class="n">input_data</span><span class="o">=</span><span class="n">new_input_data</span><span class="p">,</span>
+            <span class="n">array_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_type</span><span class="p">,</span>
+            <span class="n">is_compact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">,</span>
+            <span class="n">npartitions</span><span class="o">=</span><span class="n">new_npartitions</span><span class="p">,</span>
+            <span class="n">member_metadata</span><span class="o">=</span><span class="n">new_member_metadata</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_gather</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Index operator to fetch sample from time axis at i, member axis at j,</span>
+<span class="sd">        and component number k.</span>
+<span class="sd">        :param pos: a tuple of index to data value</span>
+<span class="sd">        :type pos: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">newvalue</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Indexing setter.   Not sure this is the right syntax but should show</span>
+<span class="sd">        the idea.</span>
+<span class="sd">        :param pos: a tuple of index to data value</span>
+<span class="sd">        :type pos: tuple</span>
+<span class="sd">        :param newvalue: the value to set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">newvalue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">newvalue</span></div>
+
+
+
+<div class="viewcode-block" id="read_basic_array_ensemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.read_basic_array_ensemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_basic_array_ensemble</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">ensemble_object</span><span class="p">,</span> <span class="n">object_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read an array from the database into an ensemble object.</span>
+
+<span class="sd">    :param db: database containing the ``ensemble`` collection.</span>
+<span class="sd">    :param ensemble_object: object that receives the stored metadata and data.</span>
+<span class="sd">    :param object_id: MongoDB identifier of the ensemble document.  The</span>
+<span class="sd">      identifier provides a one-to-one mapping to the ensemble metadata and</span>
+<span class="sd">      member data.</span>
+
+<span class="sd">    The ensemble document schema is::</span>
+
+<span class="sd">        _id : unique id</span>
+<span class="sd">        metadata : a dict that stores the ensemble&#39;s metadata</span>
+<span class="sd">        member_metadata : a list of metadata for each member</span>
+<span class="sd">        store_type = &#39;zarr&#39; : we might support other storage?</span>
+<span class="sd">        zarr_group_path : str, the path of the zarr group</span>
+<span class="sd">        zarr_arr_name : str, the name of the zarr array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ensemble_col</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">ensemble</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">ensemble_col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">object_id</span><span class="p">})</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;member_metadata&quot;</span><span class="p">])</span>
+    <span class="n">ddf</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">ensemble_object</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="n">ddf</span>
+    <span class="k">if</span> <span class="n">ensemble_object</span><span class="o">.</span><span class="n">impl</span> <span class="o">==</span> <span class="s2">&quot;xarray&quot;</span><span class="p">:</span>
+        <span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span>
+            <span class="s2">&quot;metadata&quot;</span>
+        <span class="p">]</span>  <span class="c1"># we can store the metadata in .attrs</span>
+        <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;store_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;zarr&quot;</span><span class="p">:</span>
+            <span class="n">store</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">DirectoryStore</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;zarr_group_path&quot;</span><span class="p">])</span>
+            <span class="n">zarr_arr</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="n">store</span><span class="p">)[</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;zarr_arr_name&quot;</span><span class="p">]]</span>
+            <span class="n">dask_arr</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">zarr_arr</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">zarr_arr</span><span class="o">.</span><span class="n">chunks</span><span class="p">)</span>
+            <span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dask_arr</span>
+    <span class="k">return</span> <span class="n">ensemble_object</span></div>
+
+
+
+<div class="viewcode-block" id="write_basic_array_ensemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.write_basic_array_ensemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_basic_array_ensemble</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">ensemble_object</span><span class="p">,</span> <span class="n">object_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write an ensemble object&#39;s data and metadata to storage.</span>
+
+<span class="sd">    :param db: database containing the ``ensemble`` collection.</span>
+<span class="sd">    :param ensemble_object: object whose metadata and data are written.</span>
+<span class="sd">    :param object_id: MongoDB identifier of the ensemble document.  The</span>
+<span class="sd">      identifier provides a one-to-one mapping to the ensemble metadata and</span>
+<span class="sd">      member data.</span>
+
+<span class="sd">    The ensemble document schema is::</span>
+
+<span class="sd">        _id : unique id</span>
+<span class="sd">        metadata : a dict that stores the ensemble&#39;s metadata</span>
+<span class="sd">        member_metadata : a list of metadata for each member</span>
+<span class="sd">        store_type = &#39;zarr&#39; : we might support other storage?</span>
+<span class="sd">        zarr_group_path : str, the path of the zarr group</span>
+<span class="sd">        zarr_arr_name : str, the name of the zarr array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ensemble_col</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">ensemble</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">ensemble_col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">object_id</span><span class="p">})</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">ensemble_object</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">object_id</span><span class="p">}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;member_metadata&quot;</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()}</span>
+    <span class="k">if</span> <span class="n">ensemble_object</span><span class="o">.</span><span class="n">impl</span> <span class="o">==</span> <span class="s2">&quot;xarray&quot;</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">attrs</span>
+        <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;store_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;zarr&quot;</span><span class="p">:</span>
+            <span class="n">store</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">DirectoryStore</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;zarr_group_path&quot;</span><span class="p">])</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="n">store</span><span class="p">)</span>
+            <span class="n">zarr_arr</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;zarr_arr_name&quot;</span><span class="p">]],</span>
+                <span class="n">shape</span><span class="o">=</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                <span class="n">chunks</span><span class="o">=</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">chunks</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">overwritebool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">dask</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">zarr_arr</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ensemble_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

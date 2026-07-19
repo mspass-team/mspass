@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Signal to Noise Ratio Estimation &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Signal to Noise Ratio Estimation &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -57,10 +57,10 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Arrival Time Measurement Techniques in MsPASS" href="arrival_time_measurement.html" />
-    <link rel="prev" title="Graphics in MsPASS" href="graphics.html" />
+    <link rel="prev" title="Header (Metadata) Math" href="header_math.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -161,10 +161,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -269,10 +269,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -331,72 +331,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -409,6 +411,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -420,7 +423,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -499,7 +502,7 @@ and “noise” mean and what measure is used for each.  We can address the
 first in a common way for all MsPASS implementations.  Choices for the
 second are discussed below.</p>
 <p>All MsPASS algorithms are driven by definitions of the time windows that
-define the part of an input datum is signal and noise.   All current
+define which parts of an input datum are signal and noise.   All current
 implementations are driven by a simple data object we call a <cite>TimeWindow</cite>.
 You can read the docstring but everything useful about this object
 can be gleaned from running this code fragment in the mspass container:</p>
@@ -508,7 +511,7 @@ can be gleaned from running this code fragment in the mspass container:</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time window range:  &quot;</span><span class="p">,</span><span class="n">win</span><span class="o">.</span><span class="n">start</span><span class="p">,</span><span class="s2">&quot;&lt;=t&lt;=&quot;</span><span class="p">,</span><span class="n">win</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The time window here would be appropriate if the datum it used for
+<p>The time window here would be appropriate if the datum used
 had been converted to “relative time”.   The example could be appropriate
 to define a signal window if the data had been converted to “relative time”
 (see section <a class="reference internal" href="time_standard_constraints.html#time-standard-constraints"><span class="std std-ref">Time Standard Constraints</span></a>)
@@ -520,10 +523,12 @@ be the same.</p>
 </section>
 <section id="time-window-amplitude-metrics">
 <h2>Time Window Amplitude Metrics<a class="headerlink" href="#time-window-amplitude-metrics" title="Link to this heading">#</a></h2>
-<p>The most common measure of amplitude is the root mean square error
+<p>The most common measure of amplitude is the root-mean-square amplitude
 that is a scaled version of the L2 vector norm:</p>
 <div class="math notranslate nohighlight">
-\[| \bf{x} \|_{rms} = \sqrt{\frac{\sum\limits_{i=n_s}^{n_e} x_i^2 }{n_e - n_s -1}}\]</div>
+\[\lVert \mathbf{x} \rVert_{\mathrm{rms}}
+= \sqrt{\frac{1}{N}\sum\limits_{i=n_s}^{n_e} x_i^2},
+\qquad N=n_e-n_s+1\]</div>
 <p>where <span class="math notranslate nohighlight">\(n_s\)</span> is the data index for the start time of a time window and
 <span class="math notranslate nohighlight">\(n_e\)</span> is the index of the end time.  In the snr docstrings this metric
 is given the tag <cite>rms</cite>.</p>
@@ -531,19 +536,21 @@ is given the tag <cite>rms</cite>.</p>
 peak amplitude. In linear algebra language peak amplitude in a time
 window is called the <span class="math notranslate nohighlight">\(L_\infty\)</span> norm defined as:</p>
 <div class="math notranslate nohighlight">
-\[| \bf{x} |_{\infty} = max ( \mid x_{n_s}\mid ,  \mid x_{n_s + 1}\mid , \cdots , \mid x_{n_e}\mid )\]</div>
+\[\lVert \mathbf{x} \rVert_{\infty}
+= \max ( \lvert x_{n_s}\rvert ,  \lvert x_{n_s + 1}\rvert , \ldots , \lvert x_{n_e}\rvert )\]</div>
 <p>For those unfamiliar with this jargon it is little more than
 a mathematical statement that we measure the largest sample amplitude.
 In the snr docstrings this metric is given the tag <cite>peak</cite>.</p>
 <p>MsPASS also provides a facility to calculate a few less common metrics based
 on ranked (sorted) lists of amplitudes.  All create a vector of
-<span class="math notranslate nohighlight">\(N=n_s - n_e -1\)</span> absolute values of each sample in the time window
+<span class="math notranslate nohighlight">\(N=n_e-n_s+1\)</span> absolute values of each sample in the time window
 (<span class="math notranslate nohighlight">\(\mid x_i \mid\)</span>) and sort the values in increasing order.
 The MsPASS snr module supports two metrics based on a fully sorted list
 of amplitudes:</p>
 <ol class="arabic simple">
-<li><p>The tag <cite>median</cite> is used to compute the standard quanity called the
-median, which is defined the center (50% point) of the sorted list of amplitudes.</p></li>
+<li><p>The tag <cite>mad</cite> returns the median (50% point) of the sorted absolute
+sample amplitudes.  In this API, <code class="docutils literal notranslate"><span class="pre">mad</span></code> therefore names this amplitude
+statistic rather than a median absolute deviation about the sample median.</p></li>
 <li><p>The generic tag <cite>perc</cite> is used for a family of metrics using sorted
 amplitudes.   Users familiar with seismic unix will recognize this
 keyword as a common argument for plot scaling in that package.  MsPASS,
@@ -551,8 +558,8 @@ in fact, adapted the perc metric concept from seismic unix.
 If used it always requires specifying a “percentage”
 describing the level it should define.   e.g the default of 95 means
 return the amplitude for which 95% of the samples have a lower amplitude.
-Similarly, perc of 50 would be the same as the median and 100 would
-be the same as the peak amplitude.</p></li>
+A percentage of 50 gives the same result as <code class="docutils literal notranslate"><span class="pre">mad</span></code>.  Use the <code class="docutils literal notranslate"><span class="pre">peak</span></code>
+metric when the maximum absolute amplitude is required.</p></li>
 </ol>
 </section>
 <section id="low-level-snr-estimation">
@@ -563,13 +570,15 @@ describes the detailed use, but you will normally need to specify or
 default four key parameters:  (1) signal time window, (2) noise time window,
 (3) metric to use for the signal window, and (4) metric to use for the
 noise window.   The metric choice is made by using the tag strings
-defined above:  <cite>rms</cite>, <cite>peak, `mad</cite>, or <cite>perc</cite>.   Note the <cite>perc</cite>
+defined above:  <code class="docutils literal notranslate"><span class="pre">rms</span></code>, <code class="docutils literal notranslate"><span class="pre">peak</span></code>, <code class="docutils literal notranslate"><span class="pre">mad</span></code>, or <code class="docutils literal notranslate"><span class="pre">perc</span></code>.   Note the <code class="docutils literal notranslate"><span class="pre">perc</span></code>
 option level defaults but can be set to any level that makes sense.
 If <cite>perc</cite> is used for both signal and noise the same level will be used
 for both.  The following is a typical usage example.  The example uses
 the <cite>peak</cite> metric for the signal and rms for noise and returns the estimate
 in the symbol <cite>dsnr</cite>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">swin</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.snr</span><span class="w"> </span><span class="kn">import</span> <span class="n">snr</span>
+
+<span class="n">swin</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">)</span>
 <span class="n">nwin</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">120.0</span><span class="p">,</span><span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
 <span class="c1"># assume d is a TimeSeries object defined above</span>
 <span class="n">dsnr</span> <span class="o">=</span> <span class="n">snr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">noise_window</span><span class="o">=</span><span class="n">nwin</span><span class="p">,</span><span class="n">signal_window</span><span class="o">=</span><span class="n">swin</span><span class="p">,</span>
@@ -583,28 +592,28 @@ in the symbol <cite>dsnr</cite>.</p>
 designed for quality control editing of modern broadband data.
 An issue not universally appreciated about all, modern, passive array
 data recorded with broadband instruments is that traditional measures of
-signal-to-noise ratio are usually meaningless if applied to raw data.
+signal-to-noise ratio can be misleading if applied to raw data.
 From a signal processing perspective the fundamental reason is that
 broadband seismic noise and earthquake signals are both strongly
-“colored”.  Broadband noise is always dominated by microseisms and/or
-cultural noise at frequencies above a few Hz.   Earthquake’s have
+“colored”.  Broadband seismic noise is often dominated by microseisms at
+low frequencies and cultural noise at higher frequencies.   Earthquakes have
 characteristic spectra.  The “colors” earthquakes generate are commonly
 used, in fact, to measure source properties.  As a result most earthquake records
-have wildly variable signal-to-noise variation across the recording
+have signal-to-noise ratios that vary strongly across the recording
 band of modern instruments.   MsPASS addresses this issue through
 a novel implementation in the function
-<code class="xref py py-func docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code>
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.FD_snr_estimator" title="mspasspy.algorithms.snr.FD_snr_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code></a>
 and two higher level functions that use it internally called
-<code class="xref py py-func docutils literal notranslate"><span class="pre">arrival_snr</span></code>
-and <code class="xref py py-func docutils literal notranslate"><span class="pre">arrival_snr_QC</span></code>.
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.arrival_snr" title="mspasspy.algorithms.snr.arrival_snr"><code class="xref py py-func docutils literal notranslate"><span class="pre">arrival_snr</span></code></a>
+and <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC" title="mspasspy.algorithms.snr.broadband_snr_QC"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadband_snr_QC</span></code></a>.
 The focus of this section is the algorithm used in
-<code class="xref py py-func docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code>.
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.FD_snr_estimator" title="mspasspy.algorithms.snr.FD_snr_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code></a>.
 The others should be thought of as convenient wrappers to run
 <cite>FD_snr_estimator</cite>.</p>
 <p>The “FD” in <cite>FD_snr_estimator</cite> function is short for “Frequency Domain”
 emphasizing that FD is the key idea of the algorithm.  Specifically,
 the function computes the
-power spectrum of the signal and noise windows tha are used to compute a series of
+power spectrum of the signal and noise windows that are used to compute a series of
 broadband snr metrics you can use to sort out signals worth processing further.
 The algorithm makes a fundamental assumption that the optimal frequency band
 of a given signal can be defined by a high and low corner frequency.
@@ -614,41 +623,35 @@ traditional short period and long period bands, but the signal level does
 not exceed the microseism peak.  Nonetheless, the single passband assumption
 is an obvious first order approach we have found useful for automated
 data winnowing.</p>
-<p>The function attempts to determine the data passband by a process illustrated in the
-Figure below.  The algorithm is a bidirectional search.  The lower passband edge
-initiates at the highest frequency distinguishable from zero as
-defined by the time-bandwidth product (<cite>tbp</cite> input parameter).  The upper
-passband edge search is initiated either from a user specified frequency
-or the default of 80% of Nyquist.  Both searches increment/decrement through
-frequency bins computing the ratio of the signal power spectral density to
-the estimated noise power spectral density.  An input parameter with the
-tag <cite>band_cutoff_snr</cite> defines the minimum snr the algorithm assumes is
-indicating a signal is present.   A special feature of the search possible
-because of the use of multitaper spectra uses the <cite>tbp</cite> parameter.
-A property of multitaper spectra is the spectra are smoothed at a scale of the
-number of frequency binds defined by the time-bandwidth product through
+<p>The function estimates the data passband with a bidirectional search.
+Starting at the frequency specified by <code class="docutils literal notranslate"><span class="pre">f0</span></code> (1 Hz by default), the searches
+move toward lower and higher frequencies until the amplitude SNR falls to or
+below <code class="docutils literal notranslate"><span class="pre">band_cutoff_snr</span></code>.  The amplitude SNR is the square root of the ratio
+of the signal power spectral density to the estimated noise power spectral
+density.  The high-frequency search is bounded by 80% of Nyquist.  The
+<code class="docutils literal notranslate"><span class="pre">band_cutoff_snr</span></code> parameter therefore defines the minimum SNR at which the
+algorithm considers a signal to be present.</p>
+<p>The signal and noise spectra are estimated with a multitaper method.  Its
+smoothing scale is controlled by the time-bandwidth product, <code class="docutils literal notranslate"><span class="pre">tbp</span></code>, through
 the formula:</p>
 <div class="math notranslate nohighlight">
-\[W = T \Delta f\]</div>
+\[\mathrm{tbp} = T \Delta f\]</div>
 <p>where <span class="math notranslate nohighlight">\(T\)</span> is the window length in seconds and
-<span class="math notranslate nohighlight">\(\Delta f\)</span> is the desired frequency resolution of a
-spectral estimate in Hz.   It is convenient to think of <span class="math notranslate nohighlight">\(Delta f\)</span>
-in terms of the number of Rayleigh bins, <span class="math notranslate nohighlight">\(\frac{1}{T}\)</span>
-which is the frequency resolution of the discrete Fourier
-transform for a signal of duration <span class="math notranslate nohighlight">\(T\)</span>.</p>
-<p>A key point is that increasing the time-bandwidth products causes the
-spectral estimates to progressively smoother.   For this application
-we found using <cite>tbp=4</cite> with 8 tapers or <cite>tbp=5</cite> and 10 tapers
-are good choices as they produce
-smoother spectra that produces more stable results.
+<span class="math notranslate nohighlight">\(\Delta f\)</span> is the smoothing half-bandwidth in Hz.  The Rayleigh-bin
+spacing of a discrete Fourier transform is <span class="math notranslate nohighlight">\(1/T\)</span>, so the approximate
+full smoothing bandwidth is <span class="math notranslate nohighlight">\(2\,\mathrm{tbp}/T\)</span>.</p>
+<p>A key point is that increasing the time-bandwidth product makes the
+spectral estimates progressively smoother.  The current function defaults
+to <code class="docutils literal notranslate"><span class="pre">tbp=4</span></code> and six tapers.  The implementation permits up to
+<code class="docutils literal notranslate"><span class="pre">round(2*tbp)</span></code> tapers; using eight tapers with <code class="docutils literal notranslate"><span class="pre">tbp=4</span></code> or ten with
+<code class="docutils literal notranslate"><span class="pre">tbp=5</span></code> produces smoother spectra.
 Readers unfamiliar with
-multitaper spectral methods may find it useful begin with
+multitaper spectral methods may find it useful to begin with
 the <a class="reference external" href="https://www.mathworks.com/help/signal/ref/pmtm.html">matlab help file in their multitaper estimator</a>.
 There is also a large literature applying the technique to a range of
 practical problems easily found by any library search engine.
-We chose to use the multitaper because it always produces a more
-stable estimator for this application because of its reliable smoothing
-properties.</p>
+We chose the multitaper method because its reliable smoothing generally
+produces a more stable estimator for this application.</p>
 </section>
 </section>
 
@@ -663,12 +666,12 @@ properties.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="graphics.html"
+       href="header_math.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Graphics in MsPASS</p>
+        <p class="prev-next-title">Header (Metadata) Math</p>
       </div>
     </a>
     <a class="right-next"

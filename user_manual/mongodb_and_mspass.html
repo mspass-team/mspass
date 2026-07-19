@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MongoDB with MsPASS &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Using MongoDB with MsPASS &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,11 +55,11 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Normalization" href="normalization.html" />
-    <link rel="prev" title="CRUD Operations in MsPASS" href="CRUD_operations.html" />
+    <link rel="next" title="CRUD Operations in MsPASS" href="CRUD_operations.html" />
+    <link rel="prev" title="What database schema should I use?" href="schema_choices.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -478,10 +481,10 @@
 <section id="overview-and-roadmap">
 <h2>Overview and Roadmap<a class="headerlink" href="#overview-and-roadmap" title="Link to this heading">#</a></h2>
 <p>There are a huge number of internet and printed resources on the
-Database Management system used in MsPASS called <cite>MongoDB</cite>.
+database management system used in MsPASS, <a class="reference external" href="https://www.mongodb.com/docs/manual/">MongoDB</a>.
 The reason is that MongoDB is one of the most heavily used open source
 packages in the modern software ecosystem.  For that reason in earlier
-versions of our User’s Manual we simply punted the ball and told User’s
+versions of our User’s Manual we simply pointed users
 to consult online sources.  It became clear, however, that the
 firehose of information that approach creates is not for everyone.
 Hence, we created this section to reduce the firehose to a, hopefully,
@@ -490,8 +493,8 @@ manageable stream of information.</p>
 The material, however, is broken into subsections directed at people
 with specific backgrounds.   If the title matches you, start there.  If
 you fit none of the descriptions, read them all.  The sections after that
-are organized by the letters of the standard acronymn used in
-many sources on database system:  CRUD (Create, Read, Update, and Delete),
+are organized by the letters of the standard acronym used in
+many sources on database systems: CRUD (Create, Read, Update, and Delete),
 although not that order for pedagogic reasons.
 The final section covers an auxiliary issue of MongoDB: indexes.
 Indexes are critical for query performance, but are not required.</p>
@@ -590,7 +593,7 @@ know of that is also a part of MongoDB is the concept of a “cursor”.
 In an RDBMS a cursor
 is a forward-iterator (i.e. it can only be incremented)
 that loops over the set of tuples returned by a query.
-In MongoDB is is more-or-less the same thing with different words.
+In MongoDB it is more-or-less the same thing with different words.
 A MongoDB cursor is a forward-iterator that can be used to work through
 a set of documents returned by a query.  You will see numerous examples
 of using cursors in the MsPASS User’s manual and any source discussing
@@ -598,53 +601,55 @@ MongoDB.</p>
 </section>
 <section id="mongodb-for-python-programmers">
 <h3>MongoDB for Python programmers<a class="headerlink" href="#mongodb-for-python-programmers" title="Link to this heading">#</a></h3>
-<p>All python programmers will be familiar with the container
+<p>All Python programmers will be familiar with the container
 commonly called a “dictionary” (dict).   Other sources call the same concept
 an “associative array” (Antelope) or “map container” (C++ and Java).
 Why that is important for MongoDB is simple:  the python bindings for
-MongoDB (<cite>pymongo</cite>) used a dict to structure the content of what
-MongoDB calls a “document” AND pymongo uses dict containers as the base of
+MongoDB (<a class="reference external" href="https://pymongo.readthedocs.io/">PyMongo</a>) use a dict to structure
+the content of what MongoDB calls a “document”, and PyMongo uses dict
+containers as the base of
 its query language.   Two simple examples from the related tutorial notebook
 illustrate this.</p>
 <p><em>Document output example:</em></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_util</span>
-<span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_minised</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Produces:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;$oid&quot;</span><span class="p">:</span> <span class="s2">&quot;65f6e45e4f0f9fe8183675eb&quot;</span>
-  <span class="p">},</span>
-  <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="s2">&quot;IUGFS&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="s2">&quot;2G&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="s2">&quot;BHE&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;sampling_rate&quot;</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">,</span>
-  <span class="s2">&quot;delta&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
-  <span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="mf">1355020458.049998</span><span class="p">,</span>
-  <span class="s2">&quot;last_packet_time&quot;</span><span class="p">:</span> <span class="mf">1355024042.649848</span><span class="p">,</span>
-  <span class="s2">&quot;foff&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;npts&quot;</span><span class="p">:</span> <span class="mi">72000</span><span class="p">,</span>
-  <span class="s2">&quot;storage_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;mseed&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/N/slate/pavlis/usarray/wf/2012&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;dfile&quot;</span><span class="p">:</span> <span class="s2">&quot;event70.mseed&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;time_standard&quot;</span><span class="p">:</span> <span class="s2">&quot;UTC&quot;</span><span class="p">,</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;$oid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;65f6e45e4f0f9fe8183675eb&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;sta&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IUGFS&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;net&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2G&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;chan&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BHE&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sampling_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;delta&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;starttime&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1355020458.049998</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;last_packet_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1355024042.649848</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;foff&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;npts&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">72000</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;storage_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;file&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mseed&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/N/slate/pavlis/usarray/wf/2012&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;dfile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;event70.mseed&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;time_standard&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UTC&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Here is the first of several example queries in this section:</p>
 <p><em>Query example:</em></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="s1">&#39;AAK&#39;</span><span class="p">]</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="p">:</span> <span class="s1">&#39;BHZ&#39;</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;00&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="s2">&quot;AAK&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="s2">&quot;BHZ&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="s2">&quot;00&quot;</span><span class="p">,</span>
+<span class="p">}</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;query content in pretty form&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-<span class="n">doc</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;output of query&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -673,7 +678,7 @@ following illustrates an alternative way to create a <cite>site</cite> collectio
 from an Antelope <cite>site</cite> table.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
-<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">,</span><span class="s1">&#39;ondate&#39;</span><span class="p">,</span><span class="s1">&#39;offdate&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">,</span><span class="s1">&#39;statype&#39;</span><span class="p">,</span><span class="s1">&#39;refsta&#39;</span><span class="p">,</span><span class="s1">&#39;dnorth&#39;</span><span class="p">,</span><span class="s1">&#39;deast&#39;</span><span class="p">,</span><span class="s1">&#39;lddate&#39;</span><span class="p">]</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">,</span><span class="s1">&#39;ondate&#39;</span><span class="p">,</span><span class="s1">&#39;offdate&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">,</span><span class="s1">&#39;staname&#39;</span><span class="p">,</span><span class="s1">&#39;statype&#39;</span><span class="p">,</span><span class="s1">&#39;refsta&#39;</span><span class="p">,</span><span class="s1">&#39;dnorth&#39;</span><span class="p">,</span><span class="s1">&#39;deast&#39;</span><span class="p">,</span><span class="s1">&#39;lddate&#39;</span><span class="p">]</span>
 <span class="n">widths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">17</span><span class="p">]</span>  <span class="c1"># need the antelope schema file to get these</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="s1">&#39;demo.site&#39;</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span><span class="n">widths</span><span class="o">=</span><span class="n">widths</span><span class="p">)</span>
 <span class="n">doclist</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;records&#39;</span><span class="p">)</span>
@@ -682,24 +687,28 @@ from an Antelope <cite>site</cite> table.</p>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">doclist</span><span class="p">:</span>
   <span class="c1"># In CSS3.0 these are integers for year day.  UTCDateTime</span>
   <span class="c1"># converts correctly ONLY if it is first converted to a string</span>
-  <span class="n">ondate</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;ondate&#39;</span><span class="p">])</span>
-  <span class="n">offdate</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;offdate&#39;</span><span class="p">])</span>
-  <span class="n">starttime</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">ondate</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
-  <span class="n">enddate</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">offdate</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
-  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">starttime</span>
-  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">endtime</span>
+  <span class="n">ondate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;ondate&#39;</span><span class="p">])</span>
+  <span class="n">offdate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;offdate&#39;</span><span class="p">])</span>
+  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ondate</span><span class="p">)))</span>
+  <span class="c1"># CSS3.0 uses -1 for an open-ended deployment interval.</span>
+  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+      <span class="nb">float</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">offdate</span><span class="p">)))</span>
+      <span class="k">if</span> <span class="n">offdate</span> <span class="o">&gt;</span> <span class="mi">0</span>
+      <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2599-12-31&#39;</span><span class="p">))</span>
+  <span class="p">)</span>
 <span class="c1"># this script assumes db is a MongoDB Database handle set earlier</span>
 <span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>
+<span class="k">del</span> <span class="n">df</span>
 </pre></div>
 </div>
 <p>A few details worth noting about this example:</p>
 <ul class="simple">
 <li><p>The list of keywords assigned to the symbol <cite>keys</cite> is needed because
-Antelope wfdisc fles do not have attribute names as the first line of
+Antelope site files do not have attribute names as the first line of
 the file.   The list used above uses CSS3.0 attribute names.  The order
 is significant as the names are tags on each column of data loaded
-with <cite>read_fsf</cite>.</p></li>
-<li><p>The <cite>widths</cite> symbol is set to a list of fixed field widths.  They ere
+with <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_fwf.html">pandas.read_fwf</a>.</p></li>
+<li><p>The <cite>widths</cite> symbol is set to a list of fixed field widths.  They are
 derived from the antelope schema file.</p></li>
 <li><p>The call to the pandas <cite>to_dict</cite> method converts the pandas table to
 a list of python dictionaries.</p></li>
@@ -732,7 +741,7 @@ things (documents) into it and have the data available by MongoDB queries.
 Readers should realize the schema we imposed on seismic waveform collections
 was imposed to provide a standardized namespace for keys to allow the
 framework to be extended without breaking lower level functionality.
-For the exploration stages of a research problem having now schema
+For the exploration stages of a research problem, having no schema
 constraints is a very useful feature of MongoDB. Importing data through
 pandas is a particularly simple way to import many forms of data
 you may acquire from internet sources today.</p>
@@ -805,9 +814,9 @@ the “Read” part of CRUD.  We will show examples of all three below.</p>
 <li><p><cite>find_one</cite> returns a document that is the first document found matching
 a query operator.</p></li>
 <li><p><cite>find</cite> returns a MongoDB
-<a class="reference external" href="https://www.mongodb.com/docs/v3.0/core/cursors/">Cursor object</a>
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/cursor.html">Cursor object</a>
 that can be used to iterate through query that returns many documents.</p></li>
-<li><p><cite>count_documents</cite> is a utility function used to bound how many documents
+<li><p><cite>count_documents</cite> is a utility method used to determine how many documents
 match a particular query.</p></li>
 </ol>
 <p>Examples of the use of each of the three functions above:</p>
@@ -825,20 +834,21 @@ match a particular query.</p></li>
 </div>
 <p><cite>find</cite> and <cite>find_one</cite> are the basic document-level fetching methods.
 The examples above show the most common, simple usage.
-Both, however, actually have three positional arguments with defaults
-you should be aware of.</p>
+Both accept a required-or-defaulted filter and an optional projection;
+additional behavior is controlled by documented keyword arguments.</p>
 <ol class="arabic simple">
-<li><p><cite>arg0</cite> defines the query operator.  The default is an empty dictionary
+<li><p>The first argument defines the query filter.  The default is an empty dictionary
 that is interpreted as “all”.</p></li>
-<li><p><cite>arg1</cite> defines a “projection” operator.  That means it is expected to
-be a python dictionary defining what attributes are to be retrieved or
-excluded from the returned value(s).   For RDBMS users a “projection”
+<li><p>The second argument defines a “projection”.  It is a list of field names
+or a dictionary defining which attributes are to be retrieved or
+excluded from the returned value(s).  Except for <code class="docutils literal notranslate"><span class="pre">_id</span></code>, a projection
+cannot mix inclusion and exclusion specifications.  For RDBMS users a “projection”
 in MongoDB is like the SELECT clause in SQL.  That idea is best
 illustrated by examples below.</p></li>
-<li><p><cite>arg2</cite> is an “options” operator.   I have personally never found a
-use for any of the listed options in the MongoDB documentation.  I can’t
-even find an online example so “options” are clearly an example of
-“an advanced feature” you can ignore until needed.</p></li>
+<li><p>Keyword arguments support options such as <code class="docutils literal notranslate"><span class="pre">sort</span></code>, <code class="docutils literal notranslate"><span class="pre">skip</span></code>, <code class="docutils literal notranslate"><span class="pre">limit</span></code>,
+<code class="docutils literal notranslate"><span class="pre">hint</span></code>, and <code class="docutils literal notranslate"><span class="pre">collation</span></code>.  Consult the PyMongo <code class="docutils literal notranslate"><span class="pre">Collection.find</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Collection.find_one</span></code> API before using them because the supported
+options differ between the two methods.</p></li>
 </ol>
 <p>Note also that a <cite>find_one</cite> returns only a single “document”, which
 pymongo converts to a python dictionary.   The <cite>find</cite> method, in
@@ -859,16 +869,15 @@ by the query and <cite>expression</cite> is either: (1) another dictionary or
 <span class="n">query2</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$eq&#39;</span> <span class="p">:</span> <span class="s1">&#39;AAK&#39;</span><span class="p">}}</span>
 </pre></div>
 </div>
-<p><cite>query1 and `query1</cite> are completely equivalent.
+<p><code class="docutils literal notranslate"><span class="pre">query</span></code> and <code class="docutils literal notranslate"><span class="pre">query2</span></code> are completely equivalent.
 Both are equality tests for the attribute with
 the key “sta” matching a particular, unique name “AAK”.</p>
 <p>A similar inequality test for waveforms having <cite>starttime</cite> values
 after a particular date is the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
 <span class="n">t_cutoff</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2012-07-28T00:00:00.00&#39;</span><span class="p">)</span>
-<span class="c1"># query here needs to convert to a unix epoch time (timestamp method)</span>
-<span class="c1"># for numerical comparison to work</span>
-<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;starttime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gt&#39;</span> <span class="p">:</span> <span class="n">t_cutoff</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()}}</span>
+<span class="c1"># Convert to a Unix epoch time for numerical comparison.</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;starttime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gt&#39;</span> <span class="p">:</span> <span class="n">t_cutoff</span><span class="o">.</span><span class="n">timestamp</span><span class="p">}}</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -903,7 +912,7 @@ all channels for station with net code “II” and station code “PFO”:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 <span class="n">query</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;II&#39;</span>
 <span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;PFO&#39;</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
   <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 </pre></div>
@@ -949,8 +958,8 @@ channel data for station “PFO” and loads the results into a
 <span class="c1"># Example to select the month of June of 2012</span>
 <span class="n">tsutc</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2012-06-01T00:00:00.0&#39;</span><span class="p">)</span>
 <span class="n">teutc</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2012-07-01T00:00:00.0&#39;</span><span class="p">)</span>
-<span class="n">ts</span><span class="o">=</span><span class="n">tsutc</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
-<span class="n">te</span><span class="o">=</span><span class="n">teutc</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">tsutc</span><span class="o">.</span><span class="n">timestamp</span>
+<span class="n">te</span> <span class="o">=</span> <span class="n">teutc</span><span class="o">.</span><span class="n">timestamp</span>
 <span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 <span class="n">query</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;II&#39;</span>
 <span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;PFO&#39;</span>
@@ -990,12 +999,12 @@ recorded in the month of June 2012.</p></li>
 language.   That is, the “$and” operator above is not actually required.
 The same query as above could, in fact, have been written as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;net&#39;</span> <span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;chan&#39;</span> <span class="p">:</span> <span class="s1">&#39;LHZ&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;loc&#39;</span> <span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
-  <span class="p">{</span><span class="s1">&#39;starttime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span> <span class="p">:</span> <span class="n">te</span><span class="p">}</span> <span class="p">},</span>
-  <span class="p">{</span><span class="s1">&#39;endtime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span> <span class="p">:</span> <span class="n">ts</span><span class="p">}</span> <span class="p">}</span>
+  <span class="s1">&#39;net&#39;</span><span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LHZ&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
+  <span class="s1">&#39;endtime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1013,11 +1022,16 @@ obnoxious channel code variation of E,N,Z naming versus 1,2,Z naming.
 It also drops the “loc” matching and would thus ignore the loc code
 and retrieve data from all sensors at PFO.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;net&#39;</span> <span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;$or&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;chan&#39;</span> <span class="p">:</span> <span class="s1">&#39;LHE&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span> <span class="p">:</span> <span class="s1">&#39;LHN&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span> <span class="p">:</span> <span class="s1">&#39;LH1&#39;</span><span class="p">,</span> <span class="s1">&#39;chan&#39;</span> <span class="p">:</span> <span class="s1">&#39;LH2&#39;</span><span class="p">],</span>
-  <span class="p">{</span><span class="s1">&#39;starttime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span> <span class="p">:</span> <span class="n">te</span><span class="p">}</span> <span class="p">},</span>
-  <span class="p">{</span><span class="s1">&#39;endtime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span> <span class="p">:</span> <span class="n">ts</span><span class="p">}</span> <span class="p">}</span>
+  <span class="s1">&#39;net&#39;</span><span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;$or&#39;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LHE&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LHN&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LH1&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LH2&#39;</span><span class="p">},</span>
+  <span class="p">],</span>
+  <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
+  <span class="s1">&#39;endtime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1026,11 +1040,11 @@ clearer solution with the <cite>$regex</cite> operator.   Most $or clauses I’v
 encountered are easier to express with a regular expression.
 The above could thus be express equivalently with this one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;net&#39;</span> <span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;chan&#39;</span> <span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;$regex&#39;</span> <span class="p">:</span> <span class="s1">&#39;LH.&#39;</span><span class="p">},</span>
-  <span class="p">{</span><span class="s1">&#39;starttime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span> <span class="p">:</span> <span class="n">te</span><span class="p">}</span> <span class="p">},</span>
-  <span class="p">{</span><span class="s1">&#39;endtime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span> <span class="p">:</span> <span class="n">ts</span><span class="p">}</span> <span class="p">}</span>
+  <span class="s1">&#39;net&#39;</span><span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$regex&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^LH[EN12]$&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
+  <span class="s1">&#39;endtime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1038,8 +1052,7 @@ The above could thus be express equivalently with this one:</p>
 <section id="geospatial-queries">
 <h3>Geospatial queries<a class="headerlink" href="#geospatial-queries" title="Link to this heading">#</a></h3>
 <p>MongoDB has a fairly sophisticated geospatial querying feature.
-A first order thing you must realize about geospatial indexing is that
-to be useful two things are required:</p>
+For geospatial querying to be useful, two things are required:</p>
 <ol class="arabic simple">
 <li><p>The attribute(s) you want to query should be structured into a
 special data type called a
@@ -1083,10 +1096,10 @@ this page.</p>
           <span class="s1">&#39;$maxDistance&#39;</span> <span class="p">:</span> <span class="mf">500000.0</span><span class="p">,</span>
       <span class="p">}</span>
     <span class="p">}</span>
-  <span class="p">}</span>
-  <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note the complex, nested operators that characterize all MongoDB
@@ -1158,17 +1171,12 @@ there is a convenience function in the <cite>mspasspy.db.database</cite>
 module called <cite>geoJSON_doc</cite>.   It can be used to create the obscure
 document structure MongoDB requires for simple lat,lon point data.</p>
 </li>
-<li><p>A limitation of the (current) MongoDB implementation is the
-<cite>count_documents</cite> method does not seem to work for any valid
-query I can construct.  Internet chatter suggests that is the norm.
-I have found <cite>count_documents</cite> a useful tool to test a query while
-developing a workflow script.  Since all geospatial queries are complex by
-almost any definition that is problematic.  I find that to debug
-a geospatial query it is helpful to isolate the query in a
-jupyter notebook box run it until the query runs without an error.
-The example code block immediately above is a good model.
-Use the same structure, but remove the print loop until you get the
-query to work.</p></li>
+<li><p>MongoDB does not allow <code class="docutils literal notranslate"><span class="pre">$near</span></code>, <code class="docutils literal notranslate"><span class="pre">$nearSphere</span></code>, or <code class="docutils literal notranslate"><span class="pre">$where</span></code> inside
+a <code class="docutils literal notranslate"><span class="pre">count_documents</span></code> filter.  To count a radial selection, express an
+equivalent region with <code class="docutils literal notranslate"><span class="pre">$geoWithin</span></code> and <code class="docutils literal notranslate"><span class="pre">$centerSphere</span></code> or iterate
+the <code class="docutils literal notranslate"><span class="pre">$nearSphere</span></code> cursor and count the returned documents.  During
+development, first run the query itself in a notebook and inspect a few
+returned documents before applying it to a large collection.</p></li>
 </ol>
 <p>I would stress that in spite of these caveats, the integration of
 geospatial query functions in the MongoDB are an important functionality
@@ -1189,12 +1197,12 @@ from above) but this time we sort the result by starttime
 (a type example of a sort requirement):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ts and te are epoch times defing the time range as above</span>
 <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;net&#39;</span> <span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;chan&#39;</span> <span class="p">:</span> <span class="s1">&#39;LHZ&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;loc&#39;</span> <span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
-  <span class="p">{</span><span class="s1">&#39;starttime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$le&#39;</span> <span class="p">:</span> <span class="n">te</span><span class="p">}</span> <span class="p">},</span>
-  <span class="p">{</span><span class="s1">&#39;endtime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$ge&#39;</span> <span class="p">:</span> <span class="n">ts</span><span class="p">}</span> <span class="p">}</span>
+  <span class="s1">&#39;net&#39;</span><span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LHZ&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
+  <span class="s1">&#39;endtime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
 <span class="p">}</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_miniseed&#39;</span><span class="p">)</span>
@@ -1208,7 +1216,7 @@ weird but a common construct in python which is an object-oriented language.
 Most of us can remember it better by just thinking of it as a clause
 added after find and separated by the “.” symbol.  Because it is a method
 of cursor the sort clause could have been expressed as another statement
-after the find operator done like this:  <cite>cursor = cursor.sort(“starttime,1)”)</cite></p></li>
+after the find operation like this: <code class="docutils literal notranslate"><span class="pre">cursor</span> <span class="pre">=</span> <span class="pre">cursor.sort(&quot;starttime&quot;,</span> <span class="pre">1)</span></code>.</p></li>
 <li><p>The sort expression for a single key can be thought of as calling a
 function with two arguments.  The first is the key to use for the
 sort and the second defines the direction of the sort. Here I
@@ -1260,10 +1268,9 @@ That is, with
 the mongo shell the sort above could be written as:
 <cite>{‘net’:1, ‘sta’:1, ‘chan’:1, ‘starttime’:1}</cite>.  That is not a python
 dictionary, however, even though the syntax is exactly the same.
-In Javascript that is a list where the order of the list means something.
-If that were translated to a python dictionary it would not work
-because order of input is not preserved in a python dictionary.  Hence,
-the pymongo API has to use a list to preserve order.</p></li>
+In modern Python dictionaries preserve insertion order, but PyMongo’s
+documented multi-key sort form remains a list of <code class="docutils literal notranslate"><span class="pre">(key,</span> <span class="pre">direction)</span></code>
+pairs; use that form so the intended precedence is explicit.</p></li>
 </ol>
 </section>
 <section id="report-generators">
@@ -1359,7 +1366,7 @@ than the same number of one-at-a-time transactions.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">doclist</span> <span class="o">=</span> <span class="n">ndk2docs</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of CMT records in file=&quot;</span><span class="p">,</span><span class="n">fname</span><span class="p">,</span><span class="s1">&#39; is &#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">doclist</span><span class="p">))</span>
 <span class="n">r</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">CMT</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>
-<span class="n">n</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">CMT</span><span class="o">.</span><span class="n">count_documents</span><span class="p">()</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">CMT</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of documents in CMT collection is now &quot;</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1390,7 +1397,7 @@ key “chanid” in CSS3.0 to find a record and then uses <cite>update_one</cite
 set the MsPASS standard cross-reference name <cite>channel_id</cite> in wf_TimeSeries.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># some previous magic has been assumed to have set chanid in</span>
 <span class="c1"># wf_TimeSeries (feasible with a CSS3.0 wfdisc table)</span>
-<span class="c1"># This examplei is for illustration only and is not of direct use</span>
+<span class="c1"># This example is for illustration only and is not of direct use</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
   <span class="k">if</span> <span class="s1">&#39;chanid&#39;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
@@ -1399,7 +1406,10 @@ set the MsPASS standard cross-reference name <cite>channel_id</cite> in wf_TimeS
     <span class="k">if</span> <span class="n">chandoc</span><span class="p">:</span>
       <span class="n">cid</span> <span class="o">=</span> <span class="n">chandoc</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
       <span class="n">wfid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
-      <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span> <span class="p">:</span> <span class="n">wfid</span><span class="p">},{</span><span class="s1">&#39;channel_id&#39;</span> <span class="p">:</span> <span class="n">cid</span> <span class="p">})</span>
+      <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+          <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">wfid</span><span class="p">},</span>
+          <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;channel_id&#39;</span><span class="p">:</span> <span class="n">cid</span><span class="p">}},</span>
+      <span class="p">)</span>
 </pre></div>
 </div>
 <p>The <cite>update_many</cite> method is more commonly used with more complex queries
@@ -1419,13 +1429,11 @@ from common source gathers:</p>
   <span class="n">ts</span> <span class="o">=</span> <span class="n">otime</span> <span class="o">-</span> <span class="n">ot_range</span>
   <span class="n">te</span> <span class="o">=</span> <span class="n">otime</span> <span class="o">+</span> <span class="n">ot_range</span>
   <span class="n">match_query</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;starttime&#39;</span> <span class="p">:</span> <span class="p">{</span>
-      <span class="p">{</span><span class="s1">&#39;$gte&#39;</span>  <span class="n">ts</span><span class="p">,</span> <span class="s1">&#39;$lte&#39;</span> <span class="p">:</span> <span class="n">te</span><span class="p">}</span>
-    <span class="p">}</span>
+    <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">,</span> <span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
   <span class="p">}</span>
   <span class="n">srcid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>  <span class="c1"># ObjectId of this source document</span>
-  <span class="n">update_doc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source_id&#39;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">}</span>
-  <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span><span class="n">match_query</span><span class="p">,</span><span class="n">update_doc</span><span class="p">)</span>
+  <span class="n">update_doc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;source_id&#39;</span><span class="p">:</span> <span class="n">srcid</span><span class="p">}}</span>
+  <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span><span class="n">match_query</span><span class="p">,</span> <span class="n">update_doc</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Finally, a more advanced approach that is useful for large numbers of
@@ -1495,20 +1503,22 @@ The index can be defined for one or more keys and set to define an
 increasing or decreasing sequence.   e.g. the following will create an
 index on the channel collection appropriate for miniseed metadata
 that require at least the four keys used to provide a unique match:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pymongo</span>
+
+<span class="n">db</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
  <span class="p">[</span>
-  <span class="s2">&quot;net&quot;</span><span class="p">,</span>
+  <span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
   <span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">),</span>
-  <span class="s2">&quot;chan&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;time&quot;</span>
+  <span class="p">(</span><span class="s2">&quot;chan&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
  <span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Note arg0 is a list of attribute names and/or 2-element tuples.
-Tuples are needed only if the default ascending order is to be
-switch to descending.  I did that for illustration above for “sta”,
-but it wouldn’t normally be necessary.</p>
+<p>The first argument is a list of two-element <code class="docutils literal notranslate"><span class="pre">(key,</span> <span class="pre">direction)</span></code> tuples.
+The example uses a descending station-code order only to illustrate the
+option; an all-ascending index would be more conventional.</p>
 <p>There are two utility functions for managing indexes in a collection:</p>
 <ol class="arabic simple">
 <li><p><cite>list_indexes</cite> returns a <cite>Cursor</cite> that can be iterated
@@ -1518,13 +1528,15 @@ followed by this line to verify it worked:</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">list_indexes</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-  <span class="nb">print</span><span class="p">(</span><span class="n">json_utils</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
-<li><p>There is a <cite>delete_index</cite> that can be used to remove an index from
+<li><p>There is a <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/collection.html#pymongo.collection.Collection.drop_index">drop_index</a>
+method that
+removes one index, and <code class="docutils literal notranslate"><span class="pre">drop_indexes</span></code> removes all non-<code class="docutils literal notranslate"><span class="pre">_id</span></code> indexes from
 a collection.  It uses the index name that is returned on creation
-by <cite>create_index</cite> or can be obtained by running <cite>list_indexes</cite>.</p></li>
+by <code class="docutils literal notranslate"><span class="pre">create_index</span></code> or can be obtained by running <code class="docutils literal notranslate"><span class="pre">list_indexes</span></code>.</p></li>
 </ol>
 <p>A final point about indexes is special case of “geospatial indexes”
 discussed above.   A geospatial index is a very different thing than
@@ -1544,20 +1556,20 @@ you need to learn more about that topic.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="CRUD_operations.html"
+       href="schema_choices.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">CRUD Operations in MsPASS</p>
+        <p class="prev-next-title">What database schema should I use?</p>
       </div>
     </a>
     <a class="right-next"
-       href="normalization.html"
+       href="CRUD_operations.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Normalization</p>
+        <p class="prev-next-title">CRUD Operations in MsPASS</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

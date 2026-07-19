@@ -1,47 +1,74 @@
 .. _advanced_setup_considerations:
 
-
 Advanced Setup Considerations
 =============================
 
-Handling Conda and pip installations
-------------------------------------
+This page is for contributors and developers installing MsPASS from a source
+checkout.  Most users should use the :ref:`Docker quick start <quick_start>`
+or the :ref:`Conda installation guide <deploy_mspass_with_conda>`.
 
-When building MsPASS from the source, it is common to use pip to install the Python bindings after compiling the C++ core.
-The recommended command from the root of the source tree is:
+Source builds
+-------------
+
+MsPASS is not a Python-only package.  Installing it invokes CMake to compile
+the ``mspasspy.ccore`` C++ extension.  Follow the project's
+`source-build instructions
+<https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code>`__
+for the required compilers and libraries.  The current package metadata
+requires Python 3.10 or newer.
+
+Use an isolated environment
+---------------------------
+
+Create and activate a Conda environment or Python virtual environment before
+building.  An isolated environment avoids conflicts with the operating
+system's Python packages and with other MsPASS checkouts.
+
+After activation, confirm that Python and pip refer to the intended
+environment:
 
 .. code-block:: bash
 
-    pip install --user ./
+   python -c "import sys; print(sys.executable)"
+   python -m pip --version
 
-This command installs MsPASS locally within the user's ``~/.local`` directory on Linux systems.
-The behavior on macOS should be similar, although slight variations in directory structures can occur.
-
-Conda vs. pip Precedence
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-If both a local pip installation (in ``~/.local``) and a Conda environment installation exist,
-the system's behavior depends on the environment configuration and the order of paths in the ``PATH`` environment variable.
-Typically, Python packages installed with ``--user`` are placed in a path that has precedence over Conda environments.
-You can verify which installation is currently active by using:
+Install from the root of the source tree with the command specified by the
+source-build procedure.  When that procedure has already installed all
+dependencies, the local installation command is:
 
 .. code-block:: bash
 
-    which python
-    python -c "import mspasspy; print(mspasspy.__path__)"
+   python -m pip install --no-deps -v .
 
-This will show you the path of the Python interpreter and the location of the MsPASS module being used, helping you determine which version is being prioritized.
+Using ``python -m pip`` ensures that pip installs for the active interpreter.
+Do not add ``--user`` inside a Conda or virtual environment: it can install a
+second copy outside the environment.  Also avoid ``sudo pip``, which can
+modify files managed by the operating system.
 
-Understanding pip and Conda
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Check which copy is imported
+----------------------------
 
-While both pip and Conda are package managers, they handle package installations differently.
-Conda manages packages and the environment to which they are installed, ensuring compatibility and avoiding conflicts.
-pip, on the other hand, installs Python packages and may not consider the broader environment, leading to potential conflicts.
+If multiple installations may exist, check both the selected interpreter and
+the imported package:
 
-- **Use Conda for environments and binary dependencies**: It is best to use Conda to create environments and manage packages that have binary dependencies.
-- **Use pip for Python-only packages not available on Conda**: If a package is only available via pip and does not have complex dependencies, it can be safely installed in a Conda environment.
+.. code-block:: bash
 
-**Best Practices**:
-Avoid using ``sudo pip install`` as it may change files that are managed by the system's package manager, potentially leading to inconsistent states.
-Always prefer installing packages within a user environment (``--user``) or within a virtual environment managed by Conda or virtualenv.
+   python -c "import sys, mspasspy; print(sys.executable); print(mspasspy.__file__)"
+   python -m pip show mspasspy
+
+The interpreter, imported package, and location reported by pip should all
+refer to the intended environment or checkout.  ``PATH`` chooses the Python
+executable, but it does not by itself control Python's package search path.
+
+If an old installation is imported, first identify its location with the
+commands above.  Remove it with the interpreter that owns that installation;
+do not delete arbitrary files from ``site-packages``.  Old ``PYTHONPATH``
+entries can also shadow a new build, so start a clean shell and unset that
+variable when diagnosing an unexpected import:
+
+.. code-block:: bash
+
+   unset PYTHONPATH
+
+Activate the intended environment again, rebuild, and repeat the location
+check before running tests.

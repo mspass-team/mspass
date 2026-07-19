@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>I/O in MsPASS &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>I/O in MsPASS &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Memory Management" href="memory_management.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -482,7 +485,7 @@ io-bound jobs.   The scalability of MsPASS, which means it runs the
 same with one or a thousand workers (just faster), means the more processors
 you throw at a job the more likely it will be that it becomes IO bound.
 For that reason the focus of this section is the parallel readers.
-Howver, most of the key concepts are equally applicable to serial
+However, most of the key concepts are equally applicable to serial
 jobs.</p>
 <p>Most seismologists have, at best, only a vague notion of how IO
 works in a modern computer system.   The reason is that IO is the one of
@@ -519,7 +522,7 @@ In buffered IO a program does not read directly from any device but always
 reads from a memory buffer.  Other elements of the system manage the flow of
 data in and out of the buffer.  All MsPASS IO uses stock, buffered IO
 functions.</p>
-<p><em>Concept 2:  Blocking</em>.   When an IO statement is executed in any computer language,
+<p><em>Concept 3:  Blocking</em>.   When an IO statement is executed in any computer language,
 including python, the normal behavior is for the program to be put in a wait state
 until the code that does the actual operation completes.   That waiting is
 what is meant by <em>blocking IO</em>.   With normal blocking IO your program will
@@ -592,7 +595,7 @@ IO performance to avoid.</p>
 <p>We use parallel containers in MsPASS to provide a mechanism to handle
 data sets that cannot fit in cluster memory.  As stated numerous times
 in this User’s Manual we use what is called a “bag” in dask and
-“RDD” (Resiliant Distributed Data) in pyspark for this purpose.
+“RDD” (Resilient Distributed Dataset) in pyspark for this purpose.
 To be truly parallel creation of a bag/RDD must be parallelized.
 Similarly, saving the result of a computation defined as one of them
 should also be parallelized.  If they were not parallelized the
@@ -603,7 +606,7 @@ to help the user understand current limitations of that processing.</p>
 <h3>Read<a class="headerlink" href="#read" title="Link to this heading">#</a></h3>
 <p>For both dask and pyspark the parallel read method is a function called
 <a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data" title="mspasspy.io.distributed.read_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data</span></code></a>.
-The docstring and the <cite>:ref:CRUD operations&lt;CRUD_operations&gt;</cite>
+The docstring and the <a class="reference internal" href="CRUD_operations.html#crud-operations"><span class="std std-ref">CRUD operations</span></a>
 section of this manual have more details on
 the nuts-and-bolts of running this function, but from the perspective of
 IO performance it may be helpful to discuss how that function
@@ -611,9 +614,8 @@ is parallelized for different options of arg0, which defines the primary
 input method to the function.</p>
 <ol class="arabic simple">
 <li><p><em>DataFrame input</em>.   When the input is a DataFrame each worker
-is assigned a partition of the received DataFrame to read.
-As a result there will be one reader for each worker defined for
-the job.   Readers work through the rows of the DataFrame that
+processes a partition of the received DataFrame when assigned that task
+by the scheduler.  Readers work through the rows of the DataFrame that
 define the partition to output a bag/RDD of data objects with the same partitioning
 as the DataFrame.   The scheduler assigns additional partitions to
 workers as they complete each one as usual.
@@ -647,10 +649,9 @@ parallel, read algorithms described above.   A bag/RDD is created
 from the list of dict
 containers and partitioned as usual.   The scheduler normally assigns
 partitions sequentially to workers as with atomic data.
-The parallelism is based on one
-query per worker with each worker normally processing a sequence of
-queries for each partition as each partition is completed.
-For each bag component the algorithm first issues
+The parallelism is based on one query per list element, with the scheduler
+assigning those elements to workers by partition.  For each bag component
+the algorithm first issues
 a query to MongoDB using that dict content.
 The query is then used to drive the
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.read_data()</span></code></a> method with
@@ -669,9 +670,9 @@ connection shared by readers.</p></li>
 <p>As with reading, parallel writes in MsPASS all should go through
 a common function called
 <a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data" title="mspasspy.io.distributed.write_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_distributed_data</span></code></a>.
-Parallelism is this function is similar to the reader in the sense that
-when run on a bag/RDD each worker will have one writer thread/process
-that does the output processing.   The way data are handled by writers,
+Parallelism in this function is similar to the reader:  the function creates
+write tasks from bag/RDD partitions and the scheduler assigns them to workers.
+The way data are handled by writers,
 however, is more complex.</p>
 <p>The first detail to understand about the parallel writer is it splits
 up the task into two distinctly different operations:  (1)  saving
@@ -714,8 +715,8 @@ reduced by approximately one over the average number of ensemble members.</p></l
 The overall behavior is controlled by a boolean argument to
 <a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data" title="mspasspy.io.distributed.write_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_distributed_data</span></code></a>.
 called “cremate”.  When set true dead data are “cremated” using the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">cremate</span></code> method of
-the <a class="reference internal" href="../python_api/mspasspy.util.html#module-mspasspy.util.Undertaker" title="mspasspy.util.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a> class.
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate" title="mspasspy.util.Undertaker.Undertaker.cremate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cremate</span></code></a> method of
+the <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a> class.
 As the imagery of the name implies little to nothing is left of dead
 data that is cremated.  The default for the cremate parameter is False.
 In that situation dead data are “buried”, which means a record of
@@ -840,8 +841,10 @@ than the container that hold the actual data.   The first is held in a
 collection called “fs.chunks”.</p>
 <p>With that review it is easy to state the fundamental performance problem
 inherent in using gridfs as the prime storage method:  all the data
-needed to construct all data objects has to pass through a single
-communication channel - the network connection to the MongoDB server.
+needed to construct all data objects has to pass through the MongoDB
+deployment and its network path.  PyMongo uses a connection pool rather than
+literally one connection for an entire job, but server capacity and aggregate
+network bandwidth can still become shared bottlenecks.
 The result is not unlike what would happen if a freeway with one lane
 for each cpu in a job was forced to pass over a one-lane bridge.
 This situation is even worse because in most systems the network
@@ -858,14 +861,15 @@ deal of complexity, however, and is known to only be effective if the
 read patterns are well defined in advance.  It also is inevitably
 inferior to transfer rates for disk arrays or SSD storage
 because the pipe is a single network connection as opposed to
-the faster connection typical of disk hardware.</p>
+the faster connection typical of disk hardware on many systems.  Benchmark
+the actual deployment rather than assuming either storage mode is faster.</p>
 </section>
 <section id="web-service-url-reads">
 <h3>Web-service URL reads<a class="headerlink" href="#web-service-url-reads" title="Link to this heading">#</a></h3>
 <p>At the present time the most common way to assemble waveform
 data for seismology research is to download data from one or more FDSN
 data centers via a standardized protocol called
-<a class="reference external" href="https://service.iris.edu/fdsnws/dataselect/1/">web services</a>.
+<a class="reference external" href="https://service.earthscope.org/fdsnws/dataselect/">web services</a>.
 MsPASS has a capability of defining a waveform segment with URL,
 which makes it theoretically possible to define and entire data set
 as residing remotely and accessible through the web service interface.

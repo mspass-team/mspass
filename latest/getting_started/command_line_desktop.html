@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Command Line Docker Desktop Operation &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Command Line Docker Desktop Operation &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,11 +55,11 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Deploy MsPASS with Conda" href="deploy_mspass_with_conda.html" />
+    <link rel="next" title="Deploy MsPASS with Docker Compose" href="deploy_mspass_with_docker_compose.html" />
     <link rel="prev" title="Running MsPASS on a Desktop Computer" href="mspass_desktop.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -472,199 +475,170 @@
                   
   <section id="command-line-docker-desktop-operation">
 <span id="id1"></span><h1>Command Line Docker Desktop Operation<a class="headerlink" href="#command-line-docker-desktop-operation" title="Link to this heading">#</a></h1>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>Most desktop users will likely want to use the
-<code class="code docutils literal notranslate"><span class="pre">mspass_desktop</span></code> application described
-in <a class="reference internal" href="mspass_desktop.html#mspass-desktop"><span class="std std-ref">this section of the MsPASS documentation</span></a>.
-If you have problems with installing or operating that graphical
-interface application or if you just prefer to do things
-from the command line you need to reference this document.</p>
-<p>MsPASS can be run on Desktop computers via the
-<a class="reference external" href="https://docs.docker.com/get-docker/">docker desktop application</a>
-using a unix shell.   There are two different ways to
-do that described in separate subsections below:
-(1) with a single, albeit complex command line incantation, or
-(2) a procedure using a the “compose” option of the docker
-application.</p>
+<p>This page compares the MsPASS desktop workflows and lists their most common
+Docker commands.  For step-by-step setup, follow the linked guide for the
+workflow you choose.</p>
+<section id="choose-a-desktop-workflow">
+<h2>Choose a desktop workflow<a class="headerlink" href="#choose-a-desktop-workflow" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 35.0%" />
+<col style="width: 45.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Workflow</p></th>
+<th class="head"><p>Choose it when</p></th>
+<th class="head"><p>Continue with</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Single container</p></td>
+<td><p>You want the shortest command-line path for learning, notebooks, or
+interactive work on one computer.  MongoDB, JupyterLab, the Dask
+scheduler, and a Dask worker run in one container.</p></td>
+<td><p><a class="reference internal" href="run_mspass_with_docker.html#run-mspass-with-docker"><span class="std std-ref">Run MsPASS with Docker</span></a> is the canonical
+launch and troubleshooting guide and is the recommended CLI starting
+point for most desktop users.</p></td>
+</tr>
+<tr class="row-odd"><td><p>MsPASS Desktop</p></td>
+<td><p>You prefer a graphical launcher and service-status display instead of
+managing containers in a terminal.</p></td>
+<td><p><a class="reference internal" href="mspass_desktop.html#mspass-desktop"><span class="std std-ref">Running MsPASS on a Desktop Computer</span></a> covers the
+launcher installation and graphical workflow.</p></td>
+</tr>
+<tr class="row-even"><td><p>Docker Compose</p></td>
+<td><p>You need the database, scheduler, worker, and frontend in separately
+managed containers, or you want service-level logs and worker scaling
+on one Docker host.</p></td>
+<td><p><a class="reference internal" href="deploy_mspass_with_docker_compose.html#deploy-mspass-with-docker-compose"><span class="std std-ref">Deploy MsPASS with Docker Compose</span></a> is the canonical multi-container
+guide and documents the shipped <code class="docutils literal notranslate"><span class="pre">compose.yaml</span></code> file.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Docker Compose separates services, but it does not by itself create a
+multi-host cluster.  For work across compute nodes, start with the
+<a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">virtual-cluster concepts</span></a> and then use the
+<a class="reference internal" href="deploy_mspass_on_HPC.html#deploy-mspass-on-hpc"><span class="std std-ref">HPC deployment guide</span></a>.</p>
 </section>
-<section id="installing-and-launching-docker-desktop">
-<h2>Installing and Launching Docker Desktop<a class="headerlink" href="#installing-and-launching-docker-desktop" title="Link to this heading">#</a></h2>
-<p>Docker is required in normal use to run MsPASS on desktop systems.
-The alternative is a more complicated installation of the components
-built from source as described on
-<a class="reference external" href="https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code">this wiki page</a>.
-Docker is the piece of software you will use to run and manage
-any containers on your desktop system.</p>
-<p>Docker is well-supported on all current desktop operating systems and
-has simple install procedures described in detail in the
-product’s documentation found <a class="reference external" href="https://docs.docker.com/get-docker/">here</a>
-The software can currently be downloaded at no cost, but you must have
-administrative privileges to install the software.
-The remainder of this page assumes you have successfully installed
-docker.  For Windows or Apple user’s it may be convenient to launch the
-“docker desktop” as an alternative to command line tools.
-On those platforms the docker daemon is launched by the usual method
-and runs under a graphical interface displayed on your desktop.
-For linux, once installed docker runs as a daemon process automatically launched
-when the system boots.   On linux systems only the command line interface
-is available to manage containers.</p>
-</section>
-<section id="download-mspass-container">
-<h2>Download MsPASS Container<a class="headerlink" href="#download-mspass-container" title="Link to this heading">#</a></h2>
-<p>The MsPASS container image is built and hosted on <a class="reference external" href="https://hub.docker.com/r/mspass/mspass">Docker Hub</a>.
-It is also available in the <a class="reference external" href="https://github.com/mspass-team/mspass/pkgs/container/mspass">GitHub Container Registry</a>.
-Once you have docker setup properly, use the following command in a terminal
-to download the MsPASS image from Docker Hub to your local machine:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
+<section id="shared-prerequisites">
+<h2>Shared prerequisites<a class="headerlink" href="#shared-prerequisites" title="Link to this heading">#</a></h2>
+<p>All three desktop workflows require a running Docker service.  Install Docker
+Desktop or Docker Engine by following the <a class="reference external" href="https://docs.docker.com/get-started/get-docker/">official Docker installation guide</a>, then confirm that the
+client can reach the server:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>version
 </pre></div>
 </div>
-<p>Be patient the first time you issue this command for your systems
-as this can take a few minutes depending on your internet speed.
-Note you can run this command from anywhere and the files are stored in
-a system directory (folder) whose location depends upon the host
-operating system.   Be aware that the MsPASS container will consume of the order of
-500 Mb of disk space on your system disk so you should be sure you are not
-pushing the limits of your system disk.
-When you pull the container, docker loads data only in a
-system dependent data space so you will not see anything happen
-in the directory where you run this command.  The recommended way to
-manage disk usage is through docker desktop or docker command line
-tools.   See docker’s documentation for information now how to do that.</p>
-<p>It can be confusing to understand where data is stored in a containerized environment
-because file paths are always mapped from local file path names to
-container file names.  They are usually different.
-In the discussion below files names we reference that reside inside a container will be set in italics.
-File names on the physical system will be referred to with a normal font text.</p>
+<p>The output should include both <code class="docutils literal notranslate"><span class="pre">Client</span></code> and <code class="docutils literal notranslate"><span class="pre">Server</span></code> sections.  Compose
+users must also have the Compose v2 plugin:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>version
+</pre></div>
+</div>
+<p>Before launching MsPASS, choose a dedicated writable project directory and
+make enough disk space, memory, and CPU capacity available for the database,
+JupyterLab, and Dask.  Docker Desktop users may need to adjust those resources
+in Docker Desktop settings.</p>
+<p>Docker Desktop provides the Docker service and a graphical interface on
+Windows and macOS.  Docker Engine on Linux normally runs as a background
+service and is managed from the command line.  Installing either product
+usually requires administrator privileges.  Users who cannot or do not want
+to use Docker can build the components from source, but that is a substantially
+more involved procedure described in the <a class="reference external" href="https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code">source-build wiki</a>.</p>
 </section>
-<section id="option-1-launching-with-docker-run-command">
-<h2>Option 1:  launching with docker run command<a class="headerlink" href="#option-1-launching-with-docker-run-command" title="Link to this heading">#</a></h2>
-<p>To run MsPASS from the command line cd to a writable directory at the
-top of a directory tree where you the data for your project are located.
-Most MsPASS processing is then initiated with a variant of the
-following on the command line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
+<section id="download-the-mspass-image">
+<h2>Download the MsPASS image<a class="headerlink" href="#download-the-mspass-image" title="Link to this heading">#</a></h2>
+<p>The MsPASS image is hosted on <a class="reference external" href="https://hub.docker.com/r/mspass/mspass">Docker Hub</a> and is also published in the
+<a class="reference external" href="https://github.com/mspass-team/mspass/pkgs/container/mspass">GitHub Container Registry</a>.  Download the
+standard image with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>mspass/mspass
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">8888:8888</span></code> argument maps port <code class="docutils literal notranslate"><span class="pre">8888</span></code> on your system to the container’s <code class="docutils literal notranslate"><span class="pre">8888</span></code> port.
-That pair of arguments are needed to allow your local web browser to
-connect to the Juypter notebook server running in the container.
-<code class="docutils literal notranslate"><span class="pre">8888</span></code> is the default port for the Jupyter Notebook frontend.
-If there are collisions with <code class="docutils literal notranslate"><span class="pre">8888</span></code> port on your system (uncommon),
-change the first number
-to “map” the local system port number to <code class="docutils literal notranslate"><span class="pre">8888</span></code> in the container.
-For example,  if you use <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">9999:8888</span></code> the URL you use to connect to the
-Jupyter notebook would need to be altered to use <code class="docutils literal notranslate"><span class="pre">9999</span></code> as the port number</p>
-<p>The lengthy incantation in the argument following the  <code class="docutils literal notranslate"><span class="pre">--mount</span></code>
-argument is used to “map” a local file system path to a
-defined mount point in the container.
-In this example the “current directory” for the launching shell
-is defined with the shell incantation <cite>pwd</cite>.  The command
-will be map the current directory to <em>/home</em> in the container.
-<em>/home</em> is a standard mount point
-directory on the unix system the container runs.
-That mapping is necessary
-to save your results to your local system.   Without the
-<code class="docutils literal notranslate"><span class="pre">--mount</span></code> incantation any results
-you produce in a run will disappear when the container exits.</p>
-<p>You can also substitute the full path to a local directory
-in place of <cite>pwd</cite>.   In that case, you would not need to cd to
-the desired directory first.  You must, however, have write protection
-for that directory.</p>
-<p>When the container boots it splashes a bunch of text to the terminal from
-which it was launched announcing successful launching of
-required MsPASS components.
-The last part of the output will look something
-like this</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[I 11:02:38.655 NotebookApp] Serving notebooks from local directory: /home
-[I 11:02:38.655 NotebookApp] Jupyter Notebook 6.2.0 is running at:
-[I 11:02:38.655 NotebookApp] http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-[I 11:02:38.656 NotebookApp]  or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-[I 11:02:38.656 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-[C 11:02:38.673 NotebookApp]
-
-    To access the notebook, open this file in a browser:
-        file:///root/.local/share/jupyter/runtime/nbserver-57-open.html
-    Or copy and paste one of these URLs:
-        http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-     or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
-</pre></div>
-</div>
-<p>Use the standard cut-and-paste operation to paste the URL beginning with <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8888</span></code>
-to your favorite web browser (Note if you need to use port mapping, which is
-not common, you would need to change the 8888 to the mapped value - 9999 in the
-example above.).   That URL should resolve and a Jupyter notebook home page
-should come up in the browser.
-This page assumes you know where to go from here.
-If you are not familiar with Jupyter Notebook, refer to the
-<a class="reference external" href="https://jupyter-notebook.readthedocs.io/en/stable/ui_components.html">documentation found here</a> .</p>
-<p>The root directory of the notebook contains three different directories,
-<em>db</em>, <em>logs</em>, and <em>work</em>,
-that will have been created in your working directory the first time you launch
-the mspass container in that directory.
-<em>db</em> contains MongoDB’s database files.
-<em>logs</em> contains the logs generated by the database, the scheduler, and the worker.
-<em>work</em> is a local scratch space used by dask/spark.
-Other files in your project data should also show up in the file browser.
-(Note if you do not use the <code class="docutils literal notranslate"><span class="pre">--mount</span></code> option everything shown on the home
-page will disappear when the contaienr is exited.  The default is what it
-is because the majority of “dockerized” applications are run as background
-processes and that approach makes cleanup automatic. That mode is
-rarely useful on a desktop use with MsPASS.)
-Normal use at this point is to open an existing notebook to be run
-(double-click the notebook’s file name) or create one with the <cite>New</cite> button
-on the notebook home page.</p>
-<p>A final point worth noting is that it is often useful when working
-interactively with mspass on a desktop to open a “Terminal” in the
-container.  The <cite>New</cite> button has a <cite>Terminal</cite> item in addition to the
-<cite>Python 3</cite> button that is used to create a new notebook.  If you select
-<cite>Terminal</cite> you will get a black web browser window (usually a tab on any
-newer browser) with the cryptic <code class="docutils literal notranslate"><span class="pre">#</span></code> prompt of the default Bourne shell.
-Most users will want to immediately launch a <code class="docutils literal notranslate"><span class="pre">bash</span></code> (Note we do not currently
-have any other advanced shell commands in the mspass container.) shell
-instead of the more primitive sh. i.e. we recommend you type <code class="docutils literal notranslate"><span class="pre">bash</span></code> in the
-new terminal window as it gives you things like line editing not available with
-the old-school Bourne shell.   Be warned that with docker you are running as
-root in the container.   You can thus run sysadmin commands.  That can be
-useful, but it is a sharp knife that can cut you.   Be sure you know what
-you are doing before you alter any files with bash commands in this
-terminal.   A more standard use is to run common monitoring commands like
-<code class="docutils literal notranslate"><span class="pre">top</span></code> to monitor memory and cpu usage by the container.</p>
-<p>If you are using dask on a desktop, we have found many algorithms perform
-badly because of a subtle issue with python and threads.   That is, by
-default dask uses a “thread pool” for workers with the number of threads
-equal to the number of cores defined for the docker container.
-Threading with python is subject to poor performance because of
-something called the Global Interpreter Lock (GIL) that causes multithread
-python functions to not run in parallel at all with dask.  The solution
-is to tell dask to run each worker task as a “process” not a thread.
-(Note pyspark does this by default.)  A way to do that with dask is to
-launch docker with the following variant of above:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker run -p 8888:8888 -e MSPASS_WORKER_ARG=&quot;--nworkers 4 --nthreads 1&quot; --mount src=`pwd`,target=/home,type=bind mspass/mspass
-</pre></div>
-</div>
-<p>where the value after <cite>–nworkers</cite> should be the number of worker tasks
-you want to have the container run.   Normally that would be the number of
-cores defined for the container which be default is less than the number of
-cores for the machine running docker.</p>
-<p>Finally, to exit close any notebook windows and the Jupyter notebook
-home page.   You will usually need to type a <cite>ctrl-C</cite> twice in the terminal
-window you used to launch mpass via docker to force the container to exit.</p>
+<p>The first download may take several minutes.  The image is placed in Docker’s
+system-managed image store, not in the directory where the command was run,
+so no new file will appear in that directory.  Docker Desktop’s image view or
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">image</span> <span class="pre">ls</span></code> can be used to inspect downloaded images and their disk
+usage.  The image occupies space on the system disk in addition to the space
+needed for project data and the MongoDB database.</p>
+<p>Container paths and host paths are different namespaces.  A path such as
+<code class="docutils literal notranslate"><span class="pre">/home</span></code> inside the container has no automatic connection to a project
+directory on the host.  A bind mount makes that connection explicitly and is
+what allows notebooks, database files, and results to survive after the
+container exits.</p>
 </section>
-<section id="option-2-the-docker-compose-command">
-<h2>Option 2:  The docker compose command<a class="headerlink" href="#option-2-the-docker-compose-command" title="Link to this heading">#</a></h2>
-<section id="using-the-standard-configuration">
-<h3>Using the standard configuration<a class="headerlink" href="#using-the-standard-configuration" title="Link to this heading">#</a></h3>
-<p>The <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command is good for a quick start or for testing, but
-the complex incantation makes it less desirable for repeated use.
-For those who want to run MsPASS repeatedly and not use the <code class="code docutils literal notranslate"><span class="pre">mspass-desktop</span></code>
-GUI, the <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> command described in this section may
-be of interest.</p>
-<p>To use <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> you will need a configuration file
-in the “yaml” (Yet Another Markup Language) format.   The following
-example should work for most desktop/laptop systems.</p>
+<section id="option-1-launch-one-container-with-docker-run">
+<h2>Option 1: launch one container with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code><a class="headerlink" href="#option-1-launch-one-container-with-docker-run" title="Link to this heading">#</a></h2>
+<p>Change to a writable directory at the top of the project tree.  On a Unix-like
+shell, start MsPASS with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
+</pre></div>
+</div>
+<p>This short command has two arguments that are important to understand:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">8888:8888</span></code> publishes port <code class="docutils literal notranslate"><span class="pre">8888</span></code> from the container as port <code class="docutils literal notranslate"><span class="pre">8888</span></code>
+on the host, allowing the host web browser to reach Jupyter.  If host port
+<code class="docutils literal notranslate"><span class="pre">8888</span></code> is already in use, <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">9999:8888</span></code> publishes the same Jupyter
+service on host port <code class="docutils literal notranslate"><span class="pre">9999</span></code>; use <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:9999</span></code> in that case.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--mount</span> <span class="pre">src=`pwd`,target=/home,type=bind</span></code> mounts the shell’s current
+directory at <code class="docutils literal notranslate"><span class="pre">/home</span></code> inside the container.  You can replace <code class="docutils literal notranslate"><span class="pre">pwd</span></code> with
+an absolute host path instead of changing directories first.  The selected
+directory must be writable and must be shared with Docker Desktop where
+that product requires explicit file-sharing permission.</p></li>
+</ul>
+<p>Without the bind mount, work written inside the container is not a reliable
+way to preserve results: it becomes inaccessible after a temporary container
+is removed and disappears when that container is deleted.  The mount is also
+why files already in the host project directory appear in Jupyter’s file
+browser.</p>
+<p>When the container starts, it prints messages from MongoDB, Dask, and Jupyter
+to the terminal.  The final Jupyter messages contain a URL resembling:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Jupyter Server is running at:
+http://127.0.0.1:8888/lab?token=...
+</pre></div>
+</div>
+<p>Copy the complete <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> URL, including its generated token, into a web
+browser.  Startup can take a short time, so wait for the Jupyter URL rather
+than assuming that the first messages mean the frontend is ready.  If a
+different host port was selected, replace only the port in the URL.  New
+Jupyter users can consult the <a class="reference external" href="https://jupyterlab.readthedocs.io/en/stable/user/interface.html">JupyterLab interface guide</a>.</p>
+<p>On its first run in a project directory, the MsPASS startup creates <code class="docutils literal notranslate"><span class="pre">db/</span></code>,
+<code class="docutils literal notranslate"><span class="pre">logs/</span></code>, and <code class="docutils literal notranslate"><span class="pre">work/</span></code> under the mounted directory.  <code class="docutils literal notranslate"><span class="pre">db/</span></code> holds MongoDB
+data, <code class="docutils literal notranslate"><span class="pre">logs/</span></code> holds service logs, and <code class="docutils literal notranslate"><span class="pre">work/</span></code> is scratch space used by
+Dask or Spark.  Existing notebooks and waveform files in the project tree
+also appear in Jupyter.  Open an existing notebook from the file browser or
+use the launcher to create a Python notebook.</p>
+<p>The Jupyter launcher can also open a terminal inside the container.  This is
+useful for inspecting files or running monitoring commands such as <code class="docutils literal notranslate"><span class="pre">top</span></code>.
+The shell normally runs as <code class="docutils literal notranslate"><span class="pre">root</span></code> inside the container.  It is not host
+root, but it can still modify anything in the read-write bind mount, so take
+care with commands that alter files.</p>
+<section id="dask-worker-processes">
+<h3>Dask worker processes<a class="headerlink" href="#dask-worker-processes" title="Link to this heading">#</a></h3>
+<p>Some Python algorithms perform poorly when many Dask worker threads contend
+for Python’s Global Interpreter Lock.  For those workloads, multiple
+single-threaded worker processes are often preferable.  The image accepts
+Dask worker options through <code class="docutils literal notranslate"><span class="pre">MSPASS_WORKER_ARG</span></code>.  For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>-e<span class="w"> </span><span class="nv">MSPASS_WORKER_ARG</span><span class="o">=</span><span class="s2">&quot;--nworkers 4 --nthreads 1&quot;</span><span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
+</pre></div>
+</div>
+<p>Choose the worker count to fit the CPU and memory Docker has been assigned;
+using every logical CPU is not always best if other applications must remain
+responsive or each worker needs substantial memory.  Spark uses a different
+worker model and does not use this Dask option.</p>
+<p>To stop the foreground container, close or save active notebooks and press
+Control-C in the launch terminal.  Jupyter may request a second Control-C to
+confirm shutdown.  Do not interrupt MongoDB by forcibly killing Docker unless
+a normal stop has failed.</p>
+</section>
+</section>
+<section id="option-2-run-separate-services-with-docker-compose">
+<h2>Option 2: run separate services with Docker Compose<a class="headerlink" href="#option-2-run-separate-services-with-docker-compose" title="Link to this heading">#</a></h2>
+<p>The single <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command is convenient for a first session.  Docker
+Compose is often easier for repeated work because the configuration is saved
+in a YAML file and each MsPASS component has its own container and logs.  The
+repository supplies this standard Dask configuration:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-number">Listing 1 </span><span class="caption-text">Standard compose.yaml file to run dask as four services on a destkop.</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-number">Listing 1 </span><span class="caption-text">Standard compose.yaml file with database, Dask, and frontend services</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">services</span><span class="p">:</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="w">  </span><span class="nt">mspass-db</span><span class="p">:</span>
@@ -732,132 +706,152 @@ example should work for most desktop/laptop systems.</p>
 </pre></div>
 </div>
 </div>
-<p>To get started with <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> the easiest solution is to use the
-cut-and-paste in the box above and save the content to your project
-directory to a file you could save as “compose.yaml”.   In a terminal
-cd to the project directory and issue this command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">compose</span> <span class="n">up</span> <span class="o">-</span><span class="n">d</span>
+<p>Save it as <code class="docutils literal notranslate"><span class="pre">compose.yaml</span></code> in the project directory, change to that directory,
+and start the services in the background:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </pre></div>
 </div>
-<p>You can expect an output similar to the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[+] Running 5/5
-✔ Network downloads_default               Created                         0.0s
-✔ Container downloads-mspass-scheduler-1  Started                         0.3s
-✔ Container downloads-mspass-db-1         Started                         0.3s
-✔ Container downloads-mspass-frontend-1   Started                         0.4s
-✔ Container downloads-mspass-worker-1     Started                         0.4s
+<p>Compose reports that it created a project network and started the
+<code class="docutils literal notranslate"><span class="pre">mspass-db</span></code>, <code class="docutils literal notranslate"><span class="pre">mspass-scheduler</span></code>, <code class="docutils literal notranslate"><span class="pre">mspass-worker</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">mspass-frontend</span></code> services.  Container names are normally prefixed with the
+project directory name.  Confirm that the services remain running with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>ps
 </pre></div>
 </div>
-<p>where the “downloads” prefix on the tags above will be the name of your run directory.
-The example above was run from the “Downloads”directory.</p>
-<p>It is usually advisable to verify all the containers are still running with
-this command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">compose</span> <span class="n">ps</span>
+<p>The database and scheduler may show a temporary starting state while their
+health checks run.  If the frontend does not become ready, inspect its log:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>mspass-frontend
 </pre></div>
 </div>
-<p>which should yield an output similar to the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">NAME</span>                           <span class="n">IMAGE</span>           <span class="n">COMMAND</span>                  <span class="n">SERVICE</span>            <span class="n">CREATED</span>              <span class="n">STATUS</span>                    <span class="n">PORTS</span>
-<span class="n">downloads</span><span class="o">-</span><span class="n">mspass</span><span class="o">-</span><span class="n">db</span><span class="o">-</span><span class="mi">1</span>          <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>   <span class="s2">&quot;/usr/sbin/tini -s -…&quot;</span>   <span class="n">mspass</span><span class="o">-</span><span class="n">db</span>          <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="mi">38</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">healthy</span><span class="p">)</span>   <span class="mf">0.0.0.0</span><span class="p">:</span><span class="mi">27017</span><span class="o">-&gt;</span><span class="mi">27017</span><span class="o">/</span><span class="n">tcp</span>
-<span class="n">downloads</span><span class="o">-</span><span class="n">mspass</span><span class="o">-</span><span class="n">frontend</span><span class="o">-</span><span class="mi">1</span>    <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>   <span class="s2">&quot;/usr/sbin/tini -s -…&quot;</span>   <span class="n">mspass</span><span class="o">-</span><span class="n">frontend</span>    <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="mi">38</span> <span class="n">seconds</span>             <span class="mf">0.0.0.0</span><span class="p">:</span><span class="mi">8888</span><span class="o">-&gt;</span><span class="mi">8888</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="mi">27017</span><span class="o">/</span><span class="n">tcp</span>
-<span class="n">downloads</span><span class="o">-</span><span class="n">mspass</span><span class="o">-</span><span class="n">scheduler</span><span class="o">-</span><span class="mi">1</span>   <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>   <span class="s2">&quot;/usr/sbin/tini -s -…&quot;</span>   <span class="n">mspass</span><span class="o">-</span><span class="n">scheduler</span>   <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="mi">38</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">healthy</span><span class="p">)</span>   <span class="mf">0.0.0.0</span><span class="p">:</span><span class="mi">8786</span><span class="o">-</span><span class="mi">8787</span><span class="o">-&gt;</span><span class="mi">8786</span><span class="o">-</span><span class="mi">8787</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="mi">27017</span><span class="o">/</span><span class="n">tcp</span>
-<span class="n">downloads</span><span class="o">-</span><span class="n">mspass</span><span class="o">-</span><span class="n">worker</span><span class="o">-</span><span class="mi">1</span>      <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>   <span class="s2">&quot;/usr/sbin/tini -s -…&quot;</span>   <span class="n">mspass</span><span class="o">-</span><span class="n">worker</span>      <span class="n">About</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">ago</span>   <span class="n">Up</span> <span class="mi">38</span> <span class="n">seconds</span>             <span class="mi">27017</span><span class="o">/</span><span class="n">tcp</span>
+<p>Open <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8888</span></code> and enter the configured password <code class="docutils literal notranslate"><span class="pre">mspass</span></code>.
+The supplied Compose file sets a password, so its log may not display the
+token-style URL produced by the single-container command.</p>
+<p>A Python script stored as <code class="docutils literal notranslate"><span class="pre">myjob.py</span></code> in the project directory can be run in
+the frontend service, which has both database and scheduler addresses:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>mspass-frontend<span class="w"> </span>python<span class="w"> </span>/home/myjob.py
 </pre></div>
 </div>
-<p>To get the url information needed to connect to the jupyter server
-issue the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">compose</span> <span class="n">logs</span> <span class="n">mspass</span><span class="o">-</span><span class="n">frontend</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">http</span>
+<p>When work is finished, save notebooks and stop the project cleanly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>down
 </pre></div>
 </div>
-<p>The output should contain one of the url’s you can use to connect to jupyter.</p>
-<p>If you want to just run a python script, you can submit it to be run
-from the command line.  e.g. assuming the containers are all running
-and the python script to be run is “myjob.py”, that script can be
-run as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">compose</span> <span class="n">exec</span> <span class="n">mspass</span><span class="o">-</span><span class="n">scheduler</span> <span class="n">python</span> <span class="n">myjob</span><span class="o">.</span><span class="n">py</span>
-</pre></div>
-</div>
-<p>When finished, you should shut the system down cleanly with the following
-command issued from the same project directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">compose</span> <span class="n">down</span>
-</pre></div>
-</div>
-</section>
-<section id="configuration-file-content">
-<h3>Configuration File Content<a class="headerlink" href="#configuration-file-content" title="Link to this heading">#</a></h3>
-<p>An important benefit of <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> is that it emphasizes
-that MsPASS can be abstracted as four distince “services”.
-The yaml file explicitly defines that with the <em>services</em> key at the top
-of the file.   The individual service name tags are defined by
-the indentation structure of the yaml.  They are the four names shown from
-output examples above:  <em>mspass-db, mspass-scheduler, mspass-worker,</em> and
-<em>mspass-frontend</em>.   You should realize that if running with
-MsPASS with <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> you are running four different instance
-of the MsPASS container with each instance running only one service.
-That is in contrast to the <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> approach where only
-a single instance of the container is running and that instance is
-running all four of these “services”.  In a desktop environment the two
-approaches are functionally similar.   The <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> approach
-has a small memory penalty but has the main advantage of being
-more configurable via the yaml configuration file.</p>
-<p>Configuration parameters you may need to change follow.  If a parameter
-is not listed the best advice is to not change it unless you have
-a good reason to do so.</p>
+<p>This removes the service containers and their private network but leaves the
+bind-mounted project files, including <code class="docutils literal notranslate"><span class="pre">db/</span></code>, on the host.</p>
+<section id="understanding-the-compose-file">
+<h3>Understanding the Compose file<a class="headerlink" href="#understanding-the-compose-file" title="Link to this heading">#</a></h3>
+<p>The top-level <code class="docutils literal notranslate"><span class="pre">services</span></code> mapping defines four instances of the same MsPASS
+image, each with a different responsibility:</p>
 <ul class="simple">
-<li><p><em>volumes</em> appears in all four services.  It defines what directories
-are to be mounted where on each container.   Functionally the line
-“${PWD}/:/home” in the default yaml file serves the same function as the
-following in the <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> incantation above:
-“–mount src=`pwd`,target=/home,type=bind”.   i.e. both tell docker to
-mount the current directory on “/home” in the container.   The most
-likely situation where this parameter would need to change is if you
-have waveform data on a second file system distinct from where you
-want to store the database.   That would be common, for example, on a
-desktop with a SSD disk used to store system files and the MongoDB
-database, but with a secondary, larger, slower magnetic disk used to
-store the more voluminous waveform data.   The current MsPASS container
-has only one alternative mount point to “/home”; the other stock ubuntu
-generic mount point “/mnt”.   The syntax for that is to add a yaml
-list following the <em>volumes</em> key.  For example, if we wanted to add
-a mount for a local file system called /data to the container /mnt
-directory that section of the yaml file would look like this:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mspass-db</span></code> runs a standalone MongoDB server.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mspass-scheduler</span></code> runs the Dask scheduler.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mspass-worker</span></code> performs parallel tasks assigned by the scheduler.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mspass-frontend</span></code> runs JupyterLab and connects to both the scheduler and
+database.</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>volumes:
-  - ${PWD}/:/home
-  - /data:/mnt
+<p>This differs from the default single-container launch, where one container’s
+<code class="docutils literal notranslate"><span class="pre">all</span></code> role starts all four components.  Separate services use somewhat more
+memory but make individual components easier to configure, restart, scale,
+and troubleshoot.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">volumes</span></code> entries mount <code class="docutils literal notranslate"><span class="pre">${PWD}</span></code> at <code class="docutils literal notranslate"><span class="pre">/home</span></code> in every service.  All
+services that read a waveform file must see it at the same container path.  If
+waveforms live on another host filesystem, add the same mount to each service
+that needs them.  For example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;/data:/mnt&quot;</span>
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">image</span></code> value selects the container image.  Leave it as
+<code class="docutils literal notranslate"><span class="pre">mspass/mspass</span></code> unless a particular released or development tag is required.
+<code class="docutils literal notranslate"><span class="pre">MSPASS_WORKER_ARG</span></code> controls the Dask worker layout; the supplied value runs
+four single-threaded workers and can be reduced when CPU or memory is limited.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MSPASS_ROLE</span></code> selects what each container starts.  <code class="docutils literal notranslate"><span class="pre">MSPASS_SCHEDULER</span></code>
+selects Dask or Spark, <code class="docutils literal notranslate"><span class="pre">MSPASS_SCHEDULER_ADDRESS</span></code> tells workers and the
+frontend how to reach the scheduler, and <code class="docutils literal notranslate"><span class="pre">MSPASS_DB_ADDRESS</span></code> tells the
+frontend how to reach MongoDB.  In this standalone configuration the database
+service is <code class="docutils literal notranslate"><span class="pre">mspass-db</span></code>.  <code class="docutils literal notranslate"><span class="pre">mspass-dbmanager</span></code> is correct only in the separate
+sharded MongoDB example.</p>
+<p>Port mappings have the form <code class="docutils literal notranslate"><span class="pre">HOST:CONTAINER</span></code>.  Normally, change only the
+host side to resolve a collision.  Changing a container-side port also
+requires matching changes to environment variables, service addresses, and
+health checks.  The more detailed <a class="reference internal" href="deploy_mspass_with_docker_compose.html#deploy-mspass-with-docker-compose"><span class="std std-ref">Docker Compose deployment guide</span></a> documents Spark, database sharding,
+configuration validation, and troubleshooting.</p>
+</section>
+<section id="common-startup-problems">
+<h3>Common startup problems<a class="headerlink" href="#common-startup-problems" title="Link to this heading">#</a></h3>
+<p>If Docker reports that it cannot connect to the daemon, start Docker Desktop
+or the Docker Engine service and repeat <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">version</span></code>.  A permission
+error on a mounted path usually means the host directory is not writable or
+has not been shared with Docker Desktop.  An <code class="docutils literal notranslate"><span class="pre">address</span> <span class="pre">already</span> <span class="pre">in</span> <span class="pre">use</span></code> error
+means that a published host port is occupied; choose another host port as
+described above.</p>
+<p>For a single container, keep the launch terminal open because it contains the
+startup error and Jupyter URL.  In another terminal, <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">ps</span> <span class="pre">-a</span></code> shows
+whether the container exited.  With Compose, use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">ps</span> <span class="pre">-a</span></code> to
+find an exited service and <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">logs</span> <span class="pre">SERVICE</span></code> to inspect it.
+Run <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">config</span></code> after editing YAML; it catches indentation,
+variable-substitution, and resolved-configuration problems before startup.</p>
+<p>If workers repeatedly restart or Docker becomes unresponsive, reduce the
+worker count and confirm that Docker has enough memory.  If Jupyter is running
+but cannot open a notebook or waveform, confirm that the file is below the
+mounted project directory and that the same host path is mounted into every
+Compose service that needs it.</p>
+</section>
+</section>
+<section id="persistence-and-access-boundaries">
+<h2>Persistence and access boundaries<a class="headerlink" href="#persistence-and-access-boundaries" title="Link to this heading">#</a></h2>
+<p>The documented single-container and Compose workflows bind-mount the host
+project directory at <code class="docutils literal notranslate"><span class="pre">/home</span></code> in the container.  The current MsPASS startup
+script uses that location as its Docker working directory and creates these
+service directories as needed:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">db/</span></code></dt><dd><p>MongoDB database files.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">logs/</span></code></dt><dd><p>MongoDB, scheduler, and worker logs.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">work/</span></code></dt><dd><p>Worker scratch files, not the authoritative copy of project results.</p>
+</dd>
+</dl>
+<p>Files in the bind-mounted directory remain on the host when a container is
+stopped or removed.  Files written elsewhere in a container are not a
+persistence strategy and may disappear when that container is recreated.
+Stop MsPASS before copying <code class="docutils literal notranslate"><span class="pre">db/</span></code> for backup so that MongoDB is not being
+modified during the copy.</p>
+<p>A bind mount is also a read-write access grant: processes and interactive
+shells in the container can change or delete host files under the project
+directory.  Mount only the project data that MsPASS needs, keep unrelated or
+sensitive files outside that directory, and use normal host backups.</p>
+</section>
+<section id="network-and-credential-safety">
+<h2>Network and credential safety<a class="headerlink" href="#network-and-credential-safety" title="Link to this heading">#</a></h2>
+<p>The simple commands on this page and the shipped <code class="docutils literal notranslate"><span class="pre">data/yaml/compose.yaml</span></code>
+publish their ports on the host interfaces.  The Compose example also uses
+the known Jupyter password <code class="docutils literal notranslate"><span class="pre">mspass</span></code> and does not configure MongoDB
+authentication.  Treat these as local or trusted-network examples.  On an
+untrusted network, bind published ports to loopback (for example,
+<code class="docutils literal notranslate"><span class="pre">127.0.0.1:8888:8888</span></code>) and choose a private Jupyter password.  The
+<a class="reference internal" href="deploy_mspass_with_docker_compose.html#deploy-mspass-with-docker-compose"><span class="std std-ref">Compose deployment guide</span></a> explains
+those changes.</p>
+<p>Treat a Jupyter token or password as a credential.  Do not post a token-bearing
+URL in a shared log or expose the service ports through a firewall without an
+appropriate authentication and network-security plan.</p>
+</section>
+<section id="where-to-go-next">
+<h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><em>image</em> is the name tag for the docker container being run.   There are
-multiple tags for different versions and a “dev” version found
-<a class="reference external" href="https://github.com/mspass-team/mspass/pkgs/container/mspass">here</a> .
-If you need to run a different instance of the container you will
-need to change the value associated with <em>image</em> in the file.</p></li>
-<li><p>The <em>mspass-worker</em> service has an attibute with the key
-<em>MSPASS_WORKER_ARG</em>.  For most uses we would advise setting the
-valued of “–nworkers” to the number of cores on the desktop system.
-Reduce this value if you need to do other work on the system you
-are using while mspass is running.</p></li>
-<li><p>Each service except <em>mspass-worker</em> have a <em>port</em> parameter.   You
-should only change one of those attribute if you encounter a communication
-problem created by a firewall that requires port mapping.  That is unlikely
-to ever be an issue with the <em>mspass-scheduler</em> or <em>mspass-db</em> as in
-this mode communications are always between processes running on the
-same system.  The most likely, but still rare, issue could be the
-ports for <em>mspass-frontend</em>.  The jupyter server in the container
-runs on port 8888.  If you are connecting to a machine remotely to run
-mspass with <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> you may need to do port mapping
-if 8888 is blocked by a firewall.</p></li>
+<li><p>Use the <a class="reference internal" href="run_mspass_with_docker.html#run-mspass-with-docker"><span class="std std-ref">single-container Docker guide</span></a> for
+image selection, cross-platform bind-mount syntax, Dask worker tuning, and
+detailed troubleshooting.</p></li>
+<li><p>Use the <a class="reference internal" href="deploy_mspass_with_docker_compose.html#deploy-mspass-with-docker-compose"><span class="std std-ref">Docker Compose deployment guide</span></a> for configuration validation, service
+logs, secure port changes, scaling, and lifecycle management.</p></li>
+<li><p>Read <a class="reference internal" href="advanced_setup_considerations.html#advanced-setup-considerations"><span class="std std-ref">Advanced Setup Considerations</span></a>
+when you need to manage source or Python-environment installations, or the
+<a class="reference internal" href="deploy_mspass_with_conda.html#deploy-mspass-with-conda"><span class="std std-ref">Conda installation guide</span></a> when containers
+are not the right fit.</p></li>
+<li><p>Move to the <a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">virtual-cluster concepts</span></a> and
+<a class="reference internal" href="deploy_mspass_on_HPC.html#deploy-mspass-on-hpc"><span class="std std-ref">HPC deployment guide</span></a> before adapting a
+desktop workflow to a batch-scheduled or multi-node system.</p></li>
 </ul>
-</section>
-<section id="advanced-options">
-<h3>Advanced Options<a class="headerlink" href="#advanced-options" title="Link to this heading">#</a></h3>
-<p>The <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> approach provides a rich collection of options
-beyond those illustrated in our default configuration file shown above.
-More examples can be found in the MsPASS GitHub repository in the
-<em>data/yaml</em> directory.  The most important example there is
-<em>docker-compose_spark.yaml</em> which shows how to launch a pyspark cluster.
-The default shown above will run the dask scheduler.</p>
-</section>
 </section>
 </section>
 
@@ -881,11 +875,11 @@ The default shown above will run the dask scheduler.</p>
       </div>
     </a>
     <a class="right-next"
-       href="deploy_mspass_with_conda.html"
+       href="deploy_mspass_with_docker_compose.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Deploy MsPASS with Conda</p>
+        <p class="prev-next-title">Deploy MsPASS with Docker Compose</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -908,16 +902,21 @@ The default shown above will run the dask scheduler.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-and-launching-docker-desktop">Installing and Launching Docker Desktop</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-mspass-container">Download MsPASS Container</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#option-1-launching-with-docker-run-command">Option 1:  launching with docker run command</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#option-2-the-docker-compose-command">Option 2:  The docker compose command</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-standard-configuration">Using the standard configuration</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-file-content">Configuration File Content</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-options">Advanced Options</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-a-desktop-workflow">Choose a desktop workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shared-prerequisites">Shared prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-mspass-image">Download the MsPASS image</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#option-1-launch-one-container-with-docker-run">Option 1: launch one container with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dask-worker-processes">Dask worker processes</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#option-2-run-separate-services-with-docker-compose">Option 2: run separate services with Docker Compose</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-the-compose-file">Understanding the Compose file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#common-startup-problems">Common startup problems</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#persistence-and-access-boundaries">Persistence and access boundaries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#network-and-credential-safety">Network and credential safety</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-go-next">Where to go next</a></li>
 </ul>
   </nav></div>
 

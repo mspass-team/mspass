@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Importing Data &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Importing Data &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,11 +55,11 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Handling Errors" href="handling_errors.html" />
-    <link rel="prev" title="Deconvolution Operators" href="deconvolution.html" />
+    <link rel="next" title="Importing Tabular Data" href="importing_tabular_data.html" />
+    <link rel="prev" title="Normalization" href="normalization.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -517,17 +520,17 @@ the FDSN confederation of data centers is to use obspy.
 Obspy has two different python functions that can be used to
 fetch miniseed data from one or more FDSN data centers.</p>
 <ol class="arabic simple">
-<li><p>The simplest tool obspy provides is their <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code>
+<li><p>The simplest tool obspy provides is their <code class="code docutils literal notranslate"><span class="pre">get_waveforms</span></code>
 method of the fdsn web service client.  The documentation for that
 function can be found
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html">here</a>.
-<code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code> retrieves a relatively small number of waveform
+<code class="code docutils literal notranslate"><span class="pre">get_waveforms</span></code> retrieves a relatively small number of waveforms
 at a time using station codes with wildcards and a time range.
 It is suitable only for small datasets or as a custom agent
 to run for weeks acquiring data driven by some large list.</p></li>
 <li><p>For most MsPASS users the obspy tool
-of choice is <code class="code docutils literal notranslate"><span class="pre">bulk_download</span></code>.
-An overview of the concepts of <code class="code docutils literal notranslate"><span class="pre">bulk_download</span></code> are given
+of choice is <code class="code docutils literal notranslate"><span class="pre">MassDownloader.download</span></code>.
+An overview of the concepts of <code class="code docutils literal notranslate"><span class="pre">MassDownloader</span></code> is given
 <a class="reference external" href="https://docs.obspy.org/tutorial/code_snippets/retrieving_data_from_datacenters.html">here</a>
 and the detailed docstring for the function can be found
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html">here</a>.</p></li>
@@ -537,22 +540,22 @@ are referred to the above pages and examples to build a workflow to
 retrieve a working data set.   We do, however, think it useful to
 give a few warnings.</p>
 <ol class="arabic simple">
-<li><p>Never use <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code> to retrieve more than a few thousand
+<li><p>Never use <code class="code docutils literal notranslate"><span class="pre">get_waveforms</span></code> to retrieve more than a few thousand
 waveforms unless you are designing an agent that will run for weeks.
 It is intrinsically very slow because of the inevitable
 internet delays that are unavoidable because of the design of that
-function.   Each call to <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code> initiates a query request
+function.   Each call to <code class="code docutils literal notranslate"><span class="pre">get_waveforms</span></code> initiates a query request
 transmitted by the internet to the targeted fdsn web-service server,
 the server has to do it’s work and respond, a back connection to the
 caller has to be set up, and then the data transmitted via the internet.
 The built-in, multiple delays make that process too slow for large
 data requests.</p></li>
-<li><p>The authors of obspy developed their <code class="code docutils literal notranslate"><span class="pre">bulk_download</span></code> function
-because their early experience, like ours, showed <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code>
+<li><p>The authors of obspy developed their <code class="code docutils literal notranslate"><span class="pre">MassDownloader</span></code> because
+their early experience, like ours, showed <code class="code docutils literal notranslate"><span class="pre">get_waveforms</span></code>
 was not feasible as a tool to download large data sets.
-<code class="code docutils literal notranslate"><span class="pre">bulk_download</span></code> makes it feasible to download large data sets.
+<code class="code docutils literal notranslate"><span class="pre">MassDownloader.download</span></code> makes it feasible to download large data sets.
 Be warned that feasible, however, does not mean quick.   In our experience
-<code class="code docutils literal notranslate"><span class="pre">bulk_download</span></code> can sustain a transfer rate around a few Mb/s.
+mass downloads can sustain a transfer rate around a few Mb/s.
 That is outstanding performance for internet data transfer,
 but keep in mind 1 Tb of data at that rate
 will require of the order of one week to download.</p></li>
@@ -561,7 +564,7 @@ there is no guarantee a request will succeed.  We have seen many examples
 where a large request will have missing data that we know are present
 at the data center.   The reason is that web service is, by design,
 a one way request with no conversation between the client and server
-to guarantee success.  The authors of obspy’s <code class="code docutils literal notranslate"><span class="pre">bulk_download</span></code>
+to guarantee success.  The authors of obspy’s <code class="code docutils literal notranslate"><span class="pre">MassDownloader</span></code>
 method seem to have done some tricks to reduce this problem but
 it is not clear to us if it has been completely solved.</p></li>
 </ol>
@@ -578,6 +581,63 @@ can be found <a class="reference external" href="https://github.com/mspass-team/
 As the word “prototype” implies that api
 is likely to change.  Check the docstring api for more recent changes if
 you are interested in this capability.</p>
+</section>
+<section id="indexing-reading-and-optionally-converting-miniseed">
+<h3>Indexing, reading, and optionally converting miniSEED<a class="headerlink" href="#indexing-reading-and-optionally-converting-miniseed" title="Link to this heading">#</a></h3>
+<p>Downloading a miniSEED file does not by itself expose its waveforms to MsPASS.
+The standard local-file import path begins with
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">index_mseed_file</span></code></a>.
+This method scans each file and writes one or more index documents to the
+<code class="docutils literal notranslate"><span class="pre">wf_miniseed</span></code> collection.  It does <strong>not</strong> copy or convert the waveform
+samples; the documents retain the absolute directory, file name, byte offset,
+byte count, channel codes, and time span needed to read the original file.</p>
+<p>For example, this serial loop indexes every <code class="docutils literal notranslate"><span class="pre">.mseed</span></code> file in one directory:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">DBClient</span><span class="p">(),</span> <span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">data_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/absolute/path/to/mseed&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data_directory</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.mseed&quot;</span><span class="p">)):</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">index_mseed_file</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="nb">dir</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data_directory</span><span class="p">),</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Files should contain miniSEED packets ordered by network, station, location,
+channel, and time.  With the current default <code class="docutils literal notranslate"><span class="pre">segment_time_tears=True</span></code>, a
+time discontinuity also starts a new index document.  For distributed work,
+the absolute path recorded by the index must resolve to the same file on every
+worker that reads it.</p>
+<p>An index document can be read as a MsPASS <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> without first
+rewriting the compressed samples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Replace with a MongoDB query to select a subset.</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+    <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+        <span class="c1"># Process datum here, or persist a native MsPASS copy:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data</span></code></a> uses the stored
+index to read only the referenced byte range.  Calling
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a> is optional: use
+it when the workflow should persist a converted/native copy, and omit it when
+processing can begin directly from <code class="docutils literal notranslate"><span class="pre">wf_miniseed</span></code>.  Normalization with
+receiver and source metadata is a separate step described in
+<a class="reference internal" href="normalization.html#normalization"><span class="std std-ref">Normalization</span></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In the current implementation, <code class="docutils literal notranslate"><span class="pre">index_mseed_file(normalize_channel=True)</span></code>
+computes a channel match after inserting the index records but does not
+persist the resulting <code class="docutils literal notranslate"><span class="pre">channel_id</span></code> to those records.  Leave
+<code class="docutils literal notranslate"><span class="pre">normalize_channel=False</span></code> (the default) and normalize the
+<code class="docutils literal notranslate"><span class="pre">wf_miniseed</span></code> collection separately.</p>
+</div>
 </section>
 <section id="assembling-receiver-metadata">
 <h3>Assembling Receiver Metadata<a class="headerlink" href="#assembling-receiver-metadata" title="Link to this heading">#</a></h3>
@@ -600,7 +660,7 @@ data centers.   There are two different tools obspy provides.  We have found
 both are usually necessary to assemble a complete suite of receiver metadata.</p>
 <ol class="arabic simple">
 <li><p>The fdsn client has a method called <code class="code docutils literal notranslate"><span class="pre">get_stations</span></code> that is
-directly comparable to <code class="code docutils literal notranslate"><span class="pre">get_waveform</span></code>.   It uses web
+directly comparable to <code class="code docutils literal notranslate"><span class="pre">get_waveforms</span></code>.   It uses web
 services to download metadata for one or more channels of data.  It has
 a set of search parameters used to define what is to be retrieved that
 is usually comprehensive enough to fetch what you need in no more than
@@ -612,7 +672,7 @@ An <code class="code docutils literal notranslate"><span class="pre">Inventory</
 StationXML format file translated into a python data structure with a
 few added decorations (e.g. plotting).   We return to this point
 below when we discuss how these data are imported to MsPASS.</p></li>
-<li><p>When you use the <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> you have the option of
+<li><p>When you use <code class="code docutils literal notranslate"><span class="pre">MassDownloader.download</span></code> you have the option of
 having that function download the station metadata and save the
 actual StationXML data files retrieved from web services.  The resulting
 files can then be read with their <code class="code docutils literal notranslate"><span class="pre">read_inventory</span></code> method
@@ -727,27 +787,31 @@ for web service source data in XML format they call <code class="code docutils l
 The biggest issue with this approach for many workflows is that
 it is too easy to create a collection of source data that is much
 larger than the number of events actually in the data set.</p></li>
-<li><p>If you use the obspy <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> driven by source
-queries (see example titled “Earthquake Data” on the
-mass_downloader page found <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html">here</a>)
-that function will create QuakeML data files defining the unique source data for
-all the waveforms downloaded with each call to that function.</p></li>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">read_events</span></code> function reads a saved event file, including
+QuakeML, into a <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code>.  <code class="code docutils literal notranslate"><span class="pre">MassDownloader.download</span></code> does not
+create QuakeML files; query the event service separately with
+<code class="code docutils literal notranslate"><span class="pre">get_events</span></code> and optionally save that catalog as QuakeML.</p></li>
 </ol>
 <p>The procedure to load source data for a MsPASS workflow derived from
 one of the obspy methods is comparable to that described above for FDSN
 StationXML data.  That is, we use an obspy python data structure as the
 intermediary for the import.  <code class="code docutils literal notranslate"><span class="pre">get_events</span></code> returns the
-obspy <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code> class directly while the output QuakeML files from
-the <code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code> are easily created by calling the
-obspy function <code class="code docutils literal notranslate"><span class="pre">read_events</span></code> described
+obspy <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code> class directly while local QuakeML files are read with
+the obspy function <code class="code docutils literal notranslate"><span class="pre">read_events</span></code> described
 <a class="reference external" href="https://docs.obspy.org/master/packages/autogen/obspy.core.event.read_events.html">here</a>.
 A <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code> instance can then be saved to a MongoDB source collection
 using the <code class="code docutils literal notranslate"><span class="pre">Database</span></code> method called <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code>.
-The following is a fragment of a workflow doing this with the output of
-<code class="code docutils literal notranslate"><span class="pre">mass_downloader</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">paste</span> <span class="ow">in</span> <span class="n">portion</span> <span class="n">of</span> <span class="mi">2012</span> <span class="n">usarray</span> <span class="n">workflow</span>
+The following is a complete example using a local QuakeML file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_events</span>
+
+<span class="n">catalog</span> <span class="o">=</span> <span class="n">read_events</span><span class="p">(</span><span class="s2">&quot;events.xml&quot;</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;QUAKEML&quot;</span><span class="p">)</span>
+<span class="n">number_saved</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save_catalog</span><span class="p">(</span><span class="n">catalog</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;source documents saved=&quot;</span><span class="p">,</span><span class="n">number_saved</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Be aware that <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> inserts every event without checking for
+duplicates and requires each event to have a preferred origin and preferred
+magnitude.</p>
 <p>An alternative for which we provide limited support is importing catalog
 data from an Antelope database.   We have a prototype implementation in
 the module <code class="code docutils literal notranslate"><span class="pre">mspasspy.preprocessing.css30.dbarrival</span></code> but emphasize
@@ -771,20 +835,22 @@ to be processed:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">read</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream2TimeSeriesEnsemble</span>
 <span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">()</span>
 <span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">&#39;mydatabasename&#39;</span><span class="p">)</span>
    <span class="o">...</span>
 <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
-  <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;SOMEFORMAT&quot;</span><span class="p">)</span>
-  <span class="n">d</span> <span class="o">=</span> <span class="n">converterfunction</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+  <span class="n">st</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;SOMEFORMAT&quot;</span><span class="p">)</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
   <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">SOMEFORMAT</span></code> is a keyword from the list of obspy
 supported formats found
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats">here</a>
-and <code class="code docutils literal notranslate"><span class="pre">converterfunction</span></code> is a format-specific python function you would need to
-write.  The function <code class="code docutils literal notranslate"><span class="pre">converterfunction</span></code> needs to handle
+and <code class="code docutils literal notranslate"><span class="pre">Stream2TimeSeriesEnsemble</span></code> performs the generic one-Trace-to-one-
+TimeSeries conversion.  For formats whose headers require special treatment,
+wrap it in a format-specific <code class="code docutils literal notranslate"><span class="pre">converterfunction</span></code>.  That function needs to handle
 the idiosyncrasies of how obspy handles that format and convert the stream
 <code class="code docutils literal notranslate"><span class="pre">st</span></code> to a TimeSeriesEnsemble using the MsPASS converter function
 <code class="code docutils literal notranslate"><span class="pre">Stream2TimeSeriesEnsemble</span></code> documented
@@ -825,7 +891,7 @@ the inverse <code class="code docutils literal notranslate"><span class="pre">cl
 key-value pairs in one namespace to another.   To utilize this feature for
 a given format you can either create a yaml file defining the aliases or
 hard code the aliases into a python dict set as key:alias.</p>
-<p>We close this section by emphasizing that that at this time we have intentionally not
+<p>We close this section by emphasizing that at this time we have intentionally not
 placed a high priority on development of complete tools for importing
 formats other than SEED/miniseed.   We consider this one of the first
 things our user community can do to help expand MsPASS.   If you develop
@@ -837,10 +903,15 @@ your implemetation to the MsPASS repository.</p>
 <h2>Validating an Imported Data Set<a class="headerlink" href="#validating-an-imported-data-set" title="Link to this heading">#</a></h2>
 <p>After importing any data to MsPASS (miniseed included but especially any
 specialized import function output) you are advised strongly to run the
-MsPASS command line tool <code class="code docutils literal notranslate"><span class="pre">dbverify</span></code> on the imported collection.
+MsPASS command line tool <code class="code docutils literal notranslate"><span class="pre">mspass-dbverify</span></code> on the imported collection.
 We advise you run both the <code class="code docutils literal notranslate"><span class="pre">required</span></code> test
 (-t required) and the <code class="code docutils literal notranslate"><span class="pre">schema_check</span></code> test (-t schema_check)
 before running a significant workflow on an imported data set.</p>
+<p>For example, run the two tests separately on a native waveform collection:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mspass-dbverify mydatabase -c wf_TimeSeries -t required</span>
+<span class="go">mspass-dbverify mydatabase -c wf_TimeSeries -t schema_check</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -855,20 +926,20 @@ before running a significant workflow on an imported data set.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="deconvolution.html"
+       href="normalization.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Deconvolution Operators</p>
+        <p class="prev-next-title">Normalization</p>
       </div>
     </a>
     <a class="right-next"
-       href="handling_errors.html"
+       href="importing_tabular_data.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Handling Errors</p>
+        <p class="prev-next-title">Importing Tabular Data</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -894,6 +965,7 @@ before running a significant workflow on an imported data set.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fdsn-data">FDSN data</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-miniseed-data">Importing Miniseed Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#indexing-reading-and-optionally-converting-miniseed">Indexing, reading, and optionally converting miniSEED</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#assembling-receiver-metadata">Assembling Receiver Metadata</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#source-metadata">Source Metadata</a></li>
 </ul>

@@ -9,7 +9,7 @@ parallel processing of seismic data no more difficult than running
 a typical python script on a desktop machine.   In modern IT lingo
 our goals was a "scalable" framework.  The form of parallelism we
 exploit is a one of a large class of problems that can reduced to
-what is called a directed cyclic graph (DAG) in computer science.
+what is called a directed acyclic graph (DAG) in computer science.
 Any book on "big data" will discuss this concept.
 Chapter 1 of Daniel (2019) has a particularly useful description using
 a cooking analogy.  Our framework supports two well developed systems
@@ -55,7 +55,7 @@ The "data set" is abstracted by a single container that is used
 to symbolically represents the
 entire data set even though it (normally) is not expected to fit in the
 computer's memory.   Spark refers to this abstraction as a
-Resiliant Distributed Dataset (RDD) while Dask calls the same thing a "bag".
+Resilient Distributed Dataset (RDD) while Dask calls the same thing a "bag".
 
 In MsPASS the normal content of a bag/RDD is a dataset made up of *N*
 MsPASS data objects:  TimeSeries, Seismogram, or one of the ensemble of
@@ -78,28 +78,27 @@ data is easily defined by a variant of the following code section:
 
 .. code-block:: python
 
-  from mspasspy.db.client import DBClient
-  from mspasspy.db.database import (Database,
-                       read_distributed_data)
-  dbclient=DBClient()
-  dbname='exampledb'   # This sets the database name - this is an example
-  dbhandle=Database(dbclient,dbname)
-  query={}
-  # code here can optionally produce a valid string defining query
-  # as a valid MongoDB argument of for find method.  Default is no query
-  cursor=dbhandle.wf_TimeSeries.find(query)
-  # Example uses no normalization - most read use normalize (list) argument
-  mybag=read_distributed_data(dbhandle,cursor)
-  # For spark this modification is needed - context needs to be defined earlier
-  #myrdd=read_distributed_data(dbhandle,cursor,format='spark',spark_context=context)
+  from mspasspy.client import Client
+  from mspasspy.io.distributed import read_distributed_data
 
-The final result of this example script is a dask bag (RDD for the commented
-out variant), which here is
+  mspass_client = Client(database_name="exampledb", scheduler="dask")
+  dbhandle = mspass_client.get_database()
+  dask_client = mspass_client.get_scheduler()
+  query = {}            # An empty query selects the full collection
+  # Example uses no normalization; most reads use the normalize argument.
+  mybag = read_distributed_data(
+      dbhandle,
+      query=query,
+      collection="wf_TimeSeries",
+      scheduler="dask",
+  )
+
+The final result of this example script is a Dask bag, which here is
 assigned to the python symbol *mybag*.  The bag is created by
-the MsPASS *read_distributed_data* function from the "cursor" object returned by
-the MongoDB find method.  A "cursor" is an iterable form of a list that
-utilizes the same concept as Spark and Dask - the full thing does not
-always exist in memory but is a moving window into the data set.
+the MsPASS *read_distributed_data* function from the database, query, and
+collection arguments.  Internally, the reader partitions the matching
+waveform documents without loading the complete data set into the calling
+process.
 The *read_distributed_data* function is more or less a conversion between
 external storage and the processing framework (Dask or Spark) that use
 a common concept of a buffered list.
@@ -128,9 +127,9 @@ and
 
 .. code-block:: python
 
-  x=y.accumulate(functional)
+  x=y.fold(functional)
 
-Noting that Spark calls the later operation the (more common) name *reduce*.
+Spark calls the latter operation by the more common name *reduce*.
 
 These two constructs can be thought of as black boxes that handle inputs
 as illustrated below:
@@ -150,9 +149,10 @@ the application of a simple filter in dask is:
 
 .. code-block:: python
 
-  # Assume dbhandle is set as a Database class as above
-  cursor=dbhandle.wf_TimeSeries.find({})
-  d_in=read_distributed_data(dbhandle,cursor)
+  # Assume dbhandle is set as a Database class as above.
+  d_in=read_distributed_data(
+      dbhandle, query={}, collection="wf_TimeSeries", scheduler="dask"
+  )
   d_out=d_in.map(signals.filter, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
   d_compute=d_out.compute()
 
@@ -160,14 +160,16 @@ This example applies the obpsy default bandpass filter to all data
 stored in the wf_TimeSeries collection for the database to which dbhandle
 points.  The *read_distributed_data* line loads that data as a Dask bag
 we here call *d_in*.  The map operator applies the algorithm defined by
-the symbol *signals_filter* to each object in *d_in* and stores the
+the symbol *signals.filter* to each object in *d_in* and stores the
 output in the created (new) bag *d_out*.    The last line is way you tell dask to
 "go" (i.e. proceed with the calculations) and store the computed result in the *d_compute*.
-The idea and reasons for the concept of of "lazy" or "delayed"
+The idea and reasons for the concept of "lazy" or "delayed"
 operation is discussed at length in various sources on dask (and Spark).
-We refer the reader to (LIST OF A FEW KEY URLS) for more on this general topic.
-The final output, which we chose above to give a new symbol name
-of :code:`d_compute`, is bag containing the processed data.
+See the `Dask Bag documentation <https://docs.dask.org/en/stable/bag.html>`__
+for more on lazy or delayed operation.  The final output, which we chose above
+to give a new symbol name of :code:`d_compute`, is a Python list held in the
+calling process.  For a large data set that may exhaust driver memory, so a
+production workflow normally terminates with a distributed database save.
 
 The same construct in Spark, unfortunately, requires a different set of
 constructs for two reasons:  (1) pyspark demands a functional
@@ -179,9 +181,14 @@ example is the translation of the above to Spark:
 
   # Assume dbhandle is set as a Database class as above and context is
   # Spark context object also created earlier
-  cursor=dbhandle.wf_TimeSeries.find({})
-  d_in=read_distributed_data(dbhandle,cursor,format='spark',spark_context=context)
-  d_out=d_in.map(lamda d : signals.filter(d,"bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0'))
+  d_in=read_distributed_data(
+      dbhandle,
+      query={},
+      collection="wf_TimeSeries",
+      scheduler="spark",
+      spark_context=context,
+  )
+  d_out=d_in.map(lambda d: signals.filter(d,"bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0'))
   d_compute=d_out.collect()
 
 Notice the call to map in spark needs to be preceded by a call to the *parallelize*
@@ -194,20 +201,19 @@ This tutorial in `realpython.com <https://realpython.com/python-lambda/>`_
 and `this one <https://www.w3schools.com/python/python_lambda.asp>`_ by w3schools.com
 are good starting points.
 
-Both scripts create a final processed data set python associates
-with the symbol :code:`d_compute`.   A potentially confusing issue for
-beginners is that the content of :code:`d_compute` are largely opaque.
-The reason is that both a bag and RDD are designed to handle a data set
-that will not fit in memory.  Dask and Spark have different methods
-for disaggregating the container, but most MsPASS workflows would normally
-terminate with a database save operation.
+Both scripts create a final processed data set Python associates with the
+symbol :code:`d_compute`.  Dask ``compute`` and Spark ``collect`` materialize
+that result in the calling process.  Since a bag or RDD is designed for a data
+set that may not fit in memory, most MsPASS workflows instead terminate with
+a distributed database save operation.
 
 Reduce/fold operators
 -------------------------
-A second parallel construct we use is the the `Reduce` clause of the `MapReduce`
-paradigm that was a core idea in Hadoop
-(see for example the document in `this link <https://www.talend.com/resources/what-is-mapreduce/>`_ )
-that was the ancestor of both Spark and Dask.
+A second parallel construct we use is the `Reduce` clause of the `MapReduce`
+paradigm that was a core idea in Hadoop (see the `Apache Hadoop MapReduce
+tutorial
+<https://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html>`__).
+Hadoop's MapReduce model was an ancestor of both Spark and Dask.
 
 The generic problem of stacking (averaging) a set of signals
 is an example familiar to all seismologists that can be used to illustrate
@@ -506,19 +512,18 @@ Atomic Data Example
 The simplest workflow is one that works only with atomic
 data (i.e. TimeSeries or Seismogram objects).  The example
 example in the Data Model section above is of this type.
-The following fragment is similar with a few additional processing steps.
-It reads all data indexed in the data base as Seismogram objects,
-runs a demean operator,
-runs a simple bandpass filter, windows the data to a smaller range
-defined by the window_seis function defined at he top, it
-using the data start time, and then saves the results.
+The following fragment is similar, with a few additional processing steps.
+It reads the indexed data as Seismogram objects, removes the mean, applies a
+simple bandpass filter, windows each datum relative to its start time, and then
+materializes the results.
 
 .. code-block:: python
 
-  cursor=db.wf_Seismogram.find({})
   # read -> detrend -> filter -> window
   # example uses dask scheduler
-  data = read_distributed_data(db, cursor)
+  data = read_distributed_data(
+      db, query={}, collection="wf_Seismogram", scheduler="dask"
+  )
   data = data.map(signals.detrend,type='demean')
   data = data.map(signals.filter,"bandpass",freqmin=0.01,freqmax=2.0)
   # windowing is relative to start time.  300 s window starting at d.t0+200
@@ -553,8 +558,8 @@ That same workflow using `sliding_window_pipeline` is this:
                        dask_client,
                        db.name)
 
-where in for this case I added the code to instantiate a MsPASS Client
-omitted in the map example.   It illustrates that `sliding_window_pipeline`
+For this case the example includes the code to instantiate a MsPASS Client,
+which was omitted in the map example.  It illustrates that `sliding_window_pipeline`
 requires an instance of the dask client.  With the map version the
 dask client is hidden inside the bag map method.
 
@@ -586,11 +591,11 @@ The comparable code using `sliding_window_pipeline` is:
 
 .. code:: python
 
-  def process_ensemble(query,db.name):
+  def process_ensemble(query, dbname):
     """
     Processing function for submit with ensemble example.
     """
-    db = fetch_dbhandle(db.name)
+    db = fetch_dbhandle(dbname)
     cursor = db.wf_Seismogram.find(query)
     # more robust code would handle a null cursor here - omitted for simplicity
     ens = db.read_data(cursor,collection="wf_Seismogram")
@@ -599,221 +604,46 @@ The comparable code using `sliding_window_pipeline` is:
     # ator and rtoa do not work on ensembles
     # the concept applies only to atomic data
     for i in range(len(ens.member)):
-        d = ens.member[0]  # use d as a shorthand for convenience
+        d = ens.member[i]  # use d as a shorthand for convenience
         d.ator(d.t0)
         d = WindowData(d,200.0,500.0)
-        d.rota()
-        ens.member[0] = d
+        d.rtoa()
+        ens.member[i] = d
     return ens
 
-    import mspasspy.client as msc
-    mspass_client = msc.Client()
-    dask_client = mspass_client.get_scheduler()
-    db = mspass_client.get_database("mydatabase")
-    srcidlist = db.wf_Seismogram.distinct("source_id")
-    querylist=list()
-    for srcid in srcidlist:
-        query = {"source_id" : srcid}
-        querylist.append(query)
-    data_out = sliding_window_pipeline(querylist,
-                            process_ensemble,
-                            dask_client,
-                            db.name)
+  import mspasspy.client as msc
+  mspass_client = msc.Client()
+  dask_client = mspass_client.get_scheduler()
+  db = mspass_client.get_database("mydatabase")
+  srcidlist = db.wf_Seismogram.distinct("source_id")
+  querylist=list()
+  for srcid in srcidlist:
+      query = {"source_id" : srcid}
+      querylist.append(query)
+  data_out = sliding_window_pipeline(querylist,
+                          process_ensemble,
+                          dask_client,
+                          db.name)
 
+HPC deployment
+--------------
+The processing APIs above are independent of a particular batch scheduler,
+container runtime, filesystem, or center.  Deployment details are maintained
+separately because fixed queue names, hostnames, tunnel commands, and container
+modules become obsolete quickly:
 
-New Organization for discussion
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Cluster fundamentals
-~~~~~~~~~~~~~~~~~~~~~~~
-Overview of what one has to deal with to configure a parallel system
-in a distributed cluster versus a multicore workstation.   Here are things
-I can think of we need to discuss:
+* Start with the :ref:`cluster concepts <getting_started_overview>` for the
+  distinction between an HPC batch scheduler and the Dask or Spark task
+  scheduler.
+* Follow the :ref:`HPC deployment guide <deploy_mspass_on_HPC>` for current
+  Slurm, Apptainer, service-role, interactive, and shell-launch guidance.
+* Use :ref:`HPCClusterLauncher configuration <hpc_cluster_configuration>` for
+  the launcher-version-specific YAML keys and known limitations.
 
-- batch Schedulers
-- node-to-node communications
-- containers in a distributed environment
-- to shard or not to shard, that is the question
-- io performance issues and choices (relates to file system related configuration)
-
-Configuration
-~~~~~~~~~~~~~~~
-subsections for each of the above topics centered on example.
-
-I think we should reorganize the script to have related
-setups grouped by the categories we choose for this
-user manual section (as much as possible - there may
-be some order dependence)
-
-Start of old section
-~~~~~~~~~~~~~~~~~~~~~~
-Configuration
-~~~~~~~~~~~~~~~~~~
-Overview
-------------
-Some configuration will be needed to run MsPASS in a HPC system or
-a departmental cluster.   The reason is that the
-environment of an HPC cluster has numerous complications not found on a
-desktop system.  The example we give
-here is what we use for testing the system on Stampede2 at TACC.
-This section can be thought of as a lengthy explanation centered on
-the example in our github page for configuring MsPASS in a
-large, distributed memory system like TACC's Stampede2.
-To read this page we recommend you open a second winodw or tab on
-your web browser to the current file in the mspass source code
-directory called :code:`scripts/tacc_examples/distributed_node.sh`.
-The link to the that file you can view on your web browser is
-`here <https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/distributed_node.sh>`__.
-We note there is an additional example there for running MsPASS
-on a single node at TACC called :code:`scripts/tacc_examples/single_node.sh`
-you can access directly
-`here <https://github.com/mspass-team/mspass/blob/master/scripts/tacc_examples/single_node.sh>`__,
-The single node setup is useful for testing and may help your understanding
-of what is needed by being much simpler.  We do not discuss that
-example further here, however, because a primary purpose for using
-MsPASS is processing data in a large HPC cluster like TACC.
-
-nxt para needs to say tis is a shelll script and the section below
-are grouped by functional issues then list them (singularity, mongodb, and ?)
-
-
-Workload Manager Setup
--------------------------
-It uses a workload manager software installed there called :code:`Slurm`
-and the associated command keyword :code:`SBATCH`.   If your
-system does not have Slurm there will be something similar
-(notably Moab or Torque) that
-you will need to substitute.   Perhaps obvious but things like
-file system configuration will need changes to match your local environment.
-
-:code:`Slurm` is used as a batch control system to schedule a "batch" job on
-a large cluster like Stampede2.  Batch jobs are submitted to be run on
-compute notes by submitting a file the command line tool called :code:`sbatch`.
-The submitted file is a expected to be a unix shell script that runs
-your "batch job".   To be run under :code:`Slurm` the
-shell script normally defines a set of run configuration parameters
-defined in the first few lines of the script.  Here is a typical examples:
-
-.. code-block:: bash
-
-  #!/bin/bash
-  #SBATCH -J mspass          # Job name - change as approrpiate
-  #SBATCH -o mspass.o%j      # Name of stdout output file redirection
-  #SBATCH -p normal          # Queue (partition) name
-  #SBATCH -N 2               # Total # of nodes requested (2 for this example)
-  #SBATCH -n 2               # Total # of mpi tasks
-  #SBATCH -t 02:00:00        # Run time (hh:mm:ss)
-
-This example requests 2 nodes (-N 2) for a run time of 2 hours (-t line) submitted
-to TACC's "normal" queue (-p normal).   Note the :code:`Slurm` configuration parameters
-are preceded by the keyword :code:`#SBATCH`.   The lines begin with the "#"
-symbol which the unix shell will treat as a comment.   That is done for a
-variety of reasons but one important practical one is to test the syntax of a
-script on a head node without having to submit the full job.
-
-MsPASS was designed to be run in a container.   For a workstation environment
-we assume the container system being used is docker.   Running
-MsPASS with docker is described on
-`this wiki page <https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Docker>`__.
-All HPC systems we know have a docker compatible system called
-:code:`singularity`.   Singularity can be thought of as docker for a large
-HPC cluster.   The most important feature of singularity for you as a user
-is that it uses exactly the same container file as docker.  i.e. you "pull" the
-docker container and that is used by singularity in a very similar fashion to
-the way it used by docker as follows:
-
-.. code-block:: bash
-
-  singularity build mspass.simg docker://wangyinz/mspass
-
-For more about running MsPASS with singularity consult our
-wiki page found
-`here <https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Singularity-(on-HPC)>`__.
-Since our examples here were constructed on TACC' Stampede2 you may also
-find it useful to read their page on using singularity found
-`here <https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`__
-
-There is a single node mode you may want to run for testing.
-You can find an example of how to configure Stampede2 to run on a single
-node in the MsPASS scripts/tacc_examples found on github
-`here <https://github.com/mspass-team/mspass/tree/master/scripts/tacc_examples>`__.
-We focus is manual on configuration for a production run using multiple
-nodes, that is a primary purpose of using MsPASS for data processing.
-The example we give here is the
-
-There are two ways we could deploy our system on stampede2, which are single node mode and distributed mode.
-You could refer those two job script in our /scripts/tacc_examples folder in our source code. Here we would
-introduce the common parts and elements in both scripts.
-
-In both modes, we would specify the working directory and the place we store our docker image. That's why
-these two lines are in the job scripts:
-
-.. code-block:: bash
-
-  # working directory
-  WORK_DIR=$SCRATCH/mspass/single_workdir
-  # directory where contains docker image
-  MSPASS_CONTAINER=$WORK2/mspass/mspass_latest.sif
-
-The paths for these two variables can be changed according to your case and where you want to store the image.
-And it doesn't matter if the directory doesn't exist, the job script would create one if needed.
-
-Then we define the SING_COM variable to simplify the workflow in our job script. On Stampede2 and most of HPC
-systems, we use Singularity to manage and run the docker images. There are many options to start a container
-using singularity, which you could refer to their documentation. And for those who are not familiar with Singularity,
-here is a good `source <https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`__
-to get start with.
-
-.. code-block:: bash
-
-  # command that start the container
-  module load tacc-singularity
-  SING_COM="singularity run $MSPASS_CONTAINER"
-
-Then we create a login port based on the hostname of our primary compute node we have requested. The
-port number is created in a way that guaranteed to be unique and availale on your own machine. After the
-execution of your job script, you would get the ouput file, and you could get the url for accessing the
-notebook running on your compute node. However, from you own computer, you should use this login port to
-access it instead of 8888 which typically is the port we will be using in jupyter notebook because
-we reserve the port for transmitting all the data and bits through the reverse tunnel.
-
-.. code-block:: bash
-
-  NODE_HOSTNAME=`hostname -s`
-  LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne 'print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;'`
-
-Next, we create reverse tunnel port to login nodes and make one tunnel for each login so the user can just
-connect to stampede.tacc. The reverse ssh tunnel is a tech trick that could make your own machine connect to
-the machines in the private TACC network.
-
-.. code-block:: bash
-
-  for i in `seq 4`; do
-    ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:8888 login$i
-  done
-
-For single node mode, the last thing we need to do is to start a container using the command we defined
-before:
-
-.. code-block:: bash
-
-  DB_PATH='scratch'
-  SINGULARITYENV_MSPASS_DB_PATH=$DB_PATH \
-  SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR $SING_COM
-
-Here we set the environment variables inside the container using this syntactic sugar SINGULARITYENV_XXX.
-For more information, see `the Sylabs usage appendix <https://sylabs.io/guides/3.0/user-guide/appendix.html>`__.
-We define and set different variables in different containers we start because in our start-mspass.sh, we
-define different bahavior under different *MSPASS_ROLE* so that for each role, it will execute the bash
-script we define in the start-mspass.sh. Though it looks complicated and hard to extend, this is prabably
-the best way we could do under stampede2 environment. In above code snippet, we basically start the container
-in all-in-one way.
-
-There are more other ways we start a container and it depends on what we need for the deployment. You could
-find more in the distributed_node.sh job script. For example, we start a scheduler, a dbmanager and a front-end
-jupyter notebook in our primary compute node and start a spark/dask worker and a MongoDB shard replica on each
-of our worker nodes. Also you could find that the environment variables needed are different and you could find
-the corresponding usage in the start-mspass.sh script in our source code. We hide the implementation detail and
-encapsulate it inside the Dockerfile. One more thing here is we specify number of nodes in our sbatch options,
-for example 4, stampede2 would reserve 4 compute nodes for us, and we would use 1 node as our primary
-compute nodes and 3 nodes as our worker nodes. Therefore, if you need 4 worker nodes, you should sepcify 5
-as your sbatch option for nodes.
+The checked-in ``scripts/tacc_examples`` and older Singularity/Stampede2
+examples are historical references, not portable job scripts.  Current HPC
+deployments normally use Apptainer, but every resource directive, process
+launcher, filesystem path, network route, and interactive-access method must
+follow the current documentation for the target center.  In particular, do
+not copy obsolete reverse-tunnel commands: use the center's supported access
+method described by the current deployment guide.

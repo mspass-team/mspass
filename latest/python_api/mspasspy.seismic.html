@@ -1,0 +1,1085 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mspasspy.seismic &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'python_api/mspasspy.seismic';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mspasspy.util" href="mspasspy.util.html" />
+    <link rel="prev" title="mspasspy.reduce" href="mspasspy.reduce.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.2.dev2" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">mspasspy.seismic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Python API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mspasspy.seismic</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mspasspy-seismic">
+<h1>mspasspy.seismic<a class="headerlink" href="#mspasspy-seismic" title="Link to this heading">#</a></h1>
+<section id="module-mspasspy.seismic.gather">
+<span id="gather"></span><h2>gather<a class="headerlink" href="#module-mspasspy.seismic.gather" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">BasicGather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">capacity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_components</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npartitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_compact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for a MsPASS ensemble class that uses array
+implementations to store the data.  The implementation may or may not
+provide for arrays that are too large to fit in memory.
+That behavior is controlled by constructor parameters.</p>
+<p>The data object defined by this class and its children is
+understood as appropriate only for ensemble data that satisfy several
+restrictions that the current MsPASS ensemble objects
+(TimeSeriesEnsemble and SeismogramEnsemble) do not require:</p>
+<ol class="arabic simple">
+<li><p>All data have the same sample rate.</p></li>
+<li><p>Each signal has the same number of samples.</p></li>
+<li><p>The data cannot have gaps.  Data with gaps need to be discarded or
+patched (for example, with a gap fill) before being loaded into one of
+these containers.</p></li>
+</ol>
+<p>Methods for this base class are largely getters and setters for
+universal parameters that match the above.  It must be understood that
+with this design the base class is an incomplete skeleton that
+is fleshed out by subclasses.  This class has some virtual methods
+(defined with the ABC &#64;abstractmethod decorator) and a set of methods
+that would never work if only the base class were constructed
+(not allowed because of the virtual methods).  In particular, the
+way the base class handles metadata is potentially confusing because
+the base class constructor only defines stubs for the data used to
+hold member and ensemble metadata</p>
+<p>A design issue is whether a gather should implement
+the <code class="docutils literal notranslate"><span class="pre">ator</span></code> and <code class="docutils literal notranslate"><span class="pre">rtoa</span></code> functionality of BasicTimeSeries.  The cost is
+tiny up front and retrofitting after that fact might cause a lot of
+headaches.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.append" title="Link to this definition">#</a></dt>
+<dd><p>Appends data in mspass_object to internal array object.
+For now, we don’t handle resizing similar to std containers in C++
+where allocs (in this case a resize) is triggered by filling.
+Instead, we would just rely on the xarray/numpy’s append.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.ator">
+<span class="sig-name descname"><span class="pre">ator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shift</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.ator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.ator" title="Link to this definition">#</a></dt>
+<dd><p>Convert the absolut time to relative time</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.column_values">
+<span class="sig-name descname"><span class="pre">column_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.column_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.column_values" title="Link to this definition">#</a></dt>
+<dd><p>Returns the values assigned to the column axis.  These should
+default to integers matching the column index values.   They
+should be allowed to be anything, however, to handle things
+like variable offset record sections.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.dead">
+<span class="sig-name descname"><span class="pre">dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.dead" title="Link to this definition">#</a></dt>
+<dd><p>Return true if jth member is marked dead (opposite of live).
+:param j: index number
+:type j: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.dt">
+<span class="sig-name descname"><span class="pre">dt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.dt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.dt" title="Link to this definition">#</a></dt>
+<dd><p>Return the sample rate of the ensemble</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.edit_metadata">
+<span class="sig-name descname"><span class="pre">edit_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.edit_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.edit_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Differs from set_metadata in that the contents of md are added to
+the current and do not fully repalce them.   Needed for updating
+metadata after costruction
+:param j: index of member
+:type j: int
+:param md: the metadata to edit, dict or metadata
+:type md: dict or metadata</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.ensemble_metadata">
+<span class="sig-name descname"><span class="pre">ensemble_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dict'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.ensemble_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.ensemble_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Like metadata method but returns the ensemble metadata.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.get_metadata">
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dict'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.get_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Return the Metadata components of member j.  return_type should
+allow optional return as dict or Metadata.  Not clear which should
+be default.
+:param j: index of member
+:type j: int
+:param return_type: return type, dict or metadata
+:type return_type: str</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.live">
+<span class="sig-name descname"><span class="pre">live</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.live"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.live" title="Link to this definition">#</a></dt>
+<dd><p>Return true if jth member is set live.
+:param j: index number
+:type j: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.member">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.member" title="Link to this definition">#</a></dt>
+<dd><p>Returns the data associated with member j.   Virtual method
+returns different type for scalar ersus 3c data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.rtoa">
+<span class="sig-name descname"><span class="pre">rtoa</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.rtoa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.rtoa" title="Link to this definition">#</a></dt>
+<dd><p>Convert the relative time to absolute time</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.sample_number">
+<span class="sig-name descname"><span class="pre">sample_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.sample_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.sample_number" title="Link to this definition">#</a></dt>
+<dd><p>Return a numpy array of ints of the index position of an ordered pair defined by a time
+(row) value and a column value that can be mapped to the
+column index.
+:param x: a list of column names
+:param time: the time (row) value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.samprate">
+<span class="sig-name descname"><span class="pre">samprate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.samprate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.samprate" title="Link to this definition">#</a></dt>
+<dd><p>Return the sample rate of the ensemble</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.set_column_values">
+<span class="sig-name descname"><span class="pre">set_column_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.set_column_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.set_column_values" title="Link to this definition">#</a></dt>
+<dd><p>Set the column values array to the values in x.
+:param x: a list of column names</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.set_metadata">
+<span class="sig-name descname"><span class="pre">set_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.set_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.set_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Setter for metadata of member j.   md is the new continer that would
+replace current conent.  Most useful for constructors.
+:param j: index of member
+:type j: int
+:param md: the metadata to set, dict or metadata
+:type md: dict or metadata</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.shift">
+<span class="sig-name descname"><span class="pre">shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeshift</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.shift" title="Link to this definition">#</a></dt>
+<dd><p>Time shift for all the member in the ensemble
+:param timeshift: the shift time range
+:type timeshift: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.starttime">
+<span class="sig-name descname"><span class="pre">starttime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.starttime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.starttime" title="Link to this definition">#</a></dt>
+<dd><p>Return a list (python array) of starttimes.  We should assume
+times are always stored as doubles.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.subset">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.subset" title="Link to this definition">#</a></dt>
+<dd><p>Return a subset of the data defined by either a collection of
+members or a restricted sample range (a form of windowing).
+Concrete implementtions can define what this means.   Minimum
+usage would be something functionally equivalent to the f90/matlab
+synatx of ensemble.member[i:j].   We may also want to be less
+generic and require addition methods with other names like
+“extract_members” or “window” (time range).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.sync_metadata">
+<span class="sig-name descname"><span class="pre">sync_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.sync_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.sync_metadata" title="Link to this definition">#</a></dt>
+<dd><p>This would act like the one in Ensemble in C++ copying all the
+ensemble key-value pairs to the members.  It is debatable that
+this would be needed but would be trivial to implement.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.time">
+<span class="sig-name descname"><span class="pre">time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.time" title="Link to this definition">#</a></dt>
+<dd><p>Return time of array position i,j (Note works the same for 3c and
+scalar data)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<em>int</em>) – row index</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – column index</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.time_is_UTC">
+<span class="sig-name descname"><span class="pre">time_is_UTC</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.time_is_UTC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.time_is_UTC" title="Link to this definition">#</a></dt>
+<dd><p>Returns True if the time standard for the data is set as UTC</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.time_is_relative">
+<span class="sig-name descname"><span class="pre">time_is_relative</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.time_is_relative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.time_is_relative" title="Link to this definition">#</a></dt>
+<dd><p>Returns True if the time standard for the data is set as relative</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.Gather">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">Gather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">capacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npartitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_compact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#Gather"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.Gather" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.seismic.gather.BasicGather" title="mspasspy.seismic.gather.BasicGather"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicGather</span></code></a></p>
+<p>Concrete implementtion for a scalar gather.  This is the array
+equivalent of a TimeSeriesEnsemble appropriate when the input matches
+the concept of BasicGather.    It follows the OOP stndard pardigm that creation is initialization.  This puts a lot of features in the constructor for the class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.Gather.data">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#Gather.data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.Gather.data" title="Link to this definition">#</a></dt>
+<dd><p>Return the raw data vector associated with column j.   Defined here
+as an ndarray return but probably should be any iterable
+container that acts like a vector.
+:param j: index
+:param j: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.Gather.member">
+<span class="sig-name descname"><span class="pre">member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">TimeSeries</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#Gather.member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.Gather.member" title="Link to this definition">#</a></dt>
+<dd><p>Returns the data associated with member j.  Unlike above I suggest
+we not do the idea of “data_only”.  Aways return a TimeSeries.
+Suggest data method for that purpose
+:param j: index
+:param j: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.Gather.subset">
+<span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.seismic.gather.Gather" title="mspasspy.seismic.gather.Gather"><span class="pre">Gather</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#Gather.subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.Gather.subset" title="Link to this definition">#</a></dt>
+<dd><p>Return a subset of the Gather with signals from start to end
+(like start:end in F90 or matlab).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – the start index of the subset</p></li>
+<li><p><strong>end</strong> – specifies the index where the subset ends, excluding the
+value at this index just like array slicing.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.SeismogramGather">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">SeismogramGather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">capacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npartitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_compact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#SeismogramGather"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.SeismogramGather" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.seismic.gather.BasicGather" title="mspasspy.seismic.gather.BasicGather"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicGather</span></code></a></p>
+<p>Gather for three-component data.  Can only be created from inputs that
+satisfy the restrictions of BasicGather.  It is much like Gather
+but with a 3D instead of a 2D array holding sample data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.SeismogramGather.data">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#SeismogramGather.data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.SeismogramGather.data" title="Link to this definition">#</a></dt>
+<dd><p>Return the raw data matrix associated with column j.   Defined here
+as an ndarray return but probably should be any iterable
+container that acts like a matrix.  Not clear what will be needed to
+support large matrix formats.
+:param j: index
+:param j: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.SeismogramGather.member">
+<span class="sig-name descname"><span class="pre">member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><span class="pre">Seismogram</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#SeismogramGather.member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.SeismogramGather.member" title="Link to this definition">#</a></dt>
+<dd><p>Returns the data associated with member j.  Unlike above I suggest
+we not do the idea of “data_only”.  Aways return a TimeSeries.
+Suggest data method for that purpose
+:param j: index
+:param j: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.SeismogramGather.subset">
+<span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.seismic.gather.SeismogramGather" title="mspasspy.seismic.gather.SeismogramGather"><span class="pre">SeismogramGather</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#SeismogramGather.subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.SeismogramGather.subset" title="Link to this definition">#</a></dt>
+<dd><p>Return a subset of the Gather with signals from start to end
+(like start:end in F90 or matlab).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – the start index of the subset</p></li>
+<li><p><strong>end</strong> – specifies the index where the subset ends, excluding the
+value at this index just like array slicing.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.extractDataFromMsPassObject">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">extractDataFromMsPassObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#extractDataFromMsPassObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.extractDataFromMsPassObject" title="Link to this definition">#</a></dt>
+<dd><p>mspass_object is either a seismogram or a timeseries, mspass_object.data
+is a DoubleVector/dmatrix, we want to convert it extract the data from it and
+convert it into a numpy array
+The return type is np.ndarray</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mspass_object</strong> – Seismogram or TimeSeries to extract data from</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.extractDataFromOldEnsemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">extractDataFromOldEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#extractDataFromOldEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.extractDataFromOldEnsemble" title="Link to this definition">#</a></dt>
+<dd><p>A wrapper function to extract data data from an old ensemble object, works by
+iterating the member in the ensemble and calling extractDataFromMsPassObject
+on each of them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ensemble_object</strong> – TimeSeriesEnsemble or SeismogramEnsemble</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.extractMemberMetadataFromOldEnsemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">extractMemberMetadataFromOldEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#extractMemberMetadataFromOldEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.extractMemberMetadataFromOldEnsemble" title="Link to this definition">#</a></dt>
+<dd><p>A helper function to extract the member metadata from the old ensemble object
+It iterates all the members, reads the metadata and concatenate them into one
+single dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ensemble_object</strong> – TimeSeriesEnsemble or SeismogramEnsemble</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.isMsPassObject">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">isMsPassObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#isMsPassObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.isMsPassObject" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.isOldEnsembleObject">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">isOldEnsembleObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#isOldEnsembleObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.isOldEnsembleObject" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.read_basic_array_ensemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">read_basic_array_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#read_basic_array_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.read_basic_array_ensemble" title="Link to this definition">#</a></dt>
+<dd><p>Read an array from the database into an ensemble object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – database containing the <code class="docutils literal notranslate"><span class="pre">ensemble</span></code> collection.</p></li>
+<li><p><strong>ensemble_object</strong> – object that receives the stored metadata and data.</p></li>
+<li><p><strong>object_id</strong> – MongoDB identifier of the ensemble document.  The
+identifier provides a one-to-one mapping to the ensemble metadata and
+member data.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The ensemble document schema is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>_id : unique id
+metadata : a dict that stores the ensemble&#39;s metadata
+member_metadata : a list of metadata for each member
+store_type = &#39;zarr&#39; : we might support other storage?
+zarr_group_path : str, the path of the zarr group
+zarr_arr_name : str, the name of the zarr array
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.regularize_ensemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">regularize_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#regularize_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.regularize_ensemble" title="Link to this definition">#</a></dt>
+<dd><p>A helper function to regularize all the member data in an ensemble.
+The purpose of this function is to set all member data to have the same start
+time.
+By default, the regularization is carried out by simply applying a time window
+on each member.
+:param regularizer: A function object defined by user that regularize all data
+members in the ensemble, it should take only one argument (a timeseries/seismogram)
+and return the regularized object.
+:type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.resample_ensemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">resample_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#resample_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.resample_ensemble" title="Link to this definition">#</a></dt>
+<dd><p>A wrapper for the resample function defined in resample.py. It would automate
+handling of resampling any valid data object to a common sample rate.
+User can pass the sample interval for the resampler, if not given by the
+user, we would use the sample interval from the first data member.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.seismic.gather.write_basic_array_ensemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">write_basic_array_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#write_basic_array_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.write_basic_array_ensemble" title="Link to this definition">#</a></dt>
+<dd><p>Write an ensemble object’s data and metadata to storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – database containing the <code class="docutils literal notranslate"><span class="pre">ensemble</span></code> collection.</p></li>
+<li><p><strong>ensemble_object</strong> – object whose metadata and data are written.</p></li>
+<li><p><strong>object_id</strong> – MongoDB identifier of the ensemble document.  The
+identifier provides a one-to-one mapping to the ensemble metadata and
+member data.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The ensemble document schema is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>_id : unique id
+metadata : a dict that stores the ensemble&#39;s metadata
+member_metadata : a list of metadata for each member
+store_type = &#39;zarr&#39; : we might support other storage?
+zarr_group_path : str, the path of the zarr group
+zarr_arr_name : str, the name of the zarr array
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mspasspy.reduce.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mspasspy.reduce</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mspasspy.util.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mspasspy.util</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-mspasspy.seismic.gather">gather</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather"><code class="docutils literal notranslate"><span class="pre">BasicGather</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.append"><code class="docutils literal notranslate"><span class="pre">BasicGather.append()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.ator"><code class="docutils literal notranslate"><span class="pre">BasicGather.ator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.column_values"><code class="docutils literal notranslate"><span class="pre">BasicGather.column_values()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.dead"><code class="docutils literal notranslate"><span class="pre">BasicGather.dead()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.dt"><code class="docutils literal notranslate"><span class="pre">BasicGather.dt()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.edit_metadata"><code class="docutils literal notranslate"><span class="pre">BasicGather.edit_metadata()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.ensemble_metadata"><code class="docutils literal notranslate"><span class="pre">BasicGather.ensemble_metadata()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.get_metadata"><code class="docutils literal notranslate"><span class="pre">BasicGather.get_metadata()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.live"><code class="docutils literal notranslate"><span class="pre">BasicGather.live()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.member"><code class="docutils literal notranslate"><span class="pre">BasicGather.member()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.rtoa"><code class="docutils literal notranslate"><span class="pre">BasicGather.rtoa()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.sample_number"><code class="docutils literal notranslate"><span class="pre">BasicGather.sample_number()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.samprate"><code class="docutils literal notranslate"><span class="pre">BasicGather.samprate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.set_column_values"><code class="docutils literal notranslate"><span class="pre">BasicGather.set_column_values()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.set_metadata"><code class="docutils literal notranslate"><span class="pre">BasicGather.set_metadata()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.shift"><code class="docutils literal notranslate"><span class="pre">BasicGather.shift()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.starttime"><code class="docutils literal notranslate"><span class="pre">BasicGather.starttime()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.subset"><code class="docutils literal notranslate"><span class="pre">BasicGather.subset()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.sync_metadata"><code class="docutils literal notranslate"><span class="pre">BasicGather.sync_metadata()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.time"><code class="docutils literal notranslate"><span class="pre">BasicGather.time()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.time_is_UTC"><code class="docutils literal notranslate"><span class="pre">BasicGather.time_is_UTC()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.BasicGather.time_is_relative"><code class="docutils literal notranslate"><span class="pre">BasicGather.time_is_relative()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.Gather"><code class="docutils literal notranslate"><span class="pre">Gather</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.Gather.data"><code class="docutils literal notranslate"><span class="pre">Gather.data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.Gather.member"><code class="docutils literal notranslate"><span class="pre">Gather.member()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.Gather.subset"><code class="docutils literal notranslate"><span class="pre">Gather.subset()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.SeismogramGather"><code class="docutils literal notranslate"><span class="pre">SeismogramGather</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.SeismogramGather.data"><code class="docutils literal notranslate"><span class="pre">SeismogramGather.data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.SeismogramGather.member"><code class="docutils literal notranslate"><span class="pre">SeismogramGather.member()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.SeismogramGather.subset"><code class="docutils literal notranslate"><span class="pre">SeismogramGather.subset()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.extractDataFromMsPassObject"><code class="docutils literal notranslate"><span class="pre">extractDataFromMsPassObject()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.extractDataFromOldEnsemble"><code class="docutils literal notranslate"><span class="pre">extractDataFromOldEnsemble()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.extractMemberMetadataFromOldEnsemble"><code class="docutils literal notranslate"><span class="pre">extractMemberMetadataFromOldEnsemble()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.isMsPassObject"><code class="docutils literal notranslate"><span class="pre">isMsPassObject()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.isOldEnsembleObject"><code class="docutils literal notranslate"><span class="pre">isOldEnsembleObject()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.read_basic_array_ensemble"><code class="docutils literal notranslate"><span class="pre">read_basic_array_ensemble()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.regularize_ensemble"><code class="docutils literal notranslate"><span class="pre">regularize_ensemble()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.resample_ensemble"><code class="docutils literal notranslate"><span class="pre">resample_ensemble()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.seismic.gather.write_basic_array_ensemble"><code class="docutils literal notranslate"><span class="pre">write_basic_array_ensemble()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/python_api/mspasspy.seismic.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/python_api/mspasspy.seismic.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

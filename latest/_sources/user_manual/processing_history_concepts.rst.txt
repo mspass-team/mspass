@@ -20,13 +20,13 @@ preserving processing history has two components.
 1. *Global history* is the list of *unique definitions* of algorithms used
    in a workflow.   The *unique* qualifier is necessary because most
    algorithms have one to thousands of numbers/strings that define a unique
-   behavior.   To keep the discuss concise in this document we define a
-   *parameter* as data used by an algorithm that is NOT one of the the atomic
-   data to MsPASS.   A parameter can thus be something as simple as a
+   behavior.   To keep the discussion concise in this document we define a
+   *parameter* as data used by an algorithm that is not one of the atomic
+   MsPASS inputs.  A parameter can thus be something as simple as a
    single integer or real number, or as elaborate as any python object (e.g.
    a dict or list container).  We assume the behavior of a particular algorithm
    can be uniquely defined by a unique name assigned to the algorithm and
-   a particular set of parameters used to control it's behavior.   The
+   a particular set of parameters used to control its behavior.   The
    simplest example is a function call with the algorithm set to the name
    of the function and the parameters as a set of simple real and integer
    inputs.   More complicated examples may require some more elaborate recipe
@@ -34,7 +34,10 @@ preserving processing history has two components.
    here puts no restriction on what the parameters are but treat that as
    an implementation detail.  Any algorithm that aims to preserve processing
    history must define a mechanism to load and store the parameters that
-   define a unique instance of that algorithm.
+   define a unique instance of that algorithm.  MsPASS provides
+   :py:class:`GlobalHistoryManager<mspasspy.global_history.manager.GlobalHistoryManager>`
+   and :py:class:`ParameterGTree<mspasspy.global_history.ParameterGTree.ParameterGTree>`
+   for this purpose.
 
 2. *Object level history*.  To fully recreate the processing history of a
    processed data set one needs to retain the chain of processes that operated
@@ -47,21 +50,18 @@ preserving processing history has two components.
    for object level history from at least two sources:  (1) python is a much
    richer language than traditional, custom job control languages used by
    processing packages and (2) some machine learning algorithms are iterative
-   at the object level.   On the other hand, although the need object-level history
-   is clear a naive implementation is potentially problematic in two
-   ways:  (1) memory bloat, and (2) performance.  We created a mechanism for
-   preserving object level history that is lightweight by preserving
-   only the minimum information needed to reconstruct a tree structure that
-   defines that tree.  We made the mechanism fast by implementing the
-   mechanism in C++ using an std::multimap container for which insertion
-   is about as fast as possible.  The user interface hides the implementation
-   details.   You as a user need only consult the API references to a
-   object we call *mspass.ProcessingHistory*.     (NEED A LINK HERE TO python
-   documentation)  User's need only recognize that *Seismogram* and *TimeSeries*
-   objects (THESE ALSO NEED TO BE LINKS TO PYTHON API PAGES) have a
-   ProcessingHistory component.  Algorithms can and should at least allow
-   the option of registering themselves through this mechanism.   All
-   algorithms supported in MsPASS have an option to enable object level
-   history.   NEED A FEW MORE SENTENCES HERE WITH A LINK TO PAGE WITH THE TOPIC
-   OF WRITING YOUR OWN PROCESSING MODULE EXTENSION.  THAT DOCUMENT CAN AND
-   SHOULD CONTAIN A SECTION ON HOW TO SET UP THE HISTORY MECHANISM.
+   at the object level.  Although the need for object-level history is clear,
+   a naive implementation can cause memory bloat and poor performance.  MsPASS
+   therefore stores only the node and edge information needed to reconstruct a
+   history tree.  The C++
+   :py:class:`ProcessingHistory<mspasspy.ccore.utility.ProcessingHistory>`
+   implementation uses a ``std::multimap``; the Python interface hides that
+   implementation detail.
+
+   :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` and
+   :py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>` inherit the
+   history interface.  MsPASS functions wrapped by the standard decorators can
+   register a processing stage when ``object_history=True``; callers must also
+   supply a stable ``alg_id``.  History is disabled by default to avoid its
+   storage and runtime cost.  See :ref:`adapting_algorithms` for the decorator
+   contract used when adapting a Python function or class method.

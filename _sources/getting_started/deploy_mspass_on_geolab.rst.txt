@@ -13,8 +13,12 @@ needs automatically.
 Quick start
 -----------
 
-Start a GeoLab server with the MsPASS GeoLab image, then open a notebook and
-run:
+On GeoLab's Server Options page, select ``Other...`` as the environment and
+enter the public MsPASS image reference ``ghcr.io/mspass-team/mspass:geolab``.
+See EarthScope's `Launching your Server
+<https://docs.earthscope.org/geolab/getting-started/server-launch>`_ guide for
+the current custom-image launch workflow.  After the server starts, open a
+notebook and run:
 
 .. code-block:: python
 
@@ -175,7 +179,10 @@ By default, the MongoDB data directory is:
     /home/jovyan/db/data
 
 This directory is inside the GeoLab user workspace, so it can persist across
-server restarts.
+server restarts.  It is still subject to GeoLab's home-directory quota and
+retention policy; see EarthScope's `File Systems and Data Storage
+<https://docs.earthscope.org/geolab/getting-started/user-storage>`_ guide before
+using it for large or irreplaceable datasets.
 
 To reset the local MongoDB database, stop the GeoLab server and start it again
 with:
@@ -183,6 +190,10 @@ with:
 .. code-block:: bash
 
     MSPASS_RESET_MONGO_DB=true
+
+This is a container-startup setting.  Configure it in the image or server
+launch environment before the JupyterHub single-user server starts; setting it
+in a terminal after startup does not reset the running database.
 
 Only use this when you intentionally want to remove the selected MongoDB data
 directory before startup.  The startup script does not delete the database by
@@ -270,6 +281,9 @@ endpoint used by MsPASS.  The default notebook-local MongoDB address
 
 For DB-backed MsPASS workflows with Gateway, use a MongoDB endpoint that is
 reachable from both the notebook pod and Gateway worker pods.
+
+When finished with either Gateway example, call ``cluster.shutdown()`` to
+release the Gateway workers.
 
 Disable local Dask
 ------------------

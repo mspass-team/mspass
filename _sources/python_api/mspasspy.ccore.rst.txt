@@ -17,6 +17,14 @@ seismic
     :undoc-members:
     :show-inheritance:
 
+io
+--
+
+.. automodule:: mspasspy.ccore.io
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 algorithms
 ----------
 
@@ -43,4 +51,3 @@ deconvolution
     :members:
     :undoc-members:
     :show-inheritance:
-

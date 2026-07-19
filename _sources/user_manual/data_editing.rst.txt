@@ -45,27 +45,36 @@ dataset defined by Seismogram objects:
 
 .. code-block:: python
 
-  # ... Preceding code: import commands and creating database handle db ...
+  from mspasspy.algorithms.edit import MetadataLT
+  from mspasspy.algorithms.snr import broadband_snr_QC
+
+  def measure_bandwidth(d):
+    d = broadband_snr_QC(d,
+        use_measured_arrival_time=True,
+        measured_arrival_time_key="Ptime")
+    if d.live and d.is_defined("Parrival"):
+      d["bandwidth"] = d["Parrival"]["bandwidth"]
+    return d
 
   editor = MetadataLT("bandwidth",12.0)
   query = {}   # Change to a MongoDB query to process data subset
-  cursor = db.wf_Seismogram.find(query)
+  cursor = db["wf_Seismogram"].find(query)
   for doc in cursor:
-    d = db.read_data(doc)
-    d = arrival_snr_QC(d)
-    d = editor(d)
+    d = db.read_data(doc, collection="wf_Seismogram")
+    d = measure_bandwidth(d)
+    d = editor.kill_if_true(d)
 
 
-We made this example as simple as possible by using all defaults for the
-function ``arrival_snr_QC``.   That function has many options and depends upon
-a detail that the example assumes was previously computed;  the Metadata attribute
-"Parrival" is assumed to have been set to a time within the time interval
-spanned by each datum.  The key step for the concepts of this section
+The function ``broadband_snr_QC`` has many options.  This example assumes the
+Metadata attribute "Ptime" was previously set to a time within the interval
+spanned by each datum.  The function stores a result dictionary under
+"Parrival"; ``measure_bandwidth`` copies its nested bandwidth value to the
+top-level key tested by the editor.  The key step for the concepts of this section
 is the creation of the python class
 ``MetadataLT`` in the first line.  The name is meant to be mnemonic for
 using a Metadata test with the "Less Than (FORTRAN LT or python <)" operation
 using the value stored in Metadata with the key "bandwidth".
-We directly call the ``MetadataLT`` object, which is equivalent to calling the``kill_if_true`` method, to implement the test.
+We call the ``kill_if_true`` method of the ``MetadataLT`` object to implement the test.
 That method will return a version of ``d`` marked dead if the value of "bandwidth" is less than 12.0.
 
 For completeness here is a parallel version of
@@ -73,16 +82,19 @@ that same script using dask:
 
 .. code-block:: python
 
+  from mspasspy.io.distributed import read_distributed_data
+
   editor = MetadataLT("bandwidth", 12.0)
   query = {}
-  seisbag = db.read_distributed_data(db, query)
-  seisbag = seisbag.map(arrival_snr_QC)
-  seisbag = seisbag.map(editor)
+  seisbag = read_distributed_data(db, query=query,
+                                  collection="wf_Seismogram")
+  seisbag = seisbag.map(measure_bandwidth)
+  seisbag = seisbag.map(editor.kill_if_true)
 
 
 where we also removed the comments and omit the (required to do anything)
 call to ``seisbag.compute()`` because this example would always be
-most appropriate as a section inside a workflow. 
+most appropriate as a section inside a workflow.
 
 All Simple Comparison Operators
 +++++++++++++++++++++++++++++++++
@@ -92,7 +104,7 @@ Have the same, common API with the following elements:
 #. All operators are implemented as a subclass of an (abstract) base class called
    Executioner.
 #. All operators have and one and only one constructor.
-#. All the constructors of this set have have two required, positional argument.  The
+#. All the constructors of this set have two required, positional arguments.  The
    first is the Metadata key whose value is to compared.  The second (argument
    1 starting from 0) must contain the (constant) value for the comparison.
    In the example above the key
@@ -113,18 +125,21 @@ Have the same, common API with the following elements:
    that method kills the datum if the conditional defined in construction of
    the object resolves true.   For our example above that means if ``x`` is the value
    extracted from Metadata and ``a`` is the boundary set as arg1 in the constructor,
-   the datum is killed if ``x<a``.  This method always returns a copy of the
+   the datum is killed if ``x<a``.  This method mutates and returns the
    data passed to it marked dead or alive depending on the outcome of the
    test.  That is essential for use of the function in a map operator like
    our parallel example above. All operators will throw a MsPASSError exception
    if the data received is not one of the data objects known to MsPASS.
    All implementations also silently do nothing if the input is already marked
    dead.
-#. As a convenience the base class implements the ``__call__`` method.
-   In this case the ``__call__`` method can be thought of as shorthand for the
-   ``kill_if_true`` method.   We used this feature in the example above
-   by using the form ``d = editor(d)`` that is a shorthand for the more
-   explicit but verbose ``d = editor.kill_if_true(d)``.
+#. The base class currently implements ``__call__``, but that method does not
+   return the edited datum or forward options such as ``apply_to_members``.
+   Use ``kill_if_true`` explicitly in assignments and map operations.
+
+All supplied ``kill_if_true`` implementations also accept the optional
+``apply_to_members`` argument.  For an ensemble the default value, ``False``,
+tests the ensemble's own Metadata and can kill the entire ensemble.  Set it
+to ``True`` to apply the editor serially to each live member.
 
 The following is a table of the names of all the simple comparison functions
 using the common API.   In each cell ``x`` is the value extracted from
@@ -251,19 +266,19 @@ True means if the test is true the datum will be marked dead.
    * - True
      - True
      - False
-     - x <= a and x >= b
+     - a <= x <= b
    * - False
      - True
      - False
-     - x < a and x >= b
+     - a < x <= b
    * - True
      - False
      - False
-     - x <= a and x > b
+     - a <= x < b
    * - False
      - False
      - False
-     - x < a and x > b
+     - a < x < b
 
 
 
@@ -291,15 +306,16 @@ the constructor is different and has this signature:
 
 .. code-block:: python
 
-  def __init__(self, executioner_list, verbose=False):
+  def __init__(self, executioner_list):
 
 where ``executioner_list`` is expected to be any iterable container made up
-only of python classes that are subclasses of Executioner. (All the classes
-covered in this document are subclasses of Executioner.)  Verbose has the
-same meaning as described above with an important exception.  It is not
-global but refers only to errors internal to ``FiringSquad``.  Any testers
-needing a verbose option enabled will need to have the verbose option
-specified during their construction.
+only of Python objects that are instances of Executioner subclasses. (All the
+classes covered in this document are subclasses of Executioner.)  Use a
+reusable iterable such as a list or tuple rather than a one-shot generator,
+because the constructor iterates over it once for validation and again to
+copy it.  ``FiringSquad`` itself has no verbose constructor option.  Any
+testers needing verbose output must have that option enabled during their
+construction.
 
 When the ``kill_if_true`` method is called for this class the list of
 executioners are called in order defined by the list.  The victim cannot
@@ -365,9 +381,10 @@ Some key points about extensions:
    That is required because the implementation uses the kill method that
    the caller can be assured is part of the data object received.  Extensions
    that can plug in cleanly (e.g. as a member of a ``FiringSquad``) should do
-   the same test for MsPASS data objects.  That test is standardized in the
-   base class method ``input_is_valid``.   Use of that method in
-   extensions is strongly advised to avoid unexpected aborts.
+   the same test for MsPASS data objects.  The current module uses a private
+   helper for that validation; extension code should not treat that helper as
+   a stable public API.  Follow the public behavior of the supplied editors
+   and raise ``MsPASSError`` for unsupported input types.
 *  Consider implementing the verbose option as described here for consistency.
 *  As with many things like this the best way to see how to build is an
    extension is to use the class implementations described above as examples.

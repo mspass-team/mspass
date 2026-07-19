@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>CRUD Operations in MsPASS &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>CRUD Operations in MsPASS &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,11 +55,11 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />
-    <link rel="prev" title="Database Concepts" href="database_concepts.html" />
+    <link rel="next" title="Normalization" href="normalization.html" />
+    <link rel="prev" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -484,13 +487,12 @@ summarize some common options in CRUD operations.</p>
 we give the obvious name Database.  Most MsPASS jobs need to the have following
 incantation at the top of the python job script:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="s1">&#39;database_name&#39;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s1">&#39;database_name&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>where the second argument on Database, <code class="code docutils literal notranslate"><span class="pre">'database_name'</span></code>,
-is a name you chose for the dataset you are working with.
+<p>where <code class="code docutils literal notranslate"><span class="pre">'database_name'</span></code> is a name you chose for the dataset you are
+working with.
 For the remainder of this section we will use the symbol “db” as
 defined, but as in any programming language you need to recognize the
 symbol can be anything you as the user find sensible. “db” is just our
@@ -519,7 +521,10 @@ data objects defined in MsPASS:  <code class="code docutils literal notranslate"
 <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>, <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>, or
 <code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.  Here is an example usage for a single
 miniseed trace:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example assumes filename contains one channel of data in</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">read</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trace2TimeSeries</span>
+
+<span class="c1"># Example assumes filename contains one channel of data in</span>
 <span class="c1"># miniseed format</span>
 <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;testfile.msd&#39;</span>
 <span class="n">dstrm</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;MSEED&#39;</span><span class="p">)</span>
@@ -533,15 +538,18 @@ miniseed trace:</p>
 <p>By default <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> stores all Metadata except those linked to
 normalized collections (<code class="code docutils literal notranslate"><span class="pre">source</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and/or
 <code class="code docutils literal notranslate"><span class="pre">site</span></code>) with no safety checks.  We discuss additional common
-options in a later section.  The default return value is the
-<code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> or list of <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> values for the waveform
-documents it writes.  Set <code class="code docutils literal notranslate"><span class="pre">return_data=True</span></code> when an
+options in a later section.  With the default <code class="code docutils literal notranslate"><span class="pre">return_data=False</span></code>,
+the return is a dictionary containing <code class="code docutils literal notranslate"><span class="pre">is_live</span></code> and available keys
+requested by <code class="code docutils literal notranslate"><span class="pre">return_list</span></code> (which defaults to <code class="code docutils literal notranslate"><span class="pre">[&quot;_id&quot;]</span></code>).
+Set <code class="code docutils literal notranslate"><span class="pre">return_data=True</span></code> when an
 intermediate save needs the updated data object returned to the workflow.</p>
 <p>When <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> is passed an ensemble, it writes each live member
 as an atomic datum.  Ensemble Metadata are copied to each member before
 the member is saved.  A common pattern for miniseed data is to bundle
 single-component data into three-component seismograms before saving:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># d is a TimeSeriesEnsemble loaded earlier in the workflow.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.bundle</span><span class="w"> </span><span class="kn">import</span> <span class="n">bundle_seed_data</span>
+
+<span class="c1"># d is a TimeSeriesEnsemble loaded earlier in the workflow.</span>
 <span class="n">d3c</span> <span class="o">=</span> <span class="n">bundle_seed_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d3c</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
 </pre></div>
@@ -561,7 +569,10 @@ avoid the need to write our own QUAKEML parser.   As with
 <code class="code docutils literal notranslate"><span class="pre">save_data</span></code>
 the easiest way to understand the usage would be this example derived from
 our <em>getting_started</em> tutorial.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;IRIS&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">obspy.clients.fdsn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;IRIS&quot;</span><span class="p">)</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2011-03-11T05:46:24.0&#39;</span><span class="p">)</span>
 <span class="n">starttime</span> <span class="o">=</span> <span class="n">t0</span><span class="o">-</span><span class="mf">3600.0</span>
 <span class="n">endtime</span> <span class="o">=</span> <span class="n">t0</span><span class="o">+</span><span class="p">(</span><span class="mf">7.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">24.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">3600.0</span><span class="p">)</span>
@@ -579,8 +590,10 @@ our <em>getting_started</em> tutorial.</p>
 <span class="n">db</span><span class="o">.</span><span class="n">save_catalog</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This particular example pulls 11 large aftershocks of the 2011 Tohoku
-Earthquake.</p>
+<p>This example requests magnitude 6.5 and larger events near the 2011
+Tohoku earthquake during the following week.  Catalog contents can be
+revised by the data center, so code should not assume an exact result
+count.</p>
 </li>
 <li><p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_inventory" title="mspasspy.db.database.Database.save_inventory"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_inventory()</span></code></a> is similar
 in concept to <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code>, but instead of
@@ -669,7 +682,7 @@ by the cursor and constructs a <code class="code docutils literal notranslate"><
 </ol>
 <p>The most common serial pattern is to iterate over a cursor and pass
 each document to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="n">Some</span> <span class="n">MongoDB</span> <span class="n">query</span> <span class="nb">dict</span> <span class="n">entry</span><span class="o">...</span><span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data_tag&quot;</span><span class="p">:</span> <span class="s2">&quot;raw&quot;</span><span class="p">}</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
@@ -709,16 +722,15 @@ That section also gives details about ProcessingHistory and the error
 log and the reasons they are part of MsPASS.</p>
 <p>By default <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> reads Metadata in what we call “promiscuous” mode.
 That means it takes in all metadata stored in the wf collection at which
-it is is pointed and loads the results into the objects Metadata container
+it is pointed and loads the results into the object’s Metadata container
 with no type checking or filtering.  Alternatives are “cautious”
 and “pedantic”.   Both of the later enforce the type and name constraints defined
 by the schema.   The difference is that in “pedantic” mode any
 conflicts in data type stored versus what is expected will cause the
-return to be marked dead.  In “cautious” mode the reader will attempt
-to convert any mismatched types and mark the return dead only if the
-conversion is not possible (e.g. a string like “xyz” cannot normally
-be converted to an integer and a python list cannot be converted to
-a float.)  Guidelines for how to use these different modes are:</p>
+return to be marked dead.  In “cautious” mode the reader attempts to
+convert mismatched types.  Failure kills the datum only for a required
+attribute; a nonconvertible optional attribute is retained without
+invalidating the datum.  Guidelines for how to use these modes are:</p>
 <ol class="arabic simple">
 <li><p>Use “promiscuous” mode when the wf collection to be read is known
 to be clean.  That mode is the default because it is faster to
@@ -740,12 +752,13 @@ Notice we include a size check with the MongoDB function
 <code class="code docutils literal notranslate"><span class="pre">count_documents</span></code> to impose constraints on the query. That is
 always good practice.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}</span>
+<span class="n">MAX_ENSEMBLE_SIZE</span> <span class="o">=</span> <span class="mi">10000</span>
 <span class="n">ndocs</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">ndocs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No data found for source_id = &quot;</span><span class="p">,</span> <span class="n">source_id</span><span class="p">)</span>
-<span class="k">elif</span> <span class="n">ndocs</span> <span class="o">&gt;</span> <span class="n">TOOBIG</span><span class="p">:</span>
+<span class="k">elif</span> <span class="n">ndocs</span> <span class="o">&gt;</span> <span class="n">MAX_ENSEMBLE_SIZE</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of documents matching source_id=&quot;</span><span class="p">,</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">&quot; is &quot;</span><span class="p">,</span> <span class="n">ndocs</span><span class="p">,</span>
-          <span class="s2">&quot;Exceeds the internal limit on the ensemble size=&quot;</span><span class="p">,</span> <span class="n">TOOBIG</span><span class="p">)</span>
+          <span class="s2">&quot;Exceeds the workflow limit on the ensemble size=&quot;</span><span class="p">,</span> <span class="n">MAX_ENSEMBLE_SIZE</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
@@ -775,7 +788,7 @@ a waveform collection, or a list of ensemble-defining queries.  The
 common pattern for reading a subset of a waveform collection is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
-<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="n">Some</span> <span class="n">MongoDB</span> <span class="n">query</span> <span class="nb">dict</span> <span class="n">entry</span><span class="o">...</span><span class="p">}</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data_tag&quot;</span><span class="p">:</span> <span class="s2">&quot;raw&quot;</span><span class="p">}</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
@@ -794,13 +807,13 @@ complete parallel workflow examples.</p>
 </section>
 <section id="update">
 <h2>Update<a class="headerlink" href="#update" title="Link to this heading">#</a></h2>
-<p>Because of the way we stored seismic data in MsPASS (see figure above)
-the concept of an update makes sense only for Metadata.
-The update concept makes no sense for ProcessingHistory and error log data.
-Hence, the history and elog collections, that hold that data, should never
-be updated.   No MsPASS supported algorithms will do that, but we
-emphasize that constraint because you as the owner of the dataset could
-(incorrectly) modify history or elog with calls to MongoDB’s api.</p>
+<p>Most workflow updates change only Metadata and should use
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_metadata" title="mspasspy.db.database.Database.update_metadata"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_metadata()</span></code></a>.  When sample data
+must also be replaced, <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_data" title="mspasspy.db.database.Database.update_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_data()</span></code></a>
+updates Metadata, the error log, history, and sample data for an atomic
+<code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> or <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>.  ProcessingHistory and error-log
+records should be managed through these APIs rather than edited directly with
+PyMongo.</p>
 <p>As noted elsewhere Metadata loaded with data objects in MsPASS can come
 from one of two places:  (1) attributes loaded directly with the atomic data from
 the unique document in a wf collection with which that data is associated,
@@ -820,8 +833,9 @@ data.  The following two rules summarize these idea in a more concise form:</p>
 <li><p><strong>Update Rule 1</strong>:  Processing workflows should never alter any database
 attribute marked readonly or loaded from a normalization collection.</p></li>
 <li><p><strong>Update Rule 2</strong>:  Processing workflows must never alter a cross-referencing
-id field.   Any changes to cross-referencing ids defined in the schema will
-cause the related data to be marked dead.</p></li>
+id field unless intentionally relinking the datum and validating the target.
+The update and save methods do not verify that a changed id resolves to a
+normalized document, so an invalid change can silently corrupt the link.</p></li>
 </ul>
 <p>These rules apply to both updates and writes.  How violations of the rules
 are treated on writes or updates depends on the setting of the <code class="code docutils literal notranslate"><span class="pre">mode</span></code> argument
@@ -860,26 +874,24 @@ with caution.</p></li>
 needs some clarification to understand how we handle deletes.
 A good starting point is to look at the signature of the simple core delete
 method of the Database class:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">delete_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">id</span><span class="p">,</span><span class="n">remove_unreferenced_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">clear_elog</span><span class="o">=</span><span class="kc">False</span><span class="p">):)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">delete_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">object_type</span><span class="p">,</span>
+                <span class="n">remove_unreferenced_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clear_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 </pre></div>
 </div>
-<p>As with the read methods id is the ObjectID of the wf collection document
-that references the data to be deleted.
+<p>As with the read methods, <code class="code docutils literal notranslate"><span class="pre">object_id</span></code> is the ObjectId of the waveform
+document that references the data to be deleted.  <code class="code docutils literal notranslate"><span class="pre">object_type</span></code> must be
+either <code class="code docutils literal notranslate"><span class="pre">&quot;TimeSeries&quot;</span></code> or <code class="code docutils literal notranslate"><span class="pre">&quot;Seismogram&quot;</span></code> and selects the
+corresponding waveform collection.
 Similarly, the idea of the <code class="code docutils literal notranslate"><span class="pre">clear_history</span></code> and <code class="code docutils literal notranslate"><span class="pre">clear_elog</span></code>
 may be apparent from the name.  When true all documents linked to the
 waveform data being deleted in the history and elog collections (respectively)
 will also be deleted.  If either are false, debris can be left behind
 in the elog and history collections.  On the other hand, setting either
 true will result in a loss of information that might be needed to address
-problems during processing.  Furthermore, both are only relevant to
-fully or partially processed data.   In general, we recommend the default
-for any cleanups applied within a workflow.  Set clear_elog true only in
-post processing cleanup after you are confident there are not serious
-errors that need to be traced.  Set clear_history True only if you have
-no interest in retaining the object level history.  The default is True
-because we view object level history preservation as a last step to
-provide a mechanism for others to reproduce your work.</p>
+problems during processing.  Both default to true to perform a complete
+delete and avoid orphaned records.  Set either false only when intentionally
+retaining those records and prepared to manage the broken waveform reference.</p>
 <p>The main complexity in this method is behind the boolean argument with the name
 <code class="code docutils literal notranslate"><span class="pre">remove_unreferenced_files</span></code>.  First, recognize this argument is completely
 ignored if the waveform data being referenced is stored internally in
@@ -1192,20 +1204,20 @@ do nothing to any existing tag (i.e. the tag is not updated).</p></li>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="database_concepts.html"
+       href="mongodb_and_mspass.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Database Concepts</p>
+        <p class="prev-next-title">Using MongoDB with MsPASS</p>
       </div>
     </a>
     <a class="right-next"
-       href="mongodb_and_mspass.html"
+       href="normalization.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Using MongoDB with MsPASS</p>
+        <p class="prev-next-title">Normalization</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

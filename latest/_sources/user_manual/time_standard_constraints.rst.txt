@@ -2,8 +2,8 @@
 
 Time Standard Constraints
 ==========================
-|  The section in the user's manual on BasicTimeSeries concepts
-   (This needs a link back to that section) discusses a novel feature of
+|  The :ref:`BasicTimeSeries discussion <data_object_design_concepts>`
+   discusses a novel feature of
    MsPASS that allows the framework to support both active source and
    passive array data.   This section contains additional implementation
    details that some users may find important.  The most notable example
@@ -45,13 +45,13 @@ Time Standard Constraints
             as a generalization of the finite list of time standards supported
             in SAC.
 
-       All data loaded originally with a UTC time standard have an internal
-       boolean attribute (:code:`t0shift_is_valid`) set true to inform the
-       system the data have a valid absolute time stamp.  Data loaded from
-       seed files will always have this set properly, but custom readers for
-       unusual formats must be aware of this constraint.  BasicTimeSeries
-       time series has the method :code:`set_tref` that can be used to force the
-       time standard.
+       Unshifted UTC data normally have the internal boolean attribute
+       :code:`t0shift_is_valid` set false because no conversion shift is being
+       stored.  Calling :code:`ator` stores the supplied UTC reference time,
+       changes the reference type to Relative, and sets this flag true so
+       :code:`rtoa` can reverse the conversion.  Custom readers for unusual
+       formats must set the time standard deliberately.  Python uses the
+       :code:`tref` property for that purpose; C++ provides :code:`set_tref`.
 
    2.  Active source data are normally best loaded with the TimeReferenceType
        set as :code:`Relative` (TimeReferenceType.Relative in python or
@@ -85,8 +85,9 @@ Time Standard Constraints
     the absolute timing is not reliable should have the internal attribute
     :code:`t0shift_is_valid` set to False.  That assures the users won't make the
     mistake of calling the rtoa function and creating a potentially misleading
-    (at best) data set.  That constraint can be enforced using the :code:`set_tref`
-    method that can be called from either TimeSeries or Seismogram objects.
+    (at best) data set.  In Python, assign
+    :code:`d.tref = TimeReferenceType.Relative`; changing :code:`tref` alone
+    does not create or validate a stored UTC shift.
     The complete set of methods available to handle this issue are discussed at the
     end of this document.
 
@@ -116,8 +117,8 @@ Time Standard Constraints
 
       .. code-block:: python
 
-        d.t0 = arrival_time      # t0 as a setter (alias for set_to(arrival.time)
-        t = d.t0                 # t0 as a getter (alias for to())
+        d.t0 = arrival_time      # t0 as a setter (calls the C++ set_t0 implementation)
+        t = d.t0                 # t0 as a getter
 
    *   There are several convenience methods that are useful for managing time
        as a variable.  The :code:`time(int i)` method can be used get the computed
@@ -129,14 +130,14 @@ Time Standard Constraints
        sample.   Users are cautioned that none of these methods check the
        validity of a time or sample number with respect to the data.  e.g. it
        would be ill-advised to use the output of :code:`sample_number(t)` as an
-       index into the data array without checking the result is >0 and
+       index into the data array without checking the result is >=0 and
        < npts.
 
    *   There are two methods to switch between UTC and Relative time standards.
        Use :code:`ator(time_shift)` to translate the time origin to the time
        defined by the epoch time :code:`time_shift`.   Note a convenient way to
        get such a time from a date string is the use obspy's UTCDateTime
-       and apply the :code:`timestamp` method on the UTCDateTime object.  The
+       and read the :code:`timestamp` property on the UTCDateTime object.  The
        inverse of :code:`ator` is :code:`rtoa()`.   Note the method has no arguments
        and uses the value of time_shift applied when :code:`ator` is called to
        restore time to UTC.  Finally, there is a :code:`shift(delta_time)`
@@ -151,19 +152,26 @@ Time Standard Constraints
        (technically protected in C++ but private from a python perspective),
        boolean attribute called :code:`t0shift_is_valid` in the C++ code.  That
        attribute can be interrogated with the method :code:`shifted()`.   The
-       :code:`shifted` method returns true if the data are in UTC (not shifted
-       by calling ator) OR they were never defined with respect to UTC
-       (i.e. active source data like that noted above).  There are a
-       (dangerous) pair of setter to force a time standard.
-       First, it may be sometimes necessary to force the time standard
-       with the method :code:`set_tref(rtype)` where rtype has the ugly form in python
-       :code:`TimeReferenceType.UTC` or :code:`TimeReferenceType.Relative`.
-       (At the risk of adding confusion the same symbols would be referred to
-       as :code:`TimeReferenceType::UTC` and :code:`TimeReferenceType::Relative in C++)`.
-       The second dangerous setter has the signature :code:`force_t0_shift(t)`.  It will
-       set the data 0 value to t and set :code:`t0_shift_is_valid` to True.
-       The primary purpose of these two methods is to match synthetics to
-       data that are stored with UTC time.   By calling
-       :code:`set_tref(TimeReferenceType.UTC)` followed by a call to :code:`force_t0_shift(t)`
-       where t is the origin time of an event being simulated, a synthetic can
-       be compared sample by sample to data.   
+       :code:`shifted` method returns that flag's value: true means a stored
+       UTC conversion shift is available.  It is normally false for unshifted
+       UTC data and for relative active-source data without reliable absolute
+       timing.  Python changes the time-reference enum with the :code:`tref`
+       property; the C++ method is :code:`set_tref(rtype)`.
+
+       The dangerous setter :code:`force_t0_shift(t)` stores :code:`t` as the
+       conversion shift and makes :code:`shifted()` true, but it does not
+       change :code:`t0` or :code:`tref`.  Its primary purpose is matching a
+       relative synthetic to data stored in UTC.  For a synthetic whose time
+       axis is already relative to origin, use it as follows:
+
+       .. code-block:: python
+
+          synthetic.tref = TimeReferenceType.Relative
+          synthetic.force_t0_shift(origin_time)
+          synthetic.rtoa()
+
+       After :code:`rtoa`, the time standard is UTC and :code:`origin_time`
+       has been added to the relative :code:`t0`.  Do not use
+       :code:`force_t0_shift` when the absolute reference is unknown; doing so
+       bypasses the safeguard that normally makes :code:`rtoa` reject that
+       conversion.

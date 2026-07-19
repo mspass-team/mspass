@@ -361,7 +361,7 @@ wf documents.  In fact, that is the only thing it ever returns.
 That has a very important corollary that all users must realize;
 `write_distributed_data` can ONLY be used as the termination of a
 distinct processing sequence.   It cannot appear as the function to be applied in
-a map operator.   In fact, user's must recognize that unless it
+a map operator.   In fact, users must recognize that unless it
 aborts with a usage exception, `write_distributed_data`
 always calls dask bag's `compute` method or pyspark's rdd `collect` method
 immediately before returning.   That means that `write_distributed_data`
@@ -374,7 +374,7 @@ Here is a typical fragment for atomic data:
   data = read_distributed_data(db,collection='wf_TimeSeries')
   data = data.map(detrend)
   # other processing functions in map operators would typically go here
-  wfidslist = write_distributed_data(data,collection='wf_TimeSeries')
+  wfidslist = write_distributed_data(data,db,collection='wf_TimeSeries')
   # wfidslist will be a python list of ObjectIds
 
 Saving an intermediate copy of a dataset within a workflow is
@@ -580,7 +580,7 @@ example that is a variant of that above:
     # this makes setting dfile always resolve and not throw an exception
     # elog entry is demontrates good practice in handling such errors.
     if 'source_id' in d:
-      dfile = "source_{}.dat".format(str(source_id))
+      dfile = "source_{}.dat".format(str(d['source_id']))
     else:
       dfile="UNDEFINED_source_id_data"
       message = "set_names (WARNING):  source_id value is undefined for this datum\n"
@@ -593,7 +593,7 @@ example that is a variant of that above:
   data = data.map(detrend)
   # other processing functions in map operators would typically go here
   data = data.map(set_names)
-  wfidslist = write_distributed_data(data,collection='wf_TimeSeries')
+  wfidslist = write_distributed_data(data,db,collection='wf_TimeSeries')
   # wfidslist will be a python list of ObjectIds
 
 A final point for this section is that to make the writer as robust as
@@ -622,7 +622,7 @@ things went as expected:
   #
   # note we don't call computer/collect after write_distributed_data
   # it initates the lazy computations
-  wfidslist = write_distributed_data(data,
+  wfidslist = write_distributed_data(data,db,
               collection='wf_TimeSeries',
               data_tag='example1',
               )
@@ -692,7 +692,7 @@ how `dir` and `dfile` are used with file IO above.  There are three differences:
     d['dir'] = dir
     t0 = d.t0
     year = UTCDateTime(t0).year
-    d['dffile'] = str(year)
+    d['dfile'] = str(year)
     return d
 
   # these are needed to enable spark instead of dask defaults
@@ -709,11 +709,10 @@ how `dir` and `dfile` are used with file IO above.  There are three differences:
   #
   # note we don't call computer/collect after write_distributed_data
   # it initates the lazy computations
-  wfidslist = write_distributed_data(data,
+  wfidslist = write_distributed_data(data,db,
               collection='wf_TimeSeries',
               storage_mode='file',
               scheduler='spark',
-              spark_context=sc,
               data_tag='example2',
               )
   # These are identical to example 1
@@ -760,7 +759,7 @@ ensembles.  Features this illustrate are:
     The reader has a structure that the algorithm to merge the two
     containers is run before attempting to do any normalization.
     (i.e. any normalization defined by either `normalize` or `normalize_ensemble`.)
-#.  The writer uses `storage_mode='files'` and the default "format".   As
+#.  The writer uses `storage_mode='file'` and the default "format".   As
     noted above when undefined the format defaults to a raw binary
     write of the sample data to files with the C fwrite function.
     We set `dir` and `dfile` in the ensemble's Metadata container
@@ -825,7 +824,7 @@ ensembles.  Features this illustrate are:
   data = data.map(set_dir_dfile)
   # note we don't call computer/collect after write_distributed_data
   # it initates the lazy computations
-  wfidslist = write_distributed_data(data,
+  wfidslist = write_distributed_data(data,db,
               collection='wf_Seismogram',
               storage_mode='file',
               scheduler='spark',
@@ -874,9 +873,9 @@ is illustrated in the following example:
                                      collection='wf_TimeSeries',
                                      data_tag='save1',
                                      return_data=True,
-                                     )
+                                     ))
    # more map/reduce operators
-   wfids = write_distributed_data(data,
+   wfids = write_distributed_data(data,db,
               collection='wf_TimeSeries',
               data_tag='finalsave',
               )
@@ -898,7 +897,7 @@ above, it may actually be faster to do the following instead:
 
    data = read_distributed_data(db,collection='wf_TimeSeries')
    # set of map/reduce operators would go here
-   write_distributed_data(data,
+   write_distributed_data(data,db,
               collection='wf_TimeSeries',
               data_tag='save1',
               )
@@ -907,7 +906,7 @@ above, it may actually be faster to do the following instead:
               collection='wf_TimeSeries')
 
    # more map/reduce operators
-   wfids = write_distributed_data(data,
+   wfids = write_distributed_data(data,db,
               collection='wf_TimeSeries',
               data_tag='finalsave',
               )

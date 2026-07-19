@@ -20,7 +20,7 @@ arrival time data:
 #. Tools to measure timing relationships from waveform data.
    Note there are two classes of timing measurements that we
    need to handle:  (a) absolute time tags like traditional
-   phase picks, and (b)relative timing relationships between parts of the
+   phase picks, and (b) relative timing relationships between parts of the
    same waveform or between two or more different waveforms.
 
 For item 1, the fact that timing data of one kind or another are a universal
@@ -40,10 +40,10 @@ section of the MsPASS documentation.
 
 This section is focused mainly on item 2.  That is, it describes tools in MsPASS
 for creating arrival time measurements from waveform data.  We emphasize,
-on the other hand, that there are multiple commerical and open-source systems for
+on the other hand, that there are multiple commercial and open-source systems for
 processing and data management of traditional earthquake monitoring
-networks.  We view the problem of earthquake catalog generation a solved
-problem best done by one those systems that were designed specifically
+networks.  We view the problem of earthquake catalog generation as solved
+and best handled by one of the systems designed specifically
 to do that job well.   MsPASS is a system for more specialized research
 problems.  The tools currently available are:
 
@@ -55,10 +55,12 @@ problems.  The tools currently available are:
     from the original application as it is designed for automated
     processing while the original application was used with an integrated
     graphical user interface.
-#.  Obspy has several picking method described
+#.  ObsPy has several trigger and picking methods described
     `here <https://docs.obspy.org/tutorial/code_snippets/trigger_tutorial.html>`_.
     Below we discuss how they can be used with data managed by MsPASS.
-#.  TODO:  depending on progress note new phasenet implementation.
+#.  MsPASS provides a wrapper around SeisBench's PhaseNet model for
+    annotating P-wave arrival probabilities.  It is described in
+    `MsPASS PhaseNet Picking`_ below.
 
 The rest of this section has subsections on each of the items above.
 
@@ -68,14 +70,14 @@ Fundamentals
 ^^^^^^^^^^^^^
 
 There are some fundamental properties of teleseismic body-wave data
-that any algorithm for working with such signals has be aware:
+that any algorithm for working with such signals must account for:
 
 #. Teleseismic body-wave signals vary in space at spatial scales far larger than
    signals from local and regional events.  The reasons are a fundamental
    property of the earth and a topic outside the scope of this manual.
    The key fact, however, is that coherent processing of signals from local
    and regional events can only be done over the scale of one or two
-   wavelengths.  In constrast, many studies demonatrate coherent processing of
+   wavelengths.  In contrast, many studies demonstrate coherent processing of
    teleseismic P and S waves are possible over distances of thousands of
    kilometers, which correspond to hundreds of wavelengths.
 #. The combination of source spectrum dependence on magnitude and
@@ -87,15 +89,15 @@ that any algorithm for working with such signals has be aware:
    or implicit assumptions that noise is "white".   Modern broadband
    data noise is anything but white.   It is very "colored" by
    microseisms.  Similarly, traditional algorithms from oil and gas
-   processing have an implict assumption the source is constant for
+   processing have an implicit assumption the source is constant for
    all data.  That is rarely true with earthquake data (the only
    exception is repeating earthquakes).  As a result a fundamental
    thing teleseismic processing must handle is that the
-   the optimal bandwidth for signal processing
+   optimal bandwidth for signal processing
    is always dependent on earthquake magnitude and the noise
    spectrum of the seismic station being analyzed.
 
-A corollary of item 2 is that any any automated
+A corollary of item 2 is that any automated
 processing algorithm needs to be "robust".  In this case that means
 it will automatically handle a mix of data of variable quality
 and extreme outliers.  In my experience automated arrival time
@@ -104,13 +106,13 @@ best handled by different processing algorithms:
 
 #.  Automated discarding of the lost causes.  Data can be a lost
     cause for a long list of reasons from the completely dead channel
-    or always noisy channel to a one-up problem created by some
-    local noise source the overwhelms the signal you want to see
+    or always noisy channel to a one-off problem created by some
+    local noise source that overwhelms the signal you want to see
     during a time window of interest.
 #.  Robust handling of data with signals of variable quality.  For the largest
     earthquakes this is a minor concern.  The issue is fundamental, however,
     for the smallest events that may have usable signals only on a fraction
-    of the receivers being processed.   Unfortunately, due the magnitude
+    of the receivers being processed.   Unfortunately, due to the magnitude
     frequency relationship there are always far more of the marginal
     signals to handle than the larger, easier ones.
 
@@ -121,7 +123,7 @@ In *dbxcor* we addressed both of these issues with the graphical user
 interface.  The key idea was to iteratively improve a stack of the
 array data by repeating the steps of (a) compute a robust stack,
 (b) sort by some quality metric, (c) kill the junk, and repeat until
-satisified.   MsPASS provides tools for accomplishing that same
+satisfied.   MsPASS provides tools for accomplishing that same
 process in an automated workflow.  Examples showing how the tools
 can be linked together to accomplish that are found in mspass tutorials.
 I would emphasize, however, the tools there are not the last word on this
@@ -144,14 +146,14 @@ steps:
     For parallel processing that means the data set is an RDD/bag of ensembles.   The
     members of the ensembles are assumed to span a time range around the
     seismic phase that is to be analyzed.
-#.  All waveforms are :ref:`normalized<normalization>` that will allow load source and
-    receiver coordinates to be loaded from the database during
+#.  All waveforms are :ref:`normalized<normalization>` so source and
+    receiver coordinates can be loaded from the database during
     the initial read operation or within the workflow when needed.
 #.  Although not required, I have found that in practice all
     waveforms in the ensemble should normally have some basic low-level processing.
     For high quality data like USArray data that can be as simple as
-    demean and scaling the data by a constant to compensate for gain
-    variations.  For more heterogenous data a more sophisticated response
+    demeaning and scaling the data by a constant to compensate for gain
+    variations.  For more heterogeneous data a more sophisticated response
     correction may be necessary to assure the data are all normalized to
     a common response.
 #.  The data are required to be resampled to a common sample rate to
@@ -168,11 +170,11 @@ steps:
     many examples of how to do this using obspy's tau-p travel time
     calculator.
 #.  The data should be shifted from UTC times to what in the
-    docstrings we call the "arrival time refernence" frame.   That is,
+    docstrings we call the "arrival time reference" frame.   That is,
     we expect the data have been shifted with the function
     :py:func:`ator <mspasspy.algorithms.basic.ator>` with the shift
     time as the initial arrival time estimate set previously.
-    That means a plot using the `time_axis_method` for each atomic
+    That means a plot using the ``time_axis`` method for each atomic
     datum will have 0 as the initial arrival time estimate.
 #.  The working ensembles are
     :py:class:`TimeSeriesEnsemble <mspasspy.ccore.seismic.TimeSeriesEnsemble>`
@@ -185,14 +187,14 @@ steps:
     :py:class:`SeismogramEnsemble <mspasspy.ccore.seismic.SeismogramEnsemble>`
     objects, rotated to LQT or with the
     :py:func:`free_surface_transformation<mspasspy.algorithms.basic.free_surface_transformation>`
-    operator, and then the approprate component extracted using the
+    operator, and then the appropriate component extracted using the
     :py:func:`ExtractComponent <mspasspy.algorithms.basic.ExtractComponent>`
     function.
 #.  The data should be passed through the algorithm called
     :py:func:`broadband_snr_QC<mspasspy.algorithms.snr.broadband_snr_QC>`.
     That function computes Metadata attributes that
     are required for two purposes described below:
-    (a) a single value that can be used as he "best" signal used as a
+    (a) a single value that can be used as the "best" signal used as a
     seed for the multichannel algorithm, and (b) a pair of attributes that
     can be used to filter the data to an optimal frequency band for
     each ensemble.   Plug in replacements are possible but would
@@ -228,7 +230,7 @@ implementation and the publication.
 `Pavlis and Vernon's paper(2011) <https://doi.org/10.1016/j.cageo.2009.10.008>`_
 describes an analyst tool for measuring teleseismic body wave phase arrival times using
 multichannel cross-correlation they called *dbxcor*.   *dbxcor* has an integrated
-grapical user interface that allows the user to set some key processing
+graphical user interface that allows the user to set some key processing
 parameters interactively and graphically edit the data to discard
 bad and unacceptably noisy data.
 :py:func:`align_and_stack <mspasspy.algorithms.MCXcorStacking.align_and_stack>`,
@@ -248,18 +250,18 @@ the user to set via the graphical user interface:
 #.  The algorithm used for cross-correlation ultimately uses the
     array stack to correlate with each signal in an input
     :py:class:`TimeSeriesEnsemble <mspasspy.ccore.seismic.TimeSeriesEnsemble>`.
-    However, to start the interative sequence the input ensemble has
+    However, to start the iterative sequence the input ensemble has
     to be time aligned to first order or the stack will be grossly distorted.
     *dbxcor* solved that issue by requiring the user to select the signal
     in the ensemble that would be used for initial correlations.
     The MsPASS implementation uses a python function in the module
-    `mspasspy.algorithms.deconvolution.MCXcorStacking` called
-    :py:func:`extract_initial_beam_estimate<mspasspy.algorithms.deconvolution.MCXcorStacking.extract_initial_beam_estimate>`.
+    ``mspasspy.algorithms.MCXcorStacking`` called
+    :py:func:`extract_initial_beam_estimate<mspasspy.algorithms.MCXcorStacking.extract_initial_beam_estimate>`.
     That function is designed to use the output of the MsPASS function
     :py:func:`broadband_snr_QC<mspasspy.algorithms.snr.broadband_snr_QC>`, which
     creates a "subdocument" (aka python dictionary) with a specified key
     containing a suite of waveform signal-to-noise estimate attributes.
-    :py:func:`extract_initial_beam_estimate<mspasspy.algorithms.deconvolution.MCXcorStacking.extract_initial_beam_estimate>`
+    :py:func:`extract_initial_beam_estimate<mspasspy.algorithms.MCXcorStacking.extract_initial_beam_estimate>`
     uses the datum with the largest value of specified attribute as the
     initial stack estimate.
 #.  The algorithm requires a definition of what I call the
@@ -273,22 +275,22 @@ the user to set via the graphical user interface:
     optimal duration for correlation, and (b) interference from
     secondary phases (e.g. P or pP or even S for teleseismic P) is
     a nearly universal problem unless the initial data time span was
-    carefully trimed previously.
+    carefully trimmed previously.
     The MsPASS solution to setting this time window uses a coda duration
     estimation algorithm appropriate only for teleseismic P wave data.
     That function is used within the higher level function called
-    :py:func:`MCXcorPrepP<mspasspy.algorithms.deconvolution.MCXcorStacking.MCXcorPrepP>`
+    :py:func:`MCXcorPrepP<mspasspy.algorithms.MCXcorStacking.MCXcorPrepP>`
     discussed below.  The algorithm used there automatically avoids
-    interference from pP or P phases phases and sets the end time of the
-    correlation window passed on a well established coda decay algorithm.
+    interference from pP or PP phases and sets the end time of the
+    correlation window based on a well-established coda decay algorithm.
     Specifically, the envelope of each signal is computed and the algorithm
-    searches backward in time until the envelop exceeds an amplitude
+    searches backward in time until the envelope exceeds an amplitude
     threshold based on a specified signal-to-noise ratio.  In
-    :py:func:`MCXcorPrepP<mspasspy.algorithms.deconvolution.MCXcorStacking.MCXcorPrepP>`
+    :py:func:`MCXcorPrepP<mspasspy.algorithms.MCXcorStacking.MCXcorPrepP>`
     the correlation window is derived from an average
     (multiple estimates of center are supported) coda duration from all
     ensemble members.
-#.  The algorithm requires a different time indow that in our original
+#.  The algorithm requires a different time window that in our original
     paper we called the *robust time window*.   The *robust time window*
     is the time window used to define the robust stack I discuss below.
     The idea of the robust stack is to create a stack that automatically
@@ -298,13 +300,13 @@ the user to set via the graphical user interface:
     *robust time window* needs to be smaller than the time window
     defined for the *correlation time window*.  A rule of thumb I
     always suggested for interactive processing is to define the robust
-    window as the first 2 or 3 cycles of the dominate frequency of the
+    window as the first 2 or 3 cycles of the dominant frequency of the
     phase being analyzed.   For P wave data
-    :py:func:`MCXcorPrepP<mspasspy.algorithms.deconvolution.MCXcorStacking.MCXcorPrepP>`
-    standardizes this rule of thumb in an internal function called
-    :py:func:`compute_default_robust_window<mspasspy.algorithms.deconvolution.MCXcorStacking._compute_default_robust_window>`.
+    :py:func:`MCXcorPrepP<mspasspy.algorithms.MCXcorStacking.MCXcorPrepP>`
+    standardizes this rule of thumb in the private helper
+    ``_compute_default_robust_window``.
     That algorithm is more-or-less a generalization of the "rule of thumb"
-    I noted for dbxcor.  It sets the *robust window* as specified number of
+    I noted for dbxcor.  It sets the *robust window* as a specified number of
     cycles of an input frequency.  I recommend that normally be set as the
     low frequency band edge computed by
     :py:func:`broadband_snr_QC<mspasspy.algorithms.snr.broadband_snr_QC>`.
@@ -312,36 +314,37 @@ the user to set via the graphical user interface:
     a time range from a small negative number large enough to exceed the
     maximum residual from earth model time estimates (typically from -2 to -1 s)
     to a few seconds (2 or 3 times the duration of the center frequency of the
-    traditional short-period band).  A fixed window preforms well on smaller
+    traditional short-period band).  A fixed window performs well on smaller
     events that have significant signal only in the short period band but will
     work badly on large events.   As a result an alternative is to process the
     data with different robust window lengths for different magnitude ranges.
 
-Teleseismic P-wave automatation
+Teleseismic P-wave automation
 -----------------------------------
 For teleseismic P wave data the above automated algorithms are encapsulated in a single
 function called
-:py:func:`MCXcorPrepP<mspasspy.algorithms.deconvolution.MCXcorStacking.MCXcorPrepP>`.
-It provides a top-level interface for automatically setting the required
-inputs to run the
-:py:func:`align_and_stack <mspasspy.algorithms.deconvolution.align_and_stack>`
-function.
+:py:func:`MCXcorPrepP<mspasspy.algorithms.MCXcorStacking.MCXcorPrepP>`.
+It provides a top-level interface for automatically preparing the filtered
+ensemble and initial beam required by
+:py:func:`align_and_stack <mspasspy.algorithms.MCXcorStacking.align_and_stack>`.
+It returns those two objects as ``(ensemble, beam)``.
 The parameters this function defines are discussed in the section above.
 See the docstring for the function for guidance on use and examples
 below and in the mspass tutorial repository.
 
 Robust stacking
 ------------------
-:py:func:`align_and_stack <mspasspy.algorithms.deconvolution.align_and_stack>`
-has several tuneable parameters that were a fixed constants in the original
-*dbxcor* program.   To understand the context it might be helpful
-show here the full function signature for `align_and_stack`:
+:py:func:`align_and_stack <mspasspy.algorithms.MCXcorStacking.align_and_stack>`
+has several tunable parameters that were fixed constants in the original
+*dbxcor* program.   To understand the context it is helpful to
+show the full function signature for ``align_and_stack``:
 
 .. code-block:: python
 
   def align_and_stack(
     ensemble,
     beam,
+    *args,
     correlation_window=None,
     correlation_window_keys=["correlation_window_start", "correlation_window_end"],
     window_beam=True,
@@ -356,16 +359,30 @@ show here the full function signature for `align_and_stack`:
     abort_irregular_sampling=False,
     convergence=0.01,
     residual_norm_floor=0.1,
+    demean_residuals=True,
+    handles_ensembles=True,
+    checks_arg0_type=True,
+    handles_dead_data=True,
+    **kwargs,
     ) -> tuple:
+
+.. note::
+
+   The current implementation accepts ``use_median_initial_stack`` and
+   ``abort_irregular_sampling``, but does not forward either value to the
+   underlying stack or sampling-validation calls.  Consequently, the robust
+   stack currently always starts from a median stack, and irregularly sampled
+   members follow the default behavior of being logged and killed.  Do not rely
+   on setting either argument to change those behaviors until the implementation
+   is updated.
 
 The parameters of note are:
 
-#. *use_median_initial_stack* sets what the rather verbose name implies.
-   That is, by default the initial stack for each robust stack is
-   the median stack of the ensemble time aligned to the beam computed
-   in the previous iteration.  The default is known to be dead stable
-   and is still recommended. When False the beam computed in the
-   previous iteration is used as the initial stack estimate.
+#. The robust stack currently starts from the median stack of the ensemble
+   aligned to the beam computed in the previous iteration.  This is a stable
+   starting estimate.  As noted above, ``use_median_initial_stack=False`` is
+   accepted by the API but does not currently select the previous beam as the
+   starting estimate.
 #. *residual_norm_floor* implements a concept not recognized when
    we developed the original *dbxcor* program.
    It relates to a
@@ -380,39 +397,37 @@ The parameters of note are:
 
     w_i = \frac{1}{\| \mathbf{r}_i \|}
     \frac{\mid \mathbf{b} \cdot \mathbf{d}_i \mid}
-    { \| \mathbf{d}_i}
+    { \| \mathbf{d}_i \|}
 
-where :math:`\mathbf{r}_i = \mathbf{d}_i - (\mathbf{b} \cdot \mathbf{d}_i )\mathbf{b}`.
+where :math:`\mathbf{b}` is unit-normalized and
+:math:`\mathbf{r}_i = \mathbf{d}_i - (\mathbf{b} \cdot \mathbf{d}_i )\mathbf{b}`.
 As we noted in the original paper there can be an issue for very consistent
-data if :math:`\mid \mathbf{r}_i \mid` gets too small.   A floor on that
-value is required, for example, with simulation data with no variance at all
-divide by zero floating point error.  There is a more subtle issue that we now
+data if :math:`\| \mathbf{r}_i \|` gets too small.   A floor on that
+value is required, for example, to avoid a divide-by-zero error with simulation
+data that have no variance.  There is a more subtle issue that we now
 know has a major impact on the result.  To understand why it is helpful to
 note something we didn't recognize when the *dbxcor* paper was published.
 That is, the second term in the weight formula,
-:math:`\frac{\mid \mathbf{b} \cdot \mathbf{d}_i \mid}{ \| \mathbf{d}_i}`,
+:math:`\frac{\mid \mathbf{b} \cdot \mathbf{d}_i \mid}{ \| \mathbf{d}_i \|}`,
 should be understood as the peak value of the cross-correlation function
 between the :math:`i^{th}` datum
 with the beam (stack).   Hence, the *dbxcor* weight function is the
-product of the a cross-correlation weight and inverse of the residual norm term.
+product of a cross-correlation weight and the inverse of the residual norm term.
 As we noted in the original paper
 the residual term makes the weighting more aggressively
-downweight any datum that differs significantly from the stack
+downweight any datum that differs significantly from the stack.
 That is desirable and a reason this algorithm can handle wildly variable
 quality data.  The dark side to recognize, however, is that it makes
-the result strongly history dependent.   The default behavior enabled by
-having *use_median_initial_stack* set True, is to produce a stack that
-is close to the median stack.   How "close" is controlled by the
+the result strongly history dependent.  The current median-started behavior
+produces a stack that is close to the median stack.  How "close" is controlled by the
 setting of *residual_norm_floor*.   When *residual_norm_floor* is
-1.0 the residual weighting term is disabled.  As you make the floor smaller
-and smaller the result will approach a pure median stack.  The default 0.1
-is appropriate for quality data.   For ensembles with a large fraction of
-marginal signals a smaller value may be appropriate.  More on this topic
-can be found in the (HYPERLINK) notebook that addresses this topic.  Finally,
-note that if *use_median_initial_stack* is set False and *residual_norm_floor*
-is small the stack will tend to converge to the signal the datum used as
-the initial beam (normally that selected by
-:py:func:`MCXcorPrepP<mspasspy.algorithms.deconvolution.MCXcorStacking.MCXcorPrepP>`).
+1.0 the residual weighting term is disabled.  As the floor becomes smaller,
+the residual term more aggressively concentrates weight on signals closest to
+the evolving, median-started stack.  The default 0.1 is appropriate for
+quality data.  For ensembles with a large fraction of marginal signals a
+smaller value may be appropriate.  See
+:py:func:`dbxcor_weights <mspasspy.algorithms.MCXcorStacking.dbxcor_weights>`
+for the implemented floor definition and weighting details.
 
 Examples
 ^^^^^^^^^
@@ -429,7 +444,7 @@ starting point to work with your data set:
 
   def prep_ensemble(e):
     """
-    Does requires preprocessing of an input SeismogramEnsemble.
+    Applies required preprocessing to an input SeismogramEnsemble.
     This function is specialized to this workflow with
     function call arguments fixed.   A more generic function
     would use kwargs to change some arguments.
@@ -443,7 +458,7 @@ starting point to work with your data set:
         continue
       d = rotate_to_standard(d)
       # assume default handling of input slowness using Metadata
-      # attributes ux an uy set previously
+      # attributes ux and uy set previously
       d = free_surface_transformation(d,vp0=5.0,vs0=3.5)
       d = broadband_snr_QC(d,
         noise_window=qcnw,
@@ -451,8 +466,10 @@ starting point to work with your data set:
         use_measured_arrival_time=True,
         measured_arrival_time_key="Ptime",
       )
+      # align the relative time origin to the measured P arrival
+      d = ator(d, "Ptime")
       e.member[i]=d
-  return e
+    return e
 
   ######################### MAIN ############
   # assume db is Database handle object
@@ -461,7 +478,7 @@ starting point to work with your data set:
     attributes_to_load=['lat','lon','elev','_id'])
   source_matcher=ObjectIdMatcher(db,
     collection='source',
-    attributes_to_load=['lat','lon','depth','time'])
+    attributes_to_load=['lat','lon','depth','time','_id'])
 
   srcids = db.wf_Seismogram.distinct('source_id')
   nw = TimeWindow(-100.0,-5.0)
@@ -474,12 +491,13 @@ starting point to work with your data set:
       )
     ens = prep_ensemble(ens)
     ens = ExtractComponent(ens,2)
-    ens = MCXcorPrepP(ens,
+    ens, beam = MCXcorPrepP(ens,
       nw,
       station_collection='site',
     )
-    beam = extract_initial_beam_estimate(ens)
-    ens,beam = align_and_stack(ens,beam)
+    if beam.dead():
+      continue
+    ens, beam = align_and_stack(ens, beam)
     db.save_data(ens,collection='wf_TimeSeries',data_tag='MCXcorProcessed')
     db.save_data(beam,collection='wf_TimeSeries',data_tag='MCXcorProcessed')
 
@@ -488,7 +506,7 @@ Local Earthquake Arrival Time Measurement
 Fundamentals
 ---------------
 Processing local earthquake data has similarities to processing
-teleseismic data, but there are some fundamental ones that
+teleseismic data, but there are some fundamental differences that
 require very different handling:
 
 #. Local earthquake signals can only be processed by coherent signal
@@ -507,56 +525,56 @@ An under-appreciated, in my opinion, fundamental property of the Earth
 is that local earthquake signals are so fundamentally different from
 teleseismic signals.   The reason is not actually known but the
 prevailing model is that waves with frequencies over around 1 Hz
-are more strongly scattered than the lower frequency signals
+are more strongly scattered than the lower-frequency signals
 that define teleseismic body wave phases.   There is indirect evidence
 that the crust and near-surface are the main source of the stronger
 scattering but that may be an observational gap due to the fact that
-no seismic sources have been observed from deeps deeper than around 600 km.
+earthquakes are not observed below depths of about 700 km.
 In any case, from a data processing perspective, coherent
 wavefield processing of local earthquake data is rarely feasible and
 other approaches have proven more successful.  The methods currently
-available can be grouped into three broad categories:
+available can be grouped into two broad categories:
 
 #.  Traditional analyst-based picking.  In the dark ages of seismology
     that means times measured from paper records.  In the digital data era that
     has always meant manual picks made from a computer screen with a
     graphical user interface.  That approach has been the bread-and-butter
     of seismic network operations worldwide for decades.
-#.  Automated waveform processing methods using some for of *detector* and
+#.  Automated waveform processing methods using some form of *detector* and
     *associator*.   By *detector* I mean an algorithm like the tried and true
     sta/lta detector that has been the standard since the earliest days of
     digital seismic network operations.   A detector flags a signal transient
     based on looking at one and only one channel of data.  An *associator*
     is an algorithm that collects a group of *detector* outputs and
     makes a decision on which detections are possible seismic events
-    that should be processed to estimate a possible location.   All modern
-    associators have an integrated, fast preliminar earthquake location
+    that should be processed to estimate a possible location.   Many modern
+    associators have an integrated, fast preliminary earthquake location
     algorithm.   The net output is a preliminary earthquake location and
     the set of detections that are consistent with that location.  In
     almost all cases a large fraction of detections are discarded as
     spurious by a good associator.
 
-The detector/associator paradigm are the core functions of local and
+The detector/associator paradigm is central to local and
 regional seismic network operations.  As stated multiple times in this
-User Manual, MsPASS was not designed to address the seismic network operation
+User Manual, MsPASS was not designed to address the seismic-network operation
 problem.  Multiple, robust software systems exist to address this problem
-both in the private and open-source worlds.  MsPASS views this a solved
+both in the private and open-source worlds.  MsPASS views this as a solved
 problem best handled by other tools if done on a large scale.  On the other hand,
 I know from experience a typical research problem may need to do some
 form of manual or automated picking of local earthquake data.  The
 remainder of this section addresses how MsPASS can be used in combination
 with some other packages for addressing that issue.
 
-Obspy Picking
+ObsPy Picking
 --------------
-Obspy has no graphical analyst workstation for manual picks.
-They do support a fairly extensive set of *detector* functions and a
-crude *associator*.  Those are best understood by reading their
-`Tigger/Detector Tutorial <https://docs.obspy.org/tutorial/code_snippets/trigger_tutorial.html>`_.
-In general obspy, like MsPASS, was not designed to handle network
-operations and is suitable only for handling small data sets with a
-lot of manual intervention to handle the deficiency of their
-associator.
+ObsPy does not provide a complete graphical analyst workstation or a general
+earthquake associator/location system.  It does provide single-station
+triggers and pickers plus a network coincidence trigger.  These are best
+understood by reading the
+`Trigger/Picker Tutorial <https://docs.obspy.org/tutorial/code_snippets/trigger_tutorial.html>`_.
+Like MsPASS, ObsPy is a research toolkit rather than a complete seismic-network
+operations system, so association and location normally require additional
+software.
 
 Monitoring Network Software
 -----------------------------
@@ -581,33 +599,44 @@ At present the ones I know of are:
     :ref:`Importing Tabular Data <importing_tabular_data>`
     section of this manual.  Using Antelope for processing is a larger
     topic addressed in Antelope's documentation.
-#.  `earthworm <http://www.earthwormcentral.org/>`__ is an open-source
-    earthquake monitoring system used by most earthquake monitoring
-    networks in the U.S. that are supported by the U.S. Geological Survey.
+#.  `Earthworm <https://gitlab.com/seismic-software/earthworm>`__ is an open-source
+    earthquake monitoring system.  Often as the processing core of AQMS, it is
+    widely used by regional and volcano monitoring networks in the U.S.
     Earthworm builds on several applications originally developed by
     the U.S. Geological Survey that have been around for decades.
-    A type example is
-    `Hypoinverse <http://www.earthwormcentral.org/documentation4/USER_GUIDE/hypoinverse.html>`__.
-    It also includes a suite of real-time applications maintained by a commercial
-    company called `ISTI <https://www.isti.com/products-offerings/earthworm>`__,
-    who also serve as a contractor to maintain the package.   Although I
-    have limited and old experience with Earthworm it appears the package
-    still does not use a database but uses a file system hierarchy to
-    manage data.  If that is correct, using data managed by an
-    Earthworm system will require developing custom file readers for
-    Metadata.  Miniseed waveform data can be indexed as normal for MsPASS.
-    This is a type example of a place someone in the Earthworm community
-    could help by contributing import/export tools for Earthworm.
+    A typical example is
+    `Hypoinverse <https://www.usgs.gov/software/hypoinverse-earthquake-location>`__.
+    Earthworm releases and development are maintained with support from
+    `ISTI <https://www.isti.com/products/earthworm/>`__.  Earthworm is organized
+    as communicating modules and does not provide a single MsPASS-compatible
+    database interface.  Integration therefore depends on the archive or export
+    modules used by a particular installation.  MiniSEED waveform data can be
+    indexed normally by MsPASS; other Earthworm products may require custom
+    import/export adapters.
 #.  `seiscomp <https://www.seiscomp.de/doc/>`__ is more-or-less the European
     equivalent of Earthworm.   It has similar functionality for
     real-time data acquisition, detection, event association, and location.
-    It also has a collction of graphical user interface tools useful
+    It also has a collection of graphical user interface tools useful
     for network operations.  I have zero experience with seiscomp but
     the same statement I made about Earthworm applies:   this is a place
     someone from the Seiscomp community could help MsPASS development by
     producing import/export functions from that system.
 
-MsPASS Phasenet Picking
+MsPASS PhaseNet Picking
 -------------------------
-THIS PACKAGE IS UNDER DEVELOPMENT.   LOOK FOR FUTURE UPDATES IN THIS SECTION
-WHEN THAT CODE IS RELEASED.
+MsPASS provides
+:py:func:`annotate_arrival_time <mspasspy.algorithms.ml.arrival.annotate_arrival_time>`
+as a thin wrapper around a SeisBench waveform model.  It operates on a
+:py:class:`TimeSeries <mspasspy.ccore.seismic.TimeSeries>`, applies a supplied
+model (or loads SeisBench's pretrained PhaseNet ``stead`` model), and writes
+the P-wave probabilities that meet the requested threshold to the datum's
+``p_wave_picks`` Metadata value.  That value is a dictionary mapping UTC
+timestamps to probabilities.  An optional absolute-time
+:py:class:`TimeWindow <mspasspy.ccore.algorithms.basic.TimeWindow>` can
+restrict the annotation interval.  The function mutates the input datum and
+does not return a separate picks object.
+
+SeisBench is an optional dependency.  Install MsPASS with the ``seisbench``
+extra when this feature is needed, for example ``pip install 'mspass[seisbench]'``.
+The wrapper annotates candidate P-wave times; it is not an event associator or
+earthquake-location workflow.

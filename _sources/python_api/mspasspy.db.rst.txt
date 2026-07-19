@@ -9,6 +9,14 @@ client
     :undoc-members:
     :show-inheritance:
 
+collection
+----------
+
+.. automodule:: mspasspy.db.collection
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 database
 --------
 

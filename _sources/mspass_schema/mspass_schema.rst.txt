@@ -15,7 +15,7 @@ MsPASS.  Each table is generated from ``data/yaml/mspass.yaml`` during the
 Sphinx build, so the published tables track the same schema used by the Python
 database layer.
 
-The tables below are organized in three ways:
+The tables below are organized in four ways:
 
 1. The database collection schemas defined in the YAML ``Database`` section.
 2. A complete alphabetical catalog of valid metadata keys and aliases.

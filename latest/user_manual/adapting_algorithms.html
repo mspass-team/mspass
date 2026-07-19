@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Adapting an Existing Algorithm to MsPASS &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Adapting an Existing Algorithm to MsPASS &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,10 +56,10 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Parallel Processing" href="parallel_processing.html" />
-    <link rel="prev" title="Arrival Time Measurement Techniques in MsPASS" href="arrival_time_measurement.html" />
+    <link rel="prev" title="Graphics in MsPASS" href="graphics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -475,13 +478,13 @@
 <section id="purpose">
 <h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading">#</a></h2>
 <p>The purpose of this document is to describe how an existing algorithm written
-in C/C++ or python can be adapted to the MsPASS framework.  The ideas should
+in C/C++ or Python can be adapted to the MsPASS framework.  The ideas should
 also readily be adapted to Fortran algorithms as well, but the authors have
 no experience at this point in adapting Fortran code.  If this grows as we
 hope someone in the community with experience adapting Fortran to python
 may want to modify this document to describe how to do that.</p>
 <p>The audience of this document is assumed to be core MsPASS developers who are
-working directly with the MsPASS git repository.  The examples all show
+working directly with the MsPASS Git repository.  The examples all show
 how to add an algorithm to become a full component of MsPASS.   Eventually
 a parallel document will be needed to produce a private, custom module that
 can work as a custom extension of MsPASS.</p>
@@ -503,21 +506,20 @@ valid object.   x can and often is void provided y is mutable (i.e. the
 function acts like as FORTRAN subroutine).  y also is rarely a single symbol
 but is usually a mix of simple parameters and arbitrarily complex object.
 In most cases the arguments would be typical python key-default value pairs.</p></li>
-<li><p>All data passed in and out of any such function must have support for
-“pickle”.   This is trivial for simple types like integers and floats, but
-is not a given for an arbitrary data structure.  Support for pickle is required
-if the algorithm is to be run under spark because in a multiprocessor
-environment the scheduler has to automatically move data between
-processing nodes.  Spark does this under the hood with pickle.</p></li>
+<li><p>All data passed in and out of any such function must be serializable by the
+selected distributed framework.  This is trivial for simple types like
+integers and floats, but is not a given for an arbitrary data structure.
+Both Dask and Spark may move functions, arguments, and results between
+worker processes, using pickle-compatible serialization where appropriate.</p></li>
 <li><p>The algorithm must not use any graphical displays or interactive user
 input of any kind.  MsPASS is designed for massive processing in a background
 mode.  Graphical displays and interactive inputs are not compatible with this
 model.</p></li>
-<li><p>The algorithm must never throw an unhandled exception or abort for
-any reason other than a fatal system error.  Unhandled exceptions on
-one piece of data can abort an entire job, so bombproof implementations
-are essential.   We describe some tricks below to assure this constraint is
-satisfied.</p></li>
+<li><p>Expected data errors must not escape and abort a distributed job.  MsPASS
+algorithms normally log the error in the datum’s <code class="docutils literal notranslate"><span class="pre">elog</span></code>, mark unusable
+data dead, and return it.  The standard decorators catch <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>,
+non-fatal <code class="docutils literal notranslate"><span class="pre">MsPASSError</span></code>, and other ordinary exceptions.  Fatal
+<code class="docutils literal notranslate"><span class="pre">MsPASSError</span></code> and system-level interrupts still propagate by design.</p></li>
 </ul>
 </section>
 <section id="optional-but-recommended">
@@ -561,92 +563,83 @@ segment of data.</p>
 <p>For us the cleanest starting point for this goal was an existing C++
 function in the seispp library that Pavlis had used extensively for
 some time.   The prototype for this function can be found at the
-Antelope User’s group contrib repository in the file
-<a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib/blob/master/lib/seismic/libseispp/slice_and_dice.cc">slice_and_dice.cpp</a></p>
+Antelope Users Group contrib repository in
+<a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib/blob/master/lib/seismic/libseispp/slice_and_dice.cc">slice_and_dice.cc</a>.</p>
 <p>We retained the original function interface:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">TimeSeries</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
 <span class="n">ThreeComponentSeismogram</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ThreeComponentSeismogram</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>with two changes.</p>
+<p>The current MsPASS interface makes two relevant changes.</p>
 <ol class="arabic simple">
-<li><p>What we call a Seismogram in MsPASSs had the excessively verbose name ThreeComponentSeismogram in the older SEISPP library.</p></li>
-<li><p>To simplify the binding code in pybind11 (see below) we changed the name for the Seismogram version.</p></li>
+<li><p>What MsPASS calls a <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code> had the longer name
+<code class="docutils literal notranslate"><span class="pre">ThreeComponentSeismogram</span></code> in SEISPP.</p></li>
+<li><p>C++ overloads both variants under the name <code class="docutils literal notranslate"><span class="pre">WindowData</span></code>.  The pybind11
+layer exposes distinct internal Python names because Python does not
+dispatch overloads by static argument type.</p></li>
 </ol>
-<p>The MsPASS C++ version of these two functions became the following (we include the doxygen
-comments for reference):</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/*! \brief Extracts a requested time window of data from a parent TimeSeries object.</span>
-<span class="cm">It is common to need to extract a smaller segment of data from a larger</span>
-<span class="cm">time window of data.  This function accomplishes this in a nifty method that</span>
-<span class="cm">takes advantage of the methods contained in the BasicTimeSeries object for</span>
-<span class="cm">handling time.</span>
-<span class="cm">\return new Seismgram object derived from  parent but windowed by input</span>
-<span class="cm">      time window range.</span>
-<span class="cm">\exception MsPASSError object if the requested time window is not inside data range</span>
-<span class="cm">\param parent is the larger TimeSeries object to be windowed</span>
-<span class="cm">\param tw defines the data range to be extracted from parent.</span>
-<span class="cm">*/</span>
-<span class="n">TimeSeries</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
-<span class="cm">/*! \brief Extracts a requested time window of data from a parent Seismogram object.</span>
-<span class="cm">It is common to need to extract a smaller segment of data from a larger</span>
-<span class="cm">time window of data.  This function accomplishes this in a nifty method that</span>
-<span class="cm">takes advantage of the methods contained in the BasicTimeSeries object for</span>
-<span class="cm">handling time.</span>
-<span class="cm">\return new Seismgram object derived from  parent but windowed by input</span>
-<span class="cm">      time window range.</span>
-<span class="cm">\exception MsPASSError object if the requested time window is not inside data range</span>
-<span class="cm">\param parent is the larger Seismogram object to be windowed</span>
-<span class="cm">\param tw defines the data range to be extracted from parent.</span>
-<span class="cm">*/</span>
-<span class="n">Seismogram</span><span class="w"> </span><span class="nf">WindowData3C</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Seismogram</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
+<p>The public-object overloads are currently declared as follows:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mspass</span><span class="o">::</span><span class="n">seismic</span><span class="o">::</span><span class="n">TimeSeries</span>
+<span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">mspass</span><span class="o">::</span><span class="n">seismic</span><span class="o">::</span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span>
+<span class="w">           </span><span class="k">const</span><span class="w"> </span><span class="n">mspass</span><span class="o">::</span><span class="n">algorithms</span><span class="o">::</span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
+
+<span class="n">mspass</span><span class="o">::</span><span class="n">seismic</span><span class="o">::</span><span class="n">Seismogram</span>
+<span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">mspass</span><span class="o">::</span><span class="n">seismic</span><span class="o">::</span><span class="n">Seismogram</span><span class="o">&amp;</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span>
+<span class="w">           </span><span class="k">const</span><span class="w"> </span><span class="n">mspass</span><span class="o">::</span><span class="n">algorithms</span><span class="o">::</span><span class="n">TimeWindow</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tw</span><span class="p">);</span>
 </pre></div>
 </div>
+<p>There are also overloads for <code class="docutils literal notranslate"><span class="pre">CoreTimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">CoreSeismogram</span></code>.  The
+public <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code> variants handle an invalid window by
+returning dead data with an <code class="docutils literal notranslate"><span class="pre">elog</span></code> entry; the Core variants can throw
+<code class="docutils literal notranslate"><span class="pre">MsPASSError</span></code>.</p>
 <p>A nontrivial detail we will not inflict on the reader is how we modified
 the original code to MsPASS libraries.  In addition to name changes
 there are some major differences in the API for TimeSeries and Seismogram
 objects from their ancestors (TimeSeries and ThreeComponentSeismogram).
-The current version of the implementations of these two algorithms can be
-found <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
+The current implementations are in
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">slice_and_dice.cc</a>.</p>
 <p>MsPASS uses the <cite>pybind11 package &lt;https://pybind11.readthedocs.io/en/stable/&gt;</cite>
-to bind C++ or C code for use by the python interpreter.  For the present
-all C/C++ code is bound to a single module we call mspasspy.ccore.
-The details of the build system used in MsPASS are best discussed in a
-separate document (Need a link here eventually).  This particular example
-required adding the above function prototype definitions to
-<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h">this include file</a>
-and the C++ function code <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
+to bind C++ or C code for use by the Python interpreter.  <code class="docutils literal notranslate"><span class="pre">mspasspy.ccore</span></code>
+is a package containing several compiled extension modules; this example is
+bound in <code class="docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic</span></code>.  See
+<a class="reference internal" href="../getting_started/advanced_setup_considerations.html#advanced-setup-considerations"><span class="std std-ref">Advanced Setup Considerations</span></a> for the source-build workflow.  A new
+C++ algorithm must also be added to the appropriate CMake source/extension
+target.  This example declares its prototypes in
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h">algorithms.h</a>
+and implements them in the <code class="docutils literal notranslate"><span class="pre">slice_and_dice.cc</span></code> file linked above.</p>
 <p>Creating the python bindings for these two functions required inserting the
-following blocks in the binding code for the algorithms module found
-<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/basic_py.cc">here</a>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
-<span class="p">;</span>
-<span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData3C&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData3C</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
-<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
-<span class="p">;</span>
+following blocks in
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/basic_py.cc">basic_py.cc</a>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">py</span><span class="o">::</span><span class="n">overload_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">TimeSeries</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">WindowData</span><span class="p">),</span>
+<span class="w">      </span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
+<span class="w">      </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
+<span class="w">      </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">));</span>
+
+<span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData3C&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">py</span><span class="o">::</span><span class="n">overload_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">Seismogram</span><span class="o">&amp;</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">TimeWindow</span><span class="o">&amp;&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">WindowData</span><span class="p">),</span>
+<span class="w">      </span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
+<span class="w">      </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
+<span class="w">      </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">));</span>
 </pre></div>
 </div>
 <p>We note a few details about this block of code:</p>
 <ol class="arabic">
-<li><p>The <code class="code docutils literal notranslate"><span class="pre">m</span></code> symbol is defined earlier in this file as a tag for the module to which we aim to bind this function.
-It is defined earlier in the file with this construct:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">ccore</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">m</span></code> symbol is the pybind11 module object.  This file defines it
+with:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">basic</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>That is, this construct defines the symbol <code class="code docutils literal notranslate"><span class="pre">m</span></code> as an abstraction for the
-python module ccore.</p>
+<p>The module then sets its full Python name to
+<code class="docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic</span></code>.</p>
 </li>
-<li><p>The actual C++ function names are “WindowData” and “WindowData3C”, but
-we change the names here to “_WindowData” and “_WindowData3C” respectively.
-We recommend that convention as it is conventional in python, although not really
-rigidly enforced by the language, to assume a symbol with one or
-leading underscores is “for internal use”
-(see e.g. obspy documentation or
-<a class="reference external" href="https://www.datacamp.com/community/tutorials/role-underscore-python">this nice overview</a>).
+<li><p>Both C++ overloads are named <code class="docutils literal notranslate"><span class="pre">WindowData</span></code>.  <code class="docutils literal notranslate"><span class="pre">py::overload_cast</span></code> selects
+the desired signature and the binding exposes <code class="docutils literal notranslate"><span class="pre">_WindowData</span></code> and
+<code class="docutils literal notranslate"><span class="pre">_WindowData3C</span></code>.  A leading underscore conventionally marks a Python
+symbol as non-public; see the
+<a class="reference external" href="https://docs.python.org/3/tutorial/classes.html#private-variables">Python tutorial on private names</a>.
 That usage is appropriate here as our next step will be to write a master python
 wrapper used as a front end to simplify the user api to this pair of
 functions that implement the same conceptual algorithm on two different types of
@@ -658,11 +651,67 @@ the master python wrapper we will discuss next (This is also why we intentionall
 wrapped the functions with a name containing a leading underscore.)</p></li>
 </ol>
 </section>
-<section id="example-2-pure-python-function">
-<h2>Example 2:  Pure Python Function<a class="headerlink" href="#example-2-pure-python-function" title="Link to this heading">#</a></h2>
+<section id="example-2-python-front-end-and-decorators">
+<h2>Example 2: Python front end and decorators<a class="headerlink" href="#example-2-python-front-end-and-decorators" title="Link to this heading">#</a></h2>
+<p>The public implementation is
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData" title="mspasspy.algorithms.window.WindowData"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.algorithms.window.WindowData()</span></code></a>.  Its internal
+<code class="docutils literal notranslate"><span class="pre">WindowDataAtomic</span></code> helper dispatches <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> to <code class="docutils literal notranslate"><span class="pre">_WindowData</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Seismogram</span></code> to <code class="docutils literal notranslate"><span class="pre">_WindowData3C</span></code>.  The public function adds ensemble
+handling, short-segment policies, error logging, and object-history support.
+It is decorated with
+<code class="xref py py-func docutils literal notranslate"><span class="pre">mspass_func_wrapper()</span></code>.</p>
+<p>A new atomic function commonly starts with this pattern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
+
+<span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_algorithm</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">parameter</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;my_algorithm&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="n">_bound_algorithm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">parameter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With these settings, the decorator validates arg0, returns dead input without
+calling the function, and applies the atomic function to each ensemble member.
+Set <code class="docutils literal notranslate"><span class="pre">handles_ensembles=True</span></code> only when the function itself implements
+ensemble behavior.  Use <code class="docutils literal notranslate"><span class="pre">inplace_return=True</span></code> for a function that mutates
+arg0 and returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.  Object history is off by default; when callers set
+<code class="docutils literal notranslate"><span class="pre">object_history=True</span></code>, they must also supply <code class="docutils literal notranslate"><span class="pre">alg_id</span></code>.  For a class method
+whose first data argument follows <code class="docutils literal notranslate"><span class="pre">self</span></code>, use
+<code class="xref py py-func docutils literal notranslate"><span class="pre">mspass_method_wrapper()</span></code>.  Functions consuming
+two MsPASS data objects require
+<code class="xref py py-func docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi()</span></code> or explicit error
+and history handling.</p>
 </section>
-<section id="example-3-more-complicated-mixed-c-and-python-example-scale-function">
-<h2>Example 3:  More complicated mixed C++ and python example - scale function<a class="headerlink" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function" title="Link to this heading">#</a></h2>
+<section id="example-3-mixed-c-and-python-scale-function">
+<h2>Example 3: Mixed C++ and Python scale function<a class="headerlink" href="#example-3-mixed-c-and-python-scale-function" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.scale" title="mspasspy.algorithms.window.scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.algorithms.window.scale()</span></code></a> is a more complicated current
+example.  It dispatches atomic and ensemble inputs to bindings in
+<code class="docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.amplitudes</span></code>, validates method-specific arguments,
+updates <code class="docutils literal notranslate"><span class="pre">calib</span></code> metadata, and uses <code class="docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code> for common
+history, dry-run, and error behavior.  Study the
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/python/mspasspy/algorithms/window.py">Python front end</a>
+together with the
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/amplitudes_py.cc">amplitude bindings</a>;
+neither layer alone defines the complete public contract.</p>
+</section>
+<section id="validation">
+<h2>Validation<a class="headerlink" href="#validation" title="Link to this heading">#</a></h2>
+<p>After changing a binding, rebuild or reinstall MsPASS in the active source
+environment, verify that the compiled symbol imports from its full
+<code class="docutils literal notranslate"><span class="pre">mspasspy.ccore</span></code> submodule, and add focused C++ and Python tests.  For this
+example, <code class="docutils literal notranslate"><span class="pre">python/tests/algorithms/test_window.py</span></code> exercises the public
+wrapper, while the C++ implementation and binding source should be covered by
+the relevant native tests and an import check.</p>
 </section>
 </section>
 
@@ -677,12 +726,12 @@ wrapped the functions with a name containing a leading underscore.)</p></li>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="arrival_time_measurement.html"
+       href="graphics.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Arrival Time Measurement Techniques in MsPASS</p>
+        <p class="prev-next-title">Graphics in MsPASS</p>
       </div>
     </a>
     <a class="right-next"
@@ -720,8 +769,9 @@ wrapped the functions with a name containing a leading underscore.)</p></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-simple-function-time-windowing-function">Example 1:  Simple function - Time Windowing Function</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-pure-python-function">Example 2:  Pure Python Function</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function">Example 3:  More complicated mixed C++ and python example - scale function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-python-front-end-and-decorators">Example 2: Python front end and decorators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3-mixed-c-and-python-scale-function">Example 3: Mixed C++ and Python scale function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validation">Validation</a></li>
 </ul>
   </nav></div>
 

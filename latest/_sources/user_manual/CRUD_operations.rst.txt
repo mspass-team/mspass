@@ -19,12 +19,11 @@ incantation at the top of the python job script:
 .. code-block:: python
 
     from mspasspy.db.client import DBClient
-    from mspasspy.db.database import Database
     dbclient = DBClient()
-    db = Database(dbclient, 'database_name')
+    db = dbclient.get_database('database_name')
 
-where the second argument on Database, :code:`'database_name'`,
-is a name you chose for the dataset you are working with.
+where :code:`'database_name'` is a name you chose for the dataset you are
+working with.
 For the remainder of this section we will use the symbol "db" as
 defined, but as in any programming language you need to recognize the
 symbol can be anything you as the user find sensible. "db" is just our
@@ -58,6 +57,9 @@ the docstring pages for detailed and most up to date usage:
 
     .. code-block:: python
 
+        from obspy import read
+        from mspasspy.util.converter import Trace2TimeSeries
+
         # Example assumes filename contains one channel of data in
         # miniseed format
         filename = 'testfile.msd'
@@ -71,9 +73,10 @@ the docstring pages for detailed and most up to date usage:
     By default :code:`save_data` stores all Metadata except those linked to
     normalized collections (:code:`source`, :code:`channel`, and/or
     :code:`site`) with no safety checks.  We discuss additional common
-    options in a later section.  The default return value is the
-    :code:`ObjectId` or list of :code:`ObjectId` values for the waveform
-    documents it writes.  Set :code:`return_data=True` when an
+    options in a later section.  With the default :code:`return_data=False`,
+    the return is a dictionary containing :code:`is_live` and available keys
+    requested by :code:`return_list` (which defaults to :code:`["_id"]`).
+    Set :code:`return_data=True` when an
     intermediate save needs the updated data object returned to the workflow.
 
     When :code:`save_data` is passed an ensemble, it writes each live member
@@ -82,6 +85,8 @@ the docstring pages for detailed and most up to date usage:
     single-component data into three-component seismograms before saving:
 
     .. code-block:: python
+
+        from mspasspy.algorithms.bundle import bundle_seed_data
 
         # d is a TimeSeriesEnsemble loaded earlier in the workflow.
         d3c = bundle_seed_data(d)
@@ -105,6 +110,9 @@ the docstring pages for detailed and most up to date usage:
 
     .. code-block:: python
 
+        from obspy import UTCDateTime
+        from obspy.clients.fdsn import Client
+
         client = Client("IRIS")
         t0 = UTCDateTime('2011-03-11T05:46:24.0')
         starttime = t0-3600.0
@@ -122,8 +130,10 @@ the docstring pages for detailed and most up to date usage:
                                         minmagnitude=minmag)
         db.save_catalog(cat)
 
-    This particular example pulls 11 large aftershocks of the 2011 Tohoku
-    Earthquake.
+    This example requests magnitude 6.5 and larger events near the 2011
+    Tohoku earthquake during the following week.  Catalog contents can be
+    revised by the data center, so code should not assume an exact result
+    count.
 
 3.  :py:meth:`~mspasspy.db.database.Database.save_inventory` is similar
     in concept to :code:`save_catalog`, but instead of
@@ -218,7 +228,7 @@ usage.
 
     .. code-block:: python
 
-        query = {...Some MongoDB query dict entry...}
+        query = {"data_tag": "raw"}
         cursor = db.wf_TimeSeries.find(query)
         for doc in cursor:
             d = db.read_data(doc, collection="wf_TimeSeries")
@@ -261,16 +271,15 @@ usage.
 
     By default :code:`read_data` reads Metadata in what we call "promiscuous" mode.
     That means it takes in all metadata stored in the wf collection at which
-    it is is pointed and loads the results into the objects Metadata container
+    it is pointed and loads the results into the object's Metadata container
     with no type checking or filtering.  Alternatives are "cautious"
     and "pedantic".   Both of the later enforce the type and name constraints defined
     by the schema.   The difference is that in "pedantic" mode any
     conflicts in data type stored versus what is expected will cause the
-    return to be marked dead.  In "cautious" mode the reader will attempt
-    to convert any mismatched types and mark the return dead only if the
-    conversion is not possible (e.g. a string like "xyz" cannot normally
-    be converted to an integer and a python list cannot be converted to
-    a float.)  Guidelines for how to use these different modes are:
+    return to be marked dead.  In "cautious" mode the reader attempts to
+    convert mismatched types.  Failure kills the datum only for a required
+    attribute; a nonconvertible optional attribute is retained without
+    invalidating the datum.  Guidelines for how to use these modes are:
 
     1.  Use "promiscuous" mode when the wf collection to be read is known
         to be clean.  That mode is the default because it is faster to
@@ -295,12 +304,13 @@ usage.
     .. code-block:: python
 
         query = {"source_id": source_id}
+        MAX_ENSEMBLE_SIZE = 10000
         ndocs = db.wf_TimeSeries.count_documents(query)
         if ndocs == 0:
             print("No data found for source_id = ", source_id)
-        elif ndocs > TOOBIG:
+        elif ndocs > MAX_ENSEMBLE_SIZE:
             print("Number of documents matching source_id=", source_id, " is ", ndocs,
-                  "Exceeds the internal limit on the ensemble size=", TOOBIG)
+                  "Exceeds the workflow limit on the ensemble size=", MAX_ENSEMBLE_SIZE)
         else:
             cursor = db.wf_TimeSeries.find(query)
             ensemble = db.read_data(cursor, collection="wf_TimeSeries")
@@ -332,7 +342,7 @@ usage.
 
         from mspasspy.io.distributed import read_distributed_data
 
-        query = {...Some MongoDB query dict entry...}
+        query = {"data_tag": "raw"}
         data = read_distributed_data(
             db,
             query=query,
@@ -349,13 +359,13 @@ usage.
 Update
 ~~~~~~
 
-Because of the way we stored seismic data in MsPASS (see figure above)
-the concept of an update makes sense only for Metadata.
-The update concept makes no sense for ProcessingHistory and error log data.
-Hence, the history and elog collections, that hold that data, should never
-be updated.   No MsPASS supported algorithms will do that, but we
-emphasize that constraint because you as the owner of the dataset could
-(incorrectly) modify history or elog with calls to MongoDB's api.
+Most workflow updates change only Metadata and should use
+:py:meth:`~mspasspy.db.database.Database.update_metadata`.  When sample data
+must also be replaced, :py:meth:`~mspasspy.db.database.Database.update_data`
+updates Metadata, the error log, history, and sample data for an atomic
+:code:`TimeSeries` or :code:`Seismogram`.  ProcessingHistory and error-log
+records should be managed through these APIs rather than edited directly with
+PyMongo.
 
 As noted elsewhere Metadata loaded with data objects in MsPASS can come
 from one of two places:  (1) attributes loaded directly with the atomic data from
@@ -377,8 +387,9 @@ data.  The following two rules summarize these idea in a more concise form:
   attribute marked readonly or loaded from a normalization collection.
 
 * **Update Rule 2**:  Processing workflows must never alter a cross-referencing
-  id field.   Any changes to cross-referencing ids defined in the schema will
-  cause the related data to be marked dead.
+  id field unless intentionally relinking the datum and validating the target.
+  The update and save methods do not verify that a changed id resolves to a
+  normalized document, so an invalid change can silently corrupt the link.
 
 These rules apply to both updates and writes.  How violations of the rules
 are treated on writes or updates depends on the setting of the :code:`mode` argument
@@ -421,25 +432,23 @@ method of the Database class:
 
 .. code-block:: python
 
-  def delete_data(self,id,remove_unreferenced_files=False,
-                      clear_history=True,clear_elog=False):)
+  def delete_data(self, object_id, object_type,
+                  remove_unreferenced_files=False,
+                  clear_history=True, clear_elog=True):
 
-As with the read methods id is the ObjectID of the wf collection document
-that references the data to be deleted.
+As with the read methods, :code:`object_id` is the ObjectId of the waveform
+document that references the data to be deleted.  :code:`object_type` must be
+either :code:`"TimeSeries"` or :code:`"Seismogram"` and selects the
+corresponding waveform collection.
 Similarly, the idea of the :code:`clear_history` and :code:`clear_elog`
 may be apparent from the name.  When true all documents linked to the
 waveform data being deleted in the history and elog collections (respectively)
 will also be deleted.  If either are false, debris can be left behind
 in the elog and history collections.  On the other hand, setting either
 true will result in a loss of information that might be needed to address
-problems during processing.  Furthermore, both are only relevant to
-fully or partially processed data.   In general, we recommend the default
-for any cleanups applied within a workflow.  Set clear_elog true only in
-post processing cleanup after you are confident there are not serious
-errors that need to be traced.  Set clear_history True only if you have
-no interest in retaining the object level history.  The default is True
-because we view object level history preservation as a last step to
-provide a mechanism for others to reproduce your work.
+problems during processing.  Both default to true to perform a complete
+delete and avoid orphaned records.  Set either false only when intentionally
+retaining those records and prepared to manage the broken waveform reference.
 
 The main complexity in this method is behind the boolean argument with the name
 :code:`remove_unreferenced_files`.  First, recognize this argument is completely

@@ -1,145 +1,135 @@
 .. _deploy_mspass_with_conda_and_coiled:
 
 Deploy MsPASS with Conda and Coiled
-=======================================
+===================================
 
 Overview
--------------
-This section provides a concise summary of the steps required to run
-MsPASS using Conda and Coiled. The instructions assume you are working
-in a cloud environment (AWS, GCP, Azure). You can also only use conda
-to install MsPASS locally without Coiled (step 3).
+--------
 
-1. Install Coiled
----------------------
-Fetch and install Coiled following instructions on the
-`Coiled web site <https://docs.coiled.io/user_guide/setup/index.html>`__.
+`Coiled <https://www.coiled.io/>`__ can create a Dask cluster in an AWS,
+Google Cloud, or Azure account.  MsPASS does not include or configure Coiled,
+and Coiled does not provide MongoDB.  You therefore need:
 
-Install the Coiled client Python library with pip or conda.
+* a local Conda environment containing MsPASS and Coiled,
+* a cloud account configured for Coiled, and
+* a MongoDB service that the cloud workers can reach.
 
-.. code-block::
+Cloud resources incur charges while they are running.  Review your provider's
+pricing and quotas before creating a cluster.
 
-    pip install coiled "dask[complete]"
-    coiled login
+1. Install MsPASS and Coiled
+----------------------------
 
-This will redirect you to the Coiled website to authenticate your computer.
+Create a separate environment and install both packages:
 
+.. code-block:: bash
 
-2. Connect to your cloud
----------------------------------------------
-Next grant Coiled permission to run in your cloud account(AWS, GCP, Azure).
-Coiled creates the IAM policies and network configuration for your account,
-asking you for permission at each step.
+   conda create --name mspass \
+       --channel mspass \
+       --channel conda-forge \
+       mspasspy coiled
+   conda activate mspass
 
-.. code-block::
+The environment name ``mspass`` is only an example.  See
+:ref:`deploy_mspass_with_conda` for more information about the MsPASS Conda
+package.
 
-    coiled setup aws
-    coiled setup gcp
+2. Connect Coiled to your cloud account
+----------------------------------------
 
-You can configure Coiled with custom network configuration in the
-`user portal <https://cloud.coiled.io/settings/setup/infrastructure>`__.
+Authenticate the local client:
 
-3. Get MsPASS Conda package
--------------------------------------------
-If you have not run MsPASS before you will need to get the
-`conda package <https://anaconda.org/mspass/mspasspy>`__.
-from our standard repository.  Alternatively if you want to get the most
-recent updates you may also need to do this step.
+.. code-block:: console
 
-We strongly advise you create a separate environment for mspass
-to avoiding breaking any existing python packages you may have
-installed previous.  Make sure you are on the `base` environment
-ant enter
+   coiled login
 
-.. code-block::
+This command normally opens a browser so you can authenticate the computer
+with your Coiled account.  Complete that login before attempting to create a
+cluster.
 
-    conda create --name mspass
+Then follow the current `Coiled setup guide
+<https://docs.coiled.io/user_guide/setup/index.html>`__ for your cloud
+provider.  The setup process requests permission before creating identity and
+network resources in your account.  Site-specific networking may require help
+from your cloud administrator.
 
-Noting the name "mspass" is not special and it can be changed if you
-prefer something else.  You chould then make the new
-environment current with the standand conda command:
+3. Configure MongoDB
+--------------------
 
-.. code-block::
+Use MongoDB Atlas or another MongoDB deployment that is reachable from every
+Coiled worker.  Follow the `Atlas connection instructions
+<https://www.mongodb.com/docs/atlas/connect-to-database-deployment/>`__ to
+create a database user and configure network access.
 
-    conda activate mspass
+Keep credentials out of notebooks and source control.  For a simple test,
+place the connection string in an environment variable:
 
-You will almost certainly need to add key "channels" as follows:
+.. code-block:: bash
 
-.. code-block::
+   export MSPASS_MONGODB_URI='mongodb://<encoded-credentials>@<host-list>/?<options>'
 
-    conda config --add channels mspass
-    conda config --add channels conda-forge
+Pass that variable to workers using the secret or environment mechanism
+recommended by Coiled.  Do not make a production database public merely to
+allow worker access.
 
-Then install mspass in this environment with
+You can test the connection on a machine where the variable is available:
 
-.. code-block::
+.. code-block:: python
 
-    conda install -y mspasspy
+   import os
+   from mspasspy.db.client import DBClient
 
-4. Run MsPASS
--------------------------
-After installing, Coiled will then pick up all those things installed locally,
-and install them on your cluster. For running things on Coiled, you could
-try `coiled run your_code.py` (or follow one of the examples in
-`coiled docs <https://docs.coiled.io/user_guide/usage/examples.html>`__)!
+   dbclient = DBClient(os.environ["MSPASS_MONGODB_URI"])
+   print(dbclient.admin.command("ping"))
+   db = dbclient["mspass"]
 
+This test does not prove that cloud workers can reach the database.  Test from
+a worker before starting a large job.  Place MongoDB and the workers in
+network locations that can communicate reliably; high latency or limited
+bandwidth between them can dominate a waveform-processing job, especially
+when sample data use GridFS.
 
-For example, to connect to MongoDB using Atlas:
+4. Create a Dask cluster
+------------------------
 
-.. code-block::
+The basic Coiled workflow is:
 
-    from pymongo.mongo_client import MongoClient
-    from pymongo.server_api import ServerApi
-    from urllib.parse import quote_plus
-    username = "your username"
-    password = "your password"
+.. code-block:: python
 
-    # URL-encode the username and password
-    uri_username = quote_plus(username)
-    uri_password = quote_plus(password)
-    uri = "mongodb+srv://username:somestring@cluster0.domain.mongodb.net/"
+   from coiled import Cluster
 
-    # Create a new client and connect to the server
-    client = MongoClient(uri, server_api=ServerApi('1'))
+   cluster = Cluster(n_workers=2)
+   client = cluster.get_client()
 
-    # Send a ping to confirm a successful connection
-    try:
-        client.admin.command('ping')
-        print("Pinged your deployment. You successfully connected to MongoDB!")
-    except Exception as e:
-        print(e)
+   def inc(x):
+       return x + 1
 
-If the ping success, it means we successfully connect to your remote mongo database.
-Let's build a MsPASS client and start to use MsPASS:
+   future = client.submit(inc, 10)
+   print(future.result())  # 11
 
-.. code-block::
+``n_workers`` controls the initial amount of parallel capacity in this simple
+example.  Increasing it can shorten a CPU-bound workload, but it also creates
+more billable instances and more simultaneous database and storage traffic.
+Start with a small test cluster, measure the workflow, and scale only after the
+software environment, network access, and data paths are working correctly.
 
-    from mspasspy.db.client import DBClient
-    dbclient=DBClient(uri)
-    dbclient.list_database_names() # view all the databases
-    db = dbclient['mspass']        # choose a database
-    db.index_mseed_file('CIGSC__BHZ___2017180.ms', some_path) # index mseed files
+The workers must receive an environment containing ``mspasspy``.  Coiled may
+be able to reproduce the active local environment automatically; consult its
+current `software environment documentation
+<https://docs.coiled.io/user_guide/software/index.html>`__ if imports fail on
+a worker.
 
+Files indexed on your local computer are not automatically available to cloud
+workers.  Store waveform data in storage accessible to every worker, or use
+MongoDB GridFS.  See :ref:`Input and Output in MsPASS <io>`.
 
-To use Dask:
+Close the client and cluster when the work finishes so cloud instances do not
+continue to incur charges:
 
-.. code-block::
+.. code-block:: python
 
-    from coiled import Cluster
+   client.close()
+   cluster.close()
 
-    cluster = Cluster(n_workers=20)
-    client = cluster.get_client()
-
-Once you have a Dask cluster you can then run Python code on that cluster.
-Here is a simple code you could run:
-
-.. code-block::
-
-    def inc(x):
-        return x + 1
-
-    future = client.submit(inc, 10)
-    future.result() # returns 11
-
-You can find more useful examples in Coiled documentation and reach out to
-Coiled team (support@coiled.io) for any usage questions.
+For current cluster options and troubleshooting, use the
+`Coiled documentation <https://docs.coiled.io/>`__.

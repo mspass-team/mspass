@@ -18,7 +18,8 @@ the document titled :ref:`deploy_mspass_on_HPC`.
 All readers should note this section leans heavily on several more
 specialized sections for specific environments.   That is, a
 primary design goal of MsPASS was scalability.   MsPASS is known to
-allow prototyping a workflow on a desktop system or login node in an HPC system
+allow prototyping a workflow on a desktop system or an approved interactive
+compute-node allocation in an HPC system
 and then porting the same python script with minimal changes to run on
 a cluster with hundreds of cores.  To make that work, however,
 requires some up-front work to tell the system how to deal with a
@@ -45,7 +46,7 @@ and an associated set of hardware to feed the processor.  Today only
 antique desktops have only one cpu.   Multicore processors are
 now universal other than for specialized hardware like low-power data
 loggers.  The worlds largest "supercomputers" (alias HPC system or cluster)
-have thousands of nodes and tens of thousands of cores, noting that that
+have thousands of nodes and tens of thousands of cores, although this
 sentence is likely to become quickly out of date as the upper limit
 grows yearly.  A special form of computer cluster is what is
 now called "cloud computing".  Cloud systems add a few
@@ -80,8 +81,10 @@ is at least 9 orders of magnitude slower than a cpu clock cycle.
 We thus assume the batch model of processing for HPC and cluster systems
 wherein a "job" is submitted to a global scheduling system for the cluster.
 Workflows requiring interactive graphics or other human interaction
-are normally best run on the HPC login node or move the relevant
-data to your desktop.  Note a key word above is *interactive* graphics.
+should use an approved interactive compute-node allocation or move the
+relevant data to your desktop.  Do not run compute-intensive work on an HPC
+login node unless site policy explicitly permits it.  Note a key word above
+is *interactive* graphics.
 Workflows that generate saved graphics are required as end products of
 many workflows and are more than possible through multiple mechanisms.
 Alternatively, some institutional setups may allow interactive work on your desktop computer
@@ -109,26 +112,25 @@ MsPASS currently supports two container technologies:
     appropriately for this use, `docker desktop <https://docs.docker.com/desktop/>`__.
     The links above contain secondary links to doownload pages and installation
     instruction for the package.
-#.  For HPC systems we use a comparable software
-    called :code:`singularity`.  If you are reading this to
+#.  For HPC systems we use comparable software commonly called
+    :code:`Apptainer` (or its predecessor, :code:`Singularity`).  If you are reading this to
     adapt MsPASS to an HPC system there is probably a web page describing
-    singularity or something similar.   If not, there are numerous sources on the
-    web.  A simplistic perspective is that singularity is docker for
+    Apptainer, Singularity, or something similar.  If not, there are numerous sources on the
+    web.  A simplistic perspective is that Apptainer is Docker for
     an HPC system.   It has command line tools similar to those for
-    docker desktop and runs containers built on docker hub directly.
-    In addition, a fundamental property of singularity is that it runs docker
-    containers directly.
+    Docker Desktop and can pull OCI images from Docker Hub, converting them
+    to its SIF format.  Follow the local center's instructions because
+    available modules and site policies vary.
 
 Current cloud systems support docker containers.   That is, there is a system
 dependent procedure to "pull" the MsPASS container but once loaded the container
 is used directly to run your job.
 
-The key point about containers, in general, is that a container eliminates
+The key point about containers, in general, is that a container reduces
 the long list of system dependency issues that arise with conventional
-software installation.   It also allows MsPASS to run on any operating
-systems with the x86 architecture (Intel or AMD processors) on
-the Apple ARM chip used on newer Apple products.
-Additional hardware support is possible provided docker support it.
+software installation.  The runtime, image architecture, required devices,
+mounted file systems, and site policy must still be compatible; an image
+built for one CPU architecture is not automatically portable to another.
 
 Foreman-worker Model
 --------------------------
@@ -152,7 +154,7 @@ that appear throughout this user's manual are direct consequences of this model:
     what to do.   Less obvious is the fact that all the workers also need
     to communicate with each other as well as the foreman.   The reason is
     that the most common paradigm is worker A finishes task X and passes
-    the result to to worker B to do task Y where in our case X and Y
+    the result to worker B to do task Y where in our case X and Y
     are two different processing algorithms.  As a result interprocesses
     communication is a fundamental requirement to make processing with the
     foreman-worker model possible.
@@ -337,6 +339,9 @@ using abstractions we described immediately above.   After
 the examples we turn to the implementation detail of how we
 make an abstract model concrete.
 
+The diagrams use the older legend ``Virtual machine (container)`` for dashed
+boxes.  Those boxes represent containers, not full virtual machines.
+
 Example 1:  Simple four node virtual cluster
 -----------------------------------------------
 :numref:`Configuration_figure1` is
@@ -385,18 +390,17 @@ details that we use in MsPASS to define a virtual cluster:
   `start-mspass.sh`.   `start-mspass.sh` is a shell script that is part of the
   container and not something you modify.  The script launches different
   services depending on the `role` it receives from the launcher
-  (docker or singularity).
+  (Docker, Apptainer, or Singularity).
 
 - Although in this example we run only one container per
   physical node, it also shows that the worker node is configured
   with four processes labeled P1, P2, P3, and P4.  Note our terminology
   has created an ambiguity of language in the current setup you need to
   understand.  A single instance of a container is
-  run with its "role" defined as :code:`worker` but both dask and spark,
-  by default, will have its worker spin up one process per core defined for that
-  container. That is, a worker hosts multiple processes.  That is
-  an important capability of dask and spark as it means all cores of a
-  node can be utilized by a worker.
+  run with its "role" defined as :code:`worker`, but a worker container can
+  host multiple processes or threads.  The actual Dask or Spark topology is
+  configuration-dependent; do not infer one process per core from this
+  conceptual drawing.
 
 - The worker node has lines with arrows drawn between the four boxes labeled P1, P2, P3, and P4.
   Those lines symbolize intra-node, interprocess communication between the worker processes.
@@ -511,8 +515,8 @@ of the user manual titled :ref:`deploy_mspass_on_HPC`
      (b) shows a similar configuration that would be created with the
      alternative configuration script not enables sharding.  Note that in that
      situation the :code:`db` box is assigned the role :code:`dbmanager`.
-     The :code:`dbmanager` coordinates database transitions with the
-     shards defined in the other nodes.  In this example each node running
+     The :code:`dbmanager` runs the MongoDB router and config-server functions
+     for the shards defined in the other nodes.  In this example each node running
      a worker container also runs a container with a role defined as
      :code:`shard`.
 
@@ -532,12 +536,10 @@ points about the case with sharding off are the following:
 *  As in example 2 each container runs one and only one role.  The worker
    nodes all run only one container while the node illustrated to the left
    runs three roles in three different instances of the container.
-*  We don't illustrate the worker processes in this figure for simplicity.
-   We note that both dask and spark will default to creating one worker
-   process per core assigned to the container.   In this configuration that
-   would normally mean all the cores of that node.  Thus if each node had,
-   for example, 16 cores, this virtual cluster would represent a 64 processor
-   engine.
+*  We don't illustrate the worker processes or threads in this figure for
+   simplicity.  Dask and Spark derive their worker topology from scheduler
+   defaults and launch configuration; configure it to fit the CPU and memory
+   allocated to each container.
 
 Whether or not this configuration is well balanced depends upon the
 workflow and the physical nodes on which it is run.
@@ -556,6 +558,8 @@ following:
    documentation.   Both define configurations defined in the start-mspass.sh
    script used to launch each container.   To see exactly what each do
    look at the contents of start-mspass.sh found `here <https://github.com/mspass-team/mspass/blob/master/scripts/start-mspass.sh>`__.
+   The :code:`dbmanager` role is specific to a sharded topology; standalone
+   database configurations use :code:`db` instead.
 *  Sharding adds complexity to a setup and run time environment that
    should not be taken lightly.   In general, we would recommend avoiding
    it unless you have a production workflow you find limited by
@@ -566,7 +570,7 @@ Example 4:  All-in-one desktop setup
 We left the special case we call "all-in-one" until now even
 though virtually all MsPASS users will likely first use it in that mode.
 The reason is that although
-it is implemented through the same master script (start-msspas.sh),
+it is implemented through the same startup script (start-mspass.sh),
 it is a special case that might be confusing if we had started there.
 That is, because the framework is primarily designed for running on
 a cluster running on a desktop has to simulate elements of a cluster.
@@ -663,13 +667,12 @@ The virtual cluster box is open-ended and could conceivably define hundreds of
 workers.
 
 The final file that drives the processing is the box with the tag "Jupyter Notebook".
-The last line of the `run_mspass.sh` script launches the jupyter notebook
-server in a mode where the server immediately loads and executes a notebook file you
-specify as an argument to job_script.sh.  The entire job terminates when the
-notebook finishes (or exits on an error).  The line launching the jupyter notebook
-server ("frontend" role) blocks until the notebook server exits.   Control is then returned
-to `job_script.sh` which either does cleanup or exits.  The cluster management
-software (slurm or the equivalent) then kills all the running containers.
+In the current startup script, the frontend's batch mode converts an
+``.ipynb`` file to Python and runs the resulting script, or runs a supplied
+Python script directly.  The frontend command blocks until that program
+finishes or fails, then returns control to `job_script.sh` for cleanup and
+exit.  Slurm or the equivalent scheduler terminates any remaining job
+processes when the allocation ends.
 :numref:`HPC_interactive_run_figure` is a similar to
 :numref:`HPC_batch_run_figure` but illustrates how a "job" is
 run on an HPC virtual cluster if you need to run a notebook interactively.

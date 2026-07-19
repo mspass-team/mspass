@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MsPASS Virtual Cluster Concepts &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>MsPASS Virtual Cluster Concepts &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,11 +55,11 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Database Concepts" href="../user_manual/database_concepts.html" />
-    <link rel="prev" title="Using MsPASS on EarthScope GeoLab" href="deploy_mspass_on_geolab.html" />
+    <link rel="next" title="Deploying MsPASS on an HPC cluster" href="deploy_mspass_on_HPC.html" />
+    <link rel="prev" title="Advanced Setup Considerations" href="advanced_setup_considerations.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="#">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="#">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -486,7 +489,8 @@ the document titled <a class="reference internal" href="deploy_mspass_on_HPC.htm
 <p>All readers should note this section leans heavily on several more
 specialized sections for specific environments.   That is, a
 primary design goal of MsPASS was scalability.   MsPASS is known to
-allow prototyping a workflow on a desktop system or login node in an HPC system
+allow prototyping a workflow on a desktop system or an approved interactive
+compute-node allocation in an HPC system
 and then porting the same python script with minimal changes to run on
 a cluster with hundreds of cores.  To make that work, however,
 requires some up-front work to tell the system how to deal with a
@@ -511,7 +515,7 @@ and an associated set of hardware to feed the processor.  Today only
 antique desktops have only one cpu.   Multicore processors are
 now universal other than for specialized hardware like low-power data
 loggers.  The worlds largest “supercomputers” (alias HPC system or cluster)
-have thousands of nodes and tens of thousands of cores, noting that that
+have thousands of nodes and tens of thousands of cores, although this
 sentence is likely to become quickly out of date as the upper limit
 grows yearly.  A special form of computer cluster is what is
 now called “cloud computing”.  Cloud systems add a few
@@ -544,8 +548,10 @@ is at least 9 orders of magnitude slower than a cpu clock cycle.
 We thus assume the batch model of processing for HPC and cluster systems
 wherein a “job” is submitted to a global scheduling system for the cluster.
 Workflows requiring interactive graphics or other human interaction
-are normally best run on the HPC login node or move the relevant
-data to your desktop.  Note a key word above is <em>interactive</em> graphics.
+should use an approved interactive compute-node allocation or move the
+relevant data to your desktop.  Do not run compute-intensive work on an HPC
+login node unless site policy explicitly permits it.  Note a key word above
+is <em>interactive</em> graphics.
 Workflows that generate saved graphics are required as end products of
 many workflows and are more than possible through multiple mechanisms.
 Alternatively, some institutional setups may allow interactive work on your desktop computer
@@ -572,25 +578,24 @@ It requires installing a client on your desktop system called,
 appropriately for this use, <a class="reference external" href="https://docs.docker.com/desktop/">docker desktop</a>.
 The links above contain secondary links to doownload pages and installation
 instruction for the package.</p></li>
-<li><p>For HPC systems we use a comparable software
-called <code class="code docutils literal notranslate"><span class="pre">singularity</span></code>.  If you are reading this to
+<li><p>For HPC systems we use comparable software commonly called
+<code class="code docutils literal notranslate"><span class="pre">Apptainer</span></code> (or its predecessor, <code class="code docutils literal notranslate"><span class="pre">Singularity</span></code>).  If you are reading this to
 adapt MsPASS to an HPC system there is probably a web page describing
-singularity or something similar.   If not, there are numerous sources on the
-web.  A simplistic perspective is that singularity is docker for
+Apptainer, Singularity, or something similar.  If not, there are numerous sources on the
+web.  A simplistic perspective is that Apptainer is Docker for
 an HPC system.   It has command line tools similar to those for
-docker desktop and runs containers built on docker hub directly.
-In addition, a fundamental property of singularity is that it runs docker
-containers directly.</p></li>
+Docker Desktop and can pull OCI images from Docker Hub, converting them
+to its SIF format.  Follow the local center’s instructions because
+available modules and site policies vary.</p></li>
 </ol>
 <p>Current cloud systems support docker containers.   That is, there is a system
 dependent procedure to “pull” the MsPASS container but once loaded the container
 is used directly to run your job.</p>
-<p>The key point about containers, in general, is that a container eliminates
+<p>The key point about containers, in general, is that a container reduces
 the long list of system dependency issues that arise with conventional
-software installation.   It also allows MsPASS to run on any operating
-systems with the x86 architecture (Intel or AMD processors) on
-the Apple ARM chip used on newer Apple products.
-Additional hardware support is possible provided docker support it.</p>
+software installation.  The runtime, image architecture, required devices,
+mounted file systems, and site policy must still be compatible; an image
+built for one CPU architecture is not automatically portable to another.</p>
 </section>
 <section id="foreman-worker-model">
 <h3>Foreman-worker Model<a class="headerlink" href="#foreman-worker-model" title="Link to this heading">#</a></h3>
@@ -614,7 +619,7 @@ the concept.).</p></li>
 what to do.   Less obvious is the fact that all the workers also need
 to communicate with each other as well as the foreman.   The reason is
 that the most common paradigm is worker A finishes task X and passes
-the result to to worker B to do task Y where in our case X and Y
+the result to worker B to do task Y where in our case X and Y
 are two different processing algorithms.  As a result interprocesses
 communication is a fundamental requirement to make processing with the
 foreman-worker model possible.</p></li>
@@ -797,10 +802,12 @@ until someone adds a skin to the framework.</p>
 using abstractions we described immediately above.   After
 the examples we turn to the implementation detail of how we
 make an abstract model concrete.</p>
+<p>The diagrams use the older legend <code class="docutils literal notranslate"><span class="pre">Virtual</span> <span class="pre">machine</span> <span class="pre">(container)</span></code> for dashed
+boxes.  Those boxes represent containers, not full virtual machines.</p>
 </section>
 <section id="example-1-simple-four-node-virtual-cluster">
 <h3>Example 1:  Simple four node virtual cluster<a class="headerlink" href="#example-1-simple-four-node-virtual-cluster" title="Link to this heading">#</a></h3>
-<p><a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 7</span></a> is
+<p><a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 4</span></a> is
 a block diagram of a virtual cluster that is largely useful
 only for it’s pedagogic value.   i.e. we show it
 as an introductory example to help further demonstrate key
@@ -811,7 +818,7 @@ reasons we discuss at the end of this section.</p>
 <span id="configuration-figure1"></span><a class="reference internal image-reference" href="../_images/OneRolePerVM.jpg"><img alt="../_images/OneRolePerVM.jpg" src="../_images/OneRolePerVM.jpg" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-number">Fig. 7 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
+<p><span class="caption-number">Fig. 4 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
 configuration of example 1.  This example assumes four physical
 nodes illustrated by the four larger boxes with solid lines.
 The dashed line boxes define containers running within
@@ -844,17 +851,16 @@ the setup completes by running the master shell script called
 <cite>start-mspass.sh</cite>.   <cite>start-mspass.sh</cite> is a shell script that is part of the
 container and not something you modify.  The script launches different
 services depending on the <cite>role</cite> it receives from the launcher
-(docker or singularity).</p></li>
+(Docker, Apptainer, or Singularity).</p></li>
 <li><p>Although in this example we run only one container per
 physical node, it also shows that the worker node is configured
 with four processes labeled P1, P2, P3, and P4.  Note our terminology
 has created an ambiguity of language in the current setup you need to
 understand.  A single instance of a container is
-run with its “role” defined as <code class="code docutils literal notranslate"><span class="pre">worker</span></code> but both dask and spark,
-by default, will have its worker spin up one process per core defined for that
-container. That is, a worker hosts multiple processes.  That is
-an important capability of dask and spark as it means all cores of a
-node can be utilized by a worker.</p></li>
+run with its “role” defined as <code class="code docutils literal notranslate"><span class="pre">worker</span></code>, but a worker container can
+host multiple processes or threads.  The actual Dask or Spark topology is
+configuration-dependent; do not infer one process per core from this
+conceptual drawing.</p></li>
 <li><p>The worker node has lines with arrows drawn between the four boxes labeled P1, P2, P3, and P4.
 Those lines symbolize intra-node, interprocess communication between the worker processes.
 As noted above dask and spark abstract that communication.</p></li>
@@ -863,7 +869,7 @@ local area network.  That is, the heavy line labeled “Cluster LAN”.
 A key point here is that such communications use a physical connection
 between nodes and the nodes operating system has to handle routing
 data traffic to and from the container it is running.</p></li>
-<li><p><a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 7</span></a> has node2 running with a
+<li><p><a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 4</span></a> has node2 running with a
 role set as <code class="code docutils literal notranslate"><span class="pre">frontend</span></code>.   As noted earlier the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code> box is an
 abstraction of a user interface but in our implementation it runs the
 service that allows a web browswer to connect to the virtual cluster
@@ -897,10 +903,10 @@ some fine-tuning may be justified.</p>
 </section>
 <section id="example-2-multiple-nodes-with-multiple-roles">
 <h3>Example 2:  Multiple nodes with multiple roles`<a class="headerlink" href="#example-2-multiple-nodes-with-multiple-roles" title="Link to this heading">#</a></h3>
-<p><a class="reference internal" href="#configuration-figure2"><span class="std std-numref">Fig. 8</span></a> is
+<p><a class="reference internal" href="#configuration-figure2"><span class="std std-numref">Fig. 5</span></a> is
 a block diagram of a virtual cluster that is a minor variant of
-that in <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 7</span></a>.   This configuration
-has less of the inefficiency of that in <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 7</span></a>
+that in <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 4</span></a>.   This configuration
+has less of the inefficiency of that in <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 4</span></a>
 by not dedicating a node to the <code class="code docutils literal notranslate"><span class="pre">frontend</span></code> role.  It also
 illustrates a more subtle point that is an implementation detail
 we were avoiding in Example 1.   That is, note that when a node is
@@ -927,17 +933,17 @@ is assigned 4 worker processes.</p></li>
 <span id="configuration-figure2"></span><a class="reference internal image-reference" href="../_images/MultipleRolesPerNode.jpg"><img alt="../_images/MultipleRolesPerNode.jpg" src="../_images/MultipleRolesPerNode.jpg" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-number">Fig. 8 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
+<p><span class="caption-number">Fig. 5 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
 configuration of example 2.  This example shows a cluster with
 three physical nodes running containers with multiple roles on two of the three
-nodes.  See the caption of <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 7</span></a>
+nodes.  See the caption of <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 4</span></a>
 for details on the meaning of different lines in the diagram.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="example-3-multiple-nodes-with-optional-sharding">
 <h3>Example 3: Multiple nodes with optional Sharding<a class="headerlink" href="#example-3-multiple-nodes-with-optional-sharding" title="Link to this heading">#</a></h3>
-<p><a class="reference internal" href="#configuration-figure3"><span class="std std-numref">Fig. 9</span></a> is the first example
+<p><a class="reference internal" href="#configuration-figure3"><span class="std std-numref">Fig. 6</span></a> is the first example
 that is known to give reasonable load balancing on an HPC system.
 It is, in fact, a schematic diagram of our example generic
 configuration for creating a virtual cluster.   Configuration files that would
@@ -949,7 +955,7 @@ of the user manual titled <a class="reference internal" href="deploy_mspass_on_H
 <span id="configuration-figure3"></span><a class="reference internal image-reference" href="../_images/FiveNodeExampleComposite.jpg"><img alt="../_images/FiveNodeExampleComposite.jpg" src="../_images/FiveNodeExampleComposite.jpg" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
+<p><span class="caption-number">Fig. 6 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
 configuration of generic templates.  This example shows a cluster with
 five physical nodes.  (a) shows a configuration
 without MongoDB sharding enabled.   In that case node 1 has a
@@ -959,8 +965,8 @@ Node 1 also has two other containers: one running with role
 (b) shows a similar configuration that would be created with the
 alternative configuration script not enables sharding.  Note that in that
 situation the <code class="code docutils literal notranslate"><span class="pre">db</span></code> box is assigned the role <code class="code docutils literal notranslate"><span class="pre">dbmanager</span></code>.
-The <code class="code docutils literal notranslate"><span class="pre">dbmanager</span></code> coordinates database transitions with the
-shards defined in the other nodes.  In this example each node running
+The <code class="code docutils literal notranslate"><span class="pre">dbmanager</span></code> runs the MongoDB router and config-server functions
+for the shards defined in the other nodes.  In this example each node running
 a worker container also runs a container with a role defined as
 <code class="code docutils literal notranslate"><span class="pre">shard</span></code>.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
 </figcaption>
@@ -980,12 +986,10 @@ required “roles” in a single node.</p></li>
 <li><p>As in example 2 each container runs one and only one role.  The worker
 nodes all run only one container while the node illustrated to the left
 runs three roles in three different instances of the container.</p></li>
-<li><p>We don’t illustrate the worker processes in this figure for simplicity.
-We note that both dask and spark will default to creating one worker
-process per core assigned to the container.   In this configuration that
-would normally mean all the cores of that node.  Thus if each node had,
-for example, 16 cores, this virtual cluster would represent a 64 processor
-engine.</p></li>
+<li><p>We don’t illustrate the worker processes or threads in this figure for
+simplicity.  Dask and Spark derive their worker topology from scheduler
+defaults and launch configuration; configure it to fit the CPU and memory
+allocated to each container.</p></li>
 </ul>
 <p>Whether or not this configuration is well balanced depends upon the
 workflow and the physical nodes on which it is run.
@@ -1002,7 +1006,9 @@ following:</p>
 a feature of MsPASS and not something you will find in the MongoDB
 documentation.   Both define configurations defined in the start-mspass.sh
 script used to launch each container.   To see exactly what each do
-look at the contents of start-mspass.sh found <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/start-mspass.sh">here</a>.</p></li>
+look at the contents of start-mspass.sh found <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/scripts/start-mspass.sh">here</a>.
+The <code class="code docutils literal notranslate"><span class="pre">dbmanager</span></code> role is specific to a sharded topology; standalone
+database configurations use <code class="code docutils literal notranslate"><span class="pre">db</span></code> instead.</p></li>
 <li><p>Sharding adds complexity to a setup and run time environment that
 should not be taken lightly.   In general, we would recommend avoiding
 it unless you have a production workflow you find limited by
@@ -1014,7 +1020,7 @@ database transactions.</p></li>
 <p>We left the special case we call “all-in-one” until now even
 though virtually all MsPASS users will likely first use it in that mode.
 The reason is that although
-it is implemented through the same master script (start-msspas.sh),
+it is implemented through the same startup script (start-mspass.sh),
 it is a special case that might be confusing if we had started there.
 That is, because the framework is primarily designed for running on
 a cluster running on a desktop has to simulate elements of a cluster.
@@ -1024,7 +1030,7 @@ all-in-one mode with symbols the same as the examples above:</p>
 <span id="configuration-figure4"></span><a class="reference internal image-reference" href="../_images/AllInOne.jpg"><img alt="../_images/AllInOne.jpg" src="../_images/AllInOne.jpg" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-number">Fig. 10 </span><span class="caption-text">Block diagram showing abstract components of what we
+<p><span class="caption-number">Fig. 7 </span><span class="caption-text">Block diagram showing abstract components of what we
 call the all-in-one mode used for running on a single node.
 Symbols and line styles are as with all the related figures above.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
 </figcaption>
@@ -1052,13 +1058,13 @@ to not use all the cores on the system.   That process is described
 <p>A final point anyone running MsPASS on an HPC cluster needs to understand
 is how a “job” (aka your workflow) is run on such a cluster.
 We first consider how a batch job is run since most HPC compute jobs
-should be run that way.  <a class="reference internal" href="#hpc-batch-run-figure"><span class="std std-numref">Fig. 11</span></a>
+should be run that way.  <a class="reference internal" href="#hpc-batch-run-figure"><span class="std std-numref">Fig. 8</span></a>
 is a graphic that we use as an aid to explaining the process.</p>
 <figure class="align-center" id="id5">
 <span id="hpc-batch-run-figure"></span><a class="reference internal image-reference" href="../_images/BatchRunSchematic.jpg"><img alt="../_images/BatchRunSchematic.jpg" src="../_images/BatchRunSchematic.jpg" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-number">Fig. 11 </span><span class="caption-text">Block diagram illustrating how jobs are run on an HPC system
+<p><span class="caption-number">Fig. 8 </span><span class="caption-text">Block diagram illustrating how jobs are run on an HPC system
 with MsPASS.  Main text uses this figure for a detailed description
 of the process.</span><a class="headerlink" href="#id5" title="Link to this image">#</a></p>
 </figcaption>
@@ -1104,21 +1110,20 @@ Note also we illustrate one worker in the figure only to keep the figure simple.
 The virtual cluster box is open-ended and could conceivably define hundreds of
 workers.</p>
 <p>The final file that drives the processing is the box with the tag “Jupyter Notebook”.
-The last line of the <cite>run_mspass.sh</cite> script launches the jupyter notebook
-server in a mode where the server immediately loads and executes a notebook file you
-specify as an argument to job_script.sh.  The entire job terminates when the
-notebook finishes (or exits on an error).  The line launching the jupyter notebook
-server (“frontend” role) blocks until the notebook server exits.   Control is then returned
-to <cite>job_script.sh</cite> which either does cleanup or exits.  The cluster management
-software (slurm or the equivalent) then kills all the running containers.
-<a class="reference internal" href="#hpc-interactive-run-figure"><span class="std std-numref">Fig. 12</span></a> is a similar to
-<a class="reference internal" href="#hpc-batch-run-figure"><span class="std std-numref">Fig. 11</span></a> but illustrates how a “job” is
+In the current startup script, the frontend’s batch mode converts an
+<code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> file to Python and runs the resulting script, or runs a supplied
+Python script directly.  The frontend command blocks until that program
+finishes or fails, then returns control to <cite>job_script.sh</cite> for cleanup and
+exit.  Slurm or the equivalent scheduler terminates any remaining job
+processes when the allocation ends.
+<a class="reference internal" href="#hpc-interactive-run-figure"><span class="std std-numref">Fig. 9</span></a> is a similar to
+<a class="reference internal" href="#hpc-batch-run-figure"><span class="std std-numref">Fig. 8</span></a> but illustrates how a “job” is
 run on an HPC virtual cluster if you need to run a notebook interactively.</p>
 <figure class="align-center" id="id6">
 <span id="hpc-interactive-run-figure"></span><a class="reference internal image-reference" href="../_images/InteractiveRunSchematic.jpg"><img alt="../_images/InteractiveRunSchematic.jpg" src="../_images/InteractiveRunSchematic.jpg" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-number">Fig. 12 </span><span class="caption-text">Block diagram illustrating how jobs are run on an HPC system
+<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Block diagram illustrating how jobs are run on an HPC system
 with MsPASS when human interaction with the jupyter notebook
 server is required.</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
 </figcaption>
@@ -1148,16 +1153,16 @@ in batch mode and verify it gives the same answer.</p></li>
 the full data set.</p></li>
 </ol>
 <p>There is one final variant worth noting that is not illustrated in
-either <a class="reference internal" href="#hpc-batch-run-figure"><span class="std std-numref">Fig. 11</span></a> or <a class="reference internal" href="#hpc-interactive-run-figure"><span class="std std-numref">Fig. 12</span></a>.
+either <a class="reference internal" href="#hpc-batch-run-figure"><span class="std std-numref">Fig. 8</span></a> or <a class="reference internal" href="#hpc-interactive-run-figure"><span class="std std-numref">Fig. 9</span></a>.
 That is, dask has a useful
 <a class="reference external" href="https://docs.dask.org/en/stable/diagnostics-distributed.html">diagnostic dashboard</a>
 that can be used for real-time monitoring of a job.  The reason is that
 graphically the setup is identical to that illustrated in
-<a class="reference internal" href="#hpc-interactive-run-figure"><span class="std std-numref">Fig. 12</span></a>.  The difference is that the
+<a class="reference internal" href="#hpc-interactive-run-figure"><span class="std std-numref">Fig. 9</span></a>.  The difference is that the
 job would normally still be run in batch mode, but the external web browser
 would connect to the “diagnostic port” (8787 by default) instead of the
 network port used by the notebook server (normally 8888).  We note that
-any variation of <a class="reference internal" href="#hpc-interactive-run-figure"><span class="std std-numref">Fig. 12</span></a> an
+any variation of <a class="reference internal" href="#hpc-interactive-run-figure"><span class="std std-numref">Fig. 9</span></a> an
 external web browser will only be able to make such a connection if
 networking to the cluster is set up to allow that connection.
 We discuss those issues and potential solution in the
@@ -1176,20 +1181,20 @@ related section titled <a class="reference internal" href="deploy_mspass_on_HPC.
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="deploy_mspass_on_geolab.html"
+       href="advanced_setup_considerations.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Using MsPASS on EarthScope GeoLab</p>
+        <p class="prev-next-title">Advanced Setup Considerations</p>
       </div>
     </a>
     <a class="right-next"
-       href="../user_manual/database_concepts.html"
+       href="deploy_mspass_on_HPC.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Database Concepts</p>
+        <p class="prev-next-title">Deploying MsPASS on an HPC cluster</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

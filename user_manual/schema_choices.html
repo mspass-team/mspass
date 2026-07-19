@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What database schema should I use? &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>What database schema should I use? &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,11 +55,11 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Algorithms" href="algorithms.html" />
-    <link rel="prev" title="Continuous Data Handling with MsPASS" href="continuous_data.html" />
+    <link rel="next" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />
+    <link rel="prev" title="Database Concepts" href="database_concepts.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
-<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -472,39 +475,45 @@
                   
   <section id="what-database-schema-should-i-use">
 <span id="schema-choices"></span><h1>What database schema should I use?<a class="headerlink" href="#what-database-schema-should-i-use" title="Link to this heading">#</a></h1>
-<p>This is a question with endmembers.  At one end is a research workflow
-that is highly experimental and subject to large changes.   At the other end
-is a production workflow you are constructing to run on a large dataset
-and a cluster with many processors.</p>
-<p>For the former (research code), the answer is usually
-none.  The baggage of a schema mostly gets in the way.
-The best default for that situation is the one called <cite>mspass-lite</cite>.
-It differs from the global default, <cite>mspass</cite>, in that it imposes no
-read-only restriction that can cause confusing errors in some situations.
-For this situation if you aim to use the database with the name tag
-<cite>mydb</cite> use the following as the top box of your jupyter notebook file
-defining your workflow:</p>
+<p>This choice has two endmembers.  At one end is a research workflow
+that is highly experimental and subject to large changes.  At the other end
+is a production workflow designed to run on a large dataset and a cluster
+with many processors.</p>
+<p>Even an experimental workflow loads a schema when its MsPASS
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> handle is constructed.
+The best default for that situation is the compact <code class="docutils literal notranslate"><span class="pre">mspass_lite.yaml</span></code>
+schema.  Compared with the default <code class="docutils literal notranslate"><span class="pre">mspass.yaml</span></code>, it defines fewer
+collections and metadata keys, keeps the SEED identifiers directly in the
+waveform documents, and minimizes read-only metadata.  The MongoDB <code class="docutils literal notranslate"><span class="pre">_id</span></code>
+key remains read-only in both schemas.</p>
+<p>For example, to use a database named <code class="docutils literal notranslate"><span class="pre">mydb</span></code>, put the following near the
+top of the Jupyter notebook that defines your workflow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydb&quot;</span><span class="p">,</span><span class="n">schema</span><span class="o">=</span><span class="s2">&quot;mspass_lite.yaml&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydb&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;mspass_lite.yaml&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>For a more tuned application, you should first consider a related
-question:  Does my workflow need schema enforcement?   If the answer is no,
-just use the <cite>mspass-lite</cite> schema as illustrated above.
-In most case, however, it is our experience that for large datasets
-schema constraints can provide an important way to avoid mysterious errors.
-For the case with a yes answer there are two options.   For most
-application the standard <cite>mspass</cite> schema should be sufficient.   It provides
-base functionality for source and receiver metadata.   It also defines
-the <cite>wf_miniseed</cite> collection that is essential when the processing
-sequence uses miniseed data as the parent data.  If the standard schema does not
-work for you, look at the <cite>data/yaml</cite> directory for the mspass source code
-tree for alternatives you may find there.   If none of those work for you
-it is relatively easy to extend any of the existing schema files.
-See related sections in this User’s Manual for guidance and the docstring
-for the class <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema" title="mspasspy.db.schema.DatabaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseSchema</span></code></a> and
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.schema.MetadataSchema" title="mspasspy.db.schema.MetadataSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataSchema</span></code></a>.</p>
+<p>Schema selection and schema enforcement are related but distinct.  The YAML
+file defines recognized collections, metadata keys, types, aliases,
+cross-references, required fields, and read-only fields.  Database methods
+that accept a <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument control how strictly they apply relevant
+schema checks.  See <a class="reference internal" href="CRUD_operations.html#crud-operations"><span class="std std-ref">CRUD operations</span></a> for the behavior
+of <code class="docutils literal notranslate"><span class="pre">promiscuous</span></code>, <code class="docutils literal notranslate"><span class="pre">cautious</span></code>, and <code class="docutils literal notranslate"><span class="pre">pedantic</span></code> modes.</p>
+<p>For most production workflows, start with <code class="docutils literal notranslate"><span class="pre">mspass.yaml</span></code>.  It defines the
+normalized <code class="docutils literal notranslate"><span class="pre">site</span></code>, <code class="docutils literal notranslate"><span class="pre">channel</span></code>, and <code class="docutils literal notranslate"><span class="pre">source</span></code> collections, as well as the
+<code class="docutils literal notranslate"><span class="pre">wf_miniseed</span></code> collection used to index raw miniSEED data.  The complete
+collection and metadata-key tables for that schema are in the
+<a class="reference internal" href="../mspass_schema/mspass_schema.html#mspass-schema"><span class="std std-ref">MsPASS schema reference</span></a>.</p>
+<p>The other shipped alternatives in <code class="file docutils literal notranslate"><span class="pre">data/yaml</span></code> are
+<code class="docutils literal notranslate"><span class="pre">mspass_fdsn.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">mspass_s3.yaml</span></code>.  They adapt the
+<code class="docutils literal notranslate"><span class="pre">wf_miniseed</span></code> metadata for the FDSN and Amazon S3 access paths,
+respectively.  If no shipped schema fits, copy the closest YAML file and
+update its <code class="docutils literal notranslate"><span class="pre">Database</span></code> and <code class="docutils literal notranslate"><span class="pre">Metadata</span></code> sections consistently, then pass
+that filename or path through the <code class="docutils literal notranslate"><span class="pre">schema</span></code> argument.  See the APIs for
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema" title="mspasspy.db.schema.DatabaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseSchema</span></code></a> and
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.schema.MetadataSchema" title="mspasspy.db.schema.MetadataSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataSchema</span></code></a> for the schema
+objects created from that file.</p>
 </section>
 
 
@@ -518,20 +527,20 @@ for the class <a class="reference internal" href="../python_api/mspasspy.db.html
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="continuous_data.html"
+       href="database_concepts.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Continuous Data Handling with MsPASS</p>
+        <p class="prev-next-title">Database Concepts</p>
       </div>
     </a>
     <a class="right-next"
-       href="algorithms.html"
+       href="mongodb_and_mspass.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Algorithms</p>
+        <p class="prev-next-title">Using MongoDB with MsPASS</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

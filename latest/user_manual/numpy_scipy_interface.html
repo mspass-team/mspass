@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using numpy/scipy with MsPASS &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Using NumPy and SciPy with MsPASS &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Data Object Design Concepts" href="data_object_design_concepts.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -161,10 +161,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -269,10 +269,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -331,72 +331,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -409,6 +411,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -420,7 +423,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -454,7 +457,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Using numpy/scipy with MsPASS</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Using NumPy and SciPy with MsPASS</span></li>
   </ul>
 </nav>
 </div>
@@ -471,54 +474,53 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="using-numpy-scipy-with-mspass">
-<span id="numpy-scipy-interface"></span><h1>Using numpy/scipy with MsPASS<a class="headerlink" href="#using-numpy-scipy-with-mspass" title="Link to this heading">#</a></h1>
+  <section id="using-numpy-and-scipy-with-mspass">
+<span id="numpy-scipy-interface"></span><h1>Using NumPy and SciPy with MsPASS<a class="headerlink" href="#using-numpy-and-scipy-with-mspass" title="Link to this heading">#</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>The <cite>numpy</cite> and <cite>scipy</cite> packages are heavily utilized for scientific computing
+<p>The <a class="reference external" href="https://numpy.org/">NumPy</a> and <a class="reference external" href="https://scipy.org/">SciPy</a> packages are heavily used for scientific computing
 in a wide range of fields.   One of the reasons for that is performance.
-For a number of reasons that are beside the point, python arrays
-have horrible performance.  That is particularly true of linear algebra
-operations common in all signal processing algorithms.
-All numpy algorithms we’ve ever tested are orders of magnitude faster than the same
-algorithm implemented as a pure python code with python arrays.  Since most
-scipy algorithms are built on top of numpy, the same holds for scipy.
-Similarly, obspy uses numpy arrays exclusively.   As a result, an early
+Built-in Python containers are not designed for high-performance numerical
+linear algebra.
+NumPy provides typed multidimensional arrays and compiled numerical kernels;
+SciPy builds additional scientific algorithms on that foundation.  ObsPy also
+uses NumPy arrays for waveform samples.  As a result, an early
 design constraint in MsPASS was to provide as clean an interface to
-numpy/scipy as possible.  However, because we chose to implement our own
+NumPy and SciPy as possible.  However, because we chose to implement our own
 core data objects in C++, that presents a disconnect that causes a few
 anomalies in the MsPASS API.  This section of the User’s Manual
-documents these issues and provides guidance for how to effectively mix
-numpy/scipy algorithms with <cite>TimeSeries</cite>, <cite>Seismogram</cite>, and ensemble objects.
-It does not address a prototype data type we call a <cite>Gather</cite> that can be used
-for uniform ensembles.  The <cite>Gather</cite> object is a pure python class that uses
-multidimensional numpy arrays to store sample data and is not subject to
-the issues addressed in this section.</p>
+documents these issues and provides guidance for mixing NumPy and SciPy
+algorithms with <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>,
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>, and ensemble
+objects.  The experimental regular-grid
+<a class="reference internal" href="../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.Gather" title="mspasspy.seismic.gather.Gather"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gather</span></code></a> and
+<a class="reference internal" href="../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.SeismogramGather" title="mspasspy.seismic.gather.SeismogramGather"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramGather</span></code></a> types
+use array-oriented storage directly and are outside this page’s scope.</p>
 </section>
 <section id="timeseries-data">
 <h2>TimeSeries Data<a class="headerlink" href="#timeseries-data" title="Link to this heading">#</a></h2>
-<p>Recall the mspass <cite>TimeSeries</cite> class is used to abstract the concept of
+<p>Recall that the MsPASS
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> class represents
 a single channel of fixed sample rate seismic data spanning a given time period.
 As such we used the standard signal processing abstraction of storing
 the data as a vector of numbers.</p>
 <p>Every computing language that has any role in numerical computing defines
 a syntax for arrays.  A vector in this context is a one-dimensional array.
-A problem with python’s builtin array is that it isn’t actually at all the
-same thing as an array in FORTRAN of C.   Both FORTRAN and C define
+A Python list is not the same thing as an array in Fortran or C.  Both Fortran and C define
 an array as a fixed block of memory of a specified length containing
 a sequence of numbers of the same type.   (e.g. a C double array of length
-10 is a block of <span class="math notranslate nohighlight">\(8*10\)</span> bytes.)  Numpy performance is achieved by
+10 is a block of <span class="math notranslate nohighlight">\(8 \times 10\)</span> bytes.)  NumPy performance is achieved by
 redefining an array to assume the data are in a contiguous memory block and
 using wrappers that allow low-level operations to actually be performed
 by compiled C or FORTRAN functions.  We do the same thing in MsPASS
-but our data objects do not contain numpy array classes per se, but
+but our data objects do not contain NumPy array classes directly.  Instead,
 we use the same approach to allow low-level operations to be
 done in C++.  Because we use the same concept (arrays are contiguous
 blocks of memory) the arrays can mostly be used interchangeably, but
 not always.</p>
 <p>So what is the difference?   If you execute this code fragment in MsPASS:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DoubleVector</span><span class="p">,</span> <span class="n">TimeSeries</span>
 <span class="n">x_numpy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">x_mspass</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type of numpy object=&quot;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">x_numpy</span><span class="p">))</span>
@@ -532,19 +534,19 @@ Type of mspass data vector= &lt;class &#39;mspasspy.ccore.seismic.DoubleVector&#
 </div>
 <p>The point is that both define two conceptually similar things that are a
 vector of sample data.  In this example
-these are stored with the symbols <cite>x_numpy</cite> a <cite>x_mspass.data</cite>.
+these are stored with the symbols <code class="docutils literal notranslate"><span class="pre">x_numpy</span></code> and <code class="docutils literal notranslate"><span class="pre">x_mspass.data</span></code>.
 The print statements emphasize they are
-different data types.  They are not, however, an apples and oranges
+different data types.  They are not, however, an apples-to-oranges
 kind of comparison but more of a Jonathan versus Gala apple comparison.
-Python is very cavalier about type.  Many sources call this “duck typing”
-from the cliche “if it walks like a duck and quacks like duck it must be duck”.
+Python APIs often use “duck typing”: an operation accepts objects that
+provide the required behavior rather than demanding one concrete class.
 Because of “duck typing” we can, in most cases, interchange the use of the
 two classes <cite>ndarray</cite> and <cite>DoubleVector</cite>.
-For example, you can nearly always send <cite>DoubleVector</cite> data to a
-numpy or scipy function and it will work just find.  Here are a few
+For example, you can usually send <code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code> data to a
+NumPy or SciPy function that accepts array-like input.  Here are a few
 examples:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">hilbert</span>
 <span class="c1"># Setting data to nonzero values - not essential but otherwise</span>
 <span class="c1"># trivial zero vector will cause problems for the log example</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">npts</span><span class="p">):</span>
@@ -552,23 +554,24 @@ examples:</p>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-<span class="n">yh</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">hilbert</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="n">yh</span> <span class="o">=</span> <span class="n">hilbert</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>That works because the <cite>DoubleVector</cite> is what numpy’s documentation
-calls “array like” (a duck type concept).  In fact, any numpy or scipy
-function that accepts an “array like” argument can accept the <cite>data</cite>
-member of a <cite>TimeSeries</cite> and work.   In reality, <cite>DoubleVector</cite> is
+<p>That works because <code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code> is what NumPy’s documentation
+calls array-like.  In fact, any NumPy or SciPy
+function that accepts an array-like argument can generally accept the <code class="docutils literal notranslate"><span class="pre">data</span></code>
+member of a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.  In reality, <code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code> is
 a C++ “vector container” that in C++ would be declared as:</p>
 <div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>In MsPASS we use stock “bindings” from pybind11 that allow us to do
-this magic.  The real magic is that in most cases no copying of the
-array data is required.   (For C programmers the bindings use
-a pointer (address) not a copy.)</p>
-<p>This magic works for most, but not necessarily all, vector operators that
-mix <cite>DoubleVector</cite> and <cite>ndarray</cite> types.  e.g. with the symbols above defined
+this behavior.  The buffer protocol also lets
+<code class="docutils literal notranslate"><span class="pre">np.asarray(x_mspass.data)</span></code> create a writable NumPy view without copying.
+Mutating that view therefore mutates the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> samples; call
+<code class="docutils literal notranslate"><span class="pre">np.array(x_mspass.data,</span> <span class="pre">copy=True)</span></code> when isolation is required.</p>
+<p>This works for most, but not all, vector operators that
+mix <code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code> and <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> types.  For example, with the symbols above defined
 all of the following will work and do what is expected:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">=</span><span class="n">x_numpy</span><span class="o">-</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span>
 <span class="n">z</span><span class="o">=</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="o">+</span><span class="n">x_numpy</span>
@@ -579,80 +582,59 @@ all of the following will work and do what is expected:</p>
 </div>
 <p>The main thing to avoid is an assignment where the left hand side
 and right hand side resolve to different types.   For instance,
-the following will fail with a <cite>TypeError</cite> exception if you try to run it:</p>
+the following will fail with a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">x_numpy</span>
 <span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">x_numpy</span> <span class="o">+</span> <span class="n">z</span>
 </pre></div>
 </div>
-<p>The solution is to use a python version of a type cast to a <cite>DoubleVector</cite>:</p>
+<p>The solution is to construct a <code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code> explicitly:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">x_numpy</span><span class="p">)</span>
 <span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">x_numpy</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>That is necessary because in both cases the right hand side is an
-<cite>ndarray</cite>.  The construct used is a call to the bindings of a copy constructor
-for the C++ std::vector container so it seems to come at the cost of a memory copy.
-On the other hand, that is orders of magnitude faster than a python loop to do the
-same operations.</p>
+<p>That is necessary because the right-hand side is an <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>.  The
+<code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code> constructor copies and converts the values.</p>
 <p>Be aware that if you mix types in a vector operation you can get some surprising
-results.   For example, the following code will generate a <cite>TypeError</cite>
+results.  For example, the following code generates a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>
 exception:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
 </pre></div>
 </div>
-<p>while simply reversing the order of <cite>z</cite> and <cite>ts.data</cite> like this</p>
+<p>while reversing the order of <code class="docutils literal notranslate"><span class="pre">z</span></code> and <code class="docutils literal notranslate"><span class="pre">ts.data</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">z</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">z</span>
 </pre></div>
 </div>
-<p>works and does set <cite>x_mspass.data</cite> to the vector sum of the two symbols
-on the right hand side.  The reason is that the + operator in python
-seems to resolve the type to the type of the left side of the + operator.
-Why is “deep in the weeds”, but the best advice is to avoid mixed type
-operations if possible.  The more robust way to write the above as:</p>
+<p>works and sets <code class="docutils literal notranslate"><span class="pre">ts.data</span></code> to the vector sum of the two symbols
+on the right-hand side.  The result type follows the implementation selected
+by Python’s binary-operator dispatch, so operand order matters.  Avoid relying
+on that detail; make the conversion explicit:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-<span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Finally, users who are matlab fans may like to write python code using
-the vector “:” operator.  For example, with numpy functions operations like the
-following are commonly used:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">x</span><span class="o">=</span><span class="n">z</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>That will print “5” - the length of the subvector extracted in x.
-The : operator does not always work with a <cite>DoubleVector</cite>.  If you have an
-algorithm using the colon operator, do the vector operations with
-numpy and then copy the result into the <cite>TimeSeries</cite> data member.
-An important warning about any such assignments to <cite>TimeSeries.data</cite> is you
-MUST be sure the size of the vector on the right hand side is the
-same size as the left hand side.   Consider this segment:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># creates data vector 100 samples long</span>
-<span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">x</span><span class="o">=</span><span class="n">z</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>The output of this is “5” showing that, as expected, ts.data is replaced
-by the subvector x.  The BIG PROBLEM that can cause is it will create an
-inconsistency in the size set by the <cite>npts</cite> attribute of <cite>TimeSeries</cite>.  The
-correct solution for the above is this minor variant calling the <cite>set_npts</cite> method
-of <cite>TimeSeries</cite></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># creates data vector 100 samples long</span>
-<span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">x</span><span class="o">=</span><span class="n">z</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
-<span class="n">ts</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<p>Current <code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code> bindings support ordinary Python slices.  A slice
+returns a new <code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">DoubleVector</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<p>NumPy is still more convenient for advanced indexing.  The important
+invariant is that <code class="docutils literal notranslate"><span class="pre">ts.npts</span></code> must equal <code class="docutils literal notranslate"><span class="pre">len(ts.data)</span></code>.  Assigning a
+shorter vector does not update <code class="docutils literal notranslate"><span class="pre">npts</span></code> automatically, so update both:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">)[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+<span class="k">assert</span> <span class="n">ts</span><span class="o">.</span><span class="n">npts</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span>
 </pre></div>
 </div>
 <section id="seismogram-data">
@@ -663,40 +645,39 @@ The motivation is described in the section titled
 The result is that the array holding the sample data is a matrix
 instead of a vector.  Some implementation details of note are:</p>
 <ol class="arabic simple">
-<li><p>In MsPASS the matrix has 3 rows and <cite>npts</cite> columns.  That means the
-rows of the matrix an be extracted to create a <cite>TimeSeries</cite>
+<li><p>In MsPASS the matrix has 3 rows and <code class="docutils literal notranslate"><span class="pre">npts</span></code> columns.  That means the
+rows of the matrix can be extracted to create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>
 subset of the data while the columns are single “vector” samples
 of ground motion.</p></li>
 <li><p>Currently MsPASS uses a simple, lightweight matrix class to store the sample
-data called <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.dmatrix" title="mspasspy.ccore.utility.dmatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.dmatrix</span></code></a>.  A key reason we
+data called <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.dmatrix" title="mspasspy.ccore.utility.dmatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">dmatrix</span></code></a>.  A key reason we
 made that choice was control over methods defined for the class.  A
-case in point is the <cite>shape</cite> attribute that we will see momentarily
-is important for working with numpy.</p></li>
-<li><p>For performance <cite>dmatrix</cite> is implemented in C++.   The class has methods
-for all standard matrix operations with python bindings for those operator.
-The corollary to that statement is that when working with <cite>Seismogram</cite> data
+case in point is the <code class="docutils literal notranslate"><span class="pre">shape</span></code> attribute, which is important when working
+with NumPy.</p></li>
+<li><p>For performance <code class="docutils literal notranslate"><span class="pre">dmatrix</span></code> is implemented in C++.  The class has methods
+for standard matrix operations with Python bindings for those operators.
+When working with <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code> data,
 use the native operators when possible.</p></li>
-<li><p>A <cite>dmatrix</cite> stores the array data in a contiguous block of memory
-in what numpy would call “FORTRAN order”. (“C order” is reversed.)
-FORTRAN stores a matrix as a contiguous block of memory with the
+<li><p>A <code class="docutils literal notranslate"><span class="pre">dmatrix</span></code> stores the array data in a contiguous block of memory
+in what NumPy calls Fortran order.  Fortran stores a matrix with the
 row index “varying fastest”.  Exchanging the sample data stored
-this way with numpy is like that with the std::vector used in
-<cite>TimeSeries</cite> but the exchange uses a pointer to the first sample of the
-contiguous block of memory held by an instance of a <cite>dmatrix</cite>
-class referenced with the symbol <cite>Seismogram.data</cite>.</p></li>
+this way with NumPy is like that with the <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> used in
+<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.  <code class="docutils literal notranslate"><span class="pre">np.asarray(seismogram.data)</span></code> provides a writable view
+of that buffer.</p></li>
 <li><p>We use a variation of the same “magic” in the pybind11 binding code
-that allows the <cite>Seismogram.data</cite> matrix to interact cleanly with
-numpy and scipy functions that require a matrix.  Like the scalar
+that allows the <code class="docutils literal notranslate"><span class="pre">Seismogram.data</span></code> matrix to interact cleanly with
+NumPy and SciPy functions that require a matrix.  Like the scalar
 case there are impedance mismatches, however, that can complicate
 that exchange. We discuss these below.</p></li>
 </ol>
 <p>Almost all of what was discussed above about using <cite>TimeSeries</cite>
-arrays with numpy are similar.  For example, although the result is
+arrays with NumPy are similar.  For example, although the result is
 meaningless, you can run the following code snippet with
 MsPASS and it will run and produce the expected result:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Seismogram</span>
-<span class="n">x_mspass</span> <span class="o">=</span><span class="n">Seismogram</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">dmatrix</span>
+<span class="n">x_mspass</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="c1"># initialize the matrix to some meaningless, nonzero values</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
   <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">npts</span><span class="p">):</span>
@@ -713,11 +694,11 @@ MsPASS and it will run and produce the expected result:</p>
 <span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">y</span>
 <span class="c1"># Same thing done with a binary + operator</span>
 <span class="c1"># use a copy to show more likely use</span>
-<span class="n">z</span><span class="o">=</span><span class="n">Seismogram</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-<span class="n">x_mspass_data</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="n">y</span>
+<span class="n">z</span><span class="o">=</span><span class="n">Seismogram</span><span class="p">(</span><span class="n">x_mspass</span><span class="p">)</span>
+<span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">y</span>
 </pre></div>
 </div>
-<p>As with <cite>TimeSeries</cite> at mismatch will occur if the operation
+<p>As with <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, a mismatch occurs if the operation
 yields a type mismatch.  For example, the following minor variant of
 above will run:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">=</span><span class="n">Seismogram</span><span class="p">(</span><span class="n">x_mspass</span><span class="p">)</span>
@@ -726,14 +707,14 @@ above will run:</p>
 </pre></div>
 </div>
 <p>In contrast, the following that might seem completely equivalent
-will raise a <cite>TypeError</cite> exception:</p>
+raises a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">=</span><span class="n">Seismogram</span><span class="p">(</span><span class="n">x_mspass</span><span class="p">)</span>
 <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">100</span><span class="p">])</span>
 <span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="o">.</span><span class="n">data</span>
 </pre></div>
 </div>
 <p>The reason is that for the right hand side resolves to a
-numpy “ndarray” and the left hand side is a <cite>dmatrix</cite>.
+NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> and the left-hand side requires a <code class="docutils literal notranslate"><span class="pre">dmatrix</span></code>.
 Exactly like above, this simpler assignment will fail exactly the same way:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">y</span>
 </pre></div>
@@ -742,15 +723,18 @@ Exactly like above, this simpler assignment will fail exactly the same way:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>That is, <cite>DoubleVector</cite> is changed to <cite>dmatrix</cite>.</p>
-<p>Finally, the warnings above about the “:” operator with <cite>TimeSeries</cite> apply equally
-to <cite>Seismogram</cite>.   If you write a python code with the color operator do
-all those operations with numpy arrays and use the <cite>dmatrix</cite> copy constructor
-to load the result into the object’s <cite>data</cite> array.   The warning about
-making sure the <cite>npts</cite> member attribute is consistent with the result
-applies as well.   The only thing to remember with a <cite>Seismogram</cite> is that
-<cite>npts</cite> is the number of columns of the data matrix, not the total number of
-samples.</p>
+<p>That is, <code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code> is replaced by <code class="docutils literal notranslate"><span class="pre">dmatrix</span></code> for matrix data.</p>
+<p><code class="docutils literal notranslate"><span class="pre">dmatrix</span></code> also supports ordinary row and column slices through its NumPy
+interface; those slices are returned as <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects rather than as
+another <code class="docutils literal notranslate"><span class="pre">dmatrix</span></code>.  When a result is assigned back, construct a <code class="docutils literal notranslate"><span class="pre">dmatrix</span></code>
+explicitly, require exactly three rows, and keep <code class="docutils literal notranslate"><span class="pre">npts</span></code> equal to the number
+of columns:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:,</span> <span class="mi">10</span><span class="p">:</span><span class="mi">20</span><span class="p">]</span>
+<span class="n">x_mspass</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">x_mspass</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 </section>
 </section>

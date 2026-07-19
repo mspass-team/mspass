@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Time Standard Constraints &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Time Standard Constraints &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Using ObsPy with MsPASS" href="obspy_interface.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -473,8 +476,8 @@
   <section id="time-standard-constraints">
 <span id="id1"></span><h1>Time Standard Constraints<a class="headerlink" href="#time-standard-constraints" title="Link to this heading">#</a></h1>
 <div class="line-block">
-<div class="line">The section in the user’s manual on BasicTimeSeries concepts
-(This needs a link back to that section) discusses a novel feature of
+<div class="line">The <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">BasicTimeSeries discussion</span></a>
+discusses a novel feature of
 MsPASS that allows the framework to support both active source and
 passive array data.   This section contains additional implementation
 details that some users may find important.  The most notable example
@@ -517,13 +520,13 @@ standard.  SAC users may understand the output of ator method
 as a generalization of the finite list of time standards supported
 in SAC.</p></li>
 </ol>
-<p>All data loaded originally with a UTC time standard have an internal
-boolean attribute (<code class="code docutils literal notranslate"><span class="pre">t0shift_is_valid</span></code>) set true to inform the
-system the data have a valid absolute time stamp.  Data loaded from
-seed files will always have this set properly, but custom readers for
-unusual formats must be aware of this constraint.  BasicTimeSeries
-time series has the method <code class="code docutils literal notranslate"><span class="pre">set_tref</span></code> that can be used to force the
-time standard.</p>
+<p>Unshifted UTC data normally have the internal boolean attribute
+<code class="code docutils literal notranslate"><span class="pre">t0shift_is_valid</span></code> set false because no conversion shift is being
+stored.  Calling <code class="code docutils literal notranslate"><span class="pre">ator</span></code> stores the supplied UTC reference time,
+changes the reference type to Relative, and sets this flag true so
+<code class="code docutils literal notranslate"><span class="pre">rtoa</span></code> can reverse the conversion.  Custom readers for unusual
+formats must set the time standard deliberately.  Python uses the
+<code class="code docutils literal notranslate"><span class="pre">tref</span></code> property for that purpose; C++ provides <code class="code docutils literal notranslate"><span class="pre">set_tref</span></code>.</p>
 </li>
 <li><p>Active source data are normally best loaded with the TimeReferenceType
 set as <code class="code docutils literal notranslate"><span class="pre">Relative</span></code> (TimeReferenceType.Relative in python or
@@ -561,8 +564,9 @@ have TimeReferenceType set to “Relative”.   The first two cases when
 the absolute timing is not reliable should have the internal attribute
 <code class="code docutils literal notranslate"><span class="pre">t0shift_is_valid</span></code> set to False.  That assures the users won’t make the
 mistake of calling the rtoa function and creating a potentially misleading
-(at best) data set.  That constraint can be enforced using the <code class="code docutils literal notranslate"><span class="pre">set_tref</span></code>
-method that can be called from either TimeSeries or Seismogram objects.
+(at best) data set.  In Python, assign
+<code class="code docutils literal notranslate"><span class="pre">d.tref</span> <span class="pre">=</span> <span class="pre">TimeReferenceType.Relative</span></code>; changing <code class="code docutils literal notranslate"><span class="pre">tref</span></code> alone
+does not create or validate a stored UTC shift.
 The complete set of methods available to handle this issue are discussed at the
 end of this document.</p>
 </div></blockquote>
@@ -594,8 +598,8 @@ with he simple name <code class="code docutils literal notranslate"><span class=
 these are merged to a single symbol t0 with decorators in a fairly
 standard way to make t0 appear like a class attribute as in the
 following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">arrival_time</span>      <span class="c1"># t0 as a setter (alias for set_to(arrival.time)</span>
-<span class="n">t</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>                 <span class="c1"># t0 as a getter (alias for to())</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">arrival_time</span>      <span class="c1"># t0 as a setter (calls the C++ set_t0 implementation)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>                 <span class="c1"># t0 as a getter</span>
 </pre></div>
 </div>
 </li>
@@ -609,13 +613,13 @@ the integer sample number computed for time t rounded to the nearest
 sample.   Users are cautioned that none of these methods check the
 validity of a time or sample number with respect to the data.  e.g. it
 would be ill-advised to use the output of <code class="code docutils literal notranslate"><span class="pre">sample_number(t)</span></code> as an
-index into the data array without checking the result is &gt;0 and
+index into the data array without checking the result is &gt;=0 and
 &lt; npts.</p></li>
 <li><p>There are two methods to switch between UTC and Relative time standards.
 Use <code class="code docutils literal notranslate"><span class="pre">ator(time_shift)</span></code> to translate the time origin to the time
 defined by the epoch time <code class="code docutils literal notranslate"><span class="pre">time_shift</span></code>.   Note a convenient way to
 get such a time from a date string is the use obspy’s UTCDateTime
-and apply the <code class="code docutils literal notranslate"><span class="pre">timestamp</span></code> method on the UTCDateTime object.  The
+and read the <code class="code docutils literal notranslate"><span class="pre">timestamp</span></code> property on the UTCDateTime object.  The
 inverse of <code class="code docutils literal notranslate"><span class="pre">ator</span></code> is <code class="code docutils literal notranslate"><span class="pre">rtoa()</span></code>.   Note the method has no arguments
 and uses the value of time_shift applied when <code class="code docutils literal notranslate"><span class="pre">ator</span></code> is called to
 restore time to UTC.  Finally, there is a <code class="code docutils literal notranslate"><span class="pre">shift(delta_time)</span></code>
@@ -629,22 +633,27 @@ treated as reliable is managed internally by a private
 (technically protected in C++ but private from a python perspective),
 boolean attribute called <code class="code docutils literal notranslate"><span class="pre">t0shift_is_valid</span></code> in the C++ code.  That
 attribute can be interrogated with the method <code class="code docutils literal notranslate"><span class="pre">shifted()</span></code>.   The
-<code class="code docutils literal notranslate"><span class="pre">shifted</span></code> method returns true if the data are in UTC (not shifted
-by calling ator) OR they were never defined with respect to UTC
-(i.e. active source data like that noted above).  There are a
-(dangerous) pair of setter to force a time standard.
-First, it may be sometimes necessary to force the time standard
-with the method <code class="code docutils literal notranslate"><span class="pre">set_tref(rtype)</span></code> where rtype has the ugly form in python
-<code class="code docutils literal notranslate"><span class="pre">TimeReferenceType.UTC</span></code> or <code class="code docutils literal notranslate"><span class="pre">TimeReferenceType.Relative</span></code>.
-(At the risk of adding confusion the same symbols would be referred to
-as <code class="code docutils literal notranslate"><span class="pre">TimeReferenceType::UTC</span></code> and <code class="code docutils literal notranslate"><span class="pre">TimeReferenceType::Relative</span> <span class="pre">in</span> <span class="pre">C++)</span></code>.
-The second dangerous setter has the signature <code class="code docutils literal notranslate"><span class="pre">force_t0_shift(t)</span></code>.  It will
-set the data 0 value to t and set <code class="code docutils literal notranslate"><span class="pre">t0_shift_is_valid</span></code> to True.
-The primary purpose of these two methods is to match synthetics to
-data that are stored with UTC time.   By calling
-<code class="code docutils literal notranslate"><span class="pre">set_tref(TimeReferenceType.UTC)</span></code> followed by a call to <code class="code docutils literal notranslate"><span class="pre">force_t0_shift(t)</span></code>
-where t is the origin time of an event being simulated, a synthetic can
-be compared sample by sample to data.</p></li>
+<code class="code docutils literal notranslate"><span class="pre">shifted</span></code> method returns that flag’s value: true means a stored
+UTC conversion shift is available.  It is normally false for unshifted
+UTC data and for relative active-source data without reliable absolute
+timing.  Python changes the time-reference enum with the <code class="code docutils literal notranslate"><span class="pre">tref</span></code>
+property; the C++ method is <code class="code docutils literal notranslate"><span class="pre">set_tref(rtype)</span></code>.</p>
+<p>The dangerous setter <code class="code docutils literal notranslate"><span class="pre">force_t0_shift(t)</span></code> stores <code class="code docutils literal notranslate"><span class="pre">t</span></code> as the
+conversion shift and makes <code class="code docutils literal notranslate"><span class="pre">shifted()</span></code> true, but it does not
+change <code class="code docutils literal notranslate"><span class="pre">t0</span></code> or <code class="code docutils literal notranslate"><span class="pre">tref</span></code>.  Its primary purpose is matching a
+relative synthetic to data stored in UTC.  For a synthetic whose time
+axis is already relative to origin, use it as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">synthetic</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">TimeReferenceType</span><span class="o">.</span><span class="n">Relative</span>
+<span class="n">synthetic</span><span class="o">.</span><span class="n">force_t0_shift</span><span class="p">(</span><span class="n">origin_time</span><span class="p">)</span>
+<span class="n">synthetic</span><span class="o">.</span><span class="n">rtoa</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>After <code class="code docutils literal notranslate"><span class="pre">rtoa</span></code>, the time standard is UTC and <code class="code docutils literal notranslate"><span class="pre">origin_time</span></code>
+has been added to the relative <code class="code docutils literal notranslate"><span class="pre">t0</span></code>.  Do not use
+<code class="code docutils literal notranslate"><span class="pre">force_t0_shift</span></code> when the absolute reference is unknown; doing so
+bypasses the safeguard that normally makes <code class="code docutils literal notranslate"><span class="pre">rtoa</span></code> reject that
+conversion.</p>
+</li>
 </ul>
 </div></blockquote>
 </section>

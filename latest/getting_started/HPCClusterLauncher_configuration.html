@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>HPCClusterLauncher Configuration &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>HPCClusterLauncher Configuration &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Deploying MsPASS on an HPC cluster" href="deploy_mspass_on_HPC.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -474,107 +477,116 @@
 <span id="hpc-cluster-configuration"></span><h1>HPCClusterLauncher Configuration<a class="headerlink" href="#hpcclusterlauncher-configuration" title="Link to this heading">#</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>This document gives details of configurations parameters
-needed to launch a valid instance of the
-<code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> object.  This document has
-two section:</p>
+<p><code class="docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> reads two groups of settings from YAML:</p>
 <ol class="arabic simple">
 <li><p>General parameters that can be thought of as generic system
-configuration parameters. The keys for all these attributes are
-in the top level of the yaml file hierarchy.</p></li>
+configuration parameters.  The keys for all these attributes are
+at the top level of the YAML file hierarchy.</p></li>
 <li><p>Parameters that define this particular instance of a virtual
-cluster.   All these parameters are at level 2 of the yaml file
-under the key <code class="code docutils literal notranslate"><span class="pre">HPC_cluster</span></code>.</p></li>
+cluster.  All these parameters are at level 2 of the YAML file
+under the case-sensitive key <code class="code docutils literal notranslate"><span class="pre">HPC_cluster</span></code>.</p></li>
 </ol>
+<p>The launcher is distributed by the separate <a class="reference external" href="https://github.com/mspass-team/mspass_launcher">mspass_launcher project</a>.  Its release and
+development schemas differ, so always start with the template shipped with
+the launcher version you installed.  A missing or misspelled required key
+normally raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>.</p>
 </section>
 <section id="general-attributes">
 <h2>General attributes<a class="headerlink" href="#general-attributes" title="Link to this heading">#</a></h2>
 <section id="file-parameters">
 <h3>File parameters<a class="headerlink" href="#file-parameters" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><em>container</em>  path to the file created by running <code class="code docutils literal notranslate"><span class="pre">apptainer</span> <span class="pre">build</span></code>.</p></li>
-<li><p><em>working_directory</em>  should be the path to the working directory for this
+<li><p><em>container</em> is the path to the file created by running
+<code class="code docutils literal notranslate"><span class="pre">apptainer</span> <span class="pre">build</span></code>.  Every allocated node must be able to read it.</p></li>
+<li><p><em>working_directory</em> should be the path to the working directory for this
 project.  This is the directory a job script would usually run a
-cd command to make it the current directory for the job.  It is needed in this
-context to assure the containers all are rooted at a common point.</p></li>
-<li><p><em>log_directory</em> will contain the log files created by the services run in
-the containers.</p></li>
-<li><p><em>database_directory</em>  data directory for MongoDB.  MongoDB stores is information
-in data files that live in this directory.  If the system has file systems with
-different speeds use the fastest available as database performance can usually
-io bound.</p></li>
-<li><p><em>worker_directory</em> worker containers require a scratch space to “spill” in some
-contexts when memory use is tight.  This directory should be unique to make it
-easy to clear this debris after a given run.</p></li>
-</ul>
-<section id="general-system-parameters">
-<h4>General system parameters<a class="headerlink" href="#general-system-parameters" title="Link to this heading">#</a></h4>
-<ul class="simple">
-<li><p><em>workers_per_node</em> is the number of worker processes that should be launched
-on each dedicated, worker node.   In most cases this should be the number of
-cores per node.   When working with large ensembles we have found it helpful at
-times to reduce this number to avoid memory faults.</p></li>
-<li><p><em>primary_node_worker</em> if set nonzero a worker container with this many
-worker processes will be launched on the primary node.   This options is
-most useful on newer systems with enough cores that there are idle cpu cycles
-not consumed by the database or scheduler services that currently are always
-run on the primary node.</p></li>
-<li><p><em>cluster_subnet_name</em> is what the name implies.   Cluster nodes are
-normally connected in a common subnet and this should provide the name to
-allow the job components to communicate correctly.</p></li>
-<li><p><em>db_startup_delay</em> is the number of seconds to wait after launching the db
-container.   This is necessary because the MongoDB server startup is not trivial
-and many MsPASS jobs initiate a connection to MongoDB at the top of the
-run script.   The default is conservative, but for typical HPC jobs that can
-run for hours is relatively unimportant.</p></li>
+<code class="docutils literal notranslate"><span class="pre">cd</span></code> command to make current.  It is needed in this context to assure the
+containers all are rooted at a common, shared point.</p></li>
+<li><p><em>log_directory</em> is required by the configuration loader, but the HPC
+launcher does not pass it to the containers.  With the stock MsPASS image,
+logs therefore default to <code class="docutils literal notranslate"><span class="pre">working_directory/logs</span></code>.</p></li>
+<li><p><em>database_directory</em> is the data directory for MongoDB.  MongoDB stores its
+information in data files that live in this directory.  If the system has
+filesystems with different speeds, use the fastest suitable persistent
+filesystem because database performance can be I/O bound.</p></li>
+<li><p><em>worker_directory</em> is also required by the configuration loader, but the
+launcher does not pass it to worker containers.  With the stock image, Dask
+spill files therefore default to <code class="docutils literal notranslate"><span class="pre">working_directory/work</span></code>.</p></li>
 </ul>
 </section>
+<section id="general-system-parameters">
+<h3>General system parameters<a class="headerlink" href="#general-system-parameters" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><em>workers_per_node</em> is the number of worker processes that should be launched
+on each dedicated worker node.  In most cases this should be near the number
+of cores per node.  When working with large ensembles we have found it
+helpful at times to reduce this number to avoid memory faults.  The launcher
+configures one thread per worker.</p></li>
+<li><p><em>primary_node_workers</em> (plural) controls how many worker processes are
+launched on the primary node.  Set it to <code class="docutils literal notranslate"><span class="pre">0</span></code> to reserve that node for the
+database, scheduler, and frontend.  It must be positive for a single-node
+allocation because there are no remote worker nodes.</p></li>
+<li><p><em>cluster_subnet_name</em> is a required compatibility field, but release 0.1.1
+and the current development implementation only store it.  Slurm hostname
+discovery, not this value, determines service placement.</p></li>
+<li><p><em>db_startup_delay</em> appears in the release 0.1.1 template but is not read by
+release 0.1.1 or current development code.  Do not rely on it to delay
+MongoDB startup.</p></li>
+<li><p><em>worker_memory_limit</em> is optional on the current development branch and is
+not available in release 0.1.1.  When set, it is passed to remote Dask
+workers as <code class="docutils literal notranslate"><span class="pre">MSPASS_DASK_WORKER_MEMORY_LIMIT</span></code> (for example, <code class="docutils literal notranslate"><span class="pre">2GB</span></code>).</p></li>
+</ul>
 </section>
 </section>
 <section id="hpc-cluster-parameters">
 <h2>HPC_cluster parameters<a class="headerlink" href="#hpc-cluster-parameters" title="Link to this heading">#</a></h2>
-<p>This set of parameters must be found in the yaml file hierarchy under
+<p>This set of parameters must be found in the YAML file hierarchy under
 the key <em>HPC_cluster</em> as can be seen in the template file.</p>
 <ul class="simple">
-<li><p><em>job_scheduler</em> is the name of the job scheduler.  Currently the only
-job scheduler that has been tested with <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> is slurm.
-You may have to alter the python code of <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> if a
-different job scheduler is used on your cluster.</p></li>
+<li><p><em>job_scheduler</em> is the name of the job scheduler.  Currently
+<code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> accepts only <code class="docutils literal notranslate"><span class="pre">slurm</span></code>.  Supporting a different
+job scheduler requires launcher changes.</p></li>
+<li><p><em>task_scheduler</em> is required and is passed to the container as
+<code class="docutils literal notranslate"><span class="pre">MSPASS_SCHEDULER</span></code>.  <code class="docutils literal notranslate"><span class="pre">dask</span></code> is the template default and the documented
+HPC path.</p></li>
 <li><p><em>primary_host</em>, <em>database_host</em>, <em>scheduler_host</em>, and <em>worker_hosts</em> should
-normally be set to “auto”.  When <em>primary_host</em> set to auto it is set to the
-first node returned by querying the job scheduler.
-If <em>database_host</em> or <em>scheduler_host</em> are set to “auto” that service will
-be run on the node set as primary.  When <em>worker_hosts</em> is set as “auto”
-worker containers with <em>workers_per_node</em> processes will be launched on
-all nodes not defined as the primary node.</p></li>
-<li><p><em>container_run_command</em> is the command string used to launch a container.</p></li>
+be set to <code class="docutils literal notranslate"><span class="pre">auto</span></code>.  The launcher uses the first node returned by
+<code class="docutils literal notranslate"><span class="pre">scontrol</span> <span class="pre">show</span> <span class="pre">hostname</span></code> for the primary, database, and scheduler and uses
+the remaining nodes as remote workers.  Release 0.1.1 does not reliably
+support explicit worker hosts, and neither release 0.1.1 nor current
+development code initializes all required attributes when all service hosts
+are explicit.</p></li>
+<li><p><em>container_run_command</em> is the command string used to launch a container,
+normally <code class="docutils literal notranslate"><span class="pre">apptainer</span> <span class="pre">run</span></code>.</p></li>
 <li><p><em>container_run_args</em> is a string of secondary arguments required to launch
-a container.</p></li>
-<li><p><em>container_env_flag</em> is passed as a flag when launching containers
-to control what is launched.  As described in the section on the shell
-script launch option the service a container runs is defined by
-environment variable values passed with the <em>container_run_command</em>.</p></li>
-<li><p><em>worker_run_command</em> is the command line program used to launch programs
-on other nodes.  Currently the only known mechanism is to use mpiexec.
-This attribute is an option only because some sites may use a special
-version of mpiexec that may have a different name.</p></li>
-<li><p><em>setup_tunnel</em> and <em>tunnel_setup_command</em> are linked. <em>tunnel_setup_command</em>
-is only used if <em>setup_tunnel</em> is set True.  The purpose of <em>tunnel_setup_command</em>
-is to enable external communications to MsPASS from outside the cluster,
-It is necessary to set this up if you want to connect to dask diagnostics
-or run an interactive job with one or more compute nodes. For guidance on
-how to construct this shell script look at the shell-based launchers
-found <a class="reference external" href="https://github.com/mspass-team/mspass/tree/master/scripts">here on GitHub</a>.</p></li>
+a container, commonly bind mounts and an Apptainer home directory.  The
+launcher tokenizes this string with <code class="docutils literal notranslate"><span class="pre">split()</span></code>, so paths containing spaces
+are not supported reliably.</p></li>
+<li><p><em>container_env_flag</em> is passed as the flag used to set environment values in
+service containers.  Apptainer uses <code class="docutils literal notranslate"><span class="pre">--env</span></code>.  Some launcher paths still
+hard-code <code class="docutils literal notranslate"><span class="pre">--env</span></code>, so this field does not make arbitrary container
+runtimes portable.</p></li>
+<li><p><em>worker_run_command</em> is the MPI launcher command used by release 0.1.1,
+normally <code class="docutils literal notranslate"><span class="pre">mpiexec</span></code>.  Development versions use a different set of MPI
+keys; copy them from the matching template rather than mixing schemas.</p></li>
+<li><p><em>setup_tunnel</em> and <em>tunnel_setup_command</em> are intended to run a site-specific
+tunnel command for Dask diagnostics or an interactive session.  Do not
+enable them in release 0.1.1 or current development code: both construct the
+configured command but mistakenly rerun the preceding Slurm hostname
+command.  Use a site-approved procedure, such as the maintained
+<a class="reference external" href="https://github.com/mspass-team/mspass/tree/master/scripts">shell launcher examples</a>, until that
+launcher bug is fixed.</p></li>
 </ul>
+<p>Use the <a class="reference external" href="https://github.com/mspass-team/mspass_launcher/blob/v0.1.1/src/mspass_launcher/data/yaml/HPCClusterLauncher.yaml">release 0.1.1 template</a>
+for the published package.  When intentionally testing development code, use
+the <a class="reference external" href="https://github.com/mspass-team/mspass_launcher/blob/main/src/mspass_launcher/data/yaml/HPCClusterLauncher.yaml">development template</a>
+from the same checkout.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The variables <em>container_run_command</em>, <em>container_run_args</em>, and
-<em>container_env_flag</em> in the template file work only for
-apptainer.  If using the older singularity implementation the
-syntax is identical but “apptainer” should change to “singularity”.
-The command line options for the two implementations are currently
-identical.   If a different container launcher is used at your site
-you may need to alter the python code of <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code>.</p>
+<p>Apptainer and older Singularity versions use compatible syntax for these
+settings.  For Singularity, change <code class="docutils literal notranslate"><span class="pre">apptainer</span></code> to <code class="docutils literal notranslate"><span class="pre">singularity</span></code> in
+<em>container_run_command</em>.  A different container runtime may require
+launcher code changes.</p>
 </div>
 </section>
 </section>
@@ -628,10 +640,8 @@ you may need to alter the python code of <code class="code docutils literal notr
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-attributes">General attributes</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#file-parameters">File parameters</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#general-system-parameters">General system parameters</a></li>
-</ul>
-</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#file-parameters">File parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#general-system-parameters">General system parameters</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hpc-cluster-parameters">HPC_cluster parameters</a></li>

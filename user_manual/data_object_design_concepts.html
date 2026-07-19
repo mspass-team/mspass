@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Data Object Design Concepts &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Data Object Design Concepts &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,11 +55,11 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Using numpy/scipy with MsPASS" href="numpy_scipy_interface.html" />
-    <link rel="prev" title="Importing Tabular Data" href="importing_tabular_data.html" />
+    <link rel="next" title="Using NumPy and SciPy with MsPASS" href="numpy_scipy_interface.html" />
+    <link rel="prev" title="Using MsPASS on EarthScope GeoLab" href="../getting_started/deploy_mspass_on_geolab.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -482,7 +485,7 @@ you as a user should normally interact with are two objects defined in
 MsPASS as <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> respectively.</div>
 </div>
 <div class="line-block">
-<div class="line">These data objects were designed to simply interactions with MongoDB.
+<div class="line">These data objects were designed to simplify interactions with MongoDB.
 MongoDB is completely flexible in attribute names handled by the
 database.  In all cases, the components of a data object should be conceptualized
 as four distinct components handled separately and discussed in more detail
@@ -491,8 +494,8 @@ below:</div>
 <ol class="arabic simple">
 <li><p>The waveform data (normally the largest in size).</p></li>
 <li><p>A generalization of the traditional concept of a trace header.  These
-are accessible as simple name value pairs but the value can be anything.
-It is a bit like a python dictionary, but implemented with standard C++.</p></li>
+are accessible as simple name-value pairs but the value can be heterogeneous.
+It is a bit like a Python dictionary, but implemented with standard C++.</p></li>
 <li><p>An error logger that provides a generic mechanism to post error messages
 in a parallel processing environment.</p></li>
 <li><p>An optional object-level processing history mechanism.</p></li>
@@ -501,19 +504,19 @@ in a parallel processing environment.</p></li>
 <div class="line">Data objects are grouped in memory with a generic concept called an
 <code class="code docutils literal notranslate"><span class="pre">Ensemble</span></code>.   The implementation in C++ uses a template to define a
 generic ensemble.   A limitation of the current capability to link C++
-binary code with python is that templates do not translate directly.
-Consequently, the python interface uses two different names to define
+binary code with Python is that templates do not translate directly.
+Consequently, the Python interface uses two different names to define
 Ensembles of TimeSeries and Seismogram objects:
 <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a>
 and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code></a> respectively.</div>
 </div>
 <div class="line-block">
-<div class="line">The C++ objects have wrappers for python that hide implementation details from
-the user.   All MongoDB operations implemented with the pymongo
+<div class="line">The C++ objects have wrappers for Python that hide implementation details from
+the user.  MongoDB operations implemented with PyMongo
 package use these wrappers.   Compute intensive numerical operations on the sample
 data should either be written in C/C++ with their own wrappers or
-exploit numpy/scipy numerical routines.   The later is possible
-because the wrappers make the data arrays look like numpy arrays.</div>
+exploit NumPy/SciPy numerical routines.   The latter is possible
+because the wrappers expose the data arrays to NumPy.</div>
 </div>
 </section>
 <section id="history">
@@ -527,7 +530,7 @@ Antelope.  It was distributed via the open source additions to
 Antelope distributed through the <a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib">Antelope user’s group</a> and referred to as SEISPP.   The bulk of
 the original code can be found
 <a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/seismic/libseispp">here</a>
-in github, and doxygen generated pages comparable to those found with
+on GitHub, and Doxygen-generated pages comparable to those found with
 this package can be found
 <a class="reference external" href="https://pavlab.sitehost.iu.edu/software/seispp/index.html">here</a>.</div>
 </div>
@@ -555,35 +558,31 @@ strings, and booleans handled by SEISPP.</p></li>
 <li><p>Reduce the number of public attributes to make the code less prone to
 user errors.   Note the word “reduce” not “eliminate” as many books advise.
 The general rule is simple parameter type attributes are only accessible
-through getters and putters while the normally larger main data components
+through getters and setters while the normally larger main data components
 are public.  That was done to improve performance and allow things like
-numpy operations on data vectors.</p></li>
+NumPy operations on data vectors.</p></li>
 </ul>
 <div class="line-block">
 <div class="line">MsPASS has hooks to and leans heavily on
-<a class="reference external" href="https://github.com/obspy/obspy/wiki">obspy</a>.   We chose, however,
-to diverge some from obspy in some fundamental ways.   We found two
-fundamental flaws in obspy for large scale processing that required
-this divergence:</div>
+<a class="reference external" href="https://docs.obspy.org/">ObsPy</a>.   MsPASS nevertheless uses a different
+object model in two areas that matter for large-scale processing:</div>
 </div>
 <ol class="arabic simple">
-<li><p>obspy handles what we call Metadata through set of python objects
-that have to be maintained separately and we think unnecessarily
-complicate the API.   We aimed instead to simplify the management of
+<li><p>ObsPy handles related metadata through a set of Python objects.  MsPASS
+instead aims to simplify the management of
 Metadata as much as possible.  Our goal was to make the system more like
 seismic reflection processing systems that manage the same problem
 through a simple namespace wherein metadata can be fetched with
 simple keys.   We aimed to hide any hierarchic structures (e.g
-relational database table relationships, obspy object hierarchies,
-or MongoDB normalized data structures) behind the (python)
-<code class="code docutils literal notranslate"><span class="pre">Schema</span></code> object to reduce all Metadata to pure
+relational database table relationships, ObsPy object hierarchies,
+or MongoDB normalized data structures) behind the Python schema objects
+to reduce all Metadata to
 name:value pairs.</p></li>
-<li><p>obspy does not handle three component data in a native way, but mixes
-up the concepts we call <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> and <code class="code docutils literal notranslate"><span class="pre">Ensemble</span></code> in to a common
-python object they define as a
-<a class="reference external" href="http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream">Stream</a>.
-We would argue our model is a more logical encapsulation of the
-concepts that define these ideas. For example, a collection of single
+<li><p>ObsPy represents both three-component groups and larger collections with
+its general-purpose
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> container.  MsPASS distinguishes the
+concepts represented by <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>
+and an ensemble.  For example, a collection of single
 component data like a seismic reflection shot gather is a very different
 thing than a set of three component channels that define the output of
 three sensors at a common point in space.   Hence, we carefully
@@ -614,21 +613,23 @@ Seismogram objects generated by doxygen are illustrated below</div>
 <div class="line"><img alt="Seismogram Inheritance" class="mspass-doxygen-graph" src="../_images/classmspass_1_1seismic_1_1_seismogram__inherit__graph.png" /></div>
 </div>
 <div class="line-block">
-<div class="line">Notice that both CoreSeismogram and CoreTime series have a common
-inheritance from three base classes:  <code class="code docutils literal notranslate"><span class="pre">BasicTimeSeries</span></code>,
-<code class="code docutils literal notranslate"><span class="pre">BasicMetadata</span></code>, and <code class="code docutils literal notranslate"><span class="pre">BasicProcessingHistory</span></code>.   Python supports multiple
+<div class="line">Notice that both CoreSeismogram and CoreTimeSeries have a common
+inheritance from two base classes:  <code class="code docutils literal notranslate"><span class="pre">BasicTimeSeries</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">Metadata</span></code>.  The top-level Seismogram and TimeSeries classes add
+<code class="code docutils literal notranslate"><span class="pre">ProcessingHistory</span></code>, which in turn derives from
+<code class="code docutils literal notranslate"><span class="pre">BasicProcessingHistory</span></code> and owns the object’s error logger.  C++ supports multiple
 inheritance and the wrappers make dynamic casting within the hierarchy
 (mostly) automatic.  e.g. a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> object can be passed directly to a
-python function that does only Metadata operations and it will be
-handled seamlessly because python does not enforce type signatures on
-functions.  CoreTimeSeries and CoreSeismogram should be thought of a
-defining core concepts independent from MsPASS.  All MsPASS specific
-components are inherited from ProcessingHistory.   ProcessingHistory
+Python function that does only Metadata operations and it will be
+handled seamlessly because Python does not enforce type signatures on
+functions.  CoreTimeSeries and CoreSeismogram should be thought of as
+defining core concepts independent from MsPASS.  The top-level classes
+inherit the MsPASS-specific history components from ProcessingHistory.  ProcessingHistory
 implements two important concepts that were a design goal of MsPASS:
 (a) a mechanism to preserve the processing history of a piece of data
 to facilitate more reproducible science results, and (b) a parallel safe
 error logging mechanism.  A key point of the design of this class
-hierarchy is that future users could chose to prune
+hierarchy is that future users could choose to omit
 the ProcessingHistory component and reuse CoreTimeSeries and
 CoreSeismogram to build a
 completely different framework.</div>
@@ -636,7 +637,7 @@ completely different framework.</div>
 <div class="line-block">
 <div class="line">We emphasize here that users should normally expect to only interact with
 the <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> objects.  The lower levels sometimes
-but not always have python bindings.</div>
+but not always have Python bindings.</div>
 </div>
 <div class="line-block">
 <div class="line">The remainder of this section discusses the individual components in
@@ -645,12 +646,13 @@ the class hierarchy.</div>
 </section>
 <section id="basictimeseries-base-class-of-common-data-characteristics">
 <h3>BasicTimeSeries - Base class of common data characteristics<a class="headerlink" href="#basictimeseries-base-class-of-common-data-characteristics" title="Link to this heading">#</a></h3>
-<p>This base class object can be best viewed as an answer to this
-questions:  What is a time series?   Our design answers this question by
-saying all time series data have the following elements:</p>
+<p>This base class can be viewed as an answer to this
+question:  What is a time series?   Our design answers that question by
+saying that all time-series data have the following elements:</p>
 <ol class="arabic simple">
 <li><p>We define a time series as data that has a <strong>fixed sample rate</strong>.
-Some people extend this definiion to arbitrary x-y data, but we view that as wrong.
+Some people extend this definition to arbitrary x-y data, but MsPASS uses
+the narrower uniformly sampled definition.
 Standard textbooks on signal processing focus exclusively on
 uniformly sampled data.  With that assumption the time of any sample
 is virtual and does not need to be stored.  Hence, the base object
@@ -659,22 +661,25 @@ to sample number).</p></li>
 <li><p>Data processing always requires the time series have a <strong>finite length</strong>.
 Hence, our definition of a time series directly supports windowed
 data of a specific length.   The getter for this attribute
-is <code class="code docutils literal notranslate"><span class="pre">npts()</span></code> and the setter is <code class="code docutils literal notranslate"><span class="pre">set_npts(int)</span></code>.  This definition does not
-preclude an extension to modern continuous data sets that are too
-large to fit in memory, but that is an extension we don’t currently
-support.</p></li>
-<li><p>We assume the data has been cleaned and <strong>lacks data gaps</strong>.  Real
+is <code class="code docutils literal notranslate"><span class="pre">npts()</span></code> in C++ (the <code class="code docutils literal notranslate"><span class="pre">npts</span></code> property in Python), and the
+setter is <code class="code docutils literal notranslate"><span class="pre">set_npts(size_t)</span></code>.  This definition does not
+preclude working with modern continuous data sets that are too large to
+fit in memory.  MsPASS readers divide those data into finite in-memory
+objects; see <a class="reference internal" href="continuous_data.html#continuous-data"><span class="std std-ref">Continuous Data Handling with MsPASS</span></a>.</p></li>
+<li><p>The atomic TimeSeries and Seismogram classes assume the data have been
+cleaned and <strong>lack encoded data gaps</strong>.  Real
 continuous data today nearly always have gaps at a range of scale
 created by a range of possible problems that create gaps:  telemetry
 gaps, power failures, instrument failures, time tears, and with older
-instruments data gaps created by station servicing.  MsPASS has stub API
-definitions for data with gaps, but these are currently not
-implemented.   Since the main goal of MsPASS is to provide a
+instruments data gaps created by station servicing.  MsPASS also exposes
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesWGaps" title="mspasspy.ccore.seismic.TimeSeriesWGaps"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesWGaps</span></code></a> for gap-aware operations,
+but that class is not one of the standard atomic database types.  Since the
+main goal of MsPASS is to provide a
 framework for efficient processing of large data sets, we pass the
 job of finding and/or fixing data gaps to other packages or
 algorithms using MsPASS with a “when in doubt throw it out” approach
 to editing.   The machinery to handle gap processing exists in both
-obpsy and Antelope and provide possible path to solution for users
+ObsPy and Antelope and provide possible paths to solutions for users
 needing more extensive gap processing functionality.</p></li>
 </ol>
 <div class="line-block">
@@ -683,7 +688,8 @@ getters and (when absolutely necessary) can be set by the user with setters.
 Most are best understood from the class documentation, but one is worth
 highlighting here.  A concept we borrowed from seismic reflection is the idea
 of marking data dead or alive; a boolean concept.   There are methods to
-ask if the data are alive or dead (<code class="code docutils literal notranslate"><span class="pre">live()</span></code> and <code class="code docutils literal notranslate"><span class="pre">dead()</span></code> respectively) and
+ask if the data are alive or dead (<code class="code docutils literal notranslate"><span class="pre">live()</span></code> and <code class="code docutils literal notranslate"><span class="pre">dead()</span></code> in C++).
+Python exposes <code class="code docutils literal notranslate"><span class="pre">live</span></code> as a property and <code class="code docutils literal notranslate"><span class="pre">dead()</span></code> as a method.  The
 setters to force live (<code class="code docutils literal notranslate"><span class="pre">set_live()</span></code>) or dead (<code class="code docutils literal notranslate"><span class="pre">kill()</span></code>).   An important
 thing to note is that an algorithm should always test if a data object
 is defined as live.  Some algorithms may choose to simply pass data marked
@@ -699,12 +705,13 @@ an algorithm attempts to process invalid data.</div>
 novel method used in the original SEISPP library.   The concept can be
 thought of as a generalized, but yet simplified version of how SAC
 handles time.   The time standard is defined by an enum class in C++
-called tref which is mapped to fixed names in python.   There are
+called <code class="code docutils literal notranslate"><span class="pre">TimeReferenceType</span></code>, with matching names in Python.  There are
 currently two options:</div>
 </div>
 <ol class="arabic simple">
-<li><p>When tref is TimeReferenceType::Relative (TimeReferenceType.Relative
-in python) the computed times are some relatively small number from
+<li><p>When the reference is <code class="code docutils literal notranslate"><span class="pre">TimeReferenceType::Relative</span></code>
+(<code class="code docutils literal notranslate"><span class="pre">TimeReferenceType.Relative</span></code> in Python), the computed times are
+offsets from
 some well defined time mark.   The most common relative standard is
 the implicit time standard used in all seismic reflection data:  shot
 time.   SAC users will recognize this idea as the case when
@@ -715,33 +722,29 @@ actually defines as how the data are handled depends only on the
 choice of UTC versus Relative.  The ASSUMPTION is that if an
 algorithm needs to know the answer to the question, “Relative to what?”, that
 detail will be defined in a Metadata attribute.</p></li>
-<li><p>When tref is TimeReferenceType::UTC (TimeReferenceType.UTC in python)
+<li><p>When the reference is <code class="code docutils literal notranslate"><span class="pre">TimeReferenceType::UTC</span></code>
+(<code class="code docutils literal notranslate"><span class="pre">TimeReferenceType.UTC</span></code> in Python),
 all times are assumed to be an absolute time standard defined by
 coordinated universal time (UTC).   We follow the approach used in
-Antelope and store ALL times defined as UTC with <a class="reference external" href="https://en.wikipedia.org/wiki/Unix_time">unix epoch
-times.</a>  We use this
+Antelope and store the time axis as Unix epoch seconds.  We use this
 simple approach for two reasons:  (1) storage (times can be stored as
 a simple double precision (64 bit float) field), and (2) efficiency
 (computing relative times is trivial compared to handling calendar
-data).   This is in contrast to obspy which require ALL start times
-(t0 in mspass data objects) be defined by a python class they call
-<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime">UTCDateTime</a>.
-Since MsPASS is linked to obspy we recommend you use the UTCDateTime
-class in python if you need to convert from epoch times to one of the
-calendar structures UTCDateTime can handle.</p></li>
+data).  ObsPy represents absolute start times with
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>.  Use that class when a Python
+workflow needs to convert between epoch seconds and calendar fields.</p></li>
 </ol>
 <div class="line-block">
-<div class="line">A more concise summary of what these two time standard mean is this:
-active source data always use Relative time and earthquake data are
-always stored in raw form as UTC time stamps (e.g. see the SEED
-standard).  UTC is a fixed standard while Relative could have other
+<div class="line">A concise rule of thumb is that active-source processing typically uses
+Relative time, while raw earthquake data are typically stored with UTC time
+stamps (for example, in SEED).  UTC is a fixed standard while Relative can have other
 meanings.</div>
 </div>
 <div class="line-block">
 <div class="line">The enum class syntax to define tref is awkward at best.  Consequently, we
-provide two convenience methods that have been wrapped for use in python as
-as well as C++ code:  (a) time_is_relative() returns true if the time base is
-relative, and (b) time_is_UTC() returns true if the time standard is UTC.</div>
+provide two convenience methods wrapped for Python as well as C++:
+<code class="code docutils literal notranslate"><span class="pre">time_is_relative()</span></code> returns true if the time base is relative, and
+<code class="code docutils literal notranslate"><span class="pre">time_is_UTC()</span></code> returns true if the time standard is UTC.</div>
 </div>
 <div class="line-block">
 <div class="line">BasicTimeSeries defines two methods to convert between these two time
@@ -753,7 +756,7 @@ data to an absolute time standard when the true time is not well
 constrained.</div>
 </div>
 <div class="line-block">
-<div class="line">For an expanded discussion on this topic go <a class="reference internal" href="time_standard_constraints.html#time-standard-constraints"><span class="std std-ref">here</span></a>.</div>
+<div class="line">For a detailed discussion, see <a class="reference internal" href="time_standard_constraints.html#time-standard-constraints"><span class="std std-ref">Time Standard Constraints</span></a>.</div>
 </div>
 </section>
 <section id="metadata-concepts">
@@ -762,52 +765,51 @@ constrained.</div>
 <div class="line">All data objects used by the MsPASS C++ library inherit a Metadata
 object.  A <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> object is best thought of through either of two
 concepts well known to most seismologists:  (1) headers (SAC), and (2)
-a dictionary container in python.   Both are ways to handle a general,
+a dictionary container in Python.   Both are ways to handle a general,
 modern concept of
 <a class="reference external" href="https://en.wikipedia.org/wiki/Metadata">metadata</a> commonly defined
 as “data that provides information about data”.  Packages like SAC use
 fixed (usually binary fields) slots in an external data format to
-define a finite set of attributes with a fixed namespace.   obspy uses
-a python dictionary like container they call
-<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats</a>
+define a finite set of attributes with a fixed namespace.   ObsPy uses
+a Python dictionary-like container called <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a>
 to store comparable information.   That approach allows metadata
 attributes to be extracted from a flexible container addressable by a
-key word and that can contain any valid data.   For example, a typical
-obspy script will contain a line like the following to fetch the station
+keyword and that can contain a range of value types.  For example, a typical
+ObsPy script will contain a line like the following to fetch the station
 name from a Trace object <code class="code docutils literal notranslate"><span class="pre">d</span></code>.</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sta</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">Stats</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line">In MsPASS we use a similar concept based on Pavlis’s SEISPP library
-but developed a number of years before obspy.   The Metadata
+but developed a number of years before ObsPy.  The Metadata
 object in MsPASS, however, has additional features not in the older
 SEISPP version.</div>
 </div>
 <div class="line-block">
-<div class="line">The mspass::Metadata object has a container that can hold any valid
-data much like a python dictionary.   The current implementation uses
+<div class="line">The <code class="code docutils literal notranslate"><span class="pre">mspass::utility::Metadata</span></code> object has a container that can hold
+heterogeneous values much like a Python dictionary.  The current implementation uses
 the <a class="reference external" href="https://theboostcpplibraries.com/boost.any">any</a> library that
 is part of the widely used boost library.   In a C++ program Metadata
 can contain any data that, to quote the documentation from boost, is “copy
-constructable”.  Thus Metadata acts much like a python dict using put
-and get operations within a python program.</div>
+constructable”.  Thus Metadata acts much like a Python dict using put
+and get operations within a Python program.</div>
 </div>
 <div class="line-block">
-<div class="line">The flexibility of either a python dict or Metadata present a serious
+<div class="line">The flexibility of either a Python dict or Metadata presents a serious
 potential for unexpected results or crashes if not managed.   Any algorithm
-implemented in a lower level language like C/C++ or FORTRAN and exposed to
-python through wrappers is subject to crashing from type collisions.
-The fundamental problem is that python is relatively cavalier about type
-while both C/C++ and FORTRAN are “strongly typed”.  MongoDB storage of attributes
+implemented in a lower-level language like C/C++ or Fortran and exposed to
+Python through wrappers can fail from type collisions.
+The fundamental problem is that Python is dynamically typed
+while C/C++ and Fortran are statically typed.  MongoDB storage of attributes
 can be treated as dogmatic or agnostic about type depending on what
 language API is used.  In MsPASS all database operations are currently done
-through python, so Metadata or python dict data can be saved and restored
+through Python, so Metadata or Python dict data can be saved and restored
 seamlessly with little concern about enforcing the type of an attribute.
 Problems arise when data loaded as Metadata from MongoDB are passed to
 algorithms that demand an attribute have a particular type that is not,
-in fact, the type python guessed or received from storage in MongoDB.
+in fact, the type Python received from storage in MongoDB.
 Consider this example:</div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">}</span>
@@ -830,63 +832,63 @@ and type associations should be as flexible as possible to facilitate
 adapting legacy code to MsPASS.   We provide a flexible aliasing method to
 map between attribute namespaces to make this possible.  Any such application,
 however, must exercise care in any alias mapping to avoid type mismatch.
-We expect such mapping would normally be done in python wrappers.</p></li>
+We expect such mapping would normally be done in Python wrappers.</p></li>
 <li><p>Attributes stored in the database should have predictable types whenever
-possible.   We use a python class called Schema described below
-to manage the attribute namespace is a way that is not especially heavy handed.
+possible.  We use a Python schema class described below
+to manage the attribute namespace without making ordinary metadata use
+unnecessarily rigid.
 Details are given below when we discuss the database readers and writers.</p></li>
-<li><p>Care with type is most important in interactions with C/C++ and FORTRAN
-implementations.   Pure python code can be pretty loose on type at the
-cost of efficiency.   Python is thus the language of choice for working
+<li><p>Care with type is most important in interactions with C/C++ and Fortran
+implementations.  Pure Python code can be flexible about type, sometimes at
+the cost of efficiency.  Python is thus the language of choice for working
 out a prototype, but when bottlenecks are found key sections may need to
 be implemented in a compiled language.  In that case, the Schema rules
 provide a sanity check to reduce the odds of problems with type mismatches.</p></li>
 </ul>
 <div class="line-block">
-<div class="line">The MsPASS C++ api for Metadata has methods that are dogmatic about type
-and methods that can take anything.  Core support is provided for
-types supported by all database engines:  real numbers (float or
-double), integers (32 or 64 bit), strings (currently assumed to be
-UTF-8), and booleans.  These functions are dogmatic and strongly
+<div class="line">The MsPASS C++ API for Metadata has methods that enforce a requested type
+and generic methods that accept Python objects.  Core support is provided
+for real numbers, integers, strings (assumed to be UTF-8), and booleans.
+The explicitly typed functions strongly
 enforce type throwing a MsPASSError exception if there is a mismatch.</div>
 </div>
 <div class="line-block">
 <div class="line">There are four strongly-typed “getters” seen in the following
 contrived code segment:</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume d is a Seismogram or TimeSeries which automatically casts to a Metadata in the python API use here</span>
-<span class="n">x</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;t0_shift&quot;</span><span class="p">)</span>   <span class="c1"># example fetching a floating point number - here a time shift</span>
-<span class="n">n</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get_int</span><span class="p">(</span><span class="s2">&quot;evid&quot;</span><span class="p">)</span>   <span class="c1"># example feching integer - here an event id</span>
-<span class="n">s</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">)</span>  <span class="c1"># example fetching a UTF-8 string</span>
-<span class="n">b</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get_bool</span><span class="p">(</span><span class="s2">&quot;LPSPOL&quot;</span><span class="p">)</span> <span class="c1"># boolean for positive polarity used in SAC</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume d is a Seismogram or TimeSeries, both of which expose Metadata.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;t0_shift&quot;</span><span class="p">)</span>  <span class="c1"># floating-point time shift</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_long</span><span class="p">(</span><span class="s2">&quot;evid&quot;</span><span class="p">)</span>        <span class="c1"># integer event identifier</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">)</span>       <span class="c1"># UTF-8 string</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_bool</span><span class="p">(</span><span class="s2">&quot;LPSPOL&quot;</span><span class="p">)</span>      <span class="c1"># SAC positive-polarity flag</span>
 </pre></div>
 </div>
 <div class="line-block">
-<div class="line">There are comparable, strongly-typed “putters”:</div>
+<div class="line">There are comparable, strongly typed setters:</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="s2">&quot;t0_shift&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">put_int</span><span class="p">(</span><span class="s2">&quot;evid&quot;</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">put_string</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">put_bool</span><span class="p">(</span><span class="s2">&quot;LPSPOL&quot;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="s2">&quot;t0_shift&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">put_long</span><span class="p">(</span><span class="s2">&quot;evid&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">put_string</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">put_bool</span><span class="p">(</span><span class="s2">&quot;LPSPOL&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line">A more flexible although potentially more dangerous element of the API
-are generic getters and setters that will take any valid python object.
-For example, if the variable “name_list” below was a python list of
+are generic getters and setters that accept Python objects.
+For example, if the variable “name_list” below was a Python list of
 something like seismic station names one can use this construct:</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">,</span><span class="n">name_list</span><span class="p">)</span>
-<span class="c1"># or using a decorator defined in MsPASS</span>
-<span class="n">d</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">name_list</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">,</span> <span class="n">name_list</span><span class="p">)</span>
+<span class="c1"># Or use the mapping-style interface.</span>
+<span class="n">d</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name_list</span>
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line">We can then retrieve that list with the inverse</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">)</span>
-<span class="c1"># or using a decorator defined in MsPASS</span>
-<span class="n">x</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">)</span>
+<span class="c1"># Or use the mapping-style interface.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -896,48 +898,42 @@ attributes with care.</div>
 </div>
 <div class="line-block">
 <div class="line">An important footnote to this section is that a <code class="code docutils literal notranslate"><span class="pre">mspass::utility::Metadata</span></code> object
-can be constructed directly from a python dict.   That is used, for example,
+can be constructed directly from a Python <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>.  That is used, for example,
 in MongoDB database readers because a MongoDB “document” is returned as a
-python dict in MongoDB’s python API.</div>
+Python dict in MongoDB’s Python API.</div>
 </div>
 </section>
-<section id="managing-metadata-type-with-mspasspy-db-schema">
-<h3>Managing Metadata type with mspasspy.db.Schema<a class="headerlink" href="#managing-metadata-type-with-mspasspy-db-schema" title="Link to this heading">#</a></h3>
+<section id="managing-metadata-types-with-mspasspy-db-schema">
+<h3>Managing Metadata Types with mspasspy.db.schema<a class="headerlink" href="#managing-metadata-types-with-mspasspy-db-schema" title="Link to this heading">#</a></h3>
 <div class="line-block">
-<div class="line">Most type enforcement is imposed by data readers and writers where
-the <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> class is automatically loaded with the <code class="code docutils literal notranslate"><span class="pre">Database</span></code> class
-that acts as a handle to interact with MongoDB.  Here we only document
-methods available in the <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> class and discuss how these
-can be used in developing a workflow with MsPASS.</div>
+<div class="line">Most type enforcement is imposed by data readers and writers.  A
+<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.schema.MetadataSchema" title="mspasspy.db.schema.MetadataSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataSchema</span></code></a> instance is automatically
+loaded with the <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> class that acts
+as a handle to interact with MongoDB.  Here we introduce the schema methods
+most useful when developing a workflow.</div>
 </div>
 <div class="line-block">
-<div class="line">The most important implementation of <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> is a subclass with the
-name <code class="code docutils literal notranslate"><span class="pre">MetadataSchema</span></code>.  You can create an instance easily like this:</div>
+<div class="line">You can also create a MetadataSchema directly:</div>
 </div>
-<blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetadataSchema</span>
- <span class="n">schema</span><span class="o">=</span><span class="n">MetadataSchema</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetadataSchema</span>
+
+<span class="n">schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">()</span>
 </pre></div>
 </div>
-</div></blockquote>
 <div class="line-block">
 <div class="line"><code class="code docutils literal notranslate"><span class="pre">MetadataSchema</span></code> currently has two main definitions that can be extracted
 from the class as follows:</div>
 </div>
-<blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mdseis</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
- <span class="n">mdts</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">TimeSeries</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mdseis</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
+<span class="n">mdts</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">TimeSeries</span>
 </pre></div>
 </div>
-</div></blockquote>
 <div class="line-block">
 <div class="line">There are minor variations in the namespace between these two definitions,
-but the restrictions they impose can be interogated through a common
+but the restrictions they impose can be interrogated through a common
 interface.   Both the <code class="code docutils literal notranslate"><span class="pre">mdseis</span></code> and <code class="code docutils literal notranslate"><span class="pre">mdts</span></code> symbols above are instances of
-a the <code class="code docutils literal notranslate"><span class="pre">MDSchemaDefinition</span></code> class described <a class="reference external" href="../python_api/mspasspy.db.html#module-mspasspy.db.schema">here</a>.</div>
+the <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition" title="mspasspy.db.schema.MDSchemaDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDSchemaDefinition</span></code></a> class.</div>
 </div>
-<blockquote>
-<div></div></blockquote>
 <div class="line-block">
 <div class="line">The key point for this introduction is that the <code class="code docutils literal notranslate"><span class="pre">mdseis</span></code> and <code class="code docutils literal notranslate"><span class="pre">mdts</span></code>
 objects contain methods that can be used to get a list of restricted symbols
@@ -945,19 +941,18 @@ objects contain methods that can be used to get a list of restricted symbols
 to define (the <code class="code docutils literal notranslate"><span class="pre">type()</span></code> method), and a set of other utility methods.</div>
 </div>
 <div class="line-block">
-<div class="line">One subset of the methods of the MDSchemaDefinitions class that deserves
+<div class="line">One subset of the methods of the <code class="code docutils literal notranslate"><span class="pre">MDSchemaDefinition</span></code> class that deserves
 particular discussion is a set of methods designed to handle aliases.
 These methods exist to simplify the support in the framework for adapting
 other packages that use a different set of names to define a common
 concept.   For example, although at this writing we haven’t attempted this
 the design was intended to support things like automatic mapping of
 MsPASS names to and from SAC header names.  We expect similar capabilities
-should be make it feasible to map CSS3.0 attributes (e.g. Antelope’s Datascope
+should make it feasible to map CSS3.0 attributes (e.g. Antelope’s Datascope
 database implementation uses the CSS3.0 schema) loaded from relational
 database joins directly into the MsPASS namespace.  The methods used to
 handle aliases are readily apparent from the documentation page linked
-above as they all contain the keyword <code class="code docutils literal notranslate"><span class="pre">alias</span></code>.  We leave the exercise
-of understanding how to use this feature to planned tutorials.</div>
+above as they all contain the keyword <code class="code docutils literal notranslate"><span class="pre">alias</span></code>.</div>
 </div>
 </section>
 <section id="scalar-versus-3c-data">
@@ -971,21 +966,19 @@ since the earliest days of digital seismic data in the oil and gas
 industry.  That is, the sample values are stored in a continuous block
 of memory that can be treated mathematically as a vector.   The index for the
 vector serves as a proxy for time (the <code class="code docutils literal notranslate"><span class="pre">time</span></code> method in BasicTimeSeries
-can be used to convert an index to a time defined as a double).  Note in mspass
-the integer index always uses the C convention starting at 0 and not 1 as in FORTRAN,
+can be used to convert an index to a time defined as a double).  In MsPASS,
+the integer index always uses the C convention starting at 0 and not 1 as in Fortran,
 linear algebra, and many signal processing books.
-We use a C++ <a class="reference external" href="http://www.cplusplus.com/reference/vector/vector/">standard template library vector
+We use a C++ <a class="reference external" href="https://en.cppreference.com/w/cpp/container/vector">standard template library vector
 container</a> to
-hold the sample data accessible through the public variable s in the C++ api.  The
-python API makes the vector container look like a numpy array that can
-be accessed in same way sample data are handled in an obspy Trace
+hold the sample data accessible through the public variable <code class="code docutils literal notranslate"><span class="pre">s</span></code> in the C++ API.  The
+Python API makes the vector container look like a NumPy array that can
+be accessed in the same way sample data are handled in an ObsPy Trace
 object in the “data” array.   It is important to note that the C++ s vector is
-mapped to <code class="code docutils literal notranslate"><span class="pre">data</span></code> in the python API.   The direct interface through numpy/scipy
-allows one to manipulate sample data with numpy or scipy functions (e.g. <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.iirfilter.html#scipy.signal.iirfilter">simple bandpass
-filters</a>).
-That can be useful for testing and prototyping but converting and algorithm
-to a parallel form requires additional steps described here (LINK to parallel
-section)</div>
+mapped to <code class="code docutils literal notranslate"><span class="pre">data</span></code> in the Python API.  The direct interface through NumPy/SciPy
+allows one to manipulate sample data with those libraries.  See
+<a class="reference internal" href="numpy_scipy_interface.html#numpy-scipy-interface"><span class="std std-ref">Using NumPy and SciPy with MsPASS</span></a> for array behavior and <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a>
+before placing such an algorithm in a distributed workflow.</div>
 </div>
 <div class="line-block">
 <div class="line">Although scalar time series data are treated the same (i.e. as a
@@ -1002,22 +995,22 @@ the channel number. When three component data are recorded the
 component orientation can be defined implicitly by a component index
 number.   A 3C shot gather than can be indexed conveniently with
 three array indexes.  A complication in that approach is that which
-index is used for which of the three concept required for a gather of
-3C data is not standarized.   Furthermore, for a generic system
-like mspass the multichannel model does not map cleanly into passive
+index is used for which of the three concepts required for a gather of
+3C data is not standardized.   Furthermore, for a generic system
+like MsPASS the multichannel model does not map cleanly into passive
 array data because a collection of 3C seismograms may have irregular
 size, may have variable sample rates,  and may come from variable
 instrumentation.  Hence, a simple matrix or array model would be very
 limiting and is known to create some cumbersome constructs.</p></li>
 <li><p>Traditional multichannel data processing emerged from a
-world were instruments used synchronous time sampling.
+world where instruments used synchronous time sampling.
 Seismic reflection processing always assumes during processing that
 time computed from sample numbers is accurate to within one sample.
 Furthermore, the stock assumption is that all data have sample 0 at
 shot time.  That assumption is a necessary condition
 for the conceptual model of a matrix as a mathematical representation
 of scalar, multichannel data to be valid.  That assumption is not necessarily
-true (in fact it is extremely restrictive if is required)
+true (in fact it is extremely restrictive if required)
 in passive array data and raw processing requires efforts to make
 sure the time of all samples can be computed accurately and time
 aligned.  Alignment for a single station is normally automatic
@@ -1029,37 +1022,34 @@ streams have multiple channels stored as compressed miniSEED packets
 that have to be unpacked and inserted into something like a vector
 container to be handled easily by a processing program.   The process
 becomes more complicated for three-component data because at least
-three channels have to be manipulated and time aligned.   The obspy
-package handles this issue by defining a Stream object that is a
-container of single channel Trace objects.  They handle three
-component data as Stream objects with exactly three members in the
-container.</p></li>
+three channels have to be manipulated and time aligned.  ObsPy handles
+this issue with a general <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> container of
+single-channel <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> objects.</p></li>
 </ul>
 <div class="line-block">
 <div class="line">We handle three component data in MsPASS by using a matrix to store the data
 for a given <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>.   The data are directly accessible in C++ through a public
 variable called u that is mnemonic for the standard symbol used in the
-old testament of seismology by Aki and Richards.  In python we use the
+classic seismology text by Aki and Richards.  In Python we use the
 symbol <code class="code docutils literal notranslate"><span class="pre">data</span></code> for consistency with TimeSeries.
 There are two choices of the order of indices for this matrix.
 The MsPASS implementation makes this choice:  a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>
-defines index 0(1) as the channel number and index 1(2) as the time
-index.  The following python code section illustrates this more
+defines index 0 as the component number and index 1 as the time
+index.  The following Python code section illustrates this more
 clearly than any words:</div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Seismogram</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Create an empty Seismogram with storage for 100 time steps initialized to all zeros</span>
-<span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>   <span class="c1"># Create a delta function at time t0+dt*50 in component 0</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Allocate 3 x 100 samples, initialized to zero.</span>
+<span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Put an impulse at t0 + dt * 50 in component 0.</span>
 </pre></div>
 </div>
 <div class="line-block">
-<div class="line">Note as with scalar data we use the C (and python) convention for indexing starting at 0.
+<div class="line">As with scalar data, MsPASS uses the C/Python convention of indexing from 0.
 In the C++ API the matrix is defined with a lightweight
 implementation of a matrix as the data object.   That detail is
-largely irrelevant to python programmers as the matrix is made to act like
-a numpy matrix by the wrappers.   Hence, python programmers
-familiar with numpy can manipulate the <code class="code docutils literal notranslate"><span class="pre">data</span></code> matrix with all
-the tools of numpy noting that the data are in what numpy calls FORTRAN order.</div>
+largely irrelevant to Python programmers because the matrix exposes the
+NumPy buffer interface.  Python programmers can therefore manipulate the
+<code class="code docutils literal notranslate"><span class="pre">data</span></code> matrix with NumPy, noting that its storage is Fortran ordered.</div>
 <div class="line">The Seismogram object has a minimal set of methods that the authors
 consider core concepts defining a three component seismogram.  We
 limit these to coordinate transformations of the components.   There
@@ -1081,9 +1071,10 @@ sensors that have to be sorted out, (c) stations with multiple sample
 rates (nearly universal with modern data) that cannot be merged, (d) data
 gaps that render one or more components of the set incomplete, and
 (e) others we haven’t remembered or which will appear with some future
-instrumentation.   To handle this problem we have a module in MsPASS
-called <code class="code docutils literal notranslate"><span class="pre">bundle</span></code> documented here(THIS NEEDS A LINK - wrote this when bundle
-had not yet been merged).</p>
+instrumentation.  MsPASS provides
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.bundle_seed_data" title="mspasspy.algorithms.bundle.bundle_seed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">bundle_seed_data()</span></code></a> for a complete
+TimeSeriesEnsemble and
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.BundleSEEDGroup" title="mspasspy.algorithms.bundle.BundleSEEDGroup"><code class="xref py py-func docutils literal notranslate"><span class="pre">BundleSEEDGroup()</span></code></a> for a grouped subset.</p>
 </div></blockquote>
 <div class="line-block">
 <div class="line">Ensembles of TimeSeries and Seismogram data are handled internally with a more
@@ -1097,13 +1088,13 @@ Ensemble.h):</div>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Tdata</span><span class="o">&gt;</span><span class="w"> </span><span class="n">member</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">// ...</span>
-<span class="w">  </span><span class="n">Tdata</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="n">Tdata</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="c1">// ...</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <div class="line-block">
-<div class="line">where we omit all standard constuctors and methods to focus on the key
+<div class="line">where we omit all standard constructors and methods to focus on the key
 issues here.  First, an Ensemble should be thought of as a vector of data
 objects with a Metadata object to store attributes common to the
 entire ensemble.  Hence, the idea is to store global attributes in the
@@ -1113,22 +1104,20 @@ handle an entire group (Ensemble) with a simple loop.   e.g. here is a
 simple loop to work through an entire Ensemble (defined in this code
 segment with the symbol d) in order of the vector index:</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-  <span class="n">somefunction</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>    <span class="c1"># pass member i to somefunction</span>
+    <span class="n">somefunction</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>  <span class="c1"># Pass member i to somefunction.</span>
 </pre></div>
 </div>
 <p>The wrappers also make the ensemble members “iterable”.  Hence the above
 block could also be written:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-  <span class="n">somefunction</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">somefunction</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="processinghistory-and-error-logging">
-<h3>ProcessingHistory and Error Logging<a class="headerlink" href="#processinghistory-and-error-logging" title="Link to this heading">#</a></h3>
 <section id="core-versus-top-level-data-objects">
-<h4>Core versus Top-level Data Objects<a class="headerlink" href="#core-versus-top-level-data-objects" title="Link to this heading">#</a></h4>
+<h3>Core versus Top-level Data Objects<a class="headerlink" href="#core-versus-top-level-data-objects" title="Link to this heading">#</a></h3>
 <div class="line-block">
 <div class="line">The class hierarchy diagrams above illustrate the relationship of what
 we call CoreTimeSeries and CoreSeismogram objects to those we
@@ -1140,21 +1129,22 @@ any kind of time series data that match the concepts defined above.</div>
 </div>
 <div class="line-block">
 <div class="line">The primary distinction between CoreTimeSeries and CoreSeismogram and their
-higher level representation as TimeSeries and Seismogram is the addition
-of two additional classes that implement two different fundamental, but
-auxiliar concepts:  (1) processing history and (2) error logging.
+higher-level representations as TimeSeries and Seismogram is the addition
+of two fundamental facilities: (1) processing history and (2) error logging.
 The motivation for these two concepts was discussed above.  Here we
 focus on the data structure they impose.   Other sections expand on
 the details of both classes.</div>
 </div>
 <div class="line-block">
-<div class="line">Both <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> objects extend their
-“core” parents by adding two classes:</div>
+<div class="line">Both <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> extend their
+core parents by inheriting <code class="code docutils literal notranslate"><span class="pre">ProcessingHistory</span></code>.  That base class also
+owns the <code class="code docutils literal notranslate"><span class="pre">ErrorLogger</span></code> exposed as <code class="code docutils literal notranslate"><span class="pre">elog</span></code>:</div>
 </div>
 <ol class="arabic simple">
-<li><p><code class="code docutils literal notranslate"><span class="pre">ProcessingHistory</span></code>, as the name implies, can (optionally) store the
-a complete record of the chain of processing steps applied to a
-data object to put it in it’s current state.   The complete history has
+<li><p><code class="code docutils literal notranslate"><span class="pre">ProcessingHistory</span></code>, as the name implies, can optionally store the
+chain of processing steps applied to put a data object in its current state.
+The history has
 two completely different components described in more detail elsewhere
 in this User’s Manual:
 (a) global job information designed to allow extracting the full
@@ -1168,27 +1158,29 @@ step to create a reproducible final product.  That would be most
 appropriate for published data to provide a mechanism for others to
 reproduce your work, archival data to allow you or others in your
 group to start up where you left off, or just for a temporary
-archive to preserve what you did.</p></li>
+archive to preserve what you did.  See <a class="reference internal" href="processing_history_concepts.html#processing-history-concepts"><span class="std std-ref">Processing History Concepts</span></a>
+for the supported runtime and persistence contract.</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">ErrorLogger</span></code> is an error logging object.   The purpose of the
 error logger is to maintain a log of any errors or informative messages
-created during the processing of the data.  All processing modules
-in MsPASS are designed with global error handlers so that they should never
-abort, but in worst case post a log message that tags a fatal
-error.   (Note if any properly structured mspass enabled
-processing function throws an exception and aborts it has
-encountered a bug that needs to b reported to the authors.)
+created during processing.  MsPASS decorators and processing algorithms
+normally turn datum-specific failures into error-log entries and dead data,
+allowing a distributed job to continue.  Invalid function arguments,
+programmer errors, and unrecoverable system failures can still raise an
+exception; callers should not assume that every exception is swallowed.
 In our design we considered making the ErrorLogger a base class
 for Seismogram and TimeSeries, but it does not satisfy the basic rule of
 making a concept a base class if the child “is a” ErrorLogger.
 It does, however, perfectly satisfy the idea that the object “has an”
 ErrorLogger.  Both <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> use the
 symbol <code class="code docutils literal notranslate"><span class="pre">elog</span></code> as the name for the ErrorLogger object
-(e.g. If <em>d</em> is a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> object, <em>d.elog</em>, would refer to
-the error logger component of <em>d</em>.)’’</p></li>
+(For example, if <em>d</em> is a
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>, <em>d.elog</em> refers
+to the error logger component of <em>d</em>.)  See <a class="reference internal" href="handling_errors.html#handling-errors"><span class="std std-ref">Handling Errors</span></a> for the
+severity levels and decorator behavior.</p></li>
 </ol>
 </section>
 <section id="object-level-history-design-concepts">
-<h4>Object Level History Design Concepts<a class="headerlink" href="#object-level-history-design-concepts" title="Link to this heading">#</a></h4>
+<h3>Object-Level History Design Concepts<a class="headerlink" href="#object-level-history-design-concepts" title="Link to this heading">#</a></h3>
 <p>As summarized above the concept we wanted to capture in the history mechanism
 was a means to preserve the chain of processing events that were applied to
 get a piece of data in a current state.  Our design assumes the
@@ -1213,12 +1205,14 @@ tapes) storage media.</p></li>
 <li><p>MsPASS assumes all algorithms can be reduced to the equivalent of an
 abstraction of a function call.  We assume the algorithm takes input data of one
 standard type and emits data of the same or different standard type. (“type”
-in this context means TimeSeries, Seismogram, or an obspy Trace object)
+in this context means TimeSeries or Seismogram; an ObsPy Trace is an
+external type that a converter can map to TimeSeries.)
 The history mechanism is designed to preserve what the primary input and output
 types are.</p></li>
 <li><p>Most algorithms have one to a large number of tunable parameters that
-determine their behavior.  The history needs to preserve the full
-parametric information to reproduce the original behavior.</p></li>
+determine their behavior.  Reproducibility requires preserving that
+parameter set.  Object-level history stores an algorithm name and identifier;
+the corresponding parameter record is managed separately as global history.</p></li>
 <li><p>The same algorithm may be run with different parameters and behave very
 differently (e.g. a bandpass filter with different
 passbands).  The history mechanism needs to distinguish these different
@@ -1228,13 +1222,13 @@ processing) merge many pieces of data to produce one or more outputs.  A
 CMP stacker, for example, would take an array of normal moveout corrected
 data and average them sample-by-sample to produce one output for each
 gather passed to the processor.  This is a many to one reducer.  There are
-more complicate examples like the plane wave decomposition both Wang and
+more complicated examples like the plane-wave decomposition Wang and
 Pavlis developed in the mid 2010s.  That algorithm takes
 full event gathers, which for USArray could have thousands of seismograms,
 as inputs, and produces an output of many seismograms that are
 approximate plane wave components at a set of “pseudostation” points.
 The details of that algorithm are not the point, but it is a type example
-of a reducer that is a many-to-many operation.   The history mechanism
+of a reducer that is a many-to-many operation.  The history mechanism
 must be able to describe all forms of input and output from one-to-one
 to many-to-many.</p></li>
 <li><p>Data have an origin that is assumed to be reproducible (e.g. download
@@ -1245,40 +1239,37 @@ final result needs a way to verify it was successfully saved to storage.</p></li
 <li><p>Although saving intermediate results is frequently necessary, the process of saving the
 data must not break the full history chain.</p></li>
 <li><p>The history mechanism must work for any normal logical branching and looping
-scenario possible with a python script.</p></li>
+scenario possible with a Python script.</p></li>
 <li><p>Naive preservation of history data could cause a huge overload in memory
 usage and processing time.  The design then needs to make the implementation
 as lightweight in memory and computational overhead as possible.  The
 implementation needs to minimize memory usage as some algorithms
-require other inputs that are not small.  Notably, the API was designd to support
-input that could be described by any python class. The a key concept is that our
+require other inputs that are not small.  Notably, the API was designed to support
+input that could be described by any Python class.  A key concept is that our
 definition of “parameters” is broader than just a set of numbers.  It means
 any data that is not one of the atomic types (currently TimeSeries and Seismogram
 objects) is considered a parameter.</p></li>
 <li><p>A more subtle feature of the schedules supported in MsPASS for
 parallel processing is that data objects need to be serializable.
-For python programmers that is synonymous with “pickleable”.
+For Python programmers that is synonymous with “pickleable”.
 The most common G-tree algorithms we know of use linked lists of pointers
 to store the information we use describe object-level history.
 A different mechanism is needed that is an implementation detail
 described in the detailed section on <code class="code docutils literal notranslate"><span class="pre">ProcessingHistory</span></code>.</p></li>
 </ol>
 <div class="line-block">
-<div class="line">The above is admittedly a long list of functional requirements.  Our
-ProcessingHistory object achieves those requirements with two important
-costs:  (1)  it adds a nontrivial overhead that at the time of this writing
-is not known, and (2) any algorithm that aims to preserve processing history
+<div class="line">The above is admittedly a long list of functional requirements.  Enabling
+ProcessingHistory has two important costs: (1) it adds runtime, memory, and
+storage overhead, and (2) any algorithm that aims to preserve processing history
 needs to obey some rules and work in the social environment of the
-MsPASS framework.   MsPASS supported algorithms all implement history preservation
-as an option.   User’s interested in adapting their own code to the
-framework will need to learn the social norms (i.e. the API for ProcessingHistory
-and how it can be used to automate the process).   We expect to eventually
-produce a document on adapting algorithms to MsPASS that will cover this
-subject. <strong>Needs a link to a related document on ProcessingHistory API</strong></div>
+MsPASS framework.  MsPASS decorators implement history preservation as an
+option.  Users adapting their own code should follow the
+<a class="reference internal" href="adapting_algorithms.html#adapting-algorithms"><span class="std std-ref">Adapting an Existing Algorithm to MsPASS</span></a> contract; <a class="reference internal" href="processing_history_concepts.html#processing-history-concepts"><span class="std std-ref">Processing History Concepts</span></a>
+explains how object-level records relate to global parameter history.</div>
 </div>
 </section>
 <section id="error-logging-concepts">
-<h4>Error Logging Concepts<a class="headerlink" href="#error-logging-concepts" title="Link to this heading">#</a></h4>
+<h3>Error Logging Concepts<a class="headerlink" href="#error-logging-concepts" title="Link to this heading">#</a></h3>
 <div class="line-block">
 <div class="line">When processing large volumes of data, errors are inevitable and
 handling them cleanly is an essential part of any processing
@@ -1289,35 +1280,35 @@ entire workflow if one function on one piece of data threw some kinds
 of “fatal” errors.</div>
 </div>
 <div class="line-block">
-<div class="line">To handle this problem MsPASS uses a novel <code class="code docutils literal notranslate"><span class="pre">ErrorLogger</span></code> object.  Any
-data processing module in MsPASS should NEVER exit on any error
-condition except one from which the operating system cannot recover.
-(e.g. a disk write error or memory allocation error)
-All C++ and python processing modules need to have appropriate error
-handlers (i.e. try/catch in C++ and raise/except in python) to keep a
-single error from prematurely killing a large processing job.   We
+<div class="line">To handle this problem MsPASS uses an <code class="code docutils literal notranslate"><span class="pre">ErrorLogger</span></code> object.  C++ and
+Python processing modules should use appropriate error handlers (try/catch
+in C++ and try/except in Python) for expected datum-specific failures so a
+single bad datum does not prematurely kill a large processing job.  They
+should not hide programming errors or invalid workflow configuration.  We
 recommend all error handlers in processing functions post a message
 that can help debug the error.   Error messages should be registered
 with the data object’s elog object.   Error messages should not
-normally be just posted to stdout (i.e. print in python) for two
-reasons.  First, stream io is not thread safe and garbled output is
-nearly guaranteed unless the log message are rare.  Second, with a
-large dataset it can become a nearly impossible to find out which
+normally be posted only to stdout (i.e. <code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code> in Python) for two
+reasons.  First, output from multiple workers can interleave and is difficult
+to associate with a datum.  Second, with a
+large dataset it can become nearly impossible to find which
 pieces of data created the errors.  Proper application of the
 <code class="code docutils literal notranslate"><span class="pre">ErrorLogger</span></code> object will eliminate both of these problems.</div>
 </div>
 <div class="line-block">
 <div class="line">Multiple methods are available to post errors of severity from fatal
 to logging messages that do not necessarily indicate an error.   A
-small python code segment may illustrate this more clearly.</div>
+small Python code segment illustrates this behavior:</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
-  <span class="n">d</span><span class="o">.</span><span class="n">rotate_to_standard</span><span class="p">()</span>
-  <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_verbose</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span><span class="s2">&quot;rotate_to_standard succeed for me&quot;</span><span class="p">)</span>
-  <span class="c1"># ...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span>
+
+<span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;rotate_to_standard&quot;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">rotate_to_standard</span><span class="p">()</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_verbose</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="s2">&quot;rotation completed&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-  <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">job_id</span><span class="p">(),</span><span class="n">alg</span><span class="p">,</span><span class="n">err</span><span class="p">)</span>
-  <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -1326,26 +1317,19 @@ object with a singular transformation matrix created, for example, by
 incorrectly building the object with two redundant east-west
 components.   The rotate_to_standard method tries to compute a matrix
 inverse of the transformation matrix, which will generate an
-exception of type MsPASSError (the primary exception class for MsPASSS).
+exception of type MsPASSError (the primary exception class for MsPASS).
 This example catches that exception with the expected type and passes it
-directly to the ErrorLogger (<code class="code docutils literal notranslate"><span class="pre">d.elog</span></code>).  This form is correct because it
-is documented that that is the only class exception the function will throw.
-For more ambiguous cases we refer to multiple books and online sources
-for best practices in python programming.  The key point is in more
-ambiguous cases the construct should catch the standard base
-class <code class="code docutils literal notranslate"><span class="pre">Exception</span></code> as a more generic handler.  Finally, both calls to elog
-methods contain additional parameters to tag the messages.  <code class="code docutils literal notranslate"><span class="pre">alg</span></code> is an
-algorithm name and <code class="code docutils literal notranslate"><span class="pre">d.job_id()</span></code> retrieves the <code class="code docutils literal notranslate"><span class="pre">job_id</span></code>.  Both are
-global attributes handled through the global history management
-system described in more detail in a separate section of this manual.</div>
-<div class="line">All the above would be useless baggage except the MongoDB database writers
-(Create and Update in CRUD) automatically save any elog entries in a
-separate database collection called elog.   The saved messages can be
-linked back to the data with which they are associated through the
-ObjectID of the data in the wf collection.  Details of that association
-are given in other sections of this manual.</div>
+directly to the ErrorLogger (<code class="code docutils literal notranslate"><span class="pre">d.elog</span></code>).  Catch only exceptions the
+operation is documented to raise; a broad <code class="code docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span></code> can hide
+a programming error.</div>
 </div>
-</section>
+<div class="line-block">
+<div class="line">The MongoDB save and update methods persist nonempty error logs in the
+<code class="code docutils literal notranslate"><span class="pre">elog</span></code> collection.  Each saved document uses the applicable waveform
+identifier field (for example, <code class="code docutils literal notranslate"><span class="pre">wf_TimeSeries_id</span></code>) to link the messages
+to their waveform document.  See <a class="reference internal" href="CRUD_operations.html#crud-operations"><span class="std std-ref">CRUD Operations in MsPASS</span></a> for the persistence
+and Undertaker workflows.</div>
+</div>
 </section>
 </section>
 </section>
@@ -1361,12 +1345,12 @@ are given in other sections of this manual.</div>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="importing_tabular_data.html"
+       href="../getting_started/deploy_mspass_on_geolab.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Importing Tabular Data</p>
+        <p class="prev-next-title">Using MsPASS on EarthScope GeoLab</p>
       </div>
     </a>
     <a class="right-next"
@@ -1374,7 +1358,7 @@ are given in other sections of this manual.</div>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Using numpy/scipy with MsPASS</p>
+        <p class="prev-next-title">Using NumPy and SciPy with MsPASS</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1404,14 +1388,11 @@ are given in other sections of this manual.</div>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basictimeseries-base-class-of-common-data-characteristics">BasicTimeSeries - Base class of common data characteristics</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-time">Handling Time</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metadata-concepts">Metadata Concepts</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-metadata-type-with-mspasspy-db-schema">Managing Metadata type with mspasspy.db.Schema</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-metadata-types-with-mspasspy-db-schema">Managing Metadata Types with mspasspy.db.schema</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scalar-versus-3c-data">Scalar versus 3C data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#processinghistory-and-error-logging">ProcessingHistory and Error Logging</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#core-versus-top-level-data-objects">Core versus Top-level Data Objects</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#object-level-history-design-concepts">Object Level History Design Concepts</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#error-logging-concepts">Error Logging Concepts</a></li>
-</ul>
-</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core-versus-top-level-data-objects">Core versus Top-level Data Objects</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#object-level-history-design-concepts">Object-Level History Design Concepts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-logging-concepts">Error Logging Concepts</a></li>
 </ul>
 </li>
 </ul>

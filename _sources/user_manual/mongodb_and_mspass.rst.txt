@@ -7,10 +7,10 @@ Using MongoDB with MsPASS
 Overview and Roadmap
 -----------------------
 There are a huge number of internet and printed resources on the
-Database Management system used in MsPASS called `MongoDB`.
+database management system used in MsPASS, `MongoDB <https://www.mongodb.com/docs/manual/>`__.
 The reason is that MongoDB is one of the most heavily used open source
 packages in the modern software ecosystem.  For that reason in earlier
-versions of our User's Manual we simply punted the ball and told User's
+versions of our User's Manual we simply pointed users
 to consult online sources.  It became clear, however, that the
 firehose of information that approach creates is not for everyone.
 Hence, we created this section to reduce the firehose to a, hopefully,
@@ -20,8 +20,8 @@ The first section, which is titled "Concepts", is introductory material.
 The material, however, is broken into subsections directed at people
 with specific backgrounds.   If the title matches you, start there.  If
 you fit none of the descriptions, read them all.  The sections after that
-are organized by the letters of the standard acronymn used in
-many sources on database system:  CRUD (Create, Read, Update, and Delete),
+are organized by the letters of the standard acronym used in
+many sources on database systems: CRUD (Create, Read, Update, and Delete),
 although not that order for pedagogic reasons.
 The final section covers an auxiliary issue of MongoDB: indexes.
 Indexes are critical for query performance, but are not required.
@@ -124,7 +124,7 @@ know of that is also a part of MongoDB is the concept of a "cursor".
 In an RDBMS a cursor
 is a forward-iterator (i.e. it can only be incremented)
 that loops over the set of tuples returned by a query.
-In MongoDB is is more-or-less the same thing with different words.
+In MongoDB it is more-or-less the same thing with different words.
 A MongoDB cursor is a forward-iterator that can be used to work through
 a set of documents returned by a query.  You will see numerous examples
 of using cursors in the MsPASS User's manual and any source discussing
@@ -132,12 +132,13 @@ MongoDB.
 
 MongoDB for Python programmers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-All python programmers will be familiar with the container
+All Python programmers will be familiar with the container
 commonly called a "dictionary" (dict).   Other sources call the same concept
 an "associative array" (Antelope) or "map container" (C++ and Java).
 Why that is important for MongoDB is simple:  the python bindings for
-MongoDB (`pymongo`) used a dict to structure the content of what
-MongoDB calls a "document" AND pymongo uses dict containers as the base of
+MongoDB (`PyMongo <https://pymongo.readthedocs.io/>`__) use a dict to structure
+the content of what MongoDB calls a "document", and PyMongo uses dict
+containers as the base of
 its query language.   Two simple examples from the related tutorial notebook
 illustrate this.
 
@@ -146,12 +147,12 @@ illustrate this.
 .. code-block:: python
 
   from bson import json_util
-  doc = db.wf_minised.find_one()
-  print(json_util.dumps(doc,indent=2))
+  doc = db.wf_miniseed.find_one()
+  print(json_util.dumps(doc, indent=2))
 
 Produces:
 
-.. code-block:: python
+.. code-block:: json
 
   {
     "_id": {
@@ -170,7 +171,7 @@ Produces:
     "format": "mseed",
     "dir": "/N/slate/pavlis/usarray/wf/2012",
     "dfile": "event70.mseed",
-    "time_standard": "UTC",
+    "time_standard": "UTC"
   }
 
 Here is the first of several example queries in this section:
@@ -179,15 +180,16 @@ Here is the first of several example queries in this section:
 
 .. code-block:: python
 
-  query=dict()
-  query['sta' : 'AAK']
-  query['chan'] : 'BHZ'
-  query['loc'] = '00'
+  query = {
+      "sta": "AAK",
+      "chan": "BHZ",
+      "loc": "00",
+  }
   print("query content in pretty form")
-  print(json_util.dumps(doc,indent=2))
-  doc=db.wf_miniseed.find_one(query)
+  print(json_util.dumps(query, indent=2))
+  doc = db.wf_miniseed.find_one(query)
   print("output of query")
-  print(json_util.dumps(doc,indent=2))
+  print(json_util.dumps(doc, indent=2))
 
 
 MongoDB for Pandas Users
@@ -219,7 +221,7 @@ from an Antelope `site` table.
 
   import pandas
   from obspy import UTCDateTime
-  keys = ['sta','ondate','offdate','lat','lon','elev','statype','refsta','dnorth','deast','lddate']
+  keys = ['sta','ondate','offdate','lat','lon','elev','staname','statype','refsta','dnorth','deast','lddate']
   widths = [6,8,8,9,9,9,50,4,6,9,9,17]  # need the antelope schema file to get these
   df = pandas.read_fwf('demo.site',names=keys,widths=widths)
   doclist = df.to_dict('records')
@@ -228,24 +230,29 @@ from an Antelope `site` table.
   for doc in doclist:
     # In CSS3.0 these are integers for year day.  UTCDateTime
     # converts correctly ONLY if it is first converted to a string
-    ondate=str(doc['ondate'])
-    offdate=str(doc['offdate'])
-    starttime=UTCDateTime(ondate).timestamp()
-    enddate=UTCDateTime(offdate).timestamp()
-    doc['starttime']=starttime
-    doc['endtime']=endtime
+    ondate = int(doc['ondate'])
+    offdate = int(doc['offdate'])
+    doc['starttime'] = float(UTCDateTime(str(ondate)))
+    # CSS3.0 uses -1 for an open-ended deployment interval.
+    doc['endtime'] = (
+        float(UTCDateTime(str(offdate)))
+        if offdate > 0
+        else float(UTCDateTime('2599-12-31'))
+    )
   # this script assumes db is a MongoDB Database handle set earlier
   db.site.insert_many(doclist)
+  del df
 
 A few details worth noting about this example:
 
 -  The list of keywords assigned to the symbol `keys` is needed because
-   Antelope wfdisc fles do not have attribute names as the first line of
+   Antelope site files do not have attribute names as the first line of
    the file.   The list used above uses CSS3.0 attribute names.  The order
    is significant as the names are tags on each column of data loaded
-   with `read_fsf`.
+   with `pandas.read_fwf
+   <https://pandas.pydata.org/docs/reference/api/pandas.read_fwf.html>`__.
 
--  The `widths` symbol is set to a list of fixed field widths.  They ere
+-  The `widths` symbol is set to a list of fixed field widths.  They are
    derived from the antelope schema file.
 
 -  The call to the pandas `to_dict` method converts the pandas table to
@@ -281,7 +288,7 @@ things (documents) into it and have the data available by MongoDB queries.
 Readers should realize the schema we imposed on seismic waveform collections
 was imposed to provide a standardized namespace for keys to allow the
 framework to be extended without breaking lower level functionality.
-For the exploration stages of a research problem having now schema
+For the exploration stages of a research problem, having no schema
 constraints is a very useful feature of MongoDB. Importing data through
 pandas is a particularly simple way to import many forms of data
 you may acquire from internet sources today.
@@ -354,9 +361,9 @@ the "Read" part of CRUD.  We will show examples of all three below.
 1.  `find_one` returns a document that is the first document found matching
     a query operator.
 2.  `find` returns a MongoDB
-    `Cursor object <https://www.mongodb.com/docs/v3.0/core/cursors/>`__
+    `Cursor object <https://pymongo.readthedocs.io/en/stable/api/pymongo/cursor.html>`__
     that can be used to iterate through query that returns many documents.
-3.  `count_documents` is a utility function used to bound how many documents
+3.  `count_documents` is a utility method used to determine how many documents
     match a particular query.
 
 Examples of the use of each of the three functions above:
@@ -376,20 +383,21 @@ Examples of the use of each of the three functions above:
 
 `find` and `find_one` are the basic document-level fetching methods.
 The examples above show the most common, simple usage.
-Both, however, actually have three positional arguments with defaults
-you should be aware of.
+Both accept a required-or-defaulted filter and an optional projection;
+additional behavior is controlled by documented keyword arguments.
 
-1.  `arg0` defines the query operator.  The default is an empty dictionary
+1.  The first argument defines the query filter.  The default is an empty dictionary
     that is interpreted as "all".
-2.  `arg1` defines a "projection" operator.  That means it is expected to
-    be a python dictionary defining what attributes are to be retrieved or
-    excluded from the returned value(s).   For RDBMS users a "projection"
+2.  The second argument defines a "projection".  It is a list of field names
+    or a dictionary defining which attributes are to be retrieved or
+    excluded from the returned value(s).  Except for ``_id``, a projection
+    cannot mix inclusion and exclusion specifications.  For RDBMS users a "projection"
     in MongoDB is like the SELECT clause in SQL.  That idea is best
     illustrated by examples below.
-3.  `arg2` is an "options" operator.   I have personally never found a
-    use for any of the listed options in the MongoDB documentation.  I can't
-    even find an online example so "options" are clearly an example of
-    "an advanced feature" you can ignore until needed.
+3.  Keyword arguments support options such as ``sort``, ``skip``, ``limit``,
+    ``hint``, and ``collation``.  Consult the PyMongo ``Collection.find`` or
+    ``Collection.find_one`` API before using them because the supported
+    options differ between the two methods.
 
 Note also that a `find_one` returns only a single "document", which
 pymongo converts to a python dictionary.   The `find` method, in
@@ -413,7 +421,7 @@ by the query and `expression` is either: (1) another dictionary or
   query={'sta' : 'AAK'}
   query2={'sta' : {'$eq' : 'AAK'}}
 
-`query1 and `query1` are completely equivalent.
+``query`` and ``query2`` are completely equivalent.
 Both are equality tests for the attribute with
 the key "sta" matching a particular, unique name "AAK".
 
@@ -424,9 +432,8 @@ after a particular date is the following:
 
   from obspy import UTCDateTime
   t_cutoff = UTCDateTime('2012-07-28T00:00:00.00')
-  # query here needs to convert to a unix epoch time (timestamp method)
-  # for numerical comparison to work
-  query = {'starttime' : {'$gt' : t_cutoff.timestamp()}}
+  # Convert to a Unix epoch time for numerical comparison.
+  query = {'starttime' : {'$gt' : t_cutoff.timestamp}}
   cursor = db.wf_miniseed.find(query)
 
 MQL has a rich collection of operators.
@@ -465,7 +472,7 @@ all channels for station with net code "II" and station code "PFO":
   query = dict()
   query['net'] = 'II'
   query['sta'] = 'PFO'
-  cursor = db.find(query)
+  cursor = db.channel.find(query)
   for doc in cursor:
     print(doc)
 
@@ -517,8 +524,8 @@ channel data for station "PFO" and loads the results into a
   # Example to select the month of June of 2012
   tsutc = UTCDateTime('2012-06-01T00:00:00.0')
   teutc = UTCDateTime('2012-07-01T00:00:00.0')
-  ts=tsutc.timestamp()
-  te=teutc.timestamp()
+  ts = tsutc.timestamp
+  te = teutc.timestamp
   query = dict()
   query['net'] = 'II'
   query['sta'] = 'PFO'
@@ -560,12 +567,12 @@ The same query as above could, in fact, have been written as follows:
 .. code-block:: python
 
   query = {
-    'net' : 'II',
-    'sta' : 'PFO',
-    'chan' : 'LHZ',
-    'loc' : '00',
-    {'starttime' : {'$lte' : te} },
-    {'endtime' : {'$gte' : ts} }
+    'net': 'II',
+    'sta': 'PFO',
+    'chan': 'LHZ',
+    'loc': '00',
+    'starttime': {'$lte': te},
+    'endtime': {'$gte': ts},
   }
 
 In this case I used the inline syntax because it more clearly shows
@@ -585,11 +592,16 @@ and retrieve data from all sensors at PFO.
 .. code-block:: python
 
   query = {
-    'net' : 'II',
-    'sta' : 'PFO',
-    '$or' : ['chan' : 'LHE', 'chan' : 'LHN', 'chan' : 'LH1', 'chan' : 'LH2'],
-    {'starttime' : {'$lte' : te} },
-    {'endtime' : {'$gte' : ts} }
+    'net': 'II',
+    'sta': 'PFO',
+    '$or': [
+      {'chan': 'LHE'},
+      {'chan': 'LHN'},
+      {'chan': 'LH1'},
+      {'chan': 'LH2'},
+    ],
+    'starttime': {'$lte': te},
+    'endtime': {'$gte': ts},
   }
 
 Finally, the previous example also can be used to illustrate a
@@ -600,18 +612,17 @@ The above could thus be express equivalently with this one:
 .. code-block:: python
 
   query = {
-    'net' : 'II',
-    'sta' : 'PFO',
-    'chan' :  {'$regex' : 'LH.'},
-    {'starttime' : {'$lte' : te} },
-    {'endtime' : {'$gte' : ts} }
+    'net': 'II',
+    'sta': 'PFO',
+    'chan': {'$regex': r'^LH[EN12]$'},
+    'starttime': {'$lte': te},
+    'endtime': {'$gte': ts},
   }
 
 Geospatial queries
 ~~~~~~~~~~~~~~~~~~~~~
 MongoDB has a fairly sophisticated geospatial querying feature.
-A first order thing you must realize about geospatial indexing is that
-to be useful two things are required:
+For geospatial querying to be useful, two things are required:
 
 1.  The attribute(s) you want to query should be structured into a
     special data type called a
@@ -659,10 +670,10 @@ this page.
             '$maxDistance' : 500000.0,
         }
       }
-    }
-    cursor = db.site.find(query)
-    for doc in cursor:
-      print(doc)
+  }
+  cursor = db.site.find(query)
+  for doc in cursor:
+    print(doc)
 
 Note the complex, nested operators that characterize all MongoDB
 geospatial queries.   I trust the verbose names make clear how this
@@ -735,17 +746,12 @@ are some major caveats and warnings:
     there is a convenience function in the `mspasspy.db.database`
     module called `geoJSON_doc`.   It can be used to create the obscure
     document structure MongoDB requires for simple lat,lon point data.
-3.  A limitation of the (current) MongoDB implementation is the
-    `count_documents` method does not seem to work for any valid
-    query I can construct.  Internet chatter suggests that is the norm.
-    I have found `count_documents` a useful tool to test a query while
-    developing a workflow script.  Since all geospatial queries are complex by
-    almost any definition that is problematic.  I find that to debug
-    a geospatial query it is helpful to isolate the query in a
-    jupyter notebook box run it until the query runs without an error.
-    The example code block immediately above is a good model.
-    Use the same structure, but remove the print loop until you get the
-    query to work.
+3.  MongoDB does not allow ``$near``, ``$nearSphere``, or ``$where`` inside
+    a ``count_documents`` filter.  To count a radial selection, express an
+    equivalent region with ``$geoWithin`` and ``$centerSphere`` or iterate
+    the ``$nearSphere`` cursor and count the returned documents.  During
+    development, first run the query itself in a notebook and inspect a few
+    returned documents before applying it to a large collection.
 
 I would stress that in spite of these caveats, the integration of
 geospatial query functions in the MongoDB are an important functionality
@@ -769,12 +775,12 @@ from above) but this time we sort the result by starttime
 
   # ts and te are epoch times defing the time range as above
   query = {
-    'net' : 'II',
-    'sta' : 'PFO',
-    'chan' : 'LHZ',
-    'loc' : '00',
-    {'starttime' : {'$le' : te} },
-    {'endtime' : {'$ge' : ts} }
+    'net': 'II',
+    'sta': 'PFO',
+    'chan': 'LHZ',
+    'loc': '00',
+    'starttime': {'$lte': te},
+    'endtime': {'$gte': ts},
   }
   cursor = db.wf_miniseed.find(query).sort("starttime",1)
   ens = db.read_data(cursor,collection='wf_miniseed')
@@ -787,7 +793,7 @@ There are two key points this example illustrates:
     Most of us can remember it better by just thinking of it as a clause
     added after find and separated by the "." symbol.  Because it is a method
     of cursor the sort clause could have been expressed as another statement
-    after the find operator done like this:  `cursor = cursor.sort("starttime,1)")`
+    after the find operation like this: ``cursor = cursor.sort("starttime", 1)``.
 2.  The sort expression for a single key can be thought of as calling a
     function with two arguments.  The first is the key to use for the
     sort and the second defines the direction of the sort. Here I
@@ -841,10 +847,9 @@ be aware of:
     the mongo shell the sort above could be written as:
     `{'net':1, 'sta':1, 'chan':1, 'starttime':1}`.  That is not a python
     dictionary, however, even though the syntax is exactly the same.
-    In Javascript that is a list where the order of the list means something.
-    If that were translated to a python dictionary it would not work
-    because order of input is not preserved in a python dictionary.  Hence,
-    the pymongo API has to use a list to preserve order.
+    In modern Python dictionaries preserve insertion order, but PyMongo's
+    documented multi-key sort form remains a list of ``(key, direction)``
+    pairs; use that form so the intended precedence is explicit.
 
 Report generators
 ~~~~~~~~~~~~~~~~~~~~
@@ -950,7 +955,7 @@ Here is a partial example of save from the related tutorial notebook:
   doclist = ndk2docs(fname)
   print("Number of CMT records in file=",fname,' is ',len(doclist))
   r=db.CMT.insert_many(doclist)
-  n=db.CMT.count_documents()
+  n = db.CMT.count_documents({})
   print("Number of documents in CMT collection is now ",n)
 
 
@@ -984,7 +989,7 @@ set the MsPASS standard cross-reference name `channel_id` in wf_TimeSeries.
 
   # some previous magic has been assumed to have set chanid in
   # wf_TimeSeries (feasible with a CSS3.0 wfdisc table)
-  # This examplei is for illustration only and is not of direct use
+  # This example is for illustration only and is not of direct use
   cursor = db.wf_TimeSeries.find({})
   for doc in cursor:
     if 'chanid' in doc:
@@ -993,7 +998,10 @@ set the MsPASS standard cross-reference name `channel_id` in wf_TimeSeries.
       if chandoc:
         cid = chandoc['_id']
         wfid = doc['_id']
-        db.wf_TimeSeries.update_one({'_id' : wfid},{'channel_id' : cid })
+        db.wf_TimeSeries.update_one(
+            {'_id': wfid},
+            {'$set': {'channel_id': cid}},
+        )
 
 The `update_many` method is more commonly used with more complex queries
 to set a constant for the group of documents.  The example below uses
@@ -1015,13 +1023,11 @@ from common source gathers:
     ts = otime - ot_range
     te = otime + ot_range
     match_query = {
-      'starttime' : {
-        {'$gte'  ts, '$lte' : te}
-      }
+      'starttime': {'$gte': ts, '$lte': te},
     }
     srcid = doc['_id']  # ObjectId of this source document
-    update_doc = {'source_id' : srcid}
-    db.wf_TimeSeries.update_many(match_query,update_doc)
+    update_doc = {'$set': {'source_id': srcid}}
+    db.wf_TimeSeries.update_many(match_query, update_doc)
 
 Finally, a more advanced approach that is useful for large numbers of
 random updates with a large data set is the pymongo collection method
@@ -1097,19 +1103,21 @@ that require at least the four keys used to provide a unique match:
 
 .. code-block:: python
 
+  import pymongo
+
   db.channel.create_index(
    [
-    "net",
+    ("net", pymongo.ASCENDING),
     ("sta", pymongo.DESCENDING),
-    "chan",
-    "time"
+    ("chan", pymongo.ASCENDING),
+    ("loc", pymongo.ASCENDING),
+    ("starttime", pymongo.ASCENDING),
    ]
   )
 
-Note arg0 is a list of attribute names and/or 2-element tuples.
-Tuples are needed only if the default ascending order is to be
-switch to descending.  I did that for illustration above for "sta",
-but it wouldn't normally be necessary.
+The first argument is a list of two-element ``(key, direction)`` tuples.
+The example uses a descending station-code order only to illustrate the
+option; an all-ascending index would be more conventional.
 
 There are two utility functions for managing indexes in a collection:
 
@@ -1122,11 +1130,14 @@ There are two utility functions for managing indexes in a collection:
 
   cursor = db.channel.list_indexes()
   for doc in cursor:
-    print(json_utils.dumps(doc,indent=2))
+    print(json_util.dumps(doc, indent=2))
 
-2. There is a `delete_index` that can be used to remove an index from
+2. There is a `drop_index
+   <https://pymongo.readthedocs.io/en/stable/api/pymongo/collection.html#pymongo.collection.Collection.drop_index>`__
+   method that
+   removes one index, and ``drop_indexes`` removes all non-``_id`` indexes from
    a collection.  It uses the index name that is returned on creation
-   by `create_index` or can be obtained by running `list_indexes`.
+   by ``create_index`` or can be obtained by running ``list_indexes``.
 
 A final point about indexes is special case of "geospatial indexes"
 discussed above.   A geospatial index is a very different thing than

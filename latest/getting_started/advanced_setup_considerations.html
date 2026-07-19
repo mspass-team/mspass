@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Advanced Setup Considerations &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Advanced Setup Considerations &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,11 +55,11 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Deploying MsPASS on an HPC cluster" href="deploy_mspass_on_HPC.html" />
+    <link rel="next" title="MsPASS Virtual Cluster Concepts" href="getting_started_overview.html" />
     <link rel="prev" title="Deploy MsPASS with Conda" href="deploy_mspass_with_conda.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -472,40 +475,60 @@
                   
   <section id="advanced-setup-considerations">
 <span id="id1"></span><h1>Advanced Setup Considerations<a class="headerlink" href="#advanced-setup-considerations" title="Link to this heading">#</a></h1>
-<section id="handling-conda-and-pip-installations">
-<h2>Handling Conda and pip installations<a class="headerlink" href="#handling-conda-and-pip-installations" title="Link to this heading">#</a></h2>
-<p>When building MsPASS from the source, it is common to use pip to install the Python bindings after compiling the C++ core.
-The recommended command from the root of the source tree is:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>./
+<p>This page is for contributors and developers installing MsPASS from a source
+checkout.  Most users should use the <a class="reference internal" href="quick_start.html#quick-start"><span class="std std-ref">Docker quick start</span></a>
+or the <a class="reference internal" href="deploy_mspass_with_conda.html#deploy-mspass-with-conda"><span class="std std-ref">Conda installation guide</span></a>.</p>
+<section id="source-builds">
+<h2>Source builds<a class="headerlink" href="#source-builds" title="Link to this heading">#</a></h2>
+<p>MsPASS is not a Python-only package.  Installing it invokes CMake to compile
+the <code class="docutils literal notranslate"><span class="pre">mspasspy.ccore</span></code> C++ extension.  Follow the project’s
+<a class="reference external" href="https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code">source-build instructions</a>
+for the required compilers and libraries.  The current package metadata
+requires Python 3.10 or newer.</p>
+</section>
+<section id="use-an-isolated-environment">
+<h2>Use an isolated environment<a class="headerlink" href="#use-an-isolated-environment" title="Link to this heading">#</a></h2>
+<p>Create and activate a Conda environment or Python virtual environment before
+building.  An isolated environment avoids conflicts with the operating
+system’s Python packages and with other MsPASS checkouts.</p>
+<p>After activation, confirm that Python and pip refer to the intended
+environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys; print(sys.executable)&quot;</span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>--version
 </pre></div>
 </div>
-<p>This command installs MsPASS locally within the user’s <code class="docutils literal notranslate"><span class="pre">~/.local</span></code> directory on Linux systems.
-The behavior on macOS should be similar, although slight variations in directory structures can occur.</p>
-<section id="conda-vs-pip-precedence">
-<h3>Conda vs. pip Precedence<a class="headerlink" href="#conda-vs-pip-precedence" title="Link to this heading">#</a></h3>
-<p>If both a local pip installation (in <code class="docutils literal notranslate"><span class="pre">~/.local</span></code>) and a Conda environment installation exist,
-the system’s behavior depends on the environment configuration and the order of paths in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable.
-Typically, Python packages installed with <code class="docutils literal notranslate"><span class="pre">--user</span></code> are placed in a path that has precedence over Conda environments.
-You can verify which installation is currently active by using:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>python
-python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import mspasspy; print(mspasspy.__path__)&quot;</span>
+<p>Install from the root of the source tree with the command specified by the
+source-build procedure.  When that procedure has already installed all
+dependencies, the local installation command is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-deps<span class="w"> </span>-v<span class="w"> </span>.
 </pre></div>
 </div>
-<p>This will show you the path of the Python interpreter and the location of the MsPASS module being used, helping you determine which version is being prioritized.</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span></code> ensures that pip installs for the active interpreter.
+Do not add <code class="docutils literal notranslate"><span class="pre">--user</span></code> inside a Conda or virtual environment: it can install a
+second copy outside the environment.  Also avoid <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">pip</span></code>, which can
+modify files managed by the operating system.</p>
 </section>
-<section id="understanding-pip-and-conda">
-<h3>Understanding pip and Conda<a class="headerlink" href="#understanding-pip-and-conda" title="Link to this heading">#</a></h3>
-<p>While both pip and Conda are package managers, they handle package installations differently.
-Conda manages packages and the environment to which they are installed, ensuring compatibility and avoiding conflicts.
-pip, on the other hand, installs Python packages and may not consider the broader environment, leading to potential conflicts.</p>
-<ul class="simple">
-<li><p><strong>Use Conda for environments and binary dependencies</strong>: It is best to use Conda to create environments and manage packages that have binary dependencies.</p></li>
-<li><p><strong>Use pip for Python-only packages not available on Conda</strong>: If a package is only available via pip and does not have complex dependencies, it can be safely installed in a Conda environment.</p></li>
-</ul>
-<p><strong>Best Practices</strong>:
-Avoid using <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">pip</span> <span class="pre">install</span></code> as it may change files that are managed by the system’s package manager, potentially leading to inconsistent states.
-Always prefer installing packages within a user environment (<code class="docutils literal notranslate"><span class="pre">--user</span></code>) or within a virtual environment managed by Conda or virtualenv.</p>
-</section>
+<section id="check-which-copy-is-imported">
+<h2>Check which copy is imported<a class="headerlink" href="#check-which-copy-is-imported" title="Link to this heading">#</a></h2>
+<p>If multiple installations may exist, check both the selected interpreter and
+the imported package:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys, mspasspy; print(sys.executable); print(mspasspy.__file__)&quot;</span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>show<span class="w"> </span>mspasspy
+</pre></div>
+</div>
+<p>The interpreter, imported package, and location reported by pip should all
+refer to the intended environment or checkout.  <code class="docutils literal notranslate"><span class="pre">PATH</span></code> chooses the Python
+executable, but it does not by itself control Python’s package search path.</p>
+<p>If an old installation is imported, first identify its location with the
+commands above.  Remove it with the interpreter that owns that installation;
+do not delete arbitrary files from <code class="docutils literal notranslate"><span class="pre">site-packages</span></code>.  Old <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>
+entries can also shadow a new build, so start a clean shell and unset that
+variable when diagnosing an unexpected import:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">unset</span><span class="w"> </span>PYTHONPATH
+</pre></div>
+</div>
+<p>Activate the intended environment again, rebuild, and repeat the location
+check before running tests.</p>
 </section>
 </section>
 
@@ -529,11 +552,11 @@ Always prefer installing packages within a user environment (<code class="docuti
       </div>
     </a>
     <a class="right-next"
-       href="deploy_mspass_on_HPC.html"
+       href="getting_started_overview.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Deploying MsPASS on an HPC cluster</p>
+        <p class="prev-next-title">MsPASS Virtual Cluster Concepts</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -556,11 +579,9 @@ Always prefer installing packages within a user environment (<code class="docuti
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-conda-and-pip-installations">Handling Conda and pip installations</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conda-vs-pip-precedence">Conda vs. pip Precedence</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-pip-and-conda">Understanding pip and Conda</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#source-builds">Source builds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-an-isolated-environment">Use an isolated environment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-which-copy-is-imported">Check which copy is imported</a></li>
 </ul>
   </nav></div>
 

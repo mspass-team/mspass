@@ -1,47 +1,46 @@
 .. _numpy_scipy_interface:
 
-Using numpy/scipy with MsPASS
+Using NumPy and SciPy with MsPASS
 ============================================
 Overview
 -------------
-The `numpy` and `scipy` packages are heavily utilized for scientific computing
+The `NumPy <https://numpy.org/>`__ and `SciPy <https://scipy.org/>`__ packages are heavily used for scientific computing
 in a wide range of fields.   One of the reasons for that is performance.
-For a number of reasons that are beside the point, python arrays
-have horrible performance.  That is particularly true of linear algebra
-operations common in all signal processing algorithms.
-All numpy algorithms we've ever tested are orders of magnitude faster than the same
-algorithm implemented as a pure python code with python arrays.  Since most
-scipy algorithms are built on top of numpy, the same holds for scipy.
-Similarly, obspy uses numpy arrays exclusively.   As a result, an early
+Built-in Python containers are not designed for high-performance numerical
+linear algebra.
+NumPy provides typed multidimensional arrays and compiled numerical kernels;
+SciPy builds additional scientific algorithms on that foundation.  ObsPy also
+uses NumPy arrays for waveform samples.  As a result, an early
 design constraint in MsPASS was to provide as clean an interface to
-numpy/scipy as possible.  However, because we chose to implement our own
+NumPy and SciPy as possible.  However, because we chose to implement our own
 core data objects in C++, that presents a disconnect that causes a few
 anomalies in the MsPASS API.  This section of the User's Manual
-documents these issues and provides guidance for how to effectively mix
-numpy/scipy algorithms with `TimeSeries`, `Seismogram`, and ensemble objects.
-It does not address a prototype data type we call a `Gather` that can be used
-for uniform ensembles.  The `Gather` object is a pure python class that uses
-multidimensional numpy arrays to store sample data and is not subject to
-the issues addressed in this section.
+documents these issues and provides guidance for mixing NumPy and SciPy
+algorithms with :py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>`,
+:py:class:`Seismogram<mspasspy.ccore.seismic.Seismogram>`, and ensemble
+objects.  The experimental regular-grid
+:py:class:`Gather<mspasspy.seismic.gather.Gather>` and
+:py:class:`SeismogramGather<mspasspy.seismic.gather.SeismogramGather>` types
+use array-oriented storage directly and are outside this page's scope.
 
 TimeSeries Data
 -----------------
-Recall the mspass `TimeSeries` class is used to abstract the concept of
+Recall that the MsPASS
+:py:class:`TimeSeries<mspasspy.ccore.seismic.TimeSeries>` class represents
 a single channel of fixed sample rate seismic data spanning a given time period.
 As such we used the standard signal processing abstraction of storing
 the data as a vector of numbers.
 
 Every computing language that has any role in numerical computing defines
 a syntax for arrays.  A vector in this context is a one-dimensional array.
-A problem with python's builtin array is that it isn't actually at all the
-same thing as an array in FORTRAN of C.   Both FORTRAN and C define
+A Python list is not the same thing as an array in Fortran or C.  Both Fortran and C define
 an array as a fixed block of memory of a specified length containing
 a sequence of numbers of the same type.   (e.g. a C double array of length
-10 is a block of :math:`8*10` bytes.)  Numpy performance is achieved by
+10 is a block of :math:`8 \times 10` bytes.)  NumPy performance is achieved by
 redefining an array to assume the data are in a contiguous memory block and
 using wrappers that allow low-level operations to actually be performed
 by compiled C or FORTRAN functions.  We do the same thing in MsPASS
-but our data objects do not contain numpy array classes per se, but
+but our data objects do not contain NumPy array classes directly.  Instead,
 we use the same approach to allow low-level operations to be
 done in C++.  Because we use the same concept (arrays are contiguous
 blocks of memory) the arrays can mostly be used interchangeably, but
@@ -52,7 +51,7 @@ So what is the difference?   If you execute this code fragment in MsPASS:
 .. code-block:: python
 
   import numpy as np
-  from mspasspy.ccore.seismic import TimeSeries
+  from mspasspy.ccore.seismic import DoubleVector, TimeSeries
   x_numpy = np.zeros(100)
   x_mspass = TimeSeries(100)
   print("Type of numpy object=",type(x_numpy))
@@ -65,22 +64,22 @@ You should get this output::
 
 The point is that both define two conceptually similar things that are a
 vector of sample data.  In this example
-these are stored with the symbols `x_numpy` a `x_mspass.data`.
+these are stored with the symbols ``x_numpy`` and ``x_mspass.data``.
 The print statements emphasize they are
-different data types.  They are not, however, an apples and oranges
+different data types.  They are not, however, an apples-to-oranges
 kind of comparison but more of a Jonathan versus Gala apple comparison.
-Python is very cavalier about type.  Many sources call this "duck typing"
-from the cliche "if it walks like a duck and quacks like duck it must be duck".
+Python APIs often use "duck typing": an operation accepts objects that
+provide the required behavior rather than demanding one concrete class.
 Because of "duck typing" we can, in most cases, interchange the use of the
 two classes `ndarray` and `DoubleVector`.
-For example, you can nearly always send `DoubleVector` data to a
-numpy or scipy function and it will work just find.  Here are a few
+For example, you can usually send ``DoubleVector`` data to a
+NumPy or SciPy function that accepts array-like input.  Here are a few
 examples:
 
 .. code-block:: python
 
   import numpy as np
-  import scipy
+  from scipy.signal import hilbert
   # Setting data to nonzero values - not essential but otherwise
   # trivial zero vector will cause problems for the log example
   for i in range(x_mspass.npts):
@@ -88,12 +87,12 @@ examples:
   x = np.log10(x_mspass.data)
   y = np.sqrt(x_mspass.data)
   z=np.cos(x_mspass.data)
-  yh = scipy.signal.hilbert(x_mspass.data)
+  yh = hilbert(x_mspass.data)
 
-That works because the `DoubleVector` is what numpy's documentation
-calls "array like" (a duck type concept).  In fact, any numpy or scipy
-function that accepts an "array like" argument can accept the `data`
-member of a `TimeSeries` and work.   In reality, `DoubleVector` is
+That works because ``DoubleVector`` is what NumPy's documentation
+calls array-like.  In fact, any NumPy or SciPy
+function that accepts an array-like argument can generally accept the ``data``
+member of a ``TimeSeries``.  In reality, ``DoubleVector`` is
 a C++ "vector container" that in C++ would be declared as:
 
 .. code-block:: C
@@ -101,12 +100,13 @@ a C++ "vector container" that in C++ would be declared as:
   std::vector<double> x;
 
 In MsPASS we use stock "bindings" from pybind11 that allow us to do
-this magic.  The real magic is that in most cases no copying of the
-array data is required.   (For C programmers the bindings use
-a pointer (address) not a copy.)
+this behavior.  The buffer protocol also lets
+``np.asarray(x_mspass.data)`` create a writable NumPy view without copying.
+Mutating that view therefore mutates the ``TimeSeries`` samples; call
+``np.array(x_mspass.data, copy=True)`` when isolation is required.
 
-This magic works for most, but not necessarily all, vector operators that
-mix `DoubleVector` and `ndarray` types.  e.g. with the symbols above defined
+This works for most, but not all, vector operators that
+mix ``DoubleVector`` and ``ndarray`` types.  For example, with the symbols above defined
 all of the following will work and do what is expected:
 
 .. code-block:: python
@@ -119,7 +119,7 @@ all of the following will work and do what is expected:
 
 The main thing to avoid is an assignment where the left hand side
 and right hand side resolve to different types.   For instance,
-the following will fail with a `TypeError` exception if you try to run it:
+the following will fail with a ``TypeError`` exception:
 
 .. code-block:: python
 
@@ -127,90 +127,67 @@ the following will fail with a `TypeError` exception if you try to run it:
   x_mspass.data = x_numpy
   x_mspass.data = x_numpy + z
 
-The solution is to use a python version of a type cast to a `DoubleVector`:
+The solution is to construct a ``DoubleVector`` explicitly:
 
 .. code-block:: python
 
   x_mspass.data = DoubleVector(x_numpy)
   x_mspass.data = DoubleVector(x_numpy + z)
 
-That is necessary because in both cases the right hand side is an
-`ndarray`.  The construct used is a call to the bindings of a copy constructor
-for the C++ std::vector container so it seems to come at the cost of a memory copy.
-On the other hand, that is orders of magnitude faster than a python loop to do the
-same operations.
+That is necessary because the right-hand side is an ``ndarray``.  The
+``DoubleVector`` constructor copies and converts the values.
 
 Be aware that if you mix types in a vector operation you can get some surprising
-results.   For example, the following code will generate a `TypeError`
+results.  For example, the following code generates a ``TypeError``
 exception:
 
 .. code-block:: python
 
   ts=TimeSeries(100)
   z=np.ones(100)
-  x_mspass.data = z + ts.data
+  ts.data = z + ts.data
 
-while simply reversing the order of `z` and `ts.data` like this
+while reversing the order of ``z`` and ``ts.data``
 
 .. code-block:: python
 
   ts=TimeSeries(100)
   z=np.ones(100)
-  x_mspass.data = ts.data + z
+  ts.data = ts.data + z
 
-works and does set `x_mspass.data` to the vector sum of the two symbols
-on the right hand side.  The reason is that the + operator in python
-seems to resolve the type to the type of the left side of the + operator.
-Why is "deep in the weeds", but the best advice is to avoid mixed type
-operations if possible.  The more robust way to write the above as:
+works and sets ``ts.data`` to the vector sum of the two symbols
+on the right-hand side.  The result type follows the implementation selected
+by Python's binary-operator dispatch, so operand order matters.  Avoid relying
+on that detail; make the conversion explicit:
 
 .. code-block:: python
 
   ts=TimeSeries(100)
   z = np.ones(100)
-  x = z + np.array(ts.data)
-  x_mspass.data = DoubleVector(x)
-
-Finally, users who are matlab fans may like to write python code using
-the vector ":" operator.  For example, with numpy functions operations like the
-following are commonly used:
-
-.. code-block:: python
-
-  z=np.ones(100)
-  x=z[5:10]
-  print(len(x))
-
-That will print "5" - the length of the subvector extracted in x.
-The : operator does not always work with a `DoubleVector`.  If you have an
-algorithm using the colon operator, do the vector operations with
-numpy and then copy the result into the `TimeSeries` data member.
-An important warning about any such assignments to `TimeSeries.data` is you
-MUST be sure the size of the vector on the right hand side is the
-same size as the left hand side.   Consider this segment:
-
-.. code-block:: python
-
-  ts.data=TimeSeries(100)  # creates data vector 100 samples long
-  z=np.ones(100)
-  x=z[5:10]
+  x = z + np.asarray(ts.data)
   ts.data = DoubleVector(x)
-  print(len(ts.data))
 
-The output of this is "5" showing that, as expected, ts.data is replaced
-by the subvector x.  The BIG PROBLEM that can cause is it will create an
-inconsistency in the size set by the `npts` attribute of `TimeSeries`.  The
-correct solution for the above is this minor variant calling the `set_npts` method
-of `TimeSeries`
+Current ``DoubleVector`` bindings support ordinary Python slices.  A slice
+returns a new ``DoubleVector``:
 
 .. code-block:: python
 
-  ts.data=TimeSeries(100)  # creates data vector 100 samples long
-  z=np.ones(100)
-  x=z[5:10]
-  ts.set_npts(5)
+  ts = TimeSeries(100)
+  x = ts.data[5:10]
+  assert isinstance(x, DoubleVector)
+  assert len(x) == 5
+
+NumPy is still more convenient for advanced indexing.  The important
+invariant is that ``ts.npts`` must equal ``len(ts.data)``.  Assigning a
+shorter vector does not update ``npts`` automatically, so update both:
+
+.. code-block:: python
+
+  ts = TimeSeries(100)
+  x = np.ones(100)[5:10]
+  ts.set_npts(len(x))
   ts.data = DoubleVector(x)
-  print(len(ts.data))
+  assert ts.npts == len(ts.data) == 5
 
 Seismogram Data
 ~~~~~~~~~~~~~~~~~
@@ -220,35 +197,33 @@ The motivation is described in the section titled
 The result is that the array holding the sample data is a matrix
 instead of a vector.  Some implementation details of note are:
 
-1.  In MsPASS the matrix has 3 rows and `npts` columns.  That means the
-    rows of the matrix an be extracted to create a `TimeSeries`
+1.  In MsPASS the matrix has 3 rows and ``npts`` columns.  That means the
+    rows of the matrix can be extracted to create a ``TimeSeries``
     subset of the data while the columns are single "vector" samples
     of ground motion.
 2.  Currently MsPASS uses a simple, lightweight matrix class to store the sample
-    data called :class:`mspasspy.ccore.utility.dmatrix`.  A key reason we
+    data called :py:class:`dmatrix<mspasspy.ccore.utility.dmatrix>`.  A key reason we
     made that choice was control over methods defined for the class.  A
-    case in point is the `shape` attribute that we will see momentarily
-    is important for working with numpy.
-3.  For performance `dmatrix` is implemented in C++.   The class has methods
-    for all standard matrix operations with python bindings for those operator.
-    The corollary to that statement is that when working with `Seismogram` data
+    case in point is the ``shape`` attribute, which is important when working
+    with NumPy.
+3.  For performance ``dmatrix`` is implemented in C++.  The class has methods
+    for standard matrix operations with Python bindings for those operators.
+    When working with ``Seismogram`` data,
     use the native operators when possible.
-4.  A `dmatrix` stores the array data in a contiguous block of memory
-    in what numpy would call "FORTRAN order". ("C order" is reversed.)
-    FORTRAN stores a matrix as a contiguous block of memory with the
+4.  A ``dmatrix`` stores the array data in a contiguous block of memory
+    in what NumPy calls Fortran order.  Fortran stores a matrix with the
     row index "varying fastest".  Exchanging the sample data stored
-    this way with numpy is like that with the std::vector used in
-    `TimeSeries` but the exchange uses a pointer to the first sample of the
-    contiguous block of memory held by an instance of a `dmatrix`
-    class referenced with the symbol `Seismogram.data`.
+    this way with NumPy is like that with the ``std::vector`` used in
+    ``TimeSeries``.  ``np.asarray(seismogram.data)`` provides a writable view
+    of that buffer.
 5.  We use a variation of the same "magic" in the pybind11 binding code
-    that allows the `Seismogram.data` matrix to interact cleanly with
-    numpy and scipy functions that require a matrix.  Like the scalar
+    that allows the ``Seismogram.data`` matrix to interact cleanly with
+    NumPy and SciPy functions that require a matrix.  Like the scalar
     case there are impedance mismatches, however, that can complicate
     that exchange. We discuss these below.
 
 Almost all of what was discussed above about using `TimeSeries`
-arrays with numpy are similar.  For example, although the result is
+arrays with NumPy are similar.  For example, although the result is
 meaningless, you can run the following code snippet with
 MsPASS and it will run and produce the expected result:
 
@@ -256,7 +231,8 @@ MsPASS and it will run and produce the expected result:
 
   import numpy as np
   from mspasspy.ccore.seismic import Seismogram
-  x_mspass =Seismogram(100)
+  from mspasspy.ccore.utility import dmatrix
+  x_mspass = Seismogram(100)
   # initialize the matrix to some meaningless, nonzero values
   for i in range(3):
     for j in range(x_mspass.npts):
@@ -273,10 +249,10 @@ MsPASS and it will run and produce the expected result:
   x_mspass.data += y
   # Same thing done with a binary + operator
   # use a copy to show more likely use
-  z=Seismogram(x_mspass.data)
-  x_mspass_data = z + y
+  z=Seismogram(x_mspass)
+  x_mspass.data = z.data + y
 
-As with `TimeSeries` at mismatch will occur if the operation
+As with ``TimeSeries``, a mismatch occurs if the operation
 yields a type mismatch.  For example, the following minor variant of
 above will run:
 
@@ -287,7 +263,7 @@ above will run:
   x_mspass.data = z.data + y
 
 In contrast, the following that might seem completely equivalent
-will raise a `TypeError` exception:
+raises a ``TypeError`` exception:
 
 .. code-block:: python
 
@@ -296,7 +272,7 @@ will raise a `TypeError` exception:
   x_mspass.data = y + z.data
 
 The reason is that for the right hand side resolves to a
-numpy "ndarray" and the left hand side is a `dmatrix`.
+NumPy ``ndarray`` and the left-hand side requires a ``dmatrix``.
 Exactly like above, this simpler assignment will fail exactly the same way:
 
 .. code-block:: python
@@ -309,13 +285,17 @@ The solution is similar to that we used above for `TimeSeries`:
 
   x_mspass.data = dmatrix(y)
 
-That is, `DoubleVector` is changed to `dmatrix`.
+That is, ``DoubleVector`` is replaced by ``dmatrix`` for matrix data.
 
-Finally, the warnings above about the ":" operator with `TimeSeries` apply equally
-to `Seismogram`.   If you write a python code with the color operator do
-all those operations with numpy arrays and use the `dmatrix` copy constructor
-to load the result into the object's `data` array.   The warning about
-making sure the `npts` member attribute is consistent with the result
-applies as well.   The only thing to remember with a `Seismogram` is that
-`npts` is the number of columns of the data matrix, not the total number of
-samples.
+``dmatrix`` also supports ordinary row and column slices through its NumPy
+interface; those slices are returned as ``ndarray`` objects rather than as
+another ``dmatrix``.  When a result is assigned back, construct a ``dmatrix``
+explicitly, require exactly three rows, and keep ``npts`` equal to the number
+of columns:
+
+.. code-block:: python
+
+  window = np.array(x_mspass.data, copy=True)[:, 10:20]
+  x_mspass.set_npts(window.shape[1])
+  x_mspass.data = dmatrix(window)
+  assert x_mspass.data.shape == (3, x_mspass.npts)

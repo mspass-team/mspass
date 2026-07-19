@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Header (Metadata) Math &#8212; MsPASS 2.4.2.dev1+g09d914fe documentation</title>
+    <title>Header (Metadata) Math &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bdf6f05e"></script>
+    <script src="../_static/documentation_options.js?v=bf6741af"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,11 +55,11 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Graphics in MsPASS" href="graphics.html" />
+    <link rel="next" title="Signal to Noise Ratio Estimation" href="signal_to_noise.html" />
     <link rel="prev" title="Cleaning Inconsistent Metadata" href="cleaning_metadata.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev1" />
+  <meta name="docsearch:version" content="2.4.2.dev2" />
   </head>
   
   
@@ -160,10 +160,10 @@
         <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -268,10 +268,10 @@
             <div class="navbar-item">
 <ul class="bd-navbar-elements navbar-nav">
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/mspass_desktop.html">Desktop</a>
+    <a class="nav-link nav-internal" href="../getting_started/quick_start.html">Get Started</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link nav-internal" href="../getting_started/deploy_mspass_on_HPC.html">Cluster</a>
+    <a class="nav-link nav-internal" href="../getting_started/getting_started_overview.html">Cluster</a>
   </li>
   <li class="nav-item">
     <a class="nav-link nav-internal" href="introduction.html">User Manual</a>
@@ -330,72 +330,74 @@
         <div class="sidebar-primary-item">
 <nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">MsPASS Components</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced setup considerations</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPCClusterLauncher Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">Using MsPASS on EarthScope GeoLab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Management</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Header (Metadata) Math</a></li>
-<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions (FAQ)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
@@ -408,6 +410,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
@@ -419,7 +422,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
 </ul>
 </div>
 </nav></div>
@@ -474,7 +477,7 @@
 <span id="header-math"></span><h1>Header (Metadata) Math<a class="headerlink" href="#header-metadata-math" title="Link to this heading">#</a></h1>
 <section id="concepts">
 <h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">#</a></h2>
-<p>Anyone with experience in seismc reflection data processing is aware of the
+<p>Anyone with experience in seismic reflection data processing is aware of the
 common need for what is sometimes called “header math”.   That term in the
 seismic reflection world is inherited from the days of tape-based processing
 where the processing workflow was driven by “header” attributes that were
@@ -494,10 +497,10 @@ of simple surveys is computing common midpoint coordinates from source
 and receiver coordinates.  An example from passive array processing is
 a need to compute some combined score of signal-to-noise ratio based on
 a linear combination of single metrics.</p>
-<p>The collection of edit operators covered in this section were implemented
+<p>The collection of edit operators covered in this section was implemented
 to cover the main arithmetic operations needed to do most “header math”.  They have the
 advantage of being expressed through a standardized API that allows a chain
-of operation to be computed that can implement fairly elaborate
+of operations to be computed that can implement fairly elaborate
 calculations.  The user should recognize that the main advantage of using
 these operators over a custom-coded python function
 (see the <em>Alternative</em> subsection at the end of this document) is robustness
@@ -508,12 +511,13 @@ concepts of MsPASS.</p>
 <h2>Unary Operators<a class="headerlink" href="#unary-operators" title="Link to this heading">#</a></h2>
 <p>The first set of operations are “unary” because they implement
 all the standard unary arithmetic operations in python.
-By that we me operations like <code class="docutils literal notranslate"><span class="pre">a+=b</span></code> which adds the value of b to a.
+By that we mean operations like <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">+=</span> <span class="pre">b</span></code>, which add the value of <code class="docutils literal notranslate"><span class="pre">b</span></code> to
+<code class="docutils literal notranslate"><span class="pre">a</span></code>.
 The distinction is that the operators automatically (and robustly) fetch and update the
 Metadata attribute on the left hand side of that operation.</p>
 <p>It is likely clearest to show an example of how this is used.
 Suppose we found the <code class="docutils literal notranslate"><span class="pre">calib</span></code> attribute in our entire data set
-was off by a factor or 2 because some custom algorithm had a scaling error.
+needed to be multiplied by 2 because some custom algorithm had a scaling error.
 We could define an
 operator to correct this problem with the following construct:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.algorithms.edit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mde</span>
@@ -548,27 +552,27 @@ The following table summarizes the available operators:</p>
 <tbody>
 <tr class="row-even"><td><p>Add</p></td>
 <td><p>+=</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add" title="mspasspy.algorithms.edit.Add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Add</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add" title="mspasspy.algorithms.edit.Add"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Subtract</p></td>
 <td><p>-=</p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Subtract</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract" title="mspasspy.algorithms.edit.Subtract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subtract</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Multiply</p></td>
 <td><p>*=</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply" title="mspasspy.algorithms.edit.Multiply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Multiply</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply" title="mspasspy.algorithms.edit.Multiply"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiply</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Divide</p></td>
 <td><p>/=</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide" title="mspasspy.algorithms.edit.Divide"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Divide</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide" title="mspasspy.algorithms.edit.Divide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Divide</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p>IntegerDivide</p></td>
 <td><p>//=</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide" title="mspasspy.algorithms.edit.IntegerDivide"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IntegerDivide</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide" title="mspasspy.algorithms.edit.IntegerDivide"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntegerDivide</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Mod</p></td>
 <td><p>%=</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod" title="mspasspy.algorithms.edit.Mod"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Mod</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod" title="mspasspy.algorithms.edit.Mod"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mod</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -581,7 +585,7 @@ meaning, see any book or online source on python fundamentals.</p>
 <h2>Binary Operators<a class="headerlink" href="#binary-operators" title="Link to this heading">#</a></h2>
 <p>The binary operators are like the unary operators but they define all
 operations that are python binary operators.  By that we mean any
-operation that can be case as:  <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">a</span> <span class="pre">op</span> <span class="pre">b</span></code> where <code class="docutils literal notranslate"><span class="pre">op</span></code> is one of the
+operation that can be cast as <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">a</span> <span class="pre">op</span> <span class="pre">b</span></code>, where <code class="docutils literal notranslate"><span class="pre">op</span></code> is one of the
 standard arithmetic operator symbols:  <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">//</span></code>, and <code class="docutils literal notranslate"><span class="pre">%</span></code>.
 The distinction from normal usage is that the operator has to first cautiously
 fetch <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> from Metadata, apply <code class="docutils literal notranslate"><span class="pre">op</span></code>, and then set the value <code class="docutils literal notranslate"><span class="pre">c</span></code> to
@@ -615,27 +619,27 @@ name.</p>
 <tbody>
 <tr class="row-even"><td><p>Add2</p></td>
 <td><p>+</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2" title="mspasspy.algorithms.edit.Add2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Add</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2" title="mspasspy.algorithms.edit.Add2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add2</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Subtract2</p></td>
 <td><p>-</p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Subtract</span></code></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract2" title="mspasspy.algorithms.edit.Subtract2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subtract2</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p>Multiply2</p></td>
 <td><p>*</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2" title="mspasspy.algorithms.edit.Multiply2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Multiply</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2" title="mspasspy.algorithms.edit.Multiply2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiply2</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Divide2</p></td>
 <td><p>/</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide2" title="mspasspy.algorithms.edit.Divide2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Divide2</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide2" title="mspasspy.algorithms.edit.Divide2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Divide2</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p>IntegerDivide2</p></td>
 <td><p>//</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2" title="mspasspy.algorithms.edit.IntegerDivide2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IntegerDivide2</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2" title="mspasspy.algorithms.edit.IntegerDivide2"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntegerDivide2</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Mod2</p></td>
 <td><p>%</p></td>
-<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod2" title="mspasspy.algorithms.edit.Mod2"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Mod2</span></code></a></p></td>
+<td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod2" title="mspasspy.algorithms.edit.Mod2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mod2</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -647,22 +651,21 @@ name.</p>
 arithmetic operators discussed above.</p>
 <p>First, there is an operator to change the key assigned to a Metadata attribute.
 The constructor has this usage:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">ChangeKey</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">erase_old</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">ChangeKey</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">erase_old</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The apply method of this class will check for the existence of data with the key
-<code class="docutils literal notranslate"><span class="pre">old</span></code> and redefine the key to the valued defined by the <cite>old</cite> (positional) argument
-passed to the constructor.   The <code class="docutils literal notranslate"><span class="pre">erase_old</span></code> argument defaults to True.  If set
-False <code class="docutils literal notranslate"><span class="pre">old</span></code> will be set with a copy and <code class="docutils literal notranslate"><span class="pre">new</span></code> will be retained.</p>
+<p>The apply method checks for the key <code class="docutils literal notranslate"><span class="pre">old</span></code> and copies its value to <code class="docutils literal notranslate"><span class="pre">new</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">erase_old</span></code> argument defaults to True, so the old key is then erased.
+If it is False, both keys are retained.</p>
 <p>The second is an operator to set a Metadata attribute to a constant value
 saved in the operator class.  The value can be any valid python type so
 this operation may or may not be an “arithmetic” operation.</p>
 <p>The constructor for this class has this usage:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">SetValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">const</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">SetValue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">constant_value</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The apply method of this operator will set a Metadata attribute with the
-name defined by <code class="docutils literal notranslate"><span class="pre">key</span></code> to the constant value set with <code class="docutils literal notranslate"><span class="pre">const</span></code>.</p>
+name defined by <code class="docutils literal notranslate"><span class="pre">key</span></code> to <code class="docutils literal notranslate"><span class="pre">constant_value</span></code>.</p>
 </section>
 <section id="combining-operators">
 <h2>Combining operators<a class="headerlink" href="#combining-operators" title="Link to this heading">#</a></h2>
@@ -674,8 +677,8 @@ this usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">opchain</span> <span class="o">=</span> <span class="n">MetadataOperatorChain</span><span class="p">(</span><span class="n">oplist</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>where <code class="docutils literal notranslate"><span class="pre">oplist</span></code> is a python list of 2 or more of the lower level operators
-described above.</p>
+<p>where <code class="docutils literal notranslate"><span class="pre">oplist</span></code> is any iterable of the lower-level operators described above.
+The operators run sequentially in iterable order.</p>
 <p>For example, here is a code fragment to produce a calculator that will
 compute the midpoint coordinates from Metadata attributes rx,ry,sx, and sy
 and set them as cmpx, cmpy for x and y coordinates respectively:</p>
@@ -688,7 +691,8 @@ and set them as cmpx, cmpy for x and y coordinates respectively:</p>
 </pre></div>
 </div>
 <p>The opchain contents can then be passed to a parallel map operator as in
-the simpler example above.   This operator computes and sets the following:</p>
+the simpler example above.  Like the individual operators, the chain edits the
+input object in place and returns that object.  This example computes and sets:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cmpx</span> <span class="o">=</span> <span class="p">(</span><span class="n">rx</span> <span class="o">+</span> <span class="n">sx</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
 <span class="n">cmpy</span> <span class="o">=</span> <span class="p">(</span><span class="n">ry</span> <span class="o">+</span> <span class="n">sy</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
 </pre></div>
@@ -697,23 +701,22 @@ the simpler example above.   This operator computes and sets the following:</p>
 <section id="common-properties">
 <h2>Common Properties<a class="headerlink" href="#common-properties" title="Link to this heading">#</a></h2>
 <p>All of the operations defined in this set of operator classes could be
-hand coded as needed.  The main thing they give you over a “roll you own”
+hand coded as needed.  The main thing they give you over a <code class="docutils literal notranslate"><span class="pre">roll-your-own</span></code>
 implementation is automatic handling of the following standard features of
 the MsPASS framework:</p>
 <ul class="simple">
-<li><p>All handle error consistently using the <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.util.ErrorLogger</span></code>
-mechanism of MsPASS data objects.</p></li>
-<li><p>All behave identically on some common error situations.  There are three
-common errors all these functions handle.  (1) If a key-value
-that the operator needs to fetch from
-Metadata is not defined the operator will kill the datum missing and
-log a standard message.  (2) if
-the value extracted fails for the defined arithmetic operation the datum will again
-be killed with a standard message posted to the <code class="code docutils literal notranslate"><span class="pre">elog</span></code> attribute of the
-data object. An example of this would be trying to do arithmetic on
-an attribute with a string value.  (3) If the operator receives
-a datum that is not a MsPASS
-data object the operator will throw a MsPASSError object marked Fatal.</p></li>
+<li><p>All handle errors consistently using the
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger" title="mspasspy.ccore.utility.ErrorLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorLogger</span></code></a> mechanism of
+MsPASS data objects.</p></li>
+<li><p>The arithmetic operators handle common error situations consistently.  A
+missing operand or an invalid arithmetic operation kills the affected datum;
+missing keys also add an error-log entry.  For example, arithmetic on an
+incompatible string value kills the datum.  <code class="docutils literal notranslate"><span class="pre">ChangeKey</span></code> is deliberately
+gentler: unless <code class="docutils literal notranslate"><span class="pre">fast_mode=True</span></code>, a missing source key leaves the datum
+unchanged and is logged only when <code class="docutils literal notranslate"><span class="pre">verbose=True</span></code>.  <code class="docutils literal notranslate"><span class="pre">SetValue</span></code> requires no
+preexisting value.  Any operator given an object that is not an MsPASS data
+object raises a Fatal
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MsPASSError" title="mspasspy.ccore.utility.MsPASSError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MsPASSError</span></code></a>.</p></li>
 <li><p>All the operators handle Ensembles in a consistent manner.   Editing Metadata
 for an Ensemble object has an ambiguity because Ensemble objects often
 have attributes independent of the members (e.g. a common source gather
@@ -722,7 +725,7 @@ handle this all the apply methods have a common, optional argument
 <code class="code docutils literal notranslate"><span class="pre">apply_to_members</span></code>.   When set True the operator will automatically
 apply the operation to each member of the ensemble in a simple, serial loop.
 When false the operation is applied to the ensemble metadata container.</p></li>
-<li><p>All the operators have wrappers to optionally enable the object-level
+<li><p>All the operators have wrappers that can optionally enable the object-level
 history mechanism for each datum processed.</p></li>
 </ul>
 </section>
@@ -730,12 +733,12 @@ history mechanism for each datum processed.</p></li>
 <h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>It is important to be aware of the consistency of the Metadata attributes
-for a data set before running these operators.  They will dogmatically kill
-data when required attributes are missing.   If your data set has a lot of
-missing metadata required by the operator, the operators will
+for a data set before running these operators.  The arithmetic operators
+kill data when required attributes are missing.  If your data set has a lot of
+missing metadata required by an arithmetic operator, those operators will
 kill every datum that is lacking that metadata attribute.</p></li>
 <li><p>It is far too easy to kill every datum in your data set if you read
-data by ensembles and fail to use the <cite>apply_to_members</cite> switch correctly.
+data by ensembles and fail to use the <code class="docutils literal notranslate"><span class="pre">apply_to_members</span></code> switch correctly.
 With the default value of False if you mix up the names for fields you
 set in the ensemble container and which you load with each atomic data
 object you can easily kill every ensemble in the data set.  As always it
@@ -744,9 +747,11 @@ the operation does what you think it will before releasing a workflow
 on a huge data set.</p></li>
 <li><p>When you are aware that some data have deficient metadata attributes
 that are required for a calculation, it is prudent to first pass the
-workflow through one of the related Executioner classes to “kill” data that
+workflow through one of the related
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Executioner" title="mspasspy.algorithms.edit.Executioner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executioner</span></code></a> subclasses to
+kill data that
 lack the required attributes.</p></li>
-<li><p>We have found that a chain of <code class="docutils literal notranslate"><span class="pre">ChangeKey</span></code> operator is almost always a
+<li><p>We have found that a chain of <code class="docutils literal notranslate"><span class="pre">ChangeKey</span></code> operators is almost always a
 far faster way to repair database name errors than to run
 one-at-a-time transactions with MongoDB.   Millions of update transactions
 with MongoDB can (literally) take days to complete but the same operation
@@ -780,11 +785,11 @@ operators described in this section as a part of the workflow.</p></li>
       </div>
     </a>
     <a class="right-next"
-       href="graphics.html"
+       href="signal_to_noise.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Graphics in MsPASS</p>
+        <p class="prev-next-title">Signal to Noise Ratio Estimation</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
