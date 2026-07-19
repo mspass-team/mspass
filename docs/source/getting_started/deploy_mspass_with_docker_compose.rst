@@ -1,125 +1,212 @@
 .. _deploy_mspass_with_docker_compose:
 
-:orphan:
-
 Deploy MsPASS with Docker Compose
 =================================
 
+Docker Compose runs the MsPASS database, scheduler, worker, and JupyterLab
+frontend in separate containers on one computer.  This is useful when you
+want to inspect or restart each service independently.  For the simplest
+desktop setup, use :ref:`Run MsPASS with Docker <run_mspass_with_docker>`
+instead.
+
 Prerequisites
 -------------
-Docker Compose is a tool to deploy and coordinate multiple Docker containers. 
-To install Docker Compose on machines that you have root access, please refer to the guide `here <https://docs.docker.com/compose/install/>`__ and follow the instructions for your specific platform. 
-Docker Compose uses YAML files to run multiple containers.
-Please refer to its `documentation <https://docs.docker.com/compose/>`__ for more details on using the tool.
 
-Configure MsPASS Containers
----------------------------
-The MsPASS runtime environment is composed of multiple components each serves a specific functionality. 
-They are: ``frontend``, ``scheduler``, ``worker``, ``db``, ``dbmanager``, and ``shard``.
-The MsPASS container can be launched as one of these roles by specifying the ``MSPASS_ROLE`` environment variable.
-The options include:
+Install Docker Desktop or Docker Engine with the Docker Compose plugin.  The
+commands below use the current ``docker compose`` command (with a space).
+Check the installation with:
 
-- ``frontend``: Utilizing Jupyter Notebook to provide users an interactive development environment that connects to the other components.
-- ``scheduler``: This is the Dask scheduler or the Spark master that coordinates all its corresponding workers.
-- ``worker``: This is the Dask worker or Spark worker that does the computation in parallel.
-- ``db``: This role runs a standalone MongoDB daemon process that manages data access. 
-- ``dbmanager``: This role runs MongoDB's config server and router server to provide access to a sharded MongoDB cluster.
-- ``shard``: Each shard contains a subset of the sharded data to provide horizontal scaling of the database.
-- ``all``: This role is equivalent to ``frontend`` + ``scheduler`` + ``worker`` + ``db``. 
-  Note that this is the default role, and it is how the container is launched in the :ref:`previous section <run_mspass_with_docker>`.
+.. code-block:: bash
 
-The following environment variables also need be set for the different roles to communicate:
+   docker version
+   docker compose version
 
-- ``MSPASS_SCHEDULER``: User can use ``dask`` or ``spark`` to run parallel computations. 
-  ``dask`` is the default.
-- ``MSPASS_SCHEDULER_ADDRESS``: This is the IP address or hostname of the ``scheduler``. 
-  ``worker`` and ``frontend`` rely on this to communicate with the ``scheduler``.
-- ``MSPASS_DB_ADDRESS``: This is the IP address or hostname of the ``db`` or ``dbmanager``. 
-  ``frontend`` rely on this to access the database.
-- ``MSPASS_SHARD_LIST``: This is a space delimited string of format ``$HOSTNAME/$HOSTNAME:$MONGODB_PORT`` for all the ``shard``. 
-  ``dbmanager`` rely on this to build the sharded database cluster.
-- ``MSPASS_SHARD_ID``: This is used to assign each ``shard`` a unique name such that it can write to its own ``data_shard_${MSPASS_SHARD_ID}`` directory under the */db* directory (in case the shards run on a shared filesystem). 
-- ``MSPASS_JUPYTER_PWD``: In the ``frontend``, user can optionally set a password for Jupyter Notebook access. 
-  If set to an empty string, jupyter can be accessed with no password which may cause security issues.
-  If unset, the Jupyter Notebook will generate a random token and print to stdout, which is the default behavior.
+Choose a writable project directory and run all commands from that directory.
+The shipped configurations mount the current directory at ``/home`` in every
+container, so notebooks, database files, logs, and results remain on the host.
 
-User may change the default ports of all the underlying components by setting the following variables:
+How the containers work together
+--------------------------------
 
-- ``JUPYTER_PORT``: The default is ``8888``.
-- ``DASK_SCHEDULER_PORT``: The default is ``8786``.
-- ``SPARK_MASTER_PORT``: The default is ``7077``.
-- ``MONGODB_PORT``: The default is ``27017``.
+An MsPASS deployment is made from containers with different roles.  Docker
+Compose gives the containers a shared network and starts them with the
+addresses and settings they need to communicate.  Understanding these roles
+is helpful when you read a Compose file or diagnose a service that did not
+start:
 
-These variables are for experienced users only. The deployment can break if mismatching ports are set. 
+* ``frontend`` runs JupyterLab and connects the user's notebook to the
+  database and the parallel scheduler.
+* ``scheduler`` runs either a Dask scheduler or a Spark master.  It assigns
+  parallel work to the workers.
+* ``worker`` runs a Dask worker or Spark worker that performs the computation.
+* ``db`` runs one standalone MongoDB server.  This is the database role used
+  by the standard Dask and Spark examples on this page.
+* ``dbmanager`` runs the MongoDB configuration and routing services for a
+  sharded database.  It is used with one or more ``shard`` containers, not
+  with the standalone ``db`` container.
+* ``shard`` stores part of a sharded MongoDB database.  Multiple shards can
+  distribute a large database across storage devices or hosts.
+* ``all`` combines the frontend, scheduler, worker, and standalone database
+  in one container.  It is the default role used by the simpler
+  :ref:`single-container instructions <run_mspass_with_docker>`.
 
+The image selects a role with the ``MSPASS_ROLE`` environment variable.  The
+other important variables describe the scheduler and connect the services:
 
-Deploy MsPASS Containers
-------------------------
-Docker Compose can deploy multiple MsPASS Containers of different roles, which simulates a distributed environment.
-Below, we provide two exemplary Docker Compose configurations that have distributed setup for both the computation (with Dask or Spark) and the database (with MongoDB).
+* ``MSPASS_SCHEDULER`` selects ``dask`` or ``spark``.  The default is
+  ``dask``.
+* ``MSPASS_SCHEDULER_ADDRESS`` gives workers and the frontend the hostname of
+  the scheduler service.  In the supplied files that hostname is
+  ``mspass-scheduler``.
+* ``MSPASS_DB_ADDRESS`` gives the frontend the hostname of its database
+  service.  It is ``mspass-db`` for a standalone database and
+  ``mspass-dbmanager`` only for the sharded configuration.
+* ``MSPASS_SHARD_LIST`` tells a database manager which shard services belong
+  to the cluster.  Each entry has the form ``name/host:port``.
+* ``MSPASS_SHARD_ID`` gives each shard a unique identity and keeps its data
+  separate when shards share a mounted filesystem.
+* ``MSPASS_JUPYTER_PWD`` optionally sets the Jupyter password.  If it is
+  unset, Jupyter generates a login token and prints it in the frontend log.
+  An empty value permits access without a password and should be used only in
+  an appropriately protected environment.
+
+Several port variables are also available: ``JUPYTER_PORT`` defaults to
+``8888``, ``DASK_SCHEDULER_PORT`` to ``8786``, ``SPARK_MASTER_PORT`` to
+``7077``, and ``MONGODB_PORT`` to ``27017``.  Most users should keep these
+container-side defaults.  If one of those ports is already occupied on the
+host, change the host side of its Compose ``ports`` mapping instead.  Service
+addresses and health checks must agree with any container-side port changes.
+
+Run the Dask configuration
+--------------------------
+
+The standard configuration is
+:download:`compose.yaml <../../../data/yaml/compose.yaml>`:
 
 .. literalinclude:: ../../../data/yaml/compose.yaml
    :language: yaml
    :linenos:
-   :caption: Docker Compose example that configures a MongoDB cluster of two shards and a Dask cluster of one worker.
+   :caption: Standard Docker Compose configuration using Dask
+
+Save the file as ``compose.yaml`` in your project directory, then start it:
+
+.. code-block:: bash
+
+   docker compose up -d
+
+Docker downloads the image automatically if it is not already installed.
+The configuration starts four services:
+
+* ``mspass-db`` runs a standalone MongoDB server.
+* ``mspass-scheduler`` runs the Dask scheduler.
+* ``mspass-worker`` starts four single-threaded Dask worker processes.
+* ``mspass-frontend`` runs JupyterLab.
+
+Check that the services are running:
+
+.. code-block:: bash
+
+   docker compose ps
+
+Initial startup can take a minute.  If the frontend is not ready, view its
+log with:
+
+.. code-block:: bash
+
+   docker compose logs mspass-frontend
+
+Open ``http://127.0.0.1:8888/`` in a browser and enter the password
+``mspass``.  The Dask dashboard is available at
+``http://127.0.0.1:8787/status``.
+
+When finished, stop and remove the containers with:
+
+.. code-block:: bash
+
+   docker compose down
+
+Files in the project directory are not removed.  In particular, the startup
+scripts create ``db/`` for MongoDB data, ``logs/`` for service logs, and
+``work/`` for worker scratch files.
+
+Common adjustments
+------------------
+
+The supplied file is intended for local use.  It publishes service ports on
+all host interfaces, uses the known Jupyter password ``mspass``, and does not
+enable MongoDB authentication.  On an untrusted network, choose a private
+Jupyter password and bind published ports to loopback; for example, change
+``8888:8888`` to ``127.0.0.1:8888:8888``.
+
+Other common changes are:
+
+* Change the host side of a port mapping if a port is already in use.  For
+  example, ``9999:8888`` makes JupyterLab available on host port ``9999``.
+* Adjust ``MSPASS_WORKER_ARG`` to change the number of Dask worker processes.
+  Do not request more CPU or memory than Docker has available.
+* Add the same bind mount to every service that needs access to waveform data
+  stored outside the project directory.  Paths used by notebooks and workers
+  must refer to the common path inside the containers.
+
+After editing the file, check its resolved configuration before restarting:
+
+.. code-block:: bash
+
+   docker compose config
+   docker compose up -d
+
+Run the Spark configuration
+---------------------------
+
+MsPASS also provides
+:download:`docker-compose_spark.yaml
+<../../../data/yaml/docker-compose_spark.yaml>`:
 
 .. literalinclude:: ../../../data/yaml/docker-compose_spark.yaml
    :language: yaml
    :linenos:
-   :caption: Docker Compose example that configures a MongoDB cluster of two shards and a Spark cluster of one worker.
+   :caption: Docker Compose configuration using Spark
 
-To test out the multi-container setup, we can use the ``docker-compose`` command, which will deploy all the components locally.
-First, save the content of one of the two code blocks above to a file called ``docker-compose.yml``, and make sure that you are running in a directory where you want to keep the files created by the containers (i.e., the db, logs, and work directories).
-Then, run the following command to start all the containers:
+Save the file in the project directory and run:
 
-.. code-block:: 
+.. code-block:: bash
 
-    docker-compose -f docker-compose.yml up -d
+   docker compose -f docker-compose_spark.yaml up -d
+   docker compose -f docker-compose_spark.yaml ps
 
-This command will start all the containers as services running in the background and you will see all the containers started correctly with outputs like this:
+This configuration replaces the Dask scheduler and worker with a Spark master
+and worker.  It still uses the standalone ``mspass-db`` service, and the
+frontend's ``MSPASS_DB_ADDRESS`` must therefore be ``mspass-db``.  The Spark
+scheduler and database health checks delay dependent services until they are
+ready.
 
-.. code-block:: console
+Stop the Spark services with:
 
-  $ docker-compose -f docker-compose.yml up -d
-  Creating network "mspass_default" with the default driver
-  Creating mspass_mspass-shard-1_1   ... done
-  Creating mspass_mspass-scheduler_1 ... done
-  Creating mspass_mspass-shard-0_1   ... done
-  Creating mspass_mspass-worker_1    ... done
-  Creating mspass_mspass-dbmanager_1 ... done
-  Creating mspass_mspass-frontend_1  ... done
+.. code-block:: bash
 
-You can then open ``http://127.0.0.1:8888/`` in your browser to access the Jupyter Notebook frontend. 
-Note that it may take a minute for the frontend to be ready.
-You can check the status of the frontend with this command:
+   docker compose -f docker-compose_spark.yaml down
 
-.. code-block:: 
+Do not run the Dask and Spark configurations together in the same project;
+they reuse service names and host ports.
 
-  docker-compose -f docker-compose.yml logs mspass-frontend
+Sharded MongoDB is a separate example
+-------------------------------------
 
-The notebook will ask for a password for access, just type in ``mspass`` there as you can tell that we have set the ``MSPASS_JUPYTER_PWD`` environment variable for the ``mspass-frontend`` service in the ``docker-compose.yml`` file. 
+The ``mspass-dbmanager`` name is valid only in
+``data/yaml/docker-compose_sharding.yaml``.  That file defines a
+``mspass-dbmanager`` service with the ``dbmanager`` role and two MongoDB shard
+services.  The standard Dask and Spark files use a standalone database named
+``mspass-db`` and must not point their frontend to ``mspass-dbmanager``.
 
-When you are done with MsPASS, you can bring down the containers with:
+Troubleshooting
+---------------
 
-.. code-block:: 
+Use ``docker compose ps -a`` to find services that exited and ``docker
+compose logs SERVICE`` to read a service's startup output.  The most common
+causes are a port already in use, an unwritable bind-mounted directory, or
+too little memory assigned to Docker.  If a configuration was edited, run
+``docker compose config`` to catch YAML and variable-substitution errors.
 
-    docker-compose -f docker-compose.yml down
-
-You should see similar outputs to the following indicating all the containers are correctly cleaned up:
-
-.. code-block:: console
-
-  $ docker-compose -f docker-compose.yml down
-  Stopping mspass_mspass-frontend_1  ... done
-  Stopping mspass_mspass-dbmanager_1 ... done
-  Stopping mspass_mspass-worker_1    ... done
-  Stopping mspass_mspass-shard-0_1   ... done
-  Stopping mspass_mspass-scheduler_1 ... done
-  Stopping mspass_mspass-shard-1_1   ... done
-  Removing mspass_mspass-frontend_1  ... done
-  Removing mspass_mspass-dbmanager_1 ... done
-  Removing mspass_mspass-worker_1    ... done
-  Removing mspass_mspass-shard-0_1   ... done
-  Removing mspass_mspass-scheduler_1 ... done
-  Removing mspass_mspass-shard-1_1   ... done
-  Removing network mspass_default
+For larger or multi-node deployments, continue with the
+:ref:`virtual-cluster overview <getting_started_overview>` and
+:ref:`HPC deployment guide <deploy_mspass_on_HPC>`.

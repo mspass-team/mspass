@@ -4,7 +4,7 @@ Header (Metadata) Math
 ==========================
 Concepts
 ------------
-Anyone with experience in seismc reflection data processing is aware of the
+Anyone with experience in seismic reflection data processing is aware of the
 common need for what is sometimes called "header math".   That term in the
 seismic reflection world is inherited from the days of tape-based processing
 where the processing workflow was driven by "header" attributes that were
@@ -26,10 +26,10 @@ and receiver coordinates.  An example from passive array processing is
 a need to compute some combined score of signal-to-noise ratio based on
 a linear combination of single metrics.
 
-The collection of edit operators covered in this section were implemented
+The collection of edit operators covered in this section was implemented
 to cover the main arithmetic operations needed to do most "header math".  They have the
 advantage of being expressed through a standardized API that allows a chain
-of operation to be computed that can implement fairly elaborate
+of operations to be computed that can implement fairly elaborate
 calculations.  The user should recognize that the main advantage of using
 these operators over a custom-coded python function
 (see the *Alternative* subsection at the end of this document) is robustness
@@ -40,13 +40,14 @@ Unary Operators
 ---------------------
 The first set of operations are "unary" because they implement
 all the standard unary arithmetic operations in python.
-By that we me operations like ``a+=b`` which adds the value of b to a.
+By that we mean operations like ``a += b``, which add the value of ``b`` to
+``a``.
 The distinction is that the operators automatically (and robustly) fetch and update the
 Metadata attribute on the left hand side of that operation.
 
 It is likely clearest to show an example of how this is used.
 Suppose we found the ``calib`` attribute in our entire data set
-was off by a factor or 2 because some custom algorithm had a scaling error.
+needed to be multiplied by 2 because some custom algorithm had a scaling error.
 We could define an
 operator to correct this problem with the following construct:
 
@@ -79,22 +80,22 @@ The following table summarizes the available operators:
      - Constructor
    * - Add
      - +=
-     - :py:meth:`Add<mspasspy.algorithms.edit.Add>`
+     - :py:class:`Add<mspasspy.algorithms.edit.Add>`
    * - Subtract
      - -=
-     - :py:meth:`Subtract<mspasspy.algorithms.edit.Subtact>`
+     - :py:class:`Subtract<mspasspy.algorithms.edit.Subtract>`
    * - Multiply
      - \*=
-     - :py:meth:`Multiply<mspasspy.algorithms.edit.Multiply>`
+     - :py:class:`Multiply<mspasspy.algorithms.edit.Multiply>`
    * - Divide
      - /=
-     - :py:meth:`Divide<mspasspy.algorithms.edit.Divide>`
+     - :py:class:`Divide<mspasspy.algorithms.edit.Divide>`
    * - IntegerDivide
      - //=
-     - :py:meth:`IntegerDivide<mspasspy.algorithms.edit.IntegerDivide>`
+     - :py:class:`IntegerDivide<mspasspy.algorithms.edit.IntegerDivide>`
    * - Mod
      - %=
-     - :py:meth:`Mod<mspasspy.algorithms.edit.Mod>`
+     - :py:class:`Mod<mspasspy.algorithms.edit.Mod>`
 
 As can be seen the class name is a word describing the arithmetic
 operator.  If you are not familiar with the python operator symbols
@@ -104,7 +105,7 @@ Binary Operators
 --------------------------
 The binary operators are like the unary operators but they define all
 operations that are python binary operators.  By that we mean any
-operation that can be case as:  ``c = a op b`` where ``op`` is one of the
+operation that can be cast as ``c = a op b``, where ``op`` is one of the
 standard arithmetic operator symbols:  ``+``, ``-``, ``*``, ``/``, ``//``, and ``%``.
 The distinction from normal usage is that the operator has to first cautiously
 fetch ``a`` and ``b`` from Metadata, apply ``op``, and then set the value ``c`` to
@@ -135,22 +136,22 @@ name.
      - Constructor
    * - Add2
      - \+
-     - :py:meth:`Add<mspasspy.algorithms.edit.Add2>`
+     - :py:class:`Add2<mspasspy.algorithms.edit.Add2>`
    * - Subtract2
      - \-
-     - :py:meth:`Subtract<mspasspy.algorithms.edit.Subtact2>`
+     - :py:class:`Subtract2<mspasspy.algorithms.edit.Subtract2>`
    * - Multiply2
      - \*
-     - :py:meth:`Multiply<mspasspy.algorithms.edit.Multiply2>`
+     - :py:class:`Multiply2<mspasspy.algorithms.edit.Multiply2>`
    * - Divide2
      - \/
-     - :py:meth:`Divide2<mspasspy.algorithms.edit.Divide2>`
+     - :py:class:`Divide2<mspasspy.algorithms.edit.Divide2>`
    * - IntegerDivide2
      - //
-     - :py:meth:`IntegerDivide2<mspasspy.algorithms.edit.IntegerDivide2>`
+     - :py:class:`IntegerDivide2<mspasspy.algorithms.edit.IntegerDivide2>`
    * - Mod2
      - %
-     - :py:meth:`Mod2<mspasspy.algorithms.edit.Mod2>`
+     - :py:class:`Mod2<mspasspy.algorithms.edit.Mod2>`
 
 Non-arithmetic Operators
 -------------------------------
@@ -162,12 +163,11 @@ The constructor has this usage:
 
 .. code-block:: python
 
-    op = ChangeKey(old, new, erase_old=True):
+    op = ChangeKey(old, new, erase_old=True)
 
-The apply method of this class will check for the existence of data with the key
-``old`` and redefine the key to the valued defined by the `old` (positional) argument
-passed to the constructor.   The ``erase_old`` argument defaults to True.  If set
-False ``old`` will be set with a copy and ``new`` will be retained.
+The apply method checks for the key ``old`` and copies its value to ``new``.
+The ``erase_old`` argument defaults to True, so the old key is then erased.
+If it is False, both keys are retained.
 
 The second is an operator to set a Metadata attribute to a constant value
 saved in the operator class.  The value can be any valid python type so
@@ -177,10 +177,10 @@ The constructor for this class has this usage:
 
 .. code-block:: python
 
-    op = SetValue(key, const):
+    op = SetValue(key, constant_value)
 
 The apply method of this operator will set a Metadata attribute with the
-name defined by ``key`` to the constant value set with ``const``.
+name defined by ``key`` to ``constant_value``.
 
 Combining operators
 ------------------------
@@ -194,8 +194,8 @@ this usage:
 
     opchain = MetadataOperatorChain(oplist)
 
-where ``oplist`` is a python list of 2 or more of the lower level operators
-described above.
+where ``oplist`` is any iterable of the lower-level operators described above.
+The operators run sequentially in iterable order.
 
 For example, here is a code fragment to produce a calculator that will
 compute the midpoint coordinates from Metadata attributes rx,ry,sx, and sy
@@ -211,7 +211,8 @@ and set them as cmpx, cmpy for x and y coordinates respectively:
   opchain = mde.MetadataOperatorChain([xop1,xop2,yop1,yop2])
 
 The opchain contents can then be passed to a parallel map operator as in
-the simpler example above.   This operator computes and sets the following:
+the simpler example above.  Like the individual operators, the chain edits the
+input object in place and returns that object.  This example computes and sets:
 
 .. code-block:: python
 
@@ -222,23 +223,22 @@ the simpler example above.   This operator computes and sets the following:
 Common Properties
 --------------------
 All of the operations defined in this set of operator classes could be
-hand coded as needed.  The main thing they give you over a "roll you own"
+hand coded as needed.  The main thing they give you over a ``roll-your-own``
 implementation is automatic handling of the following standard features of
 the MsPASS framework:
 
-- All handle error consistently using the :py:class:`mspasspy.ccore.util.ErrorLogger`
-  mechanism of MsPASS data objects.
-- All behave identically on some common error situations.  There are three
-  common errors all these functions handle.  (1) If a key-value
-  that the operator needs to fetch from
-  Metadata is not defined the operator will kill the datum missing and
-  log a standard message.  (2) if
-  the value extracted fails for the defined arithmetic operation the datum will again
-  be killed with a standard message posted to the :code:`elog` attribute of the
-  data object. An example of this would be trying to do arithmetic on
-  an attribute with a string value.  (3) If the operator receives
-  a datum that is not a MsPASS
-  data object the operator will throw a MsPASSError object marked Fatal.
+- All handle errors consistently using the
+  :py:class:`ErrorLogger<mspasspy.ccore.utility.ErrorLogger>` mechanism of
+  MsPASS data objects.
+- The arithmetic operators handle common error situations consistently.  A
+  missing operand or an invalid arithmetic operation kills the affected datum;
+  missing keys also add an error-log entry.  For example, arithmetic on an
+  incompatible string value kills the datum.  ``ChangeKey`` is deliberately
+  gentler: unless ``fast_mode=True``, a missing source key leaves the datum
+  unchanged and is logged only when ``verbose=True``.  ``SetValue`` requires no
+  preexisting value.  Any operator given an object that is not an MsPASS data
+  object raises a Fatal
+  :py:class:`MsPASSError<mspasspy.ccore.utility.MsPASSError>`.
 - All the operators handle Ensembles in a consistent manner.   Editing Metadata
   for an Ensemble object has an ambiguity because Ensemble objects often
   have attributes independent of the members (e.g. a common source gather
@@ -247,7 +247,7 @@ the MsPASS framework:
   :code:`apply_to_members`.   When set True the operator will automatically
   apply the operation to each member of the ensemble in a simple, serial loop.
   When false the operation is applied to the ensemble metadata container.
-- All the operators have wrappers to optionally enable the object-level
+- All the operators have wrappers that can optionally enable the object-level
   history mechanism for each datum processed.
 
 
@@ -255,12 +255,12 @@ Best Practices
 ------------------
 
 1. It is important to be aware of the consistency of the Metadata attributes
-   for a data set before running these operators.  They will dogmatically kill
-   data when required attributes are missing.   If your data set has a lot of
-   missing metadata required by the operator, the operators will
+   for a data set before running these operators.  The arithmetic operators
+   kill data when required attributes are missing.  If your data set has a lot of
+   missing metadata required by an arithmetic operator, those operators will
    kill every datum that is lacking that metadata attribute.
 2. It is far too easy to kill every datum in your data set if you read
-   data by ensembles and fail to use the `apply_to_members` switch correctly.
+   data by ensembles and fail to use the ``apply_to_members`` switch correctly.
    With the default value of False if you mix up the names for fields you
    set in the ensemble container and which you load with each atomic data
    object you can easily kill every ensemble in the data set.  As always it
@@ -269,9 +269,11 @@ Best Practices
    on a huge data set.
 3. When you are aware that some data have deficient metadata attributes
    that are required for a calculation, it is prudent to first pass the
-   workflow through one of the related Executioner classes to "kill" data that
+   workflow through one of the related
+   :py:class:`Executioner<mspasspy.algorithms.edit.Executioner>` subclasses to
+   kill data that
    lack the required attributes.
-4. We have found that a chain of ``ChangeKey`` operator is almost always a
+4. We have found that a chain of ``ChangeKey`` operators is almost always a
    far faster way to repair database name errors than to run
    one-at-a-time transactions with MongoDB.   Millions of update transactions
    with MongoDB can (literally) take days to complete but the same operation

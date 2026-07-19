@@ -30,7 +30,7 @@ objects.  That model simplifies the error handling because the error
 handling model can be stated as two simple rules:
 
 1.  If there is any error that the user needs to be warned about, post
-    an informative message to the error log.  Error are not always black
+    an informative message to the error log.  Errors are not always black
     and white so the message should define the severity level of the error.
 2.  If the error invalidates the data, mark the data dead.  We expand
     on this concept further below in the section titled "Kills".
@@ -68,16 +68,17 @@ treat errors with one of three approaches.
     the result of an algorithm that is expected to behave in different ways
     with different inputs.  For example, the save_inventory method of
     `database <../python_api/mspasspy.db.html#module-mspasspy.db.database>`__
-    returns a tuple with three numbers: number of site documents added,
-    number of channel documents added, and the number of stations in the
-    obspy Inventory object that the method received.  The result is dependent
+    returns a tuple with four numbers: number of site documents added,
+    number of channel documents added, number of sites processed, and number
+    of channels processed from the ObsPy Inventory it received.  The result is dependent
     on history of what was saved previously because this particular algorithm
     tests the input to not add duplicates to the database.
 
 3.  Processing functions in MsPASS that are properly designed for the
-    framework MUST obey a very important rule:  a function to be run in
-    parallel should never throw an exception, but use the error log and (optional)
-    kill method described below.
+    framework should not allow a datum-local exception to escape from a
+    parallel worker.  They should use the error log and (optional) kill method
+    described below.  Fatal configuration or system errors that invalidate the
+    entire operation should still propagate.
 
 Error Logger
 ~~~~~~~~~~~~~~
@@ -108,10 +109,12 @@ through constructs similar to the following pythonic pseudocode:
         # code that may throw an error processing data object "d"
     except MsPASSError as merr:
         d.elog.log_error(merr)
-        if merr.severity() == ErrorSeverity.Invalid:
+        if merr.severity == ErrorSeverity.Fatal:
+            raise
+        if merr.severity == ErrorSeverity.Invalid:
             d.kill()
     except Exception as err:
-        d.log.log_error('Unexcepted exception: more details','Invalid')
+        d.elog.log_error('algorithm_name',str(err),ErrorSeverity.Invalid)
         d.kill()
 
 The kill method is described further in the next section.  The key point
@@ -151,7 +154,7 @@ insert in a long running job where something is going wrong that is
 yielding invalid data but the job is not aborting or logging errors that
 define the problem.
 
-:code:`Informative`:  Used for very verbose options on some algorithms to
+:code:`Informational`:  Used for very verbose options on some algorithms to
 extract some auxiliary information needed for some other purpose.
 
 A final point about error logs is to how they are preserved.  Error
@@ -217,14 +220,14 @@ below.  The first is handled automatically by the
 :py:meth:`save_data<mspasspy.db.database.Database.save_data>` method of
 :py:class:`Database<mspasspy.db.database.Database>`.  The second has
 options that are implemented as methods of the class
-:py:class:`Undertaker<mspasspy.db.util.Undertaker.Undertaker>` that is the
+:py:class:`Undertaker<mspasspy.util.Undertaker.Undertaker>` that is the
 topic of the second subsection below.
 
 A final point is that if a job is expected to kill a large fraction of data
 there is a point where it becomes more efficient to clear the dataset of
 dead data.   That needs to be done with some care if one wishes to preserve
 error log entries that document why a datum was killed.   The
-:py:class:`Undertaker<mspasspy.db.util.Undertaker.Undertaker>`
+:py:class:`Undertaker<mspasspy.util.Undertaker.Undertaker>`
 class, which described in the next section was designed
 to handle such issues.
 
@@ -345,8 +348,8 @@ prior to the data processing workflow steps.
 .. code-block:: python
 
   stedronsky = Undertaker(db)  # db is an instance of Database created earlier
-  data = read_distributed_data(db,query)
+  data = read_distributed_data(db,query=query)
   data = data.map(customfunction)  # some custom function that may kill
-  data = data.map(squad)  # kills with an instance of the FiringSquad editor
-  data.map(stedronsky.bury)
+  data = data.map(squad.kill_if_true)  # squad is a FiringSquad instance
+  data = data.map(lambda d: stedronsky.bury(d) if d.dead() else d)
   # other processing commands would go here.

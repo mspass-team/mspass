@@ -131,7 +131,7 @@ class BasicMatcher(ABC):
         return self.find_one(d, *args, **kwargs)
 
     @abstractmethod
-    def find(self, mspass_object, *args, **kwargs) -> tuple:
+    def find(self, mspass_object, *args, **kwargs) -> list:
         """
         Abstraction of the MongoDB database find method with the
         matching criteria defined when a concrete instance is instantiated.
@@ -156,7 +156,7 @@ class BasicMatcher(ABC):
         method throw an exception as a use error.  That case should
         use the find_one interface defined below.
 
-        All implementations should return a pair (2 component tuple).
+        All implementations should return a two-element list.
         0 is expected to hold a list of Metadata containers and
         1 is expected to contain either a None type or an PyErrorLogger
         object.   The PyErrorLogger is a convenient way to pass error
@@ -165,12 +165,12 @@ class BasicMatcher(ABC):
         Callers should handle four cases that are possible for a return
         (noting ``[]`` means an empty list and ``[...]`` a list with data):
 
-        - ``([], None)`` means no match was found.
-        - ``([], ErrorLog)`` means failure with an informational message in the
+        - ``[[], None]`` means no match was found.
+        - ``[[], ErrorLog]`` means failure with an informational message in the
           ErrorLog that should be preserved.  The presence of an error
           should imply something went wrong and it was simply a null result.
-        - ``([...], None)`` means success with no detected errors.
-        - ``([...], ErrorLog)`` means valid data were returned but there is a
+        - ``[[...], None]`` means success with no detected errors.
+        - ``[[...], ErrorLog]`` means valid data were returned but there is a
           warning or informational message posted.  In this case handlers
           may want to examine the ErrorSeverity components of the log and
           handle different levels differently  (e.g. Fatal and Informational
@@ -179,7 +179,7 @@ class BasicMatcher(ABC):
         """
 
     @abstractmethod
-    def find_one(self, mspass_object, *args, **kwargs) -> tuple:
+    def find_one(self, mspass_object, *args, **kwargs) -> list:
         """
         Abstraction of the MongoDB database find_one method with the
         matching criteria defined when a concrete instance is instantiated.
@@ -199,7 +199,7 @@ class BasicMatcher(ABC):
         That implementation allows the "collection" to be loaded from
         MongoDB or a pandas DataFrame.
 
-        All implementations should return a pair (2 component tuple).
+        All implementations should return a two-element list.
         0 is expected to hold a Metadata containers that was yielded by
         the match.  It should be returned as None if there is no match.
         1 is expected to contain either a None type or an PyErrorLogger
@@ -208,12 +208,12 @@ class BasicMatcher(ABC):
         with the MsPASS error system than an exception mechanism.
         Callers should handle four cases that are possible for a return:
 
-        - ``(None, None)`` means no match was found.
-        - ``(None, ErrorLog)`` means failure with an informational message in
+        - ``[None, None]`` means no match was found.
+        - ``[None, ErrorLog]`` means failure with an informational message in
           the ErrorLog that the caller may want be preserved or convert to
           an exception.
-        - ``(Metadata, None)`` means success with no detected errors.
-        - ``(Metadata, ErrorLog)`` means valid data was returned but there is a
+        - ``[Metadata, None]`` means success with no detected errors.
+        - ``[Metadata, ErrorLog]`` means valid data was returned but there is a
           warning or informational message posted.  In this case handlers may
           want to examine the ErrorSeverity components of the log and handle
           different levels differently  (e.g. Fatal and Informational should
@@ -339,7 +339,7 @@ class DatabaseMatcher(BasicMatcher):
         """
         Generic database implementation of the find method for this
         abstraction.   It returns what the base class api specifies.
-        That is, normally it returns a tuple with component 0 being
+        That is, normally it returns a two-element list with component 0 being
         a python list of Metadata containers.  Each container holds
         the subset of attributes defined by attributes_to_load and
         (if present) load_if_defined.  The list is the set of all
@@ -358,17 +358,16 @@ class DatabaseMatcher(BasicMatcher):
         Failures in the query will always post a message to elog
         tagging the result as "Invalid".
 
-        It also handles the common problem of dead data or accidentally
-        receiving invalid data like a None.   The later may cause other
-        algorithms to abort, but we handle it here return [None,None].
-        We don't return an PyErrorLogger in that situation as the assumption
-        is there is no place to put it and something else has gone really
-        wrong.
+        It also handles dead data and invalid input types.  A non-Metadata
+        input returns ``[None, elog]`` with an Invalid error.  A dead datum
+        returns ``[None, None]`` because no additional error needs to be
+        posted for data already marked dead.
         """
         if not isinstance(mspass_object, Metadata):
             elog = PyErrorLogger()
-            message = "received invalid data.  Arg0 must be a valid MsPASS data object"
+            message = "received invalid data.  Arg0 must be a Metadata instance"
             elog.log_error(message, ErrorSeverity.Invalid)
+            return [None, elog]
         if hasattr(mspass_object, "dead"):
             if mspass_object.dead():
                 return [None, None]
@@ -599,7 +598,7 @@ class DictionaryCacheMatcher(BasicMatcher):
         """
         pass
 
-    def find_one(self, mspass_object) -> tuple:
+    def find_one(self, mspass_object) -> list:
         """
         Implementation of find for generic cached method.   It uses the cache_id
         method to create the indexing string from mspass_object and then returns
@@ -610,19 +609,18 @@ class DictionaryCacheMatcher(BasicMatcher):
         classes.  All extensions need to do is define the cache_id
         and db_make_cache_id algorithms to build that index.
 
-        :param mspass_object:  Any valid MsPASS data object.  That means
-          TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
-          This datum is passed to the (abstract) cache_id method to
-          create an index string and the result is used to fetch the
-          Metadata container matching that key.   What is required of the
-          input is dependent on the subclass implementation of cache_id.
+        :param mspass_object: a Metadata instance to match against the cache.
+          This includes MsPASS atomic and ensemble data objects.  The object
+          is passed to the abstract ``cache_id`` method, so a concrete matcher
+          may require particular Metadata keys or a more specific subtype.
+        :type mspass_object: :class:`~mspasspy.ccore.utility.Metadata`
 
-        :return:  2-component tuple following API specification in BasicMatcher.
+        :return: two-element list following the API specified by BasicMatcher.
           Only two possible results are possible from this implementation:
 
-          - ``(None, ErrorLog)`` means failure with an error message that can
+          - ``[None, ErrorLog]`` means failure with an error message that can
             be passed on if desired or printed.
-          - ``(Metadata, None)`` means success with no detected errors.  The
+          - ``[Metadata, None]`` means success with no detected errors.  The
             Metadata container holds all attributes_to_load and any defined
             load_if_defined values.
 
@@ -652,7 +650,7 @@ class DictionaryCacheMatcher(BasicMatcher):
                 )
                 return [find_output[0][0], elog]
 
-    def find(self, mspass_object) -> tuple:
+    def find(self, mspass_object) -> list:
         """
         Generic implementation of find method for cached tables/collections.
 
@@ -670,15 +668,16 @@ class DictionaryCacheMatcher(BasicMatcher):
         build on this usually will need to do a linear search through the
         list if they need to find a particular instance (e.g. call to find_one).
 
-        :param mspass_object: data object to match against
-          data in cache (i.e. query).
-        :type mspass_object:  must be a valid MsPASS data object.
-          currently that means TimeSeries, Seismogram, TimeSeriesEnsemble,
-          or SeismogramEnsemble.   If it is anything else (e.g. None)
-          this method will return a tuple [None, elog] with elog being
-          a PyErrorLogger with a posted message.
+        :param mspass_object: a Metadata instance to match against the cached
+          data.  This includes MsPASS atomic and ensemble data objects.  A
+          concrete matcher may require particular Metadata keys or a more
+          specific subtype.  For any non-Metadata input, the method returns
+          ``[None, elog]`` with a
+          :class:`~mspasspy.util.error_logger.PyErrorLogger` explaining the
+          failure.
+        :type mspass_object: :class:`~mspasspy.ccore.utility.Metadata`
 
-        :return: tuple with two elements.  0 is either a list of valid Metadata
+        :return: list with two elements.  0 is either a list of valid Metadata
           container(s) or None and 1 is either None or an PyErrorLogger object.
           There are only two possible returns from this method:
 
@@ -691,7 +690,7 @@ class DictionaryCacheMatcher(BasicMatcher):
         if not isinstance(mspass_object, Metadata):
             elog = PyErrorLogger()
             elog.log_error(
-                "Received datum that was not a valid MsPASS data object",
+                "Received an object that is not a Metadata instance",
                 ErrorSeverity.Invalid,
             )
             return [None, elog]
@@ -879,6 +878,9 @@ class DataFrameCacheMatcher(BasicMatcher):
     named collection to a DataFrame created during construction.  If the
     input is a DataFrame already it is simply copied selecting only
     columns defined by the attributes_to_load and load_if_defined lists.
+    Concrete subclasses can also retain columns used only for matching
+    through the cache_columns constructor argument.  Those columns are not
+    included in Metadata returned by find or find_one.
     There is also an optional parameter, custom_null_values, that is a
     python dictionary defining values in a field that should be treated
     as a definition of a Null for that field.  The constuctor converts
@@ -906,6 +908,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         require_unique_match=False,
         prepend_collection_name=False,
         custom_null_values=None,
+        cache_columns=None,
     ):
         """
         Constructor for this intermediate class.  It should not be
@@ -915,6 +918,16 @@ class DataFrameCacheMatcher(BasicMatcher):
         self.prepend_collection_name = prepend_collection_name
         self.require_unique_match = require_unique_match
         self.custom_null_values = custom_null_values
+        if cache_columns is None:
+            self._cache_columns = []
+        elif isinstance(cache_columns, (list, tuple)) and all(
+            isinstance(key, str) for key in cache_columns
+        ):
+            self._cache_columns = list(cache_columns)
+        else:
+            raise TypeError(
+                "DataFrameCacheMatcher constructor: cache_columns must be a list or tuple of strings"
+            )
         # this is a necessary sanity check
         if collection is None:
             raise TypeError(
@@ -959,7 +972,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         )
         self._load_dataframe_cache(df)
 
-    def find(self, mspass_object) -> tuple:
+    def find(self, mspass_object) -> list:
         """
         DataFrame generic implementation of find method.
 
@@ -974,7 +987,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         if not isinstance(mspass_object, Metadata):
             elog = PyErrorLogger(
                 "DataFrameCacheMatcher.find",
-                "Received datum that was not a valid MsPASS data object",
+                "Received an object that is not a Metadata instance",
                 ErrorSeverity.Invalid,
             )
             return [None, elog]
@@ -1038,7 +1051,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                 mdlist.append(md)
             return [mdlist, None]
 
-    def find_one(self, mspass_object) -> tuple:
+    def find_one(self, mspass_object) -> list:
         """
         DataFrame implementation of the find_one method.
 
@@ -1112,7 +1125,11 @@ class DataFrameCacheMatcher(BasicMatcher):
     def _load_dataframe_cache(self, df):
         # This is a bit error prone.  It assumes the BasicMatcher
         # constructor initializes a None default to an empty list
-        fulllist = self.attributes_to_load + self.load_if_defined
+        fulllist = list(
+            dict.fromkeys(
+                self.attributes_to_load + self.load_if_defined + self._cache_columns
+            )
+        )
         self.cache = df.reindex(columns=fulllist)[fulllist]
         if self.custom_null_values is not None:
             for col, nul_val in self.custom_null_values.items():
@@ -1593,7 +1610,7 @@ class MiniseedDBMatcher(DatabaseMatcher):
                     return [None, elog]
                 find_output = self.find(mspass_object)
                 if find_output[0] is None:
-                    return [None, find_output[0]]
+                    return [None, find_output[1]]
                 number_matches = len(find_output[0])
                 if number_matches == 1:
                     return [find_output[0][0], find_output[1]]
@@ -2206,12 +2223,11 @@ class EqualityMatcher(DataFrameCacheMatcher):
         can have different keys on the left (mspass_data side is the
         match_keys dictionary key) than the right (dataframe column name).
 
-        :param mspass_object:  Any valid mspass data object with a
-          Metadata container.  The container must contain all the
+        :param mspass_object: a Metadata instance containing all the
           required match keys or the function will return an error condition
-          (see below)
-        :type mspass_object:  TimeSeries, Seismogram, TimeSeriesEnsemble
-          or SeismogramEnsemble object
+          (see below).  MsPASS atomic and ensemble data objects are Metadata
+          subclasses and are therefore accepted.
+        :type mspass_object: :class:`~mspasspy.ccore.utility.Metadata`
 
         :return:  DataFrame containing all data satisying the match
            series of match conditions defined on construction.  Silently
@@ -2738,7 +2754,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
 
         return dfret
 
-    def find_one(self, mspass_object) -> tuple:
+    def find_one(self, mspass_object) -> list:
         """
         Override of find_one method of DataframeMatcher.  The override is
         necessary to handle the ambiguity of a timer interval match for
@@ -2781,8 +2797,8 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
            contains a value associated with the key defined by the
            starttime_key attibute.
 
-        :return: a tuple consistent with the BasicMatcher API definition.
-          (i.e. pair [Metadata,ErrorLogger])
+        :return: a two-element list consistent with the BasicMatcher API
+          definition (that is, ``[Metadata, ErrorLogger]``).
         """
         findreturn = self.find(mspass_object)
         mdlist = findreturn[0]
@@ -2906,6 +2922,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
                 for index, row in subset_df.iterrows():
                     # this key has to exist or we wouldn't get here
                     dt[i] = row[self.source_time_key]
+                    i += 1
                 dt -= test_time
                 dt = np.abs(dt)
                 row_index_to_use = np.argmin(dt)
@@ -2938,19 +2955,19 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
                     # is not
                     return None
 
-                for k in self.load_if_defined:
-                    if notnulltest[k]:
-                        if k in self.aliases:
-                            key = self.aliases[k]
+            for k in self.load_if_defined:
+                if notnulltest[k]:
+                    if k in self.aliases:
+                        key = self.aliases[k]
+                    else:
+                        key = k
+                    if self.prepend_collection_name:
+                        if key == "_id":
+                            mdkey = self.collection + key
                         else:
-                            key = k
-                        if self.prepend_collection_name:
-                            if key == "_id":
-                                mdkey = self.collection + key
-                            else:
-                                mdkey = self.collection + "_" + key
-                        else:
-                            mdkey = key
+                            mdkey = self.collection + "_" + key
+                    else:
+                        mdkey = key
                     doc_out[mdkey] = row[key]
             return doc_out
         else:
@@ -3102,8 +3119,9 @@ class ArrivalDBMatcher(DatabaseMatcher):
                 net = _get_with_readonly_recovery(mspass_object, "net")
                 if net is not None:
                     query["net"] = net
-                if sta is not None:
-                    query["sta"] = sta
+                if sta is None:
+                    return None
+                query["sta"] = sta
                 # intentionally ignore loc as option
                 return query
         else:
@@ -3149,10 +3167,13 @@ class ArrivalMatcher(DataFrameCacheMatcher):
     then processed in a loop updating waveform database records
     in multiple passes.  The alternative for large arrival tables
     is to use the DB version of this matcher.
+    The cache retains the time, station, and network columns needed for
+    matching as well as the attributes requested for output.
 
-    :param db:  MongoDB database handle  (positional - no default)
-    :type db: normally a MsPASS Database class but with this algorithm
-      it can be the superclass from which Database is derived.
+    :param db_or_df: MongoDB database handle or pandas DataFrame containing
+      arrival records (positional - no default).
+    :type db_or_df: normally a MsPASS Database class (or its superclass),
+      or a pandas DataFrame
 
     :param collection:  Name of MongoDB collection that is to be queried
       (default "arrival", which is not currently part of the stock
@@ -3204,14 +3225,10 @@ class ArrivalMatcher(DataFrameCacheMatcher):
        Default is "endtime".
     :type ensemble_endtime_key:  string
 
-    :param query:   optional query predicate.  That is, if set the
-      interval query is appended to this query to build a more specific
-      query.   An example might be station code keys to match a
-      specific pick for a specific station like {"sta":"AAK"}.
-      Default is None.
-    :type query:  python dictionary or None.  None is equivalewnt to
-      passing an empty dictionary.  A TypeError will be thrown if this
-      argument is not None or a dict.
+    :param arrival_time_key: column containing arrival timestamps for the
+      interval match.  A None value (the default) selects ``"time"``.
+      Set this argument when the cached table uses another column name.
+    :type arrival_time_key: string or None
     """
 
     def __init__(
@@ -3228,6 +3245,18 @@ class ArrivalMatcher(DataFrameCacheMatcher):
         arrival_time_key=None,
         custom_null_values=None,
     ):
+        if arrival_time_key is None:
+            self.arrival_time_key = "time"
+        elif isinstance(arrival_time_key, str):
+            self.arrival_time_key = arrival_time_key
+        else:
+            raise TypeError(
+                "ArrivalMatcher constructor: arrival_time_key argument must define a string"
+            )
+
+        # These columns define the match but are not necessarily requested
+        # as output attributes.  Keep them in the cache without adding them
+        # to Metadata returned by find or find_one.
         super().__init__(
             db_or_df,
             collection,
@@ -3237,19 +3266,12 @@ class ArrivalMatcher(DataFrameCacheMatcher):
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
             custom_null_values=custom_null_values,
+            cache_columns=["sta", "net", self.arrival_time_key],
         )
         # maybe a bit confusing to shorten the names here but the
         # argument names are a bit much
         self.starttime_key = ensemble_starttime_key
         self.endtime_key = ensemble_endtime_key
-        if arrival_time_key is None:
-            self.arrival_time_key = collection + "_time"
-        elif isinstance(arrival_time_key, str):
-            self.arrival_time_key = arrival_time_key
-        else:
-            raise TypeError(
-                "ArrivalDBMatcher constructor: arrival_time_key argument must define a string"
-            )
 
     def subset(self, mspass_object) -> pd.DataFrame:
         """
@@ -3257,35 +3279,33 @@ class ArrivalMatcher(DataFrameCacheMatcher):
         DataFramematcher
         """
 
-        if isinstance(mspass_object, Metadata):
-            if mspass_object.live:
-                if _input_is_atomic(mspass_object):
-                    stime = mspass_object.t0
-                    etime = mspass_object.endtime()
-                else:
-                    if mspass_object.is_defined(
-                        self.starttime_key
-                    ) and mspass_object.is_defined(self.endtimekey):
-                        stime = mspass_object[self.starttime_key]
-                        etime = mspass_object[self.endtime_key]
-                    else:
-                        return pd.DataFrame()
-                sta = _get_with_readonly_recovery(mspass_object, "sta")
-                if sta is not None:
-                    dfret = self.cache[
-                        ("sta" == sta)
-                        & (self.arrival_time_key >= stime)
-                        & (self.arrival_time_key <= etime)
-                    ]
-                    if len(dfret) > 1:
-                        net = _get_with_readonly_recovery(mspass_object, "net")
-                        if net is not None:
-                            dfret = dfret["net" == net]
-                    return dfret
-            else:
-                return pd.DataFrame()
+        if not isinstance(mspass_object, Metadata):
+            return pd.DataFrame()
+        if hasattr(mspass_object, "dead") and mspass_object.dead():
+            return pd.DataFrame()
+
+        if _input_is_atomic(mspass_object):
+            stime = mspass_object.t0
+            etime = mspass_object.endtime()
+        elif mspass_object.is_defined(self.starttime_key) and mspass_object.is_defined(
+            self.endtime_key
+        ):
+            stime = mspass_object[self.starttime_key]
+            etime = mspass_object[self.endtime_key]
         else:
             return pd.DataFrame()
+
+        sta = _get_with_readonly_recovery(mspass_object, "sta")
+        if sta is None:
+            return pd.DataFrame()
+
+        mask = (self.cache["sta"] == sta) & self.cache[self.arrival_time_key].between(
+            stime, etime, inclusive="both"
+        )
+        net = _get_with_readonly_recovery(mspass_object, "net")
+        if net is not None:
+            mask &= self.cache["net"] == net
+        return self.cache[mask]
 
 
 @mspass_func_wrapper

@@ -25,6 +25,14 @@ decorators
     :undoc-members:
     :show-inheritance:
 
+error_logger
+------------
+
+.. automodule:: mspasspy.util.error_logger
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Janitor
 --------
 

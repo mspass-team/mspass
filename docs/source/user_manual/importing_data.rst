@@ -50,17 +50,17 @@ the FDSN confederation of data centers is to use obspy.
 Obspy has two different python functions that can be used to
 fetch miniseed data from one or more FDSN data centers.
 
-#.  The simplest tool obspy provides is their :code:`get_waveform`
+#.  The simplest tool obspy provides is their :code:`get_waveforms`
     method of the fdsn web service client.  The documentation for that
     function can be found
     `here <https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.client.Client.get_waveforms.html>`__.
-    :code:`get_waveform` retrieves a relatively small number of waveform
+    :code:`get_waveforms` retrieves a relatively small number of waveforms
     at a time using station codes with wildcards and a time range.
     It is suitable only for small datasets or as a custom agent
     to run for weeks acquiring data driven by some large list.
 #.  For most MsPASS users the obspy tool
-    of choice is :code:`bulk_download`.
-    An overview of the concepts of :code:`bulk_download` are given
+    of choice is :code:`MassDownloader.download`.
+    An overview of the concepts of :code:`MassDownloader` is given
     `here <https://docs.obspy.org/tutorial/code_snippets/retrieving_data_from_datacenters.html>`__
     and the detailed docstring for the function can be found
     `here <https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html>`__.
@@ -70,22 +70,22 @@ are referred to the above pages and examples to build a workflow to
 retrieve a working data set.   We do, however, think it useful to
 give a few warnings.
 
-#.  Never use :code:`get_waveform` to retrieve more than a few thousand
+#.  Never use :code:`get_waveforms` to retrieve more than a few thousand
     waveforms unless you are designing an agent that will run for weeks.
     It is intrinsically very slow because of the inevitable
     internet delays that are unavoidable because of the design of that
-    function.   Each call to :code:`get_waveform` initiates a query request
+    function.   Each call to :code:`get_waveforms` initiates a query request
     transmitted by the internet to the targeted fdsn web-service server,
     the server has to do it's work and respond, a back connection to the
     caller has to be set up, and then the data transmitted via the internet.
     The built-in, multiple delays make that process too slow for large
     data requests.
-#.  The authors of obspy developed their :code:`bulk_download` function
-    because their early experience, like ours, showed :code:`get_waveform`
+#.  The authors of obspy developed their :code:`MassDownloader` because
+    their early experience, like ours, showed :code:`get_waveforms`
     was not feasible as a tool to download large data sets.
-    :code:`bulk_download` makes it feasible to download large data sets.
+    :code:`MassDownloader.download` makes it feasible to download large data sets.
     Be warned that feasible, however, does not mean quick.   In our experience
-    :code:`bulk_download` can sustain a transfer rate around a few Mb/s.
+    mass downloads can sustain a transfer rate around a few Mb/s.
     That is outstanding performance for internet data transfer,
     but keep in mind 1 Tb of data at that rate
     will require of the order of one week to download.
@@ -94,7 +94,7 @@ give a few warnings.
     where a large request will have missing data that we know are present
     at the data center.   The reason is that web service is, by design,
     a one way request with no conversation between the client and server
-    to guarantee success.  The authors of obspy's :code:`bulk_download`
+    to guarantee success.  The authors of obspy's :code:`MassDownloader`
     method seem to have done some tricks to reduce this problem but
     it is not clear to us if it has been completely solved.
 
@@ -111,6 +111,72 @@ can be found `here <https://github.com/mspass-team/mspass/tree/master/scripts/aw
 As the word "prototype" implies that api
 is likely to change.  Check the docstring api for more recent changes if
 you are interested in this capability.
+
+Indexing, reading, and optionally converting miniSEED
+------------------------------------------------------
+
+Downloading a miniSEED file does not by itself expose its waveforms to MsPASS.
+The standard local-file import path begins with
+:py:meth:`index_mseed_file<mspasspy.db.database.Database.index_mseed_file>`.
+This method scans each file and writes one or more index documents to the
+``wf_miniseed`` collection.  It does **not** copy or convert the waveform
+samples; the documents retain the absolute directory, file name, byte offset,
+byte count, channel codes, and time span needed to read the original file.
+
+For example, this serial loop indexes every ``.mseed`` file in one directory:
+
+.. code-block:: python
+
+    from pathlib import Path
+
+    from mspasspy.db.client import DBClient
+    from mspasspy.db.database import Database
+
+    db = Database(DBClient(), "mydatabase")
+    data_directory = Path("/absolute/path/to/mseed")
+
+    for path in sorted(data_directory.glob("*.mseed")):
+        db.index_mseed_file(
+            path.name,
+            dir=str(data_directory),
+            collection="wf_miniseed",
+        )
+
+
+Files should contain miniSEED packets ordered by network, station, location,
+channel, and time.  With the current default ``segment_time_tears=True``, a
+time discontinuity also starts a new index document.  For distributed work,
+the absolute path recorded by the index must resolve to the same file on every
+worker that reads it.
+
+An index document can be read as a MsPASS ``TimeSeries`` without first
+rewriting the compressed samples:
+
+.. code-block:: python
+
+    query = {}  # Replace with a MongoDB query to select a subset.
+    for doc in db["wf_miniseed"].find(query):
+        datum = db.read_data(doc, collection="wf_miniseed")
+        if datum.live:
+            # Process datum here, or persist a native MsPASS copy:
+            db.save_data(datum, collection="wf_TimeSeries")
+
+
+:py:meth:`read_data<mspasspy.db.database.Database.read_data>` uses the stored
+index to read only the referenced byte range.  Calling
+:py:meth:`save_data<mspasspy.db.database.Database.save_data>` is optional: use
+it when the workflow should persist a converted/native copy, and omit it when
+processing can begin directly from ``wf_miniseed``.  Normalization with
+receiver and source metadata is a separate step described in
+:ref:`normalization`.
+
+.. warning::
+
+   In the current implementation, ``index_mseed_file(normalize_channel=True)``
+   computes a channel match after inserting the index records but does not
+   persist the resulting ``channel_id`` to those records.  Leave
+   ``normalize_channel=False`` (the default) and normalize the
+   ``wf_miniseed`` collection separately.
 
 Assembling Receiver Metadata
 ----------------------------------
@@ -136,7 +202,7 @@ data centers.   There are two different tools obspy provides.  We have found
 both are usually necessary to assemble a complete suite of receiver metadata.
 
 #.  The fdsn client has a method called :code:`get_stations` that is
-    directly comparable to :code:`get_waveform`.   It uses web
+    directly comparable to :code:`get_waveforms`.   It uses web
     services to download metadata for one or more channels of data.  It has
     a set of search parameters used to define what is to be retrieved that
     is usually comprehensive enough to fetch what you need in no more than
@@ -148,7 +214,7 @@ both are usually necessary to assemble a complete suite of receiver metadata.
     StationXML format file translated into a python data structure with a
     few added decorations (e.g. plotting).   We return to this point
     below when we discuss how these data are imported to MsPASS.
-#.  When you use the :code:`mass_downloader` you have the option of
+#.  When you use :code:`MassDownloader.download` you have the option of
     having that function download the station metadata and save the
     actual StationXML data files retrieved from web services.  The resulting
     files can then be read with their :code:`read_inventory` method
@@ -268,28 +334,33 @@ retrieving source metadata.
     it is too easy to create a collection of source data that is much
     larger than the number of events actually in the data set.
 
-#.  If you use the obspy :code:`mass_downloader` driven by source
-    queries (see example titled "Earthquake Data" on the
-    mass_downloader page found `here <https://docs.obspy.org/packages/autogen/obspy.clients.fdsn.mass_downloader.html>`__)
-    that function will create QuakeML data files defining the unique source data for
-    all the waveforms downloaded with each call to that function.
+#.  The :code:`read_events` function reads a saved event file, including
+    QuakeML, into a :code:`Catalog`.  :code:`MassDownloader.download` does not
+    create QuakeML files; query the event service separately with
+    :code:`get_events` and optionally save that catalog as QuakeML.
 
 The procedure to load source data for a MsPASS workflow derived from
 one of the obspy methods is comparable to that described above for FDSN
 StationXML data.  That is, we use an obspy python data structure as the
 intermediary for the import.  :code:`get_events` returns the
-obspy :code:`Catalog` class directly while the output QuakeML files from
-the :code:`mass_downloader` are easily created by calling the
-obspy function :code:`read_events` described
+obspy :code:`Catalog` class directly while local QuakeML files are read with
+the obspy function :code:`read_events` described
 `here <https://docs.obspy.org/master/packages/autogen/obspy.core.event.read_events.html>`__.
 A :code:`Catalog` instance can then be saved to a MongoDB source collection
 using the :code:`Database` method called :code:`save_catalog`.
-The following is a fragment of a workflow doing this with the output of
-:code:`mass_downloader`.
+The following is a complete example using a local QuakeML file.
 
 .. code-block:: python
 
-   paste in portion of 2012 usarray workflow
+   from obspy import read_events
+
+   catalog = read_events("events.xml",format="QUAKEML")
+   number_saved = db.save_catalog(catalog,verbose=False)
+   print("source documents saved=",number_saved)
+
+Be aware that :code:`save_catalog` inserts every event without checking for
+duplicates and requires each event to have a preferred origin and preferred
+magnitude.
 
 An alternative for which we provide limited support is importing catalog
 data from an Antelope database.   We have a prototype implementation in
@@ -318,19 +389,21 @@ to be processed:
   from obspy import read
   from mspasspy.db.database import Database
   from mspasspy.db.client import DBClient
+  from mspasspy.util.converter import Stream2TimeSeriesEnsemble
   dbclient=DBClient()
   db=Database(dbclient,'mydatabasename')
      ...
   for fname in filelist:
-    st = obspy.read(fname,format="SOMEFORMAT")
-    d = converterfunction(st)
+    st = read(fname,format="SOMEFORMAT")
+    d = Stream2TimeSeriesEnsemble(st)
     db.save_data(d)
 
 where :code:`SOMEFORMAT` is a keyword from the list of obspy
 supported formats found
 `here <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats>`__
-and :code:`converterfunction` is a format-specific python function you would need to
-write.  The function :code:`converterfunction` needs to handle
+and :code:`Stream2TimeSeriesEnsemble` performs the generic one-Trace-to-one-
+TimeSeries conversion.  For formats whose headers require special treatment,
+wrap it in a format-specific :code:`converterfunction`.  That function needs to handle
 the idiosyncrasies of how obspy handles that format and convert the stream
 :code:`st` to a TimeSeriesEnsemble using the MsPASS converter function
 :code:`Stream2TimeSeriesEnsemble` documented
@@ -373,7 +446,7 @@ key-value pairs in one namespace to another.   To utilize this feature for
 a given format you can either create a yaml file defining the aliases or
 hard code the aliases into a python dict set as key:alias.
 
-We close this section by emphasizing that that at this time we have intentionally not
+We close this section by emphasizing that at this time we have intentionally not
 placed a high priority on development of complete tools for importing
 formats other than SEED/miniseed.   We consider this one of the first
 things our user community can do to help expand MsPASS.   If you develop
@@ -385,7 +458,14 @@ Validating an Imported Data Set
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 After importing any data to MsPASS (miniseed included but especially any
 specialized import function output) you are advised strongly to run the
-MsPASS command line tool :code:`dbverify` on the imported collection.
+MsPASS command line tool :code:`mspass-dbverify` on the imported collection.
 We advise you run both the :code:`required` test
 (-t required) and the :code:`schema_check` test (-t schema_check)
 before running a significant workflow on an imported data set.
+
+For example, run the two tests separately on a native waveform collection:
+
+.. code-block:: console
+
+    mspass-dbverify mydatabase -c wf_TimeSeries -t required
+    mspass-dbverify mydatabase -c wf_TimeSeries -t schema_check

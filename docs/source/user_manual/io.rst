@@ -13,7 +13,7 @@ io-bound jobs.   The scalability of MsPASS, which means it runs the
 same with one or a thousand workers (just faster), means the more processors
 you throw at a job the more likely it will be that it becomes IO bound.
 For that reason the focus of this section is the parallel readers.
-Howver, most of the key concepts are equally applicable to serial
+However, most of the key concepts are equally applicable to serial
 jobs.
 
 Most seismologists have, at best, only a vague notion of how IO
@@ -52,7 +52,7 @@ reads from a memory buffer.  Other elements of the system manage the flow of
 data in and out of the buffer.  All MsPASS IO uses stock, buffered IO
 functions.
 
-*Concept 2:  Blocking*.   When an IO statement is executed in any computer language,
+*Concept 3:  Blocking*.   When an IO statement is executed in any computer language,
 including python, the normal behavior is for the program to be put in a wait state
 until the code that does the actual operation completes.   That waiting is
 what is meant by *blocking IO*.   With normal blocking IO your program will
@@ -131,7 +131,7 @@ Parallel IO in MsPASS
 We use parallel containers in MsPASS to provide a mechanism to handle
 data sets that cannot fit in cluster memory.  As stated numerous times
 in this User's Manual we use what is called a "bag" in dask and
-"RDD" (Resiliant Distributed Data) in pyspark for this purpose.
+"RDD" (Resilient Distributed Dataset) in pyspark for this purpose.
 To be truly parallel creation of a bag/RDD must be parallelized.
 Similarly, saving the result of a computation defined as one of them
 should also be parallelized.  If they were not parallelized the
@@ -143,7 +143,7 @@ Read
 ~~~~~~~
 For both dask and pyspark the parallel read method is a function called
 :py:func:`read_distributed_data <mspasspy.io.distributed.read_distributed_data>`.
-The docstring and the `:ref:CRUD operations<CRUD_operations>`
+The docstring and the :ref:`CRUD operations <CRUD_operations>`
 section of this manual have more details on
 the nuts-and-bolts of running this function, but from the perspective of
 IO performance it may be helpful to discuss how that function
@@ -151,9 +151,8 @@ is parallelized for different options of arg0, which defines the primary
 input method to the function.
 
 #.  *DataFrame input*.   When the input is a DataFrame each worker
-    is assigned a partition of the received DataFrame to read.
-    As a result there will be one reader for each worker defined for
-    the job.   Readers work through the rows of the DataFrame that
+    processes a partition of the received DataFrame when assigned that task
+    by the scheduler.  Readers work through the rows of the DataFrame that
     define the partition to output a bag/RDD of data objects with the same partitioning
     as the DataFrame.   The scheduler assigns additional partitions to
     workers as they complete each one as usual.
@@ -162,7 +161,7 @@ input method to the function.
     the data passed down a pipeline to other processing algorithms.
     Note that the database is accessed in this mode only if
     normalization during reading is requested
-    (see :ref:`Normalization<normalization>`) or if any data
+    (see :ref:`Normalization <normalization>`) or if any data
     are stored with gridfs.
 #.  *Database input*.  Database input is, in many respects, a variant of
     DataFrame input with an added serial processing delay.  That is,
@@ -187,10 +186,9 @@ input method to the function.
     from the list of dict
     containers and partitioned as usual.   The scheduler normally assigns
     partitions sequentially to workers as with atomic data.
-    The parallelism is based on one
-    query per worker with each worker normally processing a sequence of
-    queries for each partition as each partition is completed.
-    For each bag component the algorithm first issues
+    The parallelism is based on one query per list element, with the scheduler
+    assigning those elements to workers by partition.  For each bag component
+    the algorithm first issues
     a query to MongoDB using that dict content.
     The query is then used to drive the
     :py:meth:`mspasspy.db.database.Database.read_data` method with
@@ -208,9 +206,9 @@ Write
 As with reading, parallel writes in MsPASS all should go through
 a common function called
 :py:func:`write_distributed_data <mspasspy.io.distributed.write_distributed_data>`.
-Parallelism is this function is similar to the reader in the sense that
-when run on a bag/RDD each worker will have one writer thread/process
-that does the output processing.   The way data are handled by writers,
+Parallelism in this function is similar to the reader:  the function creates
+write tasks from bag/RDD partitions and the scheduler assigns them to workers.
+The way data are handled by writers,
 however, is more complex.
 
 The first detail to understand about the parallel writer is it splits
@@ -255,15 +253,15 @@ A final detail about writing is the handling of "dead" data.
 The overall behavior is controlled by a boolean argument to
 :py:func:`write_distributed_data <mspasspy.io.distributed.write_distributed_data>`.
 called "cremate".  When set true dead data are "cremated" using the
-:py:meth:`cremate<mspasspy.util.Undertaker.cremate>` method of
-the :py:class:`Undertaker<mspasspy.util.Undertaker>` class.
+:py:meth:`cremate<mspasspy.util.Undertaker.Undertaker.cremate>` method of
+the :py:class:`Undertaker<mspasspy.util.Undertaker.Undertaker>` class.
 As the imagery of the name implies little to nothing is left of dead
 data that is cremated.  The default for the cremate parameter is False.
 In that situation dead data are "buried", which means a record of
 why they were killed is saved in a special collection called
 :code:`cemetery`.
 See the section
-:ref:`CRUD operations<CRUD_operations>` for more about these
+:ref:`CRUD operations <CRUD_operations>` for more about these
 concepts.  For this discussion a key point is that lots of dead data
 with the default setting of :code:`cremate=False` can impose a
 bottleneck because a call to :code:`insert_one` will happen with
@@ -383,8 +381,10 @@ collection called "fs.chunks".
 
 With that review it is easy to state the fundamental performance problem
 inherent in using gridfs as the prime storage method:  all the data
-needed to construct all data objects has to pass through a single
-communication channel - the network connection to the MongoDB server.
+needed to construct all data objects has to pass through the MongoDB
+deployment and its network path.  PyMongo uses a connection pool rather than
+literally one connection for an entire job, but server capacity and aggregate
+network bandwidth can still become shared bottlenecks.
 The result is not unlike what would happen if a freeway with one lane
 for each cpu in a job was forced to pass over a one-lane bridge.
 This situation is even worse because in most systems the network
@@ -402,14 +402,15 @@ deal of complexity, however, and is known to only be effective if the
 read patterns are well defined in advance.  It also is inevitably
 inferior to transfer rates for disk arrays or SSD storage
 because the pipe is a single network connection as opposed to
-the faster connection typical of disk hardware.
+the faster connection typical of disk hardware on many systems.  Benchmark
+the actual deployment rather than assuming either storage mode is faster.
 
 Web-service URL reads
 ~~~~~~~~~~~~~~~~~~~~~~~~
 At the present time the most common way to assemble waveform
 data for seismology research is to download data from one or more FDSN
 data centers via a standardized protocol called
-`web services <https://service.iris.edu/fdsnws/dataselect/1/>`__.
+`web services <https://service.earthscope.org/fdsnws/dataselect/>`__.
 MsPASS has a capability of defining a waveform segment with URL,
 which makes it theoretically possible to define and entire data set
 as residing remotely and accessible through the web service interface.

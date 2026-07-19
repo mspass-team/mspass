@@ -3,39 +3,48 @@
 What database schema should I use?
 =======================================
 
-This is a question with endmembers.  At one end is a research workflow
-that is highly experimental and subject to large changes.   At the other end
-is a production workflow you are constructing to run on a large dataset
-and a cluster with many processors.
+This choice has two endmembers.  At one end is a research workflow
+that is highly experimental and subject to large changes.  At the other end
+is a production workflow designed to run on a large dataset and a cluster
+with many processors.
 
-For the former (research code), the answer is usually
-none.  The baggage of a schema mostly gets in the way.
-The best default for that situation is the one called `mspass-lite`.
-It differs from the global default, `mspass`, in that it imposes no
-read-only restriction that can cause confusing errors in some situations.
-For this situation if you aim to use the database with the name tag
-`mydb` use the following as the top box of your jupyter notebook file
-defining your workflow:
+Even an experimental workflow loads a schema when its MsPASS
+:py:class:`Database<mspasspy.db.database.Database>` handle is constructed.
+The best default for that situation is the compact ``mspass_lite.yaml``
+schema.  Compared with the default ``mspass.yaml``, it defines fewer
+collections and metadata keys, keeps the SEED identifiers directly in the
+waveform documents, and minimizes read-only metadata.  The MongoDB ``_id``
+key remains read-only in both schemas.
+
+For example, to use a database named ``mydb``, put the following near the
+top of the Jupyter notebook that defines your workflow:
 
 .. code-block:: python
 
   from mspasspy.db.client import DBClient
-  dbclient = DBClient()
-  db = dbclient.get_database("mydb",schema="mspass_lite.yaml")
 
-For a more tuned application, you should first consider a related
-question:  Does my workflow need schema enforcement?   If the answer is no,
-just use the `mspass-lite` schema as illustrated above.
-In most case, however, it is our experience that for large datasets
-schema constraints can provide an important way to avoid mysterious errors.
-For the case with a yes answer there are two options.   For most
-application the standard `mspass` schema should be sufficient.   It provides
-base functionality for source and receiver metadata.   It also defines
-the `wf_miniseed` collection that is essential when the processing
-sequence uses miniseed data as the parent data.  If the standard schema does not
-work for you, look at the `data/yaml` directory for the mspass source code
-tree for alternatives you may find there.   If none of those work for you
-it is relatively easy to extend any of the existing schema files.
-See related sections in this User's Manual for guidance and the docstring
-for the class :py:class:`DatabaseSchema<mspasspy.db.schema.DatabaseSchema>` and
-:py:class:`MetadataSchema<mspasspy.db.schema.MetadataSchema>`.
+  dbclient = DBClient()
+  db = dbclient.get_database("mydb", schema="mspass_lite.yaml")
+
+Schema selection and schema enforcement are related but distinct.  The YAML
+file defines recognized collections, metadata keys, types, aliases,
+cross-references, required fields, and read-only fields.  Database methods
+that accept a ``mode`` argument control how strictly they apply relevant
+schema checks.  See :ref:`CRUD operations <CRUD_operations>` for the behavior
+of ``promiscuous``, ``cautious``, and ``pedantic`` modes.
+
+For most production workflows, start with ``mspass.yaml``.  It defines the
+normalized ``site``, ``channel``, and ``source`` collections, as well as the
+``wf_miniseed`` collection used to index raw miniSEED data.  The complete
+collection and metadata-key tables for that schema are in the
+:ref:`MsPASS schema reference <mspass_schema>`.
+
+The other shipped alternatives in :file:`data/yaml` are
+``mspass_fdsn.yaml`` and ``mspass_s3.yaml``.  They adapt the
+``wf_miniseed`` metadata for the FDSN and Amazon S3 access paths,
+respectively.  If no shipped schema fits, copy the closest YAML file and
+update its ``Database`` and ``Metadata`` sections consistently, then pass
+that filename or path through the ``schema`` argument.  See the APIs for
+:py:class:`DatabaseSchema<mspasspy.db.schema.DatabaseSchema>` and
+:py:class:`MetadataSchema<mspasspy.db.schema.MetadataSchema>` for the schema
+objects created from that file.

@@ -1,7 +1,5 @@
 .. _quick_start:
 
-:orphan:
-
 Getting Started in a Nutshell
 ===============================
 
@@ -18,7 +16,8 @@ the appropriate, longer sections of the `Getting Started` section.
 1. Install docker
 ---------------------
 Fetch and install docker following instructions on the
-`docker web site <https://docs.docker.com/get-docker/>`__.
+`official Docker instructions
+<https://docs.docker.com/get-started/get-docker/>`__.
 
 2. Launch docker desktop (MacoOS and Windows)
 ---------------------------------------------
@@ -64,11 +63,11 @@ This should generate a stream of output ending in something like the following:
             http://7b408535513f:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
          or http://127.0.0.1:8888/?token=ced2d40475df024c3544e7bd4aa0ea4676e0c88ae85be7db
 
-.. warning::
-  The start line using the unix shell trick with `pwd` can fail in some situations if
-  the path to which it resolves has a space bar character (" ") such as "My Documents".
-  If that happens choose a different work directory or replace `pwd` in the
-  incantation above with the space escaped (e.g. "My\\ Documents").
+.. note::
+  The launch command above uses the Unix shell's ``pwd`` command.  If the
+  working-directory path contains spaces, replace the ``--mount`` argument
+  with ``--mount src="$PWD",target=/home,type=bind``.  Windows PowerShell
+  users should use ``--mount src="$($PWD.Path)",target=/home,type=bind``.
 
 5. Connect to the container with a web browser
 --------------------------------------------------

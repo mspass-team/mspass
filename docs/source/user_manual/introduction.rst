@@ -6,7 +6,7 @@ Introduction
 MsPASS Features
 ~~~~~~~~~~~~~~~~
 
-MsPASS is an acronymn that stands for Massively Parallel Analysis System for Seismologists.
+MsPASS is an acronym that stands for Massive Parallel Analysis System for Seismologists.
 Some key features of MsPASS are the following:
 
 -   As the name suggests MsPASS is a domain-specific package for seismologists.
@@ -104,20 +104,22 @@ Some key features of MsPASS are the following:
     but ignored.  That model maps well to massively parallel scheduling
     because dead data are treated like live data but they just process faster.
 
--   MsPASS promotes reproducible science through two different mechanism:
+-   MsPASS promotes reproducible science through two different mechanisms:
 
     1.  The standard frontend is a `jupyter lab <https://jupyterlab.readthedocs.io/en/latest/>`__ interface.   Jupyter
         notebooks are a proven, useful mechanism to support reproducible
         calculations and document what exactly was done without major
         headaches.
-    2.  MsPaSS has an embedded processing history  capability.
-        The goal of that component of MsPASS is to ultimately allow
-        publication of the processing workflow used in a scientific paper that
-        would allow the reader to reproduce the data that paper used.  At this
-        time that part of the system remains incomplete.
-        For that reason (and for efficiency) MsPASS processing functions make
-        handling history optional and by default it is turned off.  If the system
-        grows as we hope that limitation will disappear.
+    2.  MsPASS has embedded processing-history capabilities.  Global history
+        can record algorithms and parameters used by a job, while object-level
+        history can record the processing path of an individual datum when
+        enabled.  For efficiency, the standard processing wrappers leave
+        object-level history disabled by default, so a workflow that needs it
+        must enable it explicitly for each relevant step.  These records can
+        support auditing and reproducibility, but do not by themselves capture
+        every dependency or scientific decision in a project.  See
+        :ref:`processing history concepts <processing_history_concepts>` for
+        the current data model and scope.
 
 -   The design of MsPASS has stressed leading edge but not bleeding edge open-source
     technologies.  MsPASS was assembled from
