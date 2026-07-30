@@ -15,6 +15,7 @@ from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDeco
 
 from test_TimeDomainGIDDecon import (
     _assert_actual_and_output_shaping_are_distinct,
+    _assert_external_wavelet_wrapper_error_contract,
     _assert_group_sparse_disabled_qc,
     _assert_group_sparse_qc,
     _assert_single_spike_recovery,
@@ -24,9 +25,14 @@ from test_TimeDomainGIDDecon import (
     _make_external_noise_spectrum,
     _make_external_wavelet_3c_data,
     _make_gid_test_data,
+    _make_long_window_gid_data,
     _make_single_spike_convolution_data,
     _ns_gid_pf,
     _pf_with_short_decon_window,
+    _long_window_gid_pf,
+    _assert_long_window_gid_result,
+    _assert_late_component_energy_does_not_change_auto_wavelet,
+    _assert_late_sparse_support,
     _pf_with_mode,
     _replace_gid_deconvolution_type,
 )
@@ -106,6 +112,266 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     assert qc["lag_weight_L2_final"] == pytest.approx(
         float(np.linalg.norm(lag_weights))
     )
+
+
+def test_FrequencyDomainGIDDecon_long_analysis_uses_short_wavelet_and_full_noise(
+    tmp_path,
+):
+    """Regression for the historical long-noise FFT-buffer exception."""
+    data = _make_long_window_gid_data()
+    engine = FrequencyDomainGIDDecon(
+        _long_window_gid_pf(
+            tmp_path,
+            "FrequencyDomainGIDDecon.pf",
+        )
+    )
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    _assert_long_window_gid_result(rf, rf["FrequencyDomainGIDDecon_properties"])
+    _assert_late_sparse_support(engine)
+
+
+def test_FrequencyDomainGIDDecon_auto_wavelet_ignores_late_component_energy(
+    tmp_path,
+):
+    _assert_late_component_energy_does_not_change_auto_wavelet(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_legacy_wavelet_window_defaults_to_analysis(tmp_path):
+    text = Path("./data/pf/FrequencyDomainGIDDecon.pf").read_text()
+    text = text.replace("        wavelet_window_start -5.0\n", "")
+    text = text.replace("        wavelet_window_end 20.0\n", "")
+    path = tmp_path / "FrequencyDomainGIDDecon_legacy_wavelet_window.pf"
+    path.write_text(text)
+    engine = FrequencyDomainGIDDecon(pfread(str(path)))
+    assert engine.wavelet_window_start() == pytest.approx(-5.0)
+    assert engine.wavelet_window_end() == pytest.approx(20.0)
+
+
+def test_FrequencyDomainGIDDecon_resizes_for_external_wavelet_and_noise():
+    data = _make_long_window_gid_data()
+    wavelet = TimeSeries(3001)
+    wavelet.set_t0(-5.0)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    for i in range(wavelet.npts):
+        wavelet.data[i] = np.exp(-((i - 100) / 5.0) ** 2)
+    noise = TimeSeries(6001)
+    noise.set_t0(-200.0)
+    noise.set_dt(0.05)
+    noise.set_live()
+    for i in range(noise.npts):
+        noise.data[i] = 0.01 * np.sin(0.1 * i)
+    engine = FrequencyDomainGIDDecon(pfread("./data/pf/FrequencyDomainGIDDecon.pf"))
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+        external_wavelet=wavelet,
+        external_noise=noise,
+    )
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert rf.live
+    assert qc["gid_noise_samples_loaded"] == qc["gid_noise_samples_used"] == 3801
+    assert not qc["gid_noise_truncated"]
+    assert qc["gid_inverse_operator_nfft"] >= 16384
+
+
+def test_FrequencyDomainGIDDecon_short_analysis_resizes_for_runtime_long_noise():
+    engine = FrequencyDomainGIDDecon(pfread("./data/pf/FrequencyDomainGIDDecon.pf"))
+    rf = FrequencyDomainGIDRFDecon(
+        _make_long_window_gid_data(),
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert rf.live
+    assert qc["gid_noise_samples_loaded"] == qc["gid_noise_samples_used"] == 3801
+    assert not qc["gid_noise_truncated"]
+    assert qc["gid_inverse_operator_nfft"] >= 8192
+
+
+def test_FrequencyDomainGIDDecon_uses_configured_output_window_when_signal_is_omitted(
+    tmp_path,
+):
+    engine = FrequencyDomainGIDDecon(
+        _long_window_gid_pf(tmp_path, "FrequencyDomainGIDDecon.pf")
+    )
+    rf = FrequencyDomainGIDRFDecon(
+        _make_long_window_gid_data(),
+        engine,
+    )
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert rf.live
+    assert rf.t0 == pytest.approx(-10.0)
+    assert rf.endtime() == pytest.approx(160.0)
+    assert qc["decon_window_start"] == pytest.approx(-10.0)
+    assert qc["decon_window_end"] == pytest.approx(160.0)
+
+
+def test_FrequencyDomainGIDDecon_rejects_wavelet_window_changeparameter():
+    engine = FrequencyDomainGIDDecon(pfread("./data/pf/FrequencyDomainGIDDecon.pf"))
+    with pytest.raises(MsPASSError, match="wavelet_window_end"):
+        engine.changeparameter(Metadata({"wavelet_window_end": 21.0}))
+
+
+def test_FrequencyDomainGIDDecon_rejects_signal_window_missing_configured_output():
+    data = _make_gid_test_data(noise_level=None)
+    engine = FrequencyDomainGIDDecon(pfread("./data/pf/FrequencyDomainGIDDecon.pf"))
+    assert engine.load(data, TimeWindow(-5.0, 20.0)) == 1
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        FrequencyDomainGIDDecon(pfread("./data/pf/FrequencyDomainGIDDecon.pf")),
+        signal_window=TimeWindow(-5.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert not rf.live
+
+
+def test_FrequencyDomainGIDDecon_allows_wavelet_window_outside_output_window(
+    tmp_path,
+):
+    engine = FrequencyDomainGIDDecon(
+        _long_window_gid_pf(
+            tmp_path,
+            "FrequencyDomainGIDDecon.pf",
+            wavelet_window_start=-20.0,
+            wavelet_window_end=-5.0,
+        )
+    )
+    rf = FrequencyDomainGIDRFDecon(
+        _make_long_window_gid_data(),
+        engine,
+        signal_window=TimeWindow(-20.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    assert rf.live
+    assert rf.t0 == pytest.approx(-10.0)
+
+
+def test_FrequencyDomainGIDDecon_external_wavelet_does_not_require_auto_window(
+    tmp_path,
+):
+    wavelet = TimeSeries(101)
+    wavelet.set_t0(-2.5)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    for i in range(wavelet.npts):
+        wavelet.data[i] = np.exp(-((i - 50) / 5.0) ** 2)
+    engine = FrequencyDomainGIDDecon(
+        _long_window_gid_pf(
+            tmp_path,
+            "FrequencyDomainGIDDecon.pf",
+            wavelet_window_start=-20.0,
+            wavelet_window_end=-5.0,
+        )
+    )
+    rf = FrequencyDomainGIDRFDecon(
+        _make_long_window_gid_data(),
+        engine,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+        external_wavelet=wavelet,
+    )
+    assert rf.live
+    assert rf["FrequencyDomainGIDDecon_properties"]["gid_external_wavelet_used"]
+
+
+def test_FrequencyDomainGIDRFDecon_external_wavelet_wrapper_error_contract():
+    _assert_external_wavelet_wrapper_error_contract(
+        FrequencyDomainGIDDecon(pfread("./data/pf/FrequencyDomainGIDDecon.pf")),
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon_properties",
+    )
+
+
+@pytest.mark.parametrize(
+    ("mode", "leaf_uses_external_noise"),
+    [("ns_gid", True), ("cnr", True), ("least_square", False)],
+)
+def test_FrequencyDomainGIDDecon_noise_qc_is_outer_consistent_and_leaf_specific(
+    tmp_path, mode, leaf_uses_external_noise
+):
+    data = _make_gid_test_data(noise_level=None)
+    engine = FrequencyDomainGIDDecon(
+        _pf_with_mode(
+            tmp_path,
+            "FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            mode,
+        )
+    )
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+        external_noise=_make_external_noise(),
+    )
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    # The GID-level counts always describe the -35:-5 residual/stopping
+    # window (601 samples at 0.05 s), not optional leaf regularization data.
+    assert qc["gid_noise_samples_loaded"] == 601
+    assert qc["gid_noise_samples_used"] == 601
+    assert not qc["gid_noise_truncated"]
+    assert not qc["gid_residual_external_noise_used"]
+    if leaf_uses_external_noise:
+        assert qc["gid_leaf_noise_samples_loaded"] == 300
+        assert qc["gid_leaf_noise_samples_used"] == 300
+        assert qc["gid_leaf_external_noise_used"]
+        assert qc["gid_external_noise_used"]
+    else:
+        assert qc["gid_leaf_noise_samples_loaded"] == 0
+        assert qc["gid_leaf_noise_samples_used"] == 0
+        assert not qc["gid_leaf_external_noise_used"]
+        assert not qc["gid_external_noise_used"]
+
+
+@pytest.mark.parametrize(
+    ("mode", "leaf_uses_external_noise"),
+    [("least_square", False), ("ns_gid", True), ("cnr", True)],
+)
+def test_FrequencyDomainGIDDecon_direct_external_noise_reports_residual_provenance(
+    tmp_path, mode, leaf_uses_external_noise
+):
+    data = _make_gid_test_data(noise_level=None)
+    external_noise = _make_external_noise()
+    engine = FrequencyDomainGIDDecon(
+        _pf_with_mode(
+            tmp_path,
+            "FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            mode,
+        )
+    )
+    assert engine.loadnoise(external_noise) == 0
+    assert engine.load(data, TimeWindow(-8.0, 20.0)) == 0
+    engine.process()
+    qc = dict(engine.QCMetrics())
+
+    assert qc["gid_noise_samples_loaded"] == external_noise.npts
+    assert qc["gid_noise_samples_used"] == external_noise.npts
+    assert qc["gid_residual_external_noise_used"]
+    assert qc["gid_external_noise_used"]
+    assert qc["gid_leaf_external_noise_used"] == leaf_uses_external_noise
+    if leaf_uses_external_noise:
+        assert qc["gid_leaf_noise_samples_loaded"] == external_noise.npts
+        assert qc["gid_leaf_noise_samples_used"] == external_noise.npts
+    else:
+        assert qc["gid_leaf_noise_samples_loaded"] == 0
+        assert qc["gid_leaf_noise_samples_used"] == 0
 
 
 def test_FrequencyDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
@@ -1194,6 +1460,48 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift()
 
     with pytest.raises(MsPASSError, match="shaping_wavelet_dt"):
         engine.changeparameter(leaf_md)
+
+
+@pytest.mark.parametrize(
+    ("key", "match"),
+    [
+        ("target_sample_interval", "leaf target_sample_interval"),
+        ("shaping_wavelet_dt", "leaf shaping_wavelet_dt"),
+    ],
+)
+def test_FrequencyDomainGIDDecon_constructor_rejects_selected_leaf_dt_drift(
+    tmp_path, key, match
+):
+    text = Path("data/pf/FrequencyDomainGIDDecon.pf").read_text()
+    text = _replace_gid_deconvolution_type(
+        text, "frequency_domain_gid_deconvolution", "least_square"
+    )
+    prefix, leaf = text.split("least_square &Arr{", maxsplit=1)
+    old = f"{key} 0.05"
+    assert leaf.count(old) >= 1
+    text = prefix + "least_square &Arr{" + leaf.replace(old, f"{key} 0.1", 1)
+    pf = tmp_path / f"FrequencyDomainGIDDecon_bad_leaf_{key}.pf"
+    pf.write_text(text)
+
+    with pytest.raises(MsPASSError, match=match):
+        FrequencyDomainGIDDecon(pfread(str(pf)))
+
+
+def test_FrequencyDomainGIDDecon_constructor_accepts_matching_selected_leaf_metadata():
+    FrequencyDomainGIDDecon(pfread("data/pf/FrequencyDomainGIDDecon.pf"))
+
+
+def test_FrequencyDomainGIDDecon_constructor_rejects_outer_shaping_dt_drift(
+    tmp_path,
+):
+    text = Path("data/pf/FrequencyDomainGIDDecon.pf").read_text()
+    assert text.count("shaping_wavelet_dt 0.05") >= 1
+    text = text.replace("shaping_wavelet_dt 0.05", "shaping_wavelet_dt 0.1", 1)
+    pf = tmp_path / "FrequencyDomainGIDDecon_bad_outer_shaping_dt.pf"
+    pf.write_text(text)
+
+    with pytest.raises(MsPASSError, match="shaping_wavelet_dt must match"):
+        FrequencyDomainGIDDecon(pfread(str(pf)))
 
 
 @pytest.mark.parametrize(

@@ -56,10 +56,14 @@ def _run_gid_rf_decon(
     if (
         signal_window.start > engine.deconvolution_window_start()
         or signal_window.end < engine.deconvolution_window_end()
+        or signal_window.start > engine.output_window_start()
+        or signal_window.end < engine.output_window_end()
     ):
         message = (
-            "signal_window does not contain the engine deconvolution window "
-            "[{}, {}]".format(
+            "signal_window does not contain the engine output and analysis "
+            "windows: output=[{}, {}], analysis=[{}, {}]".format(
+                engine.output_window_start(),
+                engine.output_window_end(),
                 engine.deconvolution_window_start(),
                 engine.deconvolution_window_end(),
             )
@@ -71,6 +75,27 @@ def _run_gid_rf_decon(
         return d
 
     try:
+        # Loading is guarded so invalid external wavelets retain the wrapper's
+        # normal killed-datum/error-log behavior.  It is deliberately after
+        # output/analysis validation so a rejected request cannot mutate a
+        # reusable engine's external-wavelet state.
+        if external_wavelet is not None:
+            engine.loadwavelet(external_wavelet)
+        if not engine.external_wavelet_is_loaded() and (
+            signal_window.start > engine.wavelet_window_start()
+            or signal_window.end < engine.wavelet_window_end()
+        ):
+            message = (
+                "signal_window does not contain the engine automatic wavelet "
+                "window [{}, {}]".format(
+                    engine.wavelet_window_start(), engine.wavelet_window_end()
+                )
+            )
+            d.elog.log_error(alg, message, ErrorSeverity.Invalid)
+            d.kill()
+            if return_wavelet:
+                return [d, None, None]
+            return d
         load_status = engine.load(d, signal_window, noise_window)
         if load_status:
             d.elog.log_error(
@@ -82,8 +107,6 @@ def _run_gid_rf_decon(
             if return_wavelet:
                 return [d, None, None]
             return d
-        if external_wavelet is not None:
-            engine.loadwavelet(external_wavelet)
         if external_noise is not None:
             engine.loadnoise(external_noise)
         engine.process()

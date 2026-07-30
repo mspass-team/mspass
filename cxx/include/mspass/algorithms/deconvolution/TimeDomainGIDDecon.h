@@ -92,6 +92,14 @@ public:
   double deconvolution_window_start() const { return this->fftwin.start; };
   /*! Return the end time of the configured deconvolution window. */
   double deconvolution_window_end() const { return this->fftwin.end; };
+  /*! Return the start time of the source-wavelet extraction window. */
+  double wavelet_window_start() const { return this->waveletwin.start; };
+  /*! Return the end time of the source-wavelet extraction window. */
+  double wavelet_window_end() const { return this->waveletwin.end; };
+  /*! Return the start time of the configured output window. */
+  double output_window_start() const { return this->outputwin.start; };
+  /*! Return the end time of the configured output window. */
+  double output_window_end() const { return this->outputwin.end; };
   /*! Return the start time of the configured residual-noise window. */
   double noise_window_start() const { return this->nwin.start; };
   /*! Return the end time of the configured residual-noise window. */
@@ -182,7 +190,10 @@ private:
   int ndwin, nnwin;
   /* Save the TimeWindow objects that define the extent of d_all, d_decon,
   and n.   Some things need at least some of these downstream */
-  mspass::algorithms::TimeWindow dwin, nwin, fftwin;
+  mspass::algorithms::TimeWindow dwin, outputwin, nwin, fftwin, waveletwin;
+  int inverse_operator_nfft;
+  int gid_noise_samples_loaded, gid_noise_samples_used;
+  bool gid_noise_truncated;
   std::string config_pf_text;
   double target_dt;
   /*! For preprocessor algorithms that are scalar we specify which channel
@@ -219,6 +230,7 @@ private:
   bool residual_noise_from_external;
   bool leaf_parameters_changed;
   mspass::utility::Metadata changed_leaf_metadata;
+  mspass::utility::Metadata leaf_operator_metadata;
 
   /* This parameter is set in the constructor.  It would normally be half the
   length of the fir representation of the inverse wavelet.*/
@@ -236,6 +248,10 @@ private:
   /* This is called by the constructor to create the wtf penalty function */
   void construct_weight_penalty_function(const mspass::utility::Metadata &md);
   void invalidate_processing_state();
+  void ensure_inverse_operator_size(const int data_npts,
+                                    const int wavelet_npts,
+                                    const int noise_npts);
+  int actual_inverse_operator_size() const;
   /*! Subtract current spike signal from data.
 
   \param spk - vector amplitude and lag of spike - subtract ideal

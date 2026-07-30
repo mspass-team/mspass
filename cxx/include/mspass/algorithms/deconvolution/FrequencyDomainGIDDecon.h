@@ -2,6 +2,7 @@
 #define __FREQUENCY_DOMAIN_GID_DECON__
 #include "mspass/algorithms/TimeWindow.h"
 #include "mspass/algorithms/deconvolution/CNRDeconEngine.h"
+#include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ScalarDecon.h"
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/algorithms/deconvolution/ThreeCSpike.h"
@@ -110,6 +111,14 @@ public:
   double deconvolution_window_start() const { return this->fftwin.start; };
   /*! Return the configured deconvolution-window end time. */
   double deconvolution_window_end() const { return this->fftwin.end; };
+  /*! Return the start time of the source-wavelet extraction window. */
+  double wavelet_window_start() const { return this->waveletwin.start; };
+  /*! Return the end time of the source-wavelet extraction window. */
+  double wavelet_window_end() const { return this->waveletwin.end; };
+  /*! Return the start time of the configured output window. */
+  double output_window_start() const { return this->outputwin.start; };
+  /*! Return the end time of the configured output window. */
+  double output_window_end() const { return this->outputwin.end; };
   /*! Return the current residual-noise window start time. */
   double noise_window_start() const { return this->nwin.start; };
   /*! Return the current residual-noise window end time. */
@@ -200,7 +209,10 @@ public:
 
 private:
   mspass::seismic::CoreSeismogram d_all, d_decon, r, n;
-  mspass::algorithms::TimeWindow dwin, nwin, fftwin;
+  mspass::algorithms::TimeWindow dwin, outputwin, nwin, fftwin, waveletwin;
+  int inverse_operator_nfft;
+  int gid_noise_samples_loaded, gid_noise_samples_used;
+  bool gid_noise_truncated;
   std::string config_pf_text;
   double target_dt;
   int ndwin, nnwin, noise_component;
@@ -222,6 +234,7 @@ private:
   bool residual_noise_from_external;
   bool leaf_parameters_changed;
   mspass::utility::Metadata changed_leaf_metadata;
+  mspass::utility::Metadata leaf_operator_metadata;
   std::vector<double> actual_o_fir;
   std::vector<double> lag_weights, lag_weight_penalty;
   std::vector<double> adaptive_penalty_memory;
@@ -262,6 +275,10 @@ private:
 
   void initialize_inverse_operator();
   void invalidate_processing_state();
+  void ensure_inverse_operator_size(const int data_npts,
+                                    const int wavelet_npts,
+                                    const int noise_npts);
+  int actual_inverse_operator_size() const;
   double compute_ns_peak_threshold();
   void rescale_spike(ThreeCSpike &spk);
   void update_residual_matrix(const ThreeCSpike &spk);

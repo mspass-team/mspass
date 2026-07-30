@@ -80,7 +80,8 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
     /* This complicated set of tests to set nfft is needed to mesh with
      * ShapingWavelet constructor and FFTDeconOperator api constraints created
      * by use in other classes in this directory that also use these */
-    int nfftneeded = nextPowerOf2(minwinsize);
+    int nfftneeded = nextPowerOf2(
+        max(minwinsize, GetIntRequired(pf, "operator_nfft")));
     /* This compication is needed because FFTDeconOperator(pf) is called
     prior to this function and it requires operator_nfft.   We need to
     be sure it size is consistent with window size that we just computed */
@@ -194,7 +195,8 @@ void CNRDeconEngine::changeparameter(const Metadata &md) {
     ValidateWindowDuration(TimeWindow(ts, te), "deconvolution_data_window",
                            "CNRDeconEngine::changeparameter");
     this->winlength = round((te - ts) / this->operator_dt) + 1;
-    int nfftneeded = nextPowerOf2(3 * this->winlength);
+    int nfftneeded = nextPowerOf2(
+        max(3 * this->winlength, GetIntRequired(md, "operator_nfft")));
     if (nfftneeded != this->get_size())
       FFTDeconOperator::change_size(nfftneeded);
     this->change_shift(ComputeDeconSampleShift(md));
