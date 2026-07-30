@@ -76,13 +76,23 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     decon_type = ParseGIDDeconType(mdgid, "FrequencyDomainGIDDecon");
     dwin = TimeWindow(GetDoubleRequired(mdgid, "full_data_window_start"),
                       GetDoubleRequired(mdgid, "full_data_window_end"));
+    outputwin = dwin;
     fftwin =
         TimeWindow(GetDoubleRequired(mdgid, "deconvolution_data_window_start"),
                    GetDoubleRequired(mdgid, "deconvolution_data_window_end"));
+    if (mdgid.is_defined("wavelet_window_start") ||
+        mdgid.is_defined("wavelet_window_end")) {
+      waveletwin = TimeWindow(GetDoubleRequired(mdgid, "wavelet_window_start"),
+                              GetDoubleRequired(mdgid, "wavelet_window_end"));
+    } else {
+      /* Preserve legacy files that used the analysis window as the wavelet. */
+      waveletwin = fftwin;
+    }
     nwin = TimeWindow(GetDoubleRequired(mdgid, "noise_window_start"),
                       GetDoubleRequired(mdgid, "noise_window_end"));
     ValidateWindowDuration(dwin, "full_data_window", base_error);
     ValidateWindowDuration(fftwin, "deconvolution_data_window", base_error);
+    ValidateWindowDuration(waveletwin, "wavelet_window", base_error);
     ValidateWindowDuration(nwin, "noise_window", base_error);
     if (fftwin.start < dwin.start || fftwin.end > dwin.end)
       throw MsPASSError(base_error +
@@ -92,11 +102,32 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     ValidateThreeComponentIndex(noise_component, "noise_component", base_error);
     target_dt = GetDoubleRequired(mdgid, "target_sample_interval");
     ValidatePositive(target_dt, "target_sample_interval", base_error);
-    int maxns = static_cast<int>((fftwin.end - fftwin.start) / target_dt) + 1;
-    int nfft = nextPowerOf2(maxns);
-    mdgid.put("operator_nfft", nfft);
+    if (mdgid.is_defined("shaping_wavelet_dt")) {
+      const double shaping_dt = GetDoubleRequired(mdgid, "shaping_wavelet_dt");
+      if (fabs(shaping_dt - target_dt) >
+          1.0e-6 * max(1.0, max(fabs(shaping_dt), fabs(target_dt))))
+        throw MsPASSError(base_error +
+                              "shaping_wavelet_dt must match "
+                              "target_sample_interval",
+                          ErrorSeverity::Fatal);
+    }
+    const int analysis_npts =
+        static_cast<int>(round((fftwin.end - fftwin.start) / target_dt)) + 1;
+    const int wavelet_npts = static_cast<int>(
+                                 round((waveletwin.end - waveletwin.start) /
+                                       target_dt)) +
+                             1;
+    const int noise_npts =
+        static_cast<int>(round((nwin.end - nwin.start) / target_dt)) + 1;
+    int required_npts = analysis_npts + wavelet_npts - 1;
+    if (decon_type == NS_GID || decon_type == GROUP_SPARSE)
+      required_npts = max(required_npts, noise_npts + wavelet_npts - 1);
+    int nfft = nextPowerOf2(required_npts);
+    inverse_operator_nfft = nfft;
+    const int shaping_nfft = nextPowerOf2(analysis_npts);
+    mdgid.put("operator_nfft", shaping_nfft);
     this->ScalarDecon::changeparameter(mdgid);
-    this->shapingwavelet = ShapingWavelet(mdgid, nfft);
+    this->shapingwavelet = ShapingWavelet(mdgid, shaping_nfft);
     iter_max = GetIntRequired(mdgid, "maximum_iterations");
     ValidatePositiveInteger(iter_max, "maximum_iterations", base_error);
     residual_ratio_floor = GetDoubleRequired(mdgid, "residual_ratio_floor");
@@ -148,37 +179,51 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
       ValidateGIDLeafWindow(mdleaf, fftwin, "water level", base_error);
+      ValidateGIDLeafOperatorMetadata(mdleaf, fftwin, target_dt, base_error);
+      mdleaf.put("operator_nfft", nfft);
       preprocessor = std::make_unique<WaterLevelDecon>(mdleaf);
       break;
     case LEAST_SQ:
       mdleaf = md.get_branch("least_square");
       ValidateGIDLeafWindow(mdleaf, fftwin, "least square", base_error);
+      ValidateGIDLeafOperatorMetadata(mdleaf, fftwin, target_dt, base_error);
+      mdleaf.put("operator_nfft", nfft);
       preprocessor = std::make_unique<LeastSquareDecon>(mdleaf);
       break;
     case MULTI_TAPER:
       mdleaf = md.get_branch("multi_taper");
       ValidateGIDLeafWindow(mdleaf, fftwin, "multi taper", base_error);
+      ValidateGIDLeafOperatorMetadata(mdleaf, fftwin, target_dt, base_error);
+      mdleaf.put("operator_nfft", nfft);
       preprocessor = std::make_unique<MultiTaperXcorDecon>(mdleaf);
       break;
     case CNR:
       mdleaf = md.get_branch("cnr");
       ValidateGIDLeafWindow(mdleaf, fftwin, "CNR", base_error);
+      ValidateGIDLeafOperatorMetadata(mdleaf, fftwin, target_dt, base_error,
+                                      true);
+      mdleaf.put("operator_nfft", nfft);
       cnrprocessor = std::make_unique<CNRDeconEngine>(mdleaf);
       break;
     case GROUP_SPARSE:
       mdleaf = md.get_branch("ns_gid");
       ValidateGIDLeafWindow(mdleaf, fftwin, "group sparse NS-GID inverse",
                             base_error);
+      ValidateGIDLeafOperatorMetadata(mdleaf, fftwin, target_dt, base_error);
+      mdleaf.put("operator_nfft", nfft);
       preprocessor = std::make_unique<NoiseStableDecon>(mdleaf);
       break;
     case NS_GID:
     default:
       mdleaf = md.get_branch("ns_gid");
       ValidateGIDLeafWindow(mdleaf, fftwin, "NS-GID", base_error);
+      ValidateGIDLeafOperatorMetadata(mdleaf, fftwin, target_dt, base_error);
+      mdleaf.put("operator_nfft", nfft);
       preprocessor = std::make_unique<NoiseStableDecon>(mdleaf);
       break;
     };
     changed_leaf_metadata = Metadata(mdleaf);
+    leaf_operator_metadata = Metadata(mdleaf);
     external_wavelet_loaded = false;
     external_noise_loaded = false;
     external_noise_spectrum_loaded = false;
@@ -289,6 +334,9 @@ void FrequencyDomainGIDDecon::invalidate_processing_state() {
   group_sparse_iterations = 0;
   group_sparse_active_groups = 0;
   group_sparse_converged = false;
+  gid_noise_samples_loaded = 0;
+  gid_noise_samples_used = 0;
+  gid_noise_truncated = false;
   processed = false;
 }
 
@@ -303,7 +351,35 @@ void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
   else
     preprocessor->changeparameter(md);
   changed_leaf_metadata = Metadata(md);
+  leaf_operator_metadata = Metadata(md);
   leaf_parameters_changed = true;
+}
+
+int FrequencyDomainGIDDecon::actual_inverse_operator_size() const {
+  if (decon_type == CNR)
+    return cnrprocessor->operator_size();
+  auto *fft = dynamic_cast<FFTDeconOperator *>(preprocessor.get());
+  return fft ? fft->operator_size() : inverse_operator_nfft;
+}
+
+void FrequencyDomainGIDDecon::ensure_inverse_operator_size(
+    const int data_npts, const int wavelet_npts, const int noise_npts) {
+  int needed = data_npts + wavelet_npts - 1;
+  if (decon_type == NS_GID || decon_type == GROUP_SPARSE)
+    needed = max(needed, noise_npts + wavelet_npts - 1);
+  needed = nextPowerOf2(needed);
+  if (needed <= this->actual_inverse_operator_size()) {
+    inverse_operator_nfft = this->actual_inverse_operator_size();
+    return;
+  }
+  Metadata md(leaf_operator_metadata);
+  md.put("operator_nfft", needed);
+  if (decon_type == CNR)
+    cnrprocessor->changeparameter(md);
+  else
+    preprocessor->changeparameter(md);
+  leaf_operator_metadata = md;
+  inverse_operator_nfft = this->actual_inverse_operator_size();
 }
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
@@ -313,7 +389,16 @@ int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
   ndwin = 0;
   ValidateWindowDuration(dwin_in, "signal_window",
                          "FrequencyDomainGIDDecon::load");
-  if ((dwin_in.start > fftwin.start) || (dwin_in.end < fftwin.end))
+  if (!isfinite(draw.dt()) ||
+      fabs(draw.dt() - target_dt) > 1.0e-8 * max(1.0, target_dt))
+    throw MsPASSError("FrequencyDomainGIDDecon::load: input sample interval "
+                      "does not match target_sample_interval",
+                      ErrorSeverity::Invalid);
+  if ((dwin_in.start > fftwin.start) || (dwin_in.end < fftwin.end) ||
+      ((!external_wavelet_loaded) &&
+       ((dwin_in.start > waveletwin.start) ||
+        (dwin_in.end < waveletwin.end))) ||
+      (dwin_in.start > outputwin.start) || (dwin_in.end < outputwin.end))
     return 1;
   dwin = dwin_in;
   d_all = WindowData(draw, dwin);
@@ -331,6 +416,11 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
   residual_noise_from_external = false;
   ValidateWindowDuration(nwin_in, "noise_window",
                          "FrequencyDomainGIDDecon::loadnoise");
+  if (!isfinite(draw.dt()) ||
+      fabs(draw.dt() - target_dt) > 1.0e-8 * max(1.0, target_dt))
+    throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: input sample "
+                      "interval does not match target_sample_interval",
+                      ErrorSeverity::Invalid);
   nwin = nwin_in;
   n = WindowData(draw, nwin);
   if (n.dead() || n.npts() <= 0)
@@ -460,7 +550,10 @@ int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                          "FrequencyDomainGIDDecon::load");
   ValidateWindowDuration(nwin, "noise_window",
                          "FrequencyDomainGIDDecon::load");
-  if ((dwin.start > fftwin.start) || (dwin.end < fftwin.end))
+  if ((dwin.start > fftwin.start) || (dwin.end < fftwin.end) ||
+      ((!external_wavelet_loaded) &&
+       ((dwin.start > waveletwin.start) || (dwin.end < waveletwin.end))) ||
+      (dwin.start > outputwin.start) || (dwin.end < outputwin.end))
     return 1;
   int iretn = this->loadnoise(draw, nwin);
   int iretd = this->load(draw, dwin);
@@ -474,9 +567,21 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
   CoreTimeSeries srcwavelet;
   if (external_wavelet_loaded)
     srcwavelet = CoreTimeSeries(external_wavelet);
-  else
-    srcwavelet = CoreTimeSeries(ExtractComponent(d_decon, 2));
+  else {
+    CoreTimeSeries source_component(ExtractComponent(d_all, 2));
+    srcwavelet = WindowData(source_component, waveletwin);
+    if (srcwavelet.dead() || srcwavelet.npts() <= 0)
+      throw MsPASSError("FrequencyDomainGIDDecon::initialize_inverse_operator: "
+                        "input data do not contain the requested wavelet window",
+                        ErrorSeverity::Invalid);
+  }
   current_wavelet = TimeSeries(srcwavelet, "FrequencyDomainGIDDecon");
+  int runtime_noise_npts = n.npts();
+  if (external_noise_loaded)
+    runtime_noise_npts = max(runtime_noise_npts,
+                             static_cast<int>(external_noise.npts()));
+  this->ensure_inverse_operator_size(d_decon.npts(), srcwavelet.npts(),
+                                     runtime_noise_npts);
   if (decon_type == CNR) {
     TimeSeries nwavelet;
     if (external_noise_loaded)
@@ -608,6 +713,9 @@ double FrequencyDomainGIDDecon::compute_ns_peak_threshold() {
   if (decon_type != NS_GID && decon_type != GROUP_SPARSE)
     return 0.0;
   CoreSeismogram nwork(n);
+  /* The leaf is constructed with enough FFT padding for the whole noise
+   * window and the selected wavelet.  Keep the threshold policy identical to
+   * the time-domain GID engine: use every loaded sample. */
   dmatrix uwork(nwork.u);
   uwork.zero();
   NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
@@ -713,6 +821,11 @@ void FrequencyDomainGIDDecon::process() {
     if (n.dead() || n.npts() <= 0)
       throw MsPASSError(base_error + "valid noise window has not been loaded",
                         ErrorSeverity::Invalid);
+    /* Keep these GID-level QC fields tied to the residual/stopping noise
+     * record rather than to optional leaf regularization inputs. */
+    gid_noise_samples_loaded = n.npts();
+    gid_noise_samples_used = gid_noise_samples_loaded;
+    gid_noise_truncated = false;
     this->initialize_inverse_operator();
     if (decon_type == NS_GID || decon_type == GROUP_SPARSE) {
       process_stage = "compute NS-GID peak threshold";
@@ -987,7 +1100,7 @@ CoreSeismogram FrequencyDomainGIDDecon::sparse_output() {
         "FrequencyDomainGIDDecon::sparse_output: process must be called first",
         ErrorSeverity::Invalid);
   CoreSeismogram result(d_all);
-  result = WindowData(result, dwin);
+  result = WindowData(result, outputwin);
   result.u.zero();
   double dt0 = result.t0() - r.t0();
   int delta_col = round(dt0 / r.dt());
@@ -1017,7 +1130,7 @@ CoreSeismogram FrequencyDomainGIDDecon::getresult() {
   CoreSeismogram sparse(this->sparse_output());
   CoreTimeSeries shaping(this->output_shaping_wavelet());
   CoreSeismogram shaped(sparse_convolve(shaping, sparse));
-  return WindowData(shaped, dwin);
+  return WindowData(shaped, outputwin);
 }
 
 Metadata FrequencyDomainGIDDecon::QCMetrics() {
@@ -1027,12 +1140,45 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
   md.put("deconvolution_type", GIDDeconTypeName(decon_type));
   md.put("decon_processed", processed);
   md.put("decon_sample_interval", target_dt);
-  md.put("decon_window_start", dwin.start);
-  md.put("decon_window_end", dwin.end);
+  md.put("decon_window_start", outputwin.start);
+  md.put("decon_window_end", outputwin.end);
   md.put("deconvolution_window_start", fftwin.start);
   md.put("deconvolution_window_end", fftwin.end);
+  md.put("wavelet_window_start", waveletwin.start);
+  md.put("wavelet_window_end", waveletwin.end);
   md.put("noise_window_start", nwin.start);
   md.put("noise_window_end", nwin.end);
+  md.put("gid_noise_samples_loaded", gid_noise_samples_loaded);
+  md.put("gid_noise_samples_used", gid_noise_samples_used);
+  md.put("gid_noise_truncated", gid_noise_truncated);
+  int leaf_noise_samples_loaded(0);
+  int leaf_noise_samples_used(0);
+  bool leaf_noise_truncated(false);
+  const bool leaf_uses_timeseries_noise =
+      (decon_type == CNR || decon_type == MULTI_TAPER ||
+       decon_type == NS_GID || decon_type == GROUP_SPARSE);
+  const bool leaf_external_noise_used =
+      external_noise_loaded && leaf_uses_timeseries_noise;
+  if (leaf_uses_timeseries_noise && !external_noise_spectrum_loaded) {
+    leaf_noise_samples_loaded = external_noise_loaded
+                                    ? static_cast<int>(external_noise.npts())
+                                    : static_cast<int>(n.npts());
+    leaf_noise_samples_used = leaf_noise_samples_loaded;
+    if (decon_type == MULTI_TAPER) {
+      auto *mtop = dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get());
+      if (mtop != nullptr)
+        leaf_noise_samples_used =
+            min(leaf_noise_samples_used, mtop->get_taperlen());
+      leaf_noise_truncated =
+          leaf_noise_samples_used < leaf_noise_samples_loaded;
+    }
+  }
+  md.put("gid_leaf_noise_samples_loaded", leaf_noise_samples_loaded);
+  md.put("gid_leaf_noise_samples_used", leaf_noise_samples_used);
+  md.put("gid_leaf_noise_truncated", leaf_noise_truncated);
+  md.put("gid_leaf_external_noise_used", leaf_external_noise_used);
+  md.put("gid_residual_external_noise_used", residual_noise_from_external);
+  md.put("gid_inverse_operator_nfft", this->actual_inverse_operator_size());
   md.put("gid_leaf_parameters_changed", leaf_parameters_changed);
   md.put("gid_processed", processed);
   md.put("gid_converged", gid_converged);
@@ -1066,7 +1212,8 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
     md.put("gid_penalty_valid_lags", gid_penalty_valid_lags);
   }
   md.put("gid_external_wavelet_used", external_wavelet_loaded);
-  md.put("gid_external_noise_used", external_noise_loaded);
+  md.put("gid_external_noise_used",
+         residual_noise_from_external || leaf_external_noise_used);
   md.put("gid_external_noise_spectrum_used",
          external_noise_spectrum_loaded);
   md.put("iteration_count", iter_count);

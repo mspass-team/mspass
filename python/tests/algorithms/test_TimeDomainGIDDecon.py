@@ -60,6 +60,184 @@ def _make_external_noise(npts=300, dt=0.05, t0=-35.0, scale=1.0):
     return noise
 
 
+def _make_wrapper_external_wavelet():
+    wavelet = TimeSeries(101)
+    wavelet.set_t0(-2.5)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    for i in range(wavelet.npts):
+        wavelet.data[i] = np.exp(-((i - 50) / 5.0) ** 2)
+    return wavelet
+
+
+def _assert_external_wavelet_wrapper_error_contract(engine, wrapper, qc_key):
+    data = _make_gid_test_data(noise_level=None)
+    invalid = TimeSeries()
+    invalid_result = wrapper(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+        external_wavelet=invalid,
+    )
+    assert not invalid_result.live
+    assert not engine.external_wavelet_is_loaded()
+
+    rejected = wrapper(
+        data,
+        engine,
+        signal_window=TimeWindow(-5.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+        external_wavelet=_make_wrapper_external_wavelet(),
+    )
+    assert not rejected.live
+    assert not engine.external_wavelet_is_loaded()
+
+    recovered = wrapper(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert recovered.live
+    assert not recovered[qc_key]["gid_external_wavelet_used"]
+
+
+def _make_long_window_gid_data():
+    """Synthetic RF with a short direct P and two late converted phases."""
+    dt = 0.05
+    t0 = -200.0
+    npts = int(round((160.0 - t0) / dt)) + 1
+    t = t0 + dt * np.arange(npts)
+
+    def pulse(center, amplitude, width=0.16):
+        return amplitude * np.exp(-((t - center) / width) ** 2)
+
+    data = Seismogram(npts)
+    data.set_t0(t0)
+    data.set_dt(dt)
+    data.set_live()
+    data.tref = TimeReferenceType.Relative
+    # Component 2 is the direct P source in the short wavelet window.  The
+    # later energy is deliberately outside that window and must remain in the
+    # GID analysis residual rather than becoming part of the source wavelet.
+    components = (
+        pulse(0.0, 0.35) + pulse(45.0, 0.75) + pulse(72.0, -0.55),
+        pulse(0.0, -0.20) + pulse(45.0, -0.45) + pulse(72.0, 0.35),
+        pulse(0.0, 1.0) + pulse(45.0, 0.30) + pulse(72.0, -0.25),
+    )
+    for k, values in enumerate(components):
+        # Deterministic pre-event noise spans the complete 190 s noise window.
+        data.data[k, :] = DoubleVector(
+            values + 0.002 * np.sin(0.13 * np.arange(npts) + k)
+        )
+    return data
+
+
+def _long_window_gid_pf(
+    tmp_path, pf_name, wavelet_window_start=-5.0, wavelet_window_end=20.0
+):
+    """Build a long-analysis, long-noise NS-GID configuration."""
+    text = (Path("./data/pf") / pf_name).read_text()
+    text = text.replace("full_data_window_start -8.0", "full_data_window_start -10.0")
+    text = text.replace("full_data_window_end 20.0", "full_data_window_end 160.0")
+    # The outer and every selectable leaf use the same analysis window.
+    text = text.replace(
+        "deconvolution_data_window_start -5.0",
+        "deconvolution_data_window_start -10.0",
+    )
+    text = text.replace(
+        "deconvolution_data_window_end 20.0",
+        "deconvolution_data_window_end 160.0",
+    )
+    text = text.replace("noise_window_start -35.0", "noise_window_start -200.0")
+    text = text.replace("noise_window_end -5.0", "noise_window_end -10.0")
+    text = text.replace(
+        "wavelet_window_start -5.0",
+        f"wavelet_window_start {wavelet_window_start}",
+    )
+    text = text.replace(
+        "wavelet_window_end 20.0",
+        f"wavelet_window_end {wavelet_window_end}",
+    )
+    text = text.replace("maximum_iterations 100", "maximum_iterations 30")
+    text = text.replace("ns_gid_peak_sigma_threshold 4.0", "ns_gid_peak_sigma_threshold 0.5")
+    text = text.replace(
+        "ns_gid_peak_probability_threshold 0.995",
+        "ns_gid_peak_probability_threshold 0.80",
+    )
+    path = tmp_path / pf_name
+    path.write_text(text)
+    return pfread(str(path))
+
+
+def _assert_long_window_gid_result(rf, qc):
+    assert rf.live
+    assert qc["wavelet_window_start"] == pytest.approx(-5.0)
+    assert qc["wavelet_window_end"] == pytest.approx(20.0)
+    assert qc["deconvolution_window_start"] == pytest.approx(-10.0)
+    assert qc["deconvolution_window_end"] == pytest.approx(160.0)
+    assert qc["noise_window_start"] == pytest.approx(-200.0)
+    assert qc["noise_window_end"] == pytest.approx(-10.0)
+    assert qc["gid_noise_samples_loaded"] == 3801
+    assert qc["gid_noise_samples_used"] == qc["gid_noise_samples_loaded"]
+    assert not qc["gid_noise_truncated"]
+    assert qc["gid_inverse_operator_nfft"] >= 4096
+    assert np.isfinite(qc["ns_gid_peak_threshold"])
+    # The shaping wavelet can shift the finite-bandwidth peak by a few
+    # samples, so verify nonzero recovered arrivals over the physical phase
+    # bands instead of requiring one exact sample.
+    t = rf.t0 + rf.dt * np.arange(rf.npts)
+    assert (
+        np.max(np.abs(np.asarray(rf.data[0])[(t >= 40.0) & (t <= 55.0)]))
+        > 1.0e-5
+    )
+    assert (
+        np.max(np.abs(np.asarray(rf.data[0])[(t >= 65.0) & (t <= 85.0)]))
+        > 1.0e-5
+    )
+
+
+def _assert_late_sparse_support(engine):
+    sparse = engine.sparse_output()
+    t = sparse.t0 + sparse.dt * np.arange(sparse.npts)
+    amplitude = np.linalg.norm(np.asarray(sparse.data), axis=0)
+    assert np.max(amplitude[(t >= 40.0) & (t <= 55.0)]) > 1.0e-5
+    assert np.max(amplitude[(t >= 65.0) & (t <= 85.0)]) > 1.0e-5
+
+
+def _assert_late_component_energy_does_not_change_auto_wavelet(
+    engine_type, wrapper, pf_name, qc_key, tmp_path
+):
+    data = _make_long_window_gid_data()
+    changed = Seismogram(data)
+    for lag in (45.0, 72.0):
+        index = int(round((lag - changed.t0) / changed.dt))
+        changed.data[2, index] += 10.0
+    first = engine_type(_long_window_gid_pf(tmp_path, pf_name))
+    second = engine_type(_long_window_gid_pf(tmp_path, pf_name))
+    first_rf = wrapper(
+        data,
+        first,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    second_rf = wrapper(
+        changed,
+        second,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    assert first_rf.live and second_rf.live
+    assert not first_rf[qc_key]["gid_external_wavelet_used"]
+    assert not second_rf[qc_key]["gid_external_wavelet_used"]
+    assert np.allclose(
+        np.asarray(first.actual_output().data),
+        np.asarray(second.actual_output().data),
+        atol=1.0e-10,
+    )
+
+
 def _make_external_noise_spectrum(power):
     return PowerSpectrum(
         Metadata(), DoubleVector([power, power, power]), 1.0, "valid", -1.0, 1.0, 3
@@ -210,6 +388,10 @@ def _pf_with_short_decon_window(tmp_path, pf_name, branch_name=None, mode=None):
         "deconvolution_data_window_end 20.0",
         "deconvolution_data_window_end 0.5",
     )
+    text = text.replace("full_data_window_start -8.0", "full_data_window_start -0.5")
+    text = text.replace("full_data_window_end 20.0", "full_data_window_end 0.5")
+    text = text.replace("wavelet_window_start -5.0", "wavelet_window_start -0.5")
+    text = text.replace("wavelet_window_end 20.0", "wavelet_window_end 0.5")
     dst = tmp_path / pf_name
     dst.write_text(text)
     return pfread(str(dst))
@@ -547,6 +729,207 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
         10.0 / 150.0,
         atol=1.0e-2,
     )
+
+
+def test_TimeDomainGIDDecon_long_analysis_uses_short_wavelet_and_full_noise(tmp_path):
+    """Regression for long NS-GID noise previously truncated to analysis size."""
+    data = _make_long_window_gid_data()
+    engine = TimeDomainGIDDecon(
+        _long_window_gid_pf(
+            tmp_path, "TimeDomainGIDDecon.pf"
+        )
+    )
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    _assert_long_window_gid_result(rf, rf["TimeDomainGIDDecon_properties"])
+    _assert_late_sparse_support(engine)
+
+
+def test_TimeDomainGIDDecon_auto_wavelet_ignores_late_component_energy(tmp_path):
+    _assert_late_component_energy_does_not_change_auto_wavelet(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_legacy_wavelet_window_defaults_to_analysis(tmp_path):
+    text = Path("./data/pf/TimeDomainGIDDecon.pf").read_text()
+    text = text.replace("        wavelet_window_start -5.0\n", "")
+    text = text.replace("        wavelet_window_end 20.0\n", "")
+    path = tmp_path / "TimeDomainGIDDecon_legacy_wavelet_window.pf"
+    path.write_text(text)
+    engine = TimeDomainGIDDecon(pfread(str(path)))
+    assert engine.wavelet_window_start() == pytest.approx(-5.0)
+    assert engine.wavelet_window_end() == pytest.approx(20.0)
+
+
+def test_TimeDomainGIDDecon_resizes_for_runtime_long_noise_and_keeps_output_window():
+    data = _make_long_window_gid_data()
+    engine = TimeDomainGIDDecon(pfread("./data/pf/TimeDomainGIDDecon.pf"))
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    qc = rf["TimeDomainGIDDecon_properties"]
+    assert rf.live
+    assert rf.t0 == pytest.approx(-8.0)
+    assert rf.endtime() == pytest.approx(20.0)
+    assert qc["gid_noise_samples_loaded"] == qc["gid_noise_samples_used"] == 3801
+    assert not qc["gid_noise_truncated"]
+    assert qc["gid_inverse_operator_nfft"] >= 8192
+
+
+def test_TimeDomainGIDDecon_rejects_wavelet_window_changeparameter():
+    engine = TimeDomainGIDDecon(pfread("./data/pf/TimeDomainGIDDecon.pf"))
+    with pytest.raises(MsPASSError, match="wavelet_window_start"):
+        engine.changeparameter(Metadata({"wavelet_window_start": -4.0}))
+
+
+def test_TimeDomainGIDDecon_rejects_signal_window_missing_configured_output():
+    data = _make_gid_test_data(noise_level=None)
+    engine = TimeDomainGIDDecon(pfread("./data/pf/TimeDomainGIDDecon.pf"))
+    assert engine.load(data, TimeWindow(-5.0, 20.0)) == 1
+    rf = TimeDomainGIDRFDecon(
+        data,
+        TimeDomainGIDDecon(pfread("./data/pf/TimeDomainGIDDecon.pf")),
+        signal_window=TimeWindow(-5.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert not rf.live
+
+
+def test_TimeDomainGIDDecon_allows_wavelet_window_outside_output_window(tmp_path):
+    engine = TimeDomainGIDDecon(
+        _long_window_gid_pf(
+            tmp_path,
+            "TimeDomainGIDDecon.pf",
+            wavelet_window_start=-20.0,
+            wavelet_window_end=-5.0,
+        )
+    )
+    rf = TimeDomainGIDRFDecon(
+        _make_long_window_gid_data(),
+        engine,
+        signal_window=TimeWindow(-20.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    assert rf.live
+    assert rf.t0 == pytest.approx(-10.0)
+
+
+def test_TimeDomainGIDDecon_external_wavelet_does_not_require_auto_window(tmp_path):
+    wavelet = TimeSeries(101)
+    wavelet.set_t0(-2.5)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    for i in range(wavelet.npts):
+        wavelet.data[i] = np.exp(-((i - 50) / 5.0) ** 2)
+    engine = TimeDomainGIDDecon(
+        _long_window_gid_pf(
+            tmp_path,
+            "TimeDomainGIDDecon.pf",
+            wavelet_window_start=-20.0,
+            wavelet_window_end=-5.0,
+        )
+    )
+    rf = TimeDomainGIDRFDecon(
+        _make_long_window_gid_data(),
+        engine,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+        external_wavelet=wavelet,
+    )
+    assert rf.live
+    assert rf["TimeDomainGIDDecon_properties"]["gid_external_wavelet_used"]
+
+
+def test_TimeDomainGIDRFDecon_external_wavelet_wrapper_error_contract():
+    _assert_external_wavelet_wrapper_error_contract(
+        TimeDomainGIDDecon(pfread("./data/pf/TimeDomainGIDDecon.pf")),
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon_properties",
+    )
+
+
+@pytest.mark.parametrize(
+    ("mode", "leaf_uses_external_noise"),
+    [("ns_gid", True), ("cnr", True), ("least_square", False)],
+)
+def test_TimeDomainGIDDecon_noise_qc_is_outer_consistent_and_leaf_specific(
+    tmp_path, mode, leaf_uses_external_noise
+):
+    data = _make_gid_test_data(noise_level=None)
+    engine = TimeDomainGIDDecon(
+        _pf_with_mode(
+            tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution", mode
+        )
+    )
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+        external_noise=_make_external_noise(),
+    )
+    qc = rf["TimeDomainGIDDecon_properties"]
+    # GID-level noise describes the residual/stopping record, irrespective of
+    # which leaf inverse operator is selected.  The configured -35:-5 window
+    # at 0.05 s contains 601 samples.
+    assert qc["gid_noise_samples_loaded"] == 601
+    assert qc["gid_noise_samples_used"] == 601
+    assert not qc["gid_noise_truncated"]
+    assert not qc["gid_residual_external_noise_used"]
+    if leaf_uses_external_noise:
+        assert qc["gid_leaf_noise_samples_loaded"] == 300
+        assert qc["gid_leaf_noise_samples_used"] == 300
+        assert qc["gid_leaf_external_noise_used"]
+        assert qc["gid_external_noise_used"]
+    else:
+        assert qc["gid_leaf_noise_samples_loaded"] == 0
+        assert qc["gid_leaf_noise_samples_used"] == 0
+        assert not qc["gid_leaf_external_noise_used"]
+        assert not qc["gid_external_noise_used"]
+
+
+@pytest.mark.parametrize(
+    ("mode", "leaf_uses_external_noise"),
+    [("least_square", False), ("ns_gid", True), ("cnr", True)],
+)
+def test_TimeDomainGIDDecon_direct_external_noise_reports_residual_provenance(
+    tmp_path, mode, leaf_uses_external_noise
+):
+    data = _make_gid_test_data(noise_level=None)
+    external_noise = _make_external_noise()
+    engine = TimeDomainGIDDecon(
+        _pf_with_mode(
+            tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution", mode
+        )
+    )
+    assert engine.loadnoise(external_noise) == 0
+    assert engine.load(data, TimeWindow(-8.0, 20.0)) == 0
+    engine.process()
+    qc = dict(engine.QCMetrics())
+
+    assert qc["gid_noise_samples_loaded"] == external_noise.npts
+    assert qc["gid_noise_samples_used"] == external_noise.npts
+    assert qc["gid_residual_external_noise_used"]
+    assert qc["gid_external_noise_used"]
+    assert qc["gid_leaf_external_noise_used"] == leaf_uses_external_noise
+    if leaf_uses_external_noise:
+        assert qc["gid_leaf_noise_samples_loaded"] == external_noise.npts
+        assert qc["gid_leaf_noise_samples_used"] == external_noise.npts
+    else:
+        assert qc["gid_leaf_noise_samples_loaded"] == 0
+        assert qc["gid_leaf_noise_samples_used"] == 0
 
 
 def test_TimeDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
@@ -1437,6 +1820,46 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift():
 
     with pytest.raises(MsPASSError, match="shaping_wavelet_dt"):
         engine.changeparameter(leaf_md)
+
+
+@pytest.mark.parametrize(
+    ("key", "match"),
+    [
+        ("target_sample_interval", "leaf target_sample_interval"),
+        ("shaping_wavelet_dt", "leaf shaping_wavelet_dt"),
+    ],
+)
+def test_TimeDomainGIDDecon_constructor_rejects_selected_leaf_dt_drift(
+    tmp_path, key, match
+):
+    text = Path("data/pf/TimeDomainGIDDecon.pf").read_text()
+    text = _replace_gid_deconvolution_type(
+        text, "time_domain_gid_deconvolution", "least_square"
+    )
+    prefix, leaf = text.split("least_square &Arr{", maxsplit=1)
+    old = f"{key} 0.05"
+    assert leaf.count(old) >= 1
+    text = prefix + "least_square &Arr{" + leaf.replace(old, f"{key} 0.1", 1)
+    pf = tmp_path / f"TimeDomainGIDDecon_bad_leaf_{key}.pf"
+    pf.write_text(text)
+
+    with pytest.raises(MsPASSError, match=match):
+        TimeDomainGIDDecon(pfread(str(pf)))
+
+
+def test_TimeDomainGIDDecon_constructor_accepts_matching_selected_leaf_metadata():
+    TimeDomainGIDDecon(pfread("data/pf/TimeDomainGIDDecon.pf"))
+
+
+def test_TimeDomainGIDDecon_constructor_rejects_outer_shaping_dt_drift(tmp_path):
+    text = Path("data/pf/TimeDomainGIDDecon.pf").read_text()
+    assert text.count("shaping_wavelet_dt 0.05") >= 1
+    text = text.replace("shaping_wavelet_dt 0.05", "shaping_wavelet_dt 0.1", 1)
+    pf = tmp_path / "TimeDomainGIDDecon_bad_outer_shaping_dt.pf"
+    pf.write_text(text)
+
+    with pytest.raises(MsPASSError, match="shaping_wavelet_dt must match"):
+        TimeDomainGIDDecon(pfread(str(pf)))
 
 
 @pytest.mark.parametrize(

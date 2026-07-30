@@ -150,10 +150,31 @@ MsPASS separates data handling from numerical deconvolution.
 
 ``TimeDomainGIDRFDecon`` and ``FrequencyDomainGIDRFDecon``
     Direct wrappers around the GID engines.  If ``signal_window`` is omitted,
-    the full input time range is used as the interval to analyze and return.  If
+    the full input time range is used to satisfy loading, while the configured
+    ``full_data_window`` remains the returned output interval.  If
     ``noise_window`` is omitted, the engine's parameter-file noise window is
     used.  The analysis interval must contain the configured receiver-function
     lag window.
+
+GID receiver-function windows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GID uses four independent time windows.  ``wavelet_window_start`` and
+``wavelet_window_end`` isolate the short direct-P source pulse used to build an
+internal source wavelet.  ``deconvolution_data_window_start`` and
+``deconvolution_data_window_end`` define the receiver-function analysis and
+sparse-search lags; this window must include any late P-to-S conversions of
+interest, such as P410s and P660s.  ``full_data_window_*`` defines the returned
+window and must contain the analysis window.  ``noise_window_*`` is an
+independent pre-event interval and can be longer than either signal window.
+
+For example, a mantle-transition-zone RF commonly uses ``dt=0.05``, a source
+wavelet window of ``(-5, 20)``, and analysis/output windows of ``(-10, 160)``
+with pre-event noise ``(-200, -10)``.  Configure each selected leaf inverse
+operator with the same analysis window, ``target_sample_interval``, and
+``shaping_wavelet_dt`` as the enclosing GID branch.  Older parameter files
+that omit the wavelet-window keys retain their historical behavior: the
+analysis window is also used for source-wavelet extraction.
 
 The lower-level C++ engines do the numerical work.  They are useful for tests,
 diagnostics, and specialized processing tools, but they expect the caller to
@@ -531,6 +552,16 @@ Greedy lag-weight penalty runs also record ``gid_penalty_function``,
 ``gid_adaptive_penalty_enabled``, ``gid_penalty_noise_amplitude``,
 ``gid_penalty_last_confidence``, ``gid_penalty_last_decay_factor``,
 ``gid_penalty_memory_Linf_final``, and ``gid_penalty_memory_L2_final``.
+
+``gid_noise_samples_loaded`` and ``gid_noise_samples_used`` always describe
+the GID residual/stopping noise record, regardless of the selected inverse
+mode.  Leaf regularization inputs are reported separately as
+``gid_leaf_noise_samples_loaded``, ``gid_leaf_noise_samples_used``, and
+``gid_leaf_noise_truncated``.  ``gid_residual_external_noise_used`` indicates
+that an externally loaded ``TimeSeries`` supplied the GID residual/stopping
+record, while ``gid_leaf_external_noise_used`` indicates that it was consumed
+by the leaf inverse operator.  The legacy-compatible
+``gid_external_noise_used`` is true if either role used external noise.
 
 When ``deconvolution_type ns_gid`` is active, additional ``ns_gid_*`` fields
 record inverse stability and stopping diagnostics, including

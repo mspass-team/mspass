@@ -491,6 +491,33 @@ class RFdeconProcessor:
         self._load_gid_cached_wavelet_to_engine()
         self._load_gid_cached_noise_to_engine()
 
+    def _gid_signal_window(self):
+        """Return the input window required by a GID engine load.
+
+        The loaded signal must cover output and sparse-analysis windows, plus
+        the automatic source-wavelet window unless a prepared external
+        wavelet is already cached on this processor or engine.
+        """
+        windows = [self.full_dwin, self.dwin]
+        has_external_wavelet = hasattr(self, "wvector") or (
+            hasattr(self.processor, "external_wavelet_is_loaded")
+            and self.processor.external_wavelet_is_loaded()
+        )
+        if not has_external_wavelet:
+            if self.md.is_defined("wavelet_window_start"):
+                windows.append(
+                    TimeWindow(
+                        self.md.get_double("wavelet_window_start"),
+                        self.md.get_double("wavelet_window_end"),
+                    )
+                )
+            else:
+                windows.append(self.dwin)
+        return TimeWindow(
+            min(window.start for window in windows),
+            max(window.end for window in windows),
+        )
+
     def clear_external_wavelet(self):
         """
         Clear a preconfigured external GID wavelet from this wrapper and engine.
@@ -958,7 +985,7 @@ class RFdeconProcessor:
         if not self.__is_3c_engine:
             raise RuntimeError("apply_3c is only valid for GID algorithms")
         try:
-            load_status = self.processor.load(d, self.full_dwin, self.nwin)
+            load_status = self.processor.load(d, self._gid_signal_window(), self.nwin)
         except MsPASSError as err:
             if err.severity == ErrorSeverity.Fatal:
                 raise

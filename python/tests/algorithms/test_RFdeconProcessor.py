@@ -6,6 +6,7 @@ import os
 import pickle
 import cloudpickle
 from contextlib import contextmanager
+from pathlib import Path
 import numpy as np
 import pytest
 
@@ -135,6 +136,103 @@ def _gid_pf_with_mode(tmp_path, mode, pf_name="TimeDomainGIDDecon.pf"):
     pf = tmp_path / pf_name
     pf.write_text(text)
     return pf
+
+
+@pytest.mark.parametrize(
+    ("alg", "pf_name"),
+    [
+        ("TimeDomainGID", "TimeDomainGIDDecon.pf"),
+        ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
+    ],
+)
+def test_RFdeconProcessor_gid_signal_window_includes_automatic_wavelet_union(
+    tmp_path, alg, pf_name
+):
+    text = (Path("data/pf") / pf_name).read_text()
+    text = text.replace("full_data_window_start -8.0", "full_data_window_start -10.0")
+    text = text.replace("full_data_window_end 20.0", "full_data_window_end 160.0")
+    text = text.replace(
+        "deconvolution_data_window_start -5.0", "deconvolution_data_window_start -10.0"
+    )
+    text = text.replace(
+        "deconvolution_data_window_end 20.0", "deconvolution_data_window_end 160.0"
+    )
+    text = text.replace("wavelet_window_start -5.0", "wavelet_window_start -20.0")
+    text = text.replace("wavelet_window_end 20.0", "wavelet_window_end -5.0")
+    pf = tmp_path / pf_name
+    pf.write_text(text)
+    processor = RFdeconProcessor(alg=alg, pf=str(pf))
+    automatic = processor._gid_signal_window()
+    assert automatic.start == pytest.approx(-20.0)
+    assert automatic.end == pytest.approx(160.0)
+
+    wavelet = TimeSeries(101)
+    wavelet.set_t0(-2.5)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    for i in range(wavelet.npts):
+        wavelet.data[i] = np.exp(-((i - 50) / 5.0) ** 2)
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    external = processor._gid_signal_window()
+    assert external.start == pytest.approx(-10.0)
+    assert external.end == pytest.approx(160.0)
+
+
+def _gid_processor_wavelet_outside_output_data():
+    """Build 3C input whose automatic source precedes the output window."""
+    dt = 0.05
+    t0 = -40.0
+    npts = int(round((160.0 - t0) / dt)) + 1
+    t = t0 + dt * np.arange(npts)
+
+    def pulse(center, amplitude, width=0.16):
+        return amplitude * np.exp(-((t - center) / width) ** 2)
+
+    data = Seismogram(npts)
+    data.set_t0(t0)
+    data.set_dt(dt)
+    data.set_live()
+    components = (
+        pulse(45.0, 0.75) + pulse(72.0, -0.55),
+        pulse(45.0, -0.45) + pulse(72.0, 0.35),
+        pulse(-10.0, 1.0) + pulse(45.0, 0.30) + pulse(72.0, -0.25),
+    )
+    for k, values in enumerate(components):
+        data.data[k, :] = values + 0.002 * np.sin(0.13 * np.arange(npts) + k)
+    return data
+
+
+@pytest.mark.parametrize(
+    ("alg", "pf_name"),
+    [
+        ("TimeDomainGID", "TimeDomainGIDDecon.pf"),
+        ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
+    ],
+)
+def test_RFdeconProcessor_apply_3c_loads_automatic_wavelet_outside_output(
+    tmp_path, alg, pf_name
+):
+    """``apply_3c`` must load the source window even when output excludes it."""
+    text = (Path("data/pf") / pf_name).read_text()
+    text = text.replace("full_data_window_start -8.0", "full_data_window_start -10.0")
+    text = text.replace("full_data_window_end 20.0", "full_data_window_end 160.0")
+    text = text.replace(
+        "deconvolution_data_window_start -5.0", "deconvolution_data_window_start -10.0"
+    )
+    text = text.replace(
+        "deconvolution_data_window_end 20.0", "deconvolution_data_window_end 160.0"
+    )
+    text = text.replace("wavelet_window_start -5.0", "wavelet_window_start -20.0")
+    text = text.replace("wavelet_window_end 20.0", "wavelet_window_end -5.0")
+    pf = tmp_path / pf_name
+    pf.write_text(text)
+
+    result = RFdeconProcessor(alg=alg, pf=str(pf)).apply_3c(
+        _gid_processor_wavelet_outside_output_data()
+    )
+    assert result.live
+    assert result.t0 == pytest.approx(-10.0)
+    assert result.endtime() == pytest.approx(160.0)
 
 
 def prediction_error_norm(ao, io):

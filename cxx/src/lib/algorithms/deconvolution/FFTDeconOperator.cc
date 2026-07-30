@@ -231,6 +231,15 @@ int ComputeFFTLength(const Metadata &md) {
     dt = GetDoubleRequired(md, "target_sample_interval");
     int nfft;
     nfft = ComputeFFTLength(w, dt);
+    /* operator_nfft is an explicit lower bound.  GID uses it to account for
+     * a source wavelet or an NS-GID noise window that is longer than the
+     * analysis-window-only estimate. */
+    const int requested_nfft = GetIntRequired(md, "operator_nfft");
+    if (requested_nfft <= 0)
+      throw MsPASSError("FFTDeconOperator ComputeFFTLength procedure: "
+                        "operator_nfft must be positive",
+                        ErrorSeverity::Fatal);
+    nfft = max(nfft, static_cast<int>(nextPowerOf2(requested_nfft)));
     if (nfft < 2)
       throw MsPASSError(
           string("FFTDeconOperator ComputeFFTLength procedure:  ") +

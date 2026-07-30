@@ -9,10 +9,17 @@ deconvolution_operator_type &Arr{
     time_domain_gid_deconvolution &Arr{
         deconvolution_type ns_gid
         target_sample_interval 0.05
+        # Short/crustal RF example.  deconvolution_data_window is the sparse
+        # analysis window; wavelet_window isolates the direct P source pulse.
+        # For mantle-transition-zone RFs use full/deconvolution = (-10,160),
+        # wavelet = (-5,20), and noise = (-200,-10) in this branch and every
+        # selected leaf branch.
         full_data_window_start -8.0
         full_data_window_end 20.0
         deconvolution_data_window_start -5.0
         deconvolution_data_window_end 20.0
+        wavelet_window_start -5.0
+        wavelet_window_end 20.0
         noise_window_start -35.0
         noise_window_end -5.0
         noise_component 2

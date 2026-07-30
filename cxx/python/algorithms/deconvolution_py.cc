@@ -506,12 +506,23 @@ PYBIND11_MODULE(deconvolution, m) {
       "Clear any previously loaded external wavelet")
     .def("clear_external_noise",&TimeDomainGIDDecon::clear_external_noise,
       "Clear any previously loaded external noise or noise spectrum")
+    .def("external_wavelet_is_loaded",
+      &TimeDomainGIDDecon::external_wavelet_is_loaded,
+      "Return whether an external source wavelet is loaded")
     .def("deconvolution_window_start",
       &TimeDomainGIDDecon::deconvolution_window_start,
       "Return start time of the configured deconvolution window")
     .def("deconvolution_window_end",
       &TimeDomainGIDDecon::deconvolution_window_end,
       "Return end time of the configured deconvolution window")
+    .def("wavelet_window_start", &TimeDomainGIDDecon::wavelet_window_start,
+      "Return start time of the configured source-wavelet window")
+    .def("wavelet_window_end", &TimeDomainGIDDecon::wavelet_window_end,
+      "Return end time of the configured source-wavelet window")
+    .def("output_window_start", &TimeDomainGIDDecon::output_window_start,
+      "Return start time of the configured output window")
+    .def("output_window_end", &TimeDomainGIDDecon::output_window_end,
+      "Return end time of the configured output window")
     .def("noise_window_start",
       &TimeDomainGIDDecon::noise_window_start,
       "Return start time of the configured noise window")
@@ -607,12 +618,23 @@ PYBIND11_MODULE(deconvolution, m) {
       "Clear any previously loaded external wavelet")
     .def("clear_external_noise",&FrequencyDomainGIDDecon::clear_external_noise,
       "Clear any previously loaded external noise or noise spectrum")
+    .def("external_wavelet_is_loaded",
+      &FrequencyDomainGIDDecon::external_wavelet_is_loaded,
+      "Return whether an external source wavelet is loaded")
     .def("deconvolution_window_start",
       &FrequencyDomainGIDDecon::deconvolution_window_start,
       "Return start time of the configured deconvolution window")
     .def("deconvolution_window_end",
       &FrequencyDomainGIDDecon::deconvolution_window_end,
       "Return end time of the configured deconvolution window")
+    .def("wavelet_window_start", &FrequencyDomainGIDDecon::wavelet_window_start,
+      "Return start time of the configured source-wavelet window")
+    .def("wavelet_window_end", &FrequencyDomainGIDDecon::wavelet_window_end,
+      "Return end time of the configured source-wavelet window")
+    .def("output_window_start", &FrequencyDomainGIDDecon::output_window_start,
+      "Return start time of the configured output window")
+    .def("output_window_end", &FrequencyDomainGIDDecon::output_window_end,
+      "Return end time of the configured output window")
     .def("noise_window_start",
       &FrequencyDomainGIDDecon::noise_window_start,
       "Return start time of the configured noise window")
