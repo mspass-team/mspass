@@ -66,7 +66,7 @@ def _make_wrapper_external_wavelet():
     wavelet.set_dt(0.05)
     wavelet.set_live()
     for i in range(wavelet.npts):
-        wavelet.data[i] = np.exp(-((i - 50) / 5.0) ** 2)
+        wavelet.data[i] = np.exp(-(((i - 50) / 5.0) ** 2))
     return wavelet
 
 
@@ -111,7 +111,7 @@ def _make_long_window_gid_data():
     t = t0 + dt * np.arange(npts)
 
     def pulse(center, amplitude, width=0.16):
-        return amplitude * np.exp(-((t - center) / width) ** 2)
+        return amplitude * np.exp(-(((t - center) / width) ** 2))
 
     data = Seismogram(npts)
     data.set_t0(t0)
@@ -161,7 +161,9 @@ def _long_window_gid_pf(
         f"wavelet_window_end {wavelet_window_end}",
     )
     text = text.replace("maximum_iterations 100", "maximum_iterations 30")
-    text = text.replace("ns_gid_peak_sigma_threshold 4.0", "ns_gid_peak_sigma_threshold 0.5")
+    text = text.replace(
+        "ns_gid_peak_sigma_threshold 4.0", "ns_gid_peak_sigma_threshold 0.5"
+    )
     text = text.replace(
         "ns_gid_peak_probability_threshold 0.995",
         "ns_gid_peak_probability_threshold 0.80",
@@ -188,14 +190,8 @@ def _assert_long_window_gid_result(rf, qc):
     # samples, so verify nonzero recovered arrivals over the physical phase
     # bands instead of requiring one exact sample.
     t = rf.t0 + rf.dt * np.arange(rf.npts)
-    assert (
-        np.max(np.abs(np.asarray(rf.data[0])[(t >= 40.0) & (t <= 55.0)]))
-        > 1.0e-5
-    )
-    assert (
-        np.max(np.abs(np.asarray(rf.data[0])[(t >= 65.0) & (t <= 85.0)]))
-        > 1.0e-5
-    )
+    assert np.max(np.abs(np.asarray(rf.data[0])[(t >= 40.0) & (t <= 55.0)])) > 1.0e-5
+    assert np.max(np.abs(np.asarray(rf.data[0])[(t >= 65.0) & (t <= 85.0)])) > 1.0e-5
 
 
 def _assert_late_sparse_support(engine):
@@ -734,11 +730,7 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
 def test_TimeDomainGIDDecon_long_analysis_uses_short_wavelet_and_full_noise(tmp_path):
     """Regression for long NS-GID noise previously truncated to analysis size."""
     data = _make_long_window_gid_data()
-    engine = TimeDomainGIDDecon(
-        _long_window_gid_pf(
-            tmp_path, "TimeDomainGIDDecon.pf"
-        )
-    )
+    engine = TimeDomainGIDDecon(_long_window_gid_pf(tmp_path, "TimeDomainGIDDecon.pf"))
     rf = TimeDomainGIDRFDecon(
         data,
         engine,
@@ -832,7 +824,7 @@ def test_TimeDomainGIDDecon_external_wavelet_does_not_require_auto_window(tmp_pa
     wavelet.set_dt(0.05)
     wavelet.set_live()
     for i in range(wavelet.npts):
-        wavelet.data[i] = np.exp(-((i - 50) / 5.0) ** 2)
+        wavelet.data[i] = np.exp(-(((i - 50) / 5.0) ** 2))
     engine = TimeDomainGIDDecon(
         _long_window_gid_pf(
             tmp_path,

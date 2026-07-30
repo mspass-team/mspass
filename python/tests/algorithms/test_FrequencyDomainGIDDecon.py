@@ -165,7 +165,7 @@ def test_FrequencyDomainGIDDecon_resizes_for_external_wavelet_and_noise():
     wavelet.set_dt(0.05)
     wavelet.set_live()
     for i in range(wavelet.npts):
-        wavelet.data[i] = np.exp(-((i - 100) / 5.0) ** 2)
+        wavelet.data[i] = np.exp(-(((i - 100) / 5.0) ** 2))
     noise = TimeSeries(6001)
     noise.set_t0(-200.0)
     noise.set_dt(0.05)
@@ -269,7 +269,7 @@ def test_FrequencyDomainGIDDecon_external_wavelet_does_not_require_auto_window(
     wavelet.set_dt(0.05)
     wavelet.set_live()
     for i in range(wavelet.npts):
-        wavelet.data[i] = np.exp(-((i - 50) / 5.0) ** 2)
+        wavelet.data[i] = np.exp(-(((i - 50) / 5.0) ** 2))
     engine = FrequencyDomainGIDDecon(
         _long_window_gid_pf(
             tmp_path,
