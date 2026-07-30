@@ -178,6 +178,30 @@ def test_RFdeconProcessor_gid_signal_window_includes_automatic_wavelet_union(
     assert external.end == pytest.approx(160.0)
 
 
+@pytest.mark.parametrize(
+    ("alg", "pf_name"),
+    [
+        ("TimeDomainGID", "TimeDomainGIDDecon.pf"),
+        ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
+    ],
+)
+def test_RFdeconProcessor_gid_diagnostic_accessors_return_timeseries(alg, pf_name):
+    """Public processor diagnostics must work with metadata-aware APIs."""
+    processor = RFdeconProcessor(alg=alg, pf=str(Path("data/pf") / pf_name))
+    result = processor.apply_3c(_make_gid_switching_data())
+    assert result.live
+    for diagnostic in (
+        processor.actual_output(),
+        processor.output_shaping_wavelet(),
+    ):
+        assert isinstance(diagnostic, TimeSeries)
+        windowed = WindowData(
+            diagnostic, diagnostic.t0, diagnostic.endtime()
+        )
+        assert isinstance(windowed, TimeSeries)
+        assert windowed.live
+
+
 def _gid_processor_wavelet_outside_output_data():
     """Build 3C input whose automatic source precedes the output window."""
     dt = 0.05
@@ -313,7 +337,12 @@ def test_RFdeconProcessor():
         # in this test the output is meaningless - just verify length
         # assert len(result) == 1024
         ao = processor.actual_output()
-        io = processor.ideal_output()
+        io = processor.output_shaping_wavelet()
+        assert isinstance(ao, TimeSeries)
+        assert isinstance(io, TimeSeries)
+        assert isinstance(processor.ideal_output(), TimeSeries)
+        assert isinstance(WindowData(ao, ao.t0, ao.endtime()), TimeSeries)
+        assert isinstance(WindowData(io, io.t0, io.endtime()), TimeSeries)
         if alg == "TimeDomainLeastSquares":
             ao_data = np.asarray(ao.data)
             assert np.isfinite(ao_data).all()

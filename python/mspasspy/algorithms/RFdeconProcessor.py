@@ -1010,15 +1010,16 @@ class RFdeconProcessor:
         the wavelet.  By design it is an approximation of the shaping wavelet
         defined for this operator.
 
-        :return: Actual output of the operator as a ccore.TimeSeries object.
-            The Metadata of the return is bare bones.  The most important factor
-            about this result is that because actual output waveforms are normally
-            a zero phase wavelet of some kind the result is time shifted to be
-            centered (i.e. t0 is rounded n/2 where n is the length of the vector
-            returned).
+        :return: Actual output as a full :class:`~mspasspy.ccore.seismic.TimeSeries`.
+            A fresh TimeSeries copy is returned even when the wrapped C++
+            operator exposes its diagnostic as a CoreTimeSeries, so it can be
+            passed directly to higher-level algorithms such as WindowData.
+            Metadata are intentionally minimal.  Because actual-output
+            waveforms are normally zero-phase, their time origin is centered
+            on zero lag.
         """
         if self.__is_3c_engine:
-            return self.processor.actual_output()
+            return TimeSeries(self.processor.actual_output())
         if hasattr(self, "dvector"):
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
@@ -1026,19 +1027,21 @@ class RFdeconProcessor:
         if self.__uses_noise and hasattr(self, "nvector"):
             self.processor.loadnoise(DoubleVector(self.nvector))
         self.processor.process()
-        return self.processor.actual_output()
+        return TimeSeries(self.processor.actual_output())
 
     def output_shaping_wavelet(self):
         """
-        Return the output shaping wavelet, ws(t) in Wang and Pavlis (2016).
+        Return the output shaping wavelet, ws(t) in Wang and Pavlis (2016),
+        as a full :class:`~mspasspy.ccore.seismic.TimeSeries`.
 
         For GID this is the configured wavelet used to convolve the sparse
         impulse response to form the finite-bandwidth receiver function.  For
         scalar operators it is the optional post-deconvolution
-        shaping/bandlimiting wavelet.
+        shaping/bandlimiting wavelet.  The returned copy is suitable for
+        WindowData and other metadata-aware TimeSeries APIs.
         """
         if self.__is_3c_engine:
-            return self.processor.output_shaping_wavelet()
+            return TimeSeries(self.processor.output_shaping_wavelet())
         if hasattr(self, "dvector"):
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
@@ -1046,7 +1049,7 @@ class RFdeconProcessor:
         if self.__uses_noise and hasattr(self, "nvector"):
             self.processor.loadnoise(DoubleVector(self.nvector))
         self.processor.process()
-        return self.processor.output_shaping_wavelet()
+        return TimeSeries(self.processor.output_shaping_wavelet())
 
     def ideal_output(self):
         """

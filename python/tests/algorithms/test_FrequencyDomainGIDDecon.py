@@ -12,6 +12,7 @@ from mspasspy.ccore.algorithms.deconvolution import FrequencyDomainGIDDecon
 from mspasspy.ccore.utility import ErrorSeverity, Metadata, MsPASSError, pfread
 from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, Seismogram, TimeSeries
 from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDecon
+from mspasspy.algorithms.window import WindowData
 
 from test_TimeDomainGIDDecon import (
     _assert_actual_and_output_shaping_are_distinct,
@@ -69,6 +70,20 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     )
 
     _assert_valid_rf(rf)
+    assert isinstance(actual_output, TimeSeries)
+    assert isinstance(output_shaping_wavelet, TimeSeries)
+    assert isinstance(
+        WindowData(actual_output, actual_output.t0, actual_output.endtime()),
+        TimeSeries,
+    )
+    assert isinstance(
+        WindowData(
+            output_shaping_wavelet,
+            output_shaping_wavelet.t0,
+            output_shaping_wavelet.endtime(),
+        ),
+        TimeSeries,
+    )
     assert actual_output.live
     assert output_shaping_wavelet.live
     _assert_actual_and_output_shaping_are_distinct(
@@ -1735,6 +1750,34 @@ def test_FrequencyDomainGIDRFDecon_error_return_and_optional_qc():
     rf = FrequencyDomainGIDRFDecon(data, engine, QCdata_key=None)
     _assert_valid_rf(rf)
     assert not rf.is_defined("FrequencyDomainGIDDecon_properties")
+
+
+@pytest.mark.parametrize("accessor", ["actual_output", "output_shaping_wavelet"])
+def test_FrequencyDomainGIDRFDecon_diagnostic_failure_returns_dead_triplet(
+    monkeypatch, accessor
+):
+    """Recoverable diagnostic failures retain the documented list contract."""
+    data = _make_gid_test_data(noise_level=None)
+    engine = FrequencyDomainGIDDecon(
+        pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    )
+
+    def raise_diagnostic_error(_self):
+        raise RuntimeError("synthetic diagnostic accessor failure")
+
+    monkeypatch.setattr(type(engine), accessor, raise_diagnostic_error)
+    result = FrequencyDomainGIDRFDecon.__wrapped__(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-25.0, -8.0),
+        return_wavelet=True,
+    )
+    assert isinstance(result, list)
+    assert result[0].dead()
+    assert result[1] is None
+    assert result[2] is None
+    assert result[0].elog.size() > 0
 
 
 def test_FrequencyDomainGIDDecon_rejects_invalid_runtime_noise_window():

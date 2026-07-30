@@ -69,8 +69,12 @@ def TimeDomainGIDRFDecon(
         configured noise window only.
     :param QCdata_key: metadata key used to store the engine's QC metrics.
     :param return_wavelet: when True return
-        `[rf, actual_output, output_shaping_wavelet]`.
-    :return: deconvolved `Seismogram`, or the tuple described above.
+        ``[rf, actual_output, output_shaping_wavelet]``, where both diagnostic
+        waveforms are full ``TimeSeries`` objects.
+    :return: deconvolved `Seismogram`, or the list described above when
+        ``return_wavelet`` is True.  Dead inputs and recoverable processing or
+        diagnostic-access failures return a dead `Seismogram`; with
+        ``return_wavelet`` True the auxiliary outputs are ``None``.
     """
     return _run_gid_rf_decon(
         seis,
