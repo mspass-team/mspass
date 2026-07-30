@@ -195,9 +195,7 @@ def test_RFdeconProcessor_gid_diagnostic_accessors_return_timeseries(alg, pf_nam
         processor.output_shaping_wavelet(),
     ):
         assert isinstance(diagnostic, TimeSeries)
-        windowed = WindowData(
-            diagnostic, diagnostic.t0, diagnostic.endtime()
-        )
+        windowed = WindowData(diagnostic, diagnostic.t0, diagnostic.endtime())
         assert isinstance(windowed, TimeSeries)
         assert windowed.live
 

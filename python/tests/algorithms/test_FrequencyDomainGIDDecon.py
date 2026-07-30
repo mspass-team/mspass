@@ -1758,9 +1758,7 @@ def test_FrequencyDomainGIDRFDecon_diagnostic_failure_returns_dead_triplet(
 ):
     """Recoverable diagnostic failures retain the documented list contract."""
     data = _make_gid_test_data(noise_level=None)
-    engine = FrequencyDomainGIDDecon(
-        pfread("./data/pf/FrequencyDomainGIDDecon.pf")
-    )
+    engine = FrequencyDomainGIDDecon(pfread("./data/pf/FrequencyDomainGIDDecon.pf"))
 
     def raise_diagnostic_error(_self):
         raise RuntimeError("synthetic diagnostic accessor failure")
