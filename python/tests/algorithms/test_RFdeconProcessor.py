@@ -171,7 +171,7 @@ def test_RFdeconProcessor_gid_signal_window_includes_automatic_wavelet_union(
     wavelet.set_dt(0.05)
     wavelet.set_live()
     for i in range(wavelet.npts):
-        wavelet.data[i] = np.exp(-((i - 50) / 5.0) ** 2)
+        wavelet.data[i] = np.exp(-(((i - 50) / 5.0) ** 2))
     processor.loadwavelet(wavelet, dtype="TimeSeries")
     external = processor._gid_signal_window()
     assert external.start == pytest.approx(-10.0)
@@ -186,7 +186,7 @@ def _gid_processor_wavelet_outside_output_data():
     t = t0 + dt * np.arange(npts)
 
     def pulse(center, amplitude, width=0.16):
-        return amplitude * np.exp(-((t - center) / width) ** 2)
+        return amplitude * np.exp(-(((t - center) / width) ** 2))
 
     data = Seismogram(npts)
     data.set_t0(t0)
