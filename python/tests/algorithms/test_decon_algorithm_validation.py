@@ -1572,16 +1572,13 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         > 0.95
     )
 
-    shifted_truth_times = (
-        np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
-        + external_wavelet_shift
-    )
+    physical_truth_times = np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
     for sparse_name in gid_sparse_names:
         metrics = _classify_spike_detections_against_times(
             results[sparse_name],
             -8.0,
             truth.dt,
-            shifted_truth_times,
+            physical_truth_times,
         )
         assert metrics["recall"] >= 0.95, sparse_name
         if "FrequencyDomainGIDDecon" in sparse_name or "group_sparse" in sparse_name:
@@ -1591,8 +1588,15 @@ def test_external_wavelet_validation_across_deconvolution_methods(
 
     plot_npts = int(round((20.0 - SIGNAL_WINDOW.start) / truth.dt)) + 1
     plot_results = {}
+    gid_sparse_plot_results = {}
     for name, result in results.items():
-        if "GIDDecon" in name and not name.endswith("_sparse"):
+        if "GIDDecon" in name:
+            if name not in gid_sparse_names:
+                continue
+            plot_name = f"{name.removesuffix('_sparse')}:sparse"
+            gid_sparse_plot_results[plot_name] = _slice_matrix_to_window(
+                result, -8.0, truth.dt, SIGNAL_WINDOW.start, plot_npts
+            )
             continue
         plot_name = name.replace("_sparse", ":sparse")
         src_t0 = -8.0 if name.endswith("_sparse") else SIGNAL_WINDOW.start
@@ -1602,10 +1606,25 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         if plot_name != name:
             plot_results[plot_name] = plot_results.pop(name)
 
+    assert len(gid_sparse_names) == 4
+    expected_gid_sparse_labels = {
+        f"{name.removesuffix('_sparse')}:sparse" for name in gid_sparse_names
+    }
+    assert set(gid_sparse_plot_results) == expected_gid_sparse_labels
+
     _plot_external_wavelet_results(
         decon_validation_plot_dir,
         plot_results,
         shifted_truth,
+        SIGNAL_WINDOW.start,
+        truth.dt,
+    )
+    _plot_rf_overlay(
+        decon_validation_plot_dir,
+        "external_wavelet_gid_sparse_physical_times.png",
+        "External prepared wavelet GID sparse validation (physical lag times)",
+        gid_sparse_plot_results,
+        truth,
         SIGNAL_WINDOW.start,
         truth.dt,
     )
@@ -1637,13 +1656,7 @@ def test_group_sparse_adaptive_support_threshold_controls_clustered_coefficients
         noise_scale=0.01,
         return_truth=True,
     )
-    reference = _scalar_rf_matrix_external_wavelet("LeastSquares", data, wavelet)
-    amp = np.sqrt(reference[0, :] ** 2 + reference[1, :] ** 2 + reference[2, :] ** 2)
-    external_wavelet_shift = SIGNAL_WINDOW.start + truth.dt * int(np.argmax(amp))
-    shifted_truth_times = (
-        np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
-        + external_wavelet_shift
-    )
+    physical_truth_times = np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
 
     def run_group_sparse(replacements=None):
         replacements = replacements or {}
@@ -1668,7 +1681,7 @@ def test_group_sparse_adaptive_support_threshold_controls_clustered_coefficients
             np.asarray(sparse.data),
             sparse.t0,
             sparse.dt,
-            shifted_truth_times,
+            physical_truth_times,
         )
         return metrics, dict(rf[qc_key])
 
