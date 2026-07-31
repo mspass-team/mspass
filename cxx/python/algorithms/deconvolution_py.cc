@@ -58,10 +58,10 @@ public:
         process
     );
   }
-  CoreTimeSeries actual_output()
+  TimeSeries actual_output()
   {
     PYBIND11_OVERLOAD_PURE(
-        CoreTimeSeries,
+        TimeSeries,
         ScalarDecon,
         actual_output
     );

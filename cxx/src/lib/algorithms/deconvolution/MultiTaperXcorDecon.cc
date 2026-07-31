@@ -330,7 +330,7 @@ void MultiTaperXcorDecon::process() {
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
   result = ExtractLagWindow(rf_fft, output_length, sample_shift);
 }
-CoreTimeSeries MultiTaperXcorDecon::actual_output() {
+TimeSeries MultiTaperXcorDecon::actual_output() {
   try {
     if (ao_fft.size() <= 0)
       throw MsPASSError("MultiTaperXcorDecon::actual_output: process must "

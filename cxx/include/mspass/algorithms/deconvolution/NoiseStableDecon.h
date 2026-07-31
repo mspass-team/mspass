@@ -64,7 +64,7 @@ public:
   \param noise_spectrum spectrum that covers DC and describes noise power.
   */
   void loadnoise(const mspass::seismic::PowerSpectrum &noise_spectrum);
-  mspass::seismic::CoreTimeSeries actual_output();
+  mspass::seismic::TimeSeries actual_output();
   /*! \brief Return the inverse filter impulse response.
 
   \param t0parent parent waveform start time used to set the output time

@@ -4,7 +4,7 @@
 Shared Python wrapper logic for generalized iterative deconvolution engines.
 """
 
-from mspasspy.ccore.seismic import Seismogram, TimeSeries
+from mspasspy.ccore.seismic import Seismogram
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 
@@ -117,13 +117,11 @@ def _run_gid_rf_decon(
             qcmd["algorithm"] = alg
             rf[QCdata_key] = qcmd
         if return_wavelet:
-            # The C++ GID engines expose diagnostic waveforms as
-            # CoreTimeSeries.  Promote them while still inside this recoverable
-            # error boundary so failed diagnostic access has the same contract
-            # as a failed processing step.
+            # Fetch diagnostics inside the recoverable error boundary so a
+            # failed accessor has the same contract as a failed process call.
             diagnostics = [
-                TimeSeries(engine.actual_output()),
-                TimeSeries(engine.output_shaping_wavelet()),
+                engine.actual_output(),
+                engine.output_shaping_wavelet(),
             ]
     except MsPASSError as err:
         if err.severity == ErrorSeverity.Fatal:

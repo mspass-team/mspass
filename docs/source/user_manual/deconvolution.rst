@@ -176,6 +176,17 @@ operator with the same analysis window, ``target_sample_interval``, and
 that omit the wavelet-window keys retain their historical behavior: the
 analysis window is also used for source-wavelet extraction.
 
+Group-sparse support is deliberately narrower than the requested analysis
+interval when a resolution-kernel column would cross either record edge.  The
+solver requires the complete normalized resolution kernel for every retained
+lag: partial columns have variable energy and poor refit conditioning, and are
+therefore rejected rather than interpreted as zero-valued observations.  QC
+records the resulting ``group_sparse_valid_lag_*`` interval and the
+``full_resolution_kernel`` boundary policy.  Include guard data beyond a late
+arrival and crop to the desired output window when an arrival near an edge must
+be resolved.  Shortening the analysis interval cannot recover an unsupported
+edge lag; declare that arrival unsupported when guard data are unavailable.
+
 The lower-level C++ engines do the numerical work.  They are useful for tests,
 diagnostics, and specialized processing tools, but they expect the caller to
 load the correct data, wavelet, and noise estimates.
@@ -570,6 +581,75 @@ record inverse stability and stopping diagnostics, including
 ``ns_gid_effective_bandwidth_fraction``.  The Python wrappers store these QC
 values in receiver-function metadata subdocuments, so they are saved with
 normal database records.
+
+For NS-GID, ``ns_gid_peak_threshold`` is an amplitude threshold on the
+three-component vector norm at one candidate lag.  With the shipped
+configuration it is the larger of the configured empirical quantile
+(``ns_gid_peak_threshold_empirical``) and ``ns_gid_peak_sigma_threshold``
+times the inverse-filtered three-component vector RMS
+(``ns_gid_peak_threshold_sigma``).  ``ns_gid_noise_amplitude_robust`` is the
+robust vector-RMS-equivalent diagnostic: it is formed by applying the normal
+MAD factor to each *signed* inverse-filtered component and combining the three
+component scales in quadrature.  It is not a MAD of nonnegative vector
+amplitudes.  ``ns_gid_component_noise_rms_0`` through ``_2`` expose component
+RMS contributions.  Consequently, the shipped multiplier of 4.0 is four times
+the 3C vector RMS (``4 sqrt(3)`` component standard deviations for iid normal
+components), not a conventional "4-sigma" component threshold.  The shipped
+4.0/0.995 profile is deliberately conservative for RF picking and remains
+unchanged pending representative real-data validation; tune it with local
+noise diagnostics.
+
+``ns_gid_residual_rms_ratio`` is the three-component RMS residual divided by
+the inverse-filtered three-component noise RMS and is the ratio used for the
+NS-GID residual-noise stop.  It is independent of noise-window length.
+``ns_gid_residual_noise_ratio`` and
+``ns_gid_residual_l2_ratio_legacy`` retain the earlier raw-L2 ratio for
+backward-compatible QC interpretation, but no longer drive stopping.
+
+GID constructs a union preprocessing grid spanning the full source and
+analysis intervals, then maps the leaf response back onto the unchanged
+analysis grid; it does not relabel the output after vector-only leaf
+deconvolution.  The QC
+keys ``gid_analysis_t0``, ``gid_wavelet_t0``, ``gid_analysis_samples``,
+``gid_wavelet_samples``, and ``gid_wavelet_alignment_offset_samples`` record
+that mapping.  For NS-GID, ``ns_gid_iteration_N_candidate_lag_samples``,
+``_candidate_lag_time``, ``_candidate_amplitude``, ``_threshold``,
+``_significance``, and ``_accepted``
+make each candidate decision inspectable.  The matching
+``_post_residual_rms_ratio`` is the residual/noise RMS ratio after a candidate
+is accepted, and ``_stop_condition`` is initially ``continue`` or the local
+rejection reason.  After final ridge refitting, the final trace row is updated
+with the final residual ratio and the global terminal stop reason; it therefore
+describes the same terminal state as ``ns_gid_stop_reason``.  Earlier accepted
+rows retain their pre-final-refit event values.  A final ridge refit can increase
+the residual; in that case the explicit
+``post_refit_residual_above_noise_floor`` stop reason replaces a stale
+noise-floor convergence result.
+
+The repository includes deterministic synthetic checks of the shipped 4.0/
+0.995 profile, but no representative field-data archive is part of this test
+suite.  These checks demonstrate its deliberately conservative rejection of a
+weak conversion; they are not a claim of real-data calibration.
+The repository waveform fixtures (MiniSEED/MS test inputs) contain no
+identified mantle receiver-function benchmark with a reference conversion
+catalog, so before/after field QC cannot be reported from this checkout.
+
+.. warning::
+
+   ``ScalarDecon`` public virtual diagnostics now return ``TimeSeries`` rather
+   than ``CoreTimeSeries``.  Downstream custom overrides/callers and prebuilt
+   extensions must update to that signature and be rebuilt.  This is an
+   intentional API migration so diagnostic waveforms retain metadata.
+
+For long mantle-RF searches, an explicit synthetic starting profile is
+``ns_gid_peak_sigma_threshold 2.5`` and
+``ns_gid_peak_probability_threshold 0.999`` (with the empirical threshold
+enabled).  Under iid normal components, 2.5 vector-RMS is 4.33 component
+standard deviations; its Maxwell-tail false-candidate probability is about
+3e-4, or about 0.2 candidates in 600 independent lags.  The 0.999 empirical
+guard is retained for non-Gaussian noise.  This is a statistically stated
+synthetic starting point, not a field-calibrated default; the shipped 4.0/
+0.995 profile is intentionally left unchanged.
 
 For a beginner-oriented guide to reading these fields after a plot run or
 database save, see `Validation and QC workflow`_.
