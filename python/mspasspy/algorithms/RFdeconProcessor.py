@@ -1011,15 +1011,14 @@ class RFdeconProcessor:
         defined for this operator.
 
         :return: Actual output as a full :class:`~mspasspy.ccore.seismic.TimeSeries`.
-            A fresh TimeSeries copy is returned even when the wrapped C++
-            operator exposes its diagnostic as a CoreTimeSeries, so it can be
-            passed directly to higher-level algorithms such as WindowData.
-            Metadata are intentionally minimal.  Because actual-output
+            The C++ deconvolution API returns a TimeSeries suitable for
+            higher-level algorithms such as WindowData.  Metadata are
+            intentionally minimal.  Because actual-output
             waveforms are normally zero-phase, their time origin is centered
             on zero lag.
         """
         if self.__is_3c_engine:
-            return TimeSeries(self.processor.actual_output())
+            return self.processor.actual_output()
         if hasattr(self, "dvector"):
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
@@ -1027,7 +1026,7 @@ class RFdeconProcessor:
         if self.__uses_noise and hasattr(self, "nvector"):
             self.processor.loadnoise(DoubleVector(self.nvector))
         self.processor.process()
-        return TimeSeries(self.processor.actual_output())
+        return self.processor.actual_output()
 
     def output_shaping_wavelet(self):
         """
@@ -1037,11 +1036,11 @@ class RFdeconProcessor:
         For GID this is the configured wavelet used to convolve the sparse
         impulse response to form the finite-bandwidth receiver function.  For
         scalar operators it is the optional post-deconvolution
-        shaping/bandlimiting wavelet.  The returned copy is suitable for
-        WindowData and other metadata-aware TimeSeries APIs.
+        shaping/bandlimiting wavelet.  The C++ API returns a TimeSeries
+        suitable for WindowData and other metadata-aware TimeSeries APIs.
         """
         if self.__is_3c_engine:
-            return TimeSeries(self.processor.output_shaping_wavelet())
+            return self.processor.output_shaping_wavelet()
         if hasattr(self, "dvector"):
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
@@ -1049,7 +1048,7 @@ class RFdeconProcessor:
         if self.__uses_noise and hasattr(self, "nvector"):
             self.processor.loadnoise(DoubleVector(self.nvector))
         self.processor.process()
-        return TimeSeries(self.processor.output_shaping_wavelet())
+        return self.processor.output_shaping_wavelet()
 
     def ideal_output(self):
         """

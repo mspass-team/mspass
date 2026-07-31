@@ -141,7 +141,7 @@ void WaterLevelDecon::process() {
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
   result = ExtractLagWindow(rf_fft, output_length, sample_shift);
 }
-CoreTimeSeries WaterLevelDecon::actual_output() {
+TimeSeries WaterLevelDecon::actual_output() {
   try {
     vector<double> wavelet_padded(wavelet);
     if (wavelet_padded.size() < nfft)

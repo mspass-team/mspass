@@ -377,7 +377,7 @@ void MultiTaperSpecDivDecon::process() {
     throw;
   };
 }
-CoreTimeSeries MultiTaperSpecDivDecon::actual_output() {
+TimeSeries MultiTaperSpecDivDecon::actual_output() {
   try {
     if (ao_fft.empty())
       throw MsPASSError("MultiTaperSpecDivDecon::actual_output: process must "

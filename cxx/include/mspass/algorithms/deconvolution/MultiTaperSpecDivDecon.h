@@ -78,7 +78,7 @@ public:
   The actual output/resolution kernel is defined as G(f)W0(f), where G is the
   combined multitaper-power-stabilized inverse and W0 is the untapered wavelet
   spectrum. */
-  mspass::seismic::CoreTimeSeries actual_output();
+  mspass::seismic::TimeSeries actual_output();
   /*! \brief Return a FIR representation of the inverse filter.
 
   An inverse filter has an impulse response.  For some wavelets this

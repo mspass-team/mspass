@@ -237,7 +237,7 @@ void NoiseStableDecon::process() {
   processed = true;
 }
 
-CoreTimeSeries NoiseStableDecon::actual_output() {
+TimeSeries NoiseStableDecon::actual_output() {
   if (!processed || winv.size() <= 0)
     throw MsPASSError(
         "NoiseStableDecon::actual_output: process must be called first",

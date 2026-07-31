@@ -230,7 +230,7 @@ vector<double> TimeDomainLeastSquareDecon::apply_shaping_wavelet(
   return shaped;
 }
 
-CoreTimeSeries TimeDomainLeastSquareDecon::output_shaping_wavelet() {
+TimeSeries TimeDomainLeastSquareDecon::output_shaping_wavelet() {
   const string base_error(
       "TimeDomainLeastSquareDecon::output_shaping_wavelet: ");
   const int nlag(this->diagnostic_length());
@@ -273,7 +273,7 @@ void TimeDomainLeastSquareDecon::process() {
                       ErrorSeverity::Fatal);
 }
 
-CoreTimeSeries TimeDomainLeastSquareDecon::actual_output() {
+TimeSeries TimeDomainLeastSquareDecon::actual_output() {
   if (wavelet.empty())
     throw MsPASSError("TimeDomainLeastSquareDecon::actual_output: wavelet has "
                       "not been loaded",

@@ -34,6 +34,16 @@ from test_TimeDomainGIDDecon import (
     _assert_long_window_gid_result,
     _assert_late_component_energy_does_not_change_auto_wavelet,
     _assert_late_sparse_support,
+    _assert_all_leaf_physical_lag_alignment,
+    _assert_controlled_external_alignment,
+    _assert_group_sparse_boundary_support,
+    _assert_shipped_default_weak_conversion_profile,
+    _assert_mantle_profile_weak_and_noise_control,
+    _assert_internal_external_wavelet_equivalence,
+    _assert_ridge_refit_reports_final_residual_state,
+    _assert_residual_rms_stop_is_noise_length_stable,
+    _assert_ns_terminal_trace_controls,
+    _assert_wavelet_start_invariant_sparse_timing,
     _pf_with_mode,
     _replace_gid_deconvolution_type,
 )
@@ -72,6 +82,9 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     _assert_valid_rf(rf)
     assert isinstance(actual_output, TimeSeries)
     assert isinstance(output_shaping_wavelet, TimeSeries)
+    # Exercise the bound C++ methods directly, rather than only the wrapper.
+    assert isinstance(engine.actual_output(), TimeSeries)
+    assert isinstance(engine.output_shaping_wavelet(), TimeSeries)
     assert isinstance(
         WindowData(actual_output, actual_output.t0, actual_output.endtime()),
         TimeSeries,
@@ -154,6 +167,116 @@ def test_FrequencyDomainGIDDecon_auto_wavelet_ignores_late_component_energy(
     tmp_path,
 ):
     _assert_late_component_energy_does_not_change_auto_wavelet(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_wavelet_start_preserves_sparse_arrival_times(
+    tmp_path,
+):
+    _assert_wavelet_start_invariant_sparse_timing(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_residual_rms_stop_is_noise_length_stable(
+    tmp_path,
+):
+    _assert_residual_rms_stop_is_noise_length_stable(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_ns_terminal_trace_controls(tmp_path):
+    _assert_ns_terminal_trace_controls(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_all_leaves_preserve_physical_lag_support(
+    tmp_path,
+):
+    _assert_all_leaf_physical_lag_alignment(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_controlled_external_source_alignment(tmp_path):
+    _assert_controlled_external_alignment(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_group_sparse_boundary_support(tmp_path):
+    _assert_group_sparse_boundary_support(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_shipped_defaults_reject_weak_conversion():
+    _assert_shipped_default_weak_conversion_profile(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+    )
+
+
+def test_FrequencyDomainGIDDecon_mantle_profile_weak_and_noise_control(tmp_path):
+    _assert_mantle_profile_weak_and_noise_control(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_internal_and_external_wavelets_are_equivalent():
+    _assert_internal_external_wavelet_equivalence(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+    )
+
+
+def test_FrequencyDomainGIDDecon_ridge_refit_reports_final_residual_state(
+    tmp_path,
+):
+    _assert_ridge_refit_reports_final_residual_state(
         FrequencyDomainGIDDecon,
         FrequencyDomainGIDRFDecon,
         "FrequencyDomainGIDDecon.pf",
@@ -869,7 +992,9 @@ def test_FrequencyDomainNSGID_uses_external_wavelet_and_gain_cap(tmp_path):
     support = np.where(np.linalg.norm(np.asarray(rf.data), axis=0) > 1.0e-8)[0]
     picked_times = [rf.time(int(i)) for i in support]
     assert picked_times
-    expected_times = [t - wavelet.t0 for t in spike_times[:2]]
+    # The RF sparse output is now expressed in the physical analysis-time
+    # coordinate.  An external wavelet's start time must not translate it.
+    expected_times = spike_times[:2]
     for t in expected_times:
         assert min(abs(t - p) for p in picked_times) < 0.15
 

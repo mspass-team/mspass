@@ -40,7 +40,7 @@ public:
   kernels in linear inverse theory.   Although not required we would
   normally expect this function to be peaked at 0.   Offsets from 0
   would imply a bias. */
-  mspass::seismic::CoreTimeSeries actual_output();
+  mspass::seismic::TimeSeries actual_output();
   /*! \brief Return a FIR respresentation of the inverse filter.
 
   An inverse filter has an impulse response.  For some wavelets this

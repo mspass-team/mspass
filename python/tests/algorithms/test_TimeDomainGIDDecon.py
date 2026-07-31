@@ -136,10 +136,21 @@ def _make_long_window_gid_data():
 
 
 def _long_window_gid_pf(
-    tmp_path, pf_name, wavelet_window_start=-5.0, wavelet_window_end=20.0
+    tmp_path,
+    pf_name,
+    wavelet_window_start=-5.0,
+    wavelet_window_end=20.0,
+    noise_window_start=-200.0,
+    noise_window_end=-10.0,
+    residual_noise_ratio_floor=1.0,
+    branch_name=None,
+    mode=None,
 ):
     """Build a long-analysis, long-noise NS-GID configuration."""
     text = (Path("./data/pf") / pf_name).read_text()
+    if mode is not None:
+        assert branch_name is not None
+        text = _replace_gid_deconvolution_type(text, branch_name, mode)
     text = text.replace("full_data_window_start -8.0", "full_data_window_start -10.0")
     text = text.replace("full_data_window_end 20.0", "full_data_window_end 160.0")
     # The outer and every selectable leaf use the same analysis window.
@@ -151,8 +162,10 @@ def _long_window_gid_pf(
         "deconvolution_data_window_end 20.0",
         "deconvolution_data_window_end 160.0",
     )
-    text = text.replace("noise_window_start -35.0", "noise_window_start -200.0")
-    text = text.replace("noise_window_end -5.0", "noise_window_end -10.0")
+    text = text.replace(
+        "noise_window_start -35.0", f"noise_window_start {noise_window_start}"
+    )
+    text = text.replace("noise_window_end -5.0", f"noise_window_end {noise_window_end}")
     text = text.replace(
         "wavelet_window_start -5.0",
         f"wavelet_window_start {wavelet_window_start}",
@@ -168,6 +181,10 @@ def _long_window_gid_pf(
     text = text.replace(
         "ns_gid_peak_probability_threshold 0.995",
         "ns_gid_peak_probability_threshold 0.80",
+    )
+    text = text.replace(
+        "ns_gid_residual_noise_ratio_floor 1.0",
+        f"ns_gid_residual_noise_ratio_floor {residual_noise_ratio_floor}",
     )
     path = tmp_path / pf_name
     path.write_text(text)
@@ -187,6 +204,19 @@ def _assert_long_window_gid_result(rf, qc):
     assert not qc["gid_noise_truncated"]
     assert qc["gid_inverse_operator_nfft"] >= 4096
     assert np.isfinite(qc["ns_gid_peak_threshold"])
+    assert qc["ns_gid_peak_threshold"] == pytest.approx(
+        max(
+            qc["ns_gid_peak_threshold_empirical"],
+            qc["ns_gid_peak_threshold_sigma"],
+        )
+    )
+    assert qc["ns_gid_residual_rms_initial"] >= 0.0
+    assert qc["ns_gid_residual_rms_final"] >= 0.0
+    assert qc["ns_gid_residual_rms_ratio"] == pytest.approx(
+        qc["ns_gid_residual_rms_final"] / qc["ns_gid_noise_amplitude_rms"]
+    )
+    for k in range(3):
+        assert qc[f"ns_gid_component_noise_rms_{k}"] >= 0.0
     # The shaping wavelet can shift the finite-bandwidth peak by a few
     # samples, so verify nonzero recovered arrivals over the physical phase
     # bands instead of requiring one exact sample.
@@ -201,6 +231,451 @@ def _assert_late_sparse_support(engine):
     amplitude = np.linalg.norm(np.asarray(sparse.data), axis=0)
     assert np.max(amplitude[(t >= 40.0) & (t <= 55.0)]) > 1.0e-5
     assert np.max(amplitude[(t >= 65.0) & (t <= 85.0)]) > 1.0e-5
+
+
+def _assert_wavelet_start_invariant_sparse_timing(
+    engine_class, wrapper, pf_name, qc_key, tmp_path
+):
+    """Source-window start must not move physical sparse RF arrivals."""
+    data = _make_long_window_gid_data()
+    for wavelet_start in (-8.0, -5.0, -3.0):
+        engine = engine_class(
+            _long_window_gid_pf(tmp_path, pf_name, wavelet_start, 20.0)
+        )
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-10.0, 160.0),
+            noise_window=TimeWindow(-200.0, -10.0),
+        )
+        assert rf.live
+        assert rf[qc_key]["wavelet_window_start"] == pytest.approx(wavelet_start)
+        sparse = engine.sparse_output()
+        t = sparse.t0 + sparse.dt * np.arange(sparse.npts)
+        amplitude = np.linalg.norm(np.asarray(sparse.data), axis=0)
+        for arrival in (0.0, 45.0, 72.0):
+            mask = (t >= arrival - 1.0) & (t <= arrival + 1.0)
+            peak_time = t[mask][np.argmax(amplitude[mask])]
+            assert peak_time == pytest.approx(arrival, abs=sparse.dt)
+
+
+def _assert_residual_rms_stop_is_noise_length_stable(
+    engine_class, wrapper, pf_name, qc_key, tmp_path
+):
+    """NS-GID's RMS stop must not inherit the raw-L2 length dependence."""
+    data = _make_long_window_gid_data()
+    results = []
+    for noise_start, noise_end in ((-35.0, -5.0), (-100.0, -10.0), (-200.0, -10.0)):
+        engine = engine_class(
+            _long_window_gid_pf(
+                tmp_path,
+                pf_name,
+                noise_window_start=noise_start,
+                noise_window_end=noise_end,
+                residual_noise_ratio_floor=1.1,
+            )
+        )
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-10.0, 160.0),
+            noise_window=TimeWindow(noise_start, noise_end),
+        )
+        qc = rf[qc_key]
+        assert qc["ns_gid_stop_reason"] == "residual_reached_noise_floor"
+        results.append(qc)
+    rms_ratios = [qc["ns_gid_residual_rms_ratio"] for qc in results]
+    assert max(rms_ratios) - min(rms_ratios) < 0.05
+    # This deliberately remains visible as legacy QC and varies markedly with
+    # the number of noise samples, demonstrating why it cannot drive stopping.
+    assert (
+        abs(
+            results[0]["ns_gid_residual_l2_ratio_legacy"]
+            - results[-1]["ns_gid_residual_l2_ratio_legacy"]
+        )
+        > 0.25
+    )
+
+
+def _assert_ns_terminal_trace_controls(
+    engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
+):
+    """Terminal candidate trace and global NS state must agree after refit."""
+    data = _make_long_window_gid_data()
+    for replacement, expected_reason, expected_converged in (
+        ("maximum_iterations 1", "max_iterations", False),
+        ("ns_gid_max_spikes 1", "max_spikes", True),
+    ):
+        _long_window_gid_pf(
+            tmp_path,
+            pf_name,
+            branch_name=branch_name,
+            residual_noise_ratio_floor=0.0,
+        )
+        path = tmp_path / pf_name
+        text = path.read_text()
+        if replacement.startswith("maximum_iterations"):
+            text = text.replace("maximum_iterations 30", replacement)
+        else:
+            text = text.replace("ns_gid_max_spikes 0", replacement)
+        path.write_text(text)
+        engine = engine_class(pfread(str(path)))
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-10.0, 160.0),
+            noise_window=TimeWindow(-200.0, -10.0),
+        )
+        assert rf.live
+        qc = rf[qc_key]
+        assert qc["ns_gid_stop_reason"] == expected_reason
+        assert qc["ns_gid_converged"] is expected_converged
+        rows = sorted(
+            int(key.split("_")[3])
+            for key in qc.keys()
+            if key.startswith("ns_gid_iteration_") and key.endswith("_accepted")
+        )
+        assert rows
+        terminal = rows[-1]
+        assert qc[f"ns_gid_iteration_{terminal}_stop_condition"] == expected_reason
+        assert qc[
+            f"ns_gid_iteration_{terminal}_post_residual_rms_ratio"
+        ] == pytest.approx(qc["ns_gid_residual_rms_ratio"])
+        assert (
+            sum(qc[f"ns_gid_iteration_{i}_accepted"] for i in rows)
+            == qc["ns_gid_number_spikes"]
+        )
+
+
+def _make_long_window_gid_tail_data():
+    """Add a conversion just inside the requested +160 s output boundary."""
+    data = Seismogram(_make_long_window_gid_data())
+    t = data.t0 + data.dt * np.arange(data.npts)
+    tail = np.exp(-(((t - 158.0) / 0.16) ** 2))
+    for component, amplitude in enumerate((0.30, -0.20, 0.10)):
+        data.data[component, :] = DoubleVector(
+            np.asarray(data.data[component]) + amplitude * tail
+        )
+    return data
+
+
+def _make_controlled_external_alignment_data(source_start, tail_lag=158.0):
+    """Known sparse RF convolved with a narrow source centered at zero lag."""
+    dt, t0, npts = 0.05, -200.0, 7201
+    source = np.exp(-0.5 * ((np.arange(101) * dt - 2.5) / 0.12) ** 2)
+    source /= source.max()
+    data = Seismogram(npts)
+    data.set_t0(t0)
+    data.set_dt(dt)
+    data.set_live()
+    data.tref = TimeReferenceType.Relative
+    for component, amplitudes in enumerate(
+        ((0.3, 0.2, -0.15, 0.3), (-0.2, 0.1, 0.1, -0.2), (1.0, 0.25, -0.2, 0.8))
+    ):
+        impulses = np.zeros(npts)
+        for lag, amplitude in zip((0.0, 45.0, 72.0, tail_lag), amplitudes):
+            impulses[int(round((lag - t0) / dt))] = amplitude
+        data.data[component, :] = DoubleVector(
+            np.convolve(impulses, source, mode="same")
+        )
+    wavelet = TimeSeries(int(round((2.5 - source_start) / dt)) + source.size)
+    wavelet.set_t0(source_start)
+    wavelet.set_dt(dt)
+    wavelet.set_live()
+    wavelet.data = DoubleVector(np.zeros(wavelet.npts))
+    offset = int(round((-2.5 - source_start) / dt))
+    wavelet.data[offset : offset + source.size] = DoubleVector(source)
+    return data, wavelet
+
+
+def _assert_controlled_external_alignment(
+    engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
+):
+    for source_start in (-20.0, -2.5):
+        data, wavelet = _make_controlled_external_alignment_data(source_start)
+        for mode in (
+            "least_square",
+            "water_level",
+            "multi_taper",
+            "cnr",
+            "ns_gid",
+            "group_sparse",
+        ):
+            engine = engine_class(
+                _long_window_gid_pf(
+                    tmp_path, pf_name, branch_name=branch_name, mode=mode
+                )
+            )
+            rf = wrapper(
+                data,
+                engine,
+                signal_window=TimeWindow(-10.0, 160.0),
+                noise_window=TimeWindow(-200.0, -10.0),
+                external_wavelet=wavelet,
+            )
+            assert rf.live
+            qc = rf[qc_key]
+            assert qc["gid_analysis_t0"] == pytest.approx(-10.0)
+            assert qc["gid_analysis_samples"] == 3401
+            sparse = engine.sparse_output()
+            t = sparse.t0 + sparse.dt * np.arange(sparse.npts)
+            a = np.linalg.norm(np.asarray(sparse.data), axis=0)
+            for lag in (0.0, 45.0, 72.0, 158.0):
+                mask = (t >= lag - 1.0) & (t <= lag + 1.0)
+                peak = t[mask][np.argmax(a[mask])]
+                assert np.max(a[mask]) > 1.0e-5
+                assert peak == pytest.approx(lag, abs=0.10)
+
+
+def _assert_group_sparse_boundary_support(
+    engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
+):
+    """Group-sparse excludes edge lags without a full resolution kernel."""
+    data, wavelet = _make_controlled_external_alignment_data(-20.0, 158.0)
+    engine = engine_class(
+        _long_window_gid_pf(
+            tmp_path, pf_name, branch_name=branch_name, mode="group_sparse"
+        )
+    )
+    rf = wrapper(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+        external_wavelet=wavelet,
+    )
+    assert rf.live
+    qc = rf[qc_key]
+    assert qc["group_sparse_valid_lag_end_time"] >= 158.0
+    sparse = engine.sparse_output()
+    t = sparse.t0 + sparse.dt * np.arange(sparse.npts)
+    a = np.linalg.norm(np.asarray(sparse.data), axis=0)
+    mask = (t >= 157.0) & (t <= 159.0)
+    assert np.max(a[mask]) > 1.0e-5
+    assert t[mask][np.argmax(a[mask])] == pytest.approx(158.0, abs=sparse.dt)
+
+    for tail_lag in (159.5, 159.95, 160.0):
+        data, wavelet = _make_controlled_external_alignment_data(-20.0, tail_lag)
+        engine = engine_class(
+            _long_window_gid_pf(
+                tmp_path, pf_name, branch_name=branch_name, mode="group_sparse"
+            )
+        )
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-10.0, 160.0),
+            noise_window=TimeWindow(-200.0, -10.0),
+            external_wavelet=wavelet,
+        )
+        assert rf.live
+        qc = rf[qc_key]
+        assert qc["gid_analysis_samples"] == 3401
+        assert qc["group_sparse_boundary_policy"] == "full_resolution_kernel"
+        assert qc["group_sparse_min_observed_energy_fraction"] == pytest.approx(1.0)
+        assert qc["group_sparse_valid_lag_end_samples"] == (
+            qc["gid_analysis_samples"]
+            - qc["gid_actual_o_fir_npts"]
+            + qc["gid_actual_o_fir_zero_lag_index"]
+        )
+        assert qc["group_sparse_boundary_candidates_rejected"] == (
+            qc["gid_actual_o_fir_npts"] - 1
+        )
+        assert qc["group_sparse_valid_lag_end_time"] < 159.5
+        sparse = engine.sparse_output()
+        t = sparse.t0 + sparse.dt * np.arange(sparse.npts)
+        a = np.linalg.norm(np.asarray(sparse.data), axis=0)
+        edge = (t >= tail_lag - 0.25) & (t <= 160.0)
+        assert np.max(a[edge]) <= 1.0e-12
+        assert qc["group_sparse_active_groups"] < 100
+        assert np.max(a) < 10.0
+
+
+def _assert_all_leaf_physical_lag_alignment(
+    engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
+):
+    """Every leaf must retain timing and the requested +158 s lag support."""
+    data = _make_long_window_gid_tail_data()
+    modes = (
+        "least_square",
+        "water_level",
+        "multi_taper",
+        "cnr",
+        "ns_gid",
+        "group_sparse",
+    )
+    for mode in modes:
+        for wavelet_start in (-8.0, -5.0, -3.0):
+            engine = engine_class(
+                _long_window_gid_pf(
+                    tmp_path,
+                    pf_name,
+                    wavelet_window_start=wavelet_start,
+                    branch_name=branch_name,
+                    mode=mode,
+                )
+            )
+            rf = wrapper(
+                data,
+                engine,
+                signal_window=TimeWindow(-10.0, 160.0),
+                noise_window=TimeWindow(-200.0, -10.0),
+            )
+            assert rf.live
+            qc = rf[qc_key]
+            assert qc["gid_analysis_t0"] == pytest.approx(-10.0)
+            assert qc["gid_wavelet_t0"] == pytest.approx(wavelet_start)
+            assert qc["gid_wavelet_alignment_offset_samples"] == pytest.approx(
+                (wavelet_start + 10.0) / rf.dt
+            )
+            assert qc["gid_analysis_samples"] > qc["gid_wavelet_samples"]
+            sparse = engine.sparse_output()
+            t = sparse.t0 + sparse.dt * np.arange(sparse.npts)
+            amplitude = np.linalg.norm(np.asarray(sparse.data), axis=0)
+            for arrival in (0.0, 45.0, 72.0, 158.0):
+                mask = (t >= arrival - 1.0) & (t <= arrival + 1.0)
+                peak_time = t[mask][np.argmax(amplitude[mask])]
+                assert peak_time == pytest.approx(arrival, abs=sparse.dt)
+
+
+def _assert_shipped_default_weak_conversion_profile(
+    engine_class, wrapper, pf_name, qc_key
+):
+    """Reproducible synthetic evidence for the conservative shipped profile.
+
+    The largest injected component has raw peak/noise standard-deviation ratio
+    of 9, but the 3C inverse-domain default deliberately rejects it.
+    """
+    data, wavelet, _ = _make_external_wavelet_3c_data(
+        noise_level=0.005, conversion_scale=0.10
+    )
+    engine = engine_class(pfread(str(Path("data/pf") / pf_name)))
+    rf = wrapper(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 22.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+        external_wavelet=wavelet,
+    )
+    qc = rf[qc_key]
+    assert qc["ns_gid_number_spikes"] == 0
+    assert qc["ns_gid_stop_reason"] == "candidate_not_significant"
+    assert qc["ns_gid_peak_threshold"] == pytest.approx(
+        max(
+            qc["ns_gid_peak_threshold_empirical"],
+            qc["ns_gid_peak_threshold_sigma"],
+        )
+    )
+    assert qc["ns_gid_last_peak_significance"] < 1.0
+    assert qc["ns_gid_iteration_0_accepted"] == 0
+    assert qc["ns_gid_iteration_0_candidate_lag_samples"] >= 0
+    assert np.isfinite(qc["ns_gid_iteration_0_candidate_lag_time"])
+
+
+def _assert_mantle_profile_weak_and_noise_control(
+    engine_class, wrapper, pf_name, qc_key, tmp_path
+):
+    """Optional 2.5/0.999 profile recovers weak signal and rejects noise."""
+    path = tmp_path / pf_name
+    path.write_text(
+        (Path("data/pf") / pf_name)
+        .read_text()
+        .replace("ns_gid_peak_sigma_threshold 4.0", "ns_gid_peak_sigma_threshold 2.5")
+        .replace(
+            "ns_gid_peak_probability_threshold 0.995",
+            "ns_gid_peak_probability_threshold 0.999",
+        )
+    )
+    results = []
+    for scale in (0.25, 0.0):
+        data, wavelet, _ = _make_external_wavelet_3c_data(0.005, scale)
+        engine = engine_class(pfread(str(path)))
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 22.0),
+            noise_window=TimeWindow(-35.0, -8.0),
+            external_wavelet=wavelet,
+        )
+        results.append(rf[qc_key])
+    assert results[0]["ns_gid_number_spikes"] == 4
+    assert results[0]["ns_gid_last_peak_significance"] > 1.0
+    assert results[1]["ns_gid_number_spikes"] == 0
+    assert results[1]["ns_gid_stop_reason"] == "candidate_not_significant"
+    assert results[1]["ns_gid_last_peak_significance"] < 1.0
+    assert results[0]["ns_gid_peak_threshold"] == pytest.approx(
+        results[1]["ns_gid_peak_threshold"]
+    )
+    for qc in results:
+        rows = []
+        for key in qc.keys():
+            if key.startswith("ns_gid_iteration_") and key.endswith("_accepted"):
+                rows.append(int(key.split("_")[3]))
+        rows = sorted(set(rows))
+        accepted = [qc[f"ns_gid_iteration_{i}_accepted"] for i in rows]
+        assert sum(accepted) == qc["ns_gid_number_spikes"]
+        for i in rows:
+            assert np.isfinite(qc[f"ns_gid_iteration_{i}_post_residual_rms_ratio"])
+            assert qc[f"ns_gid_iteration_{i}_accepted"] in (0, 1)
+        if rows:
+            assert (
+                qc[f"ns_gid_iteration_{rows[-1]}_stop_condition"]
+                == qc["ns_gid_stop_reason"]
+            )
+    assert results[1]["ns_gid_iteration_0_accepted"] == 0
+    assert (
+        results[1]["ns_gid_iteration_0_stop_condition"] == "candidate_not_significant"
+    )
+
+
+def _assert_internal_external_wavelet_equivalence(
+    engine_class, wrapper, pf_name, qc_key
+):
+    """The timed source adapter must give identical internal/external paths."""
+    data = _make_gid_test_data(noise_level=1.0e-4)
+    source = ExtractComponent(WindowData(data, -5.0, 20.0), 2)
+    auto_engine = engine_class(pfread(str(Path("data/pf") / pf_name)))
+    external_engine = engine_class(pfread(str(Path("data/pf") / pf_name)))
+    common = dict(
+        signal_window=TimeWindow(-8.0, 20.0), noise_window=TimeWindow(-35.0, -5.0)
+    )
+    automatic = wrapper(data, auto_engine, **common)
+    external = wrapper(data, external_engine, external_wavelet=source, **common)
+    assert automatic.live and external.live
+    assert not automatic[qc_key]["gid_external_wavelet_used"]
+    assert external[qc_key]["gid_external_wavelet_used"]
+    assert np.allclose(
+        np.asarray(automatic.data), np.asarray(external.data), atol=1.0e-10
+    )
+    assert np.allclose(
+        np.asarray(auto_engine.sparse_output().data),
+        np.asarray(external_engine.sparse_output().data),
+        atol=1.0e-10,
+    )
+
+
+def _assert_ridge_refit_reports_final_residual_state(
+    engine_class, wrapper, pf_name, qc_key, tmp_path
+):
+    """A strong ridge refit must not retain a stale noise-floor conclusion."""
+    _long_window_gid_pf(tmp_path, pf_name, residual_noise_ratio_floor=1.1)
+    path = tmp_path / pf_name
+    path.write_text(
+        path.read_text().replace("ns_gid_ridge_beta 1.0e-10", "ns_gid_ridge_beta 10.0")
+    )
+    engine = engine_class(pfread(str(path)))
+    rf = wrapper(
+        _make_long_window_gid_data(),
+        engine,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    qc = rf[qc_key]
+    assert qc["ns_gid_stop_reason"] == "post_refit_residual_above_noise_floor"
+    assert not qc["ns_gid_converged"]
+    assert qc["ns_gid_residual_rms_ratio"] > 1.1
+    assert np.isfinite(qc["ns_gid_residual_l2_final"])
+    assert np.isfinite(qc["ns_gid_residual_rms_final"])
 
 
 def _assert_late_component_energy_does_not_change_auto_wavelet(
@@ -309,6 +784,23 @@ def _assert_group_sparse_qc(qc):
     assert qc["group_sparse_iterations"] == qc["iteration_count"]
     assert qc["gid_maximum_iterations"] == qc["group_sparse_max_iterations"]
     assert qc["group_sparse_active_groups"] == qc["gid_number_spikes"]
+    assert qc["group_sparse_boundary_policy"] == "full_resolution_kernel"
+    assert qc["group_sparse_min_observed_energy_fraction"] == pytest.approx(1.0)
+    assert (
+        qc["group_sparse_min_observed_support_samples"] == qc["gid_actual_o_fir_npts"]
+    )
+    assert (
+        qc["group_sparse_valid_lag_start_samples"]
+        == qc["gid_actual_o_fir_zero_lag_index"]
+    )
+    assert qc["group_sparse_valid_lag_end_samples"] == (
+        qc["gid_analysis_samples"]
+        - qc["gid_actual_o_fir_npts"]
+        + qc["gid_actual_o_fir_zero_lag_index"]
+    )
+    assert qc["group_sparse_boundary_candidates_rejected"] == (
+        qc["gid_actual_o_fir_npts"] - 1
+    )
     assert qc["group_sparse_objective_final"] <= qc["group_sparse_objective_initial"]
     assert qc["group_sparse_fractional_improvement_final"] >= 0.0
     assert np.isfinite(qc["group_sparse_debiased_objective_final"])
@@ -394,7 +886,7 @@ def _pf_with_short_decon_window(tmp_path, pf_name, branch_name=None, mode=None):
     return pfread(str(dst))
 
 
-def _make_external_wavelet_3c_data(noise_level=1.0e-4):
+def _make_external_wavelet_3c_data(noise_level=1.0e-4, conversion_scale=1.0):
     n = 1400
     dt = 0.05
     t0 = -45.0
@@ -410,7 +902,7 @@ def _make_external_wavelet_3c_data(noise_level=1.0e-4):
 
     model = np.zeros((3, n))
     spike_times = [0.0, 3.0, 8.0, 18.0]
-    amps = np.array(
+    amps = conversion_scale * np.array(
         [[0.45, -0.25, 0.18, 0.12], [-0.2, 0.15, -0.12, 0.05], [0.0, 0.0, 0.0, 0.0]]
     )
     for it, t in enumerate(spike_times):
@@ -494,7 +986,9 @@ def test_TimeDomainNSGID_uses_external_wavelet_and_rejects_noise_spikes(tmp_path
     support = np.where(np.linalg.norm(np.asarray(rf.data), axis=0) > 1.0e-8)[0]
     picked_times = [rf.time(int(i)) for i in support]
     assert picked_times
-    expected_times = [t - wavelet.t0 for t in spike_times[:2]]
+    # The RF sparse output is now expressed in the physical analysis-time
+    # coordinate.  An external wavelet's start time must not translate it.
+    expected_times = spike_times[:2]
     for t in expected_times:
         assert min(abs(t - p) for p in picked_times) < 0.15
 
@@ -670,6 +1164,9 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
     _assert_valid_rf(rf)
     assert isinstance(actual_output, TimeSeries)
     assert isinstance(output_shaping_wavelet, TimeSeries)
+    # Exercise the bound C++ methods directly, rather than only the wrapper.
+    assert isinstance(engine.actual_output(), TimeSeries)
+    assert isinstance(engine.output_shaping_wavelet(), TimeSeries)
     assert isinstance(
         WindowData(actual_output, actual_output.t0, actual_output.endtime()),
         TimeSeries,
@@ -758,6 +1255,108 @@ def test_TimeDomainGIDDecon_long_analysis_uses_short_wavelet_and_full_noise(tmp_
 
 def test_TimeDomainGIDDecon_auto_wavelet_ignores_late_component_energy(tmp_path):
     _assert_late_component_energy_does_not_change_auto_wavelet(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_wavelet_start_preserves_sparse_arrival_times(tmp_path):
+    _assert_wavelet_start_invariant_sparse_timing(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_residual_rms_stop_is_noise_length_stable(tmp_path):
+    _assert_residual_rms_stop_is_noise_length_stable(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_ns_terminal_trace_controls(tmp_path):
+    _assert_ns_terminal_trace_controls(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_all_leaves_preserve_physical_lag_support(tmp_path):
+    _assert_all_leaf_physical_lag_alignment(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_controlled_external_source_alignment(tmp_path):
+    _assert_controlled_external_alignment(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_group_sparse_boundary_support(tmp_path):
+    _assert_group_sparse_boundary_support(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_shipped_defaults_reject_weak_conversion():
+    _assert_shipped_default_weak_conversion_profile(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+    )
+
+
+def test_TimeDomainGIDDecon_mantle_profile_weak_and_noise_control(tmp_path):
+    _assert_mantle_profile_weak_and_noise_control(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_internal_and_external_wavelets_are_equivalent():
+    _assert_internal_external_wavelet_equivalence(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+    )
+
+
+def test_TimeDomainGIDDecon_ridge_refit_reports_final_residual_state(tmp_path):
+    _assert_ridge_refit_reports_final_residual_state(
         TimeDomainGIDDecon,
         TimeDomainGIDRFDecon,
         "TimeDomainGIDDecon.pf",

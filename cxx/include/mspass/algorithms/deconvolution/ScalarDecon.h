@@ -4,6 +4,7 @@
 #include "mspass/algorithms/deconvolution/BasicDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/seismic/CoreTimeSeries.h"
+#include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/Metadata.h"
 #include <string>
 #include <vector>
@@ -88,15 +89,16 @@ public:
    * Wang and Pavlis (2016) call this wavelet ws(t).  GID methods convolve the
    * sparse impulse response with this wavelet to form the finite-duration
    * receiver-function representation used for stacking and imaging. */
-  virtual mspass::seismic::CoreTimeSeries output_shaping_wavelet() {
-    return this->shapingwavelet.impulse_response();
+  virtual mspass::seismic::TimeSeries output_shaping_wavelet() {
+    return mspass::seismic::TimeSeries(
+        this->shapingwavelet.impulse_response());
   };
   /*! \brief Legacy alias for output_shaping_wavelet.
    *
    * Older MsPASS code called the output shaping wavelet "ideal_output".  New
    * code and documentation should prefer output_shaping_wavelet, which matches
    * the terminology of Wang and Pavlis (2016). */
-  mspass::seismic::CoreTimeSeries ideal_output() {
+  mspass::seismic::TimeSeries ideal_output() {
     return this->output_shaping_wavelet();
   };
   /*! \brief Return the actual output of the deconvolution operator.
@@ -105,9 +107,9 @@ public:
   kernels in linear inverse theory.   Although not required we would
   normally expect this function to be peaked at 0.   Offsets from 0
   would imply a bias. */
-  virtual mspass::seismic::CoreTimeSeries actual_output() = 0;
+  virtual mspass::seismic::TimeSeries actual_output() = 0;
   /*! \brief Alias for actual_output using inverse-theory terminology. */
-  mspass::seismic::CoreTimeSeries resolution_kernel() {
+  mspass::seismic::TimeSeries resolution_kernel() {
     return this->actual_output();
   };
 

@@ -320,6 +320,26 @@ void TimeDomainGIDDecon::invalidate_processing_state() {
   ns_peak_threshold = 0.0;
   ns_noise_l2 = 0.0;
   ns_noise_amplitude_rms = 0.0;
+  ns_residual_rms_initial = 0.0;
+  ns_residual_rms_final = 0.0;
+  ns_peak_threshold_empirical = 0.0;
+  ns_peak_threshold_sigma = 0.0;
+  ns_noise_amplitude_robust = 0.0;
+  ns_last_candidate_amplitude = 0.0;
+  ns_noise_component_rms.clear();
+  ns_candidate_lag_history.clear();
+  ns_candidate_accepted_history.clear();
+  ns_candidate_lag_time_history.clear();
+  ns_candidate_amplitude_history.clear();
+  ns_candidate_threshold_history.clear();
+  ns_candidate_significance_history.clear();
+  ns_candidate_post_residual_rms_ratio_history.clear();
+  ns_candidate_stop_history.clear();
+  gid_analysis_samples = 0;
+  gid_wavelet_samples = 0;
+  gid_alignment_offset_samples = 0;
+  gid_analysis_t0 = 0.0;
+  gid_wavelet_t0 = 0.0;
   ns_converged = false;
   ns_stop_reason = "not_started";
   gid_converged = false;
@@ -382,11 +402,11 @@ void TimeDomainGIDDecon::ensure_inverse_operator_size(
   inverse_operator_nfft = this->actual_inverse_operator_size();
 }
 
-CoreTimeSeries TimeDomainGIDDecon::ideal_output() {
+TimeSeries TimeDomainGIDDecon::ideal_output() {
   return this->ScalarDecon::output_shaping_wavelet();
 }
 
-CoreTimeSeries TimeDomainGIDDecon::actual_output() {
+TimeSeries TimeDomainGIDDecon::actual_output() {
   if (!processed)
     throw MsPASSError(
         "TimeDomainGIDDecon::actual_output: process must be called first",
@@ -678,30 +698,19 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
 /* These are the set of private methods called from the process method */
 void TimeDomainGIDDecon::update_residual_matrix(ThreeCSpike spk) {
   try {
-    const string base_error("TimeDomainGIDDecon::update_residual_matrix:  ");
     int ncol = this->r.u.columns();
     int col0 = spk.col - actual_o_0;
     ;
-    /* Avoid seg faults and test range here.  This is an exception condition
-     * because if the lag weights are created correctly the edge conditions
-     * here should not be possible */
-    if (col0 < 0)
-      throw MsPASSError(base_error +
-                            "Coding problem - computed lag is negative.  "
-                            "lag_weights array is probably incorrect",
-                        ErrorSeverity::Fatal);
-    if ((col0 + actual_o_fir.size()) > ncol)
-      throw MsPASSError(base_error +
-                            "Coding problem - computed lag is too large and "
-                            "would overflow residual matrix and seg fault.\n"
-
-                            + "lag_weights array is probably incorrect",
-                        ErrorSeverity::Fatal);
+    const int p_start = max(0, -col0);
+    const int p_end = min(static_cast<int>(actual_o_fir.size()), ncol - col0);
+    const int n = p_end - p_start;
+    if (n <= 0)
+      return;
     for (int k = 0; k < 3; ++k) {
       /*Use the gsl version of daxpy hre to avoid type collisions with perf.h.
        */
-      cblas_daxpy(actual_o_fir.size(), -spk.u[k], &(actual_o_fir[0]), 1,
-                  this->r.u.get_address(k, col0), 3);
+      cblas_daxpy(n, -spk.u[k], &(actual_o_fir[p_start]), 1,
+                  this->r.u.get_address(k, col0 + p_start), 3);
     }
   } catch (...) {
     throw;
@@ -904,7 +913,50 @@ void TimeDomainGIDDecon::process() {
                               "wavelet window",
                           ErrorSeverity::Invalid);
     }
-    current_wavelet = TimeSeries(srcwavelet, "TimeDomainGIDDecon");
+    /* Scalar leaf operators only receive vectors.  Construct one physical
+     * grid covering both the requested analysis interval and the entire
+     * source, then zero-pad whichever input does not occupy that grid. */
+    const double analysis_t0 = d_decon.t0();
+    const int analysis_npts = d_decon.npts();
+    const double leaf_t0 = min(analysis_t0, srcwavelet.t0());
+    const double leaf_end = max(d_decon.endtime(), srcwavelet.endtime());
+    const int leaf_npts =
+        static_cast<int>(round((leaf_end - leaf_t0) / d_decon.dt())) + 1;
+    CoreSeismogram leaf_data(leaf_npts);
+    leaf_data.set_t0(leaf_t0);
+    leaf_data.set_dt(d_decon.dt());
+    leaf_data.set_tref(d_decon.timetype());
+    leaf_data.set_live();
+    leaf_data.u.zero();
+    const int data_offset = leaf_data.sample_number(d_decon.t0());
+    for (int k = 0; k < 3; ++k)
+      cblas_dcopy(d_decon.npts(), d_decon.u.get_address(k, 0), 3,
+                  leaf_data.u.get_address(k, data_offset), 3);
+    CoreTimeSeries leafwavelet(leaf_data.npts());
+    leafwavelet.s.assign(leaf_data.npts(), 0.0);
+    leafwavelet.set_t0(leaf_data.t0());
+    leafwavelet.set_dt(leaf_data.dt());
+    leafwavelet.set_tref(leaf_data.timetype());
+    leafwavelet.set_live();
+    const int leafwavelet_start = leafwavelet.sample_number(srcwavelet.t0());
+    copy(srcwavelet.s.begin(), srcwavelet.s.end(),
+         leafwavelet.s.begin() + leafwavelet_start);
+    current_wavelet = TimeSeries(leafwavelet, "TimeDomainGIDDecon");
+    gid_analysis_samples = analysis_npts;
+    gid_wavelet_samples = srcwavelet.npts();
+    gid_alignment_offset_samples =
+        static_cast<int>(round((srcwavelet.t0() - analysis_t0) / d_decon.dt()));
+    gid_analysis_t0 = analysis_t0;
+    gid_wavelet_t0 = srcwavelet.t0();
+    if (decon_type != CNR) {
+      /* Every FFT scalar leaf derives its sample shift from this metadata;
+       * multitaper additionally derives its DPSS length from it. */
+      Metadata md(leaf_operator_metadata);
+      md.put("deconvolution_data_window_start", leaf_data.t0());
+      md.put("deconvolution_data_window_end", leaf_data.endtime());
+      preprocessor->changeparameter(md);
+      leaf_operator_metadata = md;
+    }
     int runtime_noise_npts = n.npts();
     if (!ns_noise_components.empty()) {
       runtime_noise_npts = ns_noise_components[0].size();
@@ -915,7 +967,7 @@ void TimeDomainGIDDecon::process() {
     if (external_noise_loaded)
       runtime_noise_npts = max(runtime_noise_npts,
                                 static_cast<int>(external_noise.npts()));
-    this->ensure_inverse_operator_size(d_decon.npts(), srcwavelet.npts(),
+    this->ensure_inverse_operator_size(leaf_data.npts(), leafwavelet.npts(),
                                        runtime_noise_npts);
     if (decon_type == CNR) {
       process_stage = "CNR preprocessing";
@@ -927,14 +979,11 @@ void TimeDomainGIDDecon::process() {
             TimeSeries(ExtractComponent(n, noise_component),
                        "TimeDomainGIDDecon");
       cnrprocessor->initialize_inverse_operator(current_wavelet, nwavelet);
-      Seismogram dwork(d_decon);
+      Seismogram dwork(leaf_data);
       PowerSpectrum psnoise(cnrprocessor->compute_noise_spectrum(nwavelet));
       dwork = cnrprocessor->process(dwork, psnoise, 0.02, 2.0);
-      int copysize = dwork.npts();
-      if (copysize > d_decon.npts())
-        copysize = d_decon.npts();
       for (int k = 0; k < 3; ++k)
-        cblas_dcopy(copysize, dwork.u.get_address(k, 0), 3,
+        cblas_dcopy(d_decon.npts(), dwork.u.get_address(k, data_offset), 3,
                     uwork.get_address(k, 0), 3);
     } else {
       if (decon_type == NS_GID || decon_type == GROUP_SPARSE) {
@@ -964,16 +1013,14 @@ void TimeDomainGIDDecon::process() {
       }
       for (int k = 0; k < 3; ++k) {
         process_stage = "scalar preprocessing";
-        CoreTimeSeries dcomp(ExtractComponent(d_decon, k));
+        CoreTimeSeries dcomp(ExtractComponent(leaf_data, k));
         /* Need the qualifier or we get the wrong overloaded
          * load method */
-        preprocessor->ScalarDecon::load(srcwavelet.s, dcomp.s);
+        preprocessor->ScalarDecon::load(leafwavelet.s, dcomp.s);
         preprocessor->process();
         vector<double> deconout(preprocessor->getresult());
-        int copysize = deconout.size();
-        if (copysize > d_decon.npts())
-          copysize = d_decon.npts();
-        cblas_dcopy(copysize, &(deconout[0]), 1, uwork.get_address(k, 0), 3);
+        cblas_dcopy(d_decon.npts(), &(deconout[data_offset]), 1,
+                    uwork.get_address(k, 0), 3);
       }
     }
     d_decon.u = uwork;
@@ -1090,7 +1137,7 @@ void TimeDomainGIDDecon::process() {
         }
         if (ncomp.size() > static_cast<size_t>(ns_noise_npts))
           ncomp.resize(ns_noise_npts);
-        preprocessor->ScalarDecon::load(srcwavelet.s, ncomp);
+        preprocessor->ScalarDecon::load(leafwavelet.s, ncomp);
         preprocessor->process();
         vector<double> deconout(preprocessor->getresult());
         int copysize =
@@ -1099,7 +1146,7 @@ void TimeDomainGIDDecon::process() {
           cblas_dcopy(copysize, &(deconout[0]), 1,
                       nfiltered.get_address(kc, 0), 3);
       }
-      preprocessor->ScalarDecon::load(srcwavelet.s, srcwavelet.s);
+      preprocessor->ScalarDecon::load(leafwavelet.s, leafwavelet.s);
       preprocessor->process();
       vector<double> noise_amps(ThreeCAmplitudes(nfiltered));
       sort(noise_amps.begin(), noise_amps.end());
@@ -1116,13 +1163,46 @@ void TimeDomainGIDDecon::process() {
           sumsq += x * x;
         ns_noise_amplitude_rms =
             sqrt(sumsq / static_cast<double>(noise_amps.size()));
-        double sigma_floor = ns_peak_sigma_threshold * ns_noise_amplitude_rms;
+        /* A MAD of nonnegative 3C amplitudes has a Maxwell, not Gaussian,
+         * distribution.  Estimate robust signed component sigmas instead,
+         * then combine them into the comparable vector-RMS scale. */
+        double robust_vector_sumsq(0.0);
+        for (int kc = 0; kc < 3; ++kc) {
+          vector<double> signed_component(ns_noise_npts);
+          for (int j = 0; j < ns_noise_npts; ++j)
+            signed_component[j] = nfiltered(kc, j);
+          sort(signed_component.begin(), signed_component.end());
+          const double median =
+              signed_component[signed_component.size() / 2];
+          vector<double> absdev(signed_component.size());
+          for (size_t i = 0; i < signed_component.size(); ++i)
+            absdev[i] = fabs(signed_component[i] - median);
+          sort(absdev.begin(), absdev.end());
+          const double component_sigma = 1.4826 * absdev[absdev.size() / 2];
+          robust_vector_sumsq += component_sigma * component_sigma;
+        }
+        ns_noise_amplitude_robust = sqrt(robust_vector_sumsq);
+        ns_peak_threshold_empirical = empirical;
+        ns_peak_threshold_sigma =
+            ns_peak_sigma_threshold * ns_noise_amplitude_rms;
         ns_peak_threshold =
-            ns_use_empirical_noise_threshold ? max(empirical, sigma_floor)
-                                             : sigma_floor;
+            ns_use_empirical_noise_threshold
+                ? max(ns_peak_threshold_empirical, ns_peak_threshold_sigma)
+                : ns_peak_threshold_sigma;
+        ns_noise_component_rms.assign(3, 0.0);
+        for (int kc = 0; kc < 3; ++kc) {
+          double component_sumsq(0.0);
+          for (int j = 0; j < ns_noise_npts; ++j)
+            component_sumsq += nfiltered(kc, j) * nfiltered(kc, j);
+          ns_noise_component_rms[kc] =
+              sqrt(component_sumsq / static_cast<double>(ns_noise_npts));
+        }
       } else {
         ns_peak_threshold = 0.0;
         ns_noise_amplitude_rms = 0.0;
+        ns_peak_threshold_empirical = 0.0;
+        ns_peak_threshold_sigma = 0.0;
+        ns_noise_amplitude_robust = 0.0;
       }
       ns_noise_l2 = cblas_dnrm2(3 * ns_noise_npts,
                                 nfiltered.get_address(0, 0), 1);
@@ -1169,6 +1249,8 @@ void TimeDomainGIDDecon::process() {
     lw_l2_initial = 1.0;
     resid_linf_initial = Linf(r.u);
     resid_l2_initial = L2(r.u);
+    ns_residual_rms_initial = EstimateThreeCColumnAmplitudeRMS(r);
+    ns_residual_rms_final = ns_residual_rms_initial;
     lw_linf_prev = lw_linf_initial;
     lw_l2_prev = lw_l2_initial;
     resid_linf_prev = resid_linf_initial;
@@ -1218,6 +1300,7 @@ void TimeDomainGIDDecon::process() {
         this->update_residual_matrix(*sptr);
       resid_linf_prev = Linf(r.u);
       resid_l2_prev = L2(r.u);
+      ns_residual_rms_final = EstimateThreeCColumnAmplitudeRMS(r);
       group_sparse_debiased_objective_final =
           GroupSparseObjective(r, spikes, group_sparse_lambda_used);
       group_sparse_debiased_fractional_improvement_final =
@@ -1255,10 +1338,22 @@ void TimeDomainGIDDecon::process() {
         for (k = 0; k < 3; ++k)
           candidate_amp2 += r.u(k, imax) * r.u(k, imax);
         const double candidate_amp = sqrt(max(0.0, candidate_amp2));
+        ns_last_candidate_amplitude = candidate_amp;
         ns_last_peak_significance =
             (ns_peak_threshold > 0.0) ? candidate_amp / ns_peak_threshold
                                       : 0.0;
         if (ns_peak_threshold > 0.0 && candidate_amp < ns_peak_threshold) {
+          ns_candidate_lag_history.push_back(imax);
+          ns_candidate_lag_time_history.push_back(r.time(imax));
+          ns_candidate_amplitude_history.push_back(candidate_amp);
+          ns_candidate_threshold_history.push_back(ns_peak_threshold);
+          ns_candidate_significance_history.push_back(ns_last_peak_significance);
+          ns_candidate_accepted_history.push_back(0);
+          ns_candidate_post_residual_rms_ratio_history.push_back(
+              (ns_noise_amplitude_rms > 0.0)
+                  ? EstimateThreeCColumnAmplitudeRMS(r) / ns_noise_amplitude_rms
+                  : 0.0);
+          ns_candidate_stop_history.push_back("candidate_not_significant");
           ns_stop_reason = "candidate_not_significant";
           ns_converged = true;
           gid_stop_reason = ns_stop_reason;
@@ -1267,6 +1362,17 @@ void TimeDomainGIDDecon::process() {
         }
         if ((ns_max_spikes > 0) &&
             (static_cast<int>(spikes.size()) >= ns_max_spikes)) {
+          ns_candidate_lag_history.push_back(imax);
+          ns_candidate_lag_time_history.push_back(r.time(imax));
+          ns_candidate_amplitude_history.push_back(candidate_amp);
+          ns_candidate_threshold_history.push_back(ns_peak_threshold);
+          ns_candidate_significance_history.push_back(ns_last_peak_significance);
+          ns_candidate_accepted_history.push_back(0);
+          ns_candidate_post_residual_rms_ratio_history.push_back(
+              (ns_noise_amplitude_rms > 0.0)
+                  ? EstimateThreeCColumnAmplitudeRMS(r) / ns_noise_amplitude_rms
+                  : 0.0);
+          ns_candidate_stop_history.push_back("max_spikes");
           ns_stop_reason = "max_spikes";
           ns_converged = true;
           gid_stop_reason = ns_stop_reason;
@@ -1286,6 +1392,17 @@ void TimeDomainGIDDecon::process() {
         for (k = 0; k < 3; ++k)
           candidate_amp2 += r.u(k, imax) * r.u(k, imax);
         const double candidate_amp = sqrt(max(0.0, candidate_amp2));
+        if (decon_type == NS_GID) {
+          ns_candidate_lag_history.push_back(imax);
+          ns_candidate_lag_time_history.push_back(r.time(imax));
+          ns_candidate_amplitude_history.push_back(candidate_amp);
+          ns_candidate_threshold_history.push_back(ns_peak_threshold);
+          ns_candidate_significance_history.push_back(
+              (ns_peak_threshold > 0.0) ? candidate_amp / ns_peak_threshold : 0.0);
+          ns_candidate_accepted_history.push_back(0);
+          ns_candidate_post_residual_rms_ratio_history.push_back(0.0);
+          ns_candidate_stop_history.push_back("rejected_residual");
+        }
         ThreeCSpike spk(r.u, imax);
         rescale_spike_amplitude(spk, r, actual_o_fir, actual_o_0);
         CoreSeismogram saved_r(r);
@@ -1296,6 +1413,14 @@ void TimeDomainGIDDecon::process() {
           this->update_lag_weights(imax, candidate_amp);
           ++iter_count;
           accepted = true;
+          if (decon_type == NS_GID) {
+            ns_candidate_accepted_history.back() = 1;
+            ns_candidate_post_residual_rms_ratio_history.back() =
+                (ns_noise_amplitude_rms > 0.0)
+                    ? EstimateThreeCColumnAmplitudeRMS(r) / ns_noise_amplitude_rms
+                    : 0.0;
+            ns_candidate_stop_history.back() = "continue";
+          }
           if (decon_type == NS_GID && ns_refit_interval > 0 &&
               (static_cast<int>(spikes.size()) % ns_refit_interval) == 0) {
             RefitSpikeAmplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
@@ -1311,8 +1436,18 @@ void TimeDomainGIDDecon::process() {
         }
       }
       if (!accepted) {
-        gid_stop_reason = "no_acceptable_candidate";
-        gid_converged = true;
+        if (decon_type == NS_GID && !ns_candidate_accepted_history.empty() &&
+            ns_candidate_accepted_history.back() < 0)
+          ns_candidate_accepted_history.back() = 0;
+        if (decon_type == NS_GID) {
+          ns_stop_reason = "no_acceptable_candidate";
+          ns_converged = false;
+          gid_stop_reason = ns_stop_reason;
+          gid_converged = false;
+        } else {
+          gid_stop_reason = "no_acceptable_candidate";
+          gid_converged = true;
+        }
         break;
       }
     } while (this->has_not_converged());
@@ -1326,6 +1461,19 @@ void TimeDomainGIDDecon::process() {
       this->update_residual_matrix(*sptr);
     resid_linf_prev = Linf(r.u);
     resid_l2_prev = L2(r.u);
+    ns_residual_rms_final = EstimateThreeCColumnAmplitudeRMS(r);
+    if (decon_type == NS_GID &&
+        ns_stop_reason == "residual_reached_noise_floor" &&
+        (ns_noise_amplitude_rms <= 0.0 ||
+         (ns_residual_rms_final / ns_noise_amplitude_rms) >
+             ns_residual_noise_ratio_floor)) {
+      /* Ridge refitting may increase the residual.  Do not report a stale
+       * convergence decision made before the final amplitudes were fitted. */
+      ns_stop_reason = "post_refit_residual_above_noise_floor";
+      ns_converged = false;
+      gid_stop_reason = ns_stop_reason;
+      gid_converged = false;
+    }
     if (!lag_weights.empty()) {
       auto lwmax = max_element(lag_weights.begin(), lag_weights.end());
       lw_linf_prev = (lwmax != lag_weights.end()) ? *lwmax : 0.0;
@@ -1340,6 +1488,18 @@ void TimeDomainGIDDecon::process() {
       else
         ns_stop_reason = "converged";
       ns_converged = (iter_count < iter_max);
+      gid_stop_reason = ns_stop_reason;
+      gid_converged = ns_converged;
+    }
+    /* Publish the terminal trace after final ridge refitting so it agrees
+     * exactly with the global terminal reason and residual RMS ratio. */
+    if (decon_type == NS_GID && !ns_candidate_stop_history.empty()) {
+      const size_t terminal = ns_candidate_stop_history.size() - 1;
+      ns_candidate_post_residual_rms_ratio_history[terminal] =
+          (ns_noise_amplitude_rms > 0.0)
+              ? ns_residual_rms_final / ns_noise_amplitude_rms
+              : 0.0;
+      ns_candidate_stop_history[terminal] = ns_stop_reason;
       gid_stop_reason = ns_stop_reason;
       gid_converged = ns_converged;
     }
@@ -1367,6 +1527,7 @@ bool TimeDomainGIDDecon::has_not_converged() {
     lw_l2_now = cblas_dnrm2(lag_weights.size(), &(lag_weights[0]), 1);
     resid_linf_now = Linf(r.u);
     resid_l2_now = L2(r.u);
+    ns_residual_rms_final = EstimateThreeCColumnAmplitudeRMS(r);
     /* We use a standard calculation for residual l2 as fractional rms change */
     double eps;
     eps = (resid_l2_prev - resid_l2_now) / resid_l2_initial;
@@ -1383,8 +1544,9 @@ bool TimeDomainGIDDecon::has_not_converged() {
         gid_converged = ns_converged;
         return false;
       }
-      if (ns_noise_l2 > 0.0 &&
-          (resid_l2_now / ns_noise_l2) <= ns_residual_noise_ratio_floor) {
+      if (ns_noise_amplitude_rms > 0.0 &&
+          (ns_residual_rms_final / ns_noise_amplitude_rms) <=
+              ns_residual_noise_ratio_floor) {
         ns_stop_reason = "residual_reached_noise_floor";
         ns_converged = true;
         gid_stop_reason = ns_stop_reason;
@@ -1539,6 +1701,11 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
   md.put("gid_leaf_external_noise_used", leaf_external_noise_used);
   md.put("gid_residual_external_noise_used", residual_noise_from_external);
   md.put("gid_inverse_operator_nfft", this->actual_inverse_operator_size());
+  md.put("gid_analysis_samples", gid_analysis_samples);
+  md.put("gid_wavelet_samples", gid_wavelet_samples);
+  md.put("gid_analysis_t0", gid_analysis_t0);
+  md.put("gid_wavelet_t0", gid_wavelet_t0);
+  md.put("gid_wavelet_alignment_offset_samples", gid_alignment_offset_samples);
   md.put("gid_leaf_parameters_changed", leaf_parameters_changed);
   md.put("gid_processed", processed);
   md.put("gid_converged", gid_converged);
@@ -1588,6 +1755,23 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
          processed && !actual_o_fir.empty());
   if (decon_type == GROUP_SPARSE) {
     md.put("group_sparse_enabled", true);
+    const int valid_start = actual_o_0;
+    const int valid_end = static_cast<int>(d_decon.npts()) -
+                          static_cast<int>(actual_o_fir.size()) + actual_o_0;
+    const int valid_count = max(0, valid_end - valid_start + 1);
+    md.put("group_sparse_valid_lag_start_samples", valid_start);
+    md.put("group_sparse_valid_lag_end_samples", valid_end);
+    md.put("group_sparse_valid_lag_start_time",
+           d_decon.t0() + valid_start * d_decon.dt());
+    md.put("group_sparse_valid_lag_end_time",
+           d_decon.t0() + valid_end * d_decon.dt());
+    md.put("group_sparse_min_observed_energy_fraction", 1.0);
+    md.put("group_sparse_min_observed_support_samples",
+           static_cast<int>(actual_o_fir.size()));
+    md.put("group_sparse_boundary_policy",
+           string("full_resolution_kernel"));
+    md.put("group_sparse_boundary_candidates_rejected",
+           max(0, static_cast<int>(d_decon.npts()) - valid_count));
     md.put("group_sparse_inverse_operator", string("ns_gid"));
     md.put("group_sparse_lambda_requested", group_sparse_lambda);
     md.put("group_sparse_lambda_scale", group_sparse_lambda_scale);
@@ -1648,7 +1832,26 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
     md.put("ns_gid_iterations", iter_count);
     md.put("ns_gid_number_spikes", static_cast<int>(spikes.size()));
     md.put("ns_gid_peak_threshold", ns_peak_threshold);
+    md.put("ns_gid_peak_threshold_empirical", ns_peak_threshold_empirical);
+    md.put("ns_gid_peak_threshold_sigma", ns_peak_threshold_sigma);
     md.put("ns_gid_noise_amplitude_rms", ns_noise_amplitude_rms);
+    md.put("ns_gid_noise_amplitude_robust", ns_noise_amplitude_robust);
+    md.put("ns_gid_last_candidate_amplitude", ns_last_candidate_amplitude);
+    for (size_t i = 0; i < ns_candidate_lag_history.size(); ++i) {
+      const string prefix("ns_gid_iteration_" + to_string(i) + "_");
+      md.put(prefix + "candidate_lag_samples", ns_candidate_lag_history[i]);
+      md.put(prefix + "candidate_lag_time", ns_candidate_lag_time_history[i]);
+      md.put(prefix + "candidate_amplitude", ns_candidate_amplitude_history[i]);
+      md.put(prefix + "threshold", ns_candidate_threshold_history[i]);
+      md.put(prefix + "significance", ns_candidate_significance_history[i]);
+      md.put(prefix + "accepted", ns_candidate_accepted_history[i]);
+      md.put(prefix + "post_residual_rms_ratio",
+             ns_candidate_post_residual_rms_ratio_history[i]);
+      md.put(prefix + "stop_condition", ns_candidate_stop_history[i]);
+    }
+    for (size_t k = 0; k < ns_noise_component_rms.size(); ++k)
+      md.put("ns_gid_component_noise_rms_" + to_string(k),
+             ns_noise_component_rms[k]);
     md.put("ns_gid_last_peak_significance", ns_last_peak_significance);
     md.put("ns_gid_external_wavelet_used", external_wavelet_loaded);
     md.put("ns_gid_external_noise_used", external_noise_loaded);
@@ -1656,8 +1859,16 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
            external_noise_spectrum_loaded);
     md.put("ns_gid_residual_l2_initial", resid_l2_initial);
     md.put("ns_gid_residual_l2_final", resid_l2_prev);
+    md.put("ns_gid_residual_rms_initial", ns_residual_rms_initial);
+    md.put("ns_gid_residual_rms_final", ns_residual_rms_final);
     md.put("ns_gid_residual_noise_ratio",
            (ns_noise_l2 > 0.0) ? resid_l2_prev / ns_noise_l2 : 0.0);
+    md.put("ns_gid_residual_l2_ratio_legacy",
+           (ns_noise_l2 > 0.0) ? resid_l2_prev / ns_noise_l2 : 0.0);
+    md.put("ns_gid_residual_rms_ratio",
+           (ns_noise_amplitude_rms > 0.0)
+               ? ns_residual_rms_final / ns_noise_amplitude_rms
+               : 0.0);
     md.put("ns_gid_fractional_improvement_final",
            ns_fractional_improvement_final);
     NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());

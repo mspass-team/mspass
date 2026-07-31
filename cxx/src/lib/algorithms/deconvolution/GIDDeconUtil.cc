@@ -949,8 +949,12 @@ GroupSparseDeconResult SolveGroupSparseDecon(
   vector<char> valid(npts, false);
   for (int j = 0; j < npts; ++j) {
     const int col0 = j - actual_o_0;
-    valid[j] = (col0 >= 0) &&
-               ((col0 + static_cast<int>(actual_o_fir.size())) <= npts);
+    /* Group-sparse coefficients use dense, normalized/refit design columns.
+     * A partial resolution kernel is poorly conditioned and its omitted tail
+     * is indistinguishable from unobserved data.  Restrict support to columns
+     * with the complete observed kernel rather than treating that tail as
+     * zeros or allowing a variable-norm boundary column. */
+    valid[j] = (col0 >= 0) && ((col0 + nf) <= npts);
   }
 
   double sumabs(0.0);
@@ -982,7 +986,9 @@ GroupSparseDeconResult SolveGroupSparseDecon(
       const double a0 = c0[j];
       const double a1 = c1[j];
       const double a2 = c2[j];
-      for (int p = 0; p < nf; ++p) {
+      const int p_start = max(0, -col0);
+      const int p_end = min(nf, npts - col0);
+      for (int p = p_start; p < p_end; ++p) {
         const int sample = col0 + p;
         const double h = actual_o_fir[p];
         m0[sample] += h * a0;
@@ -1028,7 +1034,9 @@ GroupSparseDeconResult SolveGroupSparseDecon(
         continue;
       const int col0 = j - actual_o_0;
       double sum0(0.0), sum1(0.0), sum2(0.0);
-      for (int p = 0; p < nf; ++p) {
+      const int p_start = max(0, -col0);
+      const int p_end = min(nf, npts - col0);
+      for (int p = p_start; p < p_end; ++p) {
         const int sample = col0 + p;
         const double h = actual_o_fir[p];
         sum0 += h * r0[sample];

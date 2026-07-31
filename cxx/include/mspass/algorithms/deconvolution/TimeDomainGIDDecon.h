@@ -161,9 +161,9 @@ public:
   /*! Return the final lag-weight vector used for QC diagnostics. */
   std::vector<double> lag_weight_vector() const;
   /*! Legacy alias for output_shaping_wavelet inherited from ScalarDecon. */
-  mspass::seismic::CoreTimeSeries ideal_output();
+  mspass::seismic::TimeSeries ideal_output();
   /*! Return the actual output or resolution kernel of the inverse operator. */
-  mspass::seismic::CoreTimeSeries actual_output();
+  mspass::seismic::TimeSeries actual_output();
   /*! Return the inverse wavelet used by the leaf operator. */
   mspass::seismic::CoreTimeSeries inverse_wavelet();
   /*! Return the inverse wavelet shifted to a parent time origin. */
@@ -229,6 +229,8 @@ private:
   bool processed;
   bool residual_noise_from_external;
   bool leaf_parameters_changed;
+  int gid_analysis_samples, gid_wavelet_samples, gid_alignment_offset_samples;
+  double gid_analysis_t0, gid_wavelet_t0;
   mspass::utility::Metadata changed_leaf_metadata;
   mspass::utility::Metadata leaf_operator_metadata;
 
@@ -296,6 +298,16 @@ private:
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;
   double ns_residual_noise_ratio_floor, ns_peak_threshold;
   double ns_last_peak_significance, ns_noise_l2, ns_noise_amplitude_rms;
+  double ns_residual_rms_initial, ns_residual_rms_final;
+  double ns_peak_threshold_empirical, ns_peak_threshold_sigma;
+  double ns_noise_amplitude_robust, ns_last_candidate_amplitude;
+  std::vector<double> ns_noise_component_rms;
+  std::vector<int> ns_candidate_lag_history, ns_candidate_accepted_history;
+  std::vector<double> ns_candidate_lag_time_history,
+      ns_candidate_amplitude_history,
+      ns_candidate_threshold_history, ns_candidate_significance_history;
+  std::vector<double> ns_candidate_post_residual_rms_ratio_history;
+  std::vector<std::string> ns_candidate_stop_history;
   int ns_max_spikes, ns_refit_interval;
   double ns_ridge_beta, ns_fractional_improvement_final;
   bool ns_use_empirical_noise_threshold, ns_converged;

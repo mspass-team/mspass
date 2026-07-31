@@ -319,6 +319,26 @@ void FrequencyDomainGIDDecon::invalidate_processing_state() {
   ns_peak_threshold = 0.0;
   ns_noise_l2 = 0.0;
   ns_noise_amplitude_rms = 0.0;
+  ns_residual_rms_initial = 0.0;
+  ns_residual_rms_final = 0.0;
+  ns_peak_threshold_empirical = 0.0;
+  ns_peak_threshold_sigma = 0.0;
+  ns_noise_amplitude_robust = 0.0;
+  ns_last_candidate_amplitude = 0.0;
+  ns_noise_component_rms.clear();
+  ns_candidate_lag_history.clear();
+  ns_candidate_accepted_history.clear();
+  ns_candidate_lag_time_history.clear();
+  ns_candidate_amplitude_history.clear();
+  ns_candidate_threshold_history.clear();
+  ns_candidate_significance_history.clear();
+  ns_candidate_post_residual_rms_ratio_history.clear();
+  ns_candidate_stop_history.clear();
+  gid_analysis_samples = 0;
+  gid_wavelet_samples = 0;
+  gid_alignment_offset_samples = 0;
+  gid_analysis_t0 = 0.0;
+  gid_wavelet_t0 = 0.0;
   ns_converged = false;
   ns_stop_reason = "not_started";
   gid_converged = false;
@@ -575,12 +595,52 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
                         "input data do not contain the requested wavelet window",
                         ErrorSeverity::Invalid);
   }
-  current_wavelet = TimeSeries(srcwavelet, "FrequencyDomainGIDDecon");
+  /* Scalar leaf operators consume vectors without a time reference.  Build a
+   * common physical grid that contains the full source and analysis windows. */
+  const double analysis_t0 = d_decon.t0();
+  const int analysis_npts = d_decon.npts();
+  const double leaf_t0 = min(analysis_t0, srcwavelet.t0());
+  const double leaf_end = max(d_decon.endtime(), srcwavelet.endtime());
+  const int leaf_npts =
+      static_cast<int>(round((leaf_end - leaf_t0) / d_decon.dt())) + 1;
+  CoreSeismogram leaf_data(leaf_npts);
+  leaf_data.set_t0(leaf_t0);
+  leaf_data.set_dt(d_decon.dt());
+  leaf_data.set_tref(d_decon.timetype());
+  leaf_data.set_live();
+  leaf_data.u.zero();
+  const int data_offset = leaf_data.sample_number(d_decon.t0());
+  for (int k = 0; k < 3; ++k)
+    cblas_dcopy(d_decon.npts(), d_decon.u.get_address(k, 0), 3,
+                leaf_data.u.get_address(k, data_offset), 3);
+  CoreTimeSeries leafwavelet(leaf_data.npts());
+  leafwavelet.s.assign(leaf_data.npts(), 0.0);
+  leafwavelet.set_t0(leaf_data.t0());
+  leafwavelet.set_dt(leaf_data.dt());
+  leafwavelet.set_tref(leaf_data.timetype());
+  leafwavelet.set_live();
+  const int leafwavelet_start = leafwavelet.sample_number(srcwavelet.t0());
+  copy(srcwavelet.s.begin(), srcwavelet.s.end(),
+       leafwavelet.s.begin() + leafwavelet_start);
+  current_wavelet = TimeSeries(leafwavelet, "FrequencyDomainGIDDecon");
+  gid_analysis_samples = analysis_npts;
+  gid_wavelet_samples = srcwavelet.npts();
+  gid_alignment_offset_samples =
+      static_cast<int>(round((srcwavelet.t0() - analysis_t0) / d_decon.dt()));
+  gid_analysis_t0 = analysis_t0;
+  gid_wavelet_t0 = srcwavelet.t0();
+  if (decon_type != CNR) {
+    Metadata md(leaf_operator_metadata);
+    md.put("deconvolution_data_window_start", leaf_data.t0());
+    md.put("deconvolution_data_window_end", leaf_data.endtime());
+    preprocessor->changeparameter(md);
+    leaf_operator_metadata = md;
+  }
   int runtime_noise_npts = n.npts();
   if (external_noise_loaded)
     runtime_noise_npts = max(runtime_noise_npts,
                              static_cast<int>(external_noise.npts()));
-  this->ensure_inverse_operator_size(d_decon.npts(), srcwavelet.npts(),
+  this->ensure_inverse_operator_size(leaf_data.npts(), leafwavelet.npts(),
                                      runtime_noise_npts);
   if (decon_type == CNR) {
     TimeSeries nwavelet;
@@ -592,13 +652,10 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
                      "FrequencyDomainGIDDecon");
     cnrprocessor->initialize_inverse_operator(current_wavelet, nwavelet);
     PowerSpectrum psnoise(cnrprocessor->compute_noise_spectrum(nwavelet));
-    Seismogram dwork(d_decon);
+    Seismogram dwork(leaf_data);
     dwork = cnrprocessor->process(dwork, psnoise, 0.02, 2.0);
-    int copysize = dwork.npts();
-    if (copysize > d_decon.npts())
-      copysize = d_decon.npts();
     for (int k = 0; k < 3; ++k)
-      cblas_dcopy(copysize, dwork.u.get_address(k, 0), 3,
+      cblas_dcopy(d_decon.npts(), dwork.u.get_address(k, data_offset), 3,
                   uwork.get_address(k, 0), 3);
   } else {
     if (decon_type == MULTI_TAPER) {
@@ -625,17 +682,15 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
         nsop->loadnoise(nts);
       }
     }
-    preprocessor->ScalarDecon::load(srcwavelet.s, srcwavelet.s);
+    preprocessor->ScalarDecon::load(leafwavelet.s, leafwavelet.s);
     preprocessor->process();
     for (int k = 0; k < 3; ++k) {
-      CoreTimeSeries dcomp(ExtractComponent(d_decon, k));
-      preprocessor->ScalarDecon::load(srcwavelet.s, dcomp.s);
+      CoreTimeSeries dcomp(ExtractComponent(leaf_data, k));
+      preprocessor->ScalarDecon::load(leafwavelet.s, dcomp.s);
       preprocessor->process();
       vector<double> deconout(preprocessor->getresult());
-      int copysize = deconout.size();
-      if (copysize > d_decon.npts())
-        copysize = d_decon.npts();
-      cblas_dcopy(copysize, &(deconout[0]), 1, uwork.get_address(k, 0), 3);
+      cblas_dcopy(d_decon.npts(), &(deconout[data_offset]), 1,
+                  uwork.get_address(k, 0), 3);
     }
   }
   d_decon.u = uwork;
@@ -681,11 +736,11 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
   }
 }
 
-CoreTimeSeries FrequencyDomainGIDDecon::ideal_output() {
+TimeSeries FrequencyDomainGIDDecon::ideal_output() {
   return this->ScalarDecon::output_shaping_wavelet();
 }
 
-CoreTimeSeries FrequencyDomainGIDDecon::actual_output() {
+TimeSeries FrequencyDomainGIDDecon::actual_output() {
   if (!processed)
     throw MsPASSError(
         "FrequencyDomainGIDDecon::actual_output: process must be called first",
@@ -749,12 +804,38 @@ double FrequencyDomainGIDDecon::compute_ns_peak_threshold() {
   for (auto x : noise_amps)
     sumsq += x * x;
   ns_noise_amplitude_rms = sqrt(sumsq / static_cast<double>(noise_amps.size()));
+  /* Robust scale is derived from pooled-in-time signed components, not the
+   * non-Gaussian distribution of 3C vector amplitudes. */
+  double robust_vector_sumsq(0.0);
+  for (int k = 0; k < 3; ++k) {
+    vector<double> signed_component(nwork.npts());
+    for (int j = 0; j < nwork.npts(); ++j)
+      signed_component[j] = uwork(k, j);
+    sort(signed_component.begin(), signed_component.end());
+    const double median = signed_component[signed_component.size() / 2];
+    vector<double> absdev(signed_component.size());
+    for (size_t i = 0; i < signed_component.size(); ++i)
+      absdev[i] = fabs(signed_component[i] - median);
+    sort(absdev.begin(), absdev.end());
+    const double component_sigma = 1.4826 * absdev[absdev.size() / 2];
+    robust_vector_sumsq += component_sigma * component_sigma;
+  }
+  ns_noise_amplitude_robust = sqrt(robust_vector_sumsq);
+  ns_peak_threshold_empirical = empirical;
+  ns_peak_threshold_sigma =
+      ns_peak_sigma_threshold * ns_noise_amplitude_rms;
+  ns_noise_component_rms.assign(3, 0.0);
+  for (int k = 0; k < 3; ++k) {
+    double component_sumsq(0.0);
+    for (int j = 0; j < nwork.npts(); ++j)
+      component_sumsq += uwork(k, j) * uwork(k, j);
+    ns_noise_component_rms[k] =
+        sqrt(component_sumsq / static_cast<double>(nwork.npts()));
+  }
   ns_noise_l2 = matrix_l2(nwork.u);
-  return ns_use_empirical_noise_threshold ? max(empirical,
-                                                ns_peak_sigma_threshold *
-                                                    ns_noise_amplitude_rms)
-                                          : ns_peak_sigma_threshold *
-                                                ns_noise_amplitude_rms;
+  return ns_use_empirical_noise_threshold
+             ? max(ns_peak_threshold_empirical, ns_peak_threshold_sigma)
+             : ns_peak_threshold_sigma;
 }
 
 void FrequencyDomainGIDDecon::rescale_spike(ThreeCSpike &spk) {
@@ -870,6 +951,8 @@ void FrequencyDomainGIDDecon::process() {
     ns_last_peak_significance = 0.0;
     resid_l2_initial = matrix_l2(r.u);
     resid_linf_initial = matrix_linf(r.u);
+    ns_residual_rms_initial = EstimateThreeCColumnAmplitudeRMS(r);
+    ns_residual_rms_final = ns_residual_rms_initial;
     resid_l2_prev = resid_l2_initial;
     if (resid_l2_initial <= 0.0)
       throw MsPASSError(base_error + "input data residual is zero",
@@ -915,6 +998,7 @@ void FrequencyDomainGIDDecon::process() {
         this->update_residual_matrix(*sptr);
       resid_l2_final = matrix_l2(r.u);
       resid_linf_final = matrix_linf(r.u);
+      ns_residual_rms_final = EstimateThreeCColumnAmplitudeRMS(r);
       group_sparse_debiased_objective_final =
           GroupSparseObjective(r, spikes, group_sparse_lambda_used);
       group_sparse_debiased_fractional_improvement_final =
@@ -954,8 +1038,15 @@ void FrequencyDomainGIDDecon::process() {
       }
       auto amax = max_element(amps.begin(), amps.end());
       if ((amax == amps.end()) || (*amax <= 0.0)) {
-        gid_stop_reason = "no_valid_candidate";
-        gid_converged = true;
+        if (decon_type == NS_GID) {
+          ns_stop_reason = "no_acceptable_candidate";
+          ns_converged = false;
+          gid_stop_reason = ns_stop_reason;
+          gid_converged = false;
+        } else {
+          gid_stop_reason = "no_valid_candidate";
+          gid_converged = true;
+        }
         break;
       }
       if (decon_type == NS_GID) {
@@ -964,10 +1055,22 @@ void FrequencyDomainGIDDecon::process() {
         for (int k = 0; k < 3; ++k)
           candidate_amp2 += r.u(k, imax) * r.u(k, imax);
         double candidate_amp = sqrt(max(0.0, candidate_amp2));
+        ns_last_candidate_amplitude = candidate_amp;
         ns_last_peak_significance =
             (ns_peak_threshold > 0.0) ? candidate_amp / ns_peak_threshold
                                       : 0.0;
         if (ns_peak_threshold > 0.0 && candidate_amp < ns_peak_threshold) {
+          ns_candidate_lag_history.push_back(imax);
+          ns_candidate_lag_time_history.push_back(r.time(imax));
+          ns_candidate_amplitude_history.push_back(candidate_amp);
+          ns_candidate_threshold_history.push_back(ns_peak_threshold);
+          ns_candidate_significance_history.push_back(ns_last_peak_significance);
+          ns_candidate_accepted_history.push_back(0);
+          ns_candidate_post_residual_rms_ratio_history.push_back(
+              (ns_noise_amplitude_rms > 0.0)
+                  ? EstimateThreeCColumnAmplitudeRMS(r) / ns_noise_amplitude_rms
+                  : 0.0);
+          ns_candidate_stop_history.push_back("candidate_not_significant");
           ns_stop_reason = "candidate_not_significant";
           ns_converged = true;
           gid_stop_reason = ns_stop_reason;
@@ -976,6 +1079,17 @@ void FrequencyDomainGIDDecon::process() {
         }
         if ((ns_max_spikes > 0) &&
             (static_cast<int>(spikes.size()) >= ns_max_spikes)) {
+          ns_candidate_lag_history.push_back(imax);
+          ns_candidate_lag_time_history.push_back(r.time(imax));
+          ns_candidate_amplitude_history.push_back(candidate_amp);
+          ns_candidate_threshold_history.push_back(ns_peak_threshold);
+          ns_candidate_significance_history.push_back(ns_last_peak_significance);
+          ns_candidate_accepted_history.push_back(0);
+          ns_candidate_post_residual_rms_ratio_history.push_back(
+              (ns_noise_amplitude_rms > 0.0)
+                  ? EstimateThreeCColumnAmplitudeRMS(r) / ns_noise_amplitude_rms
+                  : 0.0);
+          ns_candidate_stop_history.push_back("max_spikes");
           ns_stop_reason = "max_spikes";
           ns_converged = true;
           gid_stop_reason = ns_stop_reason;
@@ -991,6 +1105,17 @@ void FrequencyDomainGIDDecon::process() {
         for (int k = 0; k < 3; ++k)
           candidate_amp2 += r.u(k, imax) * r.u(k, imax);
         const double candidate_amp = sqrt(max(0.0, candidate_amp2));
+        if (decon_type == NS_GID) {
+          ns_candidate_lag_history.push_back(imax);
+          ns_candidate_lag_time_history.push_back(r.time(imax));
+          ns_candidate_amplitude_history.push_back(candidate_amp);
+          ns_candidate_threshold_history.push_back(ns_peak_threshold);
+          ns_candidate_significance_history.push_back(
+              (ns_peak_threshold > 0.0) ? candidate_amp / ns_peak_threshold : 0.0);
+          ns_candidate_accepted_history.push_back(0);
+          ns_candidate_post_residual_rms_ratio_history.push_back(0.0);
+          ns_candidate_stop_history.push_back("rejected_residual");
+        }
         ThreeCSpike spk(r.u, imax);
         this->rescale_spike(spk);
         CoreSeismogram saved_r(r);
@@ -1001,6 +1126,14 @@ void FrequencyDomainGIDDecon::process() {
           this->update_lag_weights(imax, candidate_amp);
           iter_count = iiter + 1;
           accepted = true;
+          if (decon_type == NS_GID) {
+            ns_candidate_accepted_history.back() = 1;
+            ns_candidate_post_residual_rms_ratio_history.back() =
+                (ns_noise_amplitude_rms > 0.0)
+                    ? EstimateThreeCColumnAmplitudeRMS(r) / ns_noise_amplitude_rms
+                    : 0.0;
+            ns_candidate_stop_history.back() = "continue";
+          }
           if (decon_type == NS_GID && ns_refit_interval > 0 &&
               (static_cast<int>(spikes.size()) % ns_refit_interval) == 0) {
             RefitSpikeAmplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
@@ -1016,18 +1149,30 @@ void FrequencyDomainGIDDecon::process() {
         }
       }
       if (!accepted) {
-        gid_stop_reason = "no_acceptable_candidate";
-        gid_converged = true;
+        if (decon_type == NS_GID && !ns_candidate_accepted_history.empty() &&
+            ns_candidate_accepted_history.back() < 0)
+          ns_candidate_accepted_history.back() = 0;
+        if (decon_type == NS_GID) {
+          ns_stop_reason = "no_acceptable_candidate";
+          ns_converged = false;
+          gid_stop_reason = ns_stop_reason;
+          gid_converged = false;
+        } else {
+          gid_stop_reason = "no_acceptable_candidate";
+          gid_converged = true;
+        }
         break;
       }
       resid_l2_final = matrix_l2(r.u);
       resid_linf_final = matrix_linf(r.u);
+      ns_residual_rms_final = EstimateThreeCColumnAmplitudeRMS(r);
       double ratio = resid_l2_final / resid_l2_initial;
       double improvement = (resid_l2_prev - resid_l2_final) / resid_l2_initial;
       ns_fractional_improvement_final = improvement;
       resid_l2_prev = resid_l2_final;
-      if (decon_type == NS_GID && ns_noise_l2 > 0.0 &&
-          (resid_l2_final / ns_noise_l2) <= ns_residual_noise_ratio_floor) {
+      if (decon_type == NS_GID && ns_noise_amplitude_rms > 0.0 &&
+          (ns_residual_rms_final / ns_noise_amplitude_rms) <=
+              ns_residual_noise_ratio_floor) {
         ns_stop_reason = "residual_reached_noise_floor";
         ns_converged = true;
         gid_stop_reason = ns_stop_reason;
@@ -1054,9 +1199,10 @@ void FrequencyDomainGIDDecon::process() {
       }
     }
     if (decon_type == NS_GID && ns_stop_reason == "running") {
-      if (iter_count >= iter_max)
+      if (iter_count >= iter_max) {
         ns_stop_reason = "max_iterations";
-      else {
+        ns_converged = false;
+      } else {
         ns_stop_reason = "converged";
         ns_converged = true;
       }
@@ -1078,6 +1224,32 @@ void FrequencyDomainGIDDecon::process() {
       this->update_residual_matrix(*sptr);
     resid_l2_final = matrix_l2(r.u);
     resid_linf_final = matrix_linf(r.u);
+    ns_residual_rms_final = EstimateThreeCColumnAmplitudeRMS(r);
+    if (decon_type == NS_GID &&
+        ns_stop_reason == "residual_reached_noise_floor" &&
+        (ns_noise_amplitude_rms <= 0.0 ||
+         (ns_residual_rms_final / ns_noise_amplitude_rms) >
+             ns_residual_noise_ratio_floor)) {
+      /* Do not retain a pre-refit noise-floor decision after ridge refitting
+       * has changed the residual used in final QC. */
+      ns_stop_reason = "post_refit_residual_above_noise_floor";
+      ns_converged = false;
+      gid_stop_reason = ns_stop_reason;
+      gid_converged = false;
+    }
+    /* The terminal trace entry is published only after the final ridge refit,
+     * so its residual ratio and stop condition describe the same state as the
+     * global NS-GID QC fields for every exit path. */
+    if (decon_type == NS_GID && !ns_candidate_stop_history.empty()) {
+      const size_t terminal = ns_candidate_stop_history.size() - 1;
+      ns_candidate_post_residual_rms_ratio_history[terminal] =
+          (ns_noise_amplitude_rms > 0.0)
+              ? ns_residual_rms_final / ns_noise_amplitude_rms
+              : 0.0;
+      ns_candidate_stop_history[terminal] = ns_stop_reason;
+      gid_stop_reason = ns_stop_reason;
+      gid_converged = ns_converged;
+    }
     if (!lag_weights.empty()) {
       auto lwmax = max_element(lag_weights.begin(), lag_weights.end());
       lag_weight_linf_final = (lwmax != lag_weights.end()) ? *lwmax : 0.0;
@@ -1179,6 +1351,11 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
   md.put("gid_leaf_external_noise_used", leaf_external_noise_used);
   md.put("gid_residual_external_noise_used", residual_noise_from_external);
   md.put("gid_inverse_operator_nfft", this->actual_inverse_operator_size());
+  md.put("gid_analysis_samples", gid_analysis_samples);
+  md.put("gid_wavelet_samples", gid_wavelet_samples);
+  md.put("gid_analysis_t0", gid_analysis_t0);
+  md.put("gid_wavelet_t0", gid_wavelet_t0);
+  md.put("gid_wavelet_alignment_offset_samples", gid_alignment_offset_samples);
   md.put("gid_leaf_parameters_changed", leaf_parameters_changed);
   md.put("gid_processed", processed);
   md.put("gid_converged", gid_converged);
@@ -1229,6 +1406,23 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
          processed && !actual_o_fir.empty());
   if (decon_type == GROUP_SPARSE) {
     md.put("group_sparse_enabled", true);
+    const int valid_start = actual_o_0;
+    const int valid_end = static_cast<int>(d_decon.npts()) -
+                          static_cast<int>(actual_o_fir.size()) + actual_o_0;
+    const int valid_count = max(0, valid_end - valid_start + 1);
+    md.put("group_sparse_valid_lag_start_samples", valid_start);
+    md.put("group_sparse_valid_lag_end_samples", valid_end);
+    md.put("group_sparse_valid_lag_start_time",
+           d_decon.t0() + valid_start * d_decon.dt());
+    md.put("group_sparse_valid_lag_end_time",
+           d_decon.t0() + valid_end * d_decon.dt());
+    md.put("group_sparse_min_observed_energy_fraction", 1.0);
+    md.put("group_sparse_min_observed_support_samples",
+           static_cast<int>(actual_o_fir.size()));
+    md.put("group_sparse_boundary_policy",
+           string("full_resolution_kernel"));
+    md.put("group_sparse_boundary_candidates_rejected",
+           max(0, static_cast<int>(d_decon.npts()) - valid_count));
     md.put("group_sparse_inverse_operator", string("ns_gid"));
     md.put("group_sparse_lambda_requested", group_sparse_lambda);
     md.put("group_sparse_lambda_scale", group_sparse_lambda_scale);
@@ -1289,7 +1483,26 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
     md.put("ns_gid_iterations", iter_count);
     md.put("ns_gid_number_spikes", static_cast<int>(spikes.size()));
     md.put("ns_gid_peak_threshold", ns_peak_threshold);
+    md.put("ns_gid_peak_threshold_empirical", ns_peak_threshold_empirical);
+    md.put("ns_gid_peak_threshold_sigma", ns_peak_threshold_sigma);
     md.put("ns_gid_noise_amplitude_rms", ns_noise_amplitude_rms);
+    md.put("ns_gid_noise_amplitude_robust", ns_noise_amplitude_robust);
+    md.put("ns_gid_last_candidate_amplitude", ns_last_candidate_amplitude);
+    for (size_t i = 0; i < ns_candidate_lag_history.size(); ++i) {
+      const string prefix("ns_gid_iteration_" + to_string(i) + "_");
+      md.put(prefix + "candidate_lag_samples", ns_candidate_lag_history[i]);
+      md.put(prefix + "candidate_lag_time", ns_candidate_lag_time_history[i]);
+      md.put(prefix + "candidate_amplitude", ns_candidate_amplitude_history[i]);
+      md.put(prefix + "threshold", ns_candidate_threshold_history[i]);
+      md.put(prefix + "significance", ns_candidate_significance_history[i]);
+      md.put(prefix + "accepted", ns_candidate_accepted_history[i]);
+      md.put(prefix + "post_residual_rms_ratio",
+             ns_candidate_post_residual_rms_ratio_history[i]);
+      md.put(prefix + "stop_condition", ns_candidate_stop_history[i]);
+    }
+    for (size_t k = 0; k < ns_noise_component_rms.size(); ++k)
+      md.put("ns_gid_component_noise_rms_" + to_string(k),
+             ns_noise_component_rms[k]);
     md.put("ns_gid_last_peak_significance", ns_last_peak_significance);
     md.put("ns_gid_external_wavelet_used", external_wavelet_loaded);
     md.put("ns_gid_external_noise_used", external_noise_loaded);
@@ -1297,8 +1510,16 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
            external_noise_spectrum_loaded);
     md.put("ns_gid_residual_l2_initial", resid_l2_initial);
     md.put("ns_gid_residual_l2_final", resid_l2_final);
+    md.put("ns_gid_residual_rms_initial", ns_residual_rms_initial);
+    md.put("ns_gid_residual_rms_final", ns_residual_rms_final);
     md.put("ns_gid_residual_noise_ratio",
            (ns_noise_l2 > 0.0) ? resid_l2_final / ns_noise_l2 : 0.0);
+    md.put("ns_gid_residual_l2_ratio_legacy",
+           (ns_noise_l2 > 0.0) ? resid_l2_final / ns_noise_l2 : 0.0);
+    md.put("ns_gid_residual_rms_ratio",
+           (ns_noise_amplitude_rms > 0.0)
+               ? ns_residual_rms_final / ns_noise_amplitude_rms
+               : 0.0);
     md.put("ns_gid_fractional_improvement_final",
            ns_fractional_improvement_final);
     NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
