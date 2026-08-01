@@ -296,6 +296,67 @@ def _assert_two_sample_analysis_candidate_exhaustion_control_flow(
             assert qc[terminal + "post_residual_rms_ratio"] >= 0.0
 
 
+def _make_edge_only_gid_data():
+    """Live 3C data with energy only at the second sample of [0, 0.05]."""
+    dt = 0.05
+    data = Seismogram(702)
+    data.set_t0(-35.0)
+    data.set_dt(dt)
+    data.set_live()
+    for component, amplitude in enumerate((0.3, -0.2, 1.0)):
+        samples = np.zeros(data.npts)
+        samples[-1] = amplitude
+        data.data[component, :] = DoubleVector(samples)
+    return data
+
+
+def _assert_fd_zero_amplitude_candidates(engine_class, pf_name, branch_name, tmp_path):
+    """A valid lag with zero residual must not select edge-only energy."""
+    wavelet = TimeSeries(1)
+    wavelet.set_t0(0.0)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    wavelet.data[0] = 1.0
+    engine = engine_class(
+        _pf_with_short_decon_window(
+            tmp_path,
+            pf_name,
+            branch_name=branch_name,
+            mode="ns_gid",
+            window_start=0.0,
+            window_end=0.05,
+        )
+    )
+    engine.loadwavelet(wavelet)
+    assert (
+        engine.load(
+            _make_edge_only_gid_data(),
+            TimeWindow(0.0, 0.05),
+            TimeWindow(-35.0, -5.0),
+        )
+        == 0
+    )
+    engine.process()
+    result = engine.getresult()
+    qc = dict(engine.QCMetrics())
+    assert result.live
+    assert np.allclose(np.asarray(result.data), 0.0)
+    assert qc["gid_analysis_samples"] == 2
+    assert qc["gid_actual_o_fir_npts"] == 2
+    assert qc["gid_actual_o_fir_zero_lag_index"] == 0
+    assert qc["gid_penalty_valid_lags"] == 1
+    assert qc["residual_L2_initial"] > 0.0
+    assert qc["residual_L2_final"] == pytest.approx(qc["residual_L2_initial"])
+    assert (
+        qc["gid_stop_reason"] == qc["ns_gid_stop_reason"] == "no_acceptable_candidate"
+    )
+    assert not qc["gid_converged"]
+    assert not qc["ns_gid_converged"]
+    assert qc["gid_number_spikes"] == qc["ns_gid_number_spikes"] == 0
+    assert qc["ns_gid_iterations"] == 0
+    assert not any(key.startswith("ns_gid_iteration_") for key in qc)
+
+
 def _assert_cnr_resizes_for_external_inputs(
     engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
 ):
