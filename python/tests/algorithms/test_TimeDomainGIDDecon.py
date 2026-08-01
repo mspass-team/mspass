@@ -142,6 +142,16 @@ def _assert_direct_gid_load_guards(engine_class, pf_name, data):
         engine_class(pfread(f"./data/pf/{pf_name}")).loadnoise(
             wrong_dt, TimeWindow(-35.0, -5.0)
         )
+    nonfinite_dt = Seismogram(data)
+    nonfinite_dt.set_dt(float("nan"))
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine_class(pfread(f"./data/pf/{pf_name}")).load(
+            nonfinite_dt, TimeWindow(-8.0, 20.0)
+        )
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine_class(pfread(f"./data/pf/{pf_name}")).loadnoise(
+            nonfinite_dt, TimeWindow(-35.0, -5.0)
+        )
     engine = engine_class(pfread(f"./data/pf/{pf_name}"))
     assert engine.load(data, TimeWindow(-8.0, 19.0)) == 1
     assert engine.load(data, TimeWindow(-8.0, 19.0), TimeWindow(-35.0, -5.0)) == 1
@@ -183,6 +193,14 @@ def _assert_gid_constructor_metadata_compatibility(engine_class, pf_name, tmp_pa
     legacy = engine_class(pfread(str(legacy_path)))
     assert legacy.wavelet_window_start() == pytest.approx(-10.0)
     assert legacy.wavelet_window_end() == pytest.approx(160.0)
+
+    shaping_dt_path = tmp_path / f"{pf_name}.shaping_dt_required"
+    shaping_dt_path.write_text(
+        source.replace("        shaping_wavelet_dt 0.05\n", "", 1)
+    )
+    with pytest.raises(MsPASSError, match="shaping_wavelet_dt") as error:
+        engine_class(pfread(str(shaping_dt_path)))
+    assert "No value associated with this key" in str(error.value)
 
 
 def _make_zero_gid_test_data():
