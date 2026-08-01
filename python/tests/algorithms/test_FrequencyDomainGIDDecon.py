@@ -17,6 +17,13 @@ from mspasspy.algorithms.window import WindowData
 from test_TimeDomainGIDDecon import (
     _assert_actual_and_output_shaping_are_distinct,
     _assert_external_wavelet_wrapper_error_contract,
+    _assert_auto_wavelet_window_rejection,
+    _assert_gid_constructor_metadata_compatibility,
+    _assert_direct_gid_load_guards,
+    _assert_zero_residual_no_candidate,
+    _assert_two_sample_analysis_candidate_exhaustion_control_flow,
+    _assert_timeseries_alias,
+    _assert_cnr_resizes_for_external_inputs,
     _assert_group_sparse_disabled_qc,
     _assert_group_sparse_qc,
     _assert_single_spike_recovery,
@@ -85,6 +92,10 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     # Exercise the bound C++ methods directly, rather than only the wrapper.
     assert isinstance(engine.actual_output(), TimeSeries)
     assert isinstance(engine.output_shaping_wavelet(), TimeSeries)
+    assert isinstance(engine.ideal_output(), TimeSeries)
+    assert isinstance(engine.resolution_kernel(), TimeSeries)
+    _assert_timeseries_alias(engine.ideal_output(), engine.output_shaping_wavelet())
+    _assert_timeseries_alias(engine.resolution_kernel(), engine.actual_output())
     assert isinstance(
         WindowData(actual_output, actual_output.t0, actual_output.endtime()),
         TimeSeries,
@@ -294,6 +305,52 @@ def test_FrequencyDomainGIDDecon_legacy_wavelet_window_defaults_to_analysis(tmp_
     engine = FrequencyDomainGIDDecon(pfread(str(path)))
     assert engine.wavelet_window_start() == pytest.approx(-5.0)
     assert engine.wavelet_window_end() == pytest.approx(20.0)
+
+
+def test_FrequencyDomainGIDDecon_constructor_metadata_compatibility(tmp_path):
+    _assert_gid_constructor_metadata_compatibility(
+        FrequencyDomainGIDDecon, "FrequencyDomainGIDDecon.pf", tmp_path
+    )
+
+
+def test_FrequencyDomainGIDRFDecon_rejects_missing_automatic_wavelet_window(tmp_path):
+    _assert_auto_wavelet_window_rejection(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_direct_load_guards_and_auto_source():
+    _assert_direct_gid_load_guards(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        _make_gid_test_data(None),
+    )
+
+
+def test_FrequencyDomainGIDDecon_two_sample_analysis_exhausts_ns_candidates(
+    tmp_path,
+):
+    _assert_two_sample_analysis_candidate_exhaustion_control_flow(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        tmp_path,
+        (("ns_gid", "no_acceptable_candidate", False),),
+    )
+
+
+def test_FrequencyDomainGIDDecon_cnr_resizes_for_external_inputs(tmp_path):
+    _assert_cnr_resizes_for_external_inputs(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
 
 
 def test_FrequencyDomainGIDDecon_resizes_for_external_wavelet_and_noise():
