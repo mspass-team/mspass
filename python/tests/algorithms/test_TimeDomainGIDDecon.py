@@ -853,7 +853,16 @@ def _assert_shipped_default_recovers_weak_conversion(
     data, wavelet, spike_times = _make_external_wavelet_3c_data(
         noise_level=0.005, conversion_scale=0.10
     )
-    engine = engine_class(pfread(str(Path("data/pf") / pf_name)))
+    pf = pfread(str(Path("data/pf") / pf_name))
+    branch = (
+        "frequency_domain_gid_deconvolution"
+        if "FrequencyDomain" in pf_name
+        else "time_domain_gid_deconvolution"
+    )
+    configured_noise_floor = pf.get_branch("deconvolution_operator_type").get_branch(
+        branch
+    )["ns_gid_residual_noise_ratio_floor"]
+    engine = engine_class(pf)
     rf = wrapper(
         data,
         engine,
@@ -868,7 +877,7 @@ def _assert_shipped_default_recovers_weak_conversion(
     assert np.isfinite(sigma_threshold)
     assert sigma_threshold / noise_rms == pytest.approx(3.0)
     assert qc["ns_gid_number_spikes"] == 2
-    assert qc["ns_gid_stop_reason"] == "candidate_not_significant"
+    assert qc["ns_gid_stop_reason"] == "residual_reached_noise_floor"
     assert qc["gid_stop_reason"] == qc["ns_gid_stop_reason"]
     assert qc["ns_gid_peak_threshold"] == pytest.approx(
         max(
@@ -876,11 +885,16 @@ def _assert_shipped_default_recovers_weak_conversion(
             qc["ns_gid_peak_threshold_sigma"],
         )
     )
-    assert qc["ns_gid_last_peak_significance"] < 1.0
-    assert qc["ns_gid_iteration_2_accepted"] == 0
-    assert qc["ns_gid_iteration_2_stop_condition"] == "candidate_not_significant"
-    assert qc["ns_gid_iteration_2_candidate_lag_samples"] >= 0
-    assert np.isfinite(qc["ns_gid_iteration_2_candidate_lag_time"])
+    residual_ratio = qc["ns_gid_residual_rms_ratio"]
+    assert np.isfinite(residual_ratio)
+    assert np.isfinite(configured_noise_floor) and configured_noise_floor > 0.0
+    assert residual_ratio <= configured_noise_floor
+    assert qc["ns_gid_iteration_1_accepted"] == 1
+    assert qc["ns_gid_iteration_1_stop_condition"] == "residual_reached_noise_floor"
+    assert np.isfinite(qc["ns_gid_iteration_1_post_residual_rms_ratio"])
+    assert qc["ns_gid_iteration_1_post_residual_rms_ratio"] == pytest.approx(
+        residual_ratio
+    )
     sparse = engine.sparse_output()
     times = sparse.t0 + sparse.dt * np.arange(sparse.npts)
     amplitude = np.linalg.norm(np.asarray(sparse.data), axis=0)
