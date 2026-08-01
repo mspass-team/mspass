@@ -222,6 +222,8 @@ op = LeastSquareDecon(md)
 op.load(DoubleVector([1.0, 0.0, 0.0, 0.0]), DoubleVector([1.0, 0.0, 0.0, 0.0]))
 op.process()
 assert op.actual_output().npts > 0
+assert op.ideal_output().npts > 0
+assert op.resolution_kernel().npts > 0
 assert op.inverse_wavelet().npts > 0
 """
     subprocess.run([sys.executable, "-c", code], check=True)

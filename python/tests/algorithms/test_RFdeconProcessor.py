@@ -185,6 +185,41 @@ def test_RFdeconProcessor_gid_signal_window_includes_automatic_wavelet_union(
         ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
     ],
 )
+def test_RFdeconProcessor_gid_signal_window_legacy_wavelet_falls_back_to_analysis(
+    tmp_path, alg, pf_name
+):
+    text = (Path("data/pf") / pf_name).read_text()
+    text = text.replace("full_data_window_start -8.0", "full_data_window_start -12.0")
+    text = text.replace("full_data_window_end 20.0", "full_data_window_end 170.0")
+    text = text.replace(
+        "deconvolution_data_window_start -5.0",
+        "deconvolution_data_window_start -10.0",
+    )
+    text = text.replace(
+        "deconvolution_data_window_end 20.0",
+        "deconvolution_data_window_end 160.0",
+    )
+    text = text.replace("        wavelet_window_start -5.0\n", "")
+    text = text.replace("        wavelet_window_end 20.0\n", "")
+    assert "wavelet_window_start" not in text
+    assert "wavelet_window_end" not in text
+    pf = tmp_path / pf_name
+    pf.write_text(text)
+    engine = make_gid_engine(alg=alg, pf=str(pf))
+    assert engine.wavelet_window_start() == pytest.approx(-10.0)
+    assert engine.wavelet_window_end() == pytest.approx(160.0)
+    window = RFdeconProcessor(alg=alg, pf=str(pf))._gid_signal_window()
+    assert window.start == pytest.approx(-12.0)
+    assert window.end == pytest.approx(170.0)
+
+
+@pytest.mark.parametrize(
+    ("alg", "pf_name"),
+    [
+        ("TimeDomainGID", "TimeDomainGIDDecon.pf"),
+        ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
+    ],
+)
 def test_RFdeconProcessor_gid_diagnostic_accessors_return_timeseries(alg, pf_name):
     """Public processor diagnostics must work with metadata-aware APIs."""
     processor = RFdeconProcessor(alg=alg, pf=str(Path("data/pf") / pf_name))

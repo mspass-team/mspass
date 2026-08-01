@@ -104,6 +104,230 @@ def _assert_external_wavelet_wrapper_error_contract(engine, wrapper, qc_key):
     assert not recovered[qc_key]["gid_external_wavelet_used"]
 
 
+def _assert_auto_wavelet_window_rejection(engine_class, wrapper, pf_name, tmp_path):
+    """Automatic wavelet extraction must reject a signal missing only its window."""
+    text = (
+        (Path("./data/pf") / pf_name)
+        .read_text()
+        .replace("wavelet_window_start -5.0", "wavelet_window_start -9.0")
+    )
+    path = tmp_path / f"{pf_name}.auto_wavelet_guard"
+    path.write_text(text)
+    data = _make_gid_test_data(noise_level=None)
+    for return_wavelet in (False, True):
+        result = wrapper(
+            data,
+            engine_class(pfread(str(path))),
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+            return_wavelet=return_wavelet,
+        )
+        if return_wavelet:
+            assert len(result) == 3
+            assert not result[0].live
+            assert result[1:] == [None, None]
+        else:
+            assert not result.live
+
+
+def _assert_direct_gid_load_guards(engine_class, pf_name, data):
+    """Direct loading rejects incompatible sampling and accepts automatic source."""
+    wrong_dt = Seismogram(data)
+    wrong_dt.set_dt(data.dt * 2.0)
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine_class(pfread(f"./data/pf/{pf_name}")).load(
+            wrong_dt, TimeWindow(-8.0, 20.0)
+        )
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine_class(pfread(f"./data/pf/{pf_name}")).loadnoise(
+            wrong_dt, TimeWindow(-35.0, -5.0)
+        )
+    engine = engine_class(pfread(f"./data/pf/{pf_name}"))
+    assert engine.load(data, TimeWindow(-8.0, 19.0)) == 1
+    assert engine.load(data, TimeWindow(-8.0, 19.0), TimeWindow(-35.0, -5.0)) == 1
+    assert engine.load(data, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+    engine.process()
+    assert engine.getresult().live
+
+
+def _assert_gid_constructor_metadata_compatibility(engine_class, pf_name, tmp_path):
+    """Optional wavelet metadata must be supplied as a complete pair."""
+    source = (Path("./data/pf") / pf_name).read_text()
+    source = source.replace(
+        "full_data_window_start -8.0", "full_data_window_start -12.0"
+    )
+    source = source.replace("full_data_window_end 20.0", "full_data_window_end 170.0")
+    source = source.replace(
+        "deconvolution_data_window_start -5.0",
+        "deconvolution_data_window_start -10.0",
+    )
+    source = source.replace(
+        "deconvolution_data_window_end 20.0",
+        "deconvolution_data_window_end 160.0",
+    )
+    for key, value in (
+        ("wavelet_window_start", "-5.0"),
+        ("wavelet_window_end", "20.0"),
+    ):
+        path = tmp_path / f"{pf_name}.{key}_missing"
+        path.write_text(source.replace(f"        {key} {value}\n", "", 1))
+        with pytest.raises(MsPASSError, match=key):
+            engine_class(pfread(str(path)))
+
+    legacy_path = tmp_path / f"{pf_name}.legacy_wavelet_window"
+    legacy_path.write_text(
+        source.replace("        wavelet_window_start -5.0\n", "", 1).replace(
+            "        wavelet_window_end 20.0\n", "", 1
+        )
+    )
+    legacy = engine_class(pfread(str(legacy_path)))
+    assert legacy.wavelet_window_start() == pytest.approx(-10.0)
+    assert legacy.wavelet_window_end() == pytest.approx(160.0)
+
+
+def _make_zero_gid_test_data():
+    """A valid, live three-component input with no residual energy."""
+    data = _make_gid_test_data(noise_level=None)
+    for component in range(3):
+        data.data[component, :] = DoubleVector(np.zeros(data.npts))
+    return data
+
+
+def _assert_zero_residual_no_candidate(
+    engine_class, pf_name, branch_name, tmp_path, expectations
+):
+    """Zero residuals must terminate cleanly without manufacturing a spike."""
+    for mode, expected_reason, expected_converged in expectations:
+        engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
+        engine.loadwavelet(_make_wrapper_external_wavelet())
+        assert (
+            engine.load(
+                _make_zero_gid_test_data(),
+                TimeWindow(-8.0, 20.0),
+                TimeWindow(-35.0, -5.0),
+            )
+            == 0
+        )
+        engine.process()
+        rf = engine.getresult()
+        assert rf.live
+        assert np.allclose(np.asarray(rf.data), 0.0)
+        qc = dict(engine.QCMetrics())
+        assert qc["gid_stop_reason"] == expected_reason
+        assert qc["gid_converged"] is expected_converged
+        assert qc["gid_number_spikes"] == 0
+        if mode == "ns_gid":
+            assert qc["ns_gid_stop_reason"] == expected_reason
+            assert qc["ns_gid_converged"] is expected_converged
+
+
+def _assert_two_sample_analysis_candidate_exhaustion_control_flow(
+    engine_class, pf_name, branch_name, tmp_path, expectations
+):
+    """Exercise NS candidate exhaustion; this is not a scientific RF fixture."""
+    for mode, expected_reason, expected_converged in expectations:
+        engine = engine_class(
+            _pf_with_short_decon_window(
+                tmp_path,
+                pf_name,
+                branch_name=branch_name,
+                mode=mode,
+                window_start=0.0,
+                window_end=0.05,
+            )
+        )
+        engine.loadwavelet(_make_wrapper_external_wavelet())
+        assert (
+            engine.load(
+                _make_gid_test_data(noise_level=None),
+                TimeWindow(0.0, 0.05),
+                TimeWindow(-35.0, -5.0),
+            )
+            == 0
+        )
+        engine.process()
+        assert engine.getresult().live
+        qc = dict(engine.QCMetrics())
+        assert qc["gid_stop_reason"] == expected_reason
+        assert qc["gid_converged"] is expected_converged
+        if mode == "ns_gid":
+            assert qc["ns_gid_stop_reason"] == expected_reason
+            assert qc["ns_gid_converged"] is expected_converged
+            assert qc["gid_number_spikes"] == qc["ns_gid_number_spikes"] == 1
+            assert qc["ns_gid_iterations"] == 1
+            assert qc["ns_gid_iteration_0_accepted"] == 1
+            assert qc["ns_gid_iteration_0_stop_condition"] == "continue"
+            # The trace records a second, rejected candidate even though the
+            # public iteration count includes only the accepted spike.
+            terminal = "ns_gid_iteration_1_"
+            assert qc[terminal + "accepted"] == 0
+            assert qc[terminal + "stop_condition"] == expected_reason
+            assert qc[terminal + "stop_condition"] == qc["ns_gid_stop_reason"]
+            assert 0 <= qc[terminal + "candidate_lag_samples"] < 2
+            for suffix in (
+                "candidate_lag_time",
+                "candidate_amplitude",
+                "threshold",
+                "significance",
+                "post_residual_rms_ratio",
+            ):
+                assert np.isfinite(qc[terminal + suffix])
+            assert qc[terminal + "candidate_amplitude"] >= 0.0
+            assert qc[terminal + "threshold"] >= 0.0
+            assert qc[terminal + "significance"] >= 0.0
+            assert qc[terminal + "post_residual_rms_ratio"] >= 0.0
+
+
+def _assert_cnr_resizes_for_external_inputs(
+    engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
+):
+    """CNR must grow its leaf operator for long external source/noise inputs."""
+    wavelet = TimeSeries(3001)
+    wavelet.set_t0(-5.0)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    for index in range(wavelet.npts):
+        wavelet.data[index] = np.exp(-(((index - 100) / 5.0) ** 2))
+    noise = TimeSeries(6001)
+    noise.set_t0(-200.0)
+    noise.set_dt(0.05)
+    noise.set_live()
+    for index in range(noise.npts):
+        noise.data[index] = 0.01 * np.sin(0.1 * index)
+    rf = wrapper(
+        _make_long_window_gid_data(),
+        engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, "cnr")),
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+        external_wavelet=wavelet,
+        external_noise=noise,
+    )
+    assert rf.live
+    qc = rf[qc_key]
+    assert qc["deconvolution_type"] == "cnr"
+    assert qc["gid_inverse_operator_nfft"] >= 8192
+    assert qc["gid_leaf_external_noise_used"]
+    assert qc["gid_leaf_noise_samples_loaded"] == 6001
+    assert qc["gid_leaf_noise_samples_used"] == 6001
+    assert not qc["gid_leaf_noise_truncated"]
+
+
+def _assert_timeseries_alias(alias, canonical):
+    """Bound compatibility aliases must preserve the canonical waveform."""
+    assert alias.npts == canonical.npts
+    assert alias.t0 == pytest.approx(canonical.t0)
+    assert alias.dt == pytest.approx(canonical.dt)
+    assert alias.tref == canonical.tref
+    assert alias.live is canonical.live
+    assert np.array_equal(np.asarray(alias.data), np.asarray(canonical.data))
+    alias_metadata = dict(alias)
+    canonical_metadata = dict(canonical)
+    for key in ("npts", "starttime", "delta"):
+        assert key in alias_metadata
+        assert alias_metadata[key] == canonical_metadata[key]
+    assert alias_metadata == canonical_metadata
+
+
 def _make_long_window_gid_data():
     """Synthetic RF with a short direct P and two late converted phases."""
     dt = 0.05
@@ -864,23 +1088,36 @@ def _pf_with_mode(tmp_path, pf_name, branch_name, mode):
     return pfread(str(dst))
 
 
-def _pf_with_short_decon_window(tmp_path, pf_name, branch_name=None, mode=None):
+def _pf_with_short_decon_window(
+    tmp_path,
+    pf_name,
+    branch_name=None,
+    mode=None,
+    window_start=-0.5,
+    window_end=0.5,
+):
     src = Path("./data/pf") / pf_name
     text = src.read_text()
     if mode is not None:
         text = _replace_gid_deconvolution_type(text, branch_name, mode)
     text = text.replace(
         "deconvolution_data_window_start -5.0",
-        "deconvolution_data_window_start -0.5",
+        f"deconvolution_data_window_start {window_start}",
     )
     text = text.replace(
         "deconvolution_data_window_end 20.0",
-        "deconvolution_data_window_end 0.5",
+        f"deconvolution_data_window_end {window_end}",
     )
-    text = text.replace("full_data_window_start -8.0", "full_data_window_start -0.5")
-    text = text.replace("full_data_window_end 20.0", "full_data_window_end 0.5")
-    text = text.replace("wavelet_window_start -5.0", "wavelet_window_start -0.5")
-    text = text.replace("wavelet_window_end 20.0", "wavelet_window_end 0.5")
+    text = text.replace(
+        "full_data_window_start -8.0", f"full_data_window_start {window_start}"
+    )
+    text = text.replace(
+        "full_data_window_end 20.0", f"full_data_window_end {window_end}"
+    )
+    text = text.replace(
+        "wavelet_window_start -5.0", f"wavelet_window_start {window_start}"
+    )
+    text = text.replace("wavelet_window_end 20.0", f"wavelet_window_end {window_end}")
     dst = tmp_path / pf_name
     dst.write_text(text)
     return pfread(str(dst))
@@ -1167,6 +1404,10 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
     # Exercise the bound C++ methods directly, rather than only the wrapper.
     assert isinstance(engine.actual_output(), TimeSeries)
     assert isinstance(engine.output_shaping_wavelet(), TimeSeries)
+    assert isinstance(engine.ideal_output(), TimeSeries)
+    assert isinstance(engine.resolution_kernel(), TimeSeries)
+    _assert_timeseries_alias(engine.ideal_output(), engine.output_shaping_wavelet())
+    _assert_timeseries_alias(engine.resolution_kernel(), engine.actual_output())
     assert isinstance(
         WindowData(actual_output, actual_output.t0, actual_output.endtime()),
         TimeSeries,
@@ -1374,6 +1615,48 @@ def test_TimeDomainGIDDecon_legacy_wavelet_window_defaults_to_analysis(tmp_path)
     engine = TimeDomainGIDDecon(pfread(str(path)))
     assert engine.wavelet_window_start() == pytest.approx(-5.0)
     assert engine.wavelet_window_end() == pytest.approx(20.0)
+
+
+def test_TimeDomainGIDDecon_constructor_metadata_compatibility(tmp_path):
+    _assert_gid_constructor_metadata_compatibility(
+        TimeDomainGIDDecon, "TimeDomainGIDDecon.pf", tmp_path
+    )
+
+
+def test_TimeDomainGIDRFDecon_rejects_missing_automatic_wavelet_window(tmp_path):
+    _assert_auto_wavelet_window_rejection(
+        TimeDomainGIDDecon, TimeDomainGIDRFDecon, "TimeDomainGIDDecon.pf", tmp_path
+    )
+
+
+def test_TimeDomainGIDDecon_direct_load_guards_and_auto_source():
+    _assert_direct_gid_load_guards(
+        TimeDomainGIDDecon, "TimeDomainGIDDecon.pf", _make_gid_test_data(None)
+    )
+
+
+def test_TimeDomainGIDDecon_zero_residual_has_no_candidate(tmp_path):
+    _assert_zero_residual_no_candidate(
+        TimeDomainGIDDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        tmp_path,
+        (
+            ("ns_gid", "no_acceptable_candidate", False),
+            ("water_level", "no_acceptable_candidate", True),
+        ),
+    )
+
+
+def test_TimeDomainGIDDecon_cnr_resizes_for_external_inputs(tmp_path):
+    _assert_cnr_resizes_for_external_inputs(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
 
 
 def test_TimeDomainGIDDecon_resizes_for_runtime_long_noise_and_keeps_output_window():
