@@ -841,15 +841,16 @@ def _assert_all_leaf_physical_lag_alignment(
                 assert peak_time == pytest.approx(arrival, abs=sparse.dt)
 
 
-def _assert_shipped_default_weak_conversion_profile(
+def _assert_shipped_default_recovers_weak_conversion(
     engine_class, wrapper, pf_name, qc_key
 ):
-    """Reproducible synthetic evidence for the conservative shipped profile.
+    """The shipped profile recovers the two resolvable weak 3C arrivals.
 
-    The largest injected component has raw peak/noise standard-deviation ratio
-    of 9, but the 3C inverse-domain default deliberately rejects it.
+    The deterministic fixture injects 3C spikes at 0, 3, 8, and 18 s.  With
+    the shipped sigma multiplier, the first two are the resolvable weak
+    arrivals; their sparse support must remain in physical analysis time.
     """
-    data, wavelet, _ = _make_external_wavelet_3c_data(
+    data, wavelet, spike_times = _make_external_wavelet_3c_data(
         noise_level=0.005, conversion_scale=0.10
     )
     engine = engine_class(pfread(str(Path("data/pf") / pf_name)))
@@ -866,8 +867,9 @@ def _assert_shipped_default_weak_conversion_profile(
     assert np.isfinite(noise_rms) and noise_rms > 0.0
     assert np.isfinite(sigma_threshold)
     assert sigma_threshold / noise_rms == pytest.approx(3.0)
-    assert qc["ns_gid_number_spikes"] == 0
+    assert qc["ns_gid_number_spikes"] == 2
     assert qc["ns_gid_stop_reason"] == "candidate_not_significant"
+    assert qc["gid_stop_reason"] == qc["ns_gid_stop_reason"]
     assert qc["ns_gid_peak_threshold"] == pytest.approx(
         max(
             qc["ns_gid_peak_threshold_empirical"],
@@ -875,9 +877,19 @@ def _assert_shipped_default_weak_conversion_profile(
         )
     )
     assert qc["ns_gid_last_peak_significance"] < 1.0
-    assert qc["ns_gid_iteration_0_accepted"] == 0
-    assert qc["ns_gid_iteration_0_candidate_lag_samples"] >= 0
-    assert np.isfinite(qc["ns_gid_iteration_0_candidate_lag_time"])
+    assert qc["ns_gid_iteration_2_accepted"] == 0
+    assert qc["ns_gid_iteration_2_stop_condition"] == "candidate_not_significant"
+    assert qc["ns_gid_iteration_2_candidate_lag_samples"] >= 0
+    assert np.isfinite(qc["ns_gid_iteration_2_candidate_lag_time"])
+    sparse = engine.sparse_output()
+    times = sparse.t0 + sparse.dt * np.arange(sparse.npts)
+    amplitude = np.linalg.norm(np.asarray(sparse.data), axis=0)
+    for arrival in spike_times[:2]:
+        mask = (times >= arrival - 0.10) & (times <= arrival + 0.10)
+        assert np.max(amplitude[mask]) > 1.0e-8
+        assert times[mask][np.argmax(amplitude[mask])] == pytest.approx(
+            arrival, abs=0.10
+        )
 
 
 def _assert_missing_peak_sigma_uses_shipped_fallback(
@@ -1679,8 +1691,8 @@ def test_TimeDomainGIDDecon_group_sparse_boundary_support(tmp_path):
     )
 
 
-def test_TimeDomainGIDDecon_shipped_defaults_reject_weak_conversion():
-    _assert_shipped_default_weak_conversion_profile(
+def test_TimeDomainGIDDecon_shipped_defaults_recover_weak_conversion():
+    _assert_shipped_default_recovers_weak_conversion(
         TimeDomainGIDDecon,
         TimeDomainGIDRFDecon,
         "TimeDomainGIDDecon.pf",
