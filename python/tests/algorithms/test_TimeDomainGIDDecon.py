@@ -479,7 +479,7 @@ def _long_window_gid_pf(
     )
     text = text.replace("maximum_iterations 100", "maximum_iterations 30")
     text = text.replace(
-        "ns_gid_peak_sigma_threshold 4.0", "ns_gid_peak_sigma_threshold 0.5"
+        "ns_gid_peak_sigma_threshold 3.0", "ns_gid_peak_sigma_threshold 0.5"
     )
     text = text.replace(
         "ns_gid_peak_probability_threshold 0.995",
@@ -861,6 +861,7 @@ def _assert_shipped_default_weak_conversion_profile(
         external_wavelet=wavelet,
     )
     qc = rf[qc_key]
+    assert qc["ns_gid_peak_sigma_threshold"] == pytest.approx(3.0)
     assert qc["ns_gid_number_spikes"] == 0
     assert qc["ns_gid_stop_reason"] == "candidate_not_significant"
     assert qc["ns_gid_peak_threshold"] == pytest.approx(
@@ -875,6 +876,28 @@ def _assert_shipped_default_weak_conversion_profile(
     assert np.isfinite(qc["ns_gid_iteration_0_candidate_lag_time"])
 
 
+def _assert_missing_peak_sigma_uses_shipped_fallback(
+    engine_class, wrapper, pf_name, qc_key, tmp_path
+):
+    """The legacy-compatible omitted key falls back to the shipped 3C value."""
+    path = tmp_path / pf_name
+    path.write_text(
+        (Path("data/pf") / pf_name)
+        .read_text()
+        .replace("        ns_gid_peak_sigma_threshold 3.0\n", "")
+    )
+    data, wavelet, _ = _make_external_wavelet_3c_data(0.005, 0.0)
+    rf = wrapper(
+        data,
+        engine_class(pfread(str(path))),
+        signal_window=TimeWindow(-8.0, 22.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+        external_wavelet=wavelet,
+    )
+    assert rf.live
+    assert rf[qc_key]["ns_gid_peak_sigma_threshold"] == pytest.approx(3.0)
+
+
 def _assert_mantle_profile_weak_and_noise_control(
     engine_class, wrapper, pf_name, qc_key, tmp_path
 ):
@@ -883,7 +906,7 @@ def _assert_mantle_profile_weak_and_noise_control(
     path.write_text(
         (Path("data/pf") / pf_name)
         .read_text()
-        .replace("ns_gid_peak_sigma_threshold 4.0", "ns_gid_peak_sigma_threshold 2.5")
+        .replace("ns_gid_peak_sigma_threshold 3.0", "ns_gid_peak_sigma_threshold 2.5")
         .replace(
             "ns_gid_peak_probability_threshold 0.995",
             "ns_gid_peak_probability_threshold 0.999",
@@ -1243,7 +1266,7 @@ def _ns_gid_pf(tmp_path, pf_name, branch_name, gain_max=30.0, peak_sigma=3.0):
     text = _replace_gid_deconvolution_type(text, branch_name, "ns_gid")
     text = text.replace("ns_gid_gain_max 1.0e3", f"ns_gid_gain_max {gain_max}")
     text = text.replace(
-        "ns_gid_peak_sigma_threshold 4.0",
+        "ns_gid_peak_sigma_threshold 3.0",
         f"ns_gid_peak_sigma_threshold {peak_sigma}",
     )
     text = text.replace(
@@ -1653,6 +1676,16 @@ def test_TimeDomainGIDDecon_shipped_defaults_reject_weak_conversion():
         TimeDomainGIDRFDecon,
         "TimeDomainGIDDecon.pf",
         "TimeDomainGIDDecon_properties",
+    )
+
+
+def test_TimeDomainGIDDecon_missing_peak_sigma_uses_shipped_fallback(tmp_path):
+    _assert_missing_peak_sigma_uses_shipped_fallback(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
     )
 
 

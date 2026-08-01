@@ -1005,7 +1005,7 @@ def test_RFdecon_enables_generalized_iterative():
         assert qc["iteration_count"] > 0
         assert qc["deconvolution_type"] == DEFAULT_GID_DECONVOLUTION_TYPE
         assert qc["ns_gid_enabled"]
-        assert qc["ns_gid_peak_sigma_threshold"] == pytest.approx(4.0)
+        assert qc["ns_gid_peak_sigma_threshold"] == pytest.approx(3.0)
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)

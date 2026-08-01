@@ -592,12 +592,30 @@ robust vector-RMS-equivalent diagnostic: it is formed by applying the normal
 MAD factor to each *signed* inverse-filtered component and combining the three
 component scales in quadrature.  It is not a MAD of nonnegative vector
 amplitudes.  ``ns_gid_component_noise_rms_0`` through ``_2`` expose component
-RMS contributions.  Consequently, the shipped multiplier of 4.0 is four times
-the 3C vector RMS (``4 sqrt(3)`` component standard deviations for iid normal
-components), not a conventional "4-sigma" component threshold.  The shipped
-4.0/0.995 profile is deliberately conservative for RF picking and remains
-unchanged pending representative real-data validation; tune it with local
-noise diagnostics.
+RMS contributions.  Consequently, the shipped multiplier of 3.0 is three
+times the 3C vector RMS (``3 sqrt(3)`` or about 5.2 scalar-component standard
+deviations for iid, equal-variance normal components), not a conventional
+"3-sigma" component threshold.
+
+The evidence for the shipped 3.0/0.995 profile is deliberately bounded: OFAT
+used 12 tuning identities and was evaluated on 12 untouched,
+event/station-separated validation identities from the available real-data
+archive processed on Vista, with both TimeDomainGID and
+FrequencyDomainGID.  Each run used full and deconvolution windows of
+``[-10, 160]`` s, a wavelet window of ``[-5, 20]`` s, a noise window of
+``[-200, -10]`` s, and ``dt=0.05`` s.  That evidence supports changing only
+the sigma multiplier from 4.0 to 3.0 as an empirically supported conservative
+RF compromise.  An independent seismology reviewer inspected only the real RF
+waveforms for those 12 validation identities.  This is not a distributed
+archive study, phase ground truth, or a P410/P660 claim, and it is not a
+universally calibrated default.
+
+The same scan and review found no robust material evidence for changing the
+other active convergence defaults: residual/fractional stopping controls,
+spike/iteration caps, refit/ridge/lag-penalty controls, or NS inverse controls.
+They therefore remain unchanged; users should tune locally with their own
+noise diagnostics rather than interpreting this multiplier as three
+scalar-component sigmas.
 
 ``ns_gid_residual_rms_ratio`` is the three-component RMS residual divided by
 the inverse-filtered three-component noise RMS and is the ratio used for the
@@ -626,7 +644,7 @@ the residual; in that case the explicit
 ``post_refit_residual_above_noise_floor`` stop reason replaces a stale
 noise-floor convergence result.
 
-The repository includes deterministic synthetic checks of the shipped 4.0/
+The repository includes deterministic synthetic checks of the shipped 3.0/
 0.995 profile, but no representative field-data archive is part of this test
 suite.  These checks demonstrate its deliberately conservative rejection of a
 weak conversion; they are not a claim of real-data calibration.
@@ -648,8 +666,8 @@ enabled).  Under iid normal components, 2.5 vector-RMS is 4.33 component
 standard deviations; its Maxwell-tail false-candidate probability is about
 3e-4, or about 0.2 candidates in 600 independent lags.  The 0.999 empirical
 guard is retained for non-Gaussian noise.  This is a statistically stated
-synthetic starting point, not a field-calibrated default; the shipped 4.0/
-0.995 profile is intentionally left unchanged.
+synthetic starting point, not a field-calibrated default; the shipped 3.0/
+0.995 profile is the conservative RF compromise.
 
 For a beginner-oriented guide to reading these fields after a plot run or
 database save, see `Validation and QC workflow`_.
