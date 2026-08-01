@@ -861,7 +861,11 @@ def _assert_shipped_default_weak_conversion_profile(
         external_wavelet=wavelet,
     )
     qc = rf[qc_key]
-    assert qc["ns_gid_peak_sigma_threshold"] == pytest.approx(3.0)
+    noise_rms = qc["ns_gid_noise_amplitude_rms"]
+    sigma_threshold = qc["ns_gid_peak_threshold_sigma"]
+    assert np.isfinite(noise_rms) and noise_rms > 0.0
+    assert np.isfinite(sigma_threshold)
+    assert sigma_threshold / noise_rms == pytest.approx(3.0)
     assert qc["ns_gid_number_spikes"] == 0
     assert qc["ns_gid_stop_reason"] == "candidate_not_significant"
     assert qc["ns_gid_peak_threshold"] == pytest.approx(
@@ -895,7 +899,12 @@ def _assert_missing_peak_sigma_uses_shipped_fallback(
         external_wavelet=wavelet,
     )
     assert rf.live
-    assert rf[qc_key]["ns_gid_peak_sigma_threshold"] == pytest.approx(3.0)
+    qc = rf[qc_key]
+    noise_rms = qc["ns_gid_noise_amplitude_rms"]
+    sigma_threshold = qc["ns_gid_peak_threshold_sigma"]
+    assert np.isfinite(noise_rms) and noise_rms > 0.0
+    assert np.isfinite(sigma_threshold)
+    assert sigma_threshold / noise_rms == pytest.approx(3.0)
 
 
 def _assert_mantle_profile_weak_and_noise_control(
