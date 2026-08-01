@@ -230,8 +230,10 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
         GetDoubleRequired(mdgiter, "residual_fractional_improvement_floor");
     ValidateNonnegative(resid_l2_tol,
                         "residual_fractional_improvement_floor", base_error);
+    // This multiplier applies to the 3C vector-amplitude RMS.  For iid,
+    // equal-variance components, 3.0 is about 3*sqrt(3) = 5.2 scalar sigmas.
     ns_peak_sigma_threshold =
-        GetDoubleDefault(mdgiter, "ns_gid_peak_sigma_threshold", 4.0);
+        GetDoubleDefault(mdgiter, "ns_gid_peak_sigma_threshold", 3.0);
     ValidatePositive(ns_peak_sigma_threshold, "ns_gid_peak_sigma_threshold",
                      base_error);
     ns_peak_probability_threshold = GetDoubleDefault(

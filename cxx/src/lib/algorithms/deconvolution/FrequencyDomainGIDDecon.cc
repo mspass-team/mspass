@@ -231,8 +231,10 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     leaf_parameters_changed = false;
     external_wavelet_allowed = GetBoolDefault(
         mdgid, "ns_gid_external_wavelet_allowed", true);
+    // This multiplier applies to the 3C vector-amplitude RMS.  For iid,
+    // equal-variance components, 3.0 is about 3*sqrt(3) = 5.2 scalar sigmas.
     ns_peak_sigma_threshold =
-        GetDoubleDefault(mdgid, "ns_gid_peak_sigma_threshold", 4.0);
+        GetDoubleDefault(mdgid, "ns_gid_peak_sigma_threshold", 3.0);
     ValidatePositive(ns_peak_sigma_threshold, "ns_gid_peak_sigma_threshold",
                      base_error);
     ns_peak_probability_threshold = GetDoubleDefault(

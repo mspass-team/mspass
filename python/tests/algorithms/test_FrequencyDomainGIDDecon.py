@@ -46,6 +46,7 @@ from test_TimeDomainGIDDecon import (
     _assert_controlled_external_alignment,
     _assert_group_sparse_boundary_support,
     _assert_shipped_default_weak_conversion_profile,
+    _assert_missing_peak_sigma_uses_shipped_fallback,
     _assert_mantle_profile_weak_and_noise_control,
     _assert_internal_external_wavelet_equivalence,
     _assert_ridge_refit_reports_final_residual_state,
@@ -263,6 +264,16 @@ def test_FrequencyDomainGIDDecon_shipped_defaults_reject_weak_conversion():
         FrequencyDomainGIDRFDecon,
         "FrequencyDomainGIDDecon.pf",
         "FrequencyDomainGIDDecon_properties",
+    )
+
+
+def test_FrequencyDomainGIDDecon_missing_peak_sigma_uses_shipped_fallback(tmp_path):
+    _assert_missing_peak_sigma_uses_shipped_fallback(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
     )
 
 
