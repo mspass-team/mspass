@@ -22,6 +22,7 @@ from test_TimeDomainGIDDecon import (
     _assert_direct_gid_load_guards,
     _assert_zero_residual_no_candidate,
     _assert_two_sample_analysis_candidate_exhaustion_control_flow,
+    _assert_fd_zero_amplitude_candidates,
     _assert_timeseries_alias,
     _assert_cnr_resizes_for_external_inputs,
     _assert_group_sparse_disabled_qc,
@@ -339,6 +340,17 @@ def test_FrequencyDomainGIDDecon_two_sample_analysis_exhausts_ns_candidates(
         "frequency_domain_gid_deconvolution",
         tmp_path,
         (("ns_gid", "no_acceptable_candidate", False),),
+    )
+
+
+def test_FrequencyDomainGIDDecon_rejects_edge_only_zero_amplitude_candidates(
+    tmp_path,
+):
+    _assert_fd_zero_amplitude_candidates(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        tmp_path,
     )
 
 
