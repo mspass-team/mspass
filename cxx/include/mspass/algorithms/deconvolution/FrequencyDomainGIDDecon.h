@@ -245,6 +245,9 @@ private:
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;
   double ns_residual_noise_ratio_floor, ns_peak_threshold;
   double ns_last_peak_significance, ns_noise_l2, ns_noise_amplitude_rms;
+  double ns_noise_component_sigma_rms, ns_noise_component_sigma_rms_robust;
+  double ns_noise_component_rms_aggregate;
+  bool ns_noise_component_sigma_rms_fallback_used;
   double ns_residual_rms_initial, ns_residual_rms_final;
   double ns_peak_threshold_empirical, ns_peak_threshold_sigma;
   double ns_noise_amplitude_robust, ns_last_candidate_amplitude;
@@ -254,10 +257,21 @@ private:
       ns_candidate_amplitude_history,
       ns_candidate_threshold_history, ns_candidate_significance_history;
   std::vector<double> ns_candidate_post_residual_rms_ratio_history;
+  std::vector<double> ns_candidate_residual_l2_before_history,
+      ns_candidate_trial_residual_l2_history,
+      ns_candidate_post_refit_residual_l2_history,
+      ns_candidate_fractional_improvement_history,
+      ns_candidate_state_fractional_improvement_history;
+  std::vector<int> ns_candidate_periodic_refit_applied_history,
+      ns_candidate_final_refit_applied_history,
+      ns_candidate_trial_evaluated_history,
+      ns_candidate_metric_available_history;
   std::vector<std::string> ns_candidate_stop_history;
-  double ns_fractional_improvement_final, ns_ridge_beta;
+  double ns_fractional_improvement_final,
+      ns_fractional_improvement_state_final, ns_ridge_beta;
   int ns_max_spikes, ns_refit_interval;
   bool ns_use_empirical_noise_threshold, ns_converged;
+  bool ns_final_refit_applied;
   std::string ns_stop_reason;
   bool gid_converged;
   std::string gid_stop_reason;

@@ -39,6 +39,7 @@ from test_TimeDomainGIDDecon import (
     _ns_gid_pf,
     _pf_with_short_decon_window,
     _long_window_gid_pf,
+    _assert_shipped_default_long_window_result,
     _assert_long_window_gid_result,
     _assert_late_component_energy_does_not_change_auto_wavelet,
     _assert_late_sparse_support,
@@ -47,9 +48,13 @@ from test_TimeDomainGIDDecon import (
     _assert_group_sparse_boundary_support,
     _assert_shipped_default_recovers_weak_conversion,
     _assert_missing_peak_sigma_uses_shipped_fallback,
+    _assert_quantized_nonzero_noise_uses_sigma_fallback,
+    _assert_invalid_sigma_threshold_product_is_rejected,
     _assert_mantle_profile_weak_and_noise_control,
     _assert_internal_external_wavelet_equivalence,
     _assert_ridge_refit_reports_final_residual_state,
+    _assert_ns_fractional_floor_uses_pre_refit_candidate,
+    _assert_ns_default_ridge_candidate_trace,
     _assert_residual_rms_stop_is_noise_length_stable,
     _assert_ns_terminal_trace_controls,
     _assert_wavelet_start_invariant_sparse_timing,
@@ -92,21 +97,39 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     assert isinstance(actual_output, TimeSeries)
     assert isinstance(output_shaping_wavelet, TimeSeries)
     # Exercise the bound C++ methods directly, rather than only the wrapper.
-    assert isinstance(engine.actual_output(), TimeSeries)
-    assert isinstance(engine.output_shaping_wavelet(), TimeSeries)
-    assert isinstance(engine.ideal_output(), TimeSeries)
-    assert isinstance(engine.resolution_kernel(), TimeSeries)
-    _assert_timeseries_alias(engine.ideal_output(), engine.output_shaping_wavelet())
-    _assert_timeseries_alias(engine.resolution_kernel(), engine.actual_output())
+    direct_actual_output = engine.actual_output()
+    direct_output_shaping_wavelet = engine.output_shaping_wavelet()
+    direct_ideal_output = engine.ideal_output()
+    direct_resolution_kernel = engine.resolution_kernel()
+    assert isinstance(direct_actual_output, TimeSeries)
+    assert isinstance(direct_output_shaping_wavelet, TimeSeries)
+    assert isinstance(direct_ideal_output, TimeSeries)
+    assert isinstance(direct_resolution_kernel, TimeSeries)
+    _assert_timeseries_alias(direct_ideal_output, direct_output_shaping_wavelet)
+    _assert_timeseries_alias(direct_resolution_kernel, direct_actual_output)
+    for direct, wrapped in (
+        (direct_actual_output, actual_output),
+        (direct_output_shaping_wavelet, output_shaping_wavelet),
+    ):
+        assert direct.live
+        assert direct.npts == wrapped.npts
+        assert direct.t0 == pytest.approx(wrapped.t0)
+        assert direct.dt == pytest.approx(wrapped.dt)
+        assert direct.tref == wrapped.tref
+        assert np.allclose(np.asarray(direct.data), np.asarray(wrapped.data))
     assert isinstance(
-        WindowData(actual_output, actual_output.t0, actual_output.endtime()),
+        WindowData(
+            direct_actual_output,
+            direct_actual_output.t0,
+            direct_actual_output.endtime(),
+        ),
         TimeSeries,
     )
     assert isinstance(
         WindowData(
-            output_shaping_wavelet,
-            output_shaping_wavelet.t0,
-            output_shaping_wavelet.endtime(),
+            direct_output_shaping_wavelet,
+            direct_output_shaping_wavelet.t0,
+            direct_output_shaping_wavelet.endtime(),
         ),
         TimeSeries,
     )
@@ -277,6 +300,35 @@ def test_FrequencyDomainGIDDecon_missing_peak_sigma_uses_shipped_fallback(tmp_pa
     )
 
 
+def test_FrequencyDomainGIDDecon_quantized_nonzero_noise_uses_sigma_fallback(tmp_path):
+    _assert_quantized_nonzero_noise_uses_sigma_fallback(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        tmp_path,
+    )
+
+
+@pytest.mark.parametrize(
+    "multiplier,empirical_enabled,noise_value",
+    [
+        ("1.0e-323", False, 0.01),
+        ("1.0e308", True, 1.0e10),
+    ],
+)
+def test_FrequencyDomainGIDDecon_invalid_sigma_threshold_product_is_rejected(
+    tmp_path, multiplier, empirical_enabled, noise_value
+):
+    _assert_invalid_sigma_threshold_product_is_rejected(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        tmp_path,
+        multiplier,
+        empirical_enabled,
+        noise_value,
+    )
+
+
 def test_FrequencyDomainGIDDecon_mantle_profile_weak_and_noise_control(tmp_path):
     _assert_mantle_profile_weak_and_noise_control(
         FrequencyDomainGIDDecon,
@@ -300,6 +352,42 @@ def test_FrequencyDomainGIDDecon_ridge_refit_reports_final_residual_state(
     tmp_path,
 ):
     _assert_ridge_refit_reports_final_residual_state(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_shipped_defaults_recover_long_window_phases(
+    tmp_path,
+):
+    _assert_shipped_default_long_window_result(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+        expected_spikes=3,
+        expected_stop="candidate_not_significant",
+    )
+
+
+def test_FrequencyDomainGIDDecon_fractional_floor_uses_pre_refit_candidate(
+    tmp_path,
+):
+    _assert_ns_fractional_floor_uses_pre_refit_candidate(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_default_ridge_candidate_trace(tmp_path):
+    _assert_ns_default_ridge_candidate_trace(
         FrequencyDomainGIDDecon,
         FrequencyDomainGIDRFDecon,
         "FrequencyDomainGIDDecon.pf",
@@ -1615,6 +1703,16 @@ def test_FrequencyDomainGIDDecon_group_sparse_external_noise_sets_lambda(tmp_pat
     assert high_qc["group_sparse_lambda_used"] > (
         10.0 * low_qc["group_sparse_lambda_used"]
     )
+    for qc in (low_qc, high_qc):
+        assert qc["group_sparse_noise_threshold"] == pytest.approx(
+            max(
+                qc["group_sparse_peak_threshold_empirical"],
+                qc["group_sparse_peak_threshold_sigma"],
+            )
+        )
+        assert qc["group_sparse_lambda_used"] == pytest.approx(
+            qc["group_sparse_lambda_scale"] * qc["group_sparse_noise_threshold"]
+        )
 
 
 def test_FrequencyDomainGIDDecon_failed_external_noise_replacement_preserves_state(

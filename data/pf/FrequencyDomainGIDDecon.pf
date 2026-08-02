@@ -22,6 +22,9 @@ deconvolution_operator_type &Arr{
         maximum_iterations 100
         residual_ratio_floor 0.01
         residual_fractional_improvement_floor 0.0001
+        # Normally multiplies robust scalar-component MAD sigma RMS; zero or
+        # roundoff MAD falls back to ordinary scalar-component RMS.  The
+        # empirical vector-amplitude quantile remains a separate max guard.
         ns_gid_peak_sigma_threshold 3.0
         ns_gid_peak_probability_threshold 0.995
         ns_gid_use_empirical_noise_threshold true

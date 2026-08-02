@@ -230,8 +230,8 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
         GetDoubleRequired(mdgiter, "residual_fractional_improvement_floor");
     ValidateNonnegative(resid_l2_tol,
                         "residual_fractional_improvement_floor", base_error);
-    // This multiplier applies to the 3C vector-amplitude RMS.  For iid,
-    // equal-variance components, 3.0 is about 3*sqrt(3) = 5.2 scalar sigmas.
+    // This multiplier applies to the robust scalar-component sigma RMS, not
+    // the 3C vector-amplitude RMS used by the empirical threshold.
     ns_peak_sigma_threshold =
         GetDoubleDefault(mdgiter, "ns_gid_peak_sigma_threshold", 3.0);
     ValidatePositive(ns_peak_sigma_threshold, "ns_gid_peak_sigma_threshold",
@@ -318,10 +318,16 @@ void TimeDomainGIDDecon::invalidate_processing_state() {
   resid_l2_initial = 0.0;
   resid_l2_prev = 0.0;
   ns_fractional_improvement_final = 0.0;
+  ns_fractional_improvement_state_final = 0.0;
+  ns_final_refit_applied = false;
   ns_last_peak_significance = 0.0;
   ns_peak_threshold = 0.0;
   ns_noise_l2 = 0.0;
   ns_noise_amplitude_rms = 0.0;
+  ns_noise_component_sigma_rms = 0.0;
+  ns_noise_component_sigma_rms_robust = 0.0;
+  ns_noise_component_rms_aggregate = 0.0;
+  ns_noise_component_sigma_rms_fallback_used = false;
   ns_residual_rms_initial = 0.0;
   ns_residual_rms_final = 0.0;
   ns_peak_threshold_empirical = 0.0;
@@ -336,6 +342,15 @@ void TimeDomainGIDDecon::invalidate_processing_state() {
   ns_candidate_threshold_history.clear();
   ns_candidate_significance_history.clear();
   ns_candidate_post_residual_rms_ratio_history.clear();
+  ns_candidate_residual_l2_before_history.clear();
+  ns_candidate_trial_residual_l2_history.clear();
+  ns_candidate_post_refit_residual_l2_history.clear();
+  ns_candidate_fractional_improvement_history.clear();
+  ns_candidate_state_fractional_improvement_history.clear();
+  ns_candidate_periodic_refit_applied_history.clear();
+  ns_candidate_final_refit_applied_history.clear();
+  ns_candidate_trial_evaluated_history.clear();
+  ns_candidate_metric_available_history.clear();
   ns_candidate_stop_history.clear();
   gid_analysis_samples = 0;
   gid_wavelet_samples = 0;
@@ -1166,8 +1181,9 @@ void TimeDomainGIDDecon::process() {
         ns_noise_amplitude_rms =
             sqrt(sumsq / static_cast<double>(noise_amps.size()));
         /* A MAD of nonnegative 3C amplitudes has a Maxwell, not Gaussian,
-         * distribution.  Estimate robust signed component sigmas instead,
-         * then combine them into the comparable vector-RMS scale. */
+         * distribution.  Estimate robust signed component sigmas instead.
+         * Their RMS is the scalar-component sigma used by the multiplier;
+         * the quadrature sum remains the legacy vector diagnostic. */
         double robust_vector_sumsq(0.0);
         for (int kc = 0; kc < 3; ++kc) {
           vector<double> signed_component(ns_noise_npts);
@@ -1183,27 +1199,67 @@ void TimeDomainGIDDecon::process() {
           const double component_sigma = 1.4826 * absdev[absdev.size() / 2];
           robust_vector_sumsq += component_sigma * component_sigma;
         }
-        ns_noise_amplitude_robust = sqrt(robust_vector_sumsq);
-        ns_peak_threshold_empirical = empirical;
-        ns_peak_threshold_sigma =
-            ns_peak_sigma_threshold * ns_noise_amplitude_rms;
-        ns_peak_threshold =
-            ns_use_empirical_noise_threshold
-                ? max(ns_peak_threshold_empirical, ns_peak_threshold_sigma)
-                : ns_peak_threshold_sigma;
         ns_noise_component_rms.assign(3, 0.0);
+        double ordinary_component_sumsq(0.0);
         for (int kc = 0; kc < 3; ++kc) {
           double component_sumsq(0.0);
           for (int j = 0; j < ns_noise_npts; ++j)
             component_sumsq += nfiltered(kc, j) * nfiltered(kc, j);
           ns_noise_component_rms[kc] =
               sqrt(component_sumsq / static_cast<double>(ns_noise_npts));
+          ordinary_component_sumsq +=
+              ns_noise_component_rms[kc] * ns_noise_component_rms[kc];
         }
+        ns_noise_component_sigma_rms_robust =
+            sqrt(robust_vector_sumsq / 3.0);
+        ns_noise_component_rms_aggregate =
+            sqrt(ordinary_component_sumsq / 3.0);
+        ns_noise_component_sigma_rms_fallback_used = false;
+        if (isfinite(ns_noise_component_sigma_rms_robust) &&
+            ns_noise_component_sigma_rms_robust >
+                1.0e-12 * ns_noise_component_rms_aggregate) {
+          ns_noise_component_sigma_rms = ns_noise_component_sigma_rms_robust;
+        } else if (isfinite(ns_noise_component_rms_aggregate) &&
+                   ns_noise_component_rms_aggregate > 0.0) {
+          /* A low-entropy/quantized noise window can have zero (or roundoff-
+           * level) MAD even when it has real nonzero energy.  In that case
+           * ordinary signed-component RMS is the conservative scalar
+           * reference. */
+          ns_noise_component_sigma_rms = ns_noise_component_rms_aggregate;
+          ns_noise_component_sigma_rms_fallback_used = true;
+        } else {
+          throw MsPASSError(base_error +
+                                "noise scale is nonpositive or nonfinite",
+                            ErrorSeverity::Invalid);
+        }
+        ns_noise_amplitude_robust = sqrt(robust_vector_sumsq);
+        ns_peak_threshold_empirical = empirical;
+        ns_peak_threshold_sigma =
+            ns_peak_sigma_threshold * ns_noise_component_sigma_rms;
+        if (!isfinite(ns_peak_threshold_sigma) ||
+            ns_peak_threshold_sigma <= 0.0)
+          throw MsPASSError(base_error +
+                                "NS-GID sigma peak threshold is nonpositive "
+                                "or nonfinite",
+                            ErrorSeverity::Invalid);
+        ns_peak_threshold =
+            ns_use_empirical_noise_threshold
+                ? max(ns_peak_threshold_empirical, ns_peak_threshold_sigma)
+                : ns_peak_threshold_sigma;
+        if (!isfinite(ns_peak_threshold) || ns_peak_threshold <= 0.0)
+          throw MsPASSError(base_error +
+                                "NS-GID peak threshold is nonpositive or "
+                                "nonfinite",
+                            ErrorSeverity::Invalid);
       } else {
         ns_peak_threshold = 0.0;
         ns_noise_amplitude_rms = 0.0;
         ns_peak_threshold_empirical = 0.0;
         ns_peak_threshold_sigma = 0.0;
+        ns_noise_component_sigma_rms = 0.0;
+        ns_noise_component_sigma_rms_robust = 0.0;
+        ns_noise_component_rms_aggregate = 0.0;
+        ns_noise_component_sigma_rms_fallback_used = false;
         ns_noise_amplitude_robust = 0.0;
       }
       ns_noise_l2 = cblas_dnrm2(3 * ns_noise_npts,
@@ -1355,6 +1411,15 @@ void TimeDomainGIDDecon::process() {
               (ns_noise_amplitude_rms > 0.0)
                   ? EstimateThreeCColumnAmplitudeRMS(r) / ns_noise_amplitude_rms
                   : 0.0);
+          ns_candidate_residual_l2_before_history.push_back(resid_l2_prev);
+          ns_candidate_trial_residual_l2_history.push_back(0.0);
+          ns_candidate_post_refit_residual_l2_history.push_back(0.0);
+          ns_candidate_fractional_improvement_history.push_back(0.0);
+          ns_candidate_state_fractional_improvement_history.push_back(0.0);
+          ns_candidate_periodic_refit_applied_history.push_back(0);
+          ns_candidate_final_refit_applied_history.push_back(0);
+          ns_candidate_trial_evaluated_history.push_back(0);
+          ns_candidate_metric_available_history.push_back(0);
           ns_candidate_stop_history.push_back("candidate_not_significant");
           ns_stop_reason = "candidate_not_significant";
           ns_converged = true;
@@ -1374,6 +1439,15 @@ void TimeDomainGIDDecon::process() {
               (ns_noise_amplitude_rms > 0.0)
                   ? EstimateThreeCColumnAmplitudeRMS(r) / ns_noise_amplitude_rms
                   : 0.0);
+          ns_candidate_residual_l2_before_history.push_back(resid_l2_prev);
+          ns_candidate_trial_residual_l2_history.push_back(0.0);
+          ns_candidate_post_refit_residual_l2_history.push_back(0.0);
+          ns_candidate_fractional_improvement_history.push_back(0.0);
+          ns_candidate_state_fractional_improvement_history.push_back(0.0);
+          ns_candidate_periodic_refit_applied_history.push_back(0);
+          ns_candidate_final_refit_applied_history.push_back(0);
+          ns_candidate_trial_evaluated_history.push_back(0);
+          ns_candidate_metric_available_history.push_back(0);
           ns_candidate_stop_history.push_back("max_spikes");
           ns_stop_reason = "max_spikes";
           ns_converged = true;
@@ -1403,6 +1477,15 @@ void TimeDomainGIDDecon::process() {
               (ns_peak_threshold > 0.0) ? candidate_amp / ns_peak_threshold : 0.0);
           ns_candidate_accepted_history.push_back(0);
           ns_candidate_post_residual_rms_ratio_history.push_back(0.0);
+          ns_candidate_residual_l2_before_history.push_back(resid_l2_prev);
+          ns_candidate_trial_residual_l2_history.push_back(0.0);
+          ns_candidate_post_refit_residual_l2_history.push_back(0.0);
+          ns_candidate_fractional_improvement_history.push_back(0.0);
+          ns_candidate_state_fractional_improvement_history.push_back(0.0);
+          ns_candidate_periodic_refit_applied_history.push_back(0);
+          ns_candidate_final_refit_applied_history.push_back(0);
+          ns_candidate_trial_evaluated_history.push_back(1);
+          ns_candidate_metric_available_history.push_back(1);
           ns_candidate_stop_history.push_back("rejected_residual");
         }
         ThreeCSpike spk(r.u, imax);
@@ -1410,6 +1493,12 @@ void TimeDomainGIDDecon::process() {
         CoreSeismogram saved_r(r);
         this->update_residual_matrix(spk);
         double trial_l2 = L2(r.u);
+        const double resid_l2_before_candidate = resid_l2_prev;
+        if (decon_type == NS_GID) {
+          ns_candidate_trial_residual_l2_history.back() = trial_l2;
+          ns_candidate_fractional_improvement_history.back() =
+              (resid_l2_prev - trial_l2) / resid_l2_initial;
+        }
         if (trial_l2 < resid_l2_prev) {
           spikes.push_back(spk);
           this->update_lag_weights(imax, candidate_amp);
@@ -1422,6 +1511,10 @@ void TimeDomainGIDDecon::process() {
                     ? EstimateThreeCColumnAmplitudeRMS(r) / ns_noise_amplitude_rms
                     : 0.0;
             ns_candidate_stop_history.back() = "continue";
+            ns_candidate_residual_l2_before_history.back() =
+                resid_l2_before_candidate;
+            ns_fractional_improvement_final =
+                ns_candidate_fractional_improvement_history.back();
           }
           if (decon_type == NS_GID && ns_refit_interval > 0 &&
               (static_cast<int>(spikes.size()) % ns_refit_interval) == 0) {
@@ -1430,9 +1523,26 @@ void TimeDomainGIDDecon::process() {
             r = d_decon;
             for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
               this->update_residual_matrix(*sptr);
+            ns_candidate_periodic_refit_applied_history.back() = 1;
+          }
+          if (decon_type == NS_GID) {
+            const double post_refit_l2 = L2(r.u);
+            ns_candidate_post_refit_residual_l2_history.back() = post_refit_l2;
+            ns_candidate_state_fractional_improvement_history.back() =
+                (resid_l2_before_candidate - post_refit_l2) / resid_l2_initial;
+            ns_candidate_post_residual_rms_ratio_history.back() =
+                (ns_noise_amplitude_rms > 0.0)
+                    ? EstimateThreeCColumnAmplitudeRMS(r) /
+                          ns_noise_amplitude_rms
+                    : 0.0;
           }
         } else {
           r = saved_r;
+          if (decon_type == NS_GID) {
+            ns_candidate_post_refit_residual_l2_history.back() =
+                resid_l2_before_candidate;
+            ns_candidate_state_fractional_improvement_history.back() = 0.0;
+          }
           wamps[imax] = 0.0;
           amax = max_element(wamps.begin(), wamps.end());
         }
@@ -1457,6 +1567,7 @@ void TimeDomainGIDDecon::process() {
     double ridge_beta = (decon_type == NS_GID) ? ns_ridge_beta : 1.0e-10;
     RefitSpikeAmplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
                          ridge_beta);
+    ns_final_refit_applied = (decon_type == NS_GID && !spikes.empty());
     process_stage = "recompute final residual";
     r = d_decon;
     for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
@@ -1464,6 +1575,21 @@ void TimeDomainGIDDecon::process() {
     resid_linf_prev = Linf(r.u);
     resid_l2_prev = L2(r.u);
     ns_residual_rms_final = EstimateThreeCColumnAmplitudeRMS(r);
+    if (decon_type == NS_GID) {
+      for (size_t i = ns_candidate_accepted_history.size(); i-- > 0;) {
+        if (ns_candidate_accepted_history[i] != 0) {
+          ns_candidate_post_refit_residual_l2_history[i] = resid_l2_prev;
+          ns_candidate_final_refit_applied_history[i] =
+              ns_final_refit_applied ? 1 : 0;
+          ns_candidate_state_fractional_improvement_history[i] =
+              (ns_candidate_residual_l2_before_history[i] - resid_l2_prev) /
+              resid_l2_initial;
+          ns_fractional_improvement_state_final =
+              ns_candidate_state_fractional_improvement_history[i];
+          break;
+        }
+      }
+    }
     if (decon_type == NS_GID &&
         ns_stop_reason == "residual_reached_noise_floor" &&
         (ns_noise_amplitude_rms <= 0.0 ||
@@ -1533,7 +1659,7 @@ bool TimeDomainGIDDecon::has_not_converged() {
     /* We use a standard calculation for residual l2 as fractional rms change */
     double eps;
     eps = (resid_l2_prev - resid_l2_now) / resid_l2_initial;
-    ns_fractional_improvement_final = eps;
+    ns_fractional_improvement_state_final = eps;
     lw_linf_prev = lw_linf_now;
     lw_l2_prev = lw_l2_now;
     resid_linf_prev = resid_linf_now;
@@ -1555,7 +1681,7 @@ bool TimeDomainGIDDecon::has_not_converged() {
         gid_converged = ns_converged;
         return false;
       }
-      if (eps < resid_l2_tol) {
+      if (ns_fractional_improvement_final <= resid_l2_tol) {
         ns_stop_reason = "fractional_improvement_floor";
         ns_converged = true;
         gid_stop_reason = ns_stop_reason;
@@ -1801,6 +1927,17 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
     md.put("group_sparse_debiased_fractional_improvement_final",
            group_sparse_debiased_fractional_improvement_final);
     md.put("group_sparse_noise_threshold", ns_peak_threshold);
+    md.put("group_sparse_peak_threshold_empirical",
+           ns_peak_threshold_empirical);
+    md.put("group_sparse_peak_threshold_sigma", ns_peak_threshold_sigma);
+    md.put("group_sparse_noise_component_sigma_rms",
+           ns_noise_component_sigma_rms);
+    md.put("group_sparse_noise_component_sigma_rms_robust",
+           ns_noise_component_sigma_rms_robust);
+    md.put("group_sparse_noise_component_rms_aggregate",
+           ns_noise_component_rms_aggregate);
+    md.put("group_sparse_noise_component_sigma_rms_fallback_used",
+           ns_noise_component_sigma_rms_fallback_used);
     NoiseStableDecon *nsop =
         dynamic_cast<NoiseStableDecon *>(preprocessor.get());
     if (nsop != nullptr) {
@@ -1836,7 +1973,16 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
     md.put("ns_gid_peak_threshold", ns_peak_threshold);
     md.put("ns_gid_peak_threshold_empirical", ns_peak_threshold_empirical);
     md.put("ns_gid_peak_threshold_sigma", ns_peak_threshold_sigma);
+    md.put("ns_gid_empirical_peak_threshold", ns_peak_threshold_empirical);
+    md.put("ns_gid_sigma_peak_threshold", ns_peak_threshold_sigma);
     md.put("ns_gid_noise_amplitude_rms", ns_noise_amplitude_rms);
+    md.put("ns_gid_noise_component_sigma_rms", ns_noise_component_sigma_rms);
+    md.put("ns_gid_noise_component_sigma_rms_robust",
+           ns_noise_component_sigma_rms_robust);
+    md.put("ns_gid_noise_component_rms_aggregate",
+           ns_noise_component_rms_aggregate);
+    md.put("ns_gid_noise_component_sigma_rms_fallback_used",
+           ns_noise_component_sigma_rms_fallback_used);
     md.put("ns_gid_noise_amplitude_robust", ns_noise_amplitude_robust);
     md.put("ns_gid_last_candidate_amplitude", ns_last_candidate_amplitude);
     for (size_t i = 0; i < ns_candidate_lag_history.size(); ++i) {
@@ -1849,6 +1995,31 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
       md.put(prefix + "accepted", ns_candidate_accepted_history[i]);
       md.put(prefix + "post_residual_rms_ratio",
              ns_candidate_post_residual_rms_ratio_history[i]);
+      md.put(prefix + "residual_l2_before_candidate",
+             ns_candidate_residual_l2_before_history[i]);
+      const bool trial_evaluated =
+          ns_candidate_trial_evaluated_history[i] != 0;
+      const bool metric_available =
+          ns_candidate_metric_available_history[i] != 0;
+      md.put(prefix + "trial_evaluated", trial_evaluated);
+      md.put(prefix + "metric_available", metric_available);
+      if (metric_available) {
+        md.put(prefix + "residual_l2_trial_pre_refit",
+               ns_candidate_trial_residual_l2_history[i]);
+        md.put(prefix + "residual_l2_post_refit",
+               ns_candidate_post_refit_residual_l2_history[i]);
+        md.put(prefix + "candidate_fractional_improvement",
+               ns_candidate_fractional_improvement_history[i]);
+        md.put(prefix + "state_fractional_improvement",
+               ns_candidate_state_fractional_improvement_history[i]);
+      }
+      md.put(prefix + "periodic_refit_applied",
+             ns_candidate_periodic_refit_applied_history[i] != 0);
+      md.put(prefix + "final_refit_applied",
+             ns_candidate_final_refit_applied_history[i] != 0);
+      md.put(prefix + "refit_applied",
+             ns_candidate_periodic_refit_applied_history[i] != 0 ||
+                 ns_candidate_final_refit_applied_history[i] != 0);
       md.put(prefix + "stop_condition", ns_candidate_stop_history[i]);
     }
     for (size_t k = 0; k < ns_noise_component_rms.size(); ++k)
@@ -1863,6 +2034,8 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
     md.put("ns_gid_residual_l2_final", resid_l2_prev);
     md.put("ns_gid_residual_rms_initial", ns_residual_rms_initial);
     md.put("ns_gid_residual_rms_final", ns_residual_rms_final);
+    md.put("ns_gid_residual_rms", ns_residual_rms_final);
+    md.put("ns_gid_noise_rms", ns_noise_amplitude_rms);
     md.put("ns_gid_residual_noise_ratio",
            (ns_noise_l2 > 0.0) ? resid_l2_prev / ns_noise_l2 : 0.0);
     md.put("ns_gid_residual_l2_ratio_legacy",
@@ -1871,8 +2044,15 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
            (ns_noise_amplitude_rms > 0.0)
                ? ns_residual_rms_final / ns_noise_amplitude_rms
                : 0.0);
+    md.put("ns_gid_residual_noise_rms_ratio",
+           (ns_noise_amplitude_rms > 0.0)
+               ? ns_residual_rms_final / ns_noise_amplitude_rms
+               : 0.0);
     md.put("ns_gid_fractional_improvement_final",
            ns_fractional_improvement_final);
+    md.put("ns_gid_fractional_improvement_state_final",
+           ns_fractional_improvement_state_final);
+    md.put("ns_gid_final_refit_applied", ns_final_refit_applied);
     NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
     if (nsop != nullptr) {
       Metadata nsmd(nsop->QCMetrics());
