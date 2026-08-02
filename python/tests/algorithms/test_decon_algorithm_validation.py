@@ -204,6 +204,17 @@ def _make_weak_stress_colored_validation_data(noise_scale=0.025, return_truth=Fa
         truth.data[1, sample] *= 0.35
     data = convolve_wavelet(truth, wavelet)
     data = addnoise(data, nscale=noise_scale, padlength=900, corners=[0.04, 3.0])
+    if noise_scale == 0.0:
+        # Keep the nominally noise-free signal fixture deterministic while
+        # providing finite 3C pre-event noise for NS-GID threshold estimation.
+        times = data.t0 + data.dt * np.arange(data.npts)
+        preevent = times < -5.0
+        for component in range(3):
+            values = np.asarray(data.data[component]).copy()
+            values[preevent] += 1.0e-4 * np.sin(
+                0.13 * np.flatnonzero(preevent) + component
+            )
+            data.data[component, :] = DoubleVector(values)
     data["low_f_band_edge"] = 0.02
     data["high_f_band_edge"] = 2.0
     if return_truth:

@@ -36,7 +36,7 @@ from mspasspy.algorithms.RFdeconProcessor import (
 )
 from mspasspy.algorithms.TimeDomainGIDDecon import TimeDomainGIDRFDecon
 from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDecon
-from mspasspy.ccore.seismic import Seismogram, TimeSeries
+from mspasspy.ccore.seismic import DoubleVector, Seismogram, TimeSeries
 from mspasspy.ccore.utility import AntelopePf, ErrorSeverity, Metadata, MsPASSError
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.basic import ExtractComponent
@@ -74,6 +74,22 @@ def _make_gid_switching_data(noise_scale=1.0e-4):
     )
     data["low_f_band_edge"] = 0.02
     data["high_f_band_edge"] = 2.0
+    return data
+
+
+def _make_noise_stable_gid_fixture():
+    """Synthetic GID input with deterministic, finite pre-event noise."""
+    data = addnoise(
+        convolve_wavelet(make_impulse_data(), make_simulation_wavelet()),
+        nscale=0.0,
+        padlength=800,
+    )
+    times = data.t0 + data.dt * np.arange(data.npts)
+    preevent = times < -5.0
+    for component in range(3):
+        values = np.asarray(data.data[component]).copy()
+        values[preevent] += 1.0e-4 * np.sin(0.13 * np.flatnonzero(preevent) + component)
+        data.data[component, :] = DoubleVector(values)
     return data
 
 
@@ -647,9 +663,7 @@ def test_RFdecon_gid_accepts_integral_lag_penalty_double_parameters(alg):
 def test_RFdeconProcessor_gid_pickle_supports_distributed_use(alg, pf):
     os.environ["PFPATH"] = "./data/pf"
     try:
-        wavelet = make_simulation_wavelet()
-        impulses = make_impulse_data()
-        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+        seis0 = _make_noise_stable_gid_fixture()
         processor = RFdeconProcessor(alg=alg, pf=pf)
         processor2 = pickle.loads(pickle.dumps(processor))
         os.environ.pop("PFPATH", None)
@@ -679,9 +693,7 @@ def test_RFdeconProcessor_gid_pickle_supports_distributed_use(alg, pf):
 def test_RFdeconProcessor_gid_dask_serialization_supports_distributed_use(alg, pf):
     os.environ["PFPATH"] = "./data/pf"
     try:
-        wavelet = make_simulation_wavelet()
-        impulses = make_impulse_data()
-        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+        seis0 = _make_noise_stable_gid_fixture()
         processor = RFdeconProcessor(alg=alg, pf=pf)
         os.environ.pop("PFPATH", None)
 
@@ -742,9 +754,7 @@ def test_RFdeconProcessor_change_parameters_uses_public_engine_api():
             cloudpickle.loads(cloudpickle.dumps(gid_processor)),
         ]
 
-        wavelet = make_simulation_wavelet()
-        impulses = make_impulse_data()
-        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+        seis0 = _make_noise_stable_gid_fixture()
         rf_changed = RFdecon(
             Seismogram(seis0), alg="GeneralizedIterative", engine=gid_processor
         )
@@ -837,9 +847,7 @@ def test_RFdeconProcessor_change_parameters_preserved_by_dask_serialization():
         gid_processor.change_parameters(leaf_md)
         restored = _distributed_roundtrip(gid_processor)
 
-        wavelet = make_simulation_wavelet()
-        impulses = make_impulse_data()
-        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+        seis0 = _make_noise_stable_gid_fixture()
         rf_changed = RFdecon(
             Seismogram(seis0), alg="GeneralizedIterative", engine=gid_processor
         )
@@ -990,9 +998,7 @@ def test_RFdecon_enables_generalized_iterative():
     old_pfpath = os.environ.get("PFPATH")
     os.environ["PFPATH"] = "./data/pf"
     try:
-        wavelet = make_simulation_wavelet()
-        impulses = make_impulse_data()
-        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+        seis0 = _make_noise_stable_gid_fixture()
 
         rf = RFdecon(seis0, alg="GeneralizedIterative", pf="TimeDomainGIDDecon.pf")
 
@@ -1049,9 +1055,8 @@ def test_RFdecon_generalized_iterative_accepts_external_wavelet():
     old_pfpath = os.environ.get("PFPATH")
     os.environ["PFPATH"] = "./data/pf"
     try:
+        seis0 = _make_noise_stable_gid_fixture()
         wavelet = make_simulation_wavelet()
-        impulses = make_impulse_data()
-        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
 
         rf = RFdecon(
             seis0,
@@ -1088,9 +1093,8 @@ def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
     old_pfpath = os.environ.get("PFPATH")
     os.environ["PFPATH"] = "./data/pf"
     try:
+        seis0 = _make_noise_stable_gid_fixture()
         wavelet = make_simulation_wavelet()
-        impulses = make_impulse_data()
-        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
         processor = RFdeconProcessor(alg=alg, pf=pf)
         noise = WindowData(seis0, processor.nwin.start, processor.nwin.end)
         noise = ExtractComponent(noise, 2)
@@ -1119,9 +1123,8 @@ def test_RFdecon_preserves_preconfigured_gid_external_wavelet_when_omitted(tmp_p
     os.environ["PFPATH"] = "./data/pf"
     try:
         pf = _gid_pf_with_mode(tmp_path, "ns_gid")
+        seis0 = _make_noise_stable_gid_fixture()
         wavelet = make_simulation_wavelet()
-        impulses = make_impulse_data()
-        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
         processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
 
         rf_external = RFdecon(
