@@ -482,6 +482,41 @@ double EstimateThreeCColumnAmplitudeRMS(const CoreSeismogram &d) {
   return sqrt(sumsq / static_cast<double>(npts));
 }
 
+int SelectNoiseSignificantGIDCandidateIndex(
+    const vector<double> &raw_amplitudes, const vector<double> &lag_weights,
+    const double threshold) {
+  if (raw_amplitudes.size() != lag_weights.size())
+    throw MsPASSError("SelectNoiseSignificantGIDCandidateIndex: raw amplitude "
+                      "and lag-weight vectors have different sizes",
+                      ErrorSeverity::Invalid);
+  if (!isfinite(threshold) || threshold <= 0.0)
+    throw MsPASSError("SelectNoiseSignificantGIDCandidateIndex: threshold must "
+                      "be finite and positive",
+                      ErrorSeverity::Invalid);
+  int selected(-1);
+  double best_score(-1.0);
+  for (size_t i = 0; i < raw_amplitudes.size(); ++i) {
+    if (!isfinite(raw_amplitudes[i]) || !isfinite(lag_weights[i]) ||
+        lag_weights[i] <= 0.0 || raw_amplitudes[i] < threshold)
+      continue;
+    const double score = raw_amplitudes[i] * lag_weights[i];
+    if (score > best_score) {
+      best_score = score;
+      selected = static_cast<int>(i);
+    }
+  }
+  return selected;
+}
+
+string ResolveNSGIDFinalStopReason(
+    const string &provisional_stop_reason,
+    const bool final_scan_has_significant_candidate) {
+  if (provisional_stop_reason == "candidate_not_significant" &&
+      final_scan_has_significant_candidate)
+    return "post_refit_significant_candidate_remaining";
+  return provisional_stop_reason;
+}
+
 vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
     const string &penalty_type, const double penalty_scale,
     const vector<double> &kernel, const int zero_lag_sample,

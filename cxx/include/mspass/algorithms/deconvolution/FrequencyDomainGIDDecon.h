@@ -251,6 +251,20 @@ private:
   double ns_residual_rms_initial, ns_residual_rms_final;
   double ns_peak_threshold_empirical, ns_peak_threshold_sigma;
   double ns_noise_amplitude_robust, ns_last_candidate_amplitude;
+  int ns_noise_samples_at_or_above_peak_threshold;
+  int ns_noise_amplitude_sample_count;
+  int ns_initial_stationary_null_search_lag_count;
+  double ns_initial_stationary_null_expected_noise_exceedances;
+  int ns_last_selected_candidate_lag;
+  double ns_last_selected_candidate_lag_weight;
+  double ns_last_selected_candidate_weighted_amplitude;
+  double ns_max_raw_candidate_amplitude, ns_max_raw_candidate_significance;
+  int ns_max_raw_candidate_lag;
+  bool ns_last_scan_raw_significant_candidate_remaining;
+  double ns_final_scan_max_raw_candidate_amplitude,
+      ns_final_scan_max_raw_candidate_significance;
+  int ns_final_scan_max_raw_candidate_lag;
+  bool ns_final_scan_raw_significant_candidate_remaining;
   std::vector<double> ns_noise_component_rms;
   std::vector<int> ns_candidate_lag_history, ns_candidate_accepted_history;
   std::vector<double> ns_candidate_lag_time_history,
@@ -272,7 +286,7 @@ private:
   int ns_max_spikes, ns_refit_interval;
   bool ns_use_empirical_noise_threshold, ns_converged;
   bool ns_final_refit_applied;
-  std::string ns_stop_reason;
+  std::string ns_stop_reason, ns_provisional_stop_reason_before_final_refit;
   bool gid_converged;
   std::string gid_stop_reason;
   std::string lag_weight_penalty_function;

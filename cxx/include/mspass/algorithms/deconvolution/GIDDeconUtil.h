@@ -162,6 +162,16 @@ std::vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
 void ApplyGIDLagWeightPenalty(std::vector<double> &lag_weights,
                               const std::vector<double> &penalty,
                               const int center_col);
+/*! Select the largest penalized candidate among raw noise-significant lags.
+ * Returns -1 when no positive-weight lag has raw amplitude at least threshold.
+ */
+int SelectNoiseSignificantGIDCandidateIndex(
+    const std::vector<double> &raw_amplitudes,
+    const std::vector<double> &lag_weights, const double threshold);
+/*! Correct a provisional candidate-significance stop using the final-refit scan. */
+std::string ResolveNSGIDFinalStopReason(
+    const std::string &provisional_stop_reason,
+    const bool final_scan_has_significant_candidate);
 /*! Estimate the RMS column vector amplitude of a three-component seismogram. */
 double EstimateThreeCColumnAmplitudeRMS(
     const mspass::seismic::CoreSeismogram &d);

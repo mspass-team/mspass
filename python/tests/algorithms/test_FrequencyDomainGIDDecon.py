@@ -20,7 +20,10 @@ from test_TimeDomainGIDDecon import (
     _assert_auto_wavelet_window_rejection,
     _assert_gid_constructor_metadata_compatibility,
     _assert_direct_gid_load_guards,
-    _assert_zero_residual_no_candidate,
+    _assert_zero_residual_is_rejected,
+    _assert_nonfinite_analysis_residual_is_rejected,
+    _assert_nonfinite_noise_inputs_are_rejected,
+    _assert_nonfinite_noise_spectra_are_rejected,
     _assert_two_sample_analysis_candidate_exhaustion_control_flow,
     _assert_fd_zero_amplitude_candidates,
     _assert_timeseries_alias,
@@ -41,6 +44,9 @@ from test_TimeDomainGIDDecon import (
     _long_window_gid_pf,
     _assert_shipped_default_long_window_result,
     _assert_long_window_gid_result,
+    _assert_generic_residual_rms_qc,
+    _assert_unprocessed_residual_rms_fraction_is_undefined,
+    _assert_candidate_significance_filter_contract,
     _assert_late_component_energy_does_not_change_auto_wavelet,
     _assert_late_sparse_support,
     _assert_all_leaf_physical_lag_alignment,
@@ -53,6 +59,7 @@ from test_TimeDomainGIDDecon import (
     _assert_mantle_profile_weak_and_noise_control,
     _assert_internal_external_wavelet_equivalence,
     _assert_ridge_refit_reports_final_residual_state,
+    _assert_final_refit_reopens_candidate_significance,
     _assert_ns_fractional_floor_uses_pre_refit_candidate,
     _assert_ns_default_ridge_candidate_trace,
     _assert_residual_rms_stop_is_noise_length_stable,
@@ -352,6 +359,18 @@ def test_FrequencyDomainGIDDecon_ridge_refit_reports_final_residual_state(
     tmp_path,
 ):
     _assert_ridge_refit_reports_final_residual_state(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_final_refit_reopens_candidate_significance(
+    tmp_path,
+):
+    _assert_final_refit_reopens_candidate_significance(
         FrequencyDomainGIDDecon,
         FrequencyDomainGIDRFDecon,
         "FrequencyDomainGIDDecon.pf",
@@ -1715,7 +1734,7 @@ def test_FrequencyDomainGIDDecon_group_sparse_external_noise_sets_lambda(tmp_pat
         )
 
 
-def test_FrequencyDomainGIDDecon_failed_external_noise_replacement_preserves_state(
+def test_FrequencyDomainGIDDecon_failed_external_noise_replacement_invalidates_state(
     tmp_path,
 ):
     data = _make_single_spike_convolution_data()
@@ -1738,6 +1757,11 @@ def test_FrequencyDomainGIDDecon_failed_external_noise_replacement_preserves_sta
     with pytest.raises(MsPASSError, match="target_sample_interval"):
         engine.loadnoise(bad_noise)
 
+    assert not dict(engine.QCMetrics())["decon_processed"]
+    assert engine.load(data, dwin) == 0
+    with pytest.raises(MsPASSError, match="valid noise window"):
+        engine.process()
+    engine.loadnoise(noise)
     assert engine.load(data, dwin) == 0
     engine.process()
     recovered_qc = dict(engine.QCMetrics())
@@ -2107,3 +2131,65 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_runtime_signal_window():
         engine.load(data, TimeWindow(20.0, -10.0), TimeWindow(-35.0, -5.0))
 
     assert excinfo.value.severity == ErrorSeverity.Fatal
+
+
+def test_FrequencyDomainGIDDecon_generic_residual_rms_qc_non_ns(tmp_path):
+    _assert_generic_residual_rms_qc(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_unprocessed_residual_fraction_is_undefined(
+    tmp_path,
+):
+    _assert_unprocessed_residual_rms_fraction_is_undefined(
+        FrequencyDomainGIDDecon, pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    )
+
+
+def test_FrequencyDomainGIDDecon_candidate_significance_filter_contract(tmp_path):
+    _assert_candidate_significance_filter_contract(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_zero_residual_is_rejected(tmp_path):
+    _assert_zero_residual_is_rejected(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_nonfinite_analysis_residual_is_rejected(tmp_path):
+    _assert_nonfinite_analysis_residual_is_rejected(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_nonfinite_noise_inputs_are_rejected(tmp_path):
+    _assert_nonfinite_noise_inputs_are_rejected(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        tmp_path,
+    )
+    _assert_nonfinite_noise_spectra_are_rejected(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        tmp_path,
+    )
