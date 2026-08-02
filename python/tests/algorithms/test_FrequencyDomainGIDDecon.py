@@ -50,8 +50,9 @@ from test_TimeDomainGIDDecon import (
     _assert_long_window_gid_result,
     _assert_generic_residual_rms_qc,
     _assert_least_square_raw_gain_damping_invariance,
-    _assert_legacy_eq15_rejects_and_scans_next_candidates,
-    _assert_legacy_eq15_rejects_first_candidate_then_accepts_next,
+    _assert_legacy_eq15_accepts_decreasing_before_global_stop,
+    _assert_legacy_eq15_counter_skips_preceding_stop,
+    _assert_legacy_eq15_does_not_scan_past_global_floor,
     _assert_legacy_eq15_strict_equality_boundary,
     _assert_unprocessed_residual_rms_fraction_is_undefined,
     _assert_candidate_significance_filter_contract,
@@ -68,6 +69,7 @@ from test_TimeDomainGIDDecon import (
     _assert_internal_external_wavelet_equivalence,
     _assert_ridge_refit_reports_final_residual_state,
     _assert_terminal_refit_final_noise_floor_canonicalization,
+    _assert_final_refit_audit_does_not_bypass_first_floor,
     _assert_final_refit_reopens_candidate_significance,
     _assert_ns_fractional_floor_uses_pre_refit_candidate,
     _assert_ns_default_ridge_candidate_trace,
@@ -381,6 +383,18 @@ def test_FrequencyDomainGIDDecon_terminal_refit_canonicalizes_final_noise_floor(
     tmp_path,
 ):
     _assert_terminal_refit_final_noise_floor_canonicalization(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_final_refit_audit_does_not_bypass_first_floor(
+    tmp_path,
+):
+    _assert_final_refit_audit_does_not_bypass_first_floor(
         FrequencyDomainGIDDecon,
         FrequencyDomainGIDRFDecon,
         "FrequencyDomainGIDDecon.pf",
@@ -2236,10 +2250,10 @@ def test_FrequencyDomainGIDDecon_least_square_raw_gain_damping_invariance(
     )
 
 
-def test_FrequencyDomainGIDDecon_legacy_eq15_rejects_and_scans_next_candidates(
+def test_FrequencyDomainGIDDecon_legacy_eq15_accepts_decreasing_before_global_stop(
     tmp_path,
 ):
-    _assert_legacy_eq15_rejects_and_scans_next_candidates(
+    _assert_legacy_eq15_accepts_decreasing_before_global_stop(
         FrequencyDomainGIDDecon,
         FrequencyDomainGIDRFDecon,
         "FrequencyDomainGIDDecon.pf",
@@ -2249,10 +2263,10 @@ def test_FrequencyDomainGIDDecon_legacy_eq15_rejects_and_scans_next_candidates(
     )
 
 
-def test_FrequencyDomainGIDDecon_legacy_eq15_rejects_first_then_accepts_same_iteration(
+def test_FrequencyDomainGIDDecon_legacy_eq15_does_not_scan_past_global_floor(
     tmp_path,
 ):
-    _assert_legacy_eq15_rejects_first_candidate_then_accepts_next(
+    _assert_legacy_eq15_does_not_scan_past_global_floor(
         FrequencyDomainGIDDecon,
         FrequencyDomainGIDRFDecon,
         "FrequencyDomainGIDDecon.pf",
@@ -2262,7 +2276,20 @@ def test_FrequencyDomainGIDDecon_legacy_eq15_rejects_first_then_accepts_same_ite
     )
 
 
-def test_FrequencyDomainGIDDecon_legacy_eq15_strict_equality_boundary(tmp_path):
+def test_FrequencyDomainGIDDecon_legacy_eq15_counter_skips_residual_ratio_stop(
+    tmp_path,
+):
+    _assert_legacy_eq15_counter_skips_preceding_stop(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_legacy_eq15_stops_after_accepted_boundary(tmp_path):
     _assert_legacy_eq15_strict_equality_boundary(
         FrequencyDomainGIDDecon,
         FrequencyDomainGIDRFDecon,

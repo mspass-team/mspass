@@ -332,6 +332,11 @@ private:
   int ns_final_scan_best_trial_lag;
   double ns_final_scan_best_trial_residual_l2,
       ns_final_scan_best_trial_fractional_improvement;
+  int ns_final_scan_decision_candidate_lag,
+      ns_final_scan_global_acceptable_candidate_count;
+  double ns_final_scan_decision_trial_residual_l2,
+      ns_final_scan_decision_trial_fractional_improvement;
+  std::string ns_final_scan_decision;
   bool ns_final_scan_acceptable_candidate_remaining;
   std::vector<double> ns_noise_component_rms;
   std::vector<int> ns_candidate_lag_history, ns_candidate_accepted_history;
@@ -349,8 +354,11 @@ private:
       ns_candidate_trial_evaluated_history,
       ns_candidate_metric_available_history;
   std::vector<std::string> ns_candidate_stop_history;
-  /* Wang & Pavlis Eq. (15) is a candidate-level gate for legacy GID. */
+  /* Compatibility counters for legacy pre-trial candidate scans. */
   int legacy_eq15_candidates_tested, legacy_eq15_candidates_rejected;
+  /* Counters for the actual post-acceptance Eq.(15) state comparison. */
+  int legacy_eq15_post_acceptance_state_tests,
+      legacy_eq15_post_acceptance_floor_stops;
   int legacy_eq15_candidates_below_floor, legacy_eq15_candidates_non_decreasing,
       legacy_eq15_candidates_nonfinite,
       legacy_eq15_rejected_lag_samples_truncated,
