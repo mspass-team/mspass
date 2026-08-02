@@ -554,7 +554,15 @@ QC metadata
 ``QCMetrics`` records both processing status and diagnostic context.  Useful
 first-pass GID fields include ``decon_operator``, ``decon_processed``,
 ``gid_converged``, ``gid_stop_reason``, ``gid_iterations``,
-``gid_number_spikes``, ``residual_L2_initial``, and ``residual_L2_final``.
+``gid_number_spikes``, ``residual_rms_final_fraction``, and
+``residual_rms_reduction_fraction``.  ``residual_L2_initial`` and
+``residual_L2_final`` are retained for compatibility, but are unnormalised
+Euclidean norms and must not be compared across records or analysis-window
+lengths.  ``residual_rms_initial`` and ``residual_rms_final`` remove only the
+analysis-window-length factor; use the fractional fields for comparisons across
+records with different amplitudes.  ``residual_energy_final_fraction`` and
+``residual_energy_reduction_fraction`` are the corresponding squared-norm
+fractions, useful when the QC policy is expressed in explained residual energy.
 
 Greedy lag-weight penalty runs also record ``gid_penalty_function``,
 ``gid_penalty_scale_factor``, ``gid_penalty_width``,
@@ -826,15 +834,23 @@ How the greedy penalty enters GID
 
 At iteration :math:`k`, let :math:`\mathbf{a}^{(k)}_j` be the
 three-component detection-function vector at lag sample :math:`j`, and let
-:math:`\ell^{(k)}_j \in [0, 1]` be the accumulated lag weight.  The implemented
-selection statistic is
+:math:`\ell^{(k)}_j \in [0, 1]` be the accumulated lag weight.  For NS-GID,
+the raw-amplitude threshold :math:`T` is a *per-valid-lag* test, not a
+full-search false-alarm probability.  The picker first restricts its eligible
+set, then applies the lag penalty:
 
 .. math::
 
-   q^{(k)}_j = \left(\ell^{(k)}_j\right)^2
-              \left\|\mathbf{a}^{(k)}_j\right\|_2^2,
+   \mathcal{E}^{(k)} = \{j:\ell^{(k)}_j > 0,
+       \left\|\mathbf{a}^{(k)}_j\right\|_2 \ge T\},
    \qquad
-   j_* = \operatorname*{arg\,max}_j q^{(k)}_j .
+   j_* = \operatorname*{arg\,max}_{j\in\mathcal{E}^{(k)}}
+       \ell^{(k)}_j\left\|\mathbf{a}^{(k)}_j\right\|_2 .
+
+If :math:`\mathcal{E}^{(k)}` is empty, NS-GID reports
+``candidate_not_significant`` (subject to the final-refit audit below).
+Other greedy GID modes retain their legacy unconstrained weighted-energy
+selection.
 
 After accepting a spike at :math:`j_*`, the engine multiplies nearby lag
 weights by a compact penalty kernel :math:`p_m`:
@@ -1323,9 +1339,20 @@ Useful first-pass fields are:
 * ``decon_window_start``, ``decon_window_end``, ``noise_window_start``, and
   ``noise_window_end`` confirm that the analysis and noise windows match the
   intended workflow.
-* ``residual_L2_initial`` and ``residual_L2_final`` check whether the fitted
-  model reduced residual energy.  Smaller is not automatically better if the
-  sparse support becomes physically implausible.
+* ``residual_rms_final_fraction`` and ``residual_rms_reduction_fraction`` are
+  the canonical cross-record fit metrics: final/initial residual RMS and its
+  complement.  Smaller final fraction is a larger fit reduction, but is not
+  automatically better if the sparse support becomes physically implausible.
+  Consult ``residual_rms_fraction_valid`` first: an unprocessed result or a
+  zero initial residual has undefined fractional metrics (stored as NaN), not
+  a perfect fit.  ``residual_rms_initial`` and ``residual_rms_final`` normalize
+  only for analysis-window length and therefore retain amplitude units.
+  ``residual_energy_final_fraction`` and
+  ``residual_energy_reduction_fraction`` are respectively the square of the
+  RMS fraction and one minus that square; use them when a policy needs energy,
+  rather than amplitude, reduction.
+  ``residual_L2_initial`` and ``residual_L2_final`` remain legacy raw norms for
+  within-record debugging only.
 * ``gid_converged``, ``gid_stop_reason``, ``gid_iterations``, and
   ``gid_number_spikes`` summarize the GID iteration outcome.
 * ``gid_penalty_function``, ``gid_penalty_effective_width``,
@@ -1348,6 +1375,28 @@ Useful first-pass fields are:
 * ``ns_gid_gain_max_actual``, ``ns_gid_noise_amplification``, and
   ``ns_gid_effective_bandwidth_fraction`` help audit inverse-operator stability
   for ``deconvolution_type ns_gid``.
+* For ``ns_gid``, ``ns_gid_last_selected_candidate_lag_samples``,
+  ``ns_gid_last_selected_candidate_lag_weight``, and
+  ``ns_gid_last_selected_candidate_weighted_amplitude`` describe the candidate
+  selected after applying the lag penalty.  The ``ns_gid_max_raw_candidate_*``
+  and ``ns_gid_last_scan_raw_significant_candidate_remaining`` fields describe
+  the final iteration scan before amplitude refitting, not necessarily the
+  terminal residual.  The ``ns_gid_final_scan_*`` fields are recomputed from
+  the final-refit residual over the actually valid, positive-weight lags and
+  are the terminal audit fields.  If a provisional
+  ``candidate_not_significant`` exit has a significant final-scan candidate,
+  it is changed to ``post_refit_significant_candidate_remaining`` and is not
+  converged.  ``ns_gid_provisional_stop_reason_before_final_refit`` preserves
+  that pre-refit decision explicitly.  In contrast, ``ns_gid_stop_reason`` is
+  the final terminal state, and the terminal iteration-trace stop condition is
+  intentionally updated to that same final reason after refitting.
+  ``ns_gid_noise_samples_at_or_above_peak_threshold`` and
+  ``ns_gid_initial_stationary_null_expected_noise_exceedances`` are an
+  initial stationary-null plug-in estimate, not a terminal QC metric.  The
+  latter is the observed noise exceedance rate multiplied by
+  ``ns_gid_initial_stationary_null_search_lag_count`` (the actual initial
+  positive-weight, complete-kernel search lags), not by the full analysis
+  window length.  These are tuning diagnostics, not hard QC cutoffs.
 * ``group_sparse_inverse_gain_max_actual``,
   ``group_sparse_inverse_noise_amplification``, and
   ``group_sparse_inverse_effective_bandwidth_fraction`` help audit the NS-GID

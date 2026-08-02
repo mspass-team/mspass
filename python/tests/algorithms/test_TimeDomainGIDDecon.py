@@ -245,18 +245,19 @@ def _assert_gid_constructor_metadata_compatibility(engine_class, pf_name, tmp_pa
 
 
 def _make_zero_gid_test_data():
-    """A valid, live three-component input with no residual energy."""
+    """A zero analysis window while retaining finite pre-event noise."""
     data = _make_gid_test_data(noise_level=None)
+    times = data.t0 + data.dt * np.arange(data.npts)
     for component in range(3):
-        data.data[component, :] = DoubleVector(np.zeros(data.npts))
+        values = np.asarray(data.data[component]).copy()
+        values[times >= -5.0] = 0.0
+        data.data[component, :] = DoubleVector(values)
     return data
 
 
-def _assert_zero_residual_no_candidate(
-    engine_class, pf_name, branch_name, tmp_path, expectations
-):
-    """Zero residuals must terminate cleanly without manufacturing a spike."""
-    for mode, expected_reason, expected_converged in expectations:
+def _assert_zero_residual_is_rejected(engine_class, pf_name, branch_name, tmp_path):
+    """Finite noise does not make an all-zero analysis residual processable."""
+    for mode in ("ns_gid", "water_level"):
         engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
         engine.loadwavelet(_make_wrapper_external_wavelet())
         assert (
@@ -267,24 +268,24 @@ def _assert_zero_residual_no_candidate(
             )
             == 0
         )
-        if mode == "ns_gid":
-            # This is the dedicated zero-noise guard test.  NS-GID cannot
-            # infer a positive sigma threshold from an identically zero
-            # residual-noise record.
-            with pytest.raises(MsPASSError, match="noise scale is nonpositive"):
-                engine.process()
-            continue
-        engine.process()
-        rf = engine.getresult()
-        assert rf.live
-        assert np.allclose(np.asarray(rf.data), 0.0)
-        qc = dict(engine.QCMetrics())
-        assert qc["gid_stop_reason"] == expected_reason
-        assert qc["gid_converged"] is expected_converged
-        assert qc["gid_number_spikes"] == 0
-        if mode == "ns_gid":
-            assert qc["ns_gid_stop_reason"] == expected_reason
-            assert qc["ns_gid_converged"] is expected_converged
+        with pytest.raises(MsPASSError, match="input data residual is zero"):
+            engine.process()
+
+
+def _assert_nonfinite_analysis_residual_is_rejected(
+    engine_class, pf_name, branch_name, tmp_path
+):
+    """A nonfinite analysis sample must not yield processed NaN output."""
+    data = _make_gid_test_data(noise_level=None)
+    samples = np.asarray(data.data[0]).copy()
+    samples[data.sample_number(0.0)] = np.nan
+    data.data[0, :] = DoubleVector(samples)
+    for mode in ("ns_gid", "water_level"):
+        engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
+        engine.loadwavelet(_make_wrapper_external_wavelet())
+        assert engine.load(data, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+        with pytest.raises(MsPASSError, match="input data contains nonfinite samples"):
+            engine.process()
 
 
 def _assert_two_sample_analysis_candidate_exhaustion_control_flow(
@@ -688,6 +689,16 @@ def _assert_shipped_default_long_window_result(
         "ns_gid_last_peak_significance",
         "ns_gid_residual_rms_ratio",
         "ns_gid_residual_noise_rms_ratio",
+        "ns_gid_initial_residual_noise_rms_ratio",
+        "ns_gid_residual_rms_final_fraction",
+        "ns_gid_residual_rms_reduction_fraction",
+        "ns_gid_residual_energy_final_fraction",
+        "ns_gid_residual_energy_reduction_fraction",
+        "ns_gid_last_selected_candidate_lag_weight",
+        "ns_gid_last_selected_candidate_weighted_amplitude",
+        "ns_gid_max_raw_candidate_amplitude",
+        "ns_gid_max_raw_candidate_significance",
+        "ns_gid_initial_stationary_null_expected_noise_exceedances",
         "ns_gid_residual_rms",
         "ns_gid_noise_rms",
         "ns_gid_empirical_peak_threshold",
@@ -704,6 +715,34 @@ def _assert_shipped_default_long_window_result(
     )
     assert qc["ns_gid_residual_rms"] == pytest.approx(qc["ns_gid_residual_rms_final"])
     assert qc["ns_gid_noise_rms"] == pytest.approx(qc["ns_gid_noise_amplitude_rms"])
+    assert qc["ns_gid_initial_residual_noise_rms_ratio"] == pytest.approx(
+        qc["ns_gid_residual_rms_initial"] / qc["ns_gid_noise_amplitude_rms"]
+    )
+    assert qc["ns_gid_residual_rms_final_fraction"] == pytest.approx(
+        qc["ns_gid_residual_rms_final"] / qc["ns_gid_residual_rms_initial"]
+    )
+    assert qc["ns_gid_residual_rms_reduction_fraction"] == pytest.approx(
+        1.0 - qc["ns_gid_residual_rms_final_fraction"]
+    )
+    assert qc["ns_gid_residual_energy_final_fraction"] == pytest.approx(
+        qc["ns_gid_residual_rms_final_fraction"] ** 2
+    )
+    assert qc["ns_gid_residual_energy_reduction_fraction"] == pytest.approx(
+        1.0 - qc["ns_gid_residual_energy_final_fraction"]
+    )
+    assert qc["ns_gid_last_selected_candidate_lag_weight"] >= 0.0
+    assert qc["ns_gid_last_selected_candidate_weighted_amplitude"] >= 0.0
+    assert qc["ns_gid_max_raw_candidate_amplitude"] >= 0.0
+    assert qc["ns_gid_max_raw_candidate_significance"] >= 0.0
+    assert qc["ns_gid_initial_stationary_null_expected_noise_exceedances"] >= 0.0
+    assert 0 < qc["ns_gid_initial_stationary_null_search_lag_count"] < qc[
+        "gid_analysis_samples"
+    ]
+    assert qc["ns_gid_initial_stationary_null_expected_noise_exceedances"] == pytest.approx(
+        qc["ns_gid_initial_stationary_null_search_lag_count"]
+        * qc["ns_gid_noise_samples_at_or_above_peak_threshold"]
+        / qc["ns_gid_initial_stationary_null_noise_amplitude_samples"]
+    )
     assert qc["ns_gid_empirical_peak_threshold"] == pytest.approx(
         qc["ns_gid_peak_threshold_empirical"]
     )
@@ -745,6 +784,23 @@ def _assert_long_window_gid_result(rf, qc):
     assert qc["ns_gid_residual_rms_ratio"] == pytest.approx(
         qc["ns_gid_residual_rms_final"] / qc["ns_gid_noise_amplitude_rms"]
     )
+    assert qc["residual_rms_initial"] == pytest.approx(
+        qc["ns_gid_residual_rms_initial"]
+    )
+    assert qc["residual_rms_final"] == pytest.approx(qc["ns_gid_residual_rms_final"])
+    assert qc["residual_rms_final_fraction"] == pytest.approx(
+        qc["residual_rms_final"] / qc["residual_rms_initial"]
+    )
+    assert qc["residual_rms_reduction_fraction"] == pytest.approx(
+        1.0 - qc["residual_rms_final_fraction"]
+    )
+    assert qc["residual_energy_final_fraction"] == pytest.approx(
+        qc["residual_rms_final_fraction"] ** 2
+    )
+    assert qc["residual_energy_reduction_fraction"] == pytest.approx(
+        1.0 - qc["residual_energy_final_fraction"]
+    )
+    assert qc["residual_rms_fraction_valid"]
     for k in range(3):
         assert qc[f"ns_gid_component_noise_rms_{k}"] >= 0.0
     # The shaping wavelet can shift the finite-bandwidth peak by a few
@@ -1357,6 +1413,52 @@ def _assert_ridge_refit_reports_final_residual_state(
     assert np.isfinite(qc["ns_gid_residual_rms_final"])
 
 
+def _assert_final_refit_reopens_candidate_significance(
+    engine_class, wrapper, pf_name, qc_key, tmp_path
+):
+    """Final-only ridge refit must invalidate a provisional candidate stop."""
+    _long_window_gid_pf(tmp_path, pf_name, residual_noise_ratio_floor=0.0)
+    path = tmp_path / pf_name
+    text = path.read_text()
+    text = text.replace("ns_gid_ridge_beta 1.0e-10", "ns_gid_ridge_beta 10")
+    text = text.replace("ns_gid_refit_interval 5", "ns_gid_refit_interval 1000")
+    text = text.replace(
+        "residual_fractional_improvement_floor 0.0001",
+        "residual_fractional_improvement_floor 0.0",
+    )
+    text = text.replace(
+        "ns_gid_peak_probability_threshold 0.80",
+        "ns_gid_peak_probability_threshold 0.999",
+    )
+    path.write_text(text)
+    rf = wrapper(
+        _make_long_window_gid_data(),
+        engine_class(pfread(str(path))),
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    qc = rf[qc_key]
+    assert qc["ns_gid_provisional_stop_reason_before_final_refit"] == (
+        "candidate_not_significant"
+    )
+    assert qc["ns_gid_final_refit_applied"]
+    assert qc["ns_gid_last_scan_raw_significant_candidate_remaining"] is False
+    assert qc["ns_gid_final_scan_max_raw_candidate_significance"] >= 1.0
+    assert qc["ns_gid_final_scan_raw_significant_candidate_remaining"] is True
+    assert qc["ns_gid_stop_reason"] == "post_refit_significant_candidate_remaining"
+    assert qc["gid_stop_reason"] == qc["ns_gid_stop_reason"]
+    assert qc["ns_gid_converged"] is False
+    assert qc["gid_converged"] is False
+    terminal = max(
+        i
+        for i in range(qc["ns_gid_iterations"] + 1)
+        if f"ns_gid_iteration_{i}_stop_condition" in qc
+    )
+    assert qc[f"ns_gid_iteration_{terminal}_stop_condition"] == qc[
+        "ns_gid_stop_reason"
+    ]
+
+
 def _assert_ns_fractional_floor_uses_pre_refit_candidate(
     engine_class, wrapper, pf_name, qc_key, tmp_path
 ):
@@ -1495,6 +1597,60 @@ def _make_external_noise_spectrum(power):
     return PowerSpectrum(
         Metadata(), DoubleVector([power, power, power]), 1.0, "valid", -1.0, 1.0, 3
     )
+
+
+def _assert_nonfinite_noise_inputs_are_rejected(
+    engine_class, pf_name, branch_name, tmp_path
+):
+    """Every GID noise ingress rejects NaN/Inf before processing starts."""
+    modes = ("ns_gid", "group_sparse", "water_level", "least_square", "multi_taper", "cnr")
+    for bad_value in (np.nan, np.inf):
+        internal = _make_gid_test_data(noise_level=None)
+        sample = internal.sample_number(-20.0)
+        for component in range(3):
+            values = np.asarray(internal.data[component]).copy()
+            values[sample] = bad_value
+            internal.data[component, :] = DoubleVector(values)
+        external = _make_external_noise()
+        external.data[external.npts // 2] = bad_value
+        for mode in modes:
+            engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
+            valid = _make_gid_test_data(noise_level=None)
+            assert engine.load(valid, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+            engine.process()
+            assert dict(engine.QCMetrics())["decon_processed"]
+            with pytest.raises(MsPASSError, match="noise window contains nonfinite"):
+                engine.load(internal, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0))
+            assert not dict(engine.QCMetrics())["decon_processed"]
+            with pytest.raises(MsPASSError, match="valid (data|noise) window"):
+                engine.process()
+
+            engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
+            assert engine.load(valid, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+            engine.process()
+            with pytest.raises(MsPASSError, match="external noise contains nonfinite"):
+                engine.loadnoise(external)
+            assert not dict(engine.QCMetrics())["decon_processed"]
+            with pytest.raises(MsPASSError, match="valid (data|noise) window"):
+                engine.process()
+
+
+
+def _assert_nonfinite_noise_spectra_are_rejected(
+    engine_class, pf_name, branch_name, tmp_path
+):
+    """The NS/GROUP_SPARSE PowerSpectrum ingress has the same finite contract."""
+    for bad_value in (np.nan, np.inf):
+        for mode in ("ns_gid", "group_sparse"):
+            engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
+            valid = _make_gid_test_data(noise_level=None)
+            assert engine.load(valid, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+            engine.process()
+            with pytest.raises(MsPASSError, match="PowerSpectrum contains nonfinite"):
+                engine.loadnoise(_make_external_noise_spectrum(bad_value))
+            assert not dict(engine.QCMetrics())["decon_processed"]
+            with pytest.raises(MsPASSError, match="valid (data|noise) window"):
+                engine.process()
 
 
 def _assert_valid_rf(rf):
@@ -1658,6 +1814,125 @@ def _pf_with_mode(tmp_path, pf_name, branch_name, mode):
     dst = tmp_path / pf_name
     dst.write_text(text)
     return pfread(str(dst))
+
+
+def _assert_generic_residual_rms_qc(
+    engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
+):
+    """Generic RMS QC is complete for every GID mode, including early returns."""
+    for mode in (
+        "ns_gid",
+        "group_sparse",
+        "water_level",
+        "least_square",
+        "multi_taper",
+        "cnr",
+    ):
+        engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
+        rf = wrapper(
+            _make_gid_test_data(noise_level=None),
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-25.0, -8.0),
+        )
+        assert rf.live
+        qc = rf[qc_key]
+        assert qc["deconvolution_type"] == mode
+        assert qc["residual_rms_fraction_valid"]
+        npts = qc["gid_analysis_samples"]
+        assert npts > 0
+        assert qc["residual_rms_initial"] == pytest.approx(
+            qc["residual_L2_initial"] / np.sqrt(npts)
+        )
+        assert qc["residual_rms_final"] == pytest.approx(
+            qc["residual_L2_final"] / np.sqrt(npts)
+        )
+        assert qc["residual_rms_final_fraction"] == pytest.approx(
+            qc["residual_L2_final"] / qc["residual_L2_initial"]
+        )
+        assert qc["residual_rms_reduction_fraction"] == pytest.approx(
+            1.0 - qc["residual_rms_final_fraction"]
+        )
+        assert qc["residual_energy_final_fraction"] == pytest.approx(
+            qc["residual_rms_final_fraction"] ** 2
+        )
+        assert qc["residual_energy_reduction_fraction"] == pytest.approx(
+            1.0 - qc["residual_energy_final_fraction"]
+        )
+        if mode != "ns_gid":
+            assert "ns_gid_stop_reason" not in qc
+            assert "ns_gid_residual_rms_final_fraction" not in qc
+
+
+def _assert_unprocessed_residual_rms_fraction_is_undefined(engine_class, pf):
+    """Zero initial residual before processing is not reported as perfect."""
+    qc = dict(engine_class(pf).QCMetrics())
+    assert not qc["residual_rms_fraction_valid"]
+    assert np.isnan(qc["residual_rms_final_fraction"])
+    assert np.isnan(qc["residual_rms_reduction_fraction"])
+    assert np.isnan(qc["residual_energy_final_fraction"])
+    assert np.isnan(qc["residual_energy_reduction_fraction"])
+
+
+def _assert_candidate_significance_filter_contract(
+    engine_class, wrapper, pf_name, qc_key, tmp_path
+):
+    """A candidate stop is legal only when no valid raw peak exceeds threshold."""
+    engine = engine_class(_shipped_default_long_window_gid_pf(tmp_path, pf_name))
+    rf = wrapper(
+        _make_long_window_gid_data(),
+        engine,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    assert rf.live
+    qc = rf[qc_key]
+    assert qc["ns_gid_last_selected_candidate_weighted_amplitude"] == pytest.approx(
+        qc["ns_gid_last_candidate_amplitude"]
+        * qc["ns_gid_last_selected_candidate_lag_weight"]
+    )
+    assert qc["ns_gid_max_raw_candidate_significance"] == pytest.approx(
+        qc["ns_gid_max_raw_candidate_amplitude"] / qc["ns_gid_peak_threshold"]
+    )
+    assert qc["ns_gid_last_scan_raw_significant_candidate_remaining"] == (
+        qc["ns_gid_max_raw_candidate_significance"] >= 1.0
+    )
+    assert qc["ns_gid_final_scan_raw_significant_candidate_remaining"] == (
+        qc["ns_gid_final_scan_max_raw_candidate_significance"] >= 1.0
+    )
+    if qc["ns_gid_stop_reason"] == "candidate_not_significant":
+        assert not qc["ns_gid_final_scan_raw_significant_candidate_remaining"]
+        assert qc["ns_gid_final_scan_max_raw_candidate_significance"] < 1.0
+    if qc["ns_gid_stop_reason"] == "post_refit_significant_candidate_remaining":
+        assert qc["ns_gid_final_scan_raw_significant_candidate_remaining"]
+        assert not qc["ns_gid_converged"]
+
+
+def test_TimeDomainGIDDecon_generic_residual_rms_qc_non_ns(tmp_path):
+    _assert_generic_residual_rms_qc(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_unprocessed_residual_fraction_is_undefined(tmp_path):
+    _assert_unprocessed_residual_rms_fraction_is_undefined(
+        TimeDomainGIDDecon, pfread("./data/pf/TimeDomainGIDDecon.pf")
+    )
+
+
+def test_TimeDomainGIDDecon_candidate_significance_filter_contract(tmp_path):
+    _assert_candidate_significance_filter_contract(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
 
 
 def _pf_with_short_decon_window(
@@ -2241,6 +2516,16 @@ def test_TimeDomainGIDDecon_ridge_refit_reports_final_residual_state(tmp_path):
     )
 
 
+def test_TimeDomainGIDDecon_final_refit_reopens_candidate_significance(tmp_path):
+    _assert_final_refit_reopens_candidate_significance(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
 def test_TimeDomainGIDDecon_shipped_defaults_recover_long_window_phases(tmp_path):
     _assert_shipped_default_long_window_result(
         TimeDomainGIDDecon,
@@ -2306,16 +2591,36 @@ def test_TimeDomainGIDDecon_direct_load_guards_and_auto_source():
     )
 
 
-def test_TimeDomainGIDDecon_zero_residual_has_no_candidate(tmp_path):
-    _assert_zero_residual_no_candidate(
+def test_TimeDomainGIDDecon_zero_residual_is_rejected(tmp_path):
+    _assert_zero_residual_is_rejected(
         TimeDomainGIDDecon,
         "TimeDomainGIDDecon.pf",
         "time_domain_gid_deconvolution",
         tmp_path,
-        (
-            ("ns_gid", "no_acceptable_candidate", False),
-            ("water_level", "no_acceptable_candidate", True),
-        ),
+    )
+
+
+def test_TimeDomainGIDDecon_nonfinite_analysis_residual_is_rejected(tmp_path):
+    _assert_nonfinite_analysis_residual_is_rejected(
+        TimeDomainGIDDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_nonfinite_noise_inputs_are_rejected(tmp_path):
+    _assert_nonfinite_noise_inputs_are_rejected(
+        TimeDomainGIDDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        tmp_path,
+    )
+    _assert_nonfinite_noise_spectra_are_rejected(
+        TimeDomainGIDDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        tmp_path,
     )
 
 
@@ -3327,7 +3632,7 @@ def test_TimeDomainGIDDecon_group_sparse_external_noise_sets_lambda(tmp_path):
         )
 
 
-def test_TimeDomainGIDDecon_failed_external_noise_replacement_preserves_state(
+def test_TimeDomainGIDDecon_failed_external_noise_replacement_invalidates_state(
     tmp_path,
 ):
     data = _make_single_spike_convolution_data()
@@ -3350,6 +3655,11 @@ def test_TimeDomainGIDDecon_failed_external_noise_replacement_preserves_state(
     with pytest.raises(MsPASSError, match="target_sample_interval"):
         engine.loadnoise(bad_noise)
 
+    assert not dict(engine.QCMetrics())["decon_processed"]
+    assert engine.load(data, dwin) == 0
+    with pytest.raises(MsPASSError, match="valid noise window"):
+        engine.process()
+    engine.loadnoise(noise)
     assert engine.load(data, dwin) == 0
     engine.process()
     recovered_qc = dict(engine.QCMetrics())

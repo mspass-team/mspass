@@ -275,11 +275,19 @@ void ValidatePowerSpectrumCoversDC(const PowerSpectrum &spectrum,
                           ": noise PowerSpectrum is too short; at least two "
                           "frequency bins are required",
                       ErrorSeverity::Invalid);
-  if (spectrum.df() <= 0.0)
+  if (!isfinite(spectrum.f0()) || !isfinite(spectrum.df()) ||
+      spectrum.df() <= 0.0)
     throw MsPASSError(caller +
-                          ": noise PowerSpectrum has nonpositive frequency "
-                          "spacing",
+                          ": noise PowerSpectrum has nonpositive or nonfinite "
+                          "frequency spacing",
                       ErrorSeverity::Invalid);
+  for (const auto value : spectrum.spectrum) {
+    if (!isfinite(value))
+      throw MsPASSError(caller +
+                            ": noise PowerSpectrum contains nonfinite power "
+                            "samples",
+                        ErrorSeverity::Invalid);
+  }
   const double fmax =
       spectrum.f0() + spectrum.df() * static_cast<double>(spectrum.nf() - 1);
   if (spectrum.f0() > 0.0 || fmax <= 0.0)
