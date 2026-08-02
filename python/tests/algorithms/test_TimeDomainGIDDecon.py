@@ -1652,14 +1652,76 @@ def _assert_terminal_refit_final_noise_floor_canonicalization(
     assert qc["ns_gid_converged"] is True
 
 
+def _assert_final_refit_audit_does_not_bypass_first_floor(
+    engine_class, wrapper, pf_name, qc_key, tmp_path
+):
+    """Final audit cannot bypass its first decreasing sub-floor candidate.
+
+    A terminal ridge refit exposes an ordered first candidate whose trial is
+    positive but below the fractional floor.  A later candidate is above the
+    floor.  The audit must record the latter while retaining the first
+    candidate as the terminal decision, rather than resuming another epoch.
+    """
+    _long_window_gid_pf(tmp_path, pf_name, residual_noise_ratio_floor=0.0)
+    path = tmp_path / pf_name
+    text = path.read_text()
+    text = text.replace("ns_gid_ridge_beta 1.0e-10", "ns_gid_ridge_beta 1")
+    text = text.replace("ns_gid_refit_interval 5", "ns_gid_refit_interval 1000")
+    text = text.replace(
+        "residual_fractional_improvement_floor 0.0001",
+        "residual_fractional_improvement_floor 0.003",
+    )
+    text = text.replace(
+        "ns_gid_peak_probability_threshold 0.80",
+        "ns_gid_peak_probability_threshold 0.999",
+    )
+    path.write_text(text)
+    engine = engine_class(pfread(str(path)))
+    rf = wrapper(
+        _make_long_window_gid_data(),
+        engine,
+        signal_window=TimeWindow(-10.0, 160.0),
+        noise_window=TimeWindow(-200.0, -10.0),
+    )
+    qc = rf[qc_key]
+    assert qc["ns_gid_final_refit_applied"]
+    assert qc["gid_maximum_iterations"] == 30
+    assert 0 < qc["ns_gid_iterations"] < qc["gid_maximum_iterations"]
+    assert qc["ns_gid_final_scan_decision"] == "fractional_improvement_floor"
+    decision_lag = qc["ns_gid_final_scan_decision_candidate_lag_samples"]
+    assert decision_lag >= 0
+    assert decision_lag == qc["ns_gid_final_scan_max_raw_candidate_lag_samples"]
+    assert qc["ns_gid_final_scan_decision_trial_fractional_improvement"] > 0.0
+    assert qc["ns_gid_final_scan_decision_trial_fractional_improvement"] <= 0.003
+    # The ordered score is raw amplitude times a lag weight in [0, 1].  This
+    # fixture makes the raw maximum carry the maximum weight, proving that the
+    # recorded decision is the ordered first decreasing candidate.
+    lag_weights = np.asarray(engine.lag_weight_vector())
+    assert np.all((lag_weights >= 0.0) & (lag_weights <= 1.0))
+    assert lag_weights[decision_lag] == pytest.approx(lag_weights.max())
+    assert lag_weights[decision_lag] == pytest.approx(1.0)
+    assert qc["ns_gid_final_scan_significant_candidate_count"] > 1
+    # The audit scans beyond the terminal decision: the later best trial
+    # clears the floor, is counted, but must not make this epoch resume.
+    assert qc["ns_gid_final_scan_global_acceptable_candidate_count"] > 0
+    assert qc["ns_gid_final_scan_acceptable_candidate_remaining"]
+    assert qc["ns_gid_final_scan_best_trial_lag_samples"] != decision_lag
+    assert qc["ns_gid_final_scan_best_trial_residual_l2"] < qc[
+        "ns_gid_final_scan_decision_trial_residual_l2"
+    ]
+    assert qc["ns_gid_final_scan_best_trial_fractional_improvement"] > 0.003
+    assert qc["ns_gid_stop_reason"] == "fractional_improvement_floor"
+    assert qc["gid_stop_reason"] == qc["ns_gid_stop_reason"]
+
+
 def _assert_final_refit_reopens_candidate_significance(
     engine_class, wrapper, pf_name, qc_key, tmp_path
 ):
-    """A terminal refit must resume one globally bounded greedy epoch.
+    """A terminal refit resumes a globally bounded NS-GID epoch.
 
-    This fixture makes the first terminal ridge refit expose a strict,
-    off-support trial.  It must be accepted in a resumed epoch; the configured
-    30-iteration limit is global, not a fresh allowance after the resume.
+    This natural long-window fixture has a terminal refit that exposes a
+    strict off-support candidate.  It must be accepted in a resumed epoch;
+    the 30-iteration limit remains global rather than restarting per epoch.
     """
     _long_window_gid_pf(tmp_path, pf_name, residual_noise_ratio_floor=0.0)
     path = tmp_path / pf_name
@@ -1685,15 +1747,10 @@ def _assert_final_refit_reopens_candidate_significance(
     assert qc["ns_gid_final_refit_applied"]
     assert qc["ns_gid_refit_resume_count"] > 0
     assert qc["ns_gid_refit_epochs"] >= qc["ns_gid_refit_resume_count"] + 1
-    # The long-window helper sets maximum_iterations=30.  A resume must not
-    # reset that total budget; this case consumes it exactly once globally.
     assert qc["gid_maximum_iterations"] == 30
-    assert qc["ns_gid_iterations"] == 30
+    assert qc["ns_gid_iterations"] == qc["gid_maximum_iterations"]
     assert qc["ns_gid_iterations"] <= qc["gid_maximum_iterations"]
     assert qc["ns_gid_stop_reason"] == "max_iterations"
-    # Raw significance alone cannot invalidate a fractional gate, and the
-    # old synthetic terminal stop reason must never be published.
-    assert qc["ns_gid_stop_reason"] != "post_refit_significant_candidate_remaining"
     assert qc["gid_stop_reason"] == qc["ns_gid_stop_reason"]
     rows = sorted(
         int(key.split("_")[3])
@@ -1703,20 +1760,32 @@ def _assert_final_refit_reopens_candidate_significance(
     accepted_rows = [
         row for row in rows if qc[f"ns_gid_iteration_{row}_accepted"] == 1
     ]
+    assert len(accepted_rows) == qc["ns_gid_iterations"]
+    assert qc["gid_number_spikes"] == qc["ns_gid_iterations"]
+    assert len(accepted_rows) <= qc["gid_maximum_iterations"]
     refit_rows = [
         row
         for row in accepted_rows
         if qc[f"ns_gid_iteration_{row}_final_refit_applied"]
     ]
     assert refit_rows
-    # This is the key resume assertion: a new support element is accepted
-    # after the terminal refit event, not merely rediscovered in its audit.
-    assert any(row > refit_rows[0] for row in accepted_rows)
+    first_refit_row = refit_rows[0]
+    post_refit_rows = [row for row in accepted_rows if row > first_refit_row]
+    assert post_refit_rows
     accepted_lags = [
         qc[f"ns_gid_iteration_{row}_candidate_lag_samples"]
         for row in accepted_rows
     ]
     assert len(accepted_lags) == len(set(accepted_lags))
+    # A post-refit accepted lag was absent from the support before that refit.
+    first_post_refit_lag = qc[
+        f"ns_gid_iteration_{post_refit_rows[0]}_candidate_lag_samples"
+    ]
+    assert first_post_refit_lag not in {
+        qc[f"ns_gid_iteration_{row}_candidate_lag_samples"]
+        for row in accepted_rows
+        if row <= first_refit_row
+    }
 
 
 def _assert_ns_fractional_floor_uses_pre_refit_candidate(
@@ -1829,8 +1898,11 @@ def _assert_ns_default_ridge_candidate_trace(
     assert qc[prefix + "stop_condition"] == "fractional_improvement_floor_rejected"
     assert qc[prefix + "trial_evaluated"]
     # _long_window_gid_pf uses the shipped 1e-4 floor.  The fourth trial is
-    # significant, but its 3.18e-5-scale reduction must not be committed.
+    # significant, but its 3.18e-5-scale reduction must not be committed or
+    # bypassed by accepting any lower-ranked candidate in the same epoch.
     assert qc[prefix + "candidate_fractional_improvement"] < 1.0e-4
+    assert qc["gid_number_spikes"] == len(accepted)
+    assert f"ns_gid_iteration_{rejected + 1}_candidate_lag_samples" not in qc
 
 
 def _assert_late_component_energy_does_not_change_auto_wavelet(
@@ -2174,6 +2246,7 @@ def _pf_with_least_square_damping(
     residual_ratio_floor=None,
     fractional_improvement_floor=None,
     maximum_iterations=None,
+    lag_weight_linf_floor=None,
 ):
     """Select legacy least-square GID and set only its leaf damping."""
     src = Path("./data/pf") / pf_name
@@ -2207,6 +2280,12 @@ def _pf_with_least_square_damping(
     if maximum_iterations is not None:
         text = text.replace(
             "maximum_iterations 100", f"maximum_iterations {maximum_iterations}", 1
+        )
+    if lag_weight_linf_floor is not None:
+        text = text.replace(
+            "lag_weight_Linf_floor 0.01",
+            f"lag_weight_Linf_floor {lag_weight_linf_floor}",
+            1,
         )
     dst = tmp_path / pf_name
     dst.write_text(text)
@@ -2258,10 +2337,10 @@ def _assert_least_square_raw_gain_damping_invariance(
     assert 0.05 < sparse_peaks[1.0e7] / sparse_peaks[1.0] < 20.0
 
 
-def _assert_legacy_eq15_rejects_and_scans_next_candidates(
+def _assert_legacy_eq15_accepts_decreasing_before_global_stop(
     engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
 ):
-    """A failed Eq.(15) trial nulls that lag and scans the remaining peaks."""
+    """A sub-floor decreasing legacy trial is accepted before Eq.(15) stops."""
     engine = engine_class(
         _pf_with_least_square_damping(
             tmp_path,
@@ -2280,37 +2359,27 @@ def _assert_legacy_eq15_rejects_and_scans_next_candidates(
     assert rf.live
     qc = rf[qc_key]
     assert qc["gid_legacy_eq15_candidate_policy"] == (
-        "trial_fractional_l2_improvement_gate_v1"
+        "post_acceptance_state_improvement_v1;pretrial_scan_compat_v1"
     )
-    assert qc["gid_number_spikes"] == 1
-    assert qc["gid_legacy_eq15_candidates_rejected"] > 100
-    assert qc["gid_legacy_eq15_candidates_tested"] == (
-        qc["gid_number_spikes"] + qc["gid_legacy_eq15_candidates_rejected"]
+    assert qc["gid_number_spikes"] == 2
+    assert qc["gid_legacy_eq15_candidates_tested"] == 2
+    assert qc["gid_legacy_eq15_candidates_rejected"] == 0
+    assert qc["gid_legacy_eq15_pretrial_scan_candidates_tested"] == 2
+    assert qc["gid_legacy_eq15_post_acceptance_state_tests"] == 2
+    assert qc["gid_legacy_eq15_post_acceptance_floor_stops"] == 1
+    assert qc["gid_legacy_eq15_candidates_below_floor"] == 1
+    assert qc["gid_stop_reason"] == "fractional_improvement_floor"
+    assert qc["gid_legacy_eq15_stop_detail"] == (
+        "post_acceptance_fractional_improvement_floor"
     )
-    assert qc["gid_legacy_eq15_rejected_lag_seconds"]
-    assert qc["gid_stop_reason"] == "no_acceptable_candidate"
-    assert qc["gid_legacy_eq15_stop_detail"] == "all_candidates_below_eq15_floor"
-    assert qc["gid_legacy_eq15_candidates_below_floor"] > 100
-    assert qc["gid_legacy_eq15_candidates_non_decreasing"] >= 0
-    assert qc["gid_legacy_eq15_rejected_lag_samples_recorded"] <= 64
-    assert qc["gid_legacy_eq15_rejected_lag_samples_truncated"] > 0
 
 
-def _parse_csv_ints(value):
-    return [int(v) for v in value.split(",") if v]
-
-
-def _assert_legacy_eq15_rejects_first_candidate_then_accepts_next(
+def _assert_legacy_eq15_does_not_scan_past_global_floor(
     engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
 ):
-    """A spurious highest sample must not block a later valid lag that iteration."""
+    """A perturbation cannot turn Eq.(15) into a lower-candidate scan."""
     data = _make_single_spike_convolution_data()
-    # A one-sample transverse perturbation is the highest raw residual sample,
-    # but its projection onto the finite-width resolution kernel is weaker
-    # than the modeled direct arrival.  The latter must still be accepted in
-    # the same greedy iteration after Eq.(15) rejects the perturbation.
-    j = data.sample_number(10.0)
-    data.data[0, j] += 1.1
+    data.data[0, data.sample_number(10.0)] += 1.1
     engine = engine_class(
         _pf_with_least_square_damping(
             tmp_path,
@@ -2329,19 +2398,52 @@ def _assert_legacy_eq15_rejects_first_candidate_then_accepts_next(
     )
     assert rf.live
     qc = rf[qc_key]
-    rejected_by_iteration = _parse_csv_ints(
-        qc["gid_legacy_eq15_rejected_candidates_per_iteration"]
-    )
-    assert qc["gid_number_spikes"] >= 2
-    assert len(rejected_by_iteration) >= 2
-    assert rejected_by_iteration[1] >= 1
+    assert qc["gid_legacy_eq15_candidates_rejected"] == 0
     assert qc["gid_legacy_eq15_candidates_below_floor"] >= 1
+    assert qc["gid_stop_reason"] == "fractional_improvement_floor"
+    assert qc["gid_legacy_eq15_stop_detail"] == (
+        "post_acceptance_fractional_improvement_floor"
+    )
+
+
+def _assert_legacy_eq15_counter_skips_preceding_stop(
+    engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
+):
+    """Only a reached post-acceptance Eq.(15) comparison is counted."""
+    # Make the selected earlier convergence criterion unambiguously win on
+    # the first accepted spike, before Eq.(15) can be reached.
+    options = {"residual_ratio_floor": 1.0e6}
+    expected_stop = "residual_ratio_floor"
+    if "TimeDomain" in pf_name:
+        options = {"lag_weight_linf_floor": 1.0e6}
+        expected_stop = "lag_weight_linf_floor"
+    engine = engine_class(
+        _pf_with_least_square_damping(
+            tmp_path,
+            pf_name,
+            branch_name,
+            1.0,
+            **options,
+        )
+    )
+    rf = wrapper(
+        _make_single_spike_convolution_data(),
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+    )
+    assert rf.live
+    qc = rf[qc_key]
+    assert qc["gid_stop_reason"] == expected_stop
+    assert qc["gid_number_spikes"] > 0
+    assert qc["gid_legacy_eq15_post_acceptance_state_tests"] == 0
+    assert qc["gid_legacy_eq15_post_acceptance_floor_stops"] == 0
 
 
 def _assert_legacy_eq15_strict_equality_boundary(
     engine_class, wrapper, pf_name, branch_name, qc_key, tmp_path
 ):
-    """Eq.(15) is strict: a trial equal to the floor is rejected."""
+    """Eq.(15) stops after accepting a trial equal to the state floor."""
     data = _make_single_spike_convolution_data()
     baseline_engine = engine_class(
         _pf_with_least_square_damping(
@@ -2382,10 +2484,21 @@ def _assert_legacy_eq15_strict_equality_boundary(
         noise_window=TimeWindow(-35.0, -8.0),
     )
     equality_qc = equality[qc_key]
-    assert equality_qc["gid_number_spikes"] == 0
+    assert equality_qc["gid_legacy_eq15_candidate_policy"] == (
+        "post_acceptance_state_improvement_v1;pretrial_scan_compat_v1"
+    )
+    assert equality_qc["gid_number_spikes"] == 1
+    if "TimeDomain" in pf_name:
+        assert equality_qc["gid_legacy_eq15_candidates_below_floor"] == 0
+        assert equality_qc["gid_stop_reason"] == "max_iterations"
+        assert equality_qc["gid_legacy_eq15_post_acceptance_floor_stops"] == 0
+        return
     assert equality_qc["gid_legacy_eq15_candidates_below_floor"] >= 1
-    assert equality_qc["gid_stop_reason"] == "no_acceptable_candidate"
-    assert equality_qc["gid_legacy_eq15_stop_detail"] == "all_candidates_below_eq15_floor"
+    assert equality_qc["gid_legacy_eq15_candidates_rejected"] == 0
+    assert equality_qc["gid_stop_reason"] == "fractional_improvement_floor"
+    assert equality_qc["gid_legacy_eq15_stop_detail"] == (
+        "post_acceptance_fractional_improvement_floor"
+    )
 
 
 def _assert_generic_residual_rms_qc(
@@ -2545,10 +2658,10 @@ def test_TimeDomainGIDDecon_least_square_raw_gain_damping_invariance(tmp_path):
     )
 
 
-def test_TimeDomainGIDDecon_legacy_eq15_rejects_and_scans_next_candidates(
+def test_TimeDomainGIDDecon_legacy_eq15_accepts_decreasing_before_global_stop(
     tmp_path,
 ):
-    _assert_legacy_eq15_rejects_and_scans_next_candidates(
+    _assert_legacy_eq15_accepts_decreasing_before_global_stop(
         TimeDomainGIDDecon,
         TimeDomainGIDRFDecon,
         "TimeDomainGIDDecon.pf",
@@ -2558,10 +2671,10 @@ def test_TimeDomainGIDDecon_legacy_eq15_rejects_and_scans_next_candidates(
     )
 
 
-def test_TimeDomainGIDDecon_legacy_eq15_rejects_first_then_accepts_same_iteration(
+def test_TimeDomainGIDDecon_legacy_eq15_does_not_scan_past_global_floor(
     tmp_path,
 ):
-    _assert_legacy_eq15_rejects_first_candidate_then_accepts_next(
+    _assert_legacy_eq15_does_not_scan_past_global_floor(
         TimeDomainGIDDecon,
         TimeDomainGIDRFDecon,
         "TimeDomainGIDDecon.pf",
@@ -2571,7 +2684,18 @@ def test_TimeDomainGIDDecon_legacy_eq15_rejects_first_then_accepts_same_iteratio
     )
 
 
-def test_TimeDomainGIDDecon_legacy_eq15_strict_equality_boundary(tmp_path):
+def test_TimeDomainGIDDecon_legacy_eq15_counter_skips_lag_weight_stop(tmp_path):
+    _assert_legacy_eq15_counter_skips_preceding_stop(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_legacy_eq15_stops_after_accepted_boundary(tmp_path):
     _assert_legacy_eq15_strict_equality_boundary(
         TimeDomainGIDDecon,
         TimeDomainGIDRFDecon,
@@ -3197,6 +3321,16 @@ def test_TimeDomainGIDDecon_internal_and_external_wavelets_are_equivalent():
 
 def test_TimeDomainGIDDecon_ridge_refit_reports_final_residual_state(tmp_path):
     _assert_ridge_refit_reports_final_residual_state(
+        TimeDomainGIDDecon,
+        TimeDomainGIDRFDecon,
+        "TimeDomainGIDDecon.pf",
+        "TimeDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_TimeDomainGIDDecon_final_refit_audit_does_not_bypass_first_floor(tmp_path):
+    _assert_final_refit_audit_does_not_bypass_first_floor(
         TimeDomainGIDDecon,
         TimeDomainGIDRFDecon,
         "TimeDomainGIDDecon.pf",

@@ -497,11 +497,15 @@ candidate's predicted contribution from the data-domain residual and keeps the
 spike only if the residual decreases.
 
 For legacy greedy modes, ``residual_fractional_improvement_floor`` implements
-the Wang & Pavlis (2016) Eq. (15) candidate test: a trial whose fractional L2
-improvement does not exceed the floor is rejected at that lag and the engine
-continues searching the remaining candidate lags in the same iteration.
-``ns_gid`` retains its separate noise-significance and residual-noise stopping
-rules.
+the Wang & Pavlis (2016) Eq. (15) post-acceptance state test.  The
+highest-ranked candidate is accepted whenever it decreases the residual; the
+updated residual state then stops the iteration when its fractional L2
+improvement reaches the configured floor.  It is not a candidate-level
+rejection or a lower-ranked-candidate scan.  ``ns_gid`` instead applies its
+noise-significance and fractional-improvement gate before committing the
+highest-ranked candidate.  A residual-decreasing NS-GID candidate that is at
+or below that floor terminates the epoch without accepting a lower-ranked
+candidate.
 
 The inverse operator is therefore used to choose candidate spike locations and
 amplitudes.  It is not the final receiver-function representation.  The
@@ -604,14 +608,39 @@ domain; it is not a raw-input-amplitude metric.  GID also records
 ``gid_inverse_domain_scaling_policy``.  Legacy Eq. (15) audits are available as
 ``gid_legacy_eq15_candidates_tested``,
 ``gid_legacy_eq15_candidates_rejected``, and
-``gid_legacy_eq15_rejected_lag_seconds``.  Rejected lag samples are bounded to
-64 values; ``gid_legacy_eq15_rejected_lag_samples_truncated`` preserves the
-total audit count without allowing record-sized metadata.  The per-iteration
-counts and the below-floor/non-decreasing counters distinguish Eq. (15)
-rejections from candidates that cannot reduce the residual at all.  The
-public ``gid_stop_reason`` remains ``no_acceptable_candidate`` for
-compatibility; ``gid_legacy_eq15_stop_detail`` supplies either
-``all_candidates_below_eq15_floor`` or ``no_decreasing_candidate``.
+``gid_legacy_eq15_rejected_lag_seconds``.  These legacy names are compatibility
+pre-trial scan counters, not Eq. (15) state-test counts; the identical,
+explicit ``gid_legacy_eq15_pretrial_scan_*`` fields make that scope clear.
+Use ``gid_legacy_eq15_post_acceptance_state_tests`` and
+``gid_legacy_eq15_post_acceptance_floor_stops`` for post-acceptance Eq. (15)
+QC.  Legacy leaf modes preserve their
+historical greedy rule: the highest-ranked candidate is accepted whenever it
+reduces the residual, then Eq. (15) tests the resulting state improvement.
+It is not a candidate-level gate and the engine never scans lower-ranked
+candidates to bypass a sub-floor best candidate.  The legacy audit fields are
+therefore diagnostic only; a post-acceptance floor stop is recorded as
+``gid_stop_reason="fractional_improvement_floor"`` and
+``gid_legacy_eq15_stop_detail="post_acceptance_fractional_improvement_floor"``.
+For ``ns_gid`` the same fractional floor is evaluated before committing its
+highest-ranked noise-significant candidate; a decreasing but sub-floor trial
+is recorded as ``fractional_improvement_floor_rejected`` and terminates that
+epoch without accepting a lower-ranked candidate.
+
+After a terminal NS-GID refit, ``ns_gid_final_scan_best_trial_*`` reports the
+best trial across the complete read-only candidate audit, while
+``ns_gid_final_scan_acceptable_candidate_remaining`` and
+``ns_gid_final_scan_global_acceptable_candidate_count`` report whether any
+audited candidate clears the floor.  These are deliberately distinct from the
+greedy decision: ``ns_gid_final_scan_decision_candidate_*`` and
+``ns_gid_final_scan_decision`` record the first decreasing ordered candidate,
+which alone controls resume versus the fractional-floor stop.  This prevents a
+later candidate from overriding a sub-floor greedy decision while retaining
+complete diagnostic visibility.
+
+For compatibility, the frequency-domain legacy Eq. (15) floor stops at
+``improvement <= floor``; the time-domain legacy implementation retains its
+historical strict ``improvement < floor`` comparison.  New configurations
+should not depend on an exact floating-point equality at this boundary.
 
 Greedy lag-weight penalty runs also record ``gid_penalty_function``,
 ``gid_penalty_scale_factor``, ``gid_penalty_width``,

@@ -408,6 +408,11 @@ void FrequencyDomainGIDDecon::invalidate_processing_state() {
   ns_final_scan_best_trial_lag = -1;
   ns_final_scan_best_trial_residual_l2 = 0.0;
   ns_final_scan_best_trial_fractional_improvement = 0.0;
+  ns_final_scan_decision_candidate_lag = -1;
+  ns_final_scan_global_acceptable_candidate_count = 0;
+  ns_final_scan_decision_trial_residual_l2 = 0.0;
+  ns_final_scan_decision_trial_fractional_improvement = 0.0;
+  ns_final_scan_decision = "not_evaluated";
   ns_final_scan_acceptable_candidate_remaining = false;
   ns_noise_component_rms.clear();
   ns_candidate_lag_history.clear();
@@ -429,6 +434,8 @@ void FrequencyDomainGIDDecon::invalidate_processing_state() {
   ns_candidate_stop_history.clear();
   legacy_eq15_candidates_tested = 0;
   legacy_eq15_candidates_rejected = 0;
+  legacy_eq15_post_acceptance_state_tests = 0;
+  legacy_eq15_post_acceptance_floor_stops = 0;
   legacy_eq15_candidates_below_floor = 0;
   legacy_eq15_candidates_non_decreasing = 0;
   legacy_eq15_candidates_nonfinite = 0;
@@ -1539,11 +1546,13 @@ void FrequencyDomainGIDDecon::process() {
         ThreeCSpike spk(r.u, imax);
         this->rescale_spike(spk);
         const double resid_l2_before_candidate = resid_l2_prev;
-        /* Both greedy families must decide before committing a spike.  NS-GID
-         * adds a significance gate, while legacy GID supplies Eq.(15). */
-        const bool candidate_fractional_gate = decon_type != GROUP_SPARSE;
+        /* NS-GID needs a pre-commit fractional-improvement gate.  The
+         * original GID leaf modes intentionally retain their historical
+         * greedy policy: accept the best decreasing candidate, then apply
+         * Eq.(15) as the global post-acceptance stopping criterion. */
+        const bool candidate_fractional_gate = decon_type == NS_GID;
         const bool legacy_eq15_mode =
-            decon_type != NS_GID && candidate_fractional_gate;
+            decon_type != NS_GID && decon_type != GROUP_SPARSE;
         CoreSeismogram saved_r;
         double trial_l2(0.0);
         if (candidate_fractional_gate) {
@@ -1556,16 +1565,16 @@ void FrequencyDomainGIDDecon::process() {
         }
         const double trial_fractional_improvement =
             (resid_l2_prev - trial_l2) / resid_l2_initial;
-        bool legacy_eq15_significant = true;
         if (legacy_eq15_mode) {
-          /* Wang & Pavlis (2016), Eq. 15 is a candidate gate: a weak
-           * candidate is nulled and the same iteration tries the next peak.
-           * It is not a post-acceptance global stopping condition. */
+          /* Audit Eq.(15), but never let that audit alter the legacy support.
+           * Its stopping decision remains below, after accepting this
+           * decreasing candidate and updating the residual state. */
           ++legacy_eq15_candidates_tested;
           legacy_eq15_last_trial_fractional_improvement =
               trial_fractional_improvement;
-          legacy_eq15_significant =
-              trial_fractional_improvement > residual_improvement_floor;
+          if (isfinite(trial_l2) && trial_l2 < resid_l2_prev &&
+              trial_fractional_improvement <= residual_improvement_floor)
+            ++legacy_eq15_candidates_below_floor;
         }
         if (decon_type == NS_GID) {
           ns_candidate_trial_residual_l2_history.back() = trial_l2;
@@ -1576,8 +1585,7 @@ void FrequencyDomainGIDDecon::process() {
             decon_type != NS_GID ||
             (isfinite(trial_fractional_improvement) &&
              trial_fractional_improvement > residual_improvement_floor);
-        if (trial_l2 < resid_l2_prev && legacy_eq15_significant &&
-            ns_fractional_significant) {
+        if (trial_l2 < resid_l2_prev && ns_fractional_significant) {
           if (candidate_fractional_gate)
             this->update_residual_matrix(spk);
           spikes.push_back(spk);
@@ -1629,9 +1637,6 @@ void FrequencyDomainGIDDecon::process() {
             ++legacy_rejected_this_iteration;
             if (!isfinite(trial_l2)) {
               ++legacy_eq15_candidates_nonfinite;
-            } else if (trial_l2 < resid_l2_prev) {
-              legacy_found_decreasing_trial = true;
-              ++legacy_eq15_candidates_below_floor;
             } else {
               ++legacy_eq15_candidates_non_decreasing;
             }
@@ -1654,6 +1659,11 @@ void FrequencyDomainGIDDecon::process() {
             ns_candidate_post_refit_residual_l2_history.back() =
                 resid_l2_before_candidate;
             ns_candidate_state_fractional_improvement_history.back() = 0.0;
+            /* A significant best candidate that reduces the residual but
+             * fails the fractional floor is the stopping decision.  Do not
+             * discard it and let a lower-ranked candidate bypass the floor. */
+            if (ns_found_fractional_floor_rejection)
+              break;
           }
           amps[imax] = 0.0;
           amax = max_element(amps.begin(), amps.end());
@@ -1683,12 +1693,9 @@ void FrequencyDomainGIDDecon::process() {
           gid_stop_reason = ns_stop_reason;
           gid_converged = ns_converged;
         } else {
-          /* Preserve the established public stop vocabulary.  The precise
-           * Eq.(15) terminal condition is published in a companion detail
-           * field for new audit consumers. */
           gid_stop_reason = "no_acceptable_candidate";
           legacy_eq15_stop_detail = legacy_found_decreasing_trial
-                                        ? "all_candidates_below_eq15_floor"
+                                        ? "decreasing_candidate_rejected"
                                         : "no_decreasing_candidate";
           gid_converged = true;
         }
@@ -1720,10 +1727,26 @@ void FrequencyDomainGIDDecon::process() {
         }
         break;
       }
-      /* Legacy GID applies Eq. (15) while scanning trial candidates above.
-       * Keep NS-GID's established accepted-spike convergence check, but do
-       * not reinterpret the legacy candidate gate as a global post-accept
-       * stopping test. */
+      /* Eq.(15) is a post-acceptance state criterion for the historical
+       * greedy leaf modes.  NS-GID uses its accepted candidate trial metric. */
+      const double improvement = (decon_type == NS_GID)
+                                     ? ns_fractional_improvement_final
+                                     : state_improvement;
+      if (decon_type != NS_GID && decon_type != GROUP_SPARSE)
+        ++legacy_eq15_post_acceptance_state_tests;
+      if (improvement <= residual_improvement_floor) {
+        gid_stop_reason = "fractional_improvement_floor";
+        gid_converged = true;
+        if (decon_type == NS_GID) {
+          ns_stop_reason = "fractional_improvement_floor";
+          ns_converged = true;
+        } else {
+          ++legacy_eq15_post_acceptance_floor_stops;
+          legacy_eq15_stop_detail =
+              "post_acceptance_fractional_improvement_floor";
+        }
+        break;
+      }
     }
     if (decon_type == NS_GID && ns_stop_reason == "running") {
       if (iter_count >= iter_max) {
@@ -1781,6 +1804,11 @@ void FrequencyDomainGIDDecon::process() {
       ns_final_scan_best_trial_lag = -1;
       ns_final_scan_best_trial_residual_l2 = 0.0;
       ns_final_scan_best_trial_fractional_improvement = 0.0;
+      ns_final_scan_decision_candidate_lag = -1;
+      ns_final_scan_global_acceptable_candidate_count = 0;
+      ns_final_scan_decision_trial_residual_l2 = 0.0;
+      ns_final_scan_decision_trial_fractional_improvement = 0.0;
+      ns_final_scan_decision = "not_evaluated";
       ns_final_scan_acceptable_candidate_remaining = false;
       for (int j = 0; j < r.npts(); ++j) {
         if (lag_weights[j] <= 0.0)
@@ -1897,6 +1925,9 @@ void FrequencyDomainGIDDecon::process() {
       const vector<int> candidates = OrderedNoiseSignificantGIDCandidates(
           r.u, lag_weights, active_lags, ns_peak_threshold);
       for (const int lag : candidates) {
+        /* Match the main loop: nonfinite and nondecreasing trials can be
+         * skipped, but the first decreasing sub-floor candidate is the
+         * terminal decision and cannot be bypassed by a lower-ranked lag. */
         ThreeCSpike audit_spike(r.u, lag);
         this->rescale_spike(audit_spike);
         const double trial_l2 = trial_residual_l2(
@@ -1910,13 +1941,25 @@ void FrequencyDomainGIDDecon::process() {
           ns_final_scan_best_trial_residual_l2 = trial_l2;
           ns_final_scan_best_trial_fractional_improvement = improvement;
         }
-        if (isfinite(trial_l2) && trial_l2 < resid_l2_final)
-          ns_audit_has_decreasing_trial = true;
-        if (isfinite(trial_l2) && trial_l2 < resid_l2_final &&
-            isfinite(improvement) && improvement > residual_improvement_floor) {
-          ns_resume_after_refit = true;
+        if (!isfinite(trial_l2) || trial_l2 >= resid_l2_final)
+          continue;
+        if (isfinite(improvement) &&
+            improvement > residual_improvement_floor) {
+          ++ns_final_scan_global_acceptable_candidate_count;
           ns_final_scan_acceptable_candidate_remaining = true;
-          break;
+        }
+        if (!ns_audit_has_decreasing_trial) {
+          ns_audit_has_decreasing_trial = true;
+          ns_final_scan_decision_candidate_lag = lag;
+          ns_final_scan_decision_trial_residual_l2 = trial_l2;
+          ns_final_scan_decision_trial_fractional_improvement = improvement;
+          if (isfinite(improvement) &&
+              improvement > residual_improvement_floor) {
+            ns_final_scan_decision = "resume";
+            ns_resume_after_refit = true;
+          } else {
+            ns_final_scan_decision = "fractional_improvement_floor";
+          }
         }
       }
       if (!ns_resume_after_refit && candidates.empty()) {
@@ -2069,13 +2112,21 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
   md.put("gid_inverse_domain_scaling_modes",
          string("scalar_leaf_and_cnr_including_group_sparse"));
   md.put("gid_legacy_eq15_candidate_policy",
-         string("trial_fractional_l2_improvement_gate_v1"));
+         string("post_acceptance_state_improvement_v1;pretrial_scan_compat_v1"));
   md.put("gid_legacy_eq15_policy_valid", true);
   md.put("gid_legacy_eq15_policy_applied",
          decon_type != NS_GID && decon_type != GROUP_SPARSE && processed);
   md.put("gid_legacy_eq15_candidates_tested", legacy_eq15_candidates_tested);
+  md.put("gid_legacy_eq15_pretrial_scan_candidates_tested",
+         legacy_eq15_candidates_tested);
   md.put("gid_legacy_eq15_candidates_rejected",
          legacy_eq15_candidates_rejected);
+  md.put("gid_legacy_eq15_pretrial_scan_candidates_rejected",
+         legacy_eq15_candidates_rejected);
+  md.put("gid_legacy_eq15_post_acceptance_state_tests",
+         legacy_eq15_post_acceptance_state_tests);
+  md.put("gid_legacy_eq15_post_acceptance_floor_stops",
+         legacy_eq15_post_acceptance_floor_stops);
   md.put("gid_legacy_eq15_candidates_below_floor",
          legacy_eq15_candidates_below_floor);
   md.put("gid_legacy_eq15_candidates_non_decreasing",
@@ -2434,6 +2485,15 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
            ns_final_scan_best_trial_fractional_improvement);
     md.put("ns_gid_final_scan_acceptable_candidate_remaining",
            ns_final_scan_acceptable_candidate_remaining);
+    md.put("ns_gid_final_scan_global_acceptable_candidate_count",
+           ns_final_scan_global_acceptable_candidate_count);
+    md.put("ns_gid_final_scan_decision_candidate_lag_samples",
+           ns_final_scan_decision_candidate_lag);
+    md.put("ns_gid_final_scan_decision_trial_residual_l2",
+           ns_final_scan_decision_trial_residual_l2);
+    md.put("ns_gid_final_scan_decision_trial_fractional_improvement",
+           ns_final_scan_decision_trial_fractional_improvement);
+    md.put("ns_gid_final_scan_decision", ns_final_scan_decision);
     md.put("ns_gid_refit_epochs", ns_refit_epochs);
     md.put("ns_gid_refit_resume_count", ns_refit_resume_count);
     md.put("ns_gid_noise_samples_at_or_above_peak_threshold",
