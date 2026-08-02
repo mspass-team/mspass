@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <boost/any.hpp>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <sstream>
 #include <typeinfo>
@@ -403,11 +404,237 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
 void ValidateExternalTimeSeriesSampleInterval(const TimeSeries &d,
                                               const double target_dt,
                                               const string &caller) {
+  if (!std::isfinite(target_dt) || target_dt <= 0.0)
+    throw MsPASSError(caller + ": target_sample_interval must be finite and "
+                               "positive",
+                      ErrorSeverity::Invalid);
+  if (!std::isfinite(d.dt()) || d.dt() <= 0.0)
+    throw MsPASSError(caller + ": external TimeSeries dt must be finite and "
+                               "positive",
+                      ErrorSeverity::Invalid);
+  if (!std::isfinite(d.t0()) || !std::isfinite(d.endtime()))
+    throw MsPASSError(caller + ": external TimeSeries t0 and endtime must "
+                               "be finite",
+                      ErrorSeverity::Invalid);
   if (fabs(d.dt() - target_dt) >
       1.0e-6 * max(1.0, max(fabs(d.dt()), fabs(target_dt))))
     throw MsPASSError(caller + ": external TimeSeries dt does not match "
                                "target_sample_interval",
                       ErrorSeverity::Invalid);
+}
+
+void ValidateExternalTimeSeriesTimeReference(
+    const TimeSeries &d, const TimeReferenceType analysis_tref,
+    const string &caller) {
+  if (d.timetype() != analysis_tref)
+    throw MsPASSError(caller + ": external TimeSeries TimeReferenceType does "
+                               "not match the analysis data",
+                      ErrorSeverity::Invalid);
+}
+
+namespace {
+constexpr int64_t max_signed_int_fft_length = INT64_C(1) << 30;
+
+void validate_blas_three_component_count(const int64_t npts,
+                                         const string &caller) {
+  if (npts <= 0 || npts > std::numeric_limits<int>::max() / 3)
+    throw MsPASSError(caller + ": three-component sample count exceeds the "
+                               "32-bit BLAS limit",
+                      ErrorSeverity::Invalid);
+}
+
+void validate_common_grid_series(const BasicTimeSeries &d,
+                                 const string &label,
+                                 const string &caller) {
+  if (d.npts() == 0)
+    throw MsPASSError(caller + ": " + label + " has no samples",
+                      ErrorSeverity::Invalid);
+  if (!std::isfinite(d.dt()) || d.dt() <= 0.0)
+    throw MsPASSError(caller + ": " + label + " dt must be finite and "
+                               "positive",
+                      ErrorSeverity::Invalid);
+  if (!std::isfinite(d.t0()) || !std::isfinite(d.endtime()))
+    throw MsPASSError(caller + ": " + label + " t0 and endtime must be "
+                               "finite",
+                      ErrorSeverity::Invalid);
+  if (d.npts() > static_cast<size_t>(std::numeric_limits<int>::max()))
+    throw MsPASSError(caller + ": " + label + " sample count exceeds the "
+                               "supported signed-int grid limit",
+                      ErrorSeverity::Invalid);
+}
+
+int checked_grid_offset(const double time, const double origin,
+                        const double dt, const string &label,
+                        const string &caller) {
+  const long double q =
+      (static_cast<long double>(time) - static_cast<long double>(origin)) /
+      static_cast<long double>(dt);
+  const long double int_limit =
+      static_cast<long double>(std::numeric_limits<int>::max());
+  if (!std::isfinite(q) || q < -int_limit || q > int_limit)
+    throw MsPASSError(caller + ": " + label + " offset exceeds the "
+                               "supported signed-int grid limit",
+                      ErrorSeverity::Invalid);
+  const long long offset = std::llround(q);
+  /* The relative term accommodates absolute/UTC floating-point arithmetic,
+   * but alignment is a sample-grid contract: it must never grow into a
+   * material fraction of a sample for a large epoch offset. */
+  const long double tolerance = std::min(
+      1.0e-3L, 1.0e-6L * std::max(1.0L, std::fabs(q)));
+  if (std::fabs(q - static_cast<long double>(offset)) > tolerance)
+    throw MsPASSError(caller + ": " + label + " is not aligned to the "
+                               "analysis sample grid",
+                      ErrorSeverity::Invalid);
+  if (offset < 0 || offset > std::numeric_limits<int>::max())
+    throw MsPASSError(caller + ": " + label + " offset is outside the "
+                               "common grid",
+                      ErrorSeverity::Invalid);
+  return static_cast<int>(offset);
+}
+} // namespace
+
+int CheckedGIDLinearConvolutionNFFT(const int data_npts,
+                                    const int wavelet_npts,
+                                    const int noise_npts,
+                                    const bool include_noise,
+                                    const string &caller) {
+  if (data_npts <= 0 || wavelet_npts <= 0 ||
+      (include_noise && noise_npts <= 0))
+    throw MsPASSError(caller + ": linear-convolution input lengths must be "
+                               "positive",
+                      ErrorSeverity::Invalid);
+  const int64_t signal_linear = static_cast<int64_t>(data_npts) +
+                                static_cast<int64_t>(wavelet_npts) - 1;
+  int64_t required = signal_linear;
+  if (include_noise) {
+    const int64_t noise_linear = static_cast<int64_t>(noise_npts) +
+                                 static_cast<int64_t>(wavelet_npts) - 1;
+    required = max(required, noise_linear);
+  }
+  /* 2^30 is the largest power of two representable by a signed int. */
+  if (required <= 0 || required > max_signed_int_fft_length)
+    throw MsPASSError(caller + ": linear-convolution length cannot be "
+                               "represented by the signed-int FFT API",
+                      ErrorSeverity::Invalid);
+  int64_t nfft = 1;
+  while (nfft < required)
+    nfft <<= 1;
+  if (nfft > std::numeric_limits<int>::max())
+    throw MsPASSError(caller + ": next power-of-two FFT length exceeds the "
+                               "signed-int API",
+                      ErrorSeverity::Invalid);
+  return static_cast<int>(nfft);
+}
+
+int CheckedGIDWindowSampleCount(const TimeWindow &window, const double dt,
+                                const string &caller) {
+  if (!std::isfinite(window.start) || !std::isfinite(window.end) ||
+      window.end < window.start || !std::isfinite(dt) || dt <= 0.0)
+    throw MsPASSError(caller + ": window and sample interval must be finite "
+                               "with nonnegative duration and positive dt",
+                      ErrorSeverity::Invalid);
+  const long double samples =
+      (static_cast<long double>(window.end) -
+       static_cast<long double>(window.start)) /
+      static_cast<long double>(dt);
+  const long double max_samples =
+      static_cast<long double>(std::numeric_limits<int>::max()) - 1.0L;
+  if (!std::isfinite(samples) || samples < 0.0L || samples > max_samples)
+    throw MsPASSError(caller + ": window sample count exceeds the supported "
+                               "signed-int limit",
+                      ErrorSeverity::Invalid);
+  const long long rounded = std::llround(samples);
+  if (std::fabs(samples - static_cast<long double>(rounded)) > 1.0e-3L)
+    throw MsPASSError(caller + ": window duration is not aligned to the "
+                               "target sample interval",
+                      ErrorSeverity::Invalid);
+  const long long count = rounded + 1;
+  validate_blas_three_component_count(count, caller);
+  const int result = static_cast<int>(count);
+  (void)CheckedGIDLinearConvolutionNFFT(result, 1, 1, false, caller);
+  return result;
+}
+
+GIDCommonTimeGrid BuildGIDCommonTimeGrid(const BasicTimeSeries &analysis,
+                                         const BasicTimeSeries &wavelet,
+                                         const string &caller) {
+  validate_common_grid_series(analysis, "analysis data", caller);
+  validate_common_grid_series(wavelet, "wavelet", caller);
+  if (analysis.timetype() != wavelet.timetype())
+    throw MsPASSError(caller + ": wavelet TimeReferenceType does not match "
+                               "the analysis data",
+                      ErrorSeverity::Invalid);
+  const double dt_tolerance =
+      1.0e-6 * max(1.0, max(fabs(analysis.dt()), fabs(wavelet.dt())));
+  if (fabs(analysis.dt() - wavelet.dt()) > dt_tolerance)
+    throw MsPASSError(caller + ": wavelet dt does not match analysis data",
+                      ErrorSeverity::Invalid);
+
+  const double grid_t0 = min(analysis.t0(), wavelet.t0());
+  const double grid_end = max(analysis.endtime(), wavelet.endtime());
+  const long double span = static_cast<long double>(grid_end) -
+                           static_cast<long double>(grid_t0);
+  const long double samples = span / static_cast<long double>(analysis.dt());
+  const long double max_count =
+      static_cast<long double>(std::numeric_limits<int>::max()) - 1.0L;
+  if (!std::isfinite(samples) || samples < 0.0L || samples > max_count)
+    throw MsPASSError(caller + ": common analysis/wavelet grid exceeds the "
+                               "supported signed-int sample limit",
+                      ErrorSeverity::Invalid);
+  const long long rounded_samples = std::llround(samples);
+  /* See checked_grid_offset: a common grid cannot accept a fractional sample
+   * merely because its absolute UTC offset is large. */
+  const long double tolerance = std::min(
+      1.0e-3L, 1.0e-6L * std::max(1.0L, std::fabs(samples)));
+  if (std::fabs(samples - static_cast<long double>(rounded_samples)) >
+      tolerance)
+    throw MsPASSError(caller + ": analysis and wavelet endpoints are not "
+                               "aligned to a common sample grid",
+                      ErrorSeverity::Invalid);
+  const long long count = rounded_samples + 1;
+  if (count <= 0 || count > std::numeric_limits<int>::max())
+    throw MsPASSError(caller + ": common analysis/wavelet grid sample count "
+                               "is invalid or too large",
+                      ErrorSeverity::Invalid);
+  validate_blas_three_component_count(count, caller);
+  /* The leaf receives two N-sample vectors on this common grid.  Reject the
+   * request before any CoreSeismogram/vector allocation if its linear FFT
+   * would overflow the signed-int downstream interfaces. */
+  (void)CheckedGIDLinearConvolutionNFFT(
+      static_cast<int>(count), static_cast<int>(count), 1, false, caller);
+
+  GIDCommonTimeGrid result{grid_t0, static_cast<int>(count), 0, 0};
+  result.analysis_offset =
+      checked_grid_offset(analysis.t0(), grid_t0, analysis.dt(),
+                          "analysis data", caller);
+  result.wavelet_offset =
+      checked_grid_offset(wavelet.t0(), grid_t0, analysis.dt(), "wavelet",
+                          caller);
+  const auto validate_endpoint = [&](const BasicTimeSeries &series,
+                                     const int offset, const string &label) {
+    const long double endpoint_index =
+        (static_cast<long double>(series.endtime()) -
+         static_cast<long double>(grid_t0)) /
+        static_cast<long double>(analysis.dt());
+    const long double expected_index =
+        static_cast<long double>(offset) +
+        static_cast<long double>(series.npts()) - 1.0L;
+    if (!std::isfinite(endpoint_index) ||
+        std::fabs(endpoint_index - expected_index) > 1.0e-3L)
+      throw MsPASSError(caller + ": " + label + " endpoint is not aligned "
+                                 "to the common analysis sample grid",
+                        ErrorSeverity::Invalid);
+  };
+  validate_endpoint(analysis, result.analysis_offset, "analysis data");
+  validate_endpoint(wavelet, result.wavelet_offset, "wavelet");
+  if (result.analysis_offset + static_cast<long long>(analysis.npts()) >
+          result.npts ||
+      result.wavelet_offset + static_cast<long long>(wavelet.npts()) >
+          result.npts)
+    throw MsPASSError(caller + ": common grid does not contain both input "
+                               "series",
+                      ErrorSeverity::Invalid);
+  return result;
 }
 
 bool GIDLagWeightPenaltyUsesDynamicKernel(const string &penalty_type) {
@@ -508,13 +735,36 @@ int SelectNoiseSignificantGIDCandidateIndex(
   return selected;
 }
 
-string ResolveNSGIDFinalStopReason(
-    const string &provisional_stop_reason,
-    const bool final_scan_has_significant_candidate) {
-  if (provisional_stop_reason == "candidate_not_significant" &&
-      final_scan_has_significant_candidate)
-    return "post_refit_significant_candidate_remaining";
-  return provisional_stop_reason;
+vector<int> OrderedNoiseSignificantGIDCandidates(
+    const dmatrix &residual, const vector<double> &lag_weights,
+    const vector<int> &active_lags, const double threshold) {
+  const int n = residual.columns();
+  vector<char> excluded(n, false);
+  for (const int lag : active_lags)
+    if (lag >= 0 && lag < n)
+      excluded[lag] = true;
+  vector<pair<double, int>> scored;
+  scored.reserve(n);
+  for (int j = 0; j < n; ++j) {
+    if (excluded[j] || j >= static_cast<int>(lag_weights.size()) ||
+        lag_weights[j] <= 0.0)
+      continue;
+    double amplitude_squared(0.0);
+    for (int k = 0; k < min(3, static_cast<int>(residual.rows())); ++k)
+      amplitude_squared += residual(k, j) * residual(k, j);
+    const double amplitude = sqrt(max(0.0, amplitude_squared));
+    if (isfinite(amplitude) && amplitude >= threshold)
+      scored.emplace_back(amplitude * lag_weights[j], j);
+  }
+  stable_sort(scored.begin(), scored.end(),
+              [](const auto &lhs, const auto &rhs) {
+                return lhs.first > rhs.first;
+              });
+  vector<int> result;
+  result.reserve(scored.size());
+  for (const auto &candidate : scored)
+    result.push_back(candidate.second);
+  return result;
 }
 
 vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
@@ -896,13 +1146,78 @@ vector<double> SolveDenseSystem(const vector<vector<double>> &a,
   return result;
 }
 
+namespace {
+double symmetric_condition_number(vector<vector<double>> a) {
+  const int n = static_cast<int>(a.size());
+  if (n <= 1)
+    return 1.0;
+  /* DSYEV is O(n^3), unlike a maximum-off-diagonal Jacobi iteration whose
+   * repeated O(n^2) scans become prohibitive for long-window supports. */
+  vector<double> packed(n * n, 0.0), eigenvalues(n, 0.0);
+  for (int row = 0; row < n; ++row)
+    for (int col = 0; col < n; ++col)
+      packed[col * n + row] = a[row][col];
+  char jobz = 'N', uplo = 'L';
+  int n_lapack = n, lda = n, lwork = -1, info = 0;
+  double workspace_query(0.0);
+  dsyev(&jobz, &uplo, n_lapack, packed.data(), lda, eigenvalues.data(),
+        &workspace_query, lwork, info);
+  if (info != 0 || !isfinite(workspace_query) || workspace_query < 1.0)
+    return numeric_limits<double>::infinity();
+  lwork = max(3 * n - 1, static_cast<int>(ceil(workspace_query)));
+  vector<double> workspace(lwork, 0.0);
+  n_lapack = n;
+  info = 0;
+  dsyev(&jobz, &uplo, n_lapack, packed.data(), lda, eigenvalues.data(),
+        workspace.data(), lwork, info);
+  if (info != 0)
+    return numeric_limits<double>::infinity();
+  double largest(0.0), smallest(numeric_limits<double>::infinity());
+  for (const auto eigenvalue : eigenvalues) {
+    largest = max(largest, fabs(eigenvalue));
+    smallest = min(smallest, fabs(eigenvalue));
+  }
+  if (!(largest > 0.0) || !(smallest > largest * 1.0e-12))
+    return numeric_limits<double>::infinity();
+  return largest / smallest;
+}
+
+double spike_residual_l2(const list<ThreeCSpike> &spikes,
+                         const CoreSeismogram &target,
+                         const vector<double> &fir, const int fir_zero) {
+  vector<double> model(3 * target.npts(), 0.0);
+  for (const auto &spk : spikes) {
+    const int col0 = spk.col - fir_zero;
+    for (int p = 0; p < static_cast<int>(fir.size()); ++p) {
+      const int j = col0 + p;
+      if (j >= 0 && j < target.npts())
+        for (int k = 0; k < 3; ++k)
+          model[k * target.npts() + j] += spk.u[k] * fir[p];
+    }
+  }
+  long double sum(0.0);
+  for (int k = 0; k < 3; ++k)
+    for (int j = 0; j < target.npts(); ++j) {
+      const long double d = target.u(k, j) - model[k * target.npts() + j];
+      sum += d * d;
+    }
+  return isfinite(static_cast<double>(sum))
+             ? sqrt(static_cast<double>(sum))
+             : numeric_limits<double>::quiet_NaN();
+}
+} // namespace
+
 void RefitSpikeAmplitudes(list<ThreeCSpike> &spikes,
                           const CoreSeismogram &target,
                           const vector<double> &actual_o_fir,
-                          const int actual_o_0, const double ridge_beta) {
+                          const int actual_o_0, const double ridge_beta,
+                          SpikeRefitDiagnostics *diagnostics,
+                          const double condition_limit,
+                          const double condition_guard_relative_ridge) {
   const int nspikes = spikes.size();
   if (nspikes <= 0)
     return;
+  const list<ThreeCSpike> pre_debias(spikes);
   vector<ThreeCSpike *> spike_ptrs;
   spike_ptrs.reserve(nspikes);
   for (auto &spk : spikes)
@@ -917,10 +1232,21 @@ void RefitSpikeAmplitudes(list<ThreeCSpike> &spikes,
       gram[j][i] = gij;
     }
   }
+  /* Ordinary legacy/NS refits need only the ridge solve.  The eigensystem is
+   * O(n^3) and is required solely for diagnostics or an explicit condition
+   * guard request (group-sparse currently requests both). */
+  const bool need_condition = diagnostics != nullptr || isfinite(condition_limit);
+  const double condition = need_condition
+                               ? symmetric_condition_number(gram)
+                               : numeric_limits<double>::quiet_NaN();
   double maxdiag(0.0);
   for (int i = 0; i < nspikes; ++i)
     maxdiag = max(maxdiag, fabs(gram[i][i]));
-  double damping = maxdiag * ridge_beta;
+  double relative_ridge = ridge_beta;
+  const bool guarded = isfinite(condition_limit) && condition > condition_limit;
+  if (guarded)
+    relative_ridge = max(relative_ridge, condition_guard_relative_ridge);
+  double damping = maxdiag * relative_ridge;
   for (int i = 0; i < nspikes; ++i)
     gram[i][i] += damping;
   for (int component = 0; component < 3; ++component) {
@@ -936,6 +1262,35 @@ void RefitSpikeAmplitudes(list<ThreeCSpike> &spikes,
   }
   for (auto &spk : spikes)
     spk.amp = three_component_norm(spk.u[0], spk.u[1], spk.u[2]);
+  if (diagnostics != nullptr) {
+    diagnostics->gram_condition_number = condition;
+    diagnostics->relative_ridge_beta = relative_ridge;
+    diagnostics->condition_guard_applied = guarded;
+    diagnostics->residual_l2_pre =
+        spike_residual_l2(pre_debias, target, actual_o_fir, actual_o_0);
+    diagnostics->residual_l2_post =
+        spike_residual_l2(spikes, target, actual_o_fir, actual_o_0);
+    for (const auto &spk : pre_debias)
+      diagnostics->maximum_amplitude_pre =
+          max(diagnostics->maximum_amplitude_pre, spk.amp);
+    for (const auto &spk : spikes)
+      diagnostics->maximum_amplitude_post =
+          max(diagnostics->maximum_amplitude_post, spk.amp);
+    if (!isfinite(diagnostics->residual_l2_post) ||
+        diagnostics->residual_l2_post > diagnostics->residual_l2_pre *
+                                              (1.0 + 1.0e-10)) {
+      spikes = pre_debias;
+      diagnostics->fallback_to_pre_debias = true;
+      diagnostics->fallback_reason = !isfinite(diagnostics->residual_l2_post)
+                                         ? "nonfinite_refit"
+                                         : "residual_increase";
+      diagnostics->residual_l2_post = diagnostics->residual_l2_pre;
+      diagnostics->maximum_amplitude_post =
+          diagnostics->maximum_amplitude_pre;
+    } else {
+      diagnostics->fallback_reason = "none";
+    }
+  }
 }
 
 double VectorQuantile(vector<double> values, const double quantile) {
@@ -983,13 +1338,13 @@ GroupSparseDeconResult SolveGroupSparseDecon(
 
   vector<char> valid(npts, false);
   for (int j = 0; j < npts; ++j) {
+    /* A retained group must have the complete resolution response on both
+     * sides of its physical (zero-lag) center.  actual_o_0 need not be at an
+     * array endpoint: retaining it here preserves legal late arrivals while
+     * rejecting the tail-only, clipped columns that otherwise leak a large
+     * coefficient into the last samples. */
     const int col0 = j - actual_o_0;
-    /* Group-sparse coefficients use dense, normalized/refit design columns.
-     * A partial resolution kernel is poorly conditioned and its omitted tail
-     * is indistinguishable from unobserved data.  Restrict support to columns
-     * with the complete observed kernel rather than treating that tail as
-     * zeros or allowing a variable-norm boundary column. */
-    valid[j] = (col0 >= 0) && ((col0 + nf) <= npts);
+    valid[j] = (col0 >= 0) && (col0 + nf <= npts);
   }
 
   double sumabs(0.0);

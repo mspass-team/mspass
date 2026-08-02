@@ -12,6 +12,9 @@
 #ifndef dpotrs
 #define dpotrs FC_GLOBAL(dpotrs, DPOTRS)
 #endif
+#ifndef dsyev
+#define dsyev FC_GLOBAL(dsyev, DSYEV)
+#endif
 
 extern "C" {
 double ddot(const int& n,const double *x,const int& incx,
@@ -27,6 +30,7 @@ void dgetri(int&,double*,int&,int*,double*,int&,int&);
 void dgesv(int&,int&,double*,int&,int*,double*,int&,int&);
 void dpotrf(char*,int&,double*,int&,int&);
 void dpotrs(char*,int&,int&,double*,int&,double*,int&,int&);
+void dsyev(char*,char*,int&,double*,int&,double*,double*,int&,int&);
 double dlamch(const char *cmach);
 int dstebz(char *range, char *order, int *n, double 
 	*vl, double *vu, int *il, int *iu, double *abstol, 

@@ -17,8 +17,10 @@ from mspasspy.algorithms.window import WindowData
 from test_TimeDomainGIDDecon import (
     _assert_actual_and_output_shaping_are_distinct,
     _assert_external_wavelet_wrapper_error_contract,
+    _assert_external_timeseries_time_coordinate_guards,
     _assert_auto_wavelet_window_rejection,
     _assert_gid_constructor_metadata_compatibility,
+    _assert_gid_constructor_rejects_oversized_window_without_allocation,
     _assert_direct_gid_load_guards,
     _assert_zero_residual_is_rejected,
     _assert_nonfinite_analysis_residual_is_rejected,
@@ -30,6 +32,8 @@ from test_TimeDomainGIDDecon import (
     _assert_cnr_resizes_for_external_inputs,
     _assert_group_sparse_disabled_qc,
     _assert_group_sparse_qc,
+    _assert_group_sparse_explicit_lambda_normalized_domain,
+    _assert_group_sparse_empirical_threshold_can_be_disabled,
     _assert_single_spike_recovery,
     _assert_single_penalty_footprint,
     _assert_valid_rf,
@@ -45,6 +49,10 @@ from test_TimeDomainGIDDecon import (
     _assert_shipped_default_long_window_result,
     _assert_long_window_gid_result,
     _assert_generic_residual_rms_qc,
+    _assert_least_square_raw_gain_damping_invariance,
+    _assert_legacy_eq15_rejects_and_scans_next_candidates,
+    _assert_legacy_eq15_rejects_first_candidate_then_accepts_next,
+    _assert_legacy_eq15_strict_equality_boundary,
     _assert_unprocessed_residual_rms_fraction_is_undefined,
     _assert_candidate_significance_filter_contract,
     _assert_late_component_energy_does_not_change_auto_wavelet,
@@ -59,6 +67,7 @@ from test_TimeDomainGIDDecon import (
     _assert_mantle_profile_weak_and_noise_control,
     _assert_internal_external_wavelet_equivalence,
     _assert_ridge_refit_reports_final_residual_state,
+    _assert_terminal_refit_final_noise_floor_canonicalization,
     _assert_final_refit_reopens_candidate_significance,
     _assert_ns_fractional_floor_uses_pre_refit_candidate,
     _assert_ns_default_ridge_candidate_trace,
@@ -158,6 +167,7 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
         "no_valid_candidate",
         "residual_ratio_floor",
     }
+    assert qc["gid_stop_reason"] != "post_refit_significant_candidate_remaining"
     assert qc["gid_penalty_function"] == "adaptive_memory"
     assert qc["gid_penalty_scale_factor"] == pytest.approx(0.35)
     assert qc["gid_penalty_width"] == 5
@@ -367,6 +377,18 @@ def test_FrequencyDomainGIDDecon_ridge_refit_reports_final_residual_state(
     )
 
 
+def test_FrequencyDomainGIDDecon_terminal_refit_canonicalizes_final_noise_floor(
+    tmp_path,
+):
+    _assert_terminal_refit_final_noise_floor_canonicalization(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
 def test_FrequencyDomainGIDDecon_final_refit_reopens_candidate_significance(
     tmp_path,
 ):
@@ -389,6 +411,11 @@ def test_FrequencyDomainGIDDecon_shipped_defaults_recover_long_window_phases(
         "FrequencyDomainGIDDecon_properties",
         tmp_path,
         expected_spikes=3,
+        # The fourth, statistically significant trial has fractional
+        # improvement below the shipped floor.  Commit-before gating rejects
+        # it instead of briefly adding a false fourth spike.
+        # The final FD refit scan has no off-support raw-significant lag, so
+        # the final-state classification is candidate-not-significant.
         expected_stop="candidate_not_significant",
     )
 
@@ -432,6 +459,14 @@ def test_FrequencyDomainGIDDecon_constructor_metadata_compatibility(tmp_path):
     )
 
 
+def test_FrequencyDomainGIDDecon_constructor_rejects_oversized_window_without_allocation(
+    tmp_path,
+):
+    _assert_gid_constructor_rejects_oversized_window_without_allocation(
+        FrequencyDomainGIDDecon, "FrequencyDomainGIDDecon.pf", tmp_path
+    )
+
+
 def test_FrequencyDomainGIDRFDecon_rejects_missing_automatic_wavelet_window(tmp_path):
     _assert_auto_wavelet_window_rejection(
         FrequencyDomainGIDDecon,
@@ -457,7 +492,9 @@ def test_FrequencyDomainGIDDecon_two_sample_analysis_exhausts_ns_candidates(
         "FrequencyDomainGIDDecon.pf",
         "frequency_domain_gid_deconvolution",
         tmp_path,
-        (("ns_gid", "no_acceptable_candidate", False),),
+        # With a two-sample analysis window the only possible support is
+        # excluded after selection; no off-support candidate is significant.
+        (("ns_gid", "candidate_not_significant", True),),
     )
 
 
@@ -1032,13 +1069,20 @@ def test_FrequencyDomainGIDDecon_group_sparse_honors_external_noise_spectrum(tmp
     assert high_qc["group_sparse_inverse_external_wavelet_used"]
     assert low_qc["group_sparse_inverse_external_noise_spectrum_used"]
     assert high_qc["group_sparse_inverse_external_noise_spectrum_used"]
-    assert (
-        low_qc["group_sparse_noise_threshold"] > high_qc["group_sparse_noise_threshold"]
-    )
-    assert low_qc["group_sparse_lambda_used"] > high_qc["group_sparse_lambda_used"]
-    assert (
-        high_qc["group_sparse_inverse_noise_amplification"]
-        > low_qc["group_sparse_inverse_noise_amplification"]
+    for qc in (low_qc, high_qc):
+        assert qc["group_sparse_noise_threshold"] == pytest.approx(
+            qc["group_sparse_noise_threshold_normalized_inverse_domain"]
+        )
+        assert qc["group_sparse_noise_threshold"] == pytest.approx(
+            qc["group_sparse_noise_threshold_raw_inverse_domain"]
+            * qc["gid_inverse_domain_amplitude_scale"]
+        )
+        assert qc["group_sparse_lambda_used"] == pytest.approx(
+            qc["group_sparse_lambda_scale"] * qc["group_sparse_noise_threshold"]
+        )
+        assert qc["group_sparse_noise_threshold_raw_inverse_domain"] > 0.0
+    assert high_qc["group_sparse_inverse_noise_amplification"] != pytest.approx(
+        low_qc["group_sparse_inverse_noise_amplification"]
     )
 
 
@@ -1336,6 +1380,15 @@ def test_FrequencyDomainGIDDecon_rejects_external_timeseries_dt_mismatch(tmp_pat
         engine.loadwavelet(wavelet)
     with pytest.raises(MsPASSError, match="target_sample_interval"):
         engine.loadnoise(noise)
+
+
+def test_FrequencyDomainGIDDecon_rejects_invalid_external_time_coordinates(tmp_path):
+    _assert_external_timeseries_time_coordinate_guards(
+        FrequencyDomainGIDDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        tmp_path,
+    )
 
 
 @pytest.mark.parametrize(
@@ -2135,6 +2188,82 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_runtime_signal_window():
 
 def test_FrequencyDomainGIDDecon_generic_residual_rms_qc_non_ns(tmp_path):
     _assert_generic_residual_rms_qc(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_group_sparse_explicit_lambda_normalized_domain(
+    tmp_path,
+):
+    _assert_group_sparse_explicit_lambda_normalized_domain(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_group_sparse_empirical_threshold_can_be_disabled(
+    tmp_path,
+):
+    _assert_group_sparse_empirical_threshold_can_be_disabled(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_least_square_raw_gain_damping_invariance(
+    tmp_path,
+):
+    _assert_least_square_raw_gain_damping_invariance(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_legacy_eq15_rejects_and_scans_next_candidates(
+    tmp_path,
+):
+    _assert_legacy_eq15_rejects_and_scans_next_candidates(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_legacy_eq15_rejects_first_then_accepts_same_iteration(
+    tmp_path,
+):
+    _assert_legacy_eq15_rejects_first_candidate_then_accepts_next(
+        FrequencyDomainGIDDecon,
+        FrequencyDomainGIDRFDecon,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "FrequencyDomainGIDDecon_properties",
+        tmp_path,
+    )
+
+
+def test_FrequencyDomainGIDDecon_legacy_eq15_strict_equality_boundary(tmp_path):
+    _assert_legacy_eq15_strict_equality_boundary(
         FrequencyDomainGIDDecon,
         FrequencyDomainGIDRFDecon,
         "FrequencyDomainGIDDecon.pf",

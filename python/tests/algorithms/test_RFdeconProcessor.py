@@ -139,6 +139,27 @@ def _run_public_gid_engine(alg, **kwargs):
     return rf[_gid_qc_key_for_test(alg)]
 
 
+@pytest.mark.parametrize("alg", ("TimeDomainGID", "FrequencyDomainGID"))
+def test_gid_accepted_spike_lag_and_component_trace_on_known_synthetic(alg):
+    """The synthetic has an explicit three-component spike at t=0.  QC must
+    retain a parallel accepted-spike trace with the same physical lag axis."""
+    with _test_pfpath():
+        qc = dict(_run_public_gid_engine(alg))
+    lags = [float(value) for value in qc["gid_accepted_spike_lag_seconds"].split(",") if value]
+    components = [
+        {int(value) for value in token.split("+") if value}
+        for token in qc["gid_accepted_spike_components"].split(",")
+        if token
+    ]
+    assert lags
+    assert len(lags) == len(components)
+    assert all(component_set <= {0, 1, 2} and component_set for component_set in components)
+    assert any(
+        abs(lag) <= 2 * 0.05 and component_set & {0, 1} and 2 in component_set
+        for lag, component_set in zip(lags, components)
+    )
+
+
 def _gid_pf_with_mode(tmp_path, mode, pf_name="TimeDomainGIDDecon.pf"):
     with open(f"data/pf/{pf_name}", encoding="utf-8") as fp:
         text = fp.read()
