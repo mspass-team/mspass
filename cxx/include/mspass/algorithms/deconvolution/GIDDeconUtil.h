@@ -9,6 +9,7 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/dmatrix.h"
 #include <list>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -123,9 +124,49 @@ void ValidateGIDLeafOperatorMetadata(
     const mspass::utility::Metadata &md,
     const mspass::algorithms::TimeWindow &fftwin, const double target_dt,
     const std::string &caller, const bool allow_noise_window_keys = false);
-/*! Validate that an externally loaded TimeSeries has the target sample interval. */
+/*! Validate the intrinsic time coordinates of an externally loaded TimeSeries.
+ *
+ * In addition to matching the target sample interval, external inputs must
+ * have a finite, positive dt and finite endpoints.  The time-reference type
+ * is checked separately once the analysis record is known.
+ */
 void ValidateExternalTimeSeriesSampleInterval(
     const mspass::seismic::TimeSeries &d, const double target_dt,
+    const std::string &caller);
+/*! Validate that an external TimeSeries uses the same time reference as the
+ * analysis record. */
+void ValidateExternalTimeSeriesTimeReference(
+    const mspass::seismic::TimeSeries &d,
+    const mspass::seismic::TimeReferenceType analysis_tref,
+    const std::string &caller);
+/*! Checked common grid used to pass a timed source and analysis record to
+ * scalar leaf deconvolvers that accept only vectors. */
+struct GIDCommonTimeGrid {
+  double t0;
+  int npts;
+  int analysis_offset;
+  int wavelet_offset;
+};
+/*! Return a signed-int-representable power-of-two FFT length for the largest
+ * required linear convolution.  All additions are checked before conversion.
+ * The optional noise term is included by NS-GID/group-sparse callers. */
+int CheckedGIDLinearConvolutionNFFT(const int data_npts,
+                                    const int wavelet_npts,
+                                    const int noise_npts,
+                                    const bool include_noise,
+                                    const std::string &caller);
+/*! Compute a window's sample count before any FFT/shaping allocation.
+ * The calculation is finite, long-double checked, signed-int representable,
+ * safe for 3-component 32-bit BLAS calls, and has a representable FFT size. */
+int CheckedGIDWindowSampleCount(const mspass::algorithms::TimeWindow &window,
+                                const double dt,
+                                const std::string &caller);
+/*! Build a common physical sample grid without unsafe float-to-int casts or
+ * allocations.  Both records must be finite, positive-dt, grid-aligned, and
+ * use the same TimeReferenceType. */
+GIDCommonTimeGrid BuildGIDCommonTimeGrid(
+    const mspass::seismic::BasicTimeSeries &analysis,
+    const mspass::seismic::BasicTimeSeries &wavelet,
     const std::string &caller);
 /*! Clip a requested window to the live time span of a CoreTimeSeries.
  *
@@ -168,10 +209,14 @@ void ApplyGIDLagWeightPenalty(std::vector<double> &lag_weights,
 int SelectNoiseSignificantGIDCandidateIndex(
     const std::vector<double> &raw_amplitudes,
     const std::vector<double> &lag_weights, const double threshold);
-/*! Correct a provisional candidate-significance stop using the final-refit scan. */
-std::string ResolveNSGIDFinalStopReason(
-    const std::string &provisional_stop_reason,
-    const bool final_scan_has_significant_candidate);
+/*! Return NS-GID candidate lags in descending weighted-score order.
+ * Active support lags are excluded so a refit-resume epoch cannot insert a
+ * duplicate normal-equation column.  Only candidates above the raw-amplitude
+ * threshold are returned. */
+std::vector<int> OrderedNoiseSignificantGIDCandidates(
+    const mspass::utility::dmatrix &residual,
+    const std::vector<double> &lag_weights, const std::vector<int> &active_lags,
+    const double threshold);
 /*! Estimate the RMS column vector amplitude of a three-component seismogram. */
 double EstimateThreeCColumnAmplitudeRMS(
     const mspass::seismic::CoreSeismogram &d);
@@ -200,12 +245,34 @@ double FIRDataOverlap(const std::vector<double> &fir,
 std::vector<double> SolveDenseSystem(const std::vector<std::vector<double>> &a,
                                      const std::vector<double> &b,
                                      const std::string &caller);
-/*! Refit spike amplitudes by solving the dense least-squares normal equations. */
-void RefitSpikeAmplitudes(std::list<ThreeCSpike> &spikes,
-                          const mspass::seismic::CoreSeismogram &target,
-                          const std::vector<double> &actual_o_fir,
-                          const int actual_o_0,
-                          const double ridge_beta = 1.0e-10);
+/*! Diagnostics for an optional debiasing/refit of a sparse support. */
+struct SpikeRefitDiagnostics {
+  double gram_condition_number{0.0};
+  double relative_ridge_beta{0.0};
+  double residual_l2_pre{0.0};
+  double residual_l2_post{0.0};
+  double maximum_amplitude_pre{0.0};
+  double maximum_amplitude_post{0.0};
+  bool condition_guard_applied{false};
+  bool fallback_to_pre_debias{false};
+  std::string fallback_reason{"not_requested"};
+};
+/*! Refit spike amplitudes by solving dense least-squares normal equations.
+ *
+ * When diagnostics is supplied, a poorly conditioned support receives at
+ * least ``condition_guard_relative_ridge`` of scale-aware ridge damping.  A
+ * nonfinite or residual-increasing refit falls back to the pre-debias sparse
+ * solution, preserving the regularized estimate rather than emitting an
+ * unstable coefficient.
+ */
+void RefitSpikeAmplitudes(
+    std::list<ThreeCSpike> &spikes,
+    const mspass::seismic::CoreSeismogram &target,
+    const std::vector<double> &actual_o_fir, const int actual_o_0,
+    const double ridge_beta = 1.0e-10,
+    SpikeRefitDiagnostics *diagnostics = nullptr,
+    const double condition_limit = std::numeric_limits<double>::infinity(),
+    const double condition_guard_relative_ridge = 0.0);
 /*! Solve the group-sparse GID sparse-spike inverse problem.
  *
  * \return residual, selected spikes, convergence state, and QC diagnostics.

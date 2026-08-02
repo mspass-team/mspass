@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
+#include "mspass/seismic/BasicTimeSeries.h"
 
 using namespace std;
 using namespace mspass::algorithms::deconvolution;
@@ -55,12 +56,30 @@ int main() {
   assert(selected == 0);
   assert(raw_amplitudes[selected] >= threshold);
 
-  /* A final amplitude refit may invalidate a provisional candidate stop.
-   * Both TD and FD engines use this shared resolution policy. */
-  assert(ResolveNSGIDFinalStopReason("candidate_not_significant", true) ==
-         "post_refit_significant_candidate_remaining");
-  assert(ResolveNSGIDFinalStopReason("candidate_not_significant", false) ==
-         "candidate_not_significant");
+  /* These capacity checks use BasicTimeSeries metadata only; no enormous
+   * waveform vector is allocated.  They protect the downstream int-indexed
+   * FFT and 32-bit BLAS calls before a common-grid allocation is attempted. */
+  bool threw(false);
+  try {
+    (void)CheckedGIDLinearConvolutionNFFT(536870913, 536870913, 1, false,
+                                          "test_gid_penalty");
+  } catch (...) {
+    threw = true;
+  }
+  assert(threw);
+  mspass::seismic::BasicTimeSeries enormous_analysis;
+  enormous_analysis.set_t0(0.0);
+  enormous_analysis.set_dt(0.05);
+  enormous_analysis.set_npts(715827883);
+  mspass::seismic::BasicTimeSeries enormous_wavelet(enormous_analysis);
+  threw = false;
+  try {
+    (void)BuildGIDCommonTimeGrid(enormous_analysis, enormous_wavelet,
+                                 "test_gid_penalty");
+  } catch (...) {
+    threw = true;
+  }
+  assert(threw);
 
   cout << "GID adaptive-memory penalty saturation test passed" << endl;
   return 0;

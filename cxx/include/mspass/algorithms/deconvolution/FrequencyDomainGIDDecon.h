@@ -238,6 +238,12 @@ private:
   mspass::utility::Metadata changed_leaf_metadata;
   mspass::utility::Metadata leaf_operator_metadata;
   std::vector<double> actual_o_fir;
+  /* Scalar leaves expose a normalized actual_output, while their process
+   * result retains the physical inverse gain.  These values record the raw
+   * source-through-inverse zero-lag gain and the reciprocal applied to every
+   * inverse-domain quantity used by GID. */
+  double gid_leaf_raw_zero_lag_gain;
+  double gid_inverse_domain_amplitude_scale;
   std::vector<double> lag_weights, lag_weight_penalty;
   std::vector<double> adaptive_penalty_memory;
   std::vector<double> adaptive_penalty_retention;
@@ -265,6 +271,14 @@ private:
       ns_final_scan_max_raw_candidate_significance;
   int ns_final_scan_max_raw_candidate_lag;
   bool ns_final_scan_raw_significant_candidate_remaining;
+  double ns_final_scan_existing_support_max_raw_amplitude,
+      ns_final_scan_existing_support_max_raw_significance;
+  int ns_final_scan_existing_support_max_raw_lag;
+  int ns_final_scan_significant_candidate_count;
+  int ns_final_scan_best_trial_lag;
+  double ns_final_scan_best_trial_residual_l2,
+      ns_final_scan_best_trial_fractional_improvement;
+  bool ns_final_scan_acceptable_candidate_remaining;
   std::vector<double> ns_noise_component_rms;
   std::vector<int> ns_candidate_lag_history, ns_candidate_accepted_history;
   std::vector<double> ns_candidate_lag_time_history,
@@ -281,9 +295,21 @@ private:
       ns_candidate_trial_evaluated_history,
       ns_candidate_metric_available_history;
   std::vector<std::string> ns_candidate_stop_history;
+  /* Wang & Pavlis Eq. (15) is a candidate-level gate for legacy GID. */
+  int legacy_eq15_candidates_tested, legacy_eq15_candidates_rejected;
+  int legacy_eq15_candidates_below_floor, legacy_eq15_candidates_non_decreasing,
+      legacy_eq15_candidates_nonfinite,
+      legacy_eq15_rejected_lag_samples_truncated,
+      legacy_eq15_rejected_iteration_samples_truncated;
+  double legacy_eq15_last_trial_fractional_improvement;
+  std::string legacy_eq15_stop_detail;
+  std::vector<double> legacy_eq15_rejected_lag_times;
+  std::vector<int> legacy_eq15_rejected_candidates_per_iteration;
   double ns_fractional_improvement_final,
       ns_fractional_improvement_state_final, ns_ridge_beta;
   int ns_max_spikes, ns_refit_interval;
+  /* Audit post-refit terminal scans and any continuation they unlock. */
+  int ns_refit_epochs, ns_refit_resume_count;
   bool ns_use_empirical_noise_threshold, ns_converged;
   bool ns_final_refit_applied;
   std::string ns_stop_reason, ns_provisional_stop_reason_before_final_refit;
@@ -309,9 +335,16 @@ private:
   double group_sparse_fractional_improvement_final;
   double group_sparse_debiased_objective_final;
   double group_sparse_debiased_fractional_improvement_final;
+  double group_sparse_refit_gram_condition_number;
+  double group_sparse_refit_relative_ridge_beta;
+  double group_sparse_refit_residual_l2_pre, group_sparse_refit_residual_l2_post;
+  double group_sparse_refit_maximum_amplitude_pre;
+  double group_sparse_refit_maximum_amplitude_post;
   int group_sparse_max_iterations, group_sparse_iterations;
   int group_sparse_active_groups;
-  bool group_sparse_converged;
+  bool group_sparse_converged, group_sparse_refit_condition_guard_applied;
+  bool group_sparse_refit_fallback_to_pre_debias;
+  std::string group_sparse_refit_fallback_reason;
 
   void initialize_inverse_operator();
   void invalidate_processing_state();

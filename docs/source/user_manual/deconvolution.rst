@@ -182,10 +182,24 @@ solver requires the complete normalized resolution kernel for every retained
 lag: partial columns have variable energy and poor refit conditioning, and are
 therefore rejected rather than interpreted as zero-valued observations.  QC
 records the resulting ``group_sparse_valid_lag_*`` interval and the
-``full_resolution_kernel`` boundary policy.  Include guard data beyond a late
+``centered_full_fir_support`` boundary policy.  Support is measured on both
+sides of the resolution kernel's physical zero-lag sample, so it rejects a
+tail-only column without discarding a legal near-edge arrival whose full
+centered kernel is present.  Include guard data beyond a late
 arrival and crop to the desired output window when an arrival near an edge must
 be resolved.  Shortening the analysis interval cannot recover an unsupported
 edge lag; declare that arrival unsupported when guard data are unavailable.
+
+Group-sparse amplitudes are first obtained from the regularized group-lasso
+solve and are then optionally de-biased on the selected support.  Selected
+lags can be nearly collinear, so the shared refit measures the Gram condition
+number with a LAPACK symmetric eigensolve (cubic in support size).  Above ``1e5`` it raises the *relative*, diagonal-scaled ridge to at
+least ``1e-2``; this is a numerical condition guard, not a change to the
+group-lasso penalty or its default threshold.  QC records
+``group_sparse_refit_gram_condition_number``,
+``group_sparse_refit_relative_ridge_beta``, pre/post residual L2, pre/post
+maximum amplitudes, and whether the guard or a pre-debias fallback was used.
+The fallback is used only for a nonfinite or residual-increasing refit.
 
 The lower-level C++ engines do the numerical work.  They are useful for tests,
 diagnostics, and specialized processing tools, but they expect the caller to
@@ -482,6 +496,13 @@ detection-function peak becomes a candidate spike.  The engine subtracts that
 candidate's predicted contribution from the data-domain residual and keeps the
 spike only if the residual decreases.
 
+For legacy greedy modes, ``residual_fractional_improvement_floor`` implements
+the Wang & Pavlis (2016) Eq. (15) candidate test: a trial whose fractional L2
+improvement does not exceed the floor is rejected at that lag and the engine
+continues searching the remaining candidate lags in the same iteration.
+``ns_gid`` retains its separate noise-significance and residual-noise stopping
+rules.
+
 The inverse operator is therefore used to choose candidate spike locations and
 amplitudes.  It is not the final receiver-function representation.  The
 reported GID receiver function is the sparse impulse response convolved with
@@ -498,6 +519,14 @@ with a compact, peak-normalized residual-update kernel derived from the inverse
 operator's actual output.  The public ``actual_output()`` method returns the
 full inverse-operator resolution diagnostic, not the compact residual-update
 kernel.
+
+Because scalar leaves intentionally normalize their public resolution
+diagnostic, GID measures the corresponding unnormalized source-through-inverse
+zero-lag gain and applies its reciprocal to the inverse-domain data and noise
+quantities before sparse selection.  This keeps the data, residual, candidate
+threshold, and zero-lag-normalized update kernel in one amplitude domain.  It is
+especially important for heavily damped least-squares leaves; public
+``actual_output()`` behavior is unchanged.
 
 The ``multi_taper`` inverse mode is still a frequency-domain inverse operator,
 even when selected inside ``TimeDomainGIDDecon``.  In that case "time domain"
@@ -563,6 +592,26 @@ analysis-window-length factor; use the fractional fields for comparisons across
 records with different amplitudes.  ``residual_energy_final_fraction`` and
 ``residual_energy_reduction_fraction`` are the corresponding squared-norm
 fractions, useful when the QC policy is expressed in explained residual energy.
+``residual_3c_rms_initial`` and ``residual_3c_rms_final`` are component RMS
+values computed with denominator ``sqrt(3*npts)`` and remove only record
+length and component-count dependence; they remain amplitude-, bandwidth-, and
+leaf-dependent and are not cross-record quality measures by themselves.  Use
+the dimensionless residual fractions or the noise-normalized NS-GID fields for
+cross-record QC.  The explicit ``residual_L2_metric`` label identifies these
+as legacy unnormalized Euclidean norms in the new gain-normalized inverse
+domain; it is not a raw-input-amplitude metric.  GID also records
+``gid_leaf_raw_zero_lag_gain``, ``gid_inverse_domain_amplitude_scale``, and
+``gid_inverse_domain_scaling_policy``.  Legacy Eq. (15) audits are available as
+``gid_legacy_eq15_candidates_tested``,
+``gid_legacy_eq15_candidates_rejected``, and
+``gid_legacy_eq15_rejected_lag_seconds``.  Rejected lag samples are bounded to
+64 values; ``gid_legacy_eq15_rejected_lag_samples_truncated`` preserves the
+total audit count without allowing record-sized metadata.  The per-iteration
+counts and the below-floor/non-decreasing counters distinguish Eq. (15)
+rejections from candidates that cannot reduce the residual at all.  The
+public ``gid_stop_reason`` remains ``no_acceptable_candidate`` for
+compatibility; ``gid_legacy_eq15_stop_detail`` supplies either
+``all_candidates_below_eq15_floor`` or ``no_decreasing_candidate``.
 
 Greedy lag-weight penalty runs also record ``gid_penalty_function``,
 ``gid_penalty_scale_factor``, ``gid_penalty_width``,
@@ -629,71 +678,85 @@ for its automatic ``group_sparse_lambda`` (when that parameter is zero), so
 the scalar-component MAD policy also defines its automatic lambda reference.
 Its QC records ``group_sparse_noise_threshold``,
 ``group_sparse_peak_threshold_empirical``,
-``group_sparse_peak_threshold_sigma``, and the corresponding
+``group_sparse_peak_threshold_sigma``,
+``group_sparse_use_empirical_noise_threshold``, and
+``group_sparse_peak_threshold_controlling_term``.  The latter has the same
+meaning as the NS-GID controlling term: ``empirical``, ``sigma``, or ``tie``
+when the empirical guard is enabled, and ``sigma_empirical_disabled`` when it
+is disabled.  QC also records the corresponding
 ``group_sparse_noise_component_*`` requested/used-scale fields.  Set an
 explicit positive ``group_sparse_lambda`` to make the regularization strength
 independent of this noise-scale policy.
 
-Completed real-data screen and scope
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Historical real-data diagnostic and scope
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The current scalar-component implementation was screened on 332 real RF
+An earlier diagnostic screen used 332 real RF
 records from 10 station folds (31--39 records per fold), using analysis,
 wavelet, and noise windows of ``(-10, 160)``, ``(-5, 20)``, and ``(-200, -10)``
-seconds at ``dt=0.05``.  Both ``TimeDomainGIDDecon`` and
-``FrequencyDomainGIDDecon`` ran the exact current engine on Vista ARM64.  Each
+seconds at ``dt=0.05``.  It was run with the then-current implementation on
+Vista ARM64; it is not an execution of the corrected current engine.  Each
 parameter sweep reused these same 332 records; the resulting TD/FD sweep rows
 are repeated measurements, **not** thousands of independent observations.
 
-The screen retained every shipped numeric convergence default.  The table is
-evidence for conservative defaults in this workflow, not a universal
-calibration.
+This historical screen must **not** be used to validate or retain shipped
+defaults: it included the now-corrected frequency-domain threshold-domain
+error and showed low iteration/high residual-energy symptoms.  It is retained
+only as a diagnostic record.  Default selection remains provisional pending a
+common-event EarthScope benchmark, comparison with other MsPASS deconvolution
+methods, and waveform/stack QC.
 
-.. list-table:: Active NS-GID convergence defaults and exact-screen decision
+.. list-table:: Active NS-GID controls and historical diagnostic notes
    :widths: 27 13 60
    :header-rows: 1
 
    * - Control
      - Shipped value
-     - Evidence and decision
+     - Historical note; not a default-validation decision
    * - ``maximum_iterations``
      - 100
      - 200/400 reduced cap exits, but increased negative-time energy, IQR, and
-       incoherent content.  Retain 100.
+       incoherent content.  Historical observation only; no current default
+       decision follows.
    * - ``residual_fractional_improvement_floor``
      - ``1e-4``
      - This is the 0.01% criterion of Wang and Pavlis equation 15.  ``1e-5``
-       produced no waveform-quality gain.  Retain ``1e-4``.
+       produced no waveform-quality gain in that screen; no current default
+       decision follows.
    * - ``ns_gid_refit_interval``
      - 5
-     - Intervals 1, 5, and 20 were stable in the screen.  Retain 5 as the
-       balanced, less-expensive cadence.
+     - Intervals 1, 5, and 20 were stable in the screen.  Historical
+       observation only.
    * - ``ns_gid_residual_noise_ratio_floor``
      - 1.0
      - 1.2 produced about 21% one-spike solutions, consistent with underfit;
-       0.8 produced no coherent gain.  Retain 1.0.
+       0.8 produced no coherent gain in that screen.  Historical observation
+       only.
    * - ``ns_gid_peak_sigma_threshold``
      - 3.0
      - This remains exactly three robust scalar-component MAD sigmas (with the
-       documented fallback), not three vector-amplitude sigmas.  Retain 3.0.
+       documented fallback), not three vector-amplitude sigmas.  This defines
+       the parameter but does not recommend a current value.
    * - empirical threshold
      - ``q=.995``, on
      - Lowering to .9925 reduced the under-5-spike fraction from 18% to 12%
        and raised median iterations from 19/20 to 23.5/24.5 (TD/FD), without
        increasing moveout-corrected P410/P660 coherence; negative-time/IQR
        spread broadened.  .990/.975 and empirical-off showed stronger
-       noise-overfit signatures.  Retain .995 with the guard enabled.
+       noise-overfit signatures.  This pre-fix observation is not a
+       recommendation for .995.
    * - ``ns_gid_max_spikes``
      - 0 (unlimited)
-     - A hard cap of 50 degraded waveform consistency.  Retain 0.
+     - A hard cap of 50 degraded waveform consistency in that screen.
+       Historical observation only.
    * - ``ns_gid_ridge_beta``
      - ``1e-10``
      - ``1e-8`` degraded waveform consistency and ``1e-6`` had no stable
-       advantage.  Retain ``1e-10``.
+       advantage in that screen.  Historical observation only.
    * - FD ``residual_ratio_floor``
      - 0.01
      - This is active in frequency-domain NS-GID, but was not reached before
-       NS criteria in this sample.  Retain 0.01.
+       NS criteria in this sample.  Historical observation only.
    * - TD lag/residual-probability controls
      - as shipped
      - The TD lag-weight and residual-probability controls are not NS-GID stop
@@ -703,6 +766,20 @@ calibration.
 The final operational peak threshold is the maximum of the scalar-sigma and
 empirical vector-amplitude thresholds, so it need not equal exactly the stated
 number of scalar sigmas when the empirical guard dominates.
+``ns_gid_peak_threshold_controlling_term`` records ``empirical``, ``sigma``,
+or ``tie`` for that max operation.  When
+``ns_gid_use_empirical_noise_threshold`` is false, the operational threshold
+is exactly the sigma threshold and the controlling term is explicitly
+``sigma_empirical_disabled``; that boolean is also published in QC.
+``ns_gid_peak_threshold_scope`` is always ``pointwise_candidate_lag``.  Thus
+``ns_gid_peak_probability_threshold`` is a
+single-lag 3C-amplitude quantile, not a global false-alarm probability over a
+receiver-function search.  The three-component norm has a Maxwell, rather
+than scalar-Gaussian, tail, so a multiplier of three component sigmas is not a
+conventional one-component ``3 sigma`` exceedance rule.  The initial
+``ns_gid_initial_stationary_null_expected_noise_exceedances`` QC field makes
+the resulting multiple-lag exposure explicit; it is a diagnostic estimate,
+not a calibrated family-wise-error guarantee.
 
 ``ns_gid_residual_noise_rms_ratio`` is the canonical, dimensionless stopping
 ratio: final ordinary three-component residual-amplitude RMS divided by the
@@ -726,8 +803,10 @@ final accepted candidate increment; the separately reported
 post-refit state change.  Each ``ns_gid_iteration_N`` trace also records
 ``residual_l2_before_candidate``, ``residual_l2_trial_pre_refit``,
 ``residual_l2_post_refit``, candidate and state fractional improvements, and
-``periodic_refit_applied``/``final_refit_applied`` flags.  The terminal trace
-row remains synchronized with the global final residual and stop reason.
+``periodic_refit_applied``/``final_refit_applied`` flags.  Candidate rows are
+historical records: a later terminal refit never rewrites their local stop
+condition.  Final-refit audit fields are published separately in the global
+``ns_gid_final_scan_*`` metadata.
 ``trial_evaluated`` and ``metric_available`` distinguish a residual trial from
 an early significance or spike-cap exit.  Every row reports the measured
 ``residual_l2_before_candidate``.  Trial, post-refit, and improvement fields
@@ -747,17 +826,17 @@ make each candidate decision inspectable.  The matching
 ``_post_residual_rms_ratio`` is the residual/noise RMS ratio after a candidate
 is accepted, and ``_stop_condition`` is initially ``continue`` or the local
 rejection reason.  After final ridge refitting, the final trace row is updated
-with the final residual ratio and the global terminal stop reason; it therefore
-describes the same terminal state as ``ns_gid_stop_reason``.  The final
-accepted candidate's final-refit audit values are updated to the same state;
-earlier accepted rows retain their iteration-local values.  A final ridge refit
-can increase the residual; in that case the explicit
-``post_refit_residual_above_noise_floor`` stop reason replaces a stale
-noise-floor convergence result.
+with the final residual ratio for QC, but its recorded stop condition remains
+the decision made at that iteration.  A dirty support is amplitude-refit once;
+the refit then scans only *off-support* positive-weight lags.  A raw-significant
+lag resumes NS-GID only if its trial residual is strictly decreasing and clears
+``residual_fractional_improvement_floor``.  Hard iteration/spike caps still
+terminate.  ``ns_gid_refit_epochs`` and ``ns_gid_refit_resume_count`` record
+these transitions.
 
 The repository includes deterministic synthetic checks of the shipped 3.0/
-0.995 profile, and the completed real-data screen above provides workflow
-evidence for retaining it.  Neither establishes a universal calibration.
+0.995 profile.  The historical screen above does not provide workflow evidence
+for retaining it, and no current real-data result establishes a calibration.
 Fixed-lag stacks and IASP91 ray-parameter/moveout checks in that screen had
 coherence near a random ``1/N`` baseline.  They do not constitute P410s/P660s
 detection or depth inference, and the waveform set is not a representative
@@ -770,8 +849,8 @@ mantle-conversion benchmark.
    extensions must update to that signature and be rebuilt.  This is an
    intentional API migration so diagnostic waveforms retain metadata.
 
-For long mantle-RF searches, a threshold-equivalent, qualified synthetic
-starting profile is ``ns_gid_peak_sigma_threshold 4.0`` and
+For bounded synthetic controls only, a conservative profile is
+``ns_gid_peak_sigma_threshold 4.0`` and
 ``ns_gid_peak_probability_threshold 0.999`` (with the empirical threshold
 enabled).  Its 4.0 multiplier is applied to the robust scalar-component sigma
 defined above, while the 0.999 empirical vector-amplitude quantile remains the
@@ -779,8 +858,8 @@ guard for non-Gaussian noise.  This profile retained false-positive control in
 the bounded short-window synthetic regression after the
 scalar-component-sigma change (signal ``(-8, 22)``, noise ``(-35, -8)``, with
 synthetic arrivals at 0, 3, 8, and 18 seconds);
-it is not a shipped default, a universal mantle-RF recommendation, or a reason
-to override the conservatively retained 3.0/.995 real-data workflow defaults.
+it is not a shipped default, a real-data recommendation, or evidence for
+overriding any pending EarthScope/cross-method calibration.
 
 In a Figure-8-style downstream QC pass, inspect ``gid_number_spikes``, the
 stop reason, and event-stack consistency together.  Very-low-spike solutions
@@ -1139,6 +1218,15 @@ threshold when that estimate is available.  It is the same final threshold
 reported as ``group_sparse_noise_threshold``: empirical vector quantile when
 enabled, guarded by the scalar-component sigma threshold described above.
 
+Since the zero-lag normalization policy ``raw_zero_lag_normalized_v2``, both an
+explicit ``group_sparse_lambda`` and a fixed
+``group_sparse_active_threshold`` are interpreted in this normalized inverse
+domain.  They are not numerically interchangeable with values calibrated
+against pre-normalization leaf output.  Automatic lambda and quantile-based
+support thresholds migrate with the noise/coefficient scale; users carrying a
+fixed legacy value should retune it and retain the reported ``*_used`` QC
+fields with the result.
+
 The exported sparse support has a second adaptive decision rule.  The
 regularized coefficient field can contain tiny numerical coefficients or small
 clustered sidelobe coefficients.  Let :math:`a_0` denote
@@ -1180,7 +1268,9 @@ QC and interpretation
 ``QCMetrics`` records ``group_sparse_lambda_requested``,
 ``group_sparse_lambda_scale``, ``group_sparse_lambda_used``,
 ``group_sparse_noise_threshold``, ``group_sparse_peak_threshold_empirical``,
-``group_sparse_peak_threshold_sigma``, and the
+``group_sparse_peak_threshold_sigma``,
+``group_sparse_use_empirical_noise_threshold``,
+``group_sparse_peak_threshold_controlling_term``, and the
 ``group_sparse_noise_component_*`` requested/used-scale fields,
 ``group_sparse_active_threshold``, ``group_sparse_active_threshold_scale``,
 ``group_sparse_active_threshold_quantile``,
@@ -1340,9 +1430,13 @@ Useful first-pass fields are:
   ``noise_window_end`` confirm that the analysis and noise windows match the
   intended workflow.
 * ``residual_rms_final_fraction`` and ``residual_rms_reduction_fraction`` are
-  the canonical cross-record fit metrics: final/initial residual RMS and its
-  complement.  Smaller final fraction is a larger fit reduction, but is not
-  automatically better if the sparse support becomes physically implausible.
+  within-configuration fit metrics: final/initial residual RMS and its
+  complement.  Compare them across records only when the method, leaf
+  operator, analysis window, preprocessing, and output shaping are the same.
+  Different leaf bandwidths and inverse domains make them unsuitable as a
+  standalone cross-algorithm ranking.  Smaller final fraction is a larger fit
+  reduction, but is not automatically better if the sparse support becomes
+  physically implausible.
   Consult ``residual_rms_fraction_valid`` first: an unprocessed result or a
   zero initial residual has undefined fractional metrics (stored as NaN), not
   a perfect fit.  ``residual_rms_initial`` and ``residual_rms_final`` normalize
@@ -1381,15 +1475,16 @@ Useful first-pass fields are:
   selected after applying the lag penalty.  The ``ns_gid_max_raw_candidate_*``
   and ``ns_gid_last_scan_raw_significant_candidate_remaining`` fields describe
   the final iteration scan before amplitude refitting, not necessarily the
-  terminal residual.  The ``ns_gid_final_scan_*`` fields are recomputed from
-  the final-refit residual over the actually valid, positive-weight lags and
-  are the terminal audit fields.  If a provisional
-  ``candidate_not_significant`` exit has a significant final-scan candidate,
-  it is changed to ``post_refit_significant_candidate_remaining`` and is not
-  converged.  ``ns_gid_provisional_stop_reason_before_final_refit`` preserves
-  that pre-refit decision explicitly.  In contrast, ``ns_gid_stop_reason`` is
-  the final terminal state, and the terminal iteration-trace stop condition is
-  intentionally updated to that same final reason after refitting.
+  terminal residual.  The ``ns_gid_final_scan_*`` fields distinguish the
+  off-support raw maximum from the penalized ordered trial list and expose
+  ``significant_candidate_count``, the best trial, and whether an off-support
+  candidate clears both the significance and strict fractional-improvement
+  gates.  Existing-support amplitude is reported separately, so an unstable
+  ridge refit cannot be hidden by excluding that support from candidate
+  insertion.  ``ns_gid_provisional_stop_reason_before_final_refit`` preserves
+  the pre-refit decision; ``ns_gid_stop_reason`` is reclassified from the
+  final residual or resumes the bounded iteration.  Iteration-trace stop
+  conditions remain historical and are not overwritten by that audit.
   ``ns_gid_noise_samples_at_or_above_peak_threshold`` and
   ``ns_gid_initial_stationary_null_expected_noise_exceedances`` are an
   initial stationary-null plug-in estimate, not a terminal QC metric.  The
