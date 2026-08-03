@@ -38,9 +38,7 @@ def validate_external_wavelet_timeseries(
             f"{caller}: external wavelet is marked dead", ErrorSeverity.Invalid
         )
     if wavelet.npts <= 0:
-        raise MsPASSError(
-            f"{caller}: external wavelet is empty", ErrorSeverity.Invalid
-        )
+        raise MsPASSError(f"{caller}: external wavelet is empty", ErrorSeverity.Invalid)
     if not np.isfinite(wavelet.dt) or wavelet.dt <= 0.0:
         raise MsPASSError(
             f"{caller}: external TimeSeries dt must be finite and positive",
@@ -70,13 +68,10 @@ def validate_external_wavelet_timeseries(
             )
         if dt_policy == "gid":
             matches = abs(float(wavelet.dt) - float(expected_dt)) <= (
-                1.0e-6
-                * max(1.0, abs(float(wavelet.dt)), abs(float(expected_dt)))
+                1.0e-6 * max(1.0, abs(float(wavelet.dt)), abs(float(expected_dt)))
             )
         elif dt_policy == "scalar":
-            matches = np.isclose(
-                wavelet.dt, expected_dt, rtol=1.0e-7, atol=1.0e-10
-            )
+            matches = np.isclose(wavelet.dt, expected_dt, rtol=1.0e-7, atol=1.0e-10)
         else:
             raise ValueError(f"{caller}: unknown dt tolerance policy={dt_policy}")
         if not matches:
@@ -88,9 +83,7 @@ def validate_external_wavelet_timeseries(
     return wavelet
 
 
-def validate_external_wavelet_analysis_context(
-    wavelet, datum, analysis_t0, caller
-):
+def validate_external_wavelet_analysis_context(wavelet, datum, analysis_t0, caller):
     """Validate datum-dependent GID compatibility without changing an engine.
 
     Overlap is intentionally not required.  The C++ common-grid builder
@@ -108,9 +101,7 @@ def validate_external_wavelet_analysis_context(
             f"{caller}: input datum dt must be finite and positive",
             ErrorSeverity.Invalid,
         )
-    gid_dt_tolerance = 1.0e-6 * max(
-        1.0, abs(float(wavelet.dt)), abs(float(datum.dt))
-    )
+    gid_dt_tolerance = 1.0e-6 * max(1.0, abs(float(wavelet.dt)), abs(float(datum.dt)))
     if abs(float(wavelet.dt) - float(datum.dt)) > gid_dt_tolerance:
         raise MsPASSError(
             f"{caller}: external wavelet dt does not match the input datum",
@@ -141,9 +132,7 @@ def validate_external_wavelet_analysis_context(
 
     checked_grid_coordinate(wavelet.t0, "wavelet start")
     checked_grid_coordinate(wavelet.endtime(), "wavelet endpoint")
-    datum_grid_offset = (
-        float(analysis_t0) - float(datum.t0)
-    ) / float(datum.dt)
+    datum_grid_offset = (float(analysis_t0) - float(datum.t0)) / float(datum.dt)
     if not np.isfinite(datum_grid_offset) or not np.isclose(
         datum_grid_offset,
         round(datum_grid_offset),

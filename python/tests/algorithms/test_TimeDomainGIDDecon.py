@@ -119,9 +119,7 @@ def _assert_external_wavelet_wrapper_error_contract(engine, wrapper, qc_key):
         "noise_window": TimeWindow(-35.0, -5.0),
     }
     invalid = TimeSeries()
-    invalid_result = wrapper(
-        data, engine, external_wavelet=invalid, **common
-    )
+    invalid_result = wrapper(data, engine, external_wavelet=invalid, **common)
     assert not invalid_result.live
     assert not engine.external_wavelet_is_loaded()
 
@@ -135,16 +133,12 @@ def _assert_external_wavelet_wrapper_error_contract(engine, wrapper, qc_key):
     assert not rejected.live
     assert not engine.external_wavelet_is_loaded()
 
-    recovered = wrapper(
-        data, engine, **common
-    )
+    recovered = wrapper(data, engine, **common)
     assert recovered.live
     assert not recovered[qc_key]["gid_external_wavelet_used"]
 
     good = _make_wrapper_external_wavelet()
-    baseline = wrapper(
-        Seismogram(data), engine, external_wavelet=good, **common
-    )
+    baseline = wrapper(Seismogram(data), engine, external_wavelet=good, **common)
     assert baseline.live
 
     utc_epoch = 1.7e9
@@ -154,9 +148,7 @@ def _assert_external_wavelet_wrapper_error_contract(engine, wrapper, qc_key):
     utc_wavelet = TimeSeries(good)
     utc_wavelet.set_t0(utc_wavelet.t0 + utc_epoch)
     utc_wavelet.tref = TimeReferenceType.UTC
-    utc_result = wrapper(
-        utc_data, engine, external_wavelet=utc_wavelet
-    )
+    utc_result = wrapper(utc_data, engine, external_wavelet=utc_wavelet)
     assert utc_result.dead()
     assert utc_result.elog.size() > 0
     assert "ator(P-arrival epoch)" in utc_result.elog.get_error_log()[-1].message
@@ -176,9 +168,7 @@ def _assert_external_wavelet_wrapper_error_contract(engine, wrapper, qc_key):
     )
     assert close_dt_result.live
     # Restore the reference source before transactional rejection checks.
-    baseline = wrapper(
-        Seismogram(data), engine, external_wavelet=good, **common
-    )
+    baseline = wrapper(Seismogram(data), engine, external_wavelet=good, **common)
     assert baseline.live
 
     bad_wavelets = []
@@ -216,9 +206,7 @@ def _assert_external_wavelet_wrapper_error_contract(engine, wrapper, qc_key):
     bad_wavelets.append(off_grid)
 
     for bad in bad_wavelets:
-        rejected = wrapper(
-            Seismogram(data), engine, external_wavelet=bad, **common
-        )
+        rejected = wrapper(Seismogram(data), engine, external_wavelet=bad, **common)
         assert rejected.dead()
         assert rejected.elog.size() > 0
         assert engine.external_wavelet_is_loaded()
@@ -474,7 +462,9 @@ def _assert_gid_constructor_rejects_oversized_window_without_allocation(
     # 60 Ms at 20 Hz is 1.2e9 samples: finite and int-representable, but its
     # 3C BLAS length and FFT/shaping buffers are not.  Constructor rejection
     # proves no waveform-sized allocation was attempted.
-    text = text.replace("full_data_window_end 20.0", "full_data_window_end 60000000.0", 1)
+    text = text.replace(
+        "full_data_window_end 20.0", "full_data_window_end 60000000.0", 1
+    )
     text = text.replace(
         "deconvolution_data_window_end 20.0",
         "deconvolution_data_window_end 60000000.0",
@@ -581,7 +571,8 @@ def _assert_two_sample_analysis_candidate_exhaustion_control_flow(
             assert qc[terminal + "accepted"] == 0
             assert qc[terminal + "stop_condition"] == expected_reason
             assert qc[terminal + "stop_condition"] in (
-                "continue", qc["ns_gid_stop_reason"]
+                "continue",
+                qc["ns_gid_stop_reason"],
             )
             assert 0 <= qc[terminal + "candidate_lag_samples"] < 2
             for suffix in (
@@ -679,8 +670,7 @@ def _assert_td_rejected_residual_trial_audit(tmp_path):
     baseline_engine = TimeDomainGIDDecon(pfread(str(path)))
     baseline_engine.loadwavelet(wavelet)
     assert (
-        baseline_engine.load(data, TimeWindow(0.0, 0.5), TimeWindow(-35.0, -5.0))
-        == 0
+        baseline_engine.load(data, TimeWindow(0.0, 0.5), TimeWindow(-35.0, -5.0)) == 0
     )
     baseline_engine.process()
     baseline_qc = dict(baseline_engine.QCMetrics())
@@ -1001,10 +991,14 @@ def _assert_shipped_default_long_window_result(
     assert qc["ns_gid_max_raw_candidate_amplitude"] >= 0.0
     assert qc["ns_gid_max_raw_candidate_significance"] >= 0.0
     assert qc["ns_gid_initial_stationary_null_expected_noise_exceedances"] >= 0.0
-    assert 0 < qc["ns_gid_initial_stationary_null_search_lag_count"] < qc[
-        "gid_analysis_samples"
-    ]
-    assert qc["ns_gid_initial_stationary_null_expected_noise_exceedances"] == pytest.approx(
+    assert (
+        0
+        < qc["ns_gid_initial_stationary_null_search_lag_count"]
+        < qc["gid_analysis_samples"]
+    )
+    assert qc[
+        "ns_gid_initial_stationary_null_expected_noise_exceedances"
+    ] == pytest.approx(
         qc["ns_gid_initial_stationary_null_search_lag_count"]
         * qc["ns_gid_noise_samples_at_or_above_peak_threshold"]
         / qc["ns_gid_initial_stationary_null_noise_amplitude_samples"]
@@ -1046,9 +1040,7 @@ def _assert_long_window_gid_result(rf, qc):
         )
     )
     assert qc["ns_gid_peak_threshold_scope"] == "pointwise_candidate_lag"
-    assert qc["ns_gid_peak_threshold_controlling_term"] in (
-        "empirical", "sigma", "tie"
-    )
+    assert qc["ns_gid_peak_threshold_controlling_term"] in ("empirical", "sigma", "tie")
     assert qc["ns_gid_residual_rms_initial"] >= 0.0
     assert qc["ns_gid_residual_rms_final"] >= 0.0
     assert qc["ns_gid_residual_rms_ratio"] == pytest.approx(
@@ -1196,7 +1188,8 @@ def _assert_ns_terminal_trace_controls(
         # Candidate rows are historical: a later hard cap is global QC and
         # must not overwrite the accepted candidate's local ``continue``.
         assert qc[f"ns_gid_iteration_{terminal}_stop_condition"] in (
-            "continue", expected_reason
+            "continue",
+            expected_reason,
         )
         assert qc[
             f"ns_gid_iteration_{terminal}_post_residual_rms_ratio"
@@ -1414,9 +1407,7 @@ def _assert_all_leaf_physical_lag_alignment(
                 # narrow resolution kernel can split a recovered pulse across
                 # adjacent samples; it still rejects the historical multi-
                 # second wavelet-origin shift.
-                assert peak_time == pytest.approx(
-                    arrival, abs=2.0 * sparse.dt + 1.0e-9
-                )
+                assert peak_time == pytest.approx(arrival, abs=2.0 * sparse.dt + 1.0e-9)
 
 
 def _assert_shipped_default_recovers_weak_conversion(
@@ -1555,10 +1546,7 @@ def _assert_quantized_nonzero_noise_uses_sigma_fallback(
         qc["ns_gid_peak_threshold_sigma"]
     )
     assert not qc["ns_gid_use_empirical_noise_threshold"]
-    assert (
-        qc["ns_gid_peak_threshold_controlling_term"]
-        == "sigma_empirical_disabled"
-    )
+    assert qc["ns_gid_peak_threshold_controlling_term"] == "sigma_empirical_disabled"
 
 
 def _assert_invalid_sigma_threshold_product_is_rejected(
@@ -1650,7 +1638,10 @@ def _assert_mantle_profile_weak_and_noise_control(
     margin_path = tmp_path / ("high_margin_" + pf_name)
     margin_path.write_text(
         path.read_text()
-        .replace("ns_gid_use_empirical_noise_threshold true", "ns_gid_use_empirical_noise_threshold false")
+        .replace(
+            "ns_gid_use_empirical_noise_threshold true",
+            "ns_gid_use_empirical_noise_threshold false",
+        )
         .replace("ns_gid_peak_sigma_threshold 4.0", "ns_gid_peak_sigma_threshold 20.0")
     )
     data, wavelet, _ = _make_external_wavelet_3c_data(0.005, 0.0, seed=421)
@@ -1691,7 +1682,8 @@ def _assert_mantle_profile_weak_and_noise_control(
             assert qc[f"ns_gid_iteration_{i}_accepted"] in (0, 1)
         if rows:
             assert qc[f"ns_gid_iteration_{rows[-1]}_stop_condition"] in (
-                "continue", qc["ns_gid_stop_reason"]
+                "continue",
+                qc["ns_gid_stop_reason"],
             )
     assert margin["ns_gid_iteration_0_accepted"] == 0
     assert margin["ns_gid_iteration_0_stop_condition"] == "candidate_not_significant"
@@ -1770,7 +1762,8 @@ def _assert_terminal_refit_final_noise_floor_canonicalization(
         text = text.replace("residual_ratio_floor 0.01", "residual_ratio_floor 1.0")
     path.write_text(text)
     rf = wrapper(
-        _make_long_window_gid_data(), engine_class(pfread(str(path))),
+        _make_long_window_gid_data(),
+        engine_class(pfread(str(path))),
         signal_window=TimeWindow(-10.0, 160.0),
         noise_window=TimeWindow(-200.0, -10.0),
     )
@@ -1779,7 +1772,8 @@ def _assert_terminal_refit_final_noise_floor_canonicalization(
     # floor immediately after acceptance.  Both retain the provisional state
     # while the terminal refit must publish the final canonical floor state.
     assert qc["ns_gid_provisional_stop_reason_before_final_refit"] in (
-        "max_spikes", "residual_reached_noise_floor"
+        "max_spikes",
+        "residual_reached_noise_floor",
     )
     assert qc["ns_gid_final_refit_applied"]
     assert qc["ns_gid_residual_noise_rms_ratio"] <= 100.0
@@ -1842,9 +1836,10 @@ def _assert_final_refit_audit_does_not_bypass_first_floor(
     assert qc["ns_gid_final_scan_global_acceptable_candidate_count"] > 0
     assert qc["ns_gid_final_scan_acceptable_candidate_remaining"]
     assert qc["ns_gid_final_scan_best_trial_lag_samples"] != decision_lag
-    assert qc["ns_gid_final_scan_best_trial_residual_l2"] < qc[
-        "ns_gid_final_scan_decision_trial_residual_l2"
-    ]
+    assert (
+        qc["ns_gid_final_scan_best_trial_residual_l2"]
+        < qc["ns_gid_final_scan_decision_trial_residual_l2"]
+    )
     assert qc["ns_gid_final_scan_best_trial_fractional_improvement"] > 0.003
     assert qc["ns_gid_stop_reason"] == "fractional_improvement_floor"
     assert qc["gid_stop_reason"] == qc["ns_gid_stop_reason"]
@@ -1893,9 +1888,7 @@ def _assert_final_refit_reopens_candidate_significance(
         for key in qc.keys()
         if key.startswith("ns_gid_iteration_") and key.endswith("_accepted")
     )
-    accepted_rows = [
-        row for row in rows if qc[f"ns_gid_iteration_{row}_accepted"] == 1
-    ]
+    accepted_rows = [row for row in rows if qc[f"ns_gid_iteration_{row}_accepted"] == 1]
     assert len(accepted_rows) == qc["ns_gid_iterations"]
     assert qc["gid_number_spikes"] == qc["ns_gid_iterations"]
     assert len(accepted_rows) <= qc["gid_maximum_iterations"]
@@ -1909,8 +1902,7 @@ def _assert_final_refit_reopens_candidate_significance(
     post_refit_rows = [row for row in accepted_rows if row > first_refit_row]
     assert post_refit_rows
     accepted_lags = [
-        qc[f"ns_gid_iteration_{row}_candidate_lag_samples"]
-        for row in accepted_rows
+        qc[f"ns_gid_iteration_{row}_candidate_lag_samples"] for row in accepted_rows
     ]
     assert len(accepted_lags) == len(set(accepted_lags))
     # A post-refit accepted lag was absent from the support before that refit.
@@ -1988,7 +1980,8 @@ def _assert_ns_fractional_floor_uses_pre_refit_candidate(
         if f"ns_gid_iteration_{i}_stop_condition" in qc
     )
     assert qc[f"ns_gid_iteration_{terminal}_stop_condition"] in (
-        "continue", qc["ns_gid_stop_reason"]
+        "continue",
+        qc["ns_gid_stop_reason"],
     )
 
 
@@ -2024,10 +2017,7 @@ def _assert_ns_default_ridge_candidate_trace(
     )
     assert qc["ns_gid_final_refit_applied"]
     assert qc[f"ns_gid_iteration_{accepted[-1]}_final_refit_applied"]
-    assert (
-        qc[f"ns_gid_iteration_{accepted[-1]}_stop_condition"]
-        == "continue"
-    )
+    assert qc[f"ns_gid_iteration_{accepted[-1]}_stop_condition"] == "continue"
     rejected = qc["ns_gid_iterations"]
     prefix = f"ns_gid_iteration_{rejected}_"
     assert not qc[prefix + "accepted"]
@@ -2083,7 +2073,14 @@ def _assert_nonfinite_noise_inputs_are_rejected(
     engine_class, pf_name, branch_name, tmp_path
 ):
     """Every GID noise ingress rejects NaN/Inf before processing starts."""
-    modes = ("ns_gid", "group_sparse", "water_level", "least_square", "multi_taper", "cnr")
+    modes = (
+        "ns_gid",
+        "group_sparse",
+        "water_level",
+        "least_square",
+        "multi_taper",
+        "cnr",
+    )
     for bad_value in (np.nan, np.inf):
         internal = _make_gid_test_data(noise_level=None)
         sample = internal.sample_number(-20.0)
@@ -2096,7 +2093,9 @@ def _assert_nonfinite_noise_inputs_are_rejected(
         for mode in modes:
             engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
             valid = _make_gid_test_data(noise_level=None)
-            assert engine.load(valid, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+            assert (
+                engine.load(valid, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+            )
             engine.process()
             assert dict(engine.QCMetrics())["decon_processed"]
             with pytest.raises(MsPASSError, match="noise window contains nonfinite"):
@@ -2106,14 +2105,15 @@ def _assert_nonfinite_noise_inputs_are_rejected(
                 engine.process()
 
             engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
-            assert engine.load(valid, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+            assert (
+                engine.load(valid, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+            )
             engine.process()
             with pytest.raises(MsPASSError, match="external noise contains nonfinite"):
                 engine.loadnoise(external)
             assert not dict(engine.QCMetrics())["decon_processed"]
             with pytest.raises(MsPASSError, match="valid (data|noise) window"):
                 engine.process()
-
 
 
 def _assert_nonfinite_noise_spectra_are_rejected(
@@ -2124,7 +2124,9 @@ def _assert_nonfinite_noise_spectra_are_rejected(
         for mode in ("ns_gid", "group_sparse"):
             engine = engine_class(_pf_with_mode(tmp_path, pf_name, branch_name, mode))
             valid = _make_gid_test_data(noise_level=None)
-            assert engine.load(valid, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+            assert (
+                engine.load(valid, TimeWindow(-8.0, 20.0), TimeWindow(-35.0, -5.0)) == 0
+            )
             engine.process()
             with pytest.raises(MsPASSError, match="PowerSpectrum contains nonfinite"):
                 engine.loadnoise(_make_external_noise_spectrum(bad_value))
@@ -2324,13 +2326,13 @@ def _assert_group_sparse_empirical_threshold_can_be_disabled(
     )
     assert rf.live
     qc = rf[qc_key]
-    assert qc["group_sparse_peak_threshold_empirical"] > qc[
-        "group_sparse_peak_threshold_sigma"
-    ]
+    assert (
+        qc["group_sparse_peak_threshold_empirical"]
+        > qc["group_sparse_peak_threshold_sigma"]
+    )
     assert not qc["group_sparse_use_empirical_noise_threshold"]
     assert (
-        qc["group_sparse_peak_threshold_controlling_term"]
-        == "sigma_empirical_disabled"
+        qc["group_sparse_peak_threshold_controlling_term"] == "sigma_empirical_disabled"
     )
     assert qc["group_sparse_noise_threshold"] == pytest.approx(
         qc["group_sparse_peak_threshold_sigma"]
@@ -2386,9 +2388,7 @@ def _pf_with_least_square_damping(
 ):
     """Select legacy least-square GID and set only its leaf damping."""
     src = Path("./data/pf") / pf_name
-    text = _replace_gid_deconvolution_type(
-        src.read_text(), branch_name, "least_square"
-    )
+    text = _replace_gid_deconvolution_type(src.read_text(), branch_name, "least_square")
     old = (
         "    least_square &Arr{\n"
         "        target_sample_interval 0.05\n"
@@ -2436,9 +2436,7 @@ def _assert_least_square_raw_gain_damping_invariance(
     qcs = {}
     for damping in (1.0, 1.0e7):
         engine = engine_class(
-            _pf_with_least_square_damping(
-                tmp_path, pf_name, branch_name, damping
-            )
+            _pf_with_least_square_damping(tmp_path, pf_name, branch_name, damping)
         )
         rf = wrapper(
             _make_single_spike_convolution_data(),
@@ -2456,9 +2454,7 @@ def _assert_least_square_raw_gain_damping_invariance(
         assert qc["gid_inverse_domain_amplitude_scale"] == pytest.approx(
             1.0 / qc["gid_leaf_raw_zero_lag_gain"]
         )
-        assert qc["gid_inverse_domain_scaling_policy"] == (
-            "raw_zero_lag_normalized_v2"
-        )
+        assert qc["gid_inverse_domain_scaling_policy"] == ("raw_zero_lag_normalized_v2")
         assert qc["gid_inverse_domain_scaling_valid"]
         assert qc["gid_inverse_domain_scaling_applied"]
         assert qc["gid_inverse_domain_scaling_modes"] == (
@@ -2681,9 +2677,7 @@ def _assert_generic_residual_rms_qc(
         assert qc["gid_inverse_domain_amplitude_scale"] == pytest.approx(
             1.0 / qc["gid_leaf_raw_zero_lag_gain"]
         )
-        assert qc["gid_inverse_domain_scaling_policy"] == (
-            "raw_zero_lag_normalized_v2"
-        )
+        assert qc["gid_inverse_domain_scaling_policy"] == ("raw_zero_lag_normalized_v2")
         assert qc["gid_inverse_domain_scaling_valid"]
         assert qc["gid_inverse_domain_scaling_applied"]
         assert qc["gid_inverse_domain_scaling_modes"] == (
@@ -2899,9 +2893,7 @@ def _pf_with_short_decon_window(
     return pfread(str(dst))
 
 
-def _make_external_wavelet_3c_data(
-    noise_level=1.0e-4, conversion_scale=1.0, seed=421
-):
+def _make_external_wavelet_3c_data(noise_level=1.0e-4, conversion_scale=1.0, seed=421):
     n = 1400
     dt = 0.05
     t0 = -45.0
