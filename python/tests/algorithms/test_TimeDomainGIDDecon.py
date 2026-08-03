@@ -114,13 +114,13 @@ def _make_wrapper_external_wavelet():
 
 def _assert_external_wavelet_wrapper_error_contract(engine, wrapper, qc_key):
     data = _make_gid_test_data(noise_level=None)
+    common = {
+        "signal_window": TimeWindow(-8.0, 20.0),
+        "noise_window": TimeWindow(-35.0, -5.0),
+    }
     invalid = TimeSeries()
     invalid_result = wrapper(
-        data,
-        engine,
-        signal_window=TimeWindow(-8.0, 20.0),
-        noise_window=TimeWindow(-35.0, -5.0),
-        external_wavelet=invalid,
+        data, engine, external_wavelet=invalid, **common
     )
     assert not invalid_result.live
     assert not engine.external_wavelet_is_loaded()
@@ -136,13 +136,97 @@ def _assert_external_wavelet_wrapper_error_contract(engine, wrapper, qc_key):
     assert not engine.external_wavelet_is_loaded()
 
     recovered = wrapper(
-        data,
-        engine,
-        signal_window=TimeWindow(-8.0, 20.0),
-        noise_window=TimeWindow(-35.0, -5.0),
+        data, engine, **common
     )
     assert recovered.live
     assert not recovered[qc_key]["gid_external_wavelet_used"]
+
+    good = _make_wrapper_external_wavelet()
+    baseline = wrapper(
+        Seismogram(data), engine, external_wavelet=good, **common
+    )
+    assert baseline.live
+
+    utc_epoch = 1.7e9
+    utc_data = Seismogram(data)
+    utc_data.set_t0(utc_data.t0 + utc_epoch)
+    utc_data.tref = TimeReferenceType.UTC
+    utc_wavelet = TimeSeries(good)
+    utc_wavelet.set_t0(utc_wavelet.t0 + utc_epoch)
+    utc_wavelet.tref = TimeReferenceType.UTC
+    utc_result = wrapper(
+        utc_data, engine, external_wavelet=utc_wavelet
+    )
+    assert utc_result.dead()
+    assert utc_result.elog.size() > 0
+    assert "ator(P-arrival epoch)" in utc_result.elog.get_error_log()[-1].message
+    after_utc = wrapper(Seismogram(data), engine, **common)
+    assert after_utc.live
+    assert np.array_equal(np.asarray(after_utc.data), np.asarray(baseline.data))
+    assert engine.external_wavelet_is_loaded()
+    assert baseline[qc_key]["gid_wavelet_t0"] == pytest.approx(good.t0)
+
+    close_dt_wavelet = TimeSeries(1)
+    close_dt_wavelet.set_t0(0.0)
+    close_dt_wavelet.set_dt(0.0500005)
+    close_dt_wavelet.set_live()
+    close_dt_wavelet.data[0] = 1.0
+    close_dt_result = wrapper(
+        Seismogram(data), engine, external_wavelet=close_dt_wavelet, **common
+    )
+    assert close_dt_result.live
+    # Restore the reference source before transactional rejection checks.
+    baseline = wrapper(
+        Seismogram(data), engine, external_wavelet=good, **common
+    )
+    assert baseline.live
+
+    bad_wavelets = []
+    dead = TimeSeries(good)
+    dead.kill()
+    bad_wavelets.append(dead)
+    empty = TimeSeries()
+    empty.set_live()
+    bad_wavelets.append(empty)
+    for attribute, value in (
+        ("dt", float("nan")),
+        ("dt", float("inf")),
+        ("dt", 0.0),
+        ("t0", float("nan")),
+        ("t0", float("inf")),
+    ):
+        bad = TimeSeries(good)
+        if attribute == "dt":
+            bad.set_dt(value)
+        else:
+            bad.set_t0(value)
+        bad_wavelets.append(bad)
+    for value in (float("nan"), float("inf")):
+        bad = TimeSeries(good)
+        bad.data[0] = value
+        bad_wavelets.append(bad)
+    wrong_dt = TimeSeries(good)
+    wrong_dt.set_dt(good.dt * 2.0)
+    bad_wavelets.append(wrong_dt)
+    wrong_tref = TimeSeries(good)
+    wrong_tref.tref = TimeReferenceType.UTC
+    bad_wavelets.append(wrong_tref)
+    off_grid = TimeSeries(good)
+    off_grid.set_t0(good.t0 + 0.25 * good.dt)
+    bad_wavelets.append(off_grid)
+
+    for bad in bad_wavelets:
+        rejected = wrapper(
+            Seismogram(data), engine, external_wavelet=bad, **common
+        )
+        assert rejected.dead()
+        assert rejected.elog.size() > 0
+        assert engine.external_wavelet_is_loaded()
+        after = wrapper(Seismogram(data), engine, **common)
+        assert after.live
+        assert after[qc_key]["gid_external_wavelet_used"]
+        assert after[qc_key]["gid_wavelet_t0"] == pytest.approx(good.t0)
+        assert np.array_equal(np.asarray(after.data), np.asarray(baseline.data))
 
 
 def _assert_external_timeseries_time_coordinate_guards(
@@ -153,8 +237,10 @@ def _assert_external_timeseries_time_coordinate_guards(
     for loader_name in ("loadwavelet", "loadnoise"):
         for attribute, value, message in (
             ("dt", float("nan"), "dt must be finite and positive"),
+            ("dt", float("inf"), "dt must be finite and positive"),
             ("dt", 0.0, "dt must be finite and positive"),
             ("t0", float("nan"), "t0 and endtime must be finite"),
+            ("t0", float("inf"), "t0 and endtime must be finite"),
         ):
             external = _make_external_noise()
             if attribute == "dt":
@@ -168,13 +254,63 @@ def _assert_external_timeseries_time_coordinate_guards(
     dwin = TimeWindow(-8.0, 20.0)
     nwin = TimeWindow(-35.0, -5.0)
 
-    wrong_tref_wavelet = _make_wrapper_external_wavelet()
-    wrong_tref_wavelet.tref = TimeReferenceType.UTC
-    engine = engine_class(pf)
-    engine.loadwavelet(wrong_tref_wavelet)
-    assert engine.load(data, dwin, nwin) == 0
-    with pytest.raises(MsPASSError, match="TimeReferenceType does not match"):
-        engine.process()
+    # A rejected nonfinite source must not clear or replace a previously
+    # loaded usable wavelet in the low-level C++ engine.
+    good_wavelet = _make_wrapper_external_wavelet()
+    transactional_engine = engine_class(pf)
+    transactional_engine.loadwavelet(good_wavelet)
+    for value in (float("nan"), float("inf")):
+        bad_wavelet = TimeSeries(good_wavelet)
+        bad_wavelet.data[0] = value
+        with pytest.raises(MsPASSError, match="nonfinite samples"):
+            transactional_engine.loadwavelet(bad_wavelet)
+        assert transactional_engine.external_wavelet_is_loaded()
+    assert transactional_engine.load(data, dwin, nwin) == 0
+    transactional_engine.process()
+    preserved_result = transactional_engine.getresult()
+
+    control_engine = engine_class(pf)
+    control_engine.loadwavelet(good_wavelet)
+    assert control_engine.load(data, dwin, nwin) == 0
+    control_engine.process()
+    assert np.array_equal(
+        np.asarray(preserved_result.data), np.asarray(control_engine.getresult().data)
+    )
+
+    # Intrinsic loadwavelet has no datum and must not reject a future matching
+    # UTC record or a sample-aligned source that is disjoint from analysis.
+    utc_wavelet = TimeSeries(good_wavelet)
+    utc_wavelet.tref = TimeReferenceType.UTC
+    intrinsic_engine = engine_class(pf)
+    assert intrinsic_engine.loadwavelet(utc_wavelet) == 0
+    utc_data = Seismogram(data)
+    utc_data.tref = TimeReferenceType.UTC
+    assert intrinsic_engine.load(utc_data, dwin, nwin) == 0
+    with pytest.raises(MsPASSError, match=r"ator\(P-arrival epoch\)"):
+        intrinsic_engine.process()
+
+    disjoint_wavelet = TimeSeries(21)
+    disjoint_wavelet.set_t0(-10.0)
+    disjoint_wavelet.set_dt(0.05)
+    disjoint_wavelet.set_live()
+    disjoint_wavelet.data[10] = 1.0
+    disjoint_engine = engine_class(pf)
+    assert disjoint_engine.loadwavelet(disjoint_wavelet) == 0
+    assert disjoint_engine.load(data, dwin, nwin) == 0
+    disjoint_engine.process()
+    assert disjoint_engine.getresult().live
+
+    # This value is inside the public C++ tolerance and must not be rejected
+    # by a stricter Python-side policy.  A one-sample source avoids cumulative
+    # endpoint drift, which is a separate common-grid constraint.
+    close_dt_wavelet = TimeSeries(1)
+    close_dt_wavelet.set_t0(0.0)
+    close_dt_wavelet.set_dt(0.0500005)
+    close_dt_wavelet.set_live()
+    close_dt_wavelet.data[0] = 1.0
+    close_dt_engine = engine_class(pf)
+    assert close_dt_engine.loadwavelet(close_dt_wavelet) == 0
+    assert close_dt_engine.external_wavelet_is_loaded()
 
     wrong_tref_noise = _make_external_noise()
     wrong_tref_noise.tref = TimeReferenceType.UTC
@@ -204,14 +340,14 @@ def _assert_external_timeseries_time_coordinate_guards(
     # coordinate tolerance.
     for fractional_sample in (0.25, 0.4):
         non_grid_wavelet = TimeSeries(1)
-        non_grid_wavelet.set_t0(-1.0e6 - fractional_sample * 0.05)
+        non_grid_wavelet.set_t0(-2.5 - fractional_sample * 0.05)
         non_grid_wavelet.set_dt(0.05)
         non_grid_wavelet.set_live()
         non_grid_wavelet.data[0] = 1.0
         engine = engine_class(pf)
         engine.loadwavelet(non_grid_wavelet)
         assert engine.load(data, dwin, nwin) == 0
-        with pytest.raises(MsPASSError, match="aligned to a common sample grid"):
+        with pytest.raises(MsPASSError, match="aligned to the analysis sample grid"):
             engine.process()
 
     # A one-step dt check is insufficient: this 16 ppm difference is below

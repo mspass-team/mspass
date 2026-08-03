@@ -230,7 +230,10 @@ called without a parameter file.  This is an objective-specific reference
 preset, not a claim that one parameter set is scientifically optimal for every
 acquisition or imaging method.  It uses a ``(-10, 120)`` s analysis/output
 window, a ``(-5, 20)`` s source-wavelet window, and a 0.125 Hz zero-phase
-Ricker output wavelet.  Its primary standalone reference operators are
+Ricker output wavelet.  That Ricker bandwidth is a target-specific reference
+for low-frequency MTZ plane-wave/Kirchhoff imaging, not a generally optimal
+choice for crustal, high-resolution, or other RF workflows.  Its primary
+standalone reference operators are
 ``WaterLevelDecon`` (water level 0.1) and ``LeastSquareDecon`` (damping 1.0).
 
 The installed scalar presets are selected with the ``preset`` keyword:
@@ -242,7 +245,7 @@ The installed scalar presets are selected with the ``preset`` keyword:
      - Intended use
      - Output shaping
    * - ``mtz_plane_wave_lowfreq``
-     - General MTZ plane-wave/Kirchhoff reference product (the default)
+     - Reference product for MTZ plane-wave/Kirchhoff imaging (selected by default)
      - Ricker 0.125 Hz
    * - ``mtz_plane_wave_highres``
      - MTZ resolution sensitivity product
@@ -297,8 +300,21 @@ For scalar ``RFdeconProcessor`` methods, ``wavelet_window_start`` and
 analysis grid before it is passed to the vector-only scalar engine.  Thus a
 short ``(-5,20)`` P pulse paired with an analysis window beginning at -10 s
 does not acquire a spurious five-second lag shift.  A raw numeric vector has
-no time base and retains legacy behavior; use ``TimeSeries`` for a time-aware
-external source wavelet.
+no intrinsic time base: pass ``wavelet_t0`` to ``RFdecon`` or
+``RFdeconProcessor.loadwavelet`` to locate its first sample on the physical
+time axis, or use a ``TimeSeries``.  Omitting ``wavelet_t0`` retains the legacy
+interpretation that vector sample zero is the analysis-window start and emits
+a warning.  The same rule applies to bare ``external_wavelet`` vectors passed
+to the time- and frequency-domain GID wrappers.  A TimeSeries wavelet always
+keeps its own ``t0`` and sample interval.
+
+The GID receiver-function wrappers and engines interpret their configured
+windows, sample shifts, and output times as P-relative lag coordinates.  They
+therefore reject a UTC analysis datum before loading an external source into a
+reused engine.  Convert event data with ``ator(P-arrival epoch)`` before GID RF
+processing.  This is a contract of the GID RF workflow, not a general
+restriction on ``TimeSeries`` or on the datum-independent low-level
+``loadwavelet`` method.
 
 ``noise_window``
     A time interval or spectrum used to stabilize the inverse or to decide when

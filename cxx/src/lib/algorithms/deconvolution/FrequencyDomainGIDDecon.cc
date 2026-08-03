@@ -589,6 +589,10 @@ int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
     throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external wavelet "
                       "is empty",
                       ErrorSeverity::Invalid);
+  if (!time_series_samples_are_finite(wavelet))
+    throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external wavelet "
+                      "contains nonfinite samples",
+                      ErrorSeverity::Invalid);
   ValidateExternalTimeSeriesSampleInterval(
       wavelet, target_dt, "FrequencyDomainGIDDecon::loadwavelet");
   this->invalidate_processing_state();
@@ -1170,6 +1174,12 @@ void FrequencyDomainGIDDecon::process() {
     if (d_all.dead() || d_all.npts() <= 0)
       throw MsPASSError(base_error + "valid data window has not been loaded",
                         ErrorSeverity::Invalid);
+    if (d_all.time_is_UTC())
+      throw MsPASSError(
+          base_error +
+              "GID receiver-function processing requires P-relative lag "
+              "coordinates; convert UTC data first with ator(P-arrival epoch)",
+          ErrorSeverity::Invalid);
     if (!residual_matrix_is_finite(d_all.u))
       throw MsPASSError(base_error + "input data contains nonfinite samples",
                         ErrorSeverity::Invalid);
