@@ -1,0 +1,76 @@
+# crustal_plane_wave preset.  A 0.5 Hz Ricker retains useful crustal
+# resolution while keeping all scalar methods on a common output wavelet.
+
+WaterLevel &Arr{
+rf_preset crustal_plane_wave
+water_level 0.1
+operator_nfft 1024
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+target_sample_interval 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.5
+}
+LeastSquare &Arr{
+rf_preset crustal_plane_wave
+damping_factor 1.0
+operator_nfft 1024
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+target_sample_interval 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.5
+}
+TimeDomainLeastSquare &Arr{
+rf_preset crustal_plane_wave
+damping_factor 1.0e-4
+operator_nfft 1024
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+target_sample_interval 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.5
+}
+MultiTaperSpecDiv &Arr{
+rf_preset crustal_plane_wave
+damping_factor 0.1
+shaping_wavelet_dt 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.5
+target_sample_interval 0.05
+operator_nfft 1024
+time_bandwidth_product 2.5
+number_tapers 3
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+noise_window_start -35.0
+noise_window_end -5.0
+}
+MultiTaperXcor &Arr{
+rf_preset crustal_plane_wave
+damping_factor 0.03
+shaping_wavelet_dt 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.5
+target_sample_interval 0.05
+operator_nfft 1024
+time_bandwidth_product 2.5
+number_tapers 3
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+noise_window_start -35.0
+noise_window_end -5.0
+}

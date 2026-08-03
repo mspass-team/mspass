@@ -1,0 +1,71 @@
+# raw_decon_diagnostic preset.  This is for inverse/operator diagnostics, not
+# direct comparison or migration input: it intentionally has no shaping.
+
+WaterLevel &Arr{
+rf_preset raw_decon_diagnostic
+water_level 0.1
+operator_nfft 4096
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+target_sample_interval 0.05
+shaping_wavelet_type none
+}
+LeastSquare &Arr{
+rf_preset raw_decon_diagnostic
+damping_factor 1.0
+operator_nfft 4096
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+target_sample_interval 0.05
+shaping_wavelet_type none
+}
+TimeDomainLeastSquare &Arr{
+rf_preset raw_decon_diagnostic
+damping_factor 1.0e-6
+operator_nfft 4096
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+target_sample_interval 0.05
+shaping_wavelet_type none
+}
+MultiTaperSpecDiv &Arr{
+rf_preset raw_decon_diagnostic
+damping_factor 0.1
+shaping_wavelet_dt 0.05
+shaping_wavelet_type none
+target_sample_interval 0.05
+operator_nfft 4096
+time_bandwidth_product 2.5
+number_tapers 3
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+noise_window_start -140.0
+noise_window_end -10.0
+}
+MultiTaperXcor &Arr{
+rf_preset raw_decon_diagnostic
+damping_factor 0.03
+shaping_wavelet_dt 0.05
+shaping_wavelet_type none
+target_sample_interval 0.05
+operator_nfft 4096
+time_bandwidth_product 2.5
+number_tapers 3
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+noise_window_start -140.0
+noise_window_end -10.0
+}

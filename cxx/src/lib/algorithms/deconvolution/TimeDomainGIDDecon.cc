@@ -1182,7 +1182,7 @@ void TimeDomainGIDDecon::process() {
       Seismogram dwork(leaf_data);
       PowerSpectrum psnoise(cnrprocessor->compute_noise_spectrum(nwavelet));
       Seismogram raw_response(
-          cnrprocessor->process(response_input, psnoise, 0.02, 2.0));
+          cnrprocessor->process(response_input, psnoise));
       const int response_zero_lag_index = raw_response.sample_number(0.0);
       if (response_zero_lag_index < 0 ||
           response_zero_lag_index >= raw_response.npts())
@@ -1190,7 +1190,7 @@ void TimeDomainGIDDecon::process() {
                               "zero lag",
                           ErrorSeverity::Invalid);
       raw_zero_lag_gain = fabs(raw_response.u(0, response_zero_lag_index));
-      dwork = cnrprocessor->process(dwork, psnoise, 0.02, 2.0);
+      dwork = cnrprocessor->process(dwork, psnoise);
       for (int k = 0; k < 3; ++k)
         cblas_dcopy(d_decon.npts(), dwork.u.get_address(k, data_offset), 3,
                     uwork.get_address(k, 0), 3);

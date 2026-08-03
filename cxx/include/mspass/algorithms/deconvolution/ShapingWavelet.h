@@ -20,10 +20,7 @@ Slepian0.  The first two are standard.  The last is novel and theoretically
 can produce an actual output with the smalle posible sidebands*/
 class ShapingWavelet {
 public:
-  ShapingWavelet() {
-    dt = -1;
-    df = -1;
-  };
+  ShapingWavelet() : nfft(0), dt(-1), df(-1) {};
   /*! \brief Construct using a limited set of analytic forms for the wavelet.
    *
    This constructor is used to create a ricker or gaussian shaping wavelet

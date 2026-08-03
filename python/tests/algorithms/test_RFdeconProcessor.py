@@ -28,8 +28,10 @@ from decon_data_generators import (
 )
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.RFdeconProcessor import (
+    DEFAULT_RF_PRESET,
     RFdeconProcessor,
     RFdecon,
+    _gid_default_pf,
     make_gid_engine,
     make_gid_pf,
     make_gid_pf_text,
@@ -455,6 +457,70 @@ def test_RFdeconProcessor_gid_defaults_resolve_from_package_pf_path():
             os.environ["PFPATH"] = old_pfpath
 
 
+def test_RFdeconProcessor_default_is_mtz_plane_wave_lowfreq_with_auditable_qc():
+    with _test_pfpath():
+        processor = RFdeconProcessor(alg="WaterLevel")
+    assert Path(processor.pf).name == "RFdeconMTZ.pf"
+    assert processor.md["rf_preset"] == DEFAULT_RF_PRESET
+    assert processor.dwin.start == pytest.approx(-10.0)
+    assert processor.dwin.end == pytest.approx(120.0)
+    assert processor.waveletwin.start == pytest.approx(-5.0)
+    assert processor.waveletwin.end == pytest.approx(20.0)
+    assert processor.md["shaping_wavelet_type"] == "ricker"
+    assert processor.md["shaping_wavelet_frequency"] == pytest.approx(0.125)
+    processor.loaddata(np.ones(64), dtype="raw_vector")
+    processor.loadwavelet(np.ones(64), dtype="raw_vector")
+    processor.apply()
+    assert processor.QCMetrics()["rf_preset"] == DEFAULT_RF_PRESET
+
+
+@pytest.mark.parametrize("alg", ["GeneralizedIterative", "FrequencyDomainGID"])
+def test_RFdeconProcessor_default_gid_uses_labeled_mtz_sensitivity_profile(alg):
+    with _test_pfpath():
+        processor = RFdeconProcessor(alg=alg)
+    assert Path(processor.pf).name == "RFdeconGIDMTZ.pf"
+    assert processor.md["rf_preset"] == DEFAULT_RF_PRESET
+    assert processor.md["gid_workflow"] == "experimental_sensitivity"
+    assert processor.dwin.start == pytest.approx(-10.0)
+    assert processor.dwin.end == pytest.approx(120.0)
+    assert processor.md["shaping_wavelet_frequency"] == pytest.approx(0.125)
+
+
+def test_RFdeconProcessor_internal_presets_do_not_require_pfpath_or_repo_cwd(
+    tmp_path, monkeypatch
+):
+    """No-argument RF processors resolve their packaged profiles themselves."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("PFPATH", raising=False)
+    monkeypatch.delenv("MSPASS_HOME", raising=False)
+
+    scalar = RFdeconProcessor(alg="WaterLevel")
+    gid = RFdeconProcessor(alg="GeneralizedIterative")
+
+    assert Path(scalar.pf).name == "RFdeconMTZ.pf"
+    assert scalar.md["rf_preset"] == DEFAULT_RF_PRESET
+    assert Path(gid.pf).name == "RFdeconGIDMTZ.pf"
+    assert gid.md["rf_preset"] == DEFAULT_RF_PRESET
+    assert gid.md["gid_workflow"] == "experimental_sensitivity"
+
+
+def test_RFdeconProcessor_scalar_timeseries_wavelet_preserves_independent_origin():
+    with _test_pfpath():
+        processor = RFdeconProcessor(alg="WaterLevel")
+    wavelet = TimeSeries(3)
+    wavelet.set_t0(-5.0)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    wavelet.data[0] = 1.0
+    wavelet.data[1] = 2.0
+    wavelet.data[2] = 3.0
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    expected_offset = int(round((-5.0 - processor.dwin.start) / 0.05))
+    assert len(processor.wvector) == 2601
+    assert np.allclose(processor.wvector[expected_offset : expected_offset + 3], [1, 2, 3])
+    assert np.count_nonzero(processor.wvector) == 3
+
+
 @pytest.mark.parametrize("alg", GID_SWITCHING_ALGORITHMS)
 def test_make_gid_pf_text_overrides_mode_and_penalty_without_pf_edits(alg):
     with _test_pfpath():
@@ -598,6 +664,7 @@ def test_RFdeconProcessor_gid_keywords_switch_penalty_without_pf_edits(alg):
     with _test_pfpath():
         processor = RFdeconProcessor(
             alg=alg,
+            pf=_gid_default_pf(alg),
             deconvolution_type="least_square",
             lag_weight_penalty_function="cosine_taper",
             gid_parameters={"maximum_iterations": 8},
@@ -622,6 +689,7 @@ def test_RFdecon_gid_keywords_switch_modes_without_pf_edits(alg, mode):
         rf = RFdecon(
             Seismogram(_make_gid_switching_data()),
             alg=alg,
+            pf=_gid_default_pf(alg),
             gid_mode=mode,
             gid_penalty_function="none",
             gid_parameters=gid_parameters,
@@ -644,6 +712,7 @@ def test_RFdecon_gid_accepts_integral_values_for_double_parameters(alg):
         rf = RFdecon(
             Seismogram(_make_gid_switching_data()),
             alg=alg,
+            pf=_gid_default_pf(alg),
             gid_mode="group_sparse",
             gid_parameters={"group_sparse_lambda_scale": 2},
         )
@@ -660,6 +729,7 @@ def test_RFdecon_gid_accepts_integral_lag_penalty_double_parameters(alg):
         rf = RFdecon(
             Seismogram(_make_gid_switching_data()),
             alg=alg,
+            pf=_gid_default_pf(alg),
             gid_mode="least_square",
             gid_penalty_function="cosine_taper",
             gid_parameters={"lag_weight_penalty_scale_factor": 1},
@@ -841,6 +911,7 @@ def test_RFdecon_accepts_numpy_integer_component_indexes():
         rf = RFdecon(
             Seismogram(seis0),
             alg="LeastSquares",
+            pf="RFdeconProcessor.pf",
             wcomp=np.int64(2),
             ncomp=np.int64(2),
         )
@@ -975,7 +1046,7 @@ def test_RFdecon():
         for alg in alglist:
             d = Seismogram(seis0)
             # first verify it works without returning actual and ideal wavelets
-            d_decon = RFdecon(d, alg=alg)
+            d_decon = RFdecon(d, alg=alg, pf="RFdeconProcessor.pf")
             assert d_decon.live
             print(alg, d_decon.npts)
 
@@ -986,7 +1057,7 @@ def test_RFdecon():
         for alg in alglist:
             print("Testing RFdecon with alg=", alg)
             d = Seismogram(seis0)
-            deconengine = RFdeconProcessor(alg=alg)
+            deconengine = RFdeconProcessor(alg=alg, pf="RFdeconProcessor.pf")
             d_decon = RFdecon(d, alg=alg, engine=deconengine)
             assert d_decon.live
             print_metadata(d_decon)
@@ -998,7 +1069,7 @@ def test_RFdecon():
             assert np.isclose(d_decon.data, d_decon2.data).all()
         # test variant of passing prewindowed data instead of v
         for alg in alglist:
-            deconengine = RFdeconProcessor(alg=alg)
+            deconengine = RFdeconProcessor(alg=alg, pf="RFdeconProcessor.pf")
             d = Seismogram(seis0)
             n = WindowData(d, -30.0, -5.0)
             n = ExtractComponent(n, 2)

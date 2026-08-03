@@ -222,6 +222,61 @@ response: ``actual_output`` or ``resolution_kernel`` is the inverse operator
 applied to the source wavelet, while ``inverse_wavelet`` is the inverse filter
 itself.  The returned receiver function is the cropped seismic result.
 
+Objective-specific receiver-function presets
+--------------------------------------------
+
+``RFdeconProcessor`` and ``RFdecon`` select ``mtz_plane_wave_lowfreq`` when
+called without a parameter file.  This is an objective-specific reference
+preset, not a claim that one parameter set is scientifically optimal for every
+acquisition or imaging method.  It uses a ``(-10, 120)`` s analysis/output
+window, a ``(-5, 20)`` s source-wavelet window, and a 0.125 Hz zero-phase
+Ricker output wavelet.  Its primary standalone reference operators are
+``WaterLevelDecon`` (water level 0.1) and ``LeastSquareDecon`` (damping 1.0).
+
+The installed scalar presets are selected with the ``preset`` keyword:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Preset
+     - Intended use
+     - Output shaping
+   * - ``mtz_plane_wave_lowfreq``
+     - General MTZ plane-wave/Kirchhoff reference product (the default)
+     - Ricker 0.125 Hz
+   * - ``mtz_plane_wave_highres``
+     - MTZ resolution sensitivity product
+     - Ricker 0.25 Hz
+   * - ``crustal_plane_wave``
+     - Short-window crustal reference product
+     - Ricker 0.5 Hz
+   * - ``raw_decon_diagnostic``
+     - Inverse/operator diagnostics only, not direct migration input
+     - none
+
+For example::
+
+   from mspasspy.algorithms.RFdeconProcessor import RFdeconProcessor
+
+   default = RFdeconProcessor(alg="WaterLevel")
+   highres = RFdeconProcessor(
+       alg="LeastSquares", preset="mtz_plane_wave_highres"
+   )
+   historical = RFdeconProcessor(alg="LeastSquares", pf="RFdeconProcessor.pf")
+
+Each preset writes ``rf_preset`` into the RF QC metadata.  The historical
+``RFdeconProcessor.pf`` remains selectable for reproducibility, but is a
+legacy scalar test/example configuration rather than the public scientific
+default.  No-argument GID construction uses the matching long-window/Ricker
+profile and records ``gid_workflow=experimental_sensitivity``.  GID products
+remain useful sensitivity comparisons; they are not the primary MTZ default.
+
+All image comparisons should hold the output Ricker wavelet fixed.  The
+negative side lobes of a symmetric Ricker wavelet are part of the point-spread
+function for plane-wave and likely Kirchhoff-style migration; they should not
+be replaced by an unmatched Butterworth merely because an individual RF looks
+smoother.
+
 Windows and noise
 -----------------
 
@@ -235,6 +290,15 @@ Three window concepts appear throughout the deconvolution APIs:
     The source estimate used to build the inverse operator.  In receiver
     function workflows this is commonly the vertical or P component, or an
     external stacked source estimate.
+
+For scalar ``RFdeconProcessor`` methods, ``wavelet_window_start`` and
+``wavelet_window_end`` can be distinct from the analysis window.  A
+``TimeSeries`` source wavelet is embedded at its actual time origin on the
+analysis grid before it is passed to the vector-only scalar engine.  Thus a
+short ``(-5,20)`` P pulse paired with an analysis window beginning at -10 s
+does not acquire a spurious five-second lag shift.  A raw numeric vector has
+no time base and retains legacy behavior; use ``TimeSeries`` for a time-aware
+external source wavelet.
 
 ``noise_window``
     A time interval or spectrum used to stabilize the inverse or to decide when
@@ -403,9 +467,10 @@ Scalar inverse operators
 
 Scalar operators load one source wavelet and one target trace.  They return a
 regularized inverse-filter receiver function, not a sparse impulse response.
-Their default parameter files do not apply a GID-style output shaping wavelet
-(``shaping_wavelet_type none``).  If an older scalar parameter file configures
-an output filter, treat it as a legacy display or bandlimiting filter.
+The objective-specific scalar presets apply the same Ricker output shaping
+wavelet to all scalar branches.  Older parameter files can still select
+``shaping_wavelet_type none`` for diagnostic/raw output, but raw and shaped
+results should not be compared as equivalent migration inputs.
 
 ``LeastSquareDecon``
     Frequency-domain damped least-squares deconvolution.  The inverse operator
@@ -469,6 +534,13 @@ amplitudes before division.
 ``CNRDeconEngine`` is the current engine used by the Python wrappers and by the
 CNR inverse mode inside GID.  ``CNR3CDecon`` is the older three-component
 prototype kept for compatibility.
+
+The legacy ``CNRDeconEngine.process(d, noise_spectrum, fl, fh)`` entry point
+continues to derive an output shaper from ``fl`` and ``fh``.  GID instead uses
+the configured-shaping path, so its inverse-band choices no longer overwrite a
+configured Ricker frequency.  This keeps CNR output shaping independent from
+the colored-noise inverse regularization band and makes its 0.125/0.25 Hz
+products comparable with the other deconvolution methods.
 
 Generalized iterative deconvolution (GID)
 -----------------------------------------

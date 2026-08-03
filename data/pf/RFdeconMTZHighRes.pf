@@ -1,0 +1,76 @@
+# mtz_plane_wave_highres sensitivity preset.  It differs from the general
+# MTZ preset only in the common output Ricker peak frequency.
+
+WaterLevel &Arr{
+rf_preset mtz_plane_wave_highres
+water_level 0.1
+operator_nfft 4096
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+target_sample_interval 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.25
+}
+LeastSquare &Arr{
+rf_preset mtz_plane_wave_highres
+damping_factor 1.0
+operator_nfft 4096
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+target_sample_interval 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.25
+}
+TimeDomainLeastSquare &Arr{
+rf_preset mtz_plane_wave_highres
+damping_factor 1.0e-6
+operator_nfft 4096
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+target_sample_interval 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.25
+}
+MultiTaperSpecDiv &Arr{
+rf_preset mtz_plane_wave_highres
+damping_factor 0.1
+shaping_wavelet_dt 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.25
+target_sample_interval 0.05
+operator_nfft 4096
+time_bandwidth_product 2.5
+number_tapers 3
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+noise_window_start -140.0
+noise_window_end -10.0
+}
+MultiTaperXcor &Arr{
+rf_preset mtz_plane_wave_highres
+damping_factor 0.03
+shaping_wavelet_dt 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 0.25
+target_sample_interval 0.05
+operator_nfft 4096
+time_bandwidth_product 2.5
+number_tapers 3
+deconvolution_data_window_start -10.0
+deconvolution_data_window_end 120.0
+wavelet_window_start -5.0
+wavelet_window_end 20.0
+noise_window_start -140.0
+noise_window_end -10.0
+}

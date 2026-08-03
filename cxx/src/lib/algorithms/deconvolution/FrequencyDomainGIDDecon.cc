@@ -105,7 +105,7 @@ double cnr_processed_noise_rms(CNRDeconEngine &op,
     return 0.0;
   PowerSpectrum psnoise(op.compute_noise_spectrum(noise_wavelet));
   Seismogram nwork(noise);
-  nwork = op.process(nwork, psnoise, 0.02, 2.0);
+  nwork = op.process(nwork, psnoise);
   TimeWindow trimwin;
   trimwin.start =
       nwork.t0() + nwork.dt() * static_cast<double>(transient_npts);
@@ -839,7 +839,7 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
       for (int j = 0; j < response_input.npts(); ++j)
         response_input.u(k, j) = leafwavelet.s[j];
     Seismogram raw_response(
-        cnrprocessor->process(response_input, psnoise, 0.02, 2.0));
+        cnrprocessor->process(response_input, psnoise));
     const int response_zero_lag_index = raw_response.sample_number(0.0);
     if (response_zero_lag_index < 0 ||
         response_zero_lag_index >= raw_response.npts())
@@ -848,7 +848,7 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
                         ErrorSeverity::Invalid);
     raw_zero_lag_gain = fabs(raw_response.u(0, response_zero_lag_index));
     Seismogram dwork(leaf_data);
-    dwork = cnrprocessor->process(dwork, psnoise, 0.02, 2.0);
+    dwork = cnrprocessor->process(dwork, psnoise);
     for (int k = 0; k < 3; ++k)
       cblas_dcopy(d_decon.npts(), dwork.u.get_address(k, data_offset), 3,
                   uwork.get_address(k, 0), 3);

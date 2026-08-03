@@ -4,6 +4,7 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/version.hpp>
 
 #include "mspass/algorithms/Taper.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
@@ -86,6 +87,14 @@ public:
   process(const mspass::seismic::Seismogram &d,
           const mspass::seismic::PowerSpectrum &psnoise, const double fl,
           const double fh);
+  /*! Apply the inverse using the PF-configured output shaper.
+
+   * Unlike the legacy four-argument overload, this entry point does not
+   * reinterpret an inverse bandwidth as an output-shaping bandwidth.
+   */
+  mspass::seismic::Seismogram
+  process(const mspass::seismic::Seismogram &d,
+          const mspass::seismic::PowerSpectrum &psnoise);
   /*! Return the sample interval required by the current operator. */
   double get_operator_dt() const { return this->operator_dt; }
   /*! Compute noise spectrum using internal Multitaper operator.
@@ -146,6 +155,9 @@ private:
   double operator_dt; // Data must match this sample interval
   int shaping_wavelet_number_poles;
   mspass::algorithms::deconvolution::ShapingWavelet shapingwavelet;
+  /* PF-defined shaping state.  Legacy process(d,psnoise,fl,fh) may replace
+   * shapingwavelet for one call, but configured processing restores this. */
+  mspass::algorithms::deconvolution::ShapingWavelet configured_shapingwavelet;
   /* Expected time window size in samples.   When signal lengths
   match this value the slepian tapers are not recomputed.  When there
   is a mismatch it will change.  That means this can change dynamically
@@ -172,6 +184,9 @@ private:
   in the actual_output method.*/
   int winv_t0_lag;
   /*** Private methods *****/
+  mspass::seismic::Seismogram
+  process_with_current_shaping(const mspass::seismic::Seismogram &d,
+                               const mspass::seismic::PowerSpectrum &psnoise);
   void update_shaping_wavelet(const double fl, const double fh);
   /* These are two algorithms for computing inverse operator in the frequency
    * domain*/
@@ -195,6 +210,11 @@ private:
     ar & shaping_wavelet_number_poles;
     // std::cout << "Serializing shapingwavelet"<<std::endl;
     ar & shapingwavelet;
+    if (version > 0) {
+      ar & configured_shapingwavelet;
+    } else if (Archive::is_loading::value) {
+      configured_shapingwavelet = shapingwavelet;
+    }
     ar & winlength;
     // std::cout<<"Serializing power spectrum engine objects"<<std::endl;
     ar & signal_engine;
@@ -219,4 +239,5 @@ private:
   }
 };
 } // namespace mspass::algorithms::deconvolution
+BOOST_CLASS_VERSION(mspass::algorithms::deconvolution::CNRDeconEngine, 1)
 #endif

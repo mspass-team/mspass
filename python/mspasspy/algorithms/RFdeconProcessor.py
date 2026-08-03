@@ -20,6 +20,7 @@ import os
 import re
 import tempfile
 import warnings
+from importlib import resources
 
 from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, Seismogram, TimeSeries
 from mspasspy.ccore.utility import AntelopePf, Metadata, MsPASSError, ErrorSeverity
@@ -37,6 +38,87 @@ from mspasspy.ccore.algorithms.deconvolution import (
     _antelope_pf_to_text,
 )
 from mspasspy.util.decorators import mspass_func_wrapper
+
+
+# These presets describe the output wavelet and time scales used by the
+# downstream imaging objective.  The default deliberately favors robust,
+# low-frequency plane-wave MTZ imaging; the historical test/example parameter
+# file remains available by explicitly passing ``pf="RFdeconProcessor.pf"``.
+DEFAULT_RF_PRESET = "mtz_plane_wave_lowfreq"
+RFDECON_PRESET_FILES = {
+    "mtz_plane_wave_lowfreq": "RFdeconMTZ.pf",
+    "mtz_plane_wave_highres": "RFdeconMTZHighRes.pf",
+    "crustal_plane_wave": "RFdeconCrustal.pf",
+    "raw_decon_diagnostic": "RFdeconRaw.pf",
+}
+
+
+def _resolve_scalar_preset(preset):
+    try:
+        return RFDECON_PRESET_FILES[preset]
+    except KeyError as err:
+        choices = ", ".join(sorted(RFDECON_PRESET_FILES))
+        raise ValueError(f"unknown RF preset {preset!r}; choices are {choices}") from err
+
+
+def _packaged_rf_preset_path(pf_name):
+    """Return a filesystem path for an internally selected RF preset.
+
+    Explicit ``pf=`` arguments intentionally retain Antelope's normal PF-path
+    resolution.  Only no-argument RF presets use this package resource so a
+    processor created by an installed MsPASS distribution does not depend on
+    the caller's working directory or ``PFPATH``.
+    """
+    preset = resources.files("mspasspy").joinpath("data", "pf", pf_name)
+    if not preset.is_file():
+        raise FileNotFoundError(f"packaged RF preset is missing: {pf_name}")
+    return os.fspath(preset)
+
+
+def _align_scalar_wavelet_to_analysis_grid(wavelet, analysis_window, target_dt):
+    """Embed a time-aware scalar source wavelet on the analysis grid.
+
+    Scalar C++ engines accept vectors only.  A short source window therefore
+    has to be zero-embedded at its physical time rather than treated as sample
+    zero of the analysis vector.  This is the scalar counterpart of the
+    time-aware GID wavelet loading policy.
+    """
+    if wavelet.dead():
+        raise MsPASSError(
+            "RFdeconProcessor.loadwavelet: received TimeSeries wavelet marked dead",
+            ErrorSeverity.Invalid,
+        )
+    if not np.isclose(wavelet.dt, target_dt, rtol=1.0e-7, atol=1.0e-10):
+        raise ValueError(
+            "RFdeconProcessor.loadwavelet: TimeSeries wavelet dt does not match "
+            "target_sample_interval"
+        )
+    npts = int(round((analysis_window.end - analysis_window.start) / target_dt)) + 1
+    if npts <= 0:
+        raise ValueError("RFdeconProcessor.loadwavelet: invalid analysis window")
+    offset_float = (wavelet.t0 - analysis_window.start) / target_dt
+    offset = int(round(offset_float))
+    if not np.isclose(offset_float, offset, rtol=0.0, atol=1.0e-6):
+        raise ValueError(
+            "RFdeconProcessor.loadwavelet: wavelet t0 is not sample-aligned "
+            "with deconvolution_data_window_start"
+        )
+    result = np.zeros(npts, dtype=float)
+    source_start = max(0, -offset)
+    destination_start = max(0, offset)
+    count = min(wavelet.npts - source_start, npts - destination_start)
+    if count > 0:
+        source_values = np.asarray(wavelet.data, dtype=float)
+        result[destination_start : destination_start + count] = np.asarray(
+            source_values[source_start : source_start + count], dtype=float
+        )
+    if not np.any(result):
+        raise MsPASSError(
+            "RFdeconProcessor.loadwavelet: configured wavelet has no nonzero "
+            "overlap with the deconvolution analysis window",
+            ErrorSeverity.Invalid,
+        )
+    return result
 
 
 def _as_gid_timeseries(x, dt, t0, argname):
@@ -553,9 +635,10 @@ class RFdeconProcessor:
     def __init__(
         self,
         alg="LeastSquares",
-        pf="RFdeconProcessor.pf",
+        pf=None,
         _pf_text=None,
         *,
+        preset=DEFAULT_RF_PRESET,
         deconvolution_type=None,
         gid_mode=None,
         lag_weight_penalty_function=None,
@@ -564,6 +647,25 @@ class RFdeconProcessor:
     ):
         self.algorithm = alg
         self.__is_3c_engine = False
+        if pf is None:
+            if alg not in (
+                "GeneralizedIterative",
+                "TimeDomainGID",
+                "FrequencyDomainGID",
+            ):
+                pf = _packaged_rf_preset_path(_resolve_scalar_preset(preset))
+            else:
+                if preset != DEFAULT_RF_PRESET:
+                    raise ValueError(
+                        "GID high-resolution/crustal/raw sensitivity profiles "
+                        "require an explicit parameter file"
+                    )
+                # GID has its own nested parameter format.  This profile uses
+                # the same MTZ windows/Ricker output as the scalar default but
+                # labels the result as an experimental sensitivity product.
+                pf = _packaged_rf_preset_path("RFdeconGIDMTZ.pf")
+        elif preset != DEFAULT_RF_PRESET:
+            raise ValueError("specify either pf or a non-default preset, not both")
         if pf == "RFdeconProcessor.pf":
             if alg in ("GeneralizedIterative", "TimeDomainGID"):
                 pf = "TimeDomainGIDDecon.pf"
@@ -834,25 +936,37 @@ class RFdeconProcessor:
                 "RFdeconProcessor.loadwavelet:  " + " Illegal dtype parameter=" + dtype
             )
         wvector = []
+        wtimeseries = None
         if window:
             if dtype == "Seismogram":
                 ts = _ExtractComponent(w, component)
-                ts = WindowData(ts, self.dwin.start, self.dwin.end)
+                ts = WindowData(ts, self.waveletwin.start, self.waveletwin.end)
                 wvector = ts.data
+                wtimeseries = ts
             elif dtype == "TimeSeries":
-                ts = WindowData(w, self.dwin.start, self.dwin.end)
+                ts = WindowData(w, self.waveletwin.start, self.waveletwin.end)
                 wvector = ts.data
+                wtimeseries = ts
             else:
                 wvector = w
         else:
             if dtype == "Seismogram":
                 ts = _ExtractComponent(w, component)
                 wvector = ts.data
+                wtimeseries = ts
             elif dtype == "TimeSeries":
                 wvector = w.data
+                wtimeseries = TimeSeries(w)
             else:
                 wvector = w
-        new_wvector = np.array(wvector)
+        if not self.__is_3c_engine and wtimeseries is not None:
+            new_wvector = _align_scalar_wavelet_to_analysis_grid(
+                wtimeseries,
+                self.dwin,
+                self.md.get_double("target_sample_interval"),
+            )
+        else:
+            new_wvector = np.array(wvector)
         new_wtimeseries = None
         if self.__is_3c_engine and dtype == "TimeSeries" and not window:
             new_wtimeseries = TimeSeries(w)
@@ -1202,6 +1316,20 @@ class RFdeconProcessor:
         return self.dwin
 
     @property
+    def waveletwin(self):
+        """Return the configured source-wavelet window.
+
+        Legacy parameter files without these keys retain the historical
+        behavior of using the analysis window for the source estimate.
+        """
+        if self.md.is_defined("wavelet_window_start"):
+            return TimeWindow(
+                self.md.get_double("wavelet_window_start"),
+                self.md.get_double("wavelet_window_end"),
+            )
+        return self.dwin
+
+    @property
     def nwin(self):
         """
         Return the configured noise window.
@@ -1237,7 +1365,8 @@ def RFdecon(
     *args,
     engine=None,
     alg="LeastSquares",
-    pf="RFdeconProcessor.pf",
+    pf=None,
+    preset=DEFAULT_RF_PRESET,
     deconvolution_type=None,
     gid_mode=None,
     lag_weight_penalty_function=None,
@@ -1324,10 +1453,16 @@ def RFdecon(
         component 2, but callers may pass a prepared TimeSeries wavelet or a
         one-dimensional numeric vector to use the same external wavelet for all
         components.
-    :param pf: The pf file to be parsed, used for initializing a
-        RFdeconProcessor.  Ignored if engine is used.
-    :type pf:  string defining an absolute path for the file name
-        or a path relative to a directory defined by PFPATH.
+    :param pf: Optional explicit PF file.  When omitted, conventional scalar
+        methods use the ``mtz_plane_wave_lowfreq`` preset and GID uses its
+        explicitly labelled MTZ sensitivity PF.  Ignored if engine is used.
+    :type pf:  string defining an absolute path for the file name, a path
+        relative to a directory defined by PFPATH, or ``None``.
+    :param preset: Named scalar objective preset used only when ``pf`` is
+        omitted.  Choices are ``mtz_plane_wave_lowfreq`` (default),
+        ``mtz_plane_wave_highres``, ``crustal_plane_wave``, and
+        ``raw_decon_diagnostic``.  GID non-default profiles require an
+        explicit parameter file.
     :param deconvolution_type: optional GID inverse or solver mode override
         used only when ``alg`` selects ``GeneralizedIterative``,
         ``TimeDomainGID``, or ``FrequencyDomainGID``.  Common values are ``ns_gid``,
@@ -1445,6 +1580,7 @@ def RFdecon(
         processor = RFdeconProcessor(
             alg,
             pf,
+            preset=preset,
             deconvolution_type=deconvolution_type,
             gid_mode=gid_mode,
             lag_weight_penalty_function=lag_weight_penalty_function,
@@ -1496,7 +1632,10 @@ def RFdecon(
 
     try:
         if wavelet is not None:
-            processor.loadwavelet(wavelet, dtype="raw_vector")
+            if isinstance(wavelet, TimeSeries):
+                processor.loadwavelet(wavelet, dtype="TimeSeries")
+            else:
+                processor.loadwavelet(wavelet, dtype="raw_vector")
         else:
             # processor.loadwavelet(d,dtype='Seismogram',window=True,component=wcomp)
             processor.loadwavelet(d, window=True, component=wcomp)

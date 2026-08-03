@@ -720,12 +720,16 @@ PYBIND11_MODULE(deconvolution, m) {
         py::arg("wavelet"),
         py::arg("noise_spectrum"),
         "Initialize the frequency-domain inverse operator from wavelet and precomputed noise spectrum")
-    .def("process",&CNRDeconEngine::process,
+    .def("process",py::overload_cast<const Seismogram&,const PowerSpectrum&,const double,const double>(&CNRDeconEngine::process),
         py::arg("d"),
         py::arg("psnoise"),
         py::arg("fl"),
         py::arg("fh"),
         "Deconvolve a Seismogram using the loaded inverse operator and requested shaping bandwidth")
+    .def("process_configured",py::overload_cast<const Seismogram&,const PowerSpectrum&>(&CNRDeconEngine::process),
+        py::arg("d"),
+        py::arg("psnoise"),
+        "Deconvolve a Seismogram using the shaping wavelet configured in the parameter file")
     .def("get_operator_dt",&CNRDeconEngine::get_operator_dt,"Return operator sample interval")
     .def("compute_noise_spectrum",
         py::overload_cast<const TimeSeries&>(&CNRDeconEngine::compute_noise_spectrum),
