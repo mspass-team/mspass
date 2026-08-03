@@ -977,11 +977,13 @@ class RFdeconProcessor:
             ``deconvolution_data_window_start``) is retained with a warning.
             Do not specify this argument for a ``TimeSeries`` or
             ``Seismogram``; their own time coordinates are authoritative.
+
         For GID processors this datum-independent method validates only the
         wavelet's intrinsic state and configured target sample interval.
         Datum-dependent time-reference and common-grid compatibility are
         checked by :func:`RFdecon` before it mutates a reused engine, and by
         the C++ processor when processing directly loaded data.
+
         :raises RuntimeError: if ``dtype`` or the ``dtype``/``window``
             combination is invalid.
         """
