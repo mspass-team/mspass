@@ -699,6 +699,34 @@ def test_CNRArrayDecon_error_handlers():
     assert e_d.elog.size() > 0
 
 
+def test_CNRDeconEngine_configured_shaping_survives_legacy_process_and_pickle():
+    """Configured shaping must not inherit a previous legacy fl/fh call."""
+    d = make_test_data(noise_level=0.1)
+    signal_window = TimeWindow(-5.0, 30.0)
+    noise_window = TimeWindow(-45.0, -5.0)
+    wavelet = WindowData(ExtractComponent(d, 2), signal_window.start, signal_window.end)
+    noise = WindowData(ExtractComponent(d, 2), noise_window.start, noise_window.end)
+    datum = WindowData(d, signal_window.start, signal_window.end)
+    engine = CNRDeconEngine(pfread("./data/pf/CNRDeconEngine.pf"))
+    noise_spectrum = engine.compute_noise_spectrum(noise)
+    engine.initialize_inverse_operator(wavelet, noise_spectrum)
+
+    engine.process(datum, noise_spectrum, 0.02, 2.0)
+    legacy_shaper = np.asarray(engine.output_shaping_wavelet().data)
+    configured = engine.process_configured(datum, noise_spectrum)
+    configured_shaper = np.asarray(engine.output_shaping_wavelet().data)
+    assert configured.live
+    assert not np.allclose(legacy_shaper, configured_shaper)
+
+    restored = pickle.loads(pickle.dumps(engine))
+    restored_result = restored.process_configured(datum, noise_spectrum)
+    restored_shaper = restored.output_shaping_wavelet()
+    assert restored_result.live
+    assert np.allclose(restored_result.data, configured.data)
+    assert restored_shaper.npts == configured_shaper.size
+    assert np.allclose(restored_shaper.data, configured_shaper)
+
+
 # test_CNRRFDecon()
 # test_CNRRFDecon_error_handlers()
 # test_CNRArrayDecon()

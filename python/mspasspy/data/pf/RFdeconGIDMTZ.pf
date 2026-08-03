@@ -1,0 +1,194 @@
+# Objective-specific GID sensitivity preset: mtz_plane_wave_lowfreq.
+#
+# GID output is kept for controlled comparison with the standalone LS/WL
+# primary products.  It is not a general scientific production default.
+
+deconvolution_operator_type &Arr{
+    time_domain_gid_deconvolution &Arr{
+        deconvolution_type ns_gid
+        rf_preset mtz_plane_wave_lowfreq
+        gid_workflow experimental_sensitivity
+        target_sample_interval 0.05
+        # Experimental-sensitivity GID profile for mtz_plane_wave_lowfreq.
+        # The primary scientific default is standalone WaterLevel/LeastSquare;
+        # GID remains an explicitly labelled comparison product.
+        full_data_window_start -10.0
+        full_data_window_end 120.0
+        deconvolution_data_window_start -10.0
+        deconvolution_data_window_end 120.0
+        wavelet_window_start -5.0
+        wavelet_window_end 20.0
+        noise_window_start -200.0
+        noise_window_end -10.0
+        noise_component 2
+
+        maximum_iterations 100
+        lag_weight_Linf_floor 0.01
+        lag_weight_rms_floor 0.01
+        residual_noise_rms_probability_floor 0.95
+        residual_fractional_improvement_floor 0.0001
+        # Normally multiplies robust scalar-component MAD sigma RMS; zero or
+        # roundoff MAD falls back to ordinary scalar-component RMS.  The
+        # empirical vector-amplitude quantile remains a separate max guard.
+        ns_gid_peak_sigma_threshold 3.0
+        ns_gid_peak_probability_threshold 0.995
+        ns_gid_use_empirical_noise_threshold true
+        ns_gid_residual_noise_ratio_floor 1.0
+        ns_gid_max_spikes 0
+        ns_gid_refit_interval 5
+        ns_gid_ridge_beta 1.0e-10
+        ns_gid_external_wavelet_allowed true
+
+        # The group_sparse_* parameters are used only when
+        # deconvolution_type is group_sparse.  group_sparse_lambda 0.0 means
+        # use the automatic noise-scaled lambda.  active-threshold parameters
+        # control the sparse support exported after the regularized solve.
+        group_sparse_lambda 0.0
+        group_sparse_lambda_scale 1.0
+        group_sparse_tolerance 1.0e-4
+        group_sparse_max_iterations 200
+        group_sparse_active_threshold 0.02
+        group_sparse_active_threshold_scale 1.0
+        group_sparse_active_threshold_quantile 0.90
+
+        # adaptive_memory derives its applied footprint from the resolution
+        # kernel.  lag_weight_function_width is used by fixed-width penalties
+        # and preserved as QC context for adaptive/kernel-derived penalties.
+        lag_weight_penalty_scale_factor 0.35
+        lag_weight_penalty_function adaptive_memory
+        lag_weight_function_width 5
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 0.125
+    }
+    least_square &Arr{
+        target_sample_interval 0.05
+        operator_nfft 4096
+        deconvolution_data_window_start -10.0
+        deconvolution_data_window_end 120.0
+        damping_factor 1.0
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 0.125
+    }
+    water_level &Arr{
+        target_sample_interval 0.05
+        operator_nfft 4096
+        deconvolution_data_window_start -10.0
+        deconvolution_data_window_end 120.0
+        water_level 0.1
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 0.125
+    }
+    multi_taper &Arr{
+        target_sample_interval 0.05
+        operator_nfft 4096
+        deconvolution_data_window_start -10.0
+        deconvolution_data_window_end 120.0
+        damping_factor 1.0
+        time_bandwidth_product 2.5
+        number_tapers 4
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 0.125
+    }
+    cnr &Arr{
+        target_sample_interval 0.05
+        operator_nfft 4096
+        deconvolution_data_window_start -10.0
+        deconvolution_data_window_end 120.0
+        algorithm colored_noise_damping
+        damping_factor 1.0
+        noise_floor 0.01
+        snr_regularization_floor 2.0
+        snr_data_bandwidth_floor 1.5
+        noise_window_start -200.0
+        noise_window_end -10.0
+        time_bandwidth_product 2.5
+        number_tapers 4
+        taper_type none
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 0.125
+    }
+    ns_gid &Arr{
+        target_sample_interval 0.05
+        operator_nfft 4096
+        deconvolution_data_window_start -10.0
+        deconvolution_data_window_end 120.0
+
+        ns_gid_mu_min 3.0e-3
+        ns_gid_alpha 1.0
+        ns_gid_noise_floor 1.0e-12
+        ns_gid_gain_max 1.0e3
+        ns_gid_snr_taper_low 1.0
+        ns_gid_snr_taper_high 3.0
+        ns_gid_use_reliability_taper false
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 0.125
+    }
+    frequency_domain_gid_deconvolution &Arr{
+        deconvolution_type ns_gid
+        rf_preset mtz_plane_wave_lowfreq
+        gid_workflow experimental_sensitivity
+        target_sample_interval 0.05
+        # Experimental-sensitivity GID profile for mtz_plane_wave_lowfreq.
+        # The primary scientific default is standalone WaterLevel/LeastSquare;
+        # GID remains an explicitly labelled comparison product.
+        full_data_window_start -10.0
+        full_data_window_end 120.0
+        deconvolution_data_window_start -10.0
+        deconvolution_data_window_end 120.0
+        wavelet_window_start -5.0
+        wavelet_window_end 20.0
+        noise_window_start -200.0
+        noise_window_end -10.0
+        noise_component 2
+
+        maximum_iterations 100
+        residual_ratio_floor 0.01
+        residual_fractional_improvement_floor 0.0001
+        # Normally multiplies robust scalar-component MAD sigma RMS; zero or
+        # roundoff MAD falls back to ordinary scalar-component RMS.  The
+        # empirical vector-amplitude quantile remains a separate max guard.
+        ns_gid_peak_sigma_threshold 3.0
+        ns_gid_peak_probability_threshold 0.995
+        ns_gid_use_empirical_noise_threshold true
+        ns_gid_residual_noise_ratio_floor 1.0
+        ns_gid_max_spikes 0
+        ns_gid_refit_interval 5
+        ns_gid_ridge_beta 1.0e-10
+        ns_gid_external_wavelet_allowed true
+
+        # The group_sparse_* parameters are used only when
+        # deconvolution_type is group_sparse.  group_sparse_lambda 0.0 means
+        # use the automatic noise-scaled lambda.  active-threshold parameters
+        # control the sparse support exported after the regularized solve.
+        group_sparse_lambda 0.0
+        group_sparse_lambda_scale 1.0
+        group_sparse_tolerance 1.0e-4
+        group_sparse_max_iterations 200
+        group_sparse_active_threshold 0.02
+        group_sparse_active_threshold_scale 1.0
+        group_sparse_active_threshold_quantile 0.90
+
+        # adaptive_memory derives its applied footprint from the resolution
+        # kernel.  lag_weight_function_width is used by fixed-width penalties
+        # and preserved as QC context for adaptive/kernel-derived penalties.
+        lag_weight_penalty_scale_factor 0.35
+        lag_weight_penalty_function adaptive_memory
+        lag_weight_function_width 5
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 0.125
+    }
+}

@@ -123,6 +123,7 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
       }
       this->shaping_wavelet_number_poles = npoles_lo;
     }
+    this->configured_shapingwavelet = this->shapingwavelet;
     /* As with signal we use this for initializing the noise engine
     rather than the number of points, which is all the engine cares about. */
     ts = GetDoubleRequired(pf, "noise_window_start");
@@ -143,6 +144,7 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
 /* Standard copy constructor */
 CNRDeconEngine::CNRDeconEngine(const CNRDeconEngine &parent)
     : FFTDeconOperator(parent), shapingwavelet(parent.shapingwavelet),
+      configured_shapingwavelet(parent.configured_shapingwavelet),
       signal_engine(parent.signal_engine), noise_engine(parent.noise_engine),
       winv(parent.winv) {
   this->algorithm = parent.algorithm;
@@ -230,6 +232,7 @@ void CNRDeconEngine::changeparameter(const Metadata &md) {
       }
       this->shaping_wavelet_number_poles = npoles_lo;
     }
+    this->configured_shapingwavelet = this->shapingwavelet;
 
     ts = GetDoubleRequired(md, "noise_window_start");
     te = GetDoubleRequired(md, "noise_window_end");
@@ -250,6 +253,7 @@ void CNRDeconEngine::changeparameter(const Metadata &md) {
 CNRDeconEngine &CNRDeconEngine::operator=(const CNRDeconEngine &parent) {
   if (&parent != this) {
     this->shapingwavelet = parent.shapingwavelet;
+    this->configured_shapingwavelet = parent.configured_shapingwavelet;
     this->signal_engine = parent.signal_engine;
     this->noise_engine = parent.noise_engine;
     this->winv = parent.winv;
@@ -612,7 +616,108 @@ Seismogram CNRDeconEngine::process(const Seismogram &d,
     t0_shift = round((-rfest.t0()) / rfest.dt());
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
-    /* The set_npts method is assumed to not only set that attribute 
+    /* The set_npts method is assumed to not only set that attribute
+     * but initialize the u matrix to a 3xnfft matrix.*/
+    if (rfest.npts() != FFTDeconOperator::nfft)
+      rfest.set_npts(FFTDeconOperator::nfft);
+    int nhighsnr;
+    double df;
+    df = 1.0 / (operator_dt * static_cast<double>(FFTDeconOperator::nfft));
+    for (int k = 0; k < 3; ++k) {
+      TimeSeries work;
+      work = TimeSeries(ExtractComponent(d, k), "Invalid");
+      wvec.clear();
+      int ntocopy = FFTDeconOperator::nfft;
+      if (ntocopy > work.npts())
+        ntocopy = work.npts();
+      for (int j = 0; j < ntocopy; ++j)
+        wvec.push_back(work.s[j]);
+      for (int j = ntocopy; j < FFTDeconOperator::nfft; ++j)
+        wvec.push_back(0.0);
+
+      ComplexArray numerator(FFTDeconOperator::nfft, &(wvec[0]));
+      gsl_fft_complex_forward(numerator.ptr(), 1, FFTDeconOperator::nfft,
+                              wavetable, workspace);
+      /* This loop computes QCMetrics of bandwidth fraction that
+      is above a defined snr floor - not necessarily the same as the
+      regularization floor used in computing the inverse */
+      double snrmax;
+      snrmax = 1.0;
+      nhighsnr = 0;
+      for (int j = 0; j < FFTDeconOperator::nfft / 2; ++j) {
+        double f;
+        f = df * static_cast<double>(j);
+        Complex64 z = numerator[j];
+        double sigamp = abs(z);
+        double namp = sqrt(psnoise.power(f));
+        double snr = sigamp / namp;
+
+        if (snr > snrmax)
+          snrmax = snr;
+        if (snr > this->band_snr_floor)
+          ++nhighsnr;
+      }
+      signal_bandwidth_fraction[k] =
+          static_cast<double>(nhighsnr) /
+          static_cast<double>(FFTDeconOperator::nfft / 2);
+      peak_snr[k] = snrmax;
+      ComplexArray rftmp = numerator * winv;
+      rftmp = (*this->shapingwavelet.wavelet()) * rftmp;
+      gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft, wavetable,
+                              workspace);
+      wvec.clear();
+      for (int j = 0; j < FFTDeconOperator::nfft; ++j)
+        wvec.push_back(rftmp[j].real());
+      /* Note we used a time domain shift instead of using a linear phase
+      shift in the frequency domain because the time domain operator has a lower
+      operation count than the frequency domain algorithm and is thus more
+      efficient.*/
+      if (t0_shift != 0)
+        wvec = circular_shift(wvec, -t0_shift);
+      for (int j = 0; j < FFTDeconOperator::nfft; ++j)
+        rfest.u(k, j) = wvec[j];
+    }
+    return rfest;
+  } catch (...) {
+    throw;
+  };
+}
+
+Seismogram CNRDeconEngine::process(const Seismogram &d,
+                                   const PowerSpectrum &psnoise) {
+  this->shapingwavelet = this->configured_shapingwavelet;
+  return this->process_with_current_shaping(d, psnoise);
+}
+
+Seismogram CNRDeconEngine::process_with_current_shaping(
+    const Seismogram &d, const PowerSpectrum &psnoise) {
+  const string alg("CNRDeconEngine::process");
+  if (d.dead() || psnoise.dead()) {
+    Seismogram dout(d);
+    dout.set_npts(0);
+    if (d.dead()) {
+      dout.elog.log_error(
+          alg, "received Seismogram input segment marked dead - cannot process",
+          ErrorSeverity::Invalid);
+    }
+    if (psnoise.dead()) {
+      dout.elog.log_error(
+          alg, "received PowerSpectrum object marked dead - cannot process",
+          ErrorSeverity::Invalid);
+    }
+    dout.kill();
+    return dout;
+  }
+  try {
+    string base_error("CNRDeconEngine::process:  ");
+    Seismogram rfest(d);
+    /* This is used to apply a shift to the fft outputs to put signals
+    at relative time 0 */
+    int t0_shift;
+    t0_shift = round((-rfest.t0()) / rfest.dt());
+    vector<double> wvec;
+    wvec.reserve(FFTDeconOperator::nfft);
+    /* The set_npts method is assumed to not only set that attribute
      * but initialize the u matrix to a 3xnfft matrix.*/
     if (rfest.npts() != FFTDeconOperator::nfft)
       rfest.set_npts(FFTDeconOperator::nfft);

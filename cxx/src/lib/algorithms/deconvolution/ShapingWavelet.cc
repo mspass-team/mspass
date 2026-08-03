@@ -189,11 +189,9 @@ ShapingWavelet::ShapingWavelet(const int npolelo, const double f3dblo,
   Butterworth bwf(true, true, true, npolelo, f3dblo, npolehi, f3dbhi, dtin);
   w = bwf.transfer_function(nfft);
 }
-ShapingWavelet::ShapingWavelet(const ShapingWavelet &parent) : w(parent.w) {
-  dt = parent.dt;
-  df = parent.df;
-  wavelet_name = parent.wavelet_name;
-}
+ShapingWavelet::ShapingWavelet(const ShapingWavelet &parent)
+    : nfft(parent.nfft), w(parent.w), dt(parent.dt), df(parent.df),
+      wavelet_name(parent.wavelet_name) {}
 ShapingWavelet::ShapingWavelet(CoreTimeSeries d, int nfft) {
   const string base_error("ShapingWavelet TimeSeries constructor:  ");
   wavelet_name = string("data");
@@ -201,6 +199,7 @@ ShapingWavelet::ShapingWavelet(CoreTimeSeries d, int nfft) {
    * constructor without the nfft argument */
   if (nfft <= 0)
     nfft = d.npts();
+  this->nfft = nfft;
   dt = d.dt();
   df = 1.0 / (dt * ((double)nfft));
   /* This is prone to an off by one error */
@@ -249,6 +248,7 @@ ShapingWavelet::ShapingWavelet(CoreTimeSeries d, int nfft) {
 }
 ShapingWavelet &ShapingWavelet::operator=(const ShapingWavelet &parent) {
   if (this != &parent) {
+    nfft = parent.nfft;
     w = parent.w;
     dt = parent.dt;
     df = parent.df;
