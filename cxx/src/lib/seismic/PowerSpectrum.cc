@@ -7,7 +7,8 @@ using namespace std;
 using namespace mspass::utility;
 using namespace mspass::seismic;
 
-PowerSpectrum::PowerSpectrum() : BasicSpectrum(), Metadata(), elog() {
+PowerSpectrum::PowerSpectrum()
+    : BasicSpectrum(1.0, 0.0, 0.0, 0), Metadata(), elog() {
   spectrum_type = string("UNDEFINED");
 }
 PowerSpectrum::PowerSpectrum(const PowerSpectrum &parent)

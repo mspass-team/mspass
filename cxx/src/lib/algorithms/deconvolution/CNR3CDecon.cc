@@ -5,6 +5,7 @@
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
+#include <limits>
 #include <sstream>
 #include <string.h> //needed for memcpy
 
@@ -154,14 +155,24 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
     int noise_winlength = round((te - ts) / operator_dt) + 1;
     double tbp = GetDoubleRequired(pf, "time_bandwidth_product");
     long ntapers = GetLongRequired(pf, "number_tapers");
-    this->dnoise_engine = MTPowerSpectrumEngine(noise_winlength, tbp, ntapers);
+    if (ntapers <= 0 || ntapers > numeric_limits<int>::max())
+      throw MsPASSError(
+          "CNR3CDecon::read_parameters: number_tapers is outside the "
+          "supported positive integer range",
+          ErrorSeverity::Fatal);
+    const int ntapers_to_use=static_cast<int>(ntapers);
+    this->dnoise_engine =
+        MTPowerSpectrumEngine(noise_winlength, tbp, ntapers_to_use);
     /* Default wavelet noise window to data window length - adjusted dynamically
     if changed*/
-    this->wnoise_engine = MTPowerSpectrumEngine(noise_winlength, tbp, ntapers);
+    this->wnoise_engine =
+        MTPowerSpectrumEngine(noise_winlength, tbp, ntapers_to_use);
     /* Set initial signal and wavelet engine spectrum estimators to length
     defined by data window above */
-    this->signalengine = MTPowerSpectrumEngine(this->winlength, tbp, ntapers);
-    this->waveletengine = MTPowerSpectrumEngine(this->winlength, tbp, ntapers);
+    this->signalengine =
+        MTPowerSpectrumEngine(this->winlength, tbp, ntapers_to_use);
+    this->waveletengine =
+        MTPowerSpectrumEngine(this->winlength, tbp, ntapers_to_use);
     string sval;
     sval = pf.get_string("taper_type");
     /* New parameter added for dynamic bandwidth adjustment feature implemented

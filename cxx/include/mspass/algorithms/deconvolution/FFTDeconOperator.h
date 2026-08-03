@@ -2,6 +2,7 @@
 #define __FFT_DECON_OPERATOR_H__
 #include "mspass/algorithms/TimeWindow.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
+#include "mspass/algorithms/deconvolution/GSLFFTResources.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/utility/Metadata.h"
@@ -35,15 +36,17 @@ public:
   FFTDeconOperator(const mspass::utility::Metadata &md);
   /*! \brief Copy constructor.
    *
-   * Copies the FFT length and sample shift while allocating independent GSL
-   * work objects for the new operator.
+   * Copies the FFT length, sample shift, and inverse coefficients while
+   * allocating independent GSL work objects for the new operator.
    */
   FFTDeconOperator(const FFTDeconOperator &parent);
   /*! \brief Release allocated GSL FFT work objects. */
   ~FFTDeconOperator();
   /*! \brief Assign FFT size and lag shift from another operator.
    *
-   * The assigned operator receives its own GSL wavetable and workspace.
+   * The assigned operator receives the inverse coefficients and its own GSL
+   * wavetable and workspace.  Assignment commits only after all allocations
+   * succeed.
    */
   FFTDeconOperator &operator=(const FFTDeconOperator &parent);
   /*! \brief Reconfigure the FFT operator from Metadata.
@@ -54,8 +57,9 @@ public:
   void changeparameter(const mspass::utility::Metadata &md);
   /*! \brief Change the FFT work-buffer length.
    *
-   * Frees any existing GSL FFT work objects, stores nfft_new as the operator
-   * length, and allocates new work objects for that size.
+   * nfft_new must be positive.  Replacement GSL work objects are allocated
+   * before the current objects are released, so allocation failure preserves
+   * the previous usable state.
    */
   void change_size(const int nfft_new);
   /*! \brief Set the sample offset used to unwrap deconvolution lag windows. */
@@ -113,16 +117,40 @@ private:
     // std::cout << "Exiting save function" << std::endl;
   }
   template <class Archive> void load(Archive &ar, const unsigned int version) {
-    // std::cout << "Entered FFTDecon serializaton load function" << std::endl;
-    ar &this->nfft;
-    ar &this->sample_shift;
-    // std::cout << "Loading winv vector" << std::endl;
-    ar & winv;
-    // std::cout << "Creating wavetable " << std::endl;
-    this->wavetable = gsl_fft_complex_wavetable_alloc(this->nfft);
-    // std::cout << "Creating workspace" << std::endl;
-    this->workspace = gsl_fft_complex_workspace_alloc(this->nfft);
-    // std::cout << "Exiting load" << std::endl;
+    int loaded_nfft;
+    int loaded_sample_shift;
+    ComplexArray loaded_winv;
+    ar & loaded_nfft;
+    ar & loaded_sample_shift;
+    ar & loaded_winv;
+    const std::string caller("FFTDeconOperator serialization load");
+    if (loaded_nfft <= 0)
+      throw mspass::utility::MsPASSError(
+          caller + ": archived fft length must be positive",
+          mspass::utility::ErrorSeverity::Invalid);
+    if (loaded_sample_shift < 0 || loaded_sample_shift > loaded_nfft)
+      throw mspass::utility::MsPASSError(
+          caller + ": archived sample shift is outside the fft buffer",
+          mspass::utility::ErrorSeverity::Invalid);
+    /* An operator may be serialized before its inverse is initialized. */
+    if (loaded_winv.size() != 0 && loaded_winv.size() != loaded_nfft)
+      throw mspass::utility::MsPASSError(
+          caller + ": archived inverse size does not match fft length",
+          mspass::utility::ErrorSeverity::Invalid);
+    auto resources = detail::AllocateGSLFFTResources(loaded_nfft, caller);
+
+    /* Everything above may throw.  Swaps, frees, scalar stores, and releases
+     * below form the no-throw commit into either a default or initialized
+     * target. */
+    winv.swap(loaded_winv);
+    if (wavetable != nullptr)
+      gsl_fft_complex_wavetable_free(wavetable);
+    if (workspace != nullptr)
+      gsl_fft_complex_workspace_free(workspace);
+    nfft = loaded_nfft;
+    sample_shift = loaded_sample_shift;
+    wavetable = resources.wavetable.release();
+    workspace = resources.workspace.release();
   }
   BOOST_SERIALIZATION_SPLIT_MEMBER()
 };

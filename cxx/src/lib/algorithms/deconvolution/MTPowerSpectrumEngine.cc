@@ -1,7 +1,10 @@
 #include "mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h"
+#include "mspass/algorithms/deconvolution/GSLFFTResources.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
 #include "mspass/algorithms/deconvolution/dpss.h"
 #include "mspass/utility/utility.h"
+#include <limits>
+#include <new>
 #include <sstream>
 #include <vector>
 /* This C function is defined in FFTDeconOperator.h but it has a lot of
@@ -28,19 +31,52 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine() {
 MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize,
                                              const double tbpin,
                                              const int ntpin, const int nfftin,
-                                             const double dtin) {
-  taperlen = winsize;
-  tbp = tbpin;
-  ntapers = ntpin;
+                                             const double dtin)
+    : taperlen(winsize), ntapers(ntpin), nfft(0), tbp(tbpin),
+      operator_dt(dtin), deltaf(1.0), wavetable(NULL), workspace(NULL) {
+  const string caller("MTPowerSpectrumEngine constructor");
+  if (winsize <= 0)
+    throw MsPASSError(caller + ": winsize must be positive",
+                      ErrorSeverity::Fatal);
+  if (!isfinite(tbpin) || tbpin <= 0.0)
+    throw MsPASSError(
+        caller + ": time-bandwidth product must be finite and positive",
+        ErrorSeverity::Fatal);
+  if (ntpin <= 0)
+    throw MsPASSError(caller + ": number of tapers must be positive",
+                      ErrorSeverity::Fatal);
+  if (!isfinite(dtin) || dtin <= 0.0)
+    throw MsPASSError(caller + ": sample interval must be finite and positive",
+                      ErrorSeverity::Fatal);
+  if (tbpin > static_cast<double>(numeric_limits<int>::max()) / 2.0)
+    throw MsPASSError(caller + ": time-bandwidth product is too large",
+                      ErrorSeverity::Fatal);
   if (nfftin < winsize) {
-    nfft = nextPowerOf2(winsize);
-    if (nfft == winsize)
-      nfft = 2 * winsize;
+    unsigned int rounded_nfft = nextPowerOf2(winsize);
+    if (rounded_nfft == static_cast<unsigned int>(winsize)) {
+      if (rounded_nfft >
+          static_cast<unsigned int>(numeric_limits<int>::max() / 2))
+        throw MsPASSError(caller + ": computed fft length is too large",
+                          ErrorSeverity::Fatal);
+      rounded_nfft *= 2;
+    }
+    if (rounded_nfft == 0 || rounded_nfft >
+                                 static_cast<unsigned int>(
+                                     numeric_limits<int>::max()))
+      throw MsPASSError(caller + ": computed fft length is invalid",
+                        ErrorSeverity::Fatal);
+    nfft = static_cast<int>(rounded_nfft);
   } else
     nfft = nfftin;
-  operator_dt = dtin;
+  if (nfft <= 0)
+    throw MsPASSError(caller + ": fft length must be positive",
+                      ErrorSeverity::Fatal);
   this->set_df(dtin);
   int nseq = static_cast<int>(2.0 * tbp);
+  if (nseq <= 0)
+    throw MsPASSError(
+        caller + ": time-bandwidth product permits no positive taper count",
+        ErrorSeverity::Fatal);
   if (ntapers > nseq) {
     cerr << "MTPowerSpectrumEngine (WARNING):  requested number of tapers="
          << ntpin << endl
@@ -49,9 +85,14 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize,
          << "Automatically reset number tapers to max allowed=" << nseq << endl;
     ntapers = nseq;
   }
+  if (ntapers <= 0)
+    throw MsPASSError(caller + ": clamped taper count is not positive",
+                      ErrorSeverity::Fatal);
   int seql(0);
   int sequ = ntapers - 1;
-  std::vector<double> work(ntapers * taperlen, 0.0);
+  std::vector<double> work(static_cast<size_t>(ntapers) *
+                               static_cast<size_t>(taperlen),
+                           0.0);
   dpss_calc(taperlen, tbp, seql, sequ, &(work[0]));
   tapers = dmatrix(ntapers, taperlen);
   int i, ii, j;
@@ -76,20 +117,24 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize,
         tapers(i, j) = -tapers(i, j);
     }
   }
-  wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-  workspace = gsl_fft_complex_workspace_alloc(nfft);
+  auto resources = detail::AllocateGSLFFTResources(nfft, caller);
+  wavetable = resources.wavetable.release();
+  workspace = resources.workspace.release();
 }
 MTPowerSpectrumEngine::MTPowerSpectrumEngine(
     const MTPowerSpectrumEngine &parent)
-    : tapers(parent.tapers) {
-  taperlen = parent.taperlen;
-  ntapers = parent.ntapers;
-  nfft = parent.nfft;
-  tbp = parent.tbp;
-  operator_dt = parent.operator_dt;
-  deltaf = parent.deltaf;
-  wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-  workspace = gsl_fft_complex_workspace_alloc(nfft);
+    : taperlen(parent.taperlen), ntapers(parent.ntapers), nfft(parent.nfft),
+      tbp(parent.tbp), operator_dt(parent.operator_dt), tapers(parent.tapers),
+      deltaf(parent.deltaf), wavetable(NULL), workspace(NULL) {
+  /* A default engine has no FFT resources.  For a configured engine the raw
+   * GSL pointers must remain null until each allocation succeeds because this
+   * object's destructor is not run if its constructor throws. */
+  if (nfft > 0) {
+    auto resources = detail::AllocateGSLFFTResources(
+        nfft, "MTPowerSpectrumEngine copy constructor");
+    wavetable = resources.wavetable.release();
+    workspace = resources.workspace.release();
+  }
 }
 
 MTPowerSpectrumEngine::~MTPowerSpectrumEngine() {
@@ -101,15 +146,32 @@ MTPowerSpectrumEngine::~MTPowerSpectrumEngine() {
 MTPowerSpectrumEngine &
 MTPowerSpectrumEngine::operator=(const MTPowerSpectrumEngine &parent) {
   if (&parent != this) {
+    /* Copy all allocating state before committing.  In particular, never
+     * overwrite the cached GSL pointers: doing so leaked both allocations on
+     * every CNRDeconEngine assignment. */
+    dmatrix new_tapers(parent.tapers);
+    detail::GSLFFTResources resources;
+    if (parent.nfft > 0) {
+      resources = detail::AllocateGSLFFTResources(
+          parent.nfft, "MTPowerSpectrumEngine assignment");
+    }
+    try {
+      tapers = new_tapers;
+    } catch (...) {
+      throw;
+    }
+    if (wavetable != NULL)
+      gsl_fft_complex_wavetable_free(wavetable);
+    if (workspace != NULL)
+      gsl_fft_complex_workspace_free(workspace);
     taperlen = parent.taperlen;
     ntapers = parent.ntapers;
     nfft = parent.nfft;
     tbp = parent.tbp;
     operator_dt = parent.operator_dt;
     deltaf = parent.deltaf;
-    tapers = parent.tapers;
-    wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-    workspace = gsl_fft_complex_workspace_alloc(nfft);
+    wavetable = resources.wavetable.release();
+    workspace = resources.workspace.release();
   }
   return *this;
 }

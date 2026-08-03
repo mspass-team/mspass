@@ -6,6 +6,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/vector.hpp>
+#include <utility>
 namespace mspass::algorithms::deconvolution {
 /*! \brief Frequency domain shaping wavelet.
 
@@ -71,6 +72,14 @@ public:
   ShapingWavelet(const ShapingWavelet &parent);
   /*! Assignment operator. */
   ShapingWavelet &operator=(const ShapingWavelet &parent);
+  /*! Exchange complete shaping state without allocation. */
+  void swap(ShapingWavelet &other) noexcept {
+    std::swap(nfft, other.nfft);
+    w.swap(other.w);
+    std::swap(dt, other.dt);
+    std::swap(df, other.df);
+    wavelet_name.swap(other.wavelet_name);
+  }
   /*! Return a pointer to the shaping wavelet this object defines in
    * the frequency domain. */
   ComplexArray *wavelet() { return &w; };

@@ -7,7 +7,10 @@
 #include <complex>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
+#include "mspass/utility/MsPASSError.h"
 #include <iostream>
+#include <string>
+#include <utility>
 #include <vector>
 
 #define REAL(z, i) ((z)[2 * (i)])
@@ -81,6 +84,11 @@ public:
   ComplexArray(const ComplexArray &parent);
   /*! Assignment operator. */
   ComplexArray &operator=(const ComplexArray &parent);
+  /*! Exchange storage with another array without allocation. */
+  void swap(ComplexArray &other) noexcept {
+    data.swap(other.data);
+    std::swap(nsamp, other.nsamp);
+  }
   /*! Destructor. */
   ~ComplexArray();
 
@@ -192,14 +200,29 @@ private:
     ar & dv;
   }
   template <class Archive> void load(Archive &ar, const unsigned int version) {
-    ar &this->nsamp;
+    int loaded_nsamp;
     std::vector<FortranComplex64> dv;
-    dv.reserve(this->nsamp);
+    ar & loaded_nsamp;
     ar & dv;
-    this->data =
-        std::shared_ptr<FortranComplex64[]>(new FortranComplex64[this->nsamp]);
-    for (auto i = 0; i < this->nsamp; ++i)
-      this->data[i] = dv[i];
+    const std::string caller("ComplexArray serialization load");
+    if (loaded_nsamp < 0)
+      throw mspass::utility::MsPASSError(
+          caller + ": archived sample count cannot be negative",
+          mspass::utility::ErrorSeverity::Invalid);
+    if (dv.size() != static_cast<size_t>(loaded_nsamp))
+      throw mspass::utility::MsPASSError(
+          caller + ": archived sample count does not match data vector",
+          mspass::utility::ErrorSeverity::Invalid);
+
+    std::shared_ptr<FortranComplex64[]> loaded_data;
+    if (loaded_nsamp > 0) {
+      loaded_data = std::shared_ptr<FortranComplex64[]>(
+          new FortranComplex64[loaded_nsamp]);
+      for (int i = 0; i < loaded_nsamp; ++i)
+        loaded_data[i] = dv[i];
+    }
+    data.swap(loaded_data);
+    nsamp = loaded_nsamp;
   }
   BOOST_SERIALIZATION_SPLIT_MEMBER()
 };

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 /* Either text or binary can be specified here, but we use binary
  * to emphasize this class is normally serialized binary for
@@ -136,6 +137,21 @@ public:
   double &operator()(size_t r, size_t c);
   /*! Standard assignment operator */
   dmatrix &operator=(const dmatrix &other);
+  /*! Exchange complete matrix state without allocation. */
+  void swap(dmatrix &other) noexcept {
+    ary.swap(other.ary);
+    std::swap(length, other.length);
+    std::swap(nrr, other.nrr);
+    std::swap(ncc, other.ncc);
+  }
+  /*! Return true when dimensions and serialized storage agree. */
+  bool storage_is_consistent() const noexcept {
+    if (ary.size() != length)
+      return false;
+    if (nrr == 0 || ncc == 0)
+      return nrr == 0 && ncc == 0 && length == 0;
+    return length / nrr == ncc && length % nrr == 0;
+  }
   /*! \brief Add one matrix to another.
 
   Matrix addition is a standard operation but demands the two matrices
