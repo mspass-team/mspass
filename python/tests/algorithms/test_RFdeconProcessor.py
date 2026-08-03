@@ -152,7 +152,11 @@ def test_gid_accepted_spike_lag_and_component_trace_on_known_synthetic(alg):
     retain a parallel accepted-spike trace with the same physical lag axis."""
     with _test_pfpath():
         qc = dict(_run_public_gid_engine(alg))
-    lags = [float(value) for value in qc["gid_accepted_spike_lag_seconds"].split(",") if value]
+    lags = [
+        float(value)
+        for value in qc["gid_accepted_spike_lag_seconds"].split(",")
+        if value
+    ]
     components = [
         {int(value) for value in token.split("+") if value}
         for token in qc["gid_accepted_spike_components"].split(",")
@@ -160,7 +164,9 @@ def test_gid_accepted_spike_lag_and_component_trace_on_known_synthetic(alg):
     ]
     assert lags
     assert len(lags) == len(components)
-    assert all(component_set <= {0, 1, 2} and component_set for component_set in components)
+    assert all(
+        component_set <= {0, 1, 2} and component_set for component_set in components
+    )
     assert any(
         abs(lag) <= 2 * 0.05 and component_set & {0, 1} and 2 in component_set
         for lag, component_set in zip(lags, components)
@@ -524,7 +530,9 @@ def test_RFdeconProcessor_scalar_timeseries_wavelet_preserves_independent_origin
     processor.loadwavelet(wavelet, dtype="TimeSeries")
     expected_offset = int(round((-5.0 - processor.dwin.start) / 0.05))
     assert len(processor.wvector) == 2601
-    assert np.allclose(processor.wvector[expected_offset : expected_offset + 3], [1, 2, 3])
+    assert np.allclose(
+        processor.wvector[expected_offset : expected_offset + 3], [1, 2, 3]
+    )
     assert np.count_nonzero(processor.wvector) == 3
 
 
@@ -577,9 +585,7 @@ def test_RFdeconProcessor_scalar_vector_wavelet_t0_matches_timeseries():
             np.asarray(wavelet.data), dtype="raw_vector", wavelet_t0=np.nan
         )
     with pytest.raises(ValueError, match="only valid for raw_vector"):
-        vector_aware.loadwavelet(
-            wavelet, dtype="TimeSeries", wavelet_t0=wavelet.t0
-        )
+        vector_aware.loadwavelet(wavelet, dtype="TimeSeries", wavelet_t0=wavelet.t0)
 
 
 def test_RFdeconProcessor_scalar_timeseries_wavelet_validation_is_transactional():
@@ -641,9 +647,7 @@ def test_RFdeconProcessor_scalar_timeseries_wavelet_validation_is_transactional(
     seismogram.set_live()
     for component in range(3):
         seismogram.data[component, :] = DoubleVector(data)
-    rejected = RFdecon(
-        seismogram, engine=processor, wavelet=bad_wavelets[-1]
-    )
+    rejected = RFdecon(seismogram, engine=processor, wavelet=bad_wavelets[-1])
     assert rejected.dead()
     assert rejected.elog.size() > 0
     assert np.array_equal(processor.wvector, cached_wavelet)
@@ -1486,9 +1490,7 @@ def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
         assert np.isfinite(rf.data).all()
         assert rf.is_defined("RFdecon_properties")
         assert rf["RFdecon_properties"]["iteration_count"] > 0
-        assert rf["RFdecon_properties"]["gid_wavelet_t0"] == pytest.approx(
-            wavelet.t0
-        )
+        assert rf["RFdecon_properties"]["gid_wavelet_t0"] == pytest.approx(wavelet.t0)
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)
@@ -1927,9 +1929,7 @@ def test_RFdeconProcessor_gid_loadwavelet_is_transactional(alg, pf):
     for bad_wavelet in bad_wavelets:
         with pytest.raises(MsPASSError):
             processor.loadwavelet(bad_wavelet, dtype="TimeSeries")
-        assert np.array_equal(
-            np.asarray(processor.wtimeseries.data), cached_samples
-        )
+        assert np.array_equal(np.asarray(processor.wtimeseries.data), cached_samples)
         second = processor.apply_3c(Seismogram(data))
         assert second.live
         qc = dict(processor.processor.QCMetrics())
@@ -1953,9 +1953,7 @@ def test_RFdeconProcessor_gid_loadwavelet_is_transactional(alg, pf):
     processor.loadwavelet(wavelet, dtype="TimeSeries")
 
     for candidate in context_only_cases:
-        bad_call = RFdecon(
-            Seismogram(data), engine=processor, wavelet=candidate
-        )
+        bad_call = RFdecon(Seismogram(data), engine=processor, wavelet=candidate)
         assert bad_call.dead()
         assert np.array_equal(np.asarray(processor.wtimeseries.data), cached_samples)
         recovered = processor.apply_3c(Seismogram(data))
@@ -1970,9 +1968,7 @@ def test_RFdeconProcessor_gid_loadwavelet_is_transactional(alg, pf):
     utc_wavelet = TimeSeries(wavelet)
     utc_wavelet.set_t0(utc_wavelet.t0 + utc_epoch)
     utc_wavelet.tref = TimeReferenceType.UTC
-    utc_result = RFdecon(
-        utc_data, engine=processor, wavelet=utc_wavelet
-    )
+    utc_result = RFdecon(utc_data, engine=processor, wavelet=utc_wavelet)
     assert utc_result.dead()
     assert utc_result.elog.size() > 0
     assert "ator(P-arrival epoch)" in utc_result.elog.get_error_log()[-1].message
