@@ -38,7 +38,12 @@ from mspasspy.algorithms.RFdeconProcessor import (
 )
 from mspasspy.algorithms.TimeDomainGIDDecon import TimeDomainGIDRFDecon
 from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDecon
-from mspasspy.ccore.seismic import DoubleVector, Seismogram, TimeSeries
+from mspasspy.ccore.seismic import (
+    DoubleVector,
+    Seismogram,
+    TimeReferenceType,
+    TimeSeries,
+)
 from mspasspy.ccore.utility import AntelopePf, ErrorSeverity, Metadata, MsPASSError
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.basic import ExtractComponent
@@ -469,7 +474,9 @@ def test_RFdeconProcessor_default_is_mtz_plane_wave_lowfreq_with_auditable_qc():
     assert processor.md["shaping_wavelet_type"] == "ricker"
     assert processor.md["shaping_wavelet_frequency"] == pytest.approx(0.125)
     processor.loaddata(np.ones(64), dtype="raw_vector")
-    processor.loadwavelet(np.ones(64), dtype="raw_vector")
+    processor.loadwavelet(
+        np.ones(64), dtype="raw_vector", wavelet_t0=processor.dwin.start
+    )
     processor.apply()
     assert processor.QCMetrics()["rf_preset"] == DEFAULT_RF_PRESET
 
@@ -519,6 +526,173 @@ def test_RFdeconProcessor_scalar_timeseries_wavelet_preserves_independent_origin
     assert len(processor.wvector) == 2601
     assert np.allclose(processor.wvector[expected_offset : expected_offset + 3], [1, 2, 3])
     assert np.count_nonzero(processor.wvector) == 3
+
+
+def test_RFdeconProcessor_loaddata_timeseries_without_and_with_window():
+    """TimeSeries loading must use d.data and leave the input state unchanged."""
+    with _test_pfpath():
+        processor = RFdeconProcessor(alg="WaterLevel")
+    data = TimeSeries(3001)
+    data.set_t0(-20.0)
+    data.set_dt(0.05)
+    data.set_live()
+    values = np.linspace(-2.0, 3.0, data.npts)
+    data.data[:] = DoubleVector(values)
+    original_state = (data.live, data.t0, data.dt, data.npts)
+
+    processor.loaddata(data, dtype="TimeSeries", window=False)
+    assert np.array_equal(processor.dvector, values)
+    assert (data.live, data.t0, data.dt, data.npts) == original_state
+
+    expected = WindowData(data, processor.dwin.start, processor.dwin.end)
+    processor.loaddata(data, dtype="TimeSeries", window=True)
+    assert np.array_equal(processor.dvector, np.asarray(expected.data))
+    assert (data.live, data.t0, data.dt, data.npts) == original_state
+
+
+def test_RFdeconProcessor_scalar_vector_wavelet_t0_matches_timeseries():
+    with _test_pfpath():
+        time_aware = RFdeconProcessor(alg="WaterLevel")
+        vector_aware = RFdeconProcessor(alg="WaterLevel")
+        legacy = RFdeconProcessor(alg="WaterLevel")
+    wavelet = TimeSeries(3)
+    wavelet.set_t0(-5.0)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    wavelet.data[:] = DoubleVector([1.0, 2.0, 3.0])
+
+    time_aware.loadwavelet(wavelet, dtype="TimeSeries")
+    vector_aware.loadwavelet(
+        np.asarray(wavelet.data), dtype="raw_vector", wavelet_t0=wavelet.t0
+    )
+    assert np.array_equal(vector_aware.wvector, time_aware.wvector)
+
+    with pytest.warns(UserWarning, match="legacy deconvolution analysis-window origin"):
+        legacy.loadwavelet(np.asarray(wavelet.data), dtype="raw_vector")
+    assert np.array_equal(legacy.wvector, np.asarray(wavelet.data))
+    assert np.count_nonzero(legacy.wvector) == 3
+
+    with pytest.raises(ValueError, match="wavelet_t0 must be finite"):
+        vector_aware.loadwavelet(
+            np.asarray(wavelet.data), dtype="raw_vector", wavelet_t0=np.nan
+        )
+    with pytest.raises(ValueError, match="only valid for raw_vector"):
+        vector_aware.loadwavelet(
+            wavelet, dtype="TimeSeries", wavelet_t0=wavelet.t0
+        )
+
+
+def test_RFdeconProcessor_scalar_timeseries_wavelet_validation_is_transactional():
+    with _test_pfpath():
+        processor = RFdeconProcessor(alg="WaterLevel")
+    wavelet = TimeSeries(101)
+    wavelet.set_t0(-5.0)
+    wavelet.set_dt(0.05)
+    wavelet.set_live()
+    for i in range(wavelet.npts):
+        wavelet.data[i] = np.exp(-0.5 * ((i - 50) / 6.0) ** 2)
+
+    data = np.zeros(2601)
+    offset = int(round((wavelet.t0 - processor.dwin.start) / wavelet.dt))
+    data[offset : offset + wavelet.npts] = np.asarray(wavelet.data)
+    processor.loaddata(data, dtype="raw_vector")
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    baseline = np.asarray(processor.apply()).copy()
+    cached_wavelet = processor.wvector.copy()
+
+    bad_wavelets = []
+    dead = TimeSeries(wavelet)
+    dead.kill()
+    bad_wavelets.append(dead)
+    empty = TimeSeries()
+    empty.set_live()
+    bad_wavelets.append(empty)
+    for attribute, value in (
+        ("dt", 0.0500005),
+        ("dt", float("nan")),
+        ("dt", float("inf")),
+        ("dt", 0.0),
+        ("t0", float("nan")),
+        ("t0", float("inf")),
+    ):
+        bad = TimeSeries(wavelet)
+        if attribute == "dt":
+            bad.set_dt(value)
+        else:
+            bad.set_t0(value)
+        bad_wavelets.append(bad)
+    for value in (float("nan"), float("inf")):
+        bad = TimeSeries(wavelet)
+        bad.data[0] = value
+        bad_wavelets.append(bad)
+    off_grid = TimeSeries(wavelet)
+    off_grid.set_t0(wavelet.t0 + 0.25 * wavelet.dt)
+    bad_wavelets.append(off_grid)
+
+    for bad_wavelet in bad_wavelets:
+        with pytest.raises(MsPASSError):
+            processor.loadwavelet(bad_wavelet, dtype="TimeSeries")
+        assert np.array_equal(processor.wvector, cached_wavelet)
+        assert np.array_equal(np.asarray(processor.apply()), baseline)
+
+    seismogram = Seismogram(data.size)
+    seismogram.set_t0(processor.dwin.start)
+    seismogram.set_dt(0.05)
+    seismogram.set_live()
+    for component in range(3):
+        seismogram.data[component, :] = DoubleVector(data)
+    rejected = RFdecon(
+        seismogram, engine=processor, wavelet=bad_wavelets[-1]
+    )
+    assert rejected.dead()
+    assert rejected.elog.size() > 0
+    assert np.array_equal(processor.wvector, cached_wavelet)
+    assert np.array_equal(np.asarray(processor.apply()), baseline)
+
+
+@pytest.mark.parametrize("dtype", ["TimeSeries", "Seismogram"])
+def test_RFdeconProcessor_loadwavelet_validates_the_actual_window(dtype):
+    """window=True validates only the source samples that will be loaded."""
+    with _test_pfpath():
+        processor = RFdeconProcessor(alg="WaterLevel")
+    t0 = -10.0
+    dt = processor.md.get_double("target_sample_interval")
+    npts = int(round((25.0 - t0) / dt)) + 1
+    source = TimeSeries(npts)
+    source.set_t0(t0)
+    source.set_dt(dt)
+    source.set_live()
+    source.data[:] = DoubleVector(np.ones(npts))
+    outside_index = source.sample_number(-8.0)
+    inside_index = source.sample_number(0.0)
+
+    def as_input(ts):
+        if dtype == "TimeSeries":
+            return TimeSeries(ts)
+        seis = Seismogram(ts.npts)
+        seis.set_t0(ts.t0)
+        seis.set_dt(ts.dt)
+        seis.set_live()
+        seis.tref = ts.tref
+        for component in range(3):
+            seis.data[component, :] = ts.data
+        return seis
+
+    outside_bad = TimeSeries(source)
+    outside_bad.data[outside_index] = float("nan")
+    processor.loadwavelet(as_input(outside_bad), dtype=dtype, window=True)
+    cached = processor.wvector.copy()
+    assert np.isfinite(cached).all()
+
+    inside_bad = TimeSeries(source)
+    inside_bad.data[inside_index] = float("nan")
+    with pytest.raises(MsPASSError, match="nonfinite samples"):
+        processor.loadwavelet(as_input(inside_bad), dtype=dtype, window=True)
+    assert np.array_equal(processor.wvector, cached)
+
+    with pytest.raises(MsPASSError, match="nonfinite samples"):
+        processor.loadwavelet(as_input(outside_bad), dtype=dtype, window=False)
+    assert np.array_equal(processor.wvector, cached)
 
 
 @pytest.mark.parametrize("alg", GID_SWITCHING_ALGORITHMS)
@@ -1076,7 +1250,12 @@ def test_RFdecon():
             w = WindowData(d, deconengine.dwin.start, deconengine.dwin.end)
             w = ExtractComponent(w, 2)
             d_decon = RFdecon(
-                d, alg=alg, engine=deconengine, noisedata=n.data, wavelet=w.data
+                d,
+                alg=alg,
+                engine=deconengine,
+                noisedata=n.data,
+                wavelet=w.data,
+                wavelet_t0=w.t0,
             )
             assert d_decon.live
     finally:
@@ -1174,6 +1353,108 @@ def test_RFdecon_generalized_iterative_accepts_external_wavelet():
             os.environ["PFPATH"] = old_pfpath
 
 
+def test_RFdecon_scalar_vector_wavelet_t0_matches_timeseries_and_zero_lag():
+    """A bare scalar source with t0 must be identical to its TimeSeries form."""
+    data = _make_noise_stable_gid_fixture()
+    wavelet = make_simulation_wavelet()
+    with _test_pfpath():
+        from_timeseries = RFdecon(
+            Seismogram(data),
+            alg="WaterLevel",
+            pf="RFdeconProcessor.pf",
+            wavelet=wavelet,
+        )
+        from_vector = RFdecon(
+            Seismogram(data),
+            alg="WaterLevel",
+            pf="RFdeconProcessor.pf",
+            wavelet=np.asarray(wavelet.data),
+            wavelet_t0=wavelet.t0,
+        )
+
+    assert from_timeseries.live
+    assert from_vector.live
+    assert np.allclose(
+        np.asarray(from_vector.data), np.asarray(from_timeseries.data), atol=1.0e-12
+    )
+    direct_index = int(np.argmax(np.abs(np.asarray(from_vector.data[2]))))
+    assert abs(from_vector.time(direct_index)) <= 2.0 * from_vector.dt
+
+
+@pytest.mark.parametrize(
+    ("alg", "pf", "wrapper", "qc_key"),
+    [
+        (
+            "TimeDomainGID",
+            "TimeDomainGIDDecon.pf",
+            TimeDomainGIDRFDecon,
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            "FrequencyDomainGID",
+            "FrequencyDomainGIDDecon.pf",
+            FrequencyDomainGIDRFDecon,
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
+def test_gid_public_wrapper_vector_wavelet_t0_matches_timeseries_and_zero_lag(
+    alg, pf, wrapper, qc_key
+):
+    """Both public GID wrappers must preserve a vector's explicit origin."""
+    data = _make_noise_stable_gid_fixture()
+    wavelet = make_simulation_wavelet()
+    common = {
+        "signal_window": TimeWindow(-8.0, 20.0),
+        "noise_window": TimeWindow(-35.0, -5.0),
+    }
+    with _test_pfpath():
+        timeseries_engine = make_gid_engine(alg=alg, pf=pf)
+        vector_engine = make_gid_engine(alg=alg, pf=pf)
+        from_timeseries = wrapper(
+            Seismogram(data),
+            timeseries_engine,
+            external_wavelet=wavelet,
+            **common,
+        )
+        from_vector = wrapper(
+            Seismogram(data),
+            vector_engine,
+            external_wavelet=np.asarray(wavelet.data),
+            wavelet_t0=wavelet.t0,
+            **common,
+        )
+
+    assert from_timeseries.live
+    assert from_vector.live
+    assert np.allclose(
+        np.asarray(from_vector.data), np.asarray(from_timeseries.data), atol=1.0e-11
+    )
+    assert from_vector[qc_key]["gid_wavelet_t0"] == pytest.approx(wavelet.t0)
+    direct_index = int(np.argmax(np.abs(np.asarray(from_vector.data[2]))))
+    assert abs(from_vector.time(direct_index)) <= 2.0 * from_vector.dt
+
+
+def test_gid_public_wrapper_vector_wavelet_t0_validation_contract():
+    data = _make_noise_stable_gid_fixture()
+    wavelet = make_simulation_wavelet()
+    with _test_pfpath():
+        engine = make_gid_engine(alg="TimeDomainGID", pf="TimeDomainGIDDecon.pf")
+        bad = np.asarray(wavelet.data).copy()
+        bad[2] = np.nan
+        rejected = TimeDomainGIDRFDecon(
+            Seismogram(data),
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+            external_wavelet=bad,
+            wavelet_t0=wavelet.t0,
+        )
+    assert rejected.dead()
+    assert rejected.elog.size() > 0
+    assert not engine.external_wavelet_is_loaded()
+
+
 @pytest.mark.parametrize(
     "alg,pf",
     [
@@ -1196,6 +1477,7 @@ def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
             alg=alg,
             pf=pf,
             wavelet=np.asarray(wavelet.data),
+            wavelet_t0=wavelet.t0,
             noisedata=np.asarray(noise.data),
         )
 
@@ -1204,6 +1486,9 @@ def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
         assert np.isfinite(rf.data).all()
         assert rf.is_defined("RFdecon_properties")
         assert rf["RFdecon_properties"]["iteration_count"] > 0
+        assert rf["RFdecon_properties"]["gid_wavelet_t0"] == pytest.approx(
+            wavelet.t0
+        )
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)
@@ -1587,35 +1872,114 @@ def test_RFdeconProcessor_clear_external_methods_are_gid_only():
         os.environ.pop("PFPATH", None)
 
 
-def test_RFdeconProcessor_gid_loadwavelet_is_transactional(tmp_path):
-    pf = _gid_pf_with_mode(tmp_path, "ns_gid")
-
+@pytest.mark.parametrize(
+    ("alg", "pf"),
+    [
+        ("GeneralizedIterative", "TimeDomainGIDDecon.pf"),
+        ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
+    ],
+)
+def test_RFdeconProcessor_gid_loadwavelet_is_transactional(alg, pf):
     wavelet = make_simulation_wavelet()
     truth = make_impulse_data()
     data = addnoise(convolve_wavelet(truth, wavelet), nscale=1.0e-4, padlength=800)
 
-    processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
+    with _test_pfpath():
+        processor = RFdeconProcessor(alg=alg, pf=pf)
+    close_dt_wavelet = TimeSeries(1)
+    close_dt_wavelet.set_t0(0.0)
+    close_dt_wavelet.set_dt(0.0500005)
+    close_dt_wavelet.set_live()
+    close_dt_wavelet.data[0] = 1.0
+    processor.loadwavelet(close_dt_wavelet, dtype="TimeSeries")
+    assert processor.processor.external_wavelet_is_loaded()
     processor.loadwavelet(wavelet, dtype="TimeSeries")
     first = processor.apply_3c(Seismogram(data))
     assert first.live
     assert dict(processor.processor.QCMetrics())["ns_gid_external_wavelet_used"]
+    cached_samples = np.asarray(processor.wtimeseries.data).copy()
 
-    bad_wavelet = TimeSeries(wavelet)
-    bad_wavelet.set_dt(wavelet.dt * 2.0)
-    with pytest.raises(MsPASSError, match="target_sample_interval"):
-        processor.loadwavelet(bad_wavelet, dtype="TimeSeries")
+    bad_wavelets = []
+    dead = TimeSeries(wavelet)
+    dead.kill()
+    bad_wavelets.append(dead)
+    empty = TimeSeries()
+    empty.set_live()
+    bad_wavelets.append(empty)
+    for attribute, value in (
+        ("dt", wavelet.dt * 2.0),
+        ("dt", float("nan")),
+        ("dt", float("inf")),
+        ("t0", float("nan")),
+        ("t0", float("inf")),
+    ):
+        bad = TimeSeries(wavelet)
+        if attribute == "dt":
+            bad.set_dt(value)
+        else:
+            bad.set_t0(value)
+        bad_wavelets.append(bad)
+    for value in (float("nan"), float("inf")):
+        bad = TimeSeries(wavelet)
+        bad.data[0] = value
+        bad_wavelets.append(bad)
 
-    second = processor.apply_3c(Seismogram(data))
-    assert second.live
-    qc = dict(processor.processor.QCMetrics())
-    assert qc["ns_gid_external_wavelet_used"]
-    assert np.allclose(np.asarray(first.data), np.asarray(second.data))
+    for bad_wavelet in bad_wavelets:
+        with pytest.raises(MsPASSError):
+            processor.loadwavelet(bad_wavelet, dtype="TimeSeries")
+        assert np.array_equal(
+            np.asarray(processor.wtimeseries.data), cached_samples
+        )
+        second = processor.apply_3c(Seismogram(data))
+        assert second.live
+        qc = dict(processor.processor.QCMetrics())
+        assert qc["ns_gid_external_wavelet_used"]
+        assert qc["gid_wavelet_t0"] == pytest.approx(wavelet.t0)
+        assert np.array_equal(np.asarray(first.data), np.asarray(second.data))
 
-    bad_call = RFdecon(Seismogram(data), engine=processor, wavelet=bad_wavelet)
-    assert bad_call.dead()
+    # Direct processor loading has no datum context, so both coordinates are
+    # intrinsically valid.  Restore the good source before testing RFdecon's
+    # datum-aware transactional preflight.
+    context_only_cases = []
+    wrong_tref = TimeSeries(wavelet)
+    wrong_tref.tref = TimeReferenceType.UTC
+    context_only_cases.append(wrong_tref)
+    off_grid = TimeSeries(wavelet)
+    off_grid.set_t0(wavelet.t0 + 0.25 * wavelet.dt)
+    context_only_cases.append(off_grid)
+    for candidate in context_only_cases:
+        processor.loadwavelet(candidate, dtype="TimeSeries")
+        assert processor.processor.external_wavelet_is_loaded()
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+
+    for candidate in context_only_cases:
+        bad_call = RFdecon(
+            Seismogram(data), engine=processor, wavelet=candidate
+        )
+        assert bad_call.dead()
+        assert np.array_equal(np.asarray(processor.wtimeseries.data), cached_samples)
+        recovered = processor.apply_3c(Seismogram(data))
+        assert recovered.live
+        assert dict(processor.processor.QCMetrics())["ns_gid_external_wavelet_used"]
+        assert np.array_equal(np.asarray(first.data), np.asarray(recovered.data))
+
+    utc_epoch = 1.7e9
+    utc_data = Seismogram(data)
+    utc_data.set_t0(utc_data.t0 + utc_epoch)
+    utc_data.tref = TimeReferenceType.UTC
+    utc_wavelet = TimeSeries(wavelet)
+    utc_wavelet.set_t0(utc_wavelet.t0 + utc_epoch)
+    utc_wavelet.tref = TimeReferenceType.UTC
+    utc_result = RFdecon(
+        utc_data, engine=processor, wavelet=utc_wavelet
+    )
+    assert utc_result.dead()
+    assert utc_result.elog.size() > 0
+    assert "ator(P-arrival epoch)" in utc_result.elog.get_error_log()[-1].message
+    assert np.array_equal(np.asarray(processor.wtimeseries.data), cached_samples)
     recovered = processor.apply_3c(Seismogram(data))
     assert recovered.live
-    assert dict(processor.processor.QCMetrics())["ns_gid_external_wavelet_used"]
+    assert np.array_equal(np.asarray(first.data), np.asarray(recovered.data))
 
 
 def test_RFdeconProcessor_gid_loadnoise_timeseries_and_clear(tmp_path):

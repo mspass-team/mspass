@@ -24,6 +24,7 @@ def TimeDomainGIDRFDecon(
     signal_window=None,
     noise_window=None,
     external_wavelet=None,
+    wavelet_t0=None,
     external_noise=None,
     QCdata_key="TimeDomainGIDDecon_properties",
     return_wavelet=False,
@@ -48,6 +49,10 @@ def TimeDomainGIDRFDecon(
     pulse from the residual, and repeats until the residual-improvement or
     residual-energy convergence criteria are met.
 
+    This receiver-function API operates in P-relative lag coordinates.  UTC
+    input is returned dead with an error; convert it first with
+    ``ator(P-arrival epoch)``.
+
     :param seis: input `Seismogram` containing signal and noise windows.
     :param engine: configured `TimeDomainGIDDecon` instance.
     :param signal_window: optional `TimeWindow` defining the full output and
@@ -57,11 +62,16 @@ def TimeDomainGIDRFDecon(
     :param noise_window: optional `TimeWindow` defining pre-event noise.  When
         omitted the engine's parameter-file noise window is used.
     :param external_wavelet: optional prepared wavelet passed directly to the
-        GID engine.  If omitted, any external wavelet already loaded into
+        GID engine.  This may be a TimeSeries or a bare numeric
+        vector.  If omitted, any external wavelet already loaded into
         ``engine`` is preserved; otherwise the engine preserves RF
         compatibility and derives the wavelet from component 2 of the input
         seismogram.  Use ``engine.clear_external_wavelet()`` to force
         component-derived wavelets after loading an external one.
+    :param wavelet_t0: physical time of sample zero for a bare vector supplied
+        as ``external_wavelet``.  A TimeSeries retains its own coordinates.
+        ``None`` preserves the legacy analysis-window-start origin for vectors
+        and emits a warning; it is invalid when no external wavelet is given.
     :param external_noise: optional scalar noise `TimeSeries`, `CoreTimeSeries`,
         or `PowerSpectrum` passed to NS-GID inverse stabilization.
         If omitted, any external noise already loaded into ``engine`` is
@@ -84,6 +94,7 @@ def TimeDomainGIDRFDecon(
         signal_window=signal_window,
         noise_window=noise_window,
         external_wavelet=external_wavelet,
+        wavelet_t0=wavelet_t0,
         external_noise=external_noise,
         QCdata_key=QCdata_key,
         return_wavelet=return_wavelet,

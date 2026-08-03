@@ -1,9 +1,12 @@
-# General scientific RF preset: mtz_plane_wave_lowfreq.
+# Reference preset for MTZ plane-wave/Kirchhoff imaging:
+# mtz_plane_wave_lowfreq.
 #
-# This is the public no-argument default for conventional scalar RF methods.
-# It targets robust plane-wave/Kirchhoff imaging of P410s and P660s.  The
-# Ricker output wavelet is intentionally shared by all branches so method
-# comparisons do not silently compare different output bandwidths.
+# This is the public no-argument reference selected for conventional scalar RF
+# methods.  It is not a universal default for every receiver-function
+# workflow.  Its 0.125-Hz Ricker output is specific to low-frequency MTZ
+# plane-wave/Kirchhoff imaging of P410s and P660s.  The target-specific Ricker
+# is intentionally shared by all branches so comparisons within this preset
+# do not silently compare different output bandwidths.
 
 WaterLevel &Arr{
 rf_preset mtz_plane_wave_lowfreq

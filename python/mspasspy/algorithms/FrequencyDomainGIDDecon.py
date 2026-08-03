@@ -24,6 +24,7 @@ def FrequencyDomainGIDRFDecon(
     signal_window=None,
     noise_window=None,
     external_wavelet=None,
+    wavelet_t0=None,
     external_noise=None,
     QCdata_key="FrequencyDomainGIDDecon_properties",
     return_wavelet=False,
@@ -47,6 +48,10 @@ def FrequencyDomainGIDRFDecon(
     CNR.  Damping or water-level protection is required for stable behavior
     near source-wavelet spectral zeros.
 
+    This receiver-function API operates in P-relative lag coordinates.  UTC
+    input is returned dead with an error; convert it first with
+    ``ator(P-arrival epoch)``.
+
     When ``noise_window`` is omitted, the engine's configured parameter-file
     noise window is used.  ``signal_window`` must contain the configured
     deconvolution window used to build the inverse operator.  Omitted
@@ -65,11 +70,16 @@ def FrequencyDomainGIDRFDecon(
     :param noise_window: optional `TimeWindow` defining pre-event noise.  When
         omitted the engine's parameter-file noise window is used.
     :param external_wavelet: optional prepared wavelet passed directly to the
-        GID engine.  If omitted, any external wavelet already loaded into
+        GID engine.  This may be a TimeSeries or a bare numeric
+        vector.  If omitted, any external wavelet already loaded into
         ``engine`` is preserved; otherwise the engine preserves RF
         compatibility and derives the wavelet from component 2 of the input
         seismogram.  Use ``engine.clear_external_wavelet()`` to force
         component-derived wavelets after loading an external one.
+    :param wavelet_t0: physical time of sample zero for a bare vector supplied
+        as ``external_wavelet``.  A TimeSeries retains its own coordinates.
+        ``None`` preserves the legacy analysis-window-start origin for vectors
+        and emits a warning; it is invalid when no external wavelet is given.
     :param external_noise: optional scalar noise `TimeSeries`, `CoreTimeSeries`,
         or `PowerSpectrum` passed to inverse-operator stabilization.  If
         omitted, any external noise already loaded into ``engine`` is preserved.
@@ -93,6 +103,7 @@ def FrequencyDomainGIDRFDecon(
         signal_window=signal_window,
         noise_window=noise_window,
         external_wavelet=external_wavelet,
+        wavelet_t0=wavelet_t0,
         external_noise=external_noise,
         QCdata_key=QCdata_key,
         return_wavelet=return_wavelet,

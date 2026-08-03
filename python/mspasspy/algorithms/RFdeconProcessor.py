@@ -38,12 +38,18 @@ from mspasspy.ccore.algorithms.deconvolution import (
     _antelope_pf_to_text,
 )
 from mspasspy.util.decorators import mspass_func_wrapper
+from mspasspy.algorithms._decon_input_validation import (
+    validate_external_wavelet_analysis_context,
+    validate_external_wavelet_timeseries,
+    validate_gid_rf_lag_domain,
+)
 
 
 # These presets describe the output wavelet and time scales used by the
-# downstream imaging objective.  The default deliberately favors robust,
-# low-frequency plane-wave MTZ imaging; the historical test/example parameter
-# file remains available by explicitly passing ``pf="RFdeconProcessor.pf"``.
+# downstream imaging objective.  The selected no-argument reference targets
+# robust, low-frequency plane-wave/Kirchhoff MTZ imaging; it is not a universal
+# RF default.  The historical test/example parameter file remains available by
+# explicitly passing ``pf="RFdeconProcessor.pf"``.
 DEFAULT_RF_PRESET = "mtz_plane_wave_lowfreq"
 RFDECON_PRESET_FILES = {
     "mtz_plane_wave_lowfreq": "RFdeconMTZ.pf",
@@ -83,25 +89,22 @@ def _align_scalar_wavelet_to_analysis_grid(wavelet, analysis_window, target_dt):
     zero of the analysis vector.  This is the scalar counterpart of the
     time-aware GID wavelet loading policy.
     """
-    if wavelet.dead():
-        raise MsPASSError(
-            "RFdeconProcessor.loadwavelet: received TimeSeries wavelet marked dead",
-            ErrorSeverity.Invalid,
-        )
-    if not np.isclose(wavelet.dt, target_dt, rtol=1.0e-7, atol=1.0e-10):
-        raise ValueError(
-            "RFdeconProcessor.loadwavelet: TimeSeries wavelet dt does not match "
-            "target_sample_interval"
-        )
+    validate_external_wavelet_timeseries(
+        wavelet,
+        "RFdeconProcessor.loadwavelet",
+        expected_dt=target_dt,
+        dt_policy="scalar",
+    )
     npts = int(round((analysis_window.end - analysis_window.start) / target_dt)) + 1
     if npts <= 0:
         raise ValueError("RFdeconProcessor.loadwavelet: invalid analysis window")
     offset_float = (wavelet.t0 - analysis_window.start) / target_dt
     offset = int(round(offset_float))
     if not np.isclose(offset_float, offset, rtol=0.0, atol=1.0e-6):
-        raise ValueError(
+        raise MsPASSError(
             "RFdeconProcessor.loadwavelet: wavelet t0 is not sample-aligned "
-            "with deconvolution_data_window_start"
+            "with deconvolution_data_window_start",
+            ErrorSeverity.Invalid,
         )
     result = np.zeros(npts, dtype=float)
     source_start = max(0, -offset)
@@ -121,9 +124,43 @@ def _align_scalar_wavelet_to_analysis_grid(wavelet, analysis_window, target_dt):
     return result
 
 
-def _as_gid_timeseries(x, dt, t0, argname):
+def _checked_time_origin(value, caller, parameter="wavelet_t0"):
+    """Validate and normalize a time origin supplied for a bare vector."""
+    if isinstance(value, (bool, np.bool_)):
+        raise TypeError(f"{caller}: {parameter} must be a finite real number")
+    try:
+        result = float(value)
+    except (TypeError, ValueError, OverflowError) as err:
+        raise TypeError(
+            f"{caller}: {parameter} must be a finite real number"
+        ) from err
+    if not np.isfinite(result):
+        raise ValueError(f"{caller}: {parameter} must be finite")
+    return result
+
+
+def _legacy_vector_wavelet_t0(analysis_t0, caller):
+    """Return the historical vector origin while making that choice visible."""
+    warnings.warn(
+        "{}: a bare vector wavelet has no time base; interpreting its first "
+        "sample at the legacy deconvolution analysis-window origin {}.  Pass "
+        "wavelet_t0 explicitly (or pass a TimeSeries) to preserve the physical "
+        "source-wavelet time origin.".format(caller, analysis_t0),
+        UserWarning,
+        stacklevel=3,
+    )
+    return analysis_t0
+
+
+def _as_gid_timeseries(x, dt, t0, argname, tref=None):
     if isinstance(x, TimeSeries):
         return x
+    if not np.isfinite(dt) or dt <= 0.0:
+        raise ValueError(
+            "RFdecon: for GID algorithms, target_sample_interval must be "
+            "finite and positive"
+        )
+    t0 = _checked_time_origin(t0, "RFdecon", f"{argname}_t0")
     if isinstance(x, DoubleVector):
         values = np.asarray(x, dtype=float)
     else:
@@ -143,9 +180,17 @@ def _as_gid_timeseries(x, dt, t0, argname):
         raise ValueError(
             "RFdecon: for GID algorithms, {} must not be empty".format(argname)
         )
+    if not np.isfinite(values).all():
+        raise ValueError(
+            "RFdecon: for GID algorithms, {} contains nonfinite samples".format(
+                argname
+            )
+        )
     ts = TimeSeries(len(values))
     ts.set_t0(t0)
     ts.set_dt(dt)
+    if tref is not None:
+        ts.tref = tref
     ts.set_live()
     for i, value in enumerate(values):
         ts.data[i] = float(value)
@@ -902,13 +947,20 @@ class RFdeconProcessor:
                 ts = _ExtractComponent(d, component)
                 dvector = ts.data
             elif dtype == "TimeSeries":
-                dvector = ts.data
+                dvector = d.data
             else:
                 dvector = d
         # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
         self.dvector = np.array(dvector)
 
-    def loadwavelet(self, w, dtype="Seismogram", component=2, window=False):
+    def loadwavelet(
+        self,
+        w,
+        dtype="Seismogram",
+        component=2,
+        window=False,
+        wavelet_t0=None,
+    ):
         """
         Load the source wavelet used by the wrapped deconvolution engine.
 
@@ -919,6 +971,17 @@ class RFdeconProcessor:
             ``"Seismogram"``.
         :param window: when True extract the configured deconvolution window
             before loading the wavelet.
+        :param wavelet_t0: physical time of sample zero when ``dtype`` is
+            ``"raw_vector"``.  Bare vectors have no time base.  When omitted,
+            the historical interpretation (sample zero at
+            ``deconvolution_data_window_start``) is retained with a warning.
+            Do not specify this argument for a ``TimeSeries`` or
+            ``Seismogram``; their own time coordinates are authoritative.
+        For GID processors this datum-independent method validates only the
+        wavelet's intrinsic state and configured target sample interval.
+        Datum-dependent time-reference and common-grid compatibility are
+        checked by :func:`RFdecon` before it mutates a reused engine, and by
+        the C++ processor when processing directly loaded data.
         :raises RuntimeError: if ``dtype`` or the ``dtype``/``window``
             combination is invalid.
         """
@@ -935,6 +998,12 @@ class RFdeconProcessor:
             raise RuntimeError(
                 "RFdeconProcessor.loadwavelet:  " + " Illegal dtype parameter=" + dtype
             )
+        if dtype != "raw_vector" and wavelet_t0 is not None:
+            raise ValueError(
+                "RFdeconProcessor.loadwavelet: wavelet_t0 is only valid for "
+                "raw_vector input; TimeSeries and Seismogram inputs retain "
+                "their own time base"
+            )
         wvector = []
         wtimeseries = None
         if window:
@@ -949,6 +1018,16 @@ class RFdeconProcessor:
                 wtimeseries = ts
             else:
                 wvector = w
+        if wtimeseries is not None:
+            # Validate the object that will actually be loaded.  In
+            # particular, window=True deliberately ignores invalid samples
+            # outside the extracted source interval.
+            validate_external_wavelet_timeseries(
+                wtimeseries,
+                "RFdeconProcessor.loadwavelet",
+                expected_dt=self.md.get_double("target_sample_interval"),
+                dt_policy="gid" if self.__is_3c_engine else "scalar",
+            )
         else:
             if dtype == "Seismogram":
                 ts = _ExtractComponent(w, component)
@@ -959,6 +1038,31 @@ class RFdeconProcessor:
                 wtimeseries = TimeSeries(w)
             else:
                 wvector = w
+        if dtype == "raw_vector":
+            if wavelet_t0 is None:
+                vector_t0 = _legacy_vector_wavelet_t0(
+                    self.dwin.start, "RFdeconProcessor.loadwavelet"
+                )
+                # Scalar engines historically received this vector unchanged.
+                # Preserve that exact representation when no new time origin
+                # was requested.  GID still needs a TimeSeries for its C++ API.
+                if self.__is_3c_engine:
+                    wtimeseries = _as_gid_timeseries(
+                        wvector,
+                        self.md.get_double("target_sample_interval"),
+                        vector_t0,
+                        "wavelet",
+                    )
+            else:
+                vector_t0 = _checked_time_origin(
+                    wavelet_t0, "RFdeconProcessor.loadwavelet"
+                )
+                wtimeseries = _as_gid_timeseries(
+                    wvector,
+                    self.md.get_double("target_sample_interval"),
+                    vector_t0,
+                    "wavelet",
+                )
         if not self.__is_3c_engine and wtimeseries is not None:
             new_wvector = _align_scalar_wavelet_to_analysis_grid(
                 wtimeseries,
@@ -968,8 +1072,8 @@ class RFdeconProcessor:
         else:
             new_wvector = np.array(wvector)
         new_wtimeseries = None
-        if self.__is_3c_engine and dtype == "TimeSeries" and not window:
-            new_wtimeseries = TimeSeries(w)
+        if self.__is_3c_engine and wtimeseries is not None:
+            new_wtimeseries = TimeSeries(wtimeseries)
         if self.__is_3c_engine:
             if new_wtimeseries is not None:
                 self.processor.loadwavelet(new_wtimeseries)
@@ -1373,6 +1477,7 @@ def RFdecon(
     gid_penalty_function=None,
     gid_parameters=None,
     wavelet=None,
+    wavelet_t0=None,
     noisedata=None,
     wcomp=2,
     ncomp=2,
@@ -1404,8 +1509,13 @@ def RFdecon(
     to be three component data.  Conventional scalar methods accept
     optional wavelet and noisedata as plain numeric vectors.  GID methods
     accept prepared TimeSeries inputs or one-dimensional numeric vectors;
-    raw vectors are converted to TimeSeries using the processor target
-    sample interval and the configured deconvolution/noise window start.
+    raw wavelet vectors are converted to TimeSeries using the processor target
+    sample interval and ``wavelet_t0``.  Omitting ``wavelet_t0`` retains the
+    legacy analysis-window-start origin with an explicit warning.  Raw noise
+    vectors use the configured noise-window start.
+    GID receiver-function processing uses P-relative lag coordinates; convert
+    UTC input first with ``ator(P-arrival epoch)``.  This restriction belongs
+    to the GID RF workflow and is not a general TimeSeries restriction.
     When a reused GID engine already has a preconfigured external wavelet
     or noise estimate, omitting wavelet or noisedata preserves that state.
     Call RFdeconProcessor.clear_external_wavelet() or
@@ -1483,10 +1593,17 @@ def RFdecon(
         Default is None.  For a fresh processor this uses the configured
         component/window-derived wavelet estimate.  For a reused GID
         processor it preserves any previously loaded external wavelet.
-        For GID algorithms, raw vectors are converted to a TimeSeries using
-        target_sample_interval and deconvolution_data_window_start.
+        For scalar and GID algorithms, use ``wavelet_t0`` to define the first
+        sample time of a raw vector.  A TimeSeries always retains its own
+        ``t0`` and ``dt``.
     :type wavelet:  None, TimeSeries, or an iterable vector container
         (in MsPASS that means a python array, a numpy array, or a DoubleVector)
+    :param wavelet_t0: physical time of sample zero for a bare vector supplied
+        with ``wavelet``.  It is invalid with a TimeSeries wavelet or when no
+        wavelet is supplied.  ``None`` preserves the historical vector
+        interpretation—sample zero at the deconvolution analysis-window
+        start—and emits a warning so that origin is not silently assumed.
+    :type wavelet_t0: finite float or None
     :param noisedata:  vector of doubles (numpy array or the
         std::vector container internal to TimeSeries object), TimeSeries, or
         PowerSpectrum defining noise data to use for computing regularization.
@@ -1554,6 +1671,13 @@ def RFdecon(
         return d
     wcomp = _validate_component_index(wcomp, "wcomp", "RFdecon")
     ncomp = _validate_component_index(ncomp, "ncomp", "RFdecon")
+    if wavelet is None and wavelet_t0 is not None:
+        raise ValueError("RFdecon: wavelet_t0 requires a wavelet argument")
+    if isinstance(wavelet, TimeSeries) and wavelet_t0 is not None:
+        raise ValueError(
+            "RFdecon: wavelet_t0 is only valid for a bare vector; a "
+            "TimeSeries wavelet retains its own t0"
+        )
     if engine:
         if _gid_overrides_requested(
             deconvolution_type=deconvolution_type,
@@ -1590,13 +1714,33 @@ def RFdecon(
 
     if processor.is_3c_engine:
         try:
+            validate_gid_rf_lag_domain(d, "RFdecon")
             target_dt = processor.md.get_double("target_sample_interval")
             if wavelet is not None:
+                vector_wavelet_t0 = wavelet_t0
+                if not isinstance(wavelet, TimeSeries) and vector_wavelet_t0 is None:
+                    vector_wavelet_t0 = _legacy_vector_wavelet_t0(
+                        processor.dwin.start, "RFdecon"
+                    )
                 wts = _as_gid_timeseries(
                     wavelet,
                     target_dt,
-                    processor.dwin.start,
+                    (
+                        wavelet.t0
+                        if isinstance(wavelet, TimeSeries)
+                        else _checked_time_origin(vector_wavelet_t0, "RFdecon")
+                    ),
                     "wavelet",
+                    tref=d.tref,
+                )
+                validate_external_wavelet_timeseries(
+                    wts,
+                    "RFdecon",
+                    expected_dt=target_dt,
+                    dt_policy="gid",
+                )
+                validate_external_wavelet_analysis_context(
+                    wts, d, processor.dwin.start, "RFdecon"
                 )
                 processor.loadwavelet(wts, dtype="TimeSeries")
             if noisedata is not None:
@@ -1635,7 +1779,9 @@ def RFdecon(
             if isinstance(wavelet, TimeSeries):
                 processor.loadwavelet(wavelet, dtype="TimeSeries")
             else:
-                processor.loadwavelet(wavelet, dtype="raw_vector")
+                processor.loadwavelet(
+                    wavelet, dtype="raw_vector", wavelet_t0=wavelet_t0
+                )
         else:
             # processor.loadwavelet(d,dtype='Seismogram',window=True,component=wcomp)
             processor.loadwavelet(d, window=True, component=wcomp)
