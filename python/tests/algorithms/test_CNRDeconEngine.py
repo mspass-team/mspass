@@ -756,9 +756,7 @@ def test_CNRDeconEngine_configured_dead_input_preserves_legacy_state(dead_kind):
     assert result.npts == 0
     assert result.elog.size() >= 1
     assert dict(engine.QCMetrics()) == qc_before
-    assert np.array_equal(
-        engine.output_shaping_wavelet().data, shaping_before.data
-    )
+    assert np.array_equal(engine.output_shaping_wavelet().data, shaping_before.data)
     assert np.array_equal(engine.actual_output(source).data, actual_before.data)
     inverse_after = engine.inverse_wavelet(source, 0.0)
     assert np.array_equal(inverse_after.data, inverse_before.data)
@@ -847,9 +845,7 @@ def test_CNRDeconEngine_rejects_invalid_wavelet_without_corrupting_inverse(
 @pytest.mark.parametrize(
     "algorithm", ["colored_noise_damping", "generalized_water_level"]
 )
-def test_CNRDeconEngine_rejects_zero_wavelet_without_state_change(
-    tmp_path, algorithm
-):
+def test_CNRDeconEngine_rejects_zero_wavelet_without_state_change(tmp_path, algorithm):
     """A zero source cannot install or replace an inverse operator."""
     with open("data/pf/CNRDeconEngine.pf", encoding="utf-8") as fp:
         text = fp.read()
@@ -1196,9 +1192,7 @@ def test_CNRDeconEngine_process_rejects_invalid_geometry_transactionally(
             engine.process_configured(invalid, noise_spectrum)
 
     assert dict(engine.QCMetrics()) == qc_before
-    assert np.array_equal(
-        engine.output_shaping_wavelet().data, shaping_before.data
-    )
+    assert np.array_equal(engine.output_shaping_wavelet().data, shaping_before.data)
     actual_after = engine.actual_output(source)
     inverse_after = engine.inverse_wavelet(source, 0.0)
     assert np.array_equal(actual_after.data, actual_before.data)
@@ -1349,9 +1343,7 @@ def test_CNRDeconEngine_rejects_overflowing_frequency_grid_transactionally():
     recovered = engine.process(datum, valid_spectrum, 0.02, 2.0)
     assert np.array_equal(recovered.data, baseline.data)
     assert np.array_equal(engine.actual_output(source).data, actual_before.data)
-    assert np.array_equal(
-        engine.output_shaping_wavelet().data, shaping_before.data
-    )
+    assert np.array_equal(engine.output_shaping_wavelet().data, shaping_before.data)
     assert dict(engine.QCMetrics()) == qc_before
 
 
@@ -1479,9 +1471,7 @@ def test_CNRRFDecon_generalized_water_level_accepts_short_wavelet(
 @pytest.mark.parametrize(
     "algorithm", ["colored_noise_damping", "generalized_water_level"]
 )
-def test_CNRDeconEngine_exact_nfft_wavelet_uses_all_samples(
-    tmp_path, algorithm
-):
+def test_CNRDeconEngine_exact_nfft_wavelet_uses_all_samples(tmp_path, algorithm):
     """Exact-buffer inverse construction must not scalar-fill from sample 0."""
     with open("data/pf/CNRDeconEngine.pf", encoding="utf-8") as fp:
         text = fp.read()
@@ -1815,9 +1805,7 @@ def test_CNRDeconEngine_timeseries_noise_uses_cnr_dt_tolerance(
 
 @pytest.mark.parametrize("three_component", [False, True])
 @pytest.mark.parametrize("npts", range(4))
-def test_CNRDeconEngine_short_noise_spectrum_input_is_safe(
-    three_component, npts
-):
+def test_CNRDeconEngine_short_noise_spectrum_input_is_safe(three_component, npts):
     """Noise shorter than the taper count is rejected before DPSS setup."""
     d0 = make_test_data(noise_level=0.1)
     scalar_noise = WindowData(ExtractComponent(d0, 2), -45.0, -5.0)

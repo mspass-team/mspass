@@ -44,7 +44,6 @@ from mspasspy.algorithms._decon_input_validation import (
     validate_gid_rf_lag_domain,
 )
 
-
 # These presets describe the output wavelet and time scales used by the
 # downstream imaging objective.  The selected no-argument reference targets
 # robust, low-frequency plane-wave/Kirchhoff MTZ imaging; it is not a universal
@@ -64,7 +63,9 @@ def _resolve_scalar_preset(preset):
         return RFDECON_PRESET_FILES[preset]
     except KeyError as err:
         choices = ", ".join(sorted(RFDECON_PRESET_FILES))
-        raise ValueError(f"unknown RF preset {preset!r}; choices are {choices}") from err
+        raise ValueError(
+            f"unknown RF preset {preset!r}; choices are {choices}"
+        ) from err
 
 
 def _packaged_rf_preset_path(pf_name):
@@ -131,9 +132,7 @@ def _checked_time_origin(value, caller, parameter="wavelet_t0"):
     try:
         result = float(value)
     except (TypeError, ValueError, OverflowError) as err:
-        raise TypeError(
-            f"{caller}: {parameter} must be a finite real number"
-        ) from err
+        raise TypeError(f"{caller}: {parameter} must be a finite real number") from err
     if not np.isfinite(result):
         raise ValueError(f"{caller}: {parameter} must be finite")
     return result
@@ -182,9 +181,7 @@ def _as_gid_timeseries(x, dt, t0, argname, tref=None):
         )
     if not np.isfinite(values).all():
         raise ValueError(
-            "RFdecon: for GID algorithms, {} contains nonfinite samples".format(
-                argname
-            )
+            "RFdecon: for GID algorithms, {} contains nonfinite samples".format(argname)
         )
     ts = TimeSeries(len(values))
     ts.set_t0(t0)
