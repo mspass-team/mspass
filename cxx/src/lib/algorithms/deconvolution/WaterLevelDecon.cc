@@ -11,6 +11,7 @@ using mspass::algorithms::amplitudes::normalize;
 WaterLevelDecon::WaterLevelDecon(const WaterLevelDecon &parent)
     : FFTDeconOperator(parent), ScalarDecon(parent) {
   wlv = parent.wlv;
+  regularization_fraction = parent.regularization_fraction;
 }
 int WaterLevelDecon::read_metadata(const Metadata &md) {
   try {

@@ -3,6 +3,7 @@
 #include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/utility/MsPASSError.h"
+#include <limits>
 #include <sstream>
 #include <string>
 
@@ -12,6 +13,145 @@ using namespace mspass::utility;
 using namespace mspass::seismic;
 using namespace mspass::algorithms::deconvolution;
 using mspass::algorithms::amplitudes::normalize;
+
+/* Validate sample rate with a small fractional tolerance for clocks whose
+ * reported intervals have harmless rounding skew. */
+bool sample_interval_invalid(const mspass::seismic::BasicTimeSeries &d,
+                             const double operator_dt) {
+  const double DTSKEW(0.0001);
+  if (!std::isfinite(d.dt()) || d.dt() <= 0.0)
+    return true;
+  const double frac = abs(d.dt() - operator_dt) / operator_dt;
+  return frac >= DTSKEW;
+}
+
+/* CNR samples the regularizing spectrum through the operator Nyquist.  A
+ * generic valid PowerSpectrum can still be incompatible when it was computed
+ * from a different parent sample interval or was frequency-truncated. */
+void ValidateCNRNoiseSpectrum(const PowerSpectrum &spectrum,
+                              const double operator_dt,
+                              const string &caller) {
+  ValidatePowerSpectrumCoversDC(spectrum, caller);
+  const double DTSKEW(0.0001);
+  if (!std::isfinite(spectrum.dt()) || spectrum.dt() <= 0.0 ||
+      abs(spectrum.dt() - operator_dt) / operator_dt >= DTSKEW) {
+    stringstream ss;
+    ss << caller << ": noise PowerSpectrum parent sample interval="
+       << spectrum.dt() << " does not match operator sample interval="
+       << operator_dt;
+    throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+  }
+  const double operator_nyquist = 1.0 / (2.0 * operator_dt);
+  const double spectrum_fmax =
+      spectrum.f0() + spectrum.df() * static_cast<double>(spectrum.nf() - 1);
+  const double tolerance = max(1.0e-12, operator_nyquist * 1.0e-10);
+  if (spectrum_fmax + tolerance < operator_nyquist) {
+    stringstream ss;
+    ss << caller << ": noise PowerSpectrum maximum frequency="
+       << spectrum_fmax << " does not cover operator Nyquist="
+       << operator_nyquist;
+    throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+  }
+}
+
+TimeSeries InvalidActualOutput(const TimeSeries &wavelet,
+                               const string &message) {
+  TimeSeries badout(wavelet);
+  badout.kill();
+  badout.set_npts(0);
+  badout.elog.log_error("CNRDeconEngine::actual_output", message,
+                        ErrorSeverity::Invalid);
+  return badout;
+}
+
+TimeSeries InvalidInverseWavelet(const TimeSeries &wavelet,
+                                 const string &message) {
+  TimeSeries badout(wavelet);
+  badout.kill();
+  badout.set_npts(0);
+  badout.elog.log_error("CNRDeconEngine::inverse_wavelet", message,
+                        ErrorSeverity::Invalid);
+  return badout;
+}
+
+/* Finite SNR convention shared by both public processing paths.  A nonzero
+ * signal over an exact (or numerically negligible) zero-noise estimate is the
+ * ideal-noise-free limit, represented by the same finite cap used in GWL
+ * inverse construction.  Zero signal and zero noise contain no bandwidth
+ * information and therefore map to zero, not NaN. */
+double FiniteCNRAmplitudeSNR(const double signal_amplitude,
+                             const double noise_amplitude) {
+  constexpr double ZERO_NOISE_SNR_CAP = 10000.0;
+  if (signal_amplitude <= 0.0)
+    return 0.0;
+  if (noise_amplitude <= 0.0 ||
+      (noise_amplitude / signal_amplitude) < DBL_EPSILON)
+    return ZERO_NOISE_SNR_CAP;
+  const double ratio = signal_amplitude / noise_amplitude;
+  return std::isfinite(ratio) ? ratio : ZERO_NOISE_SNR_CAP;
+}
+
+void ValidateCNRDatum(const Seismogram &d, const int operator_nfft,
+                      const string &caller) {
+  if (!std::isfinite(d.t0()))
+    throw MsPASSError(caller + ": datum start time must be finite",
+                      ErrorSeverity::Invalid);
+  if (d.npts() <= 0)
+    throw MsPASSError(caller + ": datum must contain at least one sample",
+                      ErrorSeverity::Invalid);
+  if (d.npts() > operator_nfft) {
+    stringstream ss;
+    ss << caller << ": datum length=" << d.npts()
+       << " exceeds the configured FFT buffer length=" << operator_nfft;
+    throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+  }
+  for (int k = 0; k < 3; ++k) {
+    for (int j = 0; j < d.npts(); ++j) {
+      if (!std::isfinite(d.u(k, j))) {
+        stringstream ss;
+        ss << caller << ": datum contains a nonfinite sample at component="
+           << k << ", sample=" << j;
+        throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+      }
+    }
+  }
+}
+
+string InvalidCNRNoiseSamples(const TimeSeries &d) {
+  double peak_amplitude(0.0);
+  for (const double x : d.s) {
+    if (!std::isfinite(x))
+      return "Noise data contain nonfinite samples";
+    peak_amplitude = max(peak_amplitude, abs(x));
+  }
+  /* A length-N FFT magnitude is bounded by N*peak.  Keep an additional
+   * sqrt(2) margin because power sums squared real and imaginary parts. */
+  const double safe_peak =
+      sqrt(DBL_MAX / 2.0) / static_cast<double>(d.npts());
+  if (peak_amplitude > safe_peak)
+    return "Noise data amplitude is too large to compute a finite power "
+           "spectrum";
+  return string();
+}
+
+string InvalidCNRNoiseSamples(const Seismogram &d) {
+  double peak_amplitude(0.0);
+  for (int k = 0; k < 3; ++k) {
+    for (int j = 0; j < d.npts(); ++j) {
+      const double x = d.u(k, j);
+      if (!std::isfinite(x))
+        return "Noise data contain nonfinite samples";
+      peak_amplitude = max(peak_amplitude, abs(x));
+    }
+  }
+  const double safe_peak =
+      sqrt(DBL_MAX / 2.0) / static_cast<double>(d.npts());
+  if (peak_amplitude > safe_peak)
+    return "Noise data amplitude is too large to compute a finite power "
+           "spectrum";
+  return string();
+}
+
 CNRDeconEngine::CNRDeconEngine() : FFTDeconOperator() {
   /* This constructor does not initialize everything.  It initializes
   only the simple types and the values are not necessarily reasonable. */
@@ -19,10 +159,13 @@ CNRDeconEngine::CNRDeconEngine() : FFTDeconOperator() {
   damp = 1.0;
   noise_floor = 1.5;
   band_snr_floor = 1.5;
+  operator_dt = 1.0;
   shaping_wavelet_number_poles = 3;
+  winlength = 0;
   snr_regularization_floor = 2.0;
   /* These are computed private variables - we initialize them all to 0*/
   regularization_bandwidth_fraction = 0.0;
+  winv_t0_lag = 0;
   for (auto i = 0; i < 3; ++i) {
     peak_snr[i] = 0.0;
     signal_bandwidth_fraction[i] = 0.0;
@@ -31,6 +174,14 @@ CNRDeconEngine::CNRDeconEngine() : FFTDeconOperator() {
 CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
     : FFTDeconOperator(dynamic_cast<const Metadata &>(pf)) {
   try {
+    /* Initialize inverse-dependent state so a failed first initialization is
+     * deterministic and can be rolled back safely. */
+    this->regularization_bandwidth_fraction = 0.0;
+    this->winv_t0_lag = 0;
+    for (auto i = 0; i < 3; ++i) {
+      this->peak_snr[i] = 0.0;
+      this->signal_bandwidth_fraction[i] = 0.0;
+    }
     string stmp;
     stmp = pf.get_string("algorithm");
     if (stmp == "generalized_water_level") {
@@ -133,10 +284,18 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
     int noise_winlength = round((te - ts) / operator_dt) + 1;
     double tbp = GetDoubleRequired(pf, "time_bandwidth_product");
     long ntapers = GetLongRequired(pf, "number_tapers");
+    if (ntapers <= 0 || ntapers > numeric_limits<int>::max())
+      throw MsPASSError(
+          "CNRDeconEngine(constructor): number_tapers is outside the "
+          "supported positive integer range",
+          ErrorSeverity::Fatal);
+    const int ntapers_to_use=static_cast<int>(ntapers);
     this->noise_engine = MTPowerSpectrumEngine(
-        noise_winlength, tbp, ntapers, noise_winlength, this->operator_dt);
+        noise_winlength, tbp, ntapers_to_use, noise_winlength,
+        this->operator_dt);
     this->signal_engine = MTPowerSpectrumEngine(
-        this->winlength, tbp, ntapers, this->winlength, this->operator_dt);
+        this->winlength, tbp, ntapers_to_use, this->winlength,
+        this->operator_dt);
   } catch (...) {
     throw;
   };
@@ -241,10 +400,18 @@ void CNRDeconEngine::changeparameter(const Metadata &md) {
     int noise_winlength = round((te - ts) / operator_dt) + 1;
     double tbp = GetDoubleRequired(md, "time_bandwidth_product");
     long ntapers = GetLongRequired(md, "number_tapers");
+    if (ntapers <= 0 || ntapers > numeric_limits<int>::max())
+      throw MsPASSError(
+          "CNRDeconEngine::changeparameter: number_tapers is outside the "
+          "supported positive integer range",
+          ErrorSeverity::Fatal);
+    const int ntapers_to_use=static_cast<int>(ntapers);
     this->noise_engine = MTPowerSpectrumEngine(
-        noise_winlength, tbp, ntapers, noise_winlength, this->operator_dt);
+        noise_winlength, tbp, ntapers_to_use, noise_winlength,
+        this->operator_dt);
     this->signal_engine = MTPowerSpectrumEngine(
-        this->winlength, tbp, ntapers, this->winlength, this->operator_dt);
+        this->winlength, tbp, ntapers_to_use, this->winlength,
+        this->operator_dt);
   } catch (...) {
     throw;
   };
@@ -252,6 +419,7 @@ void CNRDeconEngine::changeparameter(const Metadata &md) {
 
 CNRDeconEngine &CNRDeconEngine::operator=(const CNRDeconEngine &parent) {
   if (&parent != this) {
+    FFTDeconOperator::operator=(parent);
     this->shapingwavelet = parent.shapingwavelet;
     this->configured_shapingwavelet = parent.configured_shapingwavelet;
     this->signal_engine = parent.signal_engine;
@@ -263,6 +431,7 @@ CNRDeconEngine &CNRDeconEngine::operator=(const CNRDeconEngine &parent) {
     this->noise_floor = parent.noise_floor;
     this->band_snr_floor = parent.band_snr_floor;
     this->operator_dt = parent.operator_dt;
+    this->winlength = parent.winlength;
     this->shaping_wavelet_number_poles = parent.shaping_wavelet_number_poles;
     this->snr_regularization_floor = parent.snr_regularization_floor;
     this->regularization_bandwidth_fraction =
@@ -286,9 +455,25 @@ void CNRDeconEngine::initialize_inverse_operator(const TimeSeries &wavelet,
       message += "noise data segment was marked dead\n";
     throw MsPASSError(message, ErrorSeverity::Invalid);
   }
+  const int minimum_noise_samples =
+      max(1, this->noise_engine.number_tapers());
+  if (noise_data.npts() < minimum_noise_samples) {
+    stringstream ss;
+    ss << alg << ": noise data must contain at least "
+       << minimum_noise_samples
+       << " samples to construct the configured multitaper spectrum";
+    throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+  }
   try {
-    /* Assume wavelet and noise_data have the correct sample rate.
-     * python wrapper should guarantee that */
+    /* Validate here, before compute_noise_spectrum can resize its cached
+     * multitaper engine.  MTPowerSpectrumEngine intentionally has a looser
+     * clock tolerance than the fixed-sample-rate CNR operator. */
+    if (sample_interval_invalid(noise_data, this->operator_dt)) {
+      stringstream ss;
+      ss << alg << ": noise data sample interval=" << noise_data.dt()
+         << " does not match operator sample interval=" << this->operator_dt;
+      throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+    }
     PowerSpectrum psnoise(this->compute_noise_spectrum(noise_data));
     if (psnoise.dead()) {
       string message;
@@ -315,6 +500,13 @@ void CNRDeconEngine::initialize_inverse_operator(
     throw MsPASSError(message, ErrorSeverity::Invalid);
   }
   try {
+    if (sample_interval_invalid(wavelet, this->operator_dt)) {
+      stringstream ss;
+      ss << alg << ": wavelet sample interval=" << wavelet.dt()
+         << " does not match operator sample interval=" << this->operator_dt;
+      throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+    }
+    ValidateCNRNoiseSpectrum(noise_spectrum, this->operator_dt, alg);
     this->compute_winv(wavelet, noise_spectrum);
   } catch (...) {
     throw;
@@ -326,6 +518,36 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const TimeSeries &n) {
     badout.elog.log_error("CNRDeconEngine:compute_noise",
                           "Received noise data segment marked dead",
                           ErrorSeverity::Invalid);
+    return badout;
+  }
+  const int minimum_noise_samples = max(1, noise_engine.number_tapers());
+  if (n.npts() < minimum_noise_samples) {
+    PowerSpectrum badout;
+    stringstream ss;
+    ss << "Noise data must contain at least " << minimum_noise_samples
+       << " samples to construct the configured multitaper spectrum";
+    badout.elog.log_error(
+        "CNRDeconEngine::compute_noise_spectrum", ss.str(),
+        ErrorSeverity::Invalid);
+    badout.kill();
+    return badout;
+  }
+  if (sample_interval_invalid(n, this->operator_dt)) {
+    PowerSpectrum badout;
+    stringstream ss;
+    ss << "Noise data sample interval=" << n.dt()
+       << " does not match operator sample interval=" << this->operator_dt;
+    badout.elog.log_error("CNRDeconEngine::compute_noise_spectrum", ss.str(),
+                          ErrorSeverity::Invalid);
+    badout.kill();
+    return badout;
+  }
+  const string sample_error = InvalidCNRNoiseSamples(n);
+  if (!sample_error.empty()) {
+    PowerSpectrum badout;
+    badout.elog.log_error("CNRDeconEngine::compute_noise_spectrum",
+                          sample_error, ErrorSeverity::Invalid);
+    badout.kill();
     return badout;
   }
   try {
@@ -349,6 +571,36 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram &n) {
     badout.elog.log_error("CNRDeconEngine:compute_noise",
                           "Received noise data segment marked dead",
                           ErrorSeverity::Invalid);
+    return badout;
+  }
+  const int minimum_noise_samples = max(1, noise_engine.number_tapers());
+  if (n.npts() < minimum_noise_samples) {
+    PowerSpectrum badout;
+    stringstream ss;
+    ss << "Noise data must contain at least " << minimum_noise_samples
+       << " samples to construct the configured multitaper spectrum";
+    badout.elog.log_error(
+        "CNRDeconEngine::compute_noise_spectrum", ss.str(),
+        ErrorSeverity::Invalid);
+    badout.kill();
+    return badout;
+  }
+  if (sample_interval_invalid(n, this->operator_dt)) {
+    PowerSpectrum badout;
+    stringstream ss;
+    ss << "Noise data sample interval=" << n.dt()
+       << " does not match operator sample interval=" << this->operator_dt;
+    badout.elog.log_error("CNRDeconEngine::compute_noise_spectrum", ss.str(),
+                          ErrorSeverity::Invalid);
+    badout.kill();
+    return badout;
+  }
+  const string sample_error = InvalidCNRNoiseSamples(n);
+  if (!sample_error.empty()) {
+    PowerSpectrum badout;
+    badout.elog.log_error("CNRDeconEngine::compute_noise_spectrum",
+                          sample_error, ErrorSeverity::Invalid);
+    badout.kill();
     return badout;
   }
   try {
@@ -384,24 +636,6 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram &n) {
   };
 }
 
-/* Small helper used by process method to validate the sample
-   rate of wavelet and data loaded for processing.   Uses a
-   frozen fractional value test to allow for some data with slippery
-   clocks.  Returns true of the d.dt and operator_dt are significantly
-   different and false if they are approximately equal.
-*/
-bool sample_interval_invalid(const mspass::seismic::BasicTimeSeries &d,
-                             const double operator_dt) {
-  /* Fractional error allowed in sample interval */
-  const double DTSKEW(0.0001);
-  double frac;
-  frac = abs(d.dt() - operator_dt) / operator_dt;
-  if (frac < DTSKEW) {
-    return true;
-  } else {
-    return false;
-  }
-}
 /*! private method of this class that computes the internal
   variable "winv" - a ComplexArray containing the spectrum of the
   inverse wavelet.   It assumes the content of the internally
@@ -418,11 +652,47 @@ void CNRDeconEngine::compute_winv(const TimeSeries &wavelet,
                                   const PowerSpectrum &psnoise) {
   /* Because this is a private method we don't test if wavelet and psnoise
   are marked dead.  Methods that call this one should always do so though.*/
+  const int previous_nfft = this->get_size();
+  const ComplexArray previous_winv(this->winv);
+  const int previous_t0_lag = this->winv_t0_lag;
+  const double previous_regularization_fraction =
+      this->regularization_bandwidth_fraction;
   try {
     /* Need to always create a local copy to allow taper option to work
        corectly. Also wavelet is passed const so taper would not work anyway */
     TimeSeries w(wavelet);
-    this->winv_t0_lag = w.sample_number(0.0);
+    if (w.npts() <= 0)
+      throw MsPASSError(
+          "CNRDeconEngine::compute_winv: wavelet must contain at least one "
+          "sample",
+          ErrorSeverity::Invalid);
+    if (!std::isfinite(w.t0()))
+      throw MsPASSError(
+          "CNRDeconEngine::compute_winv: wavelet start time must be finite",
+          ErrorSeverity::Invalid);
+    bool has_nonzero_sample(false);
+    for (const double x : w.s) {
+      if (!std::isfinite(x))
+        throw MsPASSError(
+            "CNRDeconEngine::compute_winv: wavelet contains NaN or infinite "
+            "samples",
+            ErrorSeverity::Invalid);
+      if (x != 0.0)
+        has_nonzero_sample = true;
+    }
+    if (!has_nonzero_sample)
+      throw MsPASSError(
+          "CNRDeconEngine::compute_winv: wavelet must contain at least one "
+          "nonzero sample",
+          ErrorSeverity::Invalid);
+    const int candidate_t0_lag = w.sample_number(0.0);
+    if (candidate_t0_lag < 0 || candidate_t0_lag >= this->get_size()) {
+      stringstream ss;
+      ss << "CNRDeconEngine::compute_winv: wavelet zero-time sample lag="
+         << candidate_t0_lag << " is outside the FFT buffer range [0,"
+         << this->get_size() << ")";
+      throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+    }
     switch (algorithm) {
     case CNR3C_algorithms::generalized_water_level:
       compute_gwl_inverse(w, psnoise);
@@ -431,8 +701,19 @@ void CNRDeconEngine::compute_winv(const TimeSeries &wavelet,
     default:
       compute_gdamp_inverse(w, psnoise);
     };
-
+    /* Commit the phase reference only after the matching inverse operator was
+     * constructed successfully. */
+    this->winv_t0_lag = candidate_t0_lag;
   } catch (...) {
+    /* Some inverse builders can resize the FFT workspace before a later
+     * operation fails.  Restore every inverse-dependent value so callers may
+     * continue using the last successfully initialized operator. */
+    if (this->get_size() != previous_nfft)
+      FFTDeconOperator::change_size(previous_nfft);
+    this->winv = previous_winv;
+    this->winv_t0_lag = previous_t0_lag;
+    this->regularization_bandwidth_fraction =
+        previous_regularization_fraction;
     throw;
   };
 }
@@ -440,13 +721,16 @@ void CNRDeconEngine::compute_winv(const TimeSeries &wavelet,
 void CNRDeconEngine::compute_gwl_inverse(const TimeSeries &wavelet,
                                          const PowerSpectrum &psnoise) {
   try {
-    if (wavelet.npts() != FFTDeconOperator::nfft) {
-      throw MsPASSError("CNRDeconEngine::compute_gwl_inverse():  wavelet size "
-                        "and fft size t0 not match - this should not happen "
-                        "and indicates a bug that needs to be fixed",
-                        ErrorSeverity::Fatal);
+    if (wavelet.npts() > FFTDeconOperator::nfft) {
+      stringstream ss;
+      ss << "CNRDeconEngine::compute_gwl_inverse(): wavelet length="
+         << wavelet.npts() << " exceeds the fixed FFT buffer length="
+         << FFTDeconOperator::nfft << endl
+         << "Use a wavelet no longer than the configured CNR FFT buffer";
+      throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
     }
-    ComplexArray cwvec(wavelet.npts(), wavelet.s[0]);
+    /* ComplexArray pads the source vector with zeros when nfft is larger. */
+    ComplexArray cwvec(FFTDeconOperator::nfft, wavelet.s);
     gsl_fft_complex_forward(cwvec.ptr(), 1, FFTDeconOperator::nfft, wavetable,
                             workspace);
     /* This computes the (regularized) denominator for the decon operator*/
@@ -463,17 +747,29 @@ void CNRDeconEngine::compute_gwl_inverse(const TimeSeries &wavelet,
     double scaled_noise_floor = noise_floor * sqrt(*maxnoise);
     vector<double> wavelet_snr;
     wavelet_snr.clear();
+    vector<bool> spectral_null(FFTDeconOperator::nfft, false);
     int nreg(0);
     for (int j = 0; j < FFTDeconOperator::nfft; ++j) {
       double *z = cwvec.ptr(j);
       double re = (*z);
       double im = (*(z + 1));
-      double amp = sqrt(re * re + im * im);
+      double amp = hypot(re, im);
       double f;
       f = df * static_cast<double>(j);
       if (f > fNy)
         f = 2.0 * fNy - f; // Fold frequency axis
       double namp = sqrt(psnoise.power(f));
+      /* An exact spectral null carries no phase or amplitude information, so
+       * its Moore-Penrose inverse gain is zero.  Use a finite placeholder for
+       * the vector division below, then explicitly zero that output bin. */
+      if (amp == 0.0) {
+        spectral_null[j] = true;
+        *z = 1.0;
+        *(z + 1) = 0.0;
+        wavelet_snr.push_back(0.0);
+        ++nreg;
+        continue;
+      }
       /* Avoid divide by zero that could randomly happen with simulation data*/
       double snr;
       if ((namp / amp) < DBL_EPSILON)
@@ -482,14 +778,13 @@ void CNRDeconEngine::compute_gwl_inverse(const TimeSeries &wavelet,
         snr = amp / namp;
       wavelet_snr.push_back(snr);
       if (snr < snr_regularization_floor) {
-        double scale;
-        if (namp < scaled_noise_floor) {
-          scale = snr_regularization_floor * scaled_noise_floor / amp;
-        } else {
-          scale = snr_regularization_floor * namp / amp;
-        }
-        re *= scale;
-        im *= scale;
+        /* Form the regularized complex value from its unit phase instead of
+         * multiplying by target/amp.  The latter can overflow for a very
+         * small but nonzero bin even though the desired value is finite. */
+        const double target_amp =
+            snr_regularization_floor * max(namp, scaled_noise_floor);
+        re = target_amp * (re / amp);
+        im = target_amp * (im / amp);
         *z = re;
         *(z + 1) = im;
         ++nreg;
@@ -504,6 +799,13 @@ void CNRDeconEngine::compute_gwl_inverse(const TimeSeries &wavelet,
     gsl_fft_complex_forward(delta0.ptr(), 1, FFTDeconOperator::nfft, wavetable,
                             workspace);
     winv = delta0 / cwvec;
+    for (int j = 0; j < FFTDeconOperator::nfft; ++j) {
+      if (spectral_null[j]) {
+        double *z = winv.ptr(j);
+        *z = 0.0;
+        *(z + 1) = 0.0;
+      }
+    }
   } catch (...) {
     throw;
   };
@@ -515,7 +817,7 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries &wavelet,
     /* Assume if we got here wavelet.npts() == nfft*/
     ComplexArray b_fft;
     if (wavelet.npts() == FFTDeconOperator::nfft) {
-      b_fft = ComplexArray(wavelet.npts(), wavelet.s[0]);
+      b_fft = ComplexArray(wavelet.npts(), wavelet.s);
     } else if (wavelet.npts() < FFTDeconOperator::nfft) {
       /* In this case we zero pad*/
       std::vector<double> btmp;
@@ -526,9 +828,12 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries &wavelet,
         btmp.push_back(0.0);
       b_fft = ComplexArray(FFTDeconOperator::nfft, btmp);
     } else {
-      /* land here if we need to change the fft size - if this happens don't
-       * force power of 2*/
-      this->change_size(wavelet.npts());
+      stringstream ss;
+      ss << "CNRDeconEngine::compute_gdamp_inverse(): wavelet length="
+         << wavelet.npts() << " exceeds the fixed FFT buffer length="
+         << FFTDeconOperator::nfft << endl
+         << "Use a wavelet no longer than the configured CNR FFT buffer";
+      throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
     }
     gsl_fft_complex_forward(b_fft.ptr(), 1, FFTDeconOperator::nfft, wavetable,
                             workspace);
@@ -548,6 +853,7 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries &wavelet,
     maxnoise = std::max_element(work.begin(), work.end());
     // Spectrum is power but need amplitude in this context so sqrt here
     double scaled_noise_floor = noise_floor * sqrt(*maxnoise);
+    vector<bool> spectral_null(nfft, false);
 
     for (int k = 0; k < nfft; ++k) {
       double *ptr;
@@ -568,8 +874,22 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries &wavelet,
       theta = theta * theta;
       /* ptr points to the real part - an oddity of this interface */
       *ptr += theta;
+      /* With an all-zero noise spectrum theta is zero.  If the source also
+       * has an exact spectral null this normal-equation denominator is zero;
+       * assign the Moore-Penrose gain of zero instead of evaluating 0/0. */
+      if ((*ptr == 0.0) && (*(ptr + 1) == 0.0)) {
+        spectral_null[k] = true;
+        *ptr = 1.0;
+      }
     }
     winv = conj_b_fft / denom;
+    for (int k = 0; k < nfft; ++k) {
+      if (spectral_null[k]) {
+        double *z = winv.ptr(k);
+        *z = 0.0;
+        *(z + 1) = 0.0;
+      }
+    }
   } catch (...) {
     throw;
   };
@@ -606,14 +926,25 @@ Seismogram CNRDeconEngine::process(const Seismogram &d,
     dout.kill();
     return dout;
   }
+  const ShapingWavelet previous_shapingwavelet(this->shapingwavelet);
+  double candidate_peak_snr[3] = {0.0, 0.0, 0.0};
+  double candidate_signal_bandwidth_fraction[3] = {0.0, 0.0, 0.0};
   try {
     string base_error("CNRDeconEngine::process:  ");
+    if (sample_interval_invalid(d, this->operator_dt)) {
+      stringstream ss;
+      ss << alg << ": datum sample interval=" << d.dt()
+         << " does not match operator sample interval=" << this->operator_dt;
+      throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+    }
+    ValidateCNRNoiseSpectrum(psnoise, this->operator_dt, alg);
+    ValidateCNRDatum(d, FFTDeconOperator::nfft, alg);
     this->update_shaping_wavelet(fl, fh);
     Seismogram rfest(d);
-    /* This is used to apply a shift to the fft outputs to put signals
-    at relative time 0 */
-    int t0_shift;
-    t0_shift = round((-rfest.t0()) / rfest.dt());
+    /* The inverse wavelet may have a different time origin from d.  Its
+     * zero-time sample, recorded when winv was initialized, is the phase
+     * reference for the inverse FFT output. */
+    const int t0_shift = this->winv_t0_lag;
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
     /* The set_npts method is assumed to not only set that attribute
@@ -638,11 +969,18 @@ Seismogram CNRDeconEngine::process(const Seismogram &d,
       ComplexArray numerator(FFTDeconOperator::nfft, &(wvec[0]));
       gsl_fft_complex_forward(numerator.ptr(), 1, FFTDeconOperator::nfft,
                               wavetable, workspace);
+      for (int j = 0; j < FFTDeconOperator::nfft; ++j) {
+        const Complex64 z = numerator[j];
+        if (!std::isfinite(z.real()) || !std::isfinite(z.imag()))
+          throw MsPASSError(
+              base_error + "datum FFT contains nonfinite values",
+              ErrorSeverity::Invalid);
+      }
       /* This loop computes QCMetrics of bandwidth fraction that
       is above a defined snr floor - not necessarily the same as the
       regularization floor used in computing the inverse */
       double snrmax;
-      snrmax = 1.0;
+      snrmax = 0.0;
       nhighsnr = 0;
       for (int j = 0; j < FFTDeconOperator::nfft / 2; ++j) {
         double f;
@@ -650,24 +988,30 @@ Seismogram CNRDeconEngine::process(const Seismogram &d,
         Complex64 z = numerator[j];
         double sigamp = abs(z);
         double namp = sqrt(psnoise.power(f));
-        double snr = sigamp / namp;
+        const double snr = FiniteCNRAmplitudeSNR(sigamp, namp);
 
         if (snr > snrmax)
           snrmax = snr;
         if (snr > this->band_snr_floor)
           ++nhighsnr;
       }
-      signal_bandwidth_fraction[k] =
+      candidate_signal_bandwidth_fraction[k] =
           static_cast<double>(nhighsnr) /
           static_cast<double>(FFTDeconOperator::nfft / 2);
-      peak_snr[k] = snrmax;
+      candidate_peak_snr[k] = snrmax;
       ComplexArray rftmp = numerator * winv;
       rftmp = (*this->shapingwavelet.wavelet()) * rftmp;
       gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft, wavetable,
                               workspace);
       wvec.clear();
-      for (int j = 0; j < FFTDeconOperator::nfft; ++j)
-        wvec.push_back(rftmp[j].real());
+      for (int j = 0; j < FFTDeconOperator::nfft; ++j) {
+        const Complex64 z = rftmp[j];
+        if (!std::isfinite(z.real()) || !std::isfinite(z.imag()))
+          throw MsPASSError(
+              base_error + "inverse FFT output contains nonfinite values",
+              ErrorSeverity::Invalid);
+        wvec.push_back(z.real());
+      }
       /* Note we used a time domain shift instead of using a linear phase
       shift in the frequency domain because the time domain operator has a lower
       operation count than the frequency domain algorithm and is thus more
@@ -677,16 +1021,45 @@ Seismogram CNRDeconEngine::process(const Seismogram &d,
       for (int j = 0; j < FFTDeconOperator::nfft; ++j)
         rfest.u(k, j) = wvec[j];
     }
+    for (int k = 0; k < 3; ++k) {
+      this->peak_snr[k] = candidate_peak_snr[k];
+      this->signal_bandwidth_fraction[k] =
+          candidate_signal_bandwidth_fraction[k];
+    }
     return rfest;
   } catch (...) {
+    this->shapingwavelet = previous_shapingwavelet;
     throw;
   };
 }
 
 Seismogram CNRDeconEngine::process(const Seismogram &d,
                                    const PowerSpectrum &psnoise) {
-  this->shapingwavelet = this->configured_shapingwavelet;
-  return this->process_with_current_shaping(d, psnoise);
+  /* Dead inputs follow the public logged-dead return convention.  Do not
+   * switch to configured shaping for this normal early return: no processing
+   * occurred, so every engine state value must remain as it was on entry. */
+  if (d.dead() || psnoise.dead())
+    return this->process_with_current_shaping(d, psnoise);
+  if (!d.dead() && !psnoise.dead()) {
+    if (sample_interval_invalid(d, this->operator_dt)) {
+      stringstream ss;
+      ss << "CNRDeconEngine::process: datum sample interval=" << d.dt()
+         << " does not match operator sample interval=" << this->operator_dt;
+      throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+    }
+    ValidateCNRNoiseSpectrum(psnoise, this->operator_dt,
+                             "CNRDeconEngine::process");
+    ValidateCNRDatum(d, FFTDeconOperator::nfft,
+                     "CNRDeconEngine::process");
+  }
+  const ShapingWavelet previous_shapingwavelet(this->shapingwavelet);
+  try {
+    this->shapingwavelet = this->configured_shapingwavelet;
+    return this->process_with_current_shaping(d, psnoise);
+  } catch (...) {
+    this->shapingwavelet = previous_shapingwavelet;
+    throw;
+  }
 }
 
 Seismogram CNRDeconEngine::process_with_current_shaping(
@@ -708,13 +1081,15 @@ Seismogram CNRDeconEngine::process_with_current_shaping(
     dout.kill();
     return dout;
   }
+  double candidate_peak_snr[3] = {0.0, 0.0, 0.0};
+  double candidate_signal_bandwidth_fraction[3] = {0.0, 0.0, 0.0};
   try {
     string base_error("CNRDeconEngine::process:  ");
     Seismogram rfest(d);
-    /* This is used to apply a shift to the fft outputs to put signals
-    at relative time 0 */
-    int t0_shift;
-    t0_shift = round((-rfest.t0()) / rfest.dt());
+    /* The inverse wavelet may have a different time origin from d.  Its
+     * zero-time sample, recorded when winv was initialized, is the phase
+     * reference for the inverse FFT output. */
+    const int t0_shift = this->winv_t0_lag;
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
     /* The set_npts method is assumed to not only set that attribute
@@ -739,11 +1114,18 @@ Seismogram CNRDeconEngine::process_with_current_shaping(
       ComplexArray numerator(FFTDeconOperator::nfft, &(wvec[0]));
       gsl_fft_complex_forward(numerator.ptr(), 1, FFTDeconOperator::nfft,
                               wavetable, workspace);
+      for (int j = 0; j < FFTDeconOperator::nfft; ++j) {
+        const Complex64 z = numerator[j];
+        if (!std::isfinite(z.real()) || !std::isfinite(z.imag()))
+          throw MsPASSError(
+              base_error + "datum FFT contains nonfinite values",
+              ErrorSeverity::Invalid);
+      }
       /* This loop computes QCMetrics of bandwidth fraction that
       is above a defined snr floor - not necessarily the same as the
       regularization floor used in computing the inverse */
       double snrmax;
-      snrmax = 1.0;
+      snrmax = 0.0;
       nhighsnr = 0;
       for (int j = 0; j < FFTDeconOperator::nfft / 2; ++j) {
         double f;
@@ -751,24 +1133,30 @@ Seismogram CNRDeconEngine::process_with_current_shaping(
         Complex64 z = numerator[j];
         double sigamp = abs(z);
         double namp = sqrt(psnoise.power(f));
-        double snr = sigamp / namp;
+        const double snr = FiniteCNRAmplitudeSNR(sigamp, namp);
 
         if (snr > snrmax)
           snrmax = snr;
         if (snr > this->band_snr_floor)
           ++nhighsnr;
       }
-      signal_bandwidth_fraction[k] =
+      candidate_signal_bandwidth_fraction[k] =
           static_cast<double>(nhighsnr) /
           static_cast<double>(FFTDeconOperator::nfft / 2);
-      peak_snr[k] = snrmax;
+      candidate_peak_snr[k] = snrmax;
       ComplexArray rftmp = numerator * winv;
       rftmp = (*this->shapingwavelet.wavelet()) * rftmp;
       gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft, wavetable,
                               workspace);
       wvec.clear();
-      for (int j = 0; j < FFTDeconOperator::nfft; ++j)
-        wvec.push_back(rftmp[j].real());
+      for (int j = 0; j < FFTDeconOperator::nfft; ++j) {
+        const Complex64 z = rftmp[j];
+        if (!std::isfinite(z.real()) || !std::isfinite(z.imag()))
+          throw MsPASSError(
+              base_error + "inverse FFT output contains nonfinite values",
+              ErrorSeverity::Invalid);
+        wvec.push_back(z.real());
+      }
       /* Note we used a time domain shift instead of using a linear phase
       shift in the frequency domain because the time domain operator has a lower
       operation count than the frequency domain algorithm and is thus more
@@ -777,6 +1165,11 @@ Seismogram CNRDeconEngine::process_with_current_shaping(
         wvec = circular_shift(wvec, -t0_shift);
       for (int j = 0; j < FFTDeconOperator::nfft; ++j)
         rfest.u(k, j) = wvec[j];
+    }
+    for (int k = 0; k < 3; ++k) {
+      this->peak_snr[k] = candidate_peak_snr[k];
+      this->signal_bandwidth_fraction[k] =
+          candidate_signal_bandwidth_fraction[k];
     }
     return rfest;
   } catch (...) {
@@ -814,15 +1207,49 @@ TimeSeries CNRDeconEngine::ideal_output() {
 }
 TimeSeries CNRDeconEngine::actual_output(const TimeSeries &wavelet) {
   if (wavelet.dead()) {
-    TimeSeries badout(wavelet);
-    badout.kill();
-    badout.set_npts(0);
-    badout.elog.log_error(
-        "CRFDeconEngine::actual_output",
-        "received wavelet data via arg0 marked dead - cannot procede",
-        ErrorSeverity::Invalid);
-    return badout;
+    return InvalidActualOutput(
+        wavelet,
+        "received wavelet data via arg0 marked dead - cannot proceed");
   }
+  if (wavelet.npts() <= 0)
+    return InvalidActualOutput(
+        wavelet, "wavelet must contain at least one sample");
+  if (sample_interval_invalid(wavelet, this->operator_dt)) {
+    stringstream ss;
+    ss << "wavelet sample interval=" << wavelet.dt()
+       << " does not match operator sample interval=" << this->operator_dt;
+    return InvalidActualOutput(wavelet, ss.str());
+  }
+  if (wavelet.npts() > FFTDeconOperator::nfft) {
+    stringstream ss;
+    ss << "wavelet length=" << wavelet.npts()
+       << " exceeds the fixed FFT buffer length="
+       << FFTDeconOperator::nfft;
+    return InvalidActualOutput(wavelet, ss.str());
+  }
+  if (!std::isfinite(wavelet.t0()))
+    return InvalidActualOutput(wavelet,
+                               "wavelet start time must be finite");
+  bool has_nonzero_sample(false);
+  for (const double x : wavelet.s) {
+    if (!std::isfinite(x))
+      return InvalidActualOutput(wavelet,
+                                 "wavelet contains nonfinite samples");
+    if (x != 0.0)
+      has_nonzero_sample = true;
+  }
+  if (!has_nonzero_sample)
+    return InvalidActualOutput(
+        wavelet, "wavelet must contain at least one nonzero sample");
+  const int input_t0_lag = wavelet.sample_number(0.0);
+  if (input_t0_lag < 0 || input_t0_lag >= FFTDeconOperator::nfft) {
+    stringstream ss;
+    ss << "wavelet zero-time sample lag=" << input_t0_lag
+       << " is outside the FFT buffer range [0," << FFTDeconOperator::nfft
+       << ")";
+    return InvalidActualOutput(wavelet, ss.str());
+  }
+
   TimeSeries result(
       wavelet); // Use this to clone metadata and elog from wavelet
   result.set_npts(FFTDeconOperator::nfft);
@@ -839,8 +1266,7 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries &wavelet) {
    * operator.   We assume relative time so we demand wavelet t0 be less
    * than or equal to nff2/2 to assure a wavelet signal is in the
    * the range -nfft/2 to nff2/2.  */
-  int w_t0_lag;
-  w_t0_lag = wavelet.sample_number(0.0);
+  int w_t0_lag(input_t0_lag);
   /* We correct the relative phase of the input wavelet to that
   saved when winv was created. */
   w_t0_lag -= this->winv_t0_lag;
@@ -908,6 +1334,17 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries &wavelet) {
     for (int k = 0; k < ao_fft.size(); ++k)
       ao.push_back(ao_fft[k].real());
     ao = circular_shift(ao, i0);
+    double ao_energy(0.0);
+    for (const double x : ao) {
+      if (!std::isfinite(x))
+        return InvalidActualOutput(
+            wavelet, "computed actual output contains nonfinite samples");
+      ao_energy += x * x;
+    }
+    if (!std::isfinite(ao_energy) || ao_energy <= 0.0)
+      return InvalidActualOutput(
+          wavelet,
+          "computed actual output has nonpositive or nonfinite energy");
     ao = normalize<double>(ao);
     /* set_npts always initializes the s buffer so it is more efficient to
     copy ao elements rather than what was here before:
@@ -922,14 +1359,38 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries &wavelet) {
 }
 TimeSeries CNRDeconEngine::inverse_wavelet(const TimeSeries &wavelet,
                                            const double tshift0) {
+  if (wavelet.dead())
+    return InvalidInverseWavelet(
+        wavelet,
+        "received wavelet data via arg0 marked dead - cannot proceed");
+  if (wavelet.npts() <= 0)
+    return InvalidInverseWavelet(
+        wavelet, "wavelet must contain at least one sample");
+  if (sample_interval_invalid(wavelet, this->operator_dt)) {
+    stringstream ss;
+    ss << "wavelet sample interval=" << wavelet.dt()
+       << " does not match operator sample interval=" << this->operator_dt;
+    return InvalidInverseWavelet(wavelet, ss.str());
+  }
+  if (!std::isfinite(wavelet.t0()))
+    return InvalidInverseWavelet(wavelet,
+                                 "wavelet start time must be finite");
+  if (!std::isfinite(tshift0))
+    return InvalidInverseWavelet(wavelet,
+                                 "requested time shift must be finite");
   try {
-    /* Using the time shift of wavelet.t0() may be a bad idea here.  Will
-    need to sort that out in debugging behaviour*/
-    double timeshift(tshift0);
-    timeshift += wavelet.t0();
-    timeshift -= operator_dt * ((double)this->winlength);
+    /* The FFT used to construct winv treats the installed source as a vector
+     * whose physical zero occurs at winv_t0_lag.  Its inverse therefore has
+     * that reference at the wrapped index (nfft-winv_t0_lag) mod nfft.
+     * Move that reference to sample zero, then preserve FourierInverse's
+     * public convention that tshift0 is the returned series start time.  Do
+     * not add wavelet.t0(): the phase of winv already contains that offset. */
+    const int inverse_reference_index =
+        (FFTDeconOperator::nfft - this->winv_t0_lag) %
+        FFTDeconOperator::nfft;
     CoreTimeSeries invcore(this->FFTDeconOperator::FourierInverse(
-        this->winv, *this->shapingwavelet.wavelet(), operator_dt, timeshift));
+        this->winv, *this->shapingwavelet.wavelet(), operator_dt, tshift0));
+    invcore.s = circular_shift(invcore.s, inverse_reference_index);
     TimeSeries result(invcore, "Invalid");
     /* Copy the error log from wavelet and post some information parameters
     to metadata */

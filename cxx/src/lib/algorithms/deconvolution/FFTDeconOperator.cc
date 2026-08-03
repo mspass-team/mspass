@@ -1,10 +1,13 @@
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
+#include "mspass/algorithms/deconvolution/GSLFFTResources.h"
 #include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <math.h>
+#include <new>
 namespace mspass::algorithms::deconvolution {
 using namespace std;
 using namespace mspass::seismic;
@@ -16,7 +19,8 @@ FFTDeconOperator::FFTDeconOperator() {
   wavetable = NULL;
   workspace = NULL;
 }
-FFTDeconOperator::FFTDeconOperator(const Metadata &md) {
+FFTDeconOperator::FFTDeconOperator(const Metadata &md)
+    : nfft(0), sample_shift(0), wavetable(NULL), workspace(NULL) {
   try {
     const string base_error("FFTDeconOperator Metadata constructor:  ");
     const double ts =
@@ -29,36 +33,53 @@ FFTDeconOperator::FFTDeconOperator(const Metadata &md) {
       throw MsPASSError(base_error +
                             "target_sample_interval must be positive",
                         ErrorSeverity::Fatal);
-    int nfftpf = GetIntRequired(md, "operator_nfft");
+    const int nfftpf = GetIntRequired(md, "operator_nfft");
+    if (nfftpf <= 0)
+      throw MsPASSError(base_error + "operator_nfft must be positive",
+                        ErrorSeverity::Fatal);
     /* We force a power of 2 algorithm for efficiency and always round up*/
-    this->nfft = nextPowerOf2(nfftpf);
+    const unsigned int rounded_nfft = nextPowerOf2(nfftpf);
+    if (rounded_nfft == 0 ||
+        rounded_nfft > static_cast<unsigned int>(numeric_limits<int>::max()))
+      throw MsPASSError(base_error + "operator_nfft is too large",
+                        ErrorSeverity::Fatal);
+    const int nfft_test = static_cast<int>(rounded_nfft);
     /* We compute the sample shift from the window start time and dt.  This
      * assures the output will be phase shifted so zero lag is at the zero
      * position of the array.   Necessary because operators using this object
      * internally only return a raw vector of samples not a child of
      * BasicTimeSeries. */
-    this->sample_shift = ComputeDeconSampleShift(md);
-    if (this->sample_shift < 0)
+    const int sample_shift_test = ComputeDeconSampleShift(md);
+    if (sample_shift_test < 0)
       throw MsPASSError(base_error +
                             "illegal sample_shift parameter - must be ge 0",
                         ErrorSeverity::Fatal);
-    if ((this->sample_shift) > nfft)
+    if (sample_shift_test > nfft_test)
       throw MsPASSError(
           base_error + "Computed shift parameter exceeds length of fft\n" +
               "Deconvolution data window parameters are probably nonsense",
           ErrorSeverity::Fatal);
-    wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-    workspace = gsl_fft_complex_workspace_alloc(nfft);
+    auto resources = detail::AllocateGSLFFTResources(nfft_test, base_error);
+    nfft = nfft_test;
+    sample_shift = sample_shift_test;
+    wavetable = resources.wavetable.release();
+    workspace = resources.workspace.release();
   } catch (...) {
     throw;
   };
 }
-FFTDeconOperator::FFTDeconOperator(const FFTDeconOperator &parent) {
-  nfft = parent.nfft;
-  sample_shift = parent.sample_shift;
-  /* copies need their own work space */
-  wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-  workspace = gsl_fft_complex_workspace_alloc(nfft);
+FFTDeconOperator::FFTDeconOperator(const FFTDeconOperator &parent)
+    : nfft(parent.nfft), sample_shift(parent.sample_shift), wavetable(NULL),
+      workspace(NULL), winv(parent.winv) {
+  /* Copy construction must clone the inverse as well as the FFT resources.
+   * A failure of the second GSL allocation requires explicit cleanup because
+   * the enclosing object's destructor is not run when its constructor throws. */
+  if (nfft > 0) {
+    auto resources = detail::AllocateGSLFFTResources(
+        nfft, "FFTDeconOperator copy constructor");
+    wavetable = resources.wavetable.release();
+    workspace = resources.workspace.release();
+  }
 }
 FFTDeconOperator::~FFTDeconOperator() {
   if (wavetable != NULL)
@@ -67,13 +88,36 @@ FFTDeconOperator::~FFTDeconOperator() {
     gsl_fft_complex_workspace_free(workspace);
 }
 FFTDeconOperator &FFTDeconOperator::operator=(const FFTDeconOperator &parent) {
-  if (this != &parent) {
+  if (this == &parent)
+    return *this;
+
+  /* Clone the inverse before allocating or changing any target state. */
+  ComplexArray new_winv(parent.winv);
+  /* Wavetables and workspaces depend only on nfft, so reuse a complete
+   * allocation when possible.  Otherwise allocate both replacements before
+   * changing this object.  That ordering makes allocation failure leave the
+   * old operator intact and prevents assignment from losing the old GSL
+   * pointers. */
+  if (nfft != parent.nfft || wavetable == NULL || workspace == NULL) {
+    detail::GSLFFTResources resources;
+    if (parent.nfft > 0) {
+      resources = detail::AllocateGSLFFTResources(
+          parent.nfft, "FFTDeconOperator assignment");
+    }
+    /* Every operation above this point can throw.  ComplexArray::swap and the
+     * pointer/scalar updates below cannot, making this the transaction commit. */
+    winv.swap(new_winv);
+    if (wavetable != NULL)
+      gsl_fft_complex_wavetable_free(wavetable);
+    if (workspace != NULL)
+      gsl_fft_complex_workspace_free(workspace);
+    wavetable = resources.wavetable.release();
+    workspace = resources.workspace.release();
     nfft = parent.nfft;
-    sample_shift = parent.sample_shift;
-    /* copies need their own work space */
-    wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-    workspace = gsl_fft_complex_workspace_alloc(nfft);
+  } else {
+    winv.swap(new_winv);
   }
+  sample_shift = parent.sample_shift;
   return *this;
 }
 void FFTDeconOperator::changeparameter(const Metadata &md) {
@@ -89,7 +133,16 @@ void FFTDeconOperator::changeparameter(const Metadata &md) {
       throw MsPASSError(base_error +
                             "target_sample_interval must be positive",
                         ErrorSeverity::Fatal);
-    const int nfft_test = nextPowerOf2(GetIntRequired(md, "operator_nfft"));
+    const int requested_nfft = GetIntRequired(md, "operator_nfft");
+    if (requested_nfft <= 0)
+      throw MsPASSError(base_error + "operator_nfft must be positive",
+                        ErrorSeverity::Fatal);
+    const unsigned int rounded_nfft = nextPowerOf2(requested_nfft);
+    if (rounded_nfft == 0 ||
+        rounded_nfft > static_cast<unsigned int>(numeric_limits<int>::max()))
+      throw MsPASSError(base_error + "operator_nfft is too large",
+                        ErrorSeverity::Fatal);
+    const int nfft_test = static_cast<int>(rounded_nfft);
     const int sample_shift_test = ComputeDeconSampleShift(md);
     if (sample_shift_test < 0)
       throw MsPASSError(base_error +
@@ -100,16 +153,13 @@ void FFTDeconOperator::changeparameter(const Metadata &md) {
           base_error + "computed sample_shift exceeds length of fft",
           ErrorSeverity::Fatal);
     if (nfft_test != nfft) {
-      gsl_fft_complex_wavetable *new_wavetable =
-          gsl_fft_complex_wavetable_alloc(nfft_test);
-      gsl_fft_complex_workspace *new_workspace =
-          gsl_fft_complex_workspace_alloc(nfft_test);
+      auto resources = detail::AllocateGSLFFTResources(nfft_test, base_error);
       if (wavetable != NULL)
         gsl_fft_complex_wavetable_free(wavetable);
       if (workspace != NULL)
         gsl_fft_complex_workspace_free(workspace);
-      wavetable = new_wavetable;
-      workspace = new_workspace;
+      wavetable = resources.wavetable.release();
+      workspace = resources.workspace.release();
       nfft = nfft_test;
     }
     sample_shift = sample_shift_test;
@@ -118,19 +168,15 @@ void FFTDeconOperator::changeparameter(const Metadata &md) {
   };
 }
 void FFTDeconOperator::change_size(const int n) {
-  try {
-    if (nfft != 0) {
-      if (wavetable != NULL)
-        gsl_fft_complex_wavetable_free(wavetable);
-      if (workspace != NULL)
-        gsl_fft_complex_workspace_free(workspace);
-    }
-    nfft = n;
-    wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-    workspace = gsl_fft_complex_workspace_alloc(nfft);
-  } catch (...) {
-    throw;
-  };
+  const string caller("FFTDeconOperator::change_size");
+  auto resources = detail::AllocateGSLFFTResources(n, caller);
+  if (wavetable != NULL)
+    gsl_fft_complex_wavetable_free(wavetable);
+  if (workspace != NULL)
+    gsl_fft_complex_workspace_free(workspace);
+  nfft = n;
+  wavetable = resources.wavetable.release();
+  workspace = resources.workspace.release();
 }
 /* Helper method to avoid repetitious code in Fourier methods.   Computes the
  inverse FIR filter for the inverse_wavelet methods of fourier decon operators.
@@ -287,9 +333,31 @@ void ValidatePowerSpectrumCoversDC(const PowerSpectrum &spectrum,
                             ": noise PowerSpectrum contains nonfinite power "
                             "samples",
                         ErrorSeverity::Invalid);
+    if (value < 0.0)
+      throw MsPASSError(caller +
+                            ": noise PowerSpectrum contains negative power "
+                            "samples",
+                        ErrorSeverity::Invalid);
   }
-  const double fmax =
-      spectrum.f0() + spectrum.df() * static_cast<double>(spectrum.nf() - 1);
+  /* Evaluate the complete frequency grid in extended precision, but require
+   * both its span and endpoint to remain representable as finite doubles.
+   * Checking only f0 and df permits a finite pair to overflow for large nf. */
+  const long double span_ld =
+      static_cast<long double>(spectrum.df()) *
+      static_cast<long double>(spectrum.nf() - 1);
+  const long double fmax_ld =
+      static_cast<long double>(spectrum.f0()) + span_ld;
+  const long double double_max =
+      static_cast<long double>(std::numeric_limits<double>::max());
+  if (!std::isfinite(span_ld) || span_ld > double_max ||
+      !std::isfinite(fmax_ld) || fmax_ld > double_max ||
+      fmax_ld < -double_max)
+    throw MsPASSError(
+        caller +
+            ": noise PowerSpectrum frequency-grid span or endpoint is "
+            "nonfinite or overflows double precision",
+        ErrorSeverity::Invalid);
+  const double fmax = static_cast<double>(fmax_ld);
   if (spectrum.f0() > 0.0 || fmax <= 0.0)
     throw MsPASSError(caller + ": noise PowerSpectrum must cover DC frequency",
                       ErrorSeverity::Invalid);

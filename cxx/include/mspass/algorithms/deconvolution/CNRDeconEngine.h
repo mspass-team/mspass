@@ -181,7 +181,7 @@ private:
   mspass::algorithms::deconvolution::ComplexArray winv;
   /* This is the lag from sample 0 for the time defines as 0 for the
   wavelet used to compute the inverse.  It is needed to resolve time
-  in the actual_output method.*/
+  in processing and the actual_output method.*/
   int winv_t0_lag;
   /*** Private methods *****/
   mspass::seismic::Seismogram

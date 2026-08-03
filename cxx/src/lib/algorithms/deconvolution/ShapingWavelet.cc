@@ -4,12 +4,15 @@
 #include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
+#include "mspass/algorithms/deconvolution/GSLFFTResources.h"
 #include "mspass/algorithms/deconvolution/wavelet.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
 #include <math.h>
+#include <memory>
+#include <new>
 #include <string>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
@@ -35,24 +38,25 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
                           ErrorSeverity::Invalid);
       }
     }
+    if (nfft <= 0)
+      throw MsPASSError(base_error + "FFT length must be positive",
+                        ErrorSeverity::Invalid);
     /* these are workspaces used by gnu's fft algorithm.  Other parts
      * of this library cache them for efficiency, but this one we
      * compute ever time the object is created and then discard it. */
-    gsl_fft_complex_wavetable *wavetable;
-    gsl_fft_complex_workspace *workspace;
-    wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-    workspace = gsl_fft_complex_workspace_alloc(nfft);
+    auto resources = detail::AllocateGSLFFTResources(nfft, base_error);
     string wavelettype = md.get_string("shaping_wavelet_type");
     wavelet_name = wavelettype;
     dt = GetDoubleRequired(md, "shaping_wavelet_dt");
-    double *r;
     if (wavelettype == "gaussian") {
       float fpeak = GetDoubleRequired(md, "shaping_wavelet_frequency");
       // construct wavelet and fft
-      r = gaussian(fpeak, (float)dt, nfft);
-      w = ComplexArray(nfft, r);
-      gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
-      delete[] r;
+      unique_ptr<double[]> r(gaussian(fpeak, (float)dt, nfft));
+      if (!r)
+        throw bad_alloc();
+      w = ComplexArray(nfft, r.get());
+      gsl_fft_complex_forward(w.ptr(), 1, nfft, resources.wavetable.get(),
+                              resources.workspace.get());
     }
     /* Note for CNR3CDecon the initial values on construction for
     ricker or butterworth are irrelevant and wasted effort.  We keep
@@ -62,13 +66,15 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
       float fpeak =
           static_cast<float>(GetDoubleRequired(md, "shaping_wavelet_frequency"));
       // construct wavelet and fft
-      r = rickerwavelet(fpeak, (float)dt, nfft);
+      unique_ptr<double[]> r(rickerwavelet(fpeak, (float)dt, nfft));
+      if (!r)
+        throw bad_alloc();
       // DEBUG
       // cerr << "Ricker shaping wavelet"<<endl;
       // for(int k=0;k<nfft;++k) cerr << r[k]<<endl;
-      w = ComplexArray(nfft, r);
-      gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
-      delete[] r;
+      w = ComplexArray(nfft, r.get());
+      gsl_fft_complex_forward(w.ptr(), 1, nfft, resources.wavetable.get(),
+                              resources.workspace.get());
     } else if (wavelettype == "butterworth") {
       double f3db_lo, f3db_hi;
       f3db_lo = GetDoubleRequired(md, "f3db_lo");
@@ -128,12 +134,14 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
       }
       double c = tbp / target_pulse_width;
       int nwsize = round(c * (static_cast<double>(nfft)));
-      double *wtmp = slepian0(tbp, nwsize);
+      unique_ptr<double[]> wtmp(slepian0(tbp, nwsize));
+      if (!wtmp)
+        throw bad_alloc();
       vector<double> work(nfft, 0.0);
-      dcopy(nwsize, wtmp, 1, &(work[0]), 1);
-      delete[] wtmp;
+      dcopy(nwsize, wtmp.get(), 1, &(work[0]), 1);
       w = ComplexArray(nfft, work);
-      gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
+      gsl_fft_complex_forward(w.ptr(), 1, nfft, resources.wavetable.get(),
+                              resources.workspace.get());
     } else if (wavelettype == "none") {
       /* The shaping wavelet is stored in the frequency domain.  The identity
        * filter is therefore one at every frequency bin, not a time-domain
@@ -144,8 +152,6 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
           base_error + "illegal value for shaping_wavelet_type=" + wavelettype,
           ErrorSeverity::Invalid);
     }
-    gsl_fft_complex_wavetable_free(wavetable);
-    gsl_fft_complex_workspace_free(workspace);
     df = 1.0 / (dt * ((double)nfft));
   } catch (MsPASSError &err) {
     cerr << base_error
@@ -164,25 +170,29 @@ to always make wavelet_name ricker in this case. */
 ShapingWavelet::ShapingWavelet(const double fpeak, const double dtin,
                                const int n)
     : wavelet_name("ricker") {
+  const string caller("ShapingWavelet Ricker constructor");
+  if (n <= 0)
+    throw MsPASSError(caller + ": FFT length must be positive",
+                      ErrorSeverity::Invalid);
   nfft = n;
   dt = dtin;
   df = 1.0 / (dt * static_cast<double>(n));
-  double *r;
-  r = rickerwavelet((float)fpeak, (float)dt, nfft);
-  w = ComplexArray(nfft, r);
-  gsl_fft_complex_wavetable *wavetable;
-  gsl_fft_complex_workspace *workspace;
-  wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-  workspace = gsl_fft_complex_workspace_alloc(nfft);
-  gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
-  gsl_fft_complex_wavetable_free(wavetable);
-  gsl_fft_complex_workspace_free(workspace);
-  delete[] r;
+  unique_ptr<double[]> r(rickerwavelet((float)fpeak, (float)dt, nfft));
+  if (!r)
+    throw bad_alloc();
+  w = ComplexArray(nfft, r.get());
+  auto resources = detail::AllocateGSLFFTResources(nfft, caller);
+  gsl_fft_complex_forward(w.ptr(), 1, nfft, resources.wavetable.get(),
+                          resources.workspace.get());
 }
 ShapingWavelet::ShapingWavelet(const int npolelo, const double f3dblo,
                                const int npolehi, const double f3dbhi,
                                const double dtin, const int n)
     : wavelet_name("butterworth") {
+  if (n <= 0)
+    throw MsPASSError(
+        "ShapingWavelet Butterworth constructor: FFT length must be positive",
+        ErrorSeverity::Invalid);
   nfft = n;
   dt = dtin;
   df = 1.0 / (dt * static_cast<double>(n));
@@ -199,6 +209,9 @@ ShapingWavelet::ShapingWavelet(CoreTimeSeries d, int nfft) {
    * constructor without the nfft argument */
   if (nfft <= 0)
     nfft = d.npts();
+  if (nfft <= 0)
+    throw MsPASSError(base_error + "FFT length must be positive",
+                      ErrorSeverity::Invalid);
   this->nfft = nfft;
   dt = d.dt();
   df = 1.0 / (dt * ((double)nfft));
@@ -237,14 +250,10 @@ ShapingWavelet::ShapingWavelet(CoreTimeSeries d, int nfft) {
     if ((iw >= 0) && (iw < nfft))
       dwork[i] = d.s[iw];
   }
-  gsl_fft_complex_wavetable *wavetable;
-  gsl_fft_complex_workspace *workspace;
-  wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-  workspace = gsl_fft_complex_workspace_alloc(nfft);
+  auto resources = detail::AllocateGSLFFTResources(nfft, base_error);
   w = ComplexArray(nfft, &(dwork[0]));
-  gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
-  gsl_fft_complex_wavetable_free(wavetable);
-  gsl_fft_complex_workspace_free(workspace);
+  gsl_fft_complex_forward(w.ptr(), 1, nfft, resources.wavetable.get(),
+                          resources.workspace.get());
 }
 ShapingWavelet &ShapingWavelet::operator=(const ShapingWavelet &parent) {
   if (this != &parent) {
@@ -259,16 +268,16 @@ ShapingWavelet &ShapingWavelet::operator=(const ShapingWavelet &parent) {
 CoreTimeSeries ShapingWavelet::impulse_response() {
   try {
     int nfft = w.size();
-    gsl_fft_complex_wavetable *wavetable;
-    gsl_fft_complex_workspace *workspace;
-    wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-    workspace = gsl_fft_complex_workspace_alloc(nfft);
+    const string caller("ShapingWavelet::impulse_response");
+    if (nfft <= 0)
+      throw MsPASSError(caller + ": shaping wavelet is empty",
+                        ErrorSeverity::Invalid);
+    auto resources = detail::AllocateGSLFFTResources(nfft, caller);
     /* We need to copy the current shaping wavelet or the inverse fft
      * will make it invalid */
     ComplexArray iwf(w);
-    gsl_fft_complex_inverse(iwf.ptr(), 1, nfft, wavetable, workspace);
-    gsl_fft_complex_wavetable_free(wavetable);
-    gsl_fft_complex_workspace_free(workspace);
+    gsl_fft_complex_inverse(iwf.ptr(), 1, nfft, resources.wavetable.get(),
+                            resources.workspace.get());
     CoreTimeSeries result(nfft);
 
     result.set_tref(TimeReferenceType::Relative);

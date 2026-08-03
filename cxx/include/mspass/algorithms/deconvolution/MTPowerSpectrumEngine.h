@@ -1,6 +1,7 @@
 #ifndef __MTPOWERSPECTRUM_ENGINE_H__
 #define __MTPOWERSPECTRUM_ENGINE_H__
 
+#include "mspass/algorithms/deconvolution/GSLFFTResources.h"
 #include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/dmatrix.h"
@@ -8,7 +9,9 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
+#include <cmath>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace mspass::algorithms::deconvolution {
@@ -124,10 +127,24 @@ public:
   \return computed df
   */
   double set_df(double dt) {
+    const std::string caller("MTPowerSpectrumEngine::set_df");
+    if (!std::isfinite(dt) || dt <= 0.0)
+      throw mspass::utility::MsPASSError(
+          caller + ": sample interval must be finite and positive",
+          mspass::utility::ErrorSeverity::Invalid);
+    const int this_nf = this->nf();
+    if (this_nf <= 1)
+      throw mspass::utility::MsPASSError(
+          caller + ": engine fft length is not configured",
+          mspass::utility::ErrorSeverity::Invalid);
+    const double fny = 1.0 / (2.0 * dt);
+    const double new_deltaf = fny / static_cast<double>(this_nf - 1);
+    if (!std::isfinite(new_deltaf) || new_deltaf <= 0.0)
+      throw mspass::utility::MsPASSError(
+          caller + ": sample interval produces an invalid frequency spacing",
+          mspass::utility::ErrorSeverity::Invalid);
     this->operator_dt = dt;
-    int this_nf = this->nf();
-    double fny = 1.0 / (2.0 * dt);
-    this->deltaf = fny / static_cast<double>(this_nf - 1);
+    this->deltaf = new_deltaf;
     return deltaf;
   };
   /*! Return tne number of frequency bins in estimates the operator will
@@ -168,15 +185,59 @@ private:
     ar & deltaf;
   }
   template <class Archive> void load(Archive &ar, const unsigned int version) {
-    ar & taperlen;
-    ar & ntapers;
-    ar & nfft;
-    ar & tbp;
-    ar & operator_dt;
-    ar & tapers;
-    ar & deltaf;
-    this->wavetable = gsl_fft_complex_wavetable_alloc(this->nfft);
-    this->workspace = gsl_fft_complex_workspace_alloc(this->nfft);
+    int loaded_taperlen;
+    int loaded_ntapers;
+    int loaded_nfft;
+    double loaded_tbp;
+    double loaded_operator_dt;
+    mspass::utility::dmatrix loaded_tapers;
+    double loaded_deltaf;
+    ar & loaded_taperlen;
+    ar & loaded_ntapers;
+    ar & loaded_nfft;
+    ar & loaded_tbp;
+    ar & loaded_operator_dt;
+    ar & loaded_tapers;
+    ar & loaded_deltaf;
+
+    const std::string caller("MTPowerSpectrumEngine serialization load");
+    if (loaded_nfft <= 0 || loaded_taperlen <= 0 || loaded_ntapers <= 0)
+      throw mspass::utility::MsPASSError(
+          caller + ": archived fft, taper, and taper-count lengths must be "
+                   "positive",
+          mspass::utility::ErrorSeverity::Invalid);
+    if (loaded_nfft < loaded_taperlen)
+      throw mspass::utility::MsPASSError(
+          caller + ": archived fft length is shorter than taper length",
+          mspass::utility::ErrorSeverity::Invalid);
+    if (!std::isfinite(loaded_tbp) || loaded_tbp <= 0.0 ||
+        !std::isfinite(loaded_operator_dt) || loaded_operator_dt <= 0.0 ||
+        !std::isfinite(loaded_deltaf) || loaded_deltaf <= 0.0)
+      throw mspass::utility::MsPASSError(
+          caller + ": archived spectral parameters must be finite and "
+                   "positive",
+          mspass::utility::ErrorSeverity::Invalid);
+    if (!loaded_tapers.storage_is_consistent() ||
+        loaded_tapers.rows() != static_cast<size_t>(loaded_ntapers) ||
+        loaded_tapers.columns() != static_cast<size_t>(loaded_taperlen))
+      throw mspass::utility::MsPASSError(
+          caller + ": archived taper matrix dimensions are inconsistent",
+          mspass::utility::ErrorSeverity::Invalid);
+    auto resources = detail::AllocateGSLFFTResources(loaded_nfft, caller);
+
+    loaded_tapers.swap(tapers);
+    if (wavetable != nullptr)
+      gsl_fft_complex_wavetable_free(wavetable);
+    if (workspace != nullptr)
+      gsl_fft_complex_workspace_free(workspace);
+    taperlen = loaded_taperlen;
+    ntapers = loaded_ntapers;
+    nfft = loaded_nfft;
+    tbp = loaded_tbp;
+    operator_dt = loaded_operator_dt;
+    deltaf = loaded_deltaf;
+    wavetable = resources.wavetable.release();
+    workspace = resources.workspace.release();
   }
   BOOST_SERIALIZATION_SPLIT_MEMBER()
 };

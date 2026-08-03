@@ -26,9 +26,17 @@ ScalarDecon::ScalarDecon(const ScalarDecon &parent)
       shapingwavelet(parent.shapingwavelet) {}
 ScalarDecon &ScalarDecon::operator=(const ScalarDecon &parent) {
   if (this != &parent) {
-    wavelet = parent.wavelet;
-    data = parent.data;
-    result = parent.result;
+    /* Prepare every allocating member before committing so assignment to an
+     * empty scalar leaf also installs the shaping wavelet required by its
+     * actual_output and inverse_wavelet methods. */
+    vector<double> new_wavelet(parent.wavelet);
+    vector<double> new_data(parent.data);
+    vector<double> new_result(parent.result);
+    ShapingWavelet new_shapingwavelet(parent.shapingwavelet);
+    wavelet.swap(new_wavelet);
+    data.swap(new_data);
+    result.swap(new_result);
+    shapingwavelet.swap(new_shapingwavelet);
   }
   return *this;
 }
