@@ -12,6 +12,7 @@
 
 ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
 ARG GEOLAB_BASE_IMAGE=ghcr.io/mspass-team/geolab-base-mirror@sha256:7aa0b713de225288188163c13519efce1ac5248ea386e734d88ad7c54b0abe27
+ARG PYTHON_VERSION=3.12
 ARG DASK_LABEXTENSION_VERSION=7.0.0
 ARG SPARK_VERSION=3.0.0
 ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop2.7
@@ -42,7 +43,20 @@ RUN --mount=type=bind,from=spark-build-assets,source=/,target=/mnt/build-assets,
 
 FROM ${MSPASS_BASE_IMAGE} AS mspass-base
 
+ARG PYTHON_VERSION
+
 LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
+
+# The SCOPED base currently pins Python 3.10.  GeoLab's notebook environment
+# uses Python 3.12, so move every target derived from mspass-base (runtime, dev,
+# mpi, and tacc) to the same Python ABI before compiling MsPASS.
+RUN set -eux; \
+	sed -i '/^python[[:space:]]/d' /opt/conda/conda-meta/pinned; \
+	mamba install --yes "python=${PYTHON_VERSION}"; \
+	mamba clean --all --force-pkgs-dirs --yes; \
+	python -c "import sys; expected='${PYTHON_VERSION}'; actual=f'{sys.version_info.major}.{sys.version_info.minor}'; assert actual == expected, (actual, expected)"; \
+	mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> /opt/conda/conda-meta/pinned; \
+	docker-clean
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN set -eux; \
@@ -316,6 +330,8 @@ FROM ${GEOLAB_BASE_IMAGE} AS geolab
 # Gateway server.
 USER root
 
+ARG PYTHON_VERSION
+
 # Keep the base GeoLab uid/gid/user identity so mounted /home/jovyan workspaces
 # and Dask Gateway scheduler/worker pods match the official GeoLab runtime.
 ARG NB_USER=jovyan
@@ -387,6 +403,7 @@ ADD python /mspass/python
 ADD .git /mspass/.git
 
 RUN set -eux; \
+    /srv/conda/envs/notebook/bin/python -c "import sys; expected='${PYTHON_VERSION}'; actual=f'{sys.version_info.major}.{sys.version_info.minor}'; assert actual == expected, (actual, expected)"; \
     printf '%s\n' \
         'dask==2026.3.0' \
         'distributed==2026.3.0' \
