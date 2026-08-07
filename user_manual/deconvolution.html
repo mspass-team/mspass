@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Deconvolution Operators &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
+    <title>Deconvolution Operators &#8212; MsPASS 2.4.2.dev26+gbb9a68b9 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bf6741af"></script>
+    <script src="../_static/documentation_options.js?v=6c6a80d7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Arrival Time Measurement Techniques in MsPASS" href="arrival_time_measurement.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev2" />
+  <meta name="docsearch:version" content="2.4.2.dev26" />
   </head>
   
   
@@ -597,15 +597,57 @@ is used for all components; otherwise the configured component of the
 signal window is used as the source wavelet.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDRFDecon</span></code> and <code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDRFDecon</span></code></dt><dd><p>Direct wrappers around the GID engines.  If <code class="docutils literal notranslate"><span class="pre">signal_window</span></code> is omitted,
-the full input time range is used as the interval to analyze and return.  If
+the full input time range is used to satisfy loading, while the configured
+<code class="docutils literal notranslate"><span class="pre">full_data_window</span></code> remains the returned output interval.  If
 <code class="docutils literal notranslate"><span class="pre">noise_window</span></code> is omitted, the engine’s parameter-file noise window is
 used.  The analysis interval must contain the configured receiver-function
 lag window.</p>
 </dd>
 </dl>
+<section id="gid-receiver-function-windows">
+<h3>GID receiver-function windows<a class="headerlink" href="#gid-receiver-function-windows" title="Link to this heading">#</a></h3>
+<p>GID uses four independent time windows.  <code class="docutils literal notranslate"><span class="pre">wavelet_window_start</span></code> and
+<code class="docutils literal notranslate"><span class="pre">wavelet_window_end</span></code> isolate the short direct-P source pulse used to build an
+internal source wavelet.  <code class="docutils literal notranslate"><span class="pre">deconvolution_data_window_start</span></code> and
+<code class="docutils literal notranslate"><span class="pre">deconvolution_data_window_end</span></code> define the receiver-function analysis and
+sparse-search lags; this window must include any late P-to-S conversions of
+interest, such as P410s and P660s.  <code class="docutils literal notranslate"><span class="pre">full_data_window_*</span></code> defines the returned
+window and must contain the analysis window.  <code class="docutils literal notranslate"><span class="pre">noise_window_*</span></code> is an
+independent pre-event interval and can be longer than either signal window.</p>
+<p>For example, a mantle-transition-zone RF commonly uses <code class="docutils literal notranslate"><span class="pre">dt=0.05</span></code>, a source
+wavelet window of <code class="docutils literal notranslate"><span class="pre">(-5,</span> <span class="pre">20)</span></code>, and analysis/output windows of <code class="docutils literal notranslate"><span class="pre">(-10,</span> <span class="pre">160)</span></code>
+with pre-event noise <code class="docutils literal notranslate"><span class="pre">(-200,</span> <span class="pre">-10)</span></code>.  Configure each selected leaf inverse
+operator with the same analysis window, <code class="docutils literal notranslate"><span class="pre">target_sample_interval</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">shaping_wavelet_dt</span></code> as the enclosing GID branch.  Older parameter files
+that omit the wavelet-window keys retain their historical behavior: the
+analysis window is also used for source-wavelet extraction.</p>
+<p>Group-sparse support is deliberately narrower than the requested analysis
+interval when a resolution-kernel column would cross either record edge.  The
+solver requires the complete normalized resolution kernel for every retained
+lag: partial columns have variable energy and poor refit conditioning, and are
+therefore rejected rather than interpreted as zero-valued observations.  QC
+records the resulting <code class="docutils literal notranslate"><span class="pre">group_sparse_valid_lag_*</span></code> interval and the
+<code class="docutils literal notranslate"><span class="pre">centered_full_fir_support</span></code> boundary policy.  Support is measured on both
+sides of the resolution kernel’s physical zero-lag sample, so it rejects a
+tail-only column without discarding a legal near-edge arrival whose full
+centered kernel is present.  Include guard data beyond a late
+arrival and crop to the desired output window when an arrival near an edge must
+be resolved.  Shortening the analysis interval cannot recover an unsupported
+edge lag; declare that arrival unsupported when guard data are unavailable.</p>
+<p>Group-sparse amplitudes are first obtained from the regularized group-lasso
+solve and are then optionally de-biased on the selected support.  Selected
+lags can be nearly collinear, so the shared refit measures the Gram condition
+number with a LAPACK symmetric eigensolve (cubic in support size).  Above <code class="docutils literal notranslate"><span class="pre">1e5</span></code> it raises the <em>relative</em>, diagonal-scaled ridge to at
+least <code class="docutils literal notranslate"><span class="pre">1e-2</span></code>; this is a numerical condition guard, not a change to the
+group-lasso penalty or its default threshold.  QC records
+<code class="docutils literal notranslate"><span class="pre">group_sparse_refit_gram_condition_number</span></code>,
+<code class="docutils literal notranslate"><span class="pre">group_sparse_refit_relative_ridge_beta</span></code>, pre/post residual L2, pre/post
+maximum amplitudes, and whether the guard or a pre-debias fallback was used.
+The fallback is used only for a nonfinite or residual-increasing refit.</p>
 <p>The lower-level C++ engines do the numerical work.  They are useful for tests,
 diagnostics, and specialized processing tools, but they expect the caller to
 load the correct data, wavelet, and noise estimates.</p>
+</section>
 </section>
 <section id="common-conventions">
 <h2>Common conventions<a class="headerlink" href="#common-conventions" title="Link to this heading">#</a></h2>
@@ -622,6 +664,68 @@ response: <code class="docutils literal notranslate"><span class="pre">actual_ou
 applied to the source wavelet, while <code class="docutils literal notranslate"><span class="pre">inverse_wavelet</span></code> is the inverse filter
 itself.  The returned receiver function is the cropped seismic result.</p>
 </section>
+<section id="objective-specific-receiver-function-presets">
+<h2>Objective-specific receiver-function presets<a class="headerlink" href="#objective-specific-receiver-function-presets" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor</span></code> and <code class="docutils literal notranslate"><span class="pre">RFdecon</span></code> select <code class="docutils literal notranslate"><span class="pre">mtz_plane_wave_lowfreq</span></code> when
+called without a parameter file.  This is an objective-specific reference
+preset, not a claim that one parameter set is scientifically optimal for every
+acquisition or imaging method.  It uses a <code class="docutils literal notranslate"><span class="pre">(-10,</span> <span class="pre">120)</span></code> s analysis/output
+window, a <code class="docutils literal notranslate"><span class="pre">(-5,</span> <span class="pre">20)</span></code> s source-wavelet window, and a 0.125 Hz zero-phase
+Ricker output wavelet.  That Ricker bandwidth is a target-specific reference
+for low-frequency MTZ plane-wave/Kirchhoff imaging, not a generally optimal
+choice for crustal, high-resolution, or other RF workflows.  Its primary
+standalone reference operators are
+<code class="docutils literal notranslate"><span class="pre">WaterLevelDecon</span></code> (water level 0.1) and <code class="docutils literal notranslate"><span class="pre">LeastSquareDecon</span></code> (damping 1.0).</p>
+<p>The installed scalar presets are selected with the <code class="docutils literal notranslate"><span class="pre">preset</span></code> keyword:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Preset</p></th>
+<th class="head"><p>Intended use</p></th>
+<th class="head"><p>Output shaping</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mtz_plane_wave_lowfreq</span></code></p></td>
+<td><p>Reference product for MTZ plane-wave/Kirchhoff imaging (selected by default)</p></td>
+<td><p>Ricker 0.125 Hz</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mtz_plane_wave_highres</span></code></p></td>
+<td><p>MTZ resolution sensitivity product</p></td>
+<td><p>Ricker 0.25 Hz</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">crustal_plane_wave</span></code></p></td>
+<td><p>Short-window crustal reference product</p></td>
+<td><p>Ricker 0.5 Hz</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">raw_decon_diagnostic</span></code></p></td>
+<td><p>Inverse/operator diagnostics only, not direct migration input</p></td>
+<td><p>none</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.RFdeconProcessor</span><span class="w"> </span><span class="kn">import</span> <span class="n">RFdeconProcessor</span>
+
+<span class="n">default</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span><span class="n">alg</span><span class="o">=</span><span class="s2">&quot;WaterLevel&quot;</span><span class="p">)</span>
+<span class="n">highres</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span> <span class="n">preset</span><span class="o">=</span><span class="s2">&quot;mtz_plane_wave_highres&quot;</span>
+<span class="p">)</span>
+<span class="n">historical</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span><span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Each preset writes <code class="docutils literal notranslate"><span class="pre">rf_preset</span></code> into the RF QC metadata.  The historical
+<code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.pf</span></code> remains selectable for reproducibility, but is a
+legacy scalar test/example configuration rather than the public scientific
+default.  No-argument GID construction uses the matching long-window/Ricker
+profile and records <code class="docutils literal notranslate"><span class="pre">gid_workflow=experimental_sensitivity</span></code>.  GID products
+remain useful sensitivity comparisons; they are not the primary MTZ default.</p>
+<p>All image comparisons should hold the output Ricker wavelet fixed.  The
+negative side lobes of a symmetric Ricker wavelet are part of the point-spread
+function for plane-wave and likely Kirchhoff-style migration; they should not
+be replaced by an unmatched Butterworth merely because an individual RF looks
+smoother.</p>
+</section>
 <section id="windows-and-noise">
 <h2>Windows and noise<a class="headerlink" href="#windows-and-noise" title="Link to this heading">#</a></h2>
 <p>Three window concepts appear throughout the deconvolution APIs:</p>
@@ -633,6 +737,28 @@ return.</p>
 function workflows this is commonly the vertical or P component, or an
 external stacked source estimate.</p>
 </dd>
+</dl>
+<p>For scalar <code class="docutils literal notranslate"><span class="pre">RFdeconProcessor</span></code> methods, <code class="docutils literal notranslate"><span class="pre">wavelet_window_start</span></code> and
+<code class="docutils literal notranslate"><span class="pre">wavelet_window_end</span></code> can be distinct from the analysis window.  A
+<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> source wavelet is embedded at its actual time origin on the
+analysis grid before it is passed to the vector-only scalar engine.  Thus a
+short <code class="docutils literal notranslate"><span class="pre">(-5,20)</span></code> P pulse paired with an analysis window beginning at -10 s
+does not acquire a spurious five-second lag shift.  A raw numeric vector has
+no intrinsic time base: pass <code class="docutils literal notranslate"><span class="pre">wavelet_t0</span></code> to <code class="docutils literal notranslate"><span class="pre">RFdecon</span></code> or
+<code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.loadwavelet</span></code> to locate its first sample on the physical
+time axis, or use a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.  Omitting <code class="docutils literal notranslate"><span class="pre">wavelet_t0</span></code> retains the legacy
+interpretation that vector sample zero is the analysis-window start and emits
+a warning.  The same rule applies to bare <code class="docutils literal notranslate"><span class="pre">external_wavelet</span></code> vectors passed
+to the time- and frequency-domain GID wrappers.  A TimeSeries wavelet always
+keeps its own <code class="docutils literal notranslate"><span class="pre">t0</span></code> and sample interval.</p>
+<p>The GID receiver-function wrappers and engines interpret their configured
+windows, sample shifts, and output times as P-relative lag coordinates.  They
+therefore reject a UTC analysis datum before loading an external source into a
+reused engine.  Convert event data with <code class="docutils literal notranslate"><span class="pre">ator(P-arrival</span> <span class="pre">epoch)</span></code> before GID RF
+processing.  This is a contract of the GID RF workflow, not a general
+restriction on <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> or on the datum-independent low-level
+<code class="docutils literal notranslate"><span class="pre">loadwavelet</span></code> method.</p>
+<dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">noise_window</span></code></dt><dd><p>A time interval or spectrum used to stabilize the inverse or to decide when
 an iterative method should stop.</p>
 </dd>
@@ -795,9 +921,10 @@ and the <code class="docutils literal notranslate"><span class="pre">group_lasso
 <h2>Scalar inverse operators<a class="headerlink" href="#scalar-inverse-operators" title="Link to this heading">#</a></h2>
 <p>Scalar operators load one source wavelet and one target trace.  They return a
 regularized inverse-filter receiver function, not a sparse impulse response.
-Their default parameter files do not apply a GID-style output shaping wavelet
-(<code class="docutils literal notranslate"><span class="pre">shaping_wavelet_type</span> <span class="pre">none</span></code>).  If an older scalar parameter file configures
-an output filter, treat it as a legacy display or bandlimiting filter.</p>
+The objective-specific scalar presets apply the same Ricker output shaping
+wavelet to all scalar branches.  Older parameter files can still select
+<code class="docutils literal notranslate"><span class="pre">shaping_wavelet_type</span> <span class="pre">none</span></code> for diagnostic/raw output, but raw and shaped
+results should not be compared as equivalent migration inputs.</p>
 <dl>
 <dt><code class="docutils literal notranslate"><span class="pre">LeastSquareDecon</span></code></dt><dd><p>Frequency-domain damped least-squares deconvolution.  The inverse operator
 has the form</p>
@@ -849,6 +976,12 @@ amplitudes before division.</p>
 <p><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine</span></code> is the current engine used by the Python wrappers and by the
 CNR inverse mode inside GID.  <code class="docutils literal notranslate"><span class="pre">CNR3CDecon</span></code> is the older three-component
 prototype kept for compatibility.</p>
+<p>The legacy <code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.process(d,</span> <span class="pre">noise_spectrum,</span> <span class="pre">fl,</span> <span class="pre">fh)</span></code> entry point
+continues to derive an output shaper from <code class="docutils literal notranslate"><span class="pre">fl</span></code> and <code class="docutils literal notranslate"><span class="pre">fh</span></code>.  GID instead uses
+the configured-shaping path, so its inverse-band choices no longer overwrite a
+configured Ricker frequency.  This keeps CNR output shaping independent from
+the colored-noise inverse regularization band and makes its 0.125/0.25 Hz
+products comparable with the other deconvolution methods.</p>
 </section>
 <section id="generalized-iterative-deconvolution-gid">
 <h2>Generalized iterative deconvolution (GID)<a class="headerlink" href="#generalized-iterative-deconvolution-gid" title="Link to this heading">#</a></h2>
@@ -869,6 +1002,16 @@ operator for the selected GID mode.  The largest acceptable three-component
 detection-function peak becomes a candidate spike.  The engine subtracts that
 candidate’s predicted contribution from the data-domain residual and keeps the
 spike only if the residual decreases.</p>
+<p>For legacy greedy modes, <code class="docutils literal notranslate"><span class="pre">residual_fractional_improvement_floor</span></code> implements
+the Wang &amp; Pavlis (2016) Eq. (15) post-acceptance state test.  The
+highest-ranked candidate is accepted whenever it decreases the residual; the
+updated residual state then stops the iteration when its fractional L2
+improvement reaches the configured floor.  It is not a candidate-level
+rejection or a lower-ranked-candidate scan.  <code class="docutils literal notranslate"><span class="pre">ns_gid</span></code> instead applies its
+noise-significance and fractional-improvement gate before committing the
+highest-ranked candidate.  A residual-decreasing NS-GID candidate that is at
+or below that floor terminates the epoch without accepting a lower-ranked
+candidate.</p>
 <p>The inverse operator is therefore used to choose candidate spike locations and
 amplitudes.  It is not the final receiver-function representation.  The
 reported GID receiver function is the sparse impulse response convolved with
@@ -884,6 +1027,13 @@ with a compact, peak-normalized residual-update kernel derived from the inverse
 operator’s actual output.  The public <code class="docutils literal notranslate"><span class="pre">actual_output()</span></code> method returns the
 full inverse-operator resolution diagnostic, not the compact residual-update
 kernel.</p>
+<p>Because scalar leaves intentionally normalize their public resolution
+diagnostic, GID measures the corresponding unnormalized source-through-inverse
+zero-lag gain and applies its reciprocal to the inverse-domain data and noise
+quantities before sparse selection.  This keeps the data, residual, candidate
+threshold, and zero-lag-normalized update kernel in one amplitude domain.  It is
+especially important for heavily damped least-squares leaves; public
+<code class="docutils literal notranslate"><span class="pre">actual_output()</span></code> behavior is unchanged.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">multi_taper</span></code> inverse mode is still a frequency-domain inverse operator,
 even when selected inside <code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon</span></code>.  In that case “time domain”
 describes the sparse iteration and residual update, not the spectral method
@@ -931,7 +1081,58 @@ found a configured reason not to add more spikes.</p>
 <p><code class="docutils literal notranslate"><span class="pre">QCMetrics</span></code> records both processing status and diagnostic context.  Useful
 first-pass GID fields include <code class="docutils literal notranslate"><span class="pre">decon_operator</span></code>, <code class="docutils literal notranslate"><span class="pre">decon_processed</span></code>,
 <code class="docutils literal notranslate"><span class="pre">gid_converged</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_stop_reason</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_iterations</span></code>,
-<code class="docutils literal notranslate"><span class="pre">gid_number_spikes</span></code>, <code class="docutils literal notranslate"><span class="pre">residual_L2_initial</span></code>, and <code class="docutils literal notranslate"><span class="pre">residual_L2_final</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">gid_number_spikes</span></code>, <code class="docutils literal notranslate"><span class="pre">residual_rms_final_fraction</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">residual_rms_reduction_fraction</span></code>.  <code class="docutils literal notranslate"><span class="pre">residual_L2_initial</span></code> and
+<code class="docutils literal notranslate"><span class="pre">residual_L2_final</span></code> are retained for compatibility, but are unnormalised
+Euclidean norms and must not be compared across records or analysis-window
+lengths.  <code class="docutils literal notranslate"><span class="pre">residual_rms_initial</span></code> and <code class="docutils literal notranslate"><span class="pre">residual_rms_final</span></code> remove only the
+analysis-window-length factor; use the fractional fields for comparisons across
+records with different amplitudes.  <code class="docutils literal notranslate"><span class="pre">residual_energy_final_fraction</span></code> and
+<code class="docutils literal notranslate"><span class="pre">residual_energy_reduction_fraction</span></code> are the corresponding squared-norm
+fractions, useful when the QC policy is expressed in explained residual energy.
+<code class="docutils literal notranslate"><span class="pre">residual_3c_rms_initial</span></code> and <code class="docutils literal notranslate"><span class="pre">residual_3c_rms_final</span></code> are component RMS
+values computed with denominator <code class="docutils literal notranslate"><span class="pre">sqrt(3*npts)</span></code> and remove only record
+length and component-count dependence; they remain amplitude-, bandwidth-, and
+leaf-dependent and are not cross-record quality measures by themselves.  Use
+the dimensionless residual fractions or the noise-normalized NS-GID fields for
+cross-record QC.  The explicit <code class="docutils literal notranslate"><span class="pre">residual_L2_metric</span></code> label identifies these
+as legacy unnormalized Euclidean norms in the new gain-normalized inverse
+domain; it is not a raw-input-amplitude metric.  GID also records
+<code class="docutils literal notranslate"><span class="pre">gid_leaf_raw_zero_lag_gain</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_inverse_domain_amplitude_scale</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">gid_inverse_domain_scaling_policy</span></code>.  Legacy Eq. (15) audits are available as
+<code class="docutils literal notranslate"><span class="pre">gid_legacy_eq15_candidates_tested</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gid_legacy_eq15_candidates_rejected</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">gid_legacy_eq15_rejected_lag_seconds</span></code>.  These legacy names are compatibility
+pre-trial scan counters, not Eq. (15) state-test counts; the identical,
+explicit <code class="docutils literal notranslate"><span class="pre">gid_legacy_eq15_pretrial_scan_*</span></code> fields make that scope clear.
+Use <code class="docutils literal notranslate"><span class="pre">gid_legacy_eq15_post_acceptance_state_tests</span></code> and
+<code class="docutils literal notranslate"><span class="pre">gid_legacy_eq15_post_acceptance_floor_stops</span></code> for post-acceptance Eq. (15)
+QC.  Legacy leaf modes preserve their
+historical greedy rule: the highest-ranked candidate is accepted whenever it
+reduces the residual, then Eq. (15) tests the resulting state improvement.
+It is not a candidate-level gate and the engine never scans lower-ranked
+candidates to bypass a sub-floor best candidate.  The legacy audit fields are
+therefore diagnostic only; a post-acceptance floor stop is recorded as
+<code class="docutils literal notranslate"><span class="pre">gid_stop_reason=&quot;fractional_improvement_floor&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">gid_legacy_eq15_stop_detail=&quot;post_acceptance_fractional_improvement_floor&quot;</span></code>.
+For <code class="docutils literal notranslate"><span class="pre">ns_gid</span></code> the same fractional floor is evaluated before committing its
+highest-ranked noise-significant candidate; a decreasing but sub-floor trial
+is recorded as <code class="docutils literal notranslate"><span class="pre">fractional_improvement_floor_rejected</span></code> and terminates that
+epoch without accepting a lower-ranked candidate.</p>
+<p>After a terminal NS-GID refit, <code class="docutils literal notranslate"><span class="pre">ns_gid_final_scan_best_trial_*</span></code> reports the
+best trial across the complete read-only candidate audit, while
+<code class="docutils literal notranslate"><span class="pre">ns_gid_final_scan_acceptable_candidate_remaining</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_final_scan_global_acceptable_candidate_count</span></code> report whether any
+audited candidate clears the floor.  These are deliberately distinct from the
+greedy decision: <code class="docutils literal notranslate"><span class="pre">ns_gid_final_scan_decision_candidate_*</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_final_scan_decision</span></code> record the first decreasing ordered candidate,
+which alone controls resume versus the fractional-floor stop.  This prevents a
+later candidate from overriding a sub-floor greedy decision while retaining
+complete diagnostic visibility.</p>
+<p>For compatibility, the frequency-domain legacy Eq. (15) floor stops at
+<code class="docutils literal notranslate"><span class="pre">improvement</span> <span class="pre">&lt;=</span> <span class="pre">floor</span></code>; the time-domain legacy implementation retains its
+historical strict <code class="docutils literal notranslate"><span class="pre">improvement</span> <span class="pre">&lt;</span> <span class="pre">floor</span></code> comparison.  New configurations
+should not depend on an exact floating-point equality at this boundary.</p>
 <p>Greedy lag-weight penalty runs also record <code class="docutils literal notranslate"><span class="pre">gid_penalty_function</span></code>,
 <code class="docutils literal notranslate"><span class="pre">gid_penalty_scale_factor</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_width</span></code>,
 <code class="docutils literal notranslate"><span class="pre">gid_penalty_effective_width</span></code>, <code class="docutils literal notranslate"><span class="pre">lag_weight_Linf_final</span></code>, and
@@ -939,13 +1140,255 @@ first-pass GID fields include <code class="docutils literal notranslate"><span c
 <code class="docutils literal notranslate"><span class="pre">gid_adaptive_penalty_enabled</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_noise_amplitude</span></code>,
 <code class="docutils literal notranslate"><span class="pre">gid_penalty_last_confidence</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_last_decay_factor</span></code>,
 <code class="docutils literal notranslate"><span class="pre">gid_penalty_memory_Linf_final</span></code>, and <code class="docutils literal notranslate"><span class="pre">gid_penalty_memory_L2_final</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gid_noise_samples_loaded</span></code> and <code class="docutils literal notranslate"><span class="pre">gid_noise_samples_used</span></code> always describe
+the GID residual/stopping noise record, regardless of the selected inverse
+mode.  Leaf regularization inputs are reported separately as
+<code class="docutils literal notranslate"><span class="pre">gid_leaf_noise_samples_loaded</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_leaf_noise_samples_used</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">gid_leaf_noise_truncated</span></code>.  <code class="docutils literal notranslate"><span class="pre">gid_residual_external_noise_used</span></code> indicates
+that an externally loaded <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> supplied the GID residual/stopping
+record, while <code class="docutils literal notranslate"><span class="pre">gid_leaf_external_noise_used</span></code> indicates that it was consumed
+by the leaf inverse operator.  The legacy-compatible
+<code class="docutils literal notranslate"><span class="pre">gid_external_noise_used</span></code> is true if either role used external noise.</p>
 <p>When <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code> is active, additional <code class="docutils literal notranslate"><span class="pre">ns_gid_*</span></code> fields
 record inverse stability and stopping diagnostics, including
 <code class="docutils literal notranslate"><span class="pre">ns_gid_stop_reason</span></code>, <code class="docutils literal notranslate"><span class="pre">ns_gid_converged</span></code>, <code class="docutils literal notranslate"><span class="pre">ns_gid_peak_threshold</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ns_gid_noise_amplitude_rms</span></code>, <code class="docutils literal notranslate"><span class="pre">ns_gid_gain_max_actual</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_noise_amplitude_rms</span></code>, <code class="docutils literal notranslate"><span class="pre">ns_gid_noise_component_sigma_rms</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ns_gid_gain_max_actual</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">ns_gid_effective_bandwidth_fraction</span></code>.  The Python wrappers store these QC
 values in receiver-function metadata subdocuments, so they are saved with
 normal database records.</p>
+<p>For NS-GID, <code class="docutils literal notranslate"><span class="pre">ns_gid_peak_threshold</span></code> is an amplitude threshold on the
+three-component vector norm at one candidate lag.  With the shipped
+configuration it is the larger of the configured empirical quantile
+(<code class="docutils literal notranslate"><span class="pre">ns_gid_peak_threshold_empirical</span></code>) and <code class="docutils literal notranslate"><span class="pre">ns_gid_peak_sigma_threshold</span></code>
+times <code class="docutils literal notranslate"><span class="pre">ns_gid_noise_component_sigma_rms</span></code>
+(<code class="docutils literal notranslate"><span class="pre">ns_gid_peak_threshold_sigma</span></code>).  The requested robust reference,
+<code class="docutils literal notranslate"><span class="pre">ns_gid_noise_component_sigma_rms_robust</span></code>, is the RMS of three
+median-centered, signed-component MAD sigma estimates.  It is an explicitly
+defined scalar-component noise sigma, not a statistic of nonnegative vector
+amplitudes.  The shipped multiplier of 3.0 consequently means three
+scalar-component sigma for this robust reference.
+<code class="docutils literal notranslate"><span class="pre">ns_gid_empirical_peak_threshold</span></code> and <code class="docutils literal notranslate"><span class="pre">ns_gid_sigma_peak_threshold</span></code> are
+literal compatibility aliases for <code class="docutils literal notranslate"><span class="pre">ns_gid_peak_threshold_empirical</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_peak_threshold_sigma</span></code>, respectively.</p>
+<p>Sparse or quantized nonzero noise can have a zero (or roundoff-level) MAD.
+When that occurs, the engine uses the ordinary signed-component RMS aggregate
+<code class="docutils literal notranslate"><span class="pre">ns_gid_noise_component_rms_aggregate</span></code> instead and records both the used
+scale in <code class="docutils literal notranslate"><span class="pre">ns_gid_noise_component_sigma_rms</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_noise_component_sigma_rms_fallback_used=true</span></code>.  If neither the
+robust scale nor that ordinary scalar-component RMS reference is finite and
+positive, processing fails rather than emitting a zero sigma threshold.  Thus
+disabling the empirical guard cannot silently bypass NS-GID filtering.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ns_gid_noise_amplitude_rms</span></code> remains the ordinary inverse-filtered 3C
+vector-amplitude RMS, and <code class="docutils literal notranslate"><span class="pre">ns_gid_noise_amplitude_robust</span></code> remains the
+quadrature combination of the same three MAD sigma estimates.  They are
+retained as vector-noise diagnostics but do not define the sigma multiplier.
+<code class="docutils literal notranslate"><span class="pre">ns_gid_component_noise_rms_0</span></code> through <code class="docutils literal notranslate"><span class="pre">_2</span></code> continue to expose ordinary
+component RMS contributions.  The empirical threshold is still a quantile of
+the 3C vector-amplitude distribution, and the max policy between it and the
+sigma threshold is unchanged.</p>
+<p><code class="docutils literal notranslate"><span class="pre">group_sparse</span></code> uses the same inverse-filtered noise-threshold computation
+for its automatic <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda</span></code> (when that parameter is zero), so
+the scalar-component MAD policy also defines its automatic lambda reference.
+Its QC records <code class="docutils literal notranslate"><span class="pre">group_sparse_noise_threshold</span></code>,
+<code class="docutils literal notranslate"><span class="pre">group_sparse_peak_threshold_empirical</span></code>,
+<code class="docutils literal notranslate"><span class="pre">group_sparse_peak_threshold_sigma</span></code>,
+<code class="docutils literal notranslate"><span class="pre">group_sparse_use_empirical_noise_threshold</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">group_sparse_peak_threshold_controlling_term</span></code>.  The latter has the same
+meaning as the NS-GID controlling term: <code class="docutils literal notranslate"><span class="pre">empirical</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma</span></code>, or <code class="docutils literal notranslate"><span class="pre">tie</span></code>
+when the empirical guard is enabled, and <code class="docutils literal notranslate"><span class="pre">sigma_empirical_disabled</span></code> when it
+is disabled.  QC also records the corresponding
+<code class="docutils literal notranslate"><span class="pre">group_sparse_noise_component_*</span></code> requested/used-scale fields.  Set an
+explicit positive <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda</span></code> to make the regularization strength
+independent of this noise-scale policy.</p>
+</section>
+<section id="historical-real-data-diagnostic-and-scope">
+<h3>Historical real-data diagnostic and scope<a class="headerlink" href="#historical-real-data-diagnostic-and-scope" title="Link to this heading">#</a></h3>
+<p>An earlier diagnostic screen used 332 real RF
+records from 10 station folds (31–39 records per fold), using analysis,
+wavelet, and noise windows of <code class="docutils literal notranslate"><span class="pre">(-10,</span> <span class="pre">160)</span></code>, <code class="docutils literal notranslate"><span class="pre">(-5,</span> <span class="pre">20)</span></code>, and <code class="docutils literal notranslate"><span class="pre">(-200,</span> <span class="pre">-10)</span></code>
+seconds at <code class="docutils literal notranslate"><span class="pre">dt=0.05</span></code>.  It was run with the then-current implementation on
+Vista ARM64; it is not an execution of the corrected current engine.  Each
+parameter sweep reused these same 332 records; the resulting TD/FD sweep rows
+are repeated measurements, <strong>not</strong> thousands of independent observations.</p>
+<p>This historical screen must <strong>not</strong> be used to validate or retain shipped
+defaults: it included the now-corrected frequency-domain threshold-domain
+error and showed low iteration/high residual-energy symptoms.  It is retained
+only as a diagnostic record.  Default selection remains provisional pending a
+common-event EarthScope benchmark, comparison with other MsPASS deconvolution
+methods, and waveform/stack QC.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-number">Table 10 </span><span class="caption-text">Active NS-GID controls and historical diagnostic notes</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 27.0%" />
+<col style="width: 13.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Control</p></th>
+<th class="head"><p>Shipped value</p></th>
+<th class="head"><p>Historical note; not a default-validation decision</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">maximum_iterations</span></code></p></td>
+<td><p>100</p></td>
+<td><p>200/400 reduced cap exits, but increased negative-time energy, IQR, and
+incoherent content.  Historical observation only; no current default
+decision follows.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">residual_fractional_improvement_floor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-4</span></code></p></td>
+<td><p>This is the 0.01% criterion of Wang and Pavlis equation 15.  <code class="docutils literal notranslate"><span class="pre">1e-5</span></code>
+produced no waveform-quality gain in that screen; no current default
+decision follows.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ns_gid_refit_interval</span></code></p></td>
+<td><p>5</p></td>
+<td><p>Intervals 1, 5, and 20 were stable in the screen.  Historical
+observation only.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ns_gid_residual_noise_ratio_floor</span></code></p></td>
+<td><p>1.0</p></td>
+<td><p>1.2 produced about 21% one-spike solutions, consistent with underfit;
+0.8 produced no coherent gain in that screen.  Historical observation
+only.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ns_gid_peak_sigma_threshold</span></code></p></td>
+<td><p>3.0</p></td>
+<td><p>This remains exactly three robust scalar-component MAD sigmas (with the
+documented fallback), not three vector-amplitude sigmas.  This defines
+the parameter but does not recommend a current value.</p></td>
+</tr>
+<tr class="row-odd"><td><p>empirical threshold</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">q=.995</span></code>, on</p></td>
+<td><p>Lowering to .9925 reduced the under-5-spike fraction from 18% to 12%
+and raised median iterations from 19/20 to 23.5/24.5 (TD/FD), without
+increasing moveout-corrected P410/P660 coherence; negative-time/IQR
+spread broadened.  .990/.975 and empirical-off showed stronger
+noise-overfit signatures.  This pre-fix observation is not a
+recommendation for .995.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ns_gid_max_spikes</span></code></p></td>
+<td><p>0 (unlimited)</p></td>
+<td><p>A hard cap of 50 degraded waveform consistency in that screen.
+Historical observation only.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ns_gid_ridge_beta</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-10</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-8</span></code> degraded waveform consistency and <code class="docutils literal notranslate"><span class="pre">1e-6</span></code> had no stable
+advantage in that screen.  Historical observation only.</p></td>
+</tr>
+<tr class="row-even"><td><p>FD <code class="docutils literal notranslate"><span class="pre">residual_ratio_floor</span></code></p></td>
+<td><p>0.01</p></td>
+<td><p>This is active in frequency-domain NS-GID, but was not reached before
+NS criteria in this sample.  Historical observation only.</p></td>
+</tr>
+<tr class="row-odd"><td><p>TD lag/residual-probability controls</p></td>
+<td><p>as shipped</p></td>
+<td><p>The TD lag-weight and residual-probability controls are not NS-GID stop
+criteria (though penalty configuration can still affect candidate
+scoring).  They were not retuned as NS stopping defaults.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The final operational peak threshold is the maximum of the scalar-sigma and
+empirical vector-amplitude thresholds, so it need not equal exactly the stated
+number of scalar sigmas when the empirical guard dominates.
+<code class="docutils literal notranslate"><span class="pre">ns_gid_peak_threshold_controlling_term</span></code> records <code class="docutils literal notranslate"><span class="pre">empirical</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">tie</span></code> for that max operation.  When
+<code class="docutils literal notranslate"><span class="pre">ns_gid_use_empirical_noise_threshold</span></code> is false, the operational threshold
+is exactly the sigma threshold and the controlling term is explicitly
+<code class="docutils literal notranslate"><span class="pre">sigma_empirical_disabled</span></code>; that boolean is also published in QC.
+<code class="docutils literal notranslate"><span class="pre">ns_gid_peak_threshold_scope</span></code> is always <code class="docutils literal notranslate"><span class="pre">pointwise_candidate_lag</span></code>.  Thus
+<code class="docutils literal notranslate"><span class="pre">ns_gid_peak_probability_threshold</span></code> is a
+single-lag 3C-amplitude quantile, not a global false-alarm probability over a
+receiver-function search.  The three-component norm has a Maxwell, rather
+than scalar-Gaussian, tail, so a multiplier of three component sigmas is not a
+conventional one-component <code class="docutils literal notranslate"><span class="pre">3</span> <span class="pre">sigma</span></code> exceedance rule.  The initial
+<code class="docutils literal notranslate"><span class="pre">ns_gid_initial_stationary_null_expected_noise_exceedances</span></code> QC field makes
+the resulting multiple-lag exposure explicit; it is a diagnostic estimate,
+not a calibrated family-wise-error guarantee.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ns_gid_residual_noise_rms_ratio</span></code> is the canonical, dimensionless stopping
+ratio: final ordinary three-component residual-amplitude RMS divided by the
+ordinary inverse-filtered three-component noise-amplitude RMS.  It is the
+ratio used for the NS-GID residual-noise stop and is independent of
+noise-window length.  <code class="docutils literal notranslate"><span class="pre">ns_gid_residual_rms_ratio</span></code> is a compatibility alias
+with the identical value.  <code class="docutils literal notranslate"><span class="pre">ns_gid_residual_rms</span></code> aliases
+<code class="docutils literal notranslate"><span class="pre">ns_gid_residual_rms_final</span></code> (RMS amplitude units), while
+<code class="docutils literal notranslate"><span class="pre">ns_gid_noise_rms</span></code> aliases <code class="docutils literal notranslate"><span class="pre">ns_gid_noise_amplitude_rms</span></code> (the same units).
+<code class="docutils literal notranslate"><span class="pre">ns_gid_residual_noise_ratio</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_residual_l2_ratio_legacy</span></code> retain the earlier raw-L2 ratio for
+backward-compatible QC interpretation, but no longer drive stopping.</p>
+<p>For NS-GID, <code class="docutils literal notranslate"><span class="pre">residual_fractional_improvement_floor</span></code> is evaluated from the
+raw-L2 reduction caused by the accepted candidate <em>before</em> a periodic ridge
+amplitude refit.  A ridge refit is retained as the next iteration state, but
+its residual adjustment cannot by itself cause candidate-fractional
+convergence.  <code class="docutils literal notranslate"><span class="pre">ns_gid_fractional_improvement_final</span></code> therefore means the
+final accepted candidate increment; the separately reported
+<code class="docutils literal notranslate"><span class="pre">ns_gid_fractional_improvement_state_final</span></code> describes the corresponding
+post-refit state change.  Each <code class="docutils literal notranslate"><span class="pre">ns_gid_iteration_N</span></code> trace also records
+<code class="docutils literal notranslate"><span class="pre">residual_l2_before_candidate</span></code>, <code class="docutils literal notranslate"><span class="pre">residual_l2_trial_pre_refit</span></code>,
+<code class="docutils literal notranslate"><span class="pre">residual_l2_post_refit</span></code>, candidate and state fractional improvements, and
+<code class="docutils literal notranslate"><span class="pre">periodic_refit_applied</span></code>/<code class="docutils literal notranslate"><span class="pre">final_refit_applied</span></code> flags.  Candidate rows are
+historical records: a later terminal refit never rewrites their local stop
+condition.  Final-refit audit fields are published separately in the global
+<code class="docutils literal notranslate"><span class="pre">ns_gid_final_scan_*</span></code> metadata.
+<code class="docutils literal notranslate"><span class="pre">trial_evaluated</span></code> and <code class="docutils literal notranslate"><span class="pre">metric_available</span></code> distinguish a residual trial from
+an early significance or spike-cap exit.  Every row reports the measured
+<code class="docutils literal notranslate"><span class="pre">residual_l2_before_candidate</span></code>.  Trial, post-refit, and improvement fields
+are present only when a residual trial was actually evaluated; a rejected
+trial reports its restored pre-candidate L2 state and zero state improvement.</p>
+<p>GID constructs a union preprocessing grid spanning the full source and
+analysis intervals, then maps the leaf response back onto the unchanged
+analysis grid; it does not relabel the output after vector-only leaf
+deconvolution.  The QC
+keys <code class="docutils literal notranslate"><span class="pre">gid_analysis_t0</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_wavelet_t0</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_analysis_samples</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gid_wavelet_samples</span></code>, and <code class="docutils literal notranslate"><span class="pre">gid_wavelet_alignment_offset_samples</span></code> record
+that mapping.  For NS-GID, <code class="docutils literal notranslate"><span class="pre">ns_gid_iteration_N_candidate_lag_samples</span></code>,
+<code class="docutils literal notranslate"><span class="pre">_candidate_lag_time</span></code>, <code class="docutils literal notranslate"><span class="pre">_candidate_amplitude</span></code>, <code class="docutils literal notranslate"><span class="pre">_threshold</span></code>,
+<code class="docutils literal notranslate"><span class="pre">_significance</span></code>, and <code class="docutils literal notranslate"><span class="pre">_accepted</span></code>
+make each candidate decision inspectable.  The matching
+<code class="docutils literal notranslate"><span class="pre">_post_residual_rms_ratio</span></code> is the residual/noise RMS ratio after a candidate
+is accepted, and <code class="docutils literal notranslate"><span class="pre">_stop_condition</span></code> is initially <code class="docutils literal notranslate"><span class="pre">continue</span></code> or the local
+rejection reason.  After final ridge refitting, the final trace row is updated
+with the final residual ratio for QC, but its recorded stop condition remains
+the decision made at that iteration.  A dirty support is amplitude-refit once;
+the refit then scans only <em>off-support</em> positive-weight lags.  A raw-significant
+lag resumes NS-GID only if its trial residual is strictly decreasing and clears
+<code class="docutils literal notranslate"><span class="pre">residual_fractional_improvement_floor</span></code>.  Hard iteration/spike caps still
+terminate.  <code class="docutils literal notranslate"><span class="pre">ns_gid_refit_epochs</span></code> and <code class="docutils literal notranslate"><span class="pre">ns_gid_refit_resume_count</span></code> record
+these transitions.</p>
+<p>The repository includes deterministic synthetic checks of the shipped 3.0/
+0.995 profile.  The historical screen above does not provide workflow evidence
+for retaining it, and no current real-data result establishes a calibration.
+Fixed-lag stacks and IASP91 ray-parameter/moveout checks in that screen had
+coherence near a random <code class="docutils literal notranslate"><span class="pre">1/N</span></code> baseline.  They do not constitute P410s/P660s
+detection or depth inference, and the waveform set is not a representative
+mantle-conversion benchmark.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarDecon</span></code> public virtual diagnostics now return <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> rather
+than <code class="docutils literal notranslate"><span class="pre">CoreTimeSeries</span></code>.  Downstream custom overrides/callers and prebuilt
+extensions must update to that signature and be rebuilt.  This is an
+intentional API migration so diagnostic waveforms retain metadata.</p>
+</div>
+<p>For bounded synthetic controls only, a conservative profile is
+<code class="docutils literal notranslate"><span class="pre">ns_gid_peak_sigma_threshold</span> <span class="pre">4.0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_peak_probability_threshold</span> <span class="pre">0.999</span></code> (with the empirical threshold
+enabled).  Its 4.0 multiplier is applied to the robust scalar-component sigma
+defined above, while the 0.999 empirical vector-amplitude quantile remains the
+guard for non-Gaussian noise.  This profile retained false-positive control in
+the bounded short-window synthetic regression after the
+scalar-component-sigma change (signal <code class="docutils literal notranslate"><span class="pre">(-8,</span> <span class="pre">22)</span></code>, noise <code class="docutils literal notranslate"><span class="pre">(-35,</span> <span class="pre">-8)</span></code>, with
+synthetic arrivals at 0, 3, 8, and 18 seconds);
+it is not a shipped default, a real-data recommendation, or evidence for
+overriding any pending EarthScope/cross-method calibration.</p>
+<p>In a Figure-8-style downstream QC pass, inspect <code class="docutils literal notranslate"><span class="pre">gid_number_spikes</span></code>, the
+stop reason, and event-stack consistency together.  Very-low-spike solutions
+are candidates for editing or exclusion after waveform review; the engine does
+not auto-kill them.</p>
 <p>For a beginner-oriented guide to reading these fields after a plot run or
 database save, see <a class="reference internal" href="#validation-and-qc-workflow">Validation and QC workflow</a>.</p>
 </section>
@@ -997,13 +1440,20 @@ same lag penalty.  Treat it as a robust starting point, not a universal optimum.
 <h4>How the greedy penalty enters GID<a class="headerlink" href="#how-the-greedy-penalty-enters-gid" title="Link to this heading">#</a></h4>
 <p>At iteration <span class="math notranslate nohighlight">\(k\)</span>, let <span class="math notranslate nohighlight">\(\mathbf{a}^{(k)}_j\)</span> be the
 three-component detection-function vector at lag sample <span class="math notranslate nohighlight">\(j\)</span>, and let
-<span class="math notranslate nohighlight">\(\ell^{(k)}_j \in [0, 1]\)</span> be the accumulated lag weight.  The implemented
-selection statistic is</p>
+<span class="math notranslate nohighlight">\(\ell^{(k)}_j \in [0, 1]\)</span> be the accumulated lag weight.  For NS-GID,
+the raw-amplitude threshold <span class="math notranslate nohighlight">\(T\)</span> is a <em>per-valid-lag</em> test, not a
+full-search false-alarm probability.  The picker first restricts its eligible
+set, then applies the lag penalty:</p>
 <div class="math notranslate nohighlight">
-\[q^{(k)}_j = \left(\ell^{(k)}_j\right)^2
-           \left\|\mathbf{a}^{(k)}_j\right\|_2^2,
+\[\mathcal{E}^{(k)} = \{j:\ell^{(k)}_j &gt; 0,
+    \left\|\mathbf{a}^{(k)}_j\right\|_2 \ge T\},
 \qquad
-j_* = \operatorname*{arg\,max}_j q^{(k)}_j .\]</div>
+j_* = \operatorname*{arg\,max}_{j\in\mathcal{E}^{(k)}}
+    \ell^{(k)}_j\left\|\mathbf{a}^{(k)}_j\right\|_2 .\]</div>
+<p>If <span class="math notranslate nohighlight">\(\mathcal{E}^{(k)}\)</span> is empty, NS-GID reports
+<code class="docutils literal notranslate"><span class="pre">candidate_not_significant</span></code> (subject to the final-refit audit below).
+Other greedy GID modes retain their legacy unconstrained weighted-energy
+selection.</p>
 <p>After accepting a spike at <span class="math notranslate nohighlight">\(j_*\)</span>, the engine multiplies nearby lag
 weights by a compact penalty kernel <span class="math notranslate nohighlight">\(p_m\)</span>:</p>
 <div class="math notranslate nohighlight">
@@ -1231,7 +1681,17 @@ reference.  Then</p>
       &amp; \mathrm{otherwise}.
 \end{cases}\end{split}\]</div>
 <p>Here <span class="math notranslate nohighlight">\(\eta_{\mathrm{noise}}\)</span> is the NS-GID inverse-filtered noise
-threshold when that estimate is available.</p>
+threshold when that estimate is available.  It is the same final threshold
+reported as <code class="docutils literal notranslate"><span class="pre">group_sparse_noise_threshold</span></code>: empirical vector quantile when
+enabled, guarded by the scalar-component sigma threshold described above.</p>
+<p>Since the zero-lag normalization policy <code class="docutils literal notranslate"><span class="pre">raw_zero_lag_normalized_v2</span></code>, both an
+explicit <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda</span></code> and a fixed
+<code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold</span></code> are interpreted in this normalized inverse
+domain.  They are not numerically interchangeable with values calibrated
+against pre-normalization leaf output.  Automatic lambda and quantile-based
+support thresholds migrate with the noise/coefficient scale; users carrying a
+fixed legacy value should retune it and retain the reported <code class="docutils literal notranslate"><span class="pre">*_used</span></code> QC
+fields with the result.</p>
 <p>The exported sparse support has a second adaptive decision rule.  The
 regularized coefficient field can contain tiny numerical coefficients or small
 clustered sidelobe coefficients.  Let <span class="math notranslate nohighlight">\(a_0\)</span> denote
@@ -1266,6 +1726,11 @@ overly large fixed floor can remove weak converted phases.</p>
 <h3>QC and interpretation<a class="headerlink" href="#qc-and-interpretation" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">QCMetrics</span></code> records <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda_requested</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda_scale</span></code>, <code class="docutils literal notranslate"><span class="pre">group_sparse_lambda_used</span></code>,
+<code class="docutils literal notranslate"><span class="pre">group_sparse_noise_threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">group_sparse_peak_threshold_empirical</span></code>,
+<code class="docutils literal notranslate"><span class="pre">group_sparse_peak_threshold_sigma</span></code>,
+<code class="docutils literal notranslate"><span class="pre">group_sparse_use_empirical_noise_threshold</span></code>,
+<code class="docutils literal notranslate"><span class="pre">group_sparse_peak_threshold_controlling_term</span></code>, and the
+<code class="docutils literal notranslate"><span class="pre">group_sparse_noise_component_*</span></code> requested/used-scale fields,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold_scale</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold_quantile</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_active_threshold_quantile_value</span></code>,
@@ -1407,9 +1872,24 @@ whether it processed the datum.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">decon_window_start</span></code>, <code class="docutils literal notranslate"><span class="pre">decon_window_end</span></code>, <code class="docutils literal notranslate"><span class="pre">noise_window_start</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">noise_window_end</span></code> confirm that the analysis and noise windows match the
 intended workflow.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">residual_L2_initial</span></code> and <code class="docutils literal notranslate"><span class="pre">residual_L2_final</span></code> check whether the fitted
-model reduced residual energy.  Smaller is not automatically better if the
-sparse support becomes physically implausible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">residual_rms_final_fraction</span></code> and <code class="docutils literal notranslate"><span class="pre">residual_rms_reduction_fraction</span></code> are
+within-configuration fit metrics: final/initial residual RMS and its
+complement.  Compare them across records only when the method, leaf
+operator, analysis window, preprocessing, and output shaping are the same.
+Different leaf bandwidths and inverse domains make them unsuitable as a
+standalone cross-algorithm ranking.  Smaller final fraction is a larger fit
+reduction, but is not automatically better if the sparse support becomes
+physically implausible.
+Consult <code class="docutils literal notranslate"><span class="pre">residual_rms_fraction_valid</span></code> first: an unprocessed result or a
+zero initial residual has undefined fractional metrics (stored as NaN), not
+a perfect fit.  <code class="docutils literal notranslate"><span class="pre">residual_rms_initial</span></code> and <code class="docutils literal notranslate"><span class="pre">residual_rms_final</span></code> normalize
+only for analysis-window length and therefore retain amplitude units.
+<code class="docutils literal notranslate"><span class="pre">residual_energy_final_fraction</span></code> and
+<code class="docutils literal notranslate"><span class="pre">residual_energy_reduction_fraction</span></code> are respectively the square of the
+RMS fraction and one minus that square; use them when a policy needs energy,
+rather than amplitude, reduction.
+<code class="docutils literal notranslate"><span class="pre">residual_L2_initial</span></code> and <code class="docutils literal notranslate"><span class="pre">residual_L2_final</span></code> remain legacy raw norms for
+within-record debugging only.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gid_converged</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_stop_reason</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_iterations</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">gid_number_spikes</span></code> summarize the GID iteration outcome.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gid_penalty_function</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_effective_width</span></code>,
@@ -1432,6 +1912,29 @@ selected support.  These fields are present only for
 <li><p><code class="docutils literal notranslate"><span class="pre">ns_gid_gain_max_actual</span></code>, <code class="docutils literal notranslate"><span class="pre">ns_gid_noise_amplification</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">ns_gid_effective_bandwidth_fraction</span></code> help audit inverse-operator stability
 for <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code>.</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">ns_gid</span></code>, <code class="docutils literal notranslate"><span class="pre">ns_gid_last_selected_candidate_lag_samples</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ns_gid_last_selected_candidate_lag_weight</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_last_selected_candidate_weighted_amplitude</span></code> describe the candidate
+selected after applying the lag penalty.  The <code class="docutils literal notranslate"><span class="pre">ns_gid_max_raw_candidate_*</span></code>
+and <code class="docutils literal notranslate"><span class="pre">ns_gid_last_scan_raw_significant_candidate_remaining</span></code> fields describe
+the final iteration scan before amplitude refitting, not necessarily the
+terminal residual.  The <code class="docutils literal notranslate"><span class="pre">ns_gid_final_scan_*</span></code> fields distinguish the
+off-support raw maximum from the penalized ordered trial list and expose
+<code class="docutils literal notranslate"><span class="pre">significant_candidate_count</span></code>, the best trial, and whether an off-support
+candidate clears both the significance and strict fractional-improvement
+gates.  Existing-support amplitude is reported separately, so an unstable
+ridge refit cannot be hidden by excluding that support from candidate
+insertion.  <code class="docutils literal notranslate"><span class="pre">ns_gid_provisional_stop_reason_before_final_refit</span></code> preserves
+the pre-refit decision; <code class="docutils literal notranslate"><span class="pre">ns_gid_stop_reason</span></code> is reclassified from the
+final residual or resumes the bounded iteration.  Iteration-trace stop
+conditions remain historical and are not overwritten by that audit.
+<code class="docutils literal notranslate"><span class="pre">ns_gid_noise_samples_at_or_above_peak_threshold</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ns_gid_initial_stationary_null_expected_noise_exceedances</span></code> are an
+initial stationary-null plug-in estimate, not a terminal QC metric.  The
+latter is the observed noise exceedance rate multiplied by
+<code class="docutils literal notranslate"><span class="pre">ns_gid_initial_stationary_null_search_lag_count</span></code> (the actual initial
+positive-weight, complete-kernel search lags), not by the full analysis
+window length.  These are tuning diagnostics, not hard QC cutoffs.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">group_sparse_inverse_gain_max_actual</span></code>,
 <code class="docutils literal notranslate"><span class="pre">group_sparse_inverse_noise_amplification</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">group_sparse_inverse_effective_bandwidth_fraction</span></code> help audit the NS-GID
@@ -1508,8 +2011,12 @@ equivalent to historical Park-Levin-style implementations.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#essential-terms">Essential terms</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrappers-and-engines">Wrappers and engines</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrappers-and-engines">Wrappers and engines</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gid-receiver-function-windows">GID receiver-function windows</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-conventions">Common conventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objective-specific-receiver-function-presets">Objective-specific receiver-function presets</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#windows-and-noise">Windows and noise</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-an-operator">Choosing an operator</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switching-gid-methods-safely">Switching GID methods safely</a></li>
@@ -1523,6 +2030,7 @@ equivalent to historical Park-Levin-style implementations.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ns-gid-inverse-mode"><code class="docutils literal notranslate"><span class="pre">NS-GID</span></code> inverse mode</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convergence-and-stopping">Convergence and stopping</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qc-metadata">QC metadata</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#historical-real-data-diagnostic-and-scope">Historical real-data diagnostic and scope</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lag-weight-penalty-framework">Lag-weight penalty framework</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#recommended-use">Recommended use</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-greedy-penalty-enters-gid">How the greedy penalty enters GID</a></li>

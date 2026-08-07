@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.TimeDomainGIDDecon &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
+    <title>mspasspy.algorithms.TimeDomainGIDDecon &#8212; MsPASS 2.4.2.dev26+gbb9a68b9 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=bf6741af"></script>
+    <script src="../../../_static/documentation_options.js?v=6c6a80d7"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev2" />
+  <meta name="docsearch:version" content="2.4.2.dev26" />
   </head>
   
   
@@ -500,6 +500,7 @@
     <span class="n">signal_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">external_wavelet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">wavelet_t0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">external_noise</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">QCdata_key</span><span class="o">=</span><span class="s2">&quot;TimeDomainGIDDecon_properties&quot;</span><span class="p">,</span>
     <span class="n">return_wavelet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -524,6 +525,10 @@
 <span class="sd">    pulse from the residual, and repeats until the residual-improvement or</span>
 <span class="sd">    residual-energy convergence criteria are met.</span>
 
+<span class="sd">    This receiver-function API operates in P-relative lag coordinates.  UTC</span>
+<span class="sd">    input is returned dead with an error; convert it first with</span>
+<span class="sd">    ``ator(P-arrival epoch)``.</span>
+
 <span class="sd">    :param seis: input `Seismogram` containing signal and noise windows.</span>
 <span class="sd">    :param engine: configured `TimeDomainGIDDecon` instance.</span>
 <span class="sd">    :param signal_window: optional `TimeWindow` defining the full output and</span>
@@ -533,11 +538,16 @@
 <span class="sd">    :param noise_window: optional `TimeWindow` defining pre-event noise.  When</span>
 <span class="sd">        omitted the engine&#39;s parameter-file noise window is used.</span>
 <span class="sd">    :param external_wavelet: optional prepared wavelet passed directly to the</span>
-<span class="sd">        GID engine.  If omitted, any external wavelet already loaded into</span>
+<span class="sd">        GID engine.  This may be a TimeSeries or a bare numeric</span>
+<span class="sd">        vector.  If omitted, any external wavelet already loaded into</span>
 <span class="sd">        ``engine`` is preserved; otherwise the engine preserves RF</span>
 <span class="sd">        compatibility and derives the wavelet from component 2 of the input</span>
 <span class="sd">        seismogram.  Use ``engine.clear_external_wavelet()`` to force</span>
 <span class="sd">        component-derived wavelets after loading an external one.</span>
+<span class="sd">    :param wavelet_t0: physical time of sample zero for a bare vector supplied</span>
+<span class="sd">        as ``external_wavelet``.  A TimeSeries retains its own coordinates.</span>
+<span class="sd">        ``None`` preserves the legacy analysis-window-start origin for vectors</span>
+<span class="sd">        and emits a warning; it is invalid when no external wavelet is given.</span>
 <span class="sd">    :param external_noise: optional scalar noise `TimeSeries`, `CoreTimeSeries`,</span>
 <span class="sd">        or `PowerSpectrum` passed to NS-GID inverse stabilization.</span>
 <span class="sd">        If omitted, any external noise already loaded into ``engine`` is</span>
@@ -545,8 +555,12 @@
 <span class="sd">        configured noise window only.</span>
 <span class="sd">    :param QCdata_key: metadata key used to store the engine&#39;s QC metrics.</span>
 <span class="sd">    :param return_wavelet: when True return</span>
-<span class="sd">        `[rf, actual_output, output_shaping_wavelet]`.</span>
-<span class="sd">    :return: deconvolved `Seismogram`, or the tuple described above.</span>
+<span class="sd">        ``[rf, actual_output, output_shaping_wavelet]``, where both diagnostic</span>
+<span class="sd">        waveforms are full ``TimeSeries`` objects.</span>
+<span class="sd">    :return: deconvolved `Seismogram`, or the list described above when</span>
+<span class="sd">        ``return_wavelet`` is True.  Dead inputs and recoverable processing or</span>
+<span class="sd">        diagnostic-access failures return a dead `Seismogram`; with</span>
+<span class="sd">        ``return_wavelet`` True the auxiliary outputs are ``None``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_run_gid_rf_decon</span><span class="p">(</span>
         <span class="n">seis</span><span class="p">,</span>
@@ -556,6 +570,7 @@
         <span class="n">signal_window</span><span class="o">=</span><span class="n">signal_window</span><span class="p">,</span>
         <span class="n">noise_window</span><span class="o">=</span><span class="n">noise_window</span><span class="p">,</span>
         <span class="n">external_wavelet</span><span class="o">=</span><span class="n">external_wavelet</span><span class="p">,</span>
+        <span class="n">wavelet_t0</span><span class="o">=</span><span class="n">wavelet_t0</span><span class="p">,</span>
         <span class="n">external_noise</span><span class="o">=</span><span class="n">external_noise</span><span class="p">,</span>
         <span class="n">QCdata_key</span><span class="o">=</span><span class="n">QCdata_key</span><span class="p">,</span>
         <span class="n">return_wavelet</span><span class="o">=</span><span class="n">return_wavelet</span><span class="p">,</span>

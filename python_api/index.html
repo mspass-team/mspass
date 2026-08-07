@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Python API &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
+    <title>Python API &#8212; MsPASS 2.4.2.dev26+gbb9a68b9 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bf6741af"></script>
+    <script src="../_static/documentation_options.js?v=6c6a80d7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="How do I develop a new workflow from scratch?" href="../user_manual/development_strategies.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev2" />
+  <meta name="docsearch:version" content="2.4.2.dev26" />
   </head>
   
   
@@ -538,6 +538,7 @@
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.nwin"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.nwin</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.output_shaping_wavelet"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.output_shaping_wavelet()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.uses_noise"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.uses_noise</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.waveletwin"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.waveletwin</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.make_gid_engine"><code class="docutils literal notranslate"><span class="pre">make_gid_engine()</span></code></a></li>
@@ -1235,6 +1236,7 @@
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.inverse_wavelet"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.inverse_wavelet()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.output_shaping_wavelet"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.output_shaping_wavelet()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.process"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.process()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.process_configured"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.process_configured()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.resolution_kernel"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.resolution_kernel()</span></code></a></li>
 </ul>
 </li>
@@ -1273,6 +1275,7 @@
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.clear_external_wavelet"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.clear_external_wavelet()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.deconvolution_window_end"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.deconvolution_window_end()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.deconvolution_window_start"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.deconvolution_window_start()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.external_wavelet_is_loaded"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.external_wavelet_is_loaded()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.getresult"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.getresult()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.ideal_output"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.ideal_output()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.inverse_wavelet"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.inverse_wavelet()</span></code></a></li>
@@ -1282,8 +1285,12 @@
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.loadwavelet"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.loadwavelet()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.noise_window_end"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.noise_window_end()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.noise_window_start"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.noise_window_start()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.output_window_end"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.output_window_end()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.output_window_start"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.output_window_start()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.process"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.process()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.sparse_output"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.sparse_output()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.wavelet_window_end"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.wavelet_window_end()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.wavelet_window_start"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon.wavelet_window_start()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon"><code class="docutils literal notranslate"><span class="pre">LeastSquareDecon</span></code></a><ul>
@@ -1381,6 +1388,7 @@
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.clear_external_wavelet"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.clear_external_wavelet()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.deconvolution_window_end"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.deconvolution_window_end()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.deconvolution_window_start"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.deconvolution_window_start()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.external_wavelet_is_loaded"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.external_wavelet_is_loaded()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.getresult"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.getresult()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.ideal_output"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.ideal_output()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.inverse_wavelet"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.inverse_wavelet()</span></code></a></li>
@@ -1390,8 +1398,12 @@
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.loadwavelet"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.loadwavelet()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.noise_window_end"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.noise_window_end()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.noise_window_start"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.noise_window_start()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.output_window_end"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.output_window_end()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.output_window_start"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.output_window_start()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.process"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.process()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.sparse_output"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.sparse_output()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.wavelet_window_end"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.wavelet_window_end()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.wavelet_window_start"><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon.wavelet_window_start()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon"><code class="docutils literal notranslate"><span class="pre">TimeDomainLeastSquareDecon</span></code></a><ul>

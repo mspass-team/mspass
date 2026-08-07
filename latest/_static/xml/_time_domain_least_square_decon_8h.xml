@@ -33,9 +33,15 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -45,19 +51,21 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
       <node id="18">
@@ -65,25 +73,7 @@
         <link refid="_shaping_wavelet_8h_source"/>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h</label>
-        <link refid="_time_domain_least_square_decon_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
@@ -96,30 +86,82 @@
         <childnode refid="26" relation="include">
         </childnode>
       </node>
-      <node id="28">
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h</label>
+        <link refid="_time_domain_least_square_decon_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
         <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="29" relation="include">
+        <childnode refid="30" relation="include">
         </childnode>
       </node>
-      <node id="27">
+      <node id="28">
         <label>mspass/seismic/CoreTimeSeries.h</label>
         <link refid="_core_time_series_8h_source"/>
-        <childnode refid="28" relation="include">
+        <childnode refid="29" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
         </childnode>
       </node>
       <node id="5">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
         <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -158,8 +200,41 @@
         <childnode refid="9" relation="include">
         </childnode>
       </node>
+      <node id="38">
+        <label>mspass/utility/ProcessingHistory.h</label>
+        <link refid="_processing_history_8h_source"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
       <node id="10">
         <label>boost/any.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/archive/basic_archive.hpp</label>
       </node>
       <node id="20">
         <label>boost/archive/text_iarchive.hpp</label>
@@ -167,14 +242,35 @@
       <node id="21">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="31">
+      <node id="44">
         <label>boost/serialization/base_object.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="39">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/serialization/serialization.hpp</label>
       </node>
       <node id="22">
         <label>boost/serialization/shared_ptr.hpp</label>
       </node>
-      <node id="30">
+      <node id="31">
         <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="41">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="42">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="43">
+        <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
       <node id="23">
         <label>complex</label>
@@ -200,7 +296,7 @@
       <node id="13">
         <label>map</label>
       </node>
-      <node id="29">
+      <node id="30">
         <label>math.h</label>
       </node>
       <node id="14">
@@ -218,7 +314,13 @@
       <node id="17">
         <label>typeinfo</label>
       </node>
+      <node id="37">
+        <label>unistd.h</label>
+      </node>
       <node id="26">
+        <label>utility</label>
+      </node>
+      <node id="27">
         <label>vector</label>
       </node>
     </incdepgraph>
@@ -253,8 +355,8 @@
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>&amp;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" kindref="member">data</ref>);</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a4c359d9b0db253b3e31e57d42e53ebcd" kindref="member">changeparameter</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/>&amp;md);</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a6c94a11e332e4137f25576e7d2748ecf" kindref="member">process</ref>();</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a55cd2752989a99b6766e86650458aac7" kindref="member">output_shaping_wavelet</ref>();</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a5c1a9906a6de26977002e63465bbc1d7" kindref="member">actual_output</ref>();</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1af27c37a9bdef25b602481f05c0573ee4" kindref="member">output_shaping_wavelet</ref>();</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1af931a3299fe55b71fe53243b22ab0e50" kindref="member">actual_output</ref>();</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a72b7dfccd79cd8d8e10c7f6e6dcde718" kindref="member">inverse_wavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0parent);</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a72b7dfccd79cd8d8e10c7f6e6dcde718" kindref="member">inverse_wavelet</ref>();</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a0a7439911588bbbd51df7d3171ce2ef8" kindref="member">QCMetrics</ref>();</highlight></codeline>

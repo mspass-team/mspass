@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.2.dev2+g6525e147 documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.2.dev26+gbb9a68b9 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=bf6741af"></script>
+    <script src="../_static/documentation_options.js?v=6c6a80d7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev2" />
+  <meta name="docsearch:version" content="2.4.2.dev26" />
   </head>
   
   
@@ -1976,7 +1976,7 @@ array methods.</p>
 <p>&#64;author: Gary Pavlis</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.RFdeconProcessor.RFdecon">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.RFdeconProcessor.</span></span><span class="sig-name descname"><span class="pre">RFdecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LeastSquares'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdeconProcessor.pf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deconvolution_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_weight_penalty_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_penalty_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisedata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wcomp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncomp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QCdocument_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdecon_properties'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdecon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.RFdeconProcessor.</span></span><span class="sig-name descname"><span class="pre">RFdecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LeastSquares'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mtz_plane_wave_lowfreq'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deconvolution_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_weight_penalty_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_penalty_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet_t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisedata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wcomp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncomp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QCdocument_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdecon_properties'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdecon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon" title="Link to this definition">#</a></dt>
 <dd><p>Use this function to compute conventional receiver functions
 from a single three component seismogram. In this function,
 an instance of wrapper class RFdeconProcessor will be built and
@@ -1993,8 +1993,13 @@ each component separately.  Note d is dogmatically required
 to be three component data.  Conventional scalar methods accept
 optional wavelet and noisedata as plain numeric vectors.  GID methods
 accept prepared TimeSeries inputs or one-dimensional numeric vectors;
-raw vectors are converted to TimeSeries using the processor target
-sample interval and the configured deconvolution/noise window start.
+raw wavelet vectors are converted to TimeSeries using the processor target
+sample interval and <code class="docutils literal notranslate"><span class="pre">wavelet_t0</span></code>.  Omitting <code class="docutils literal notranslate"><span class="pre">wavelet_t0</span></code> retains the
+legacy analysis-window-start origin with an explicit warning.  Raw noise
+vectors use the configured noise-window start.
+GID receiver-function processing uses P-relative lag coordinates; convert
+UTC input first with <code class="docutils literal notranslate"><span class="pre">ator(P-arrival</span> <span class="pre">epoch)</span></code>.  This restriction belongs
+to the GID RF workflow and is not a general TimeSeries restriction.
 When a reused GID engine already has a preconfigured external wavelet
 or noise estimate, omitting wavelet or noisedata preserves that state.
 Call RFdeconProcessor.clear_external_wavelet() or
@@ -2040,9 +2045,15 @@ receiver-function convention of deriving the source wavelet from
 component 2, but callers may pass a prepared TimeSeries wavelet or a
 one-dimensional numeric vector to use the same external wavelet for all
 components.</p></li>
-<li><p><strong>pf</strong> (<em>string defining an absolute path for the file name</em><em>
-or </em><em>a path relative to a directory defined by PFPATH.</em>) – The pf file to be parsed, used for initializing a
-RFdeconProcessor.  Ignored if engine is used.</p></li>
+<li><p><strong>pf</strong> (string defining an absolute path for the file name, a path
+relative to a directory defined by PFPATH, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.) – Optional explicit PF file.  When omitted, conventional scalar
+methods use the <code class="docutils literal notranslate"><span class="pre">mtz_plane_wave_lowfreq</span></code> preset and GID uses its
+explicitly labelled MTZ sensitivity PF.  Ignored if engine is used.</p></li>
+<li><p><strong>preset</strong> – Named scalar objective preset used only when <code class="docutils literal notranslate"><span class="pre">pf</span></code> is
+omitted.  Choices are <code class="docutils literal notranslate"><span class="pre">mtz_plane_wave_lowfreq</span></code> (default),
+<code class="docutils literal notranslate"><span class="pre">mtz_plane_wave_highres</span></code>, <code class="docutils literal notranslate"><span class="pre">crustal_plane_wave</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">raw_decon_diagnostic</span></code>.  GID non-default profiles require an
+explicit parameter file.</p></li>
 <li><p><strong>deconvolution_type</strong> – optional GID inverse or solver mode override
 used only when <code class="docutils literal notranslate"><span class="pre">alg</span></code> selects <code class="docutils literal notranslate"><span class="pre">GeneralizedIterative</span></code>,
 <code class="docutils literal notranslate"><span class="pre">TimeDomainGID</span></code>, or <code class="docutils literal notranslate"><span class="pre">FrequencyDomainGID</span></code>.  Common values are <code class="docutils literal notranslate"><span class="pre">ns_gid</span></code>,
@@ -2064,8 +2075,14 @@ defining the wavelet to use to compute deconvolution operator.
 Default is None.  For a fresh processor this uses the configured
 component/window-derived wavelet estimate.  For a reused GID
 processor it preserves any previously loaded external wavelet.
-For GID algorithms, raw vectors are converted to a TimeSeries using
-target_sample_interval and deconvolution_data_window_start.</p></li>
+For scalar and GID algorithms, use <code class="docutils literal notranslate"><span class="pre">wavelet_t0</span></code> to define the first
+sample time of a raw vector.  A TimeSeries always retains its own
+<code class="docutils literal notranslate"><span class="pre">t0</span></code> and <code class="docutils literal notranslate"><span class="pre">dt</span></code>.</p></li>
+<li><p><strong>wavelet_t0</strong> (<em>finite float</em><em> or </em><em>None</em>) – physical time of sample zero for a bare vector supplied
+with <code class="docutils literal notranslate"><span class="pre">wavelet</span></code>.  It is invalid with a TimeSeries wavelet or when no
+wavelet is supplied.  <code class="docutils literal notranslate"><span class="pre">None</span></code> preserves the historical vector
+interpretation—sample zero at the deconvolution analysis-window
+start—and emits a warning so that origin is not silently assumed.</p></li>
 <li><p><strong>noisedata</strong> (<em>None</em><em>, </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><em>TimeSeries</em></a><em>, </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><em>PowerSpectrum</em></a><em>, or </em><em>an iterable vector container</em><em>
 (</em><em>in MsPASS that means a python array</em><em>, </em><em>a numpy array</em><em>, or </em><em>a DoubleVector</em><em>)</em>) – vector of doubles (numpy array or the
 std::vector container internal to TimeSeries object), TimeSeries, or
@@ -2126,7 +2143,7 @@ The orientations are always the same as the input.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.RFdeconProcessor.</span></span><span class="sig-name descname"><span class="pre">RFdeconProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LeastSquares'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdeconProcessor.pf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_pf_text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deconvolution_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_weight_penalty_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_penalty_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.RFdeconProcessor.</span></span><span class="sig-name descname"><span class="pre">RFdeconProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LeastSquares'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_pf_text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mtz_plane_wave_lowfreq'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deconvolution_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_weight_penalty_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_penalty_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class is a wrapper for the suite of receiver function deconvolution
 methods we call scalar methods.  That is, the operation is reducible to
@@ -2167,12 +2184,12 @@ the wavelet.  By design it is an approximation of the shaping wavelet
 defined for this operator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Actual output of the operator as a ccore.TimeSeries object.
-The Metadata of the return is bare bones.  The most important factor
-about this result is that because actual output waveforms are normally
-a zero phase wavelet of some kind the result is time shifted to be
-centered (i.e. t0 is rounded n/2 where n is the length of the vector
-returned).</p>
+<dd class="field-odd"><p>Actual output as a full <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>.
+The C++ deconvolution API returns a TimeSeries suitable for
+higher-level algorithms such as WindowData.  Metadata are
+intentionally minimal.  Because actual-output
+waveforms are normally zero-phase, their time origin is centered
+on zero lag.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2359,7 +2376,7 @@ combination is invalid.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadwavelet">
-<span class="sig-name descname"><span class="pre">loadwavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Seismogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.loadwavelet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadwavelet" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">loadwavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Seismogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet_t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.loadwavelet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadwavelet" title="Link to this definition">#</a></dt>
 <dd><p>Load the source wavelet used by the wrapped deconvolution engine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2371,10 +2388,23 @@ combination is invalid.</p>
 <code class="docutils literal notranslate"><span class="pre">&quot;Seismogram&quot;</span></code>.</p></li>
 <li><p><strong>window</strong> – when True extract the configured deconvolution window
 before loading the wavelet.</p></li>
+<li><p><strong>wavelet_t0</strong> – physical time of sample zero when <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is
+<code class="docutils literal notranslate"><span class="pre">&quot;raw_vector&quot;</span></code>.  Bare vectors have no time base.  When omitted,
+the historical interpretation (sample zero at
+<code class="docutils literal notranslate"><span class="pre">deconvolution_data_window_start</span></code>) is retained with a warning.
+Do not specify this argument for a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Seismogram</span></code>; their own time coordinates are authoritative.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – if <code class="docutils literal notranslate"><span class="pre">dtype</span></code> or the <code class="docutils literal notranslate"><span class="pre">dtype</span></code>/<code class="docutils literal notranslate"><span class="pre">window</span></code>
+</dl>
+<p>For GID processors this datum-independent method validates only the
+wavelet’s intrinsic state and configured target sample interval.
+Datum-dependent time-reference and common-grid compatibility are
+checked by <a class="reference internal" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon" title="mspasspy.algorithms.RFdeconProcessor.RFdecon"><code class="xref py py-func docutils literal notranslate"><span class="pre">RFdecon()</span></code></a> before it mutates a reused engine, and by
+the C++ processor when processing directly loaded data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – if <code class="docutils literal notranslate"><span class="pre">dtype</span></code> or the <code class="docutils literal notranslate"><span class="pre">dtype</span></code>/<code class="docutils literal notranslate"><span class="pre">window</span></code>
 combination is invalid.</p>
 </dd>
 </dl>
@@ -2396,11 +2426,13 @@ combination is invalid.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.output_shaping_wavelet">
 <span class="sig-name descname"><span class="pre">output_shaping_wavelet</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.output_shaping_wavelet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.output_shaping_wavelet" title="Link to this definition">#</a></dt>
-<dd><p>Return the output shaping wavelet, ws(t) in Wang and Pavlis (2016).</p>
+<dd><p>Return the output shaping wavelet, ws(t) in Wang and Pavlis (2016),
+as a full <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>.</p>
 <p>For GID this is the configured wavelet used to convolve the sparse
 impulse response to form the finite-bandwidth receiver function.  For
 scalar operators it is the optional post-deconvolution
-shaping/bandlimiting wavelet.</p>
+shaping/bandlimiting wavelet.  The C++ API returns a TimeSeries
+suitable for WindowData and other metadata-aware TimeSeries APIs.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -2412,6 +2444,14 @@ shaping/bandlimiting wavelet.</p>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.waveletwin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waveletwin</span></span><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.waveletwin" title="Link to this definition">#</a></dt>
+<dd><p>Return the configured source-wavelet window.</p>
+<p>Legacy parameter files without these keys retain the historical
+behavior of using the analysis window for the source estimate.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2462,13 +2502,16 @@ shaped sparse impulse response for the requested lag window, not a circularly
 wrapped inverse-filter response.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.FrequencyDomainGIDDecon.FrequencyDomainGIDRFDecon">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.FrequencyDomainGIDDecon.</span></span><span class="sig-name descname"><span class="pre">FrequencyDomainGIDRFDecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QCdata_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FrequencyDomainGIDDecon_properties'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FrequencyDomainGIDRFDecon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/FrequencyDomainGIDDecon.html#FrequencyDomainGIDRFDecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.FrequencyDomainGIDDecon.FrequencyDomainGIDRFDecon" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.FrequencyDomainGIDDecon.</span></span><span class="sig-name descname"><span class="pre">FrequencyDomainGIDRFDecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet_t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QCdata_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FrequencyDomainGIDDecon_properties'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FrequencyDomainGIDRFDecon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/FrequencyDomainGIDDecon.html#FrequencyDomainGIDRFDecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.FrequencyDomainGIDDecon.FrequencyDomainGIDRFDecon" title="Link to this definition">#</a></dt>
 <dd><p>Estimate a three-component receiver function with the frequency-domain
 generalized iterative deconvolution algorithm.</p>
 <p>The inverse operator mode is selected in the engine parameter file.  The
 supported modes include damped least squares, water level, multitaper, and
 CNR.  Damping or water-level protection is required for stable behavior
 near source-wavelet spectral zeros.</p>
+<p>This receiver-function API operates in P-relative lag coordinates.  UTC
+input is returned dead with an error; convert it first with
+<code class="docutils literal notranslate"><span class="pre">ator(P-arrival</span> <span class="pre">epoch)</span></code>.</p>
 <p>When <code class="docutils literal notranslate"><span class="pre">noise_window</span></code> is omitted, the engine’s configured parameter-file
 noise window is used.  <code class="docutils literal notranslate"><span class="pre">signal_window</span></code> must contain the configured
 deconvolution window used to build the inverse operator.  Omitted
@@ -2489,11 +2532,16 @@ window.</p></li>
 <li><p><strong>noise_window</strong> – optional <cite>TimeWindow</cite> defining pre-event noise.  When
 omitted the engine’s parameter-file noise window is used.</p></li>
 <li><p><strong>external_wavelet</strong> – optional prepared wavelet passed directly to the
-GID engine.  If omitted, any external wavelet already loaded into
+GID engine.  This may be a TimeSeries or a bare numeric
+vector.  If omitted, any external wavelet already loaded into
 <code class="docutils literal notranslate"><span class="pre">engine</span></code> is preserved; otherwise the engine preserves RF
 compatibility and derives the wavelet from component 2 of the input
 seismogram.  Use <code class="docutils literal notranslate"><span class="pre">engine.clear_external_wavelet()</span></code> to force
 component-derived wavelets after loading an external one.</p></li>
+<li><p><strong>wavelet_t0</strong> – physical time of sample zero for a bare vector supplied
+as <code class="docutils literal notranslate"><span class="pre">external_wavelet</span></code>.  A TimeSeries retains its own coordinates.
+<code class="docutils literal notranslate"><span class="pre">None</span></code> preserves the legacy analysis-window-start origin for vectors
+and emits a warning; it is invalid when no external wavelet is given.</p></li>
 <li><p><strong>external_noise</strong> – optional scalar noise <cite>TimeSeries</cite>, <cite>CoreTimeSeries</cite>,
 or <cite>PowerSpectrum</cite> passed to inverse-operator stabilization.  If
 omitted, any external noise already loaded into <code class="docutils literal notranslate"><span class="pre">engine</span></code> is preserved.
@@ -2502,14 +2550,15 @@ window only.</p></li>
 <li><p><strong>QCdata_key</strong> – metadata key used to store the engine’s QC metrics on
 the returned receiver function.</p></li>
 <li><p><strong>return_wavelet</strong> – when True return
-<cite>[rf, actual_output, output_shaping_wavelet]</cite>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">[rf,</span> <span class="pre">actual_output,</span> <span class="pre">output_shaping_wavelet]</span></code>, where both diagnostic
+waveforms are full <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>deconvolved <cite>Seismogram</cite>, or the list described above when
-<code class="docutils literal notranslate"><span class="pre">return_wavelet</span></code> is True.  Dead inputs and recoverable processing
-failures return a dead <cite>Seismogram</cite>; with <code class="docutils literal notranslate"><span class="pre">return_wavelet</span></code> True the
-auxiliary outputs are returned as <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">return_wavelet</span></code> is True.  Dead inputs and recoverable processing or
+diagnostic-access failures return a dead <cite>Seismogram</cite>; with
+<code class="docutils literal notranslate"><span class="pre">return_wavelet</span></code> True the auxiliary outputs are <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2526,7 +2575,7 @@ sparse impulse response convolved with the configured output shaping wavelet
 for the requested lag window; it is not the raw sparse result itself.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.TimeDomainGIDDecon.TimeDomainGIDRFDecon">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.TimeDomainGIDDecon.</span></span><span class="sig-name descname"><span class="pre">TimeDomainGIDRFDecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QCdata_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TimeDomainGIDDecon_properties'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TimeDomainGIDRFDecon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/TimeDomainGIDDecon.html#TimeDomainGIDRFDecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.TimeDomainGIDDecon.TimeDomainGIDRFDecon" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.TimeDomainGIDDecon.</span></span><span class="sig-name descname"><span class="pre">TimeDomainGIDRFDecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet_t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QCdata_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TimeDomainGIDDecon_properties'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TimeDomainGIDRFDecon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/TimeDomainGIDDecon.html#TimeDomainGIDRFDecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.TimeDomainGIDDecon.TimeDomainGIDRFDecon" title="Link to this definition">#</a></dt>
 <dd><p>Estimate a three-component receiver function with generalized iterative
 deconvolution.</p>
 <p>The engine first builds a configurable inverse operator for the source
@@ -2534,6 +2583,9 @@ wavelet, applies it to the current residual to form the detection function,
 picks the largest vector spike, subtracts the corresponding shaped source
 pulse from the residual, and repeats until the residual-improvement or
 residual-energy convergence criteria are met.</p>
+<p>This receiver-function API operates in P-relative lag coordinates.  UTC
+input is returned dead with an error; convert it first with
+<code class="docutils literal notranslate"><span class="pre">ator(P-arrival</span> <span class="pre">epoch)</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2546,11 +2598,16 @@ window.</p></li>
 <li><p><strong>noise_window</strong> – optional <cite>TimeWindow</cite> defining pre-event noise.  When
 omitted the engine’s parameter-file noise window is used.</p></li>
 <li><p><strong>external_wavelet</strong> – optional prepared wavelet passed directly to the
-GID engine.  If omitted, any external wavelet already loaded into
+GID engine.  This may be a TimeSeries or a bare numeric
+vector.  If omitted, any external wavelet already loaded into
 <code class="docutils literal notranslate"><span class="pre">engine</span></code> is preserved; otherwise the engine preserves RF
 compatibility and derives the wavelet from component 2 of the input
 seismogram.  Use <code class="docutils literal notranslate"><span class="pre">engine.clear_external_wavelet()</span></code> to force
 component-derived wavelets after loading an external one.</p></li>
+<li><p><strong>wavelet_t0</strong> – physical time of sample zero for a bare vector supplied
+as <code class="docutils literal notranslate"><span class="pre">external_wavelet</span></code>.  A TimeSeries retains its own coordinates.
+<code class="docutils literal notranslate"><span class="pre">None</span></code> preserves the legacy analysis-window-start origin for vectors
+and emits a warning; it is invalid when no external wavelet is given.</p></li>
 <li><p><strong>external_noise</strong> – optional scalar noise <cite>TimeSeries</cite>, <cite>CoreTimeSeries</cite>,
 or <cite>PowerSpectrum</cite> passed to NS-GID inverse stabilization.
 If omitted, any external noise already loaded into <code class="docutils literal notranslate"><span class="pre">engine</span></code> is
@@ -2558,11 +2615,15 @@ preserved.  Use <code class="docutils literal notranslate"><span class="pre">eng
 configured noise window only.</p></li>
 <li><p><strong>QCdata_key</strong> – metadata key used to store the engine’s QC metrics.</p></li>
 <li><p><strong>return_wavelet</strong> – when True return
-<cite>[rf, actual_output, output_shaping_wavelet]</cite>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">[rf,</span> <span class="pre">actual_output,</span> <span class="pre">output_shaping_wavelet]</span></code>, where both diagnostic
+waveforms are full <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>deconvolved <cite>Seismogram</cite>, or the tuple described above.</p>
+<dd class="field-even"><p>deconvolved <cite>Seismogram</cite>, or the list described above when
+<code class="docutils literal notranslate"><span class="pre">return_wavelet</span></code> is True.  Dead inputs and recoverable processing or
+diagnostic-access failures return a dead <cite>Seismogram</cite>; with
+<code class="docutils literal notranslate"><span class="pre">return_wavelet</span></code> True the auxiliary outputs are <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -6706,6 +6767,7 @@ return so calib*data is the same value before and after the scaling.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.nwin"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.nwin</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.output_shaping_wavelet"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.output_shaping_wavelet()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.uses_noise"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.uses_noise</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.waveletwin"><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor.waveletwin</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.algorithms.RFdeconProcessor.make_gid_engine"><code class="docutils literal notranslate"><span class="pre">make_gid_engine()</span></code></a></li>

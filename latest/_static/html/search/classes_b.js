@@ -7,5 +7,6 @@ var searchData=
   ['shapingwavelet_4',['ShapingWavelet',['../classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html',1,'mspass::algorithms::deconvolution']]],
   ['slownessvector_5',['SlownessVector',['../classmspass_1_1seismic_1_1_slowness_vector.html',1,'mspass::seismic']]],
   ['sort_5fby_5fstage_6',['sort_by_stage',['../classmspass_1_1utility_1_1sort__by__stage.html',1,'mspass::utility']]],
-  ['sphericalcoordinate_7',['SphericalCoordinate',['../structmspass_1_1utility_1_1_spherical_coordinate.html',1,'mspass::utility']]]
+  ['sphericalcoordinate_7',['SphericalCoordinate',['../structmspass_1_1utility_1_1_spherical_coordinate.html',1,'mspass::utility']]],
+  ['spikerefitdiagnostics_8',['SpikeRefitDiagnostics',['../structmspass_1_1algorithms_1_1deconvolution_1_1_spike_refit_diagnostics.html',1,'mspass::algorithms::deconvolution']]]
 ];

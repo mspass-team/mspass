@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacemspass_1_1algorithms_1_1deconvolution_1_1detail" kind="namespace" language="C++">
+    <compoundname>mspass::algorithms::deconvolution::detail</compoundname>
+    <innerclass refid="structmspass_1_1algorithms_1_1deconvolution_1_1detail_1_1_g_s_l_f_f_t_resources" prot="public">mspass::algorithms::deconvolution::detail::GSLFFTResources</innerclass>
+    <innerclass refid="structmspass_1_1algorithms_1_1deconvolution_1_1detail_1_1_g_s_l_f_f_t_wavetable_deleter" prot="public">mspass::algorithms::deconvolution::detail::GSLFFTWavetableDeleter</innerclass>
+    <innerclass refid="structmspass_1_1algorithms_1_1deconvolution_1_1detail_1_1_g_s_l_f_f_t_workspace_deleter" prot="public">mspass::algorithms::deconvolution::detail::GSLFFTWorkspaceDeleter</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="_g_s_l_f_f_t_resources_8h_1ac30e9d3e9de1b57a5ef02952f739be7f" prot="public" static="no">
+        <type>std::unique_ptr&lt; gsl_fft_complex_wavetable, <ref refid="structmspass_1_1algorithms_1_1deconvolution_1_1detail_1_1_g_s_l_f_f_t_wavetable_deleter" kindref="compound">GSLFFTWavetableDeleter</ref> &gt;</type>
+        <definition>using mspass::algorithms::deconvolution::detail::GSLFFTWavetablePtr = typedef std::unique_ptr&lt;gsl_fft_complex_wavetable, GSLFFTWavetableDeleter&gt;</definition>
+        <argsstring></argsstring>
+        <name>GSLFFTWavetablePtr</name>
+        <qualifiedname>mspass::algorithms::deconvolution::detail::GSLFFTWavetablePtr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GSLFFTResources.h" line="26" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GSLFFTResources.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="_g_s_l_f_f_t_resources_8h_1a5de00084bfae33fd271ab3b079419ad2" prot="public" static="no">
+        <type>std::unique_ptr&lt; gsl_fft_complex_workspace, <ref refid="structmspass_1_1algorithms_1_1deconvolution_1_1detail_1_1_g_s_l_f_f_t_workspace_deleter" kindref="compound">GSLFFTWorkspaceDeleter</ref> &gt;</type>
+        <definition>using mspass::algorithms::deconvolution::detail::GSLFFTWorkspacePtr = typedef std::unique_ptr&lt;gsl_fft_complex_workspace, GSLFFTWorkspaceDeleter&gt;</definition>
+        <argsstring></argsstring>
+        <name>GSLFFTWorkspacePtr</name>
+        <qualifiedname>mspass::algorithms::deconvolution::detail::GSLFFTWorkspacePtr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GSLFFTResources.h" line="28" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GSLFFTResources.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="_g_s_l_f_f_t_resources_8h_1a0dfbb7b0d0e615c7e3bcf7be0780e44c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structmspass_1_1algorithms_1_1deconvolution_1_1detail_1_1_g_s_l_f_f_t_resources" kindref="compound">GSLFFTResources</ref></type>
+        <definition>GSLFFTResources mspass::algorithms::deconvolution::detail::AllocateGSLFFTResources</definition>
+        <argsstring>(const int nfft, const std::string &amp;caller)</argsstring>
+        <name>AllocateGSLFFTResources</name>
+        <qualifiedname>mspass::algorithms::deconvolution::detail::AllocateGSLFFTResources</qualifiedname>
+        <param>
+          <type>const int</type>
+          <declname>nfft</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>caller</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GSLFFTResources.h" line="39" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GSLFFTResources.h" bodystart="39" bodyend="52"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GSLFFTResources.h" line="10" column="1"/>
+  </compounddef>
+</doxygen>
