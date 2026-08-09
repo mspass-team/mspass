@@ -14,6 +14,8 @@ source:
 
 build:
   script: scripts/conda_build.sh
+  script_env:
+    - MSPASS_BOOST_ROOT
   include_recipe: False
   number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
   string: py{{ CONDA_PY }}_{{ GIT_DESCRIBE_NUMBER|int }}_g{{ GIT_FULL_HASH[:8] }}
@@ -35,7 +37,8 @@ requirements:
     - numpy>=2.2.6
     - cmake>=3.18
     - gsl
-    - boost-cpp
+    # Boost.Serialization 1.86 is built statically by cxx/cmake.  Conda-forge
+    # does not provide 1.86, so a boost-cpp dependency would mix in 1.85.
     - liblapack
     - yaml-cpp
 
@@ -67,7 +70,6 @@ requirements:
     - libzlib
     - cartopy
     - gsl
-    - libboost
     - liblapack
     - yaml-cpp
 

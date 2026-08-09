@@ -164,7 +164,6 @@ RUN apt-get update \
        python3-dev python3-pip \
        openjdk-8-jdk \
        git cmake gfortran gdb \
-       libboost-dev libboost-serialization-dev \
        libgsl-dev liblapack-dev libyaml-dev \
        zip unzip \
     && apt-get clean \
@@ -363,8 +362,6 @@ RUN set -eux; \
         gfortran \
         git \
         libblas-dev \
-        libboost-dev \
-        libboost-serialization-dev \
         libgsl-dev \
         liblapack-dev \
         libyaml-cpp-dev \

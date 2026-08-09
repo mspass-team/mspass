@@ -43,6 +43,16 @@ jobs:
         ref: ${{ steps.docs-ref.outputs.ref }}
         path: source
 
+    - name: Cache Boost 1.86
+      uses: actions/cache@v5
+      with:
+        path: ${{ runner.temp }}/mspass-boost-1.86.0
+        key: mspass-boost-1.86.0-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/boost-download.cmake') }}
+
+    - name: Configure Boost 1.86 cache
+      shell: bash
+      run: echo "MSPASS_BOOST_ROOT=${RUNNER_TEMP}/mspass-boost-1.86.0" >> "$GITHUB_ENV"
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -62,7 +72,7 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -yq cmake doxygen gfortran graphviz libboost-dev libboost-serialization-dev libgsl-dev liblapack-dev libyaml-cpp-dev pandoc
+        sudo apt-get install -yq cmake doxygen gfortran graphviz libgsl-dev liblapack-dev libyaml-cpp-dev pandoc
 
     - name: Install Python dependencies
       working-directory: source
