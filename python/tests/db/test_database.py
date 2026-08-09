@@ -3160,6 +3160,74 @@ class TestDatabase:
             and seis_ensemble_metadata["key2"] == "value2"
         )
 
+    def test_read_ensemble_data_preserves_read_errors(self):
+        """Read failures retain their logs and are saved as abortions."""
+        cases = [
+            ("wf_TimeSeries", TimeSeries, TimeSeriesEnsemble, self.test_ts),
+            ("wf_Seismogram", Seismogram, SeismogramEnsemble, self.test_seis),
+        ]
+        warning_key = "issue_670_live_warning"
+        abortion_key = "issue_670_abortion"
+
+        for collection, object_type, ensemble_type, template in cases:
+            self.db.drop_collection(collection)
+            self.db.drop_collection("abortions")
+            self.db.drop_collection("cemetery")
+            try:
+                saved_ids = []
+                for _ in range(3):
+                    datum = copy.deepcopy(template)
+                    saved = self.db.save_data(
+                        datum,
+                        collection=collection,
+                        storage_mode="gridfs",
+                        return_data=True,
+                    )
+                    saved_ids.append(saved["_id"])
+
+                self.db[collection].update_one(
+                    {"_id": saved_ids[0]}, {"$set": {warning_key: True}}
+                )
+                self.db[collection].update_one(
+                    {"_id": saved_ids[2]},
+                    {"$set": {"npts": "not-an-integer", abortion_key: True}},
+                )
+
+                cursor = self.db[collection].find({"_id": {"$in": saved_ids}})
+                ensemble = self.db.read_data(
+                    cursor,
+                    collection=collection,
+                    mode="cautious",
+                )
+
+                assert isinstance(ensemble, ensemble_type)
+                assert ensemble.live
+                assert len(ensemble.member) == 2
+                ensemble_messages = [
+                    error.message for error in ensemble.elog.get_error_log()
+                ]
+                assert any(warning_key in message for message in ensemble_messages)
+                assert not any(
+                    "will be killed" in message for message in ensemble_messages
+                )
+
+                assert self.db.abortions.count_documents({}) == 1
+                assert self.db.cemetery.count_documents({}) == 0
+                abortion_doc = self.db.abortions.find_one({})
+                assert abortion_doc["type"] == str(object_type)
+                assert abortion_doc["tombstone"]["_id"] == saved_ids[2]
+                assert abortion_doc["tombstone"][abortion_key]
+                assert abortion_doc["tombstone"]["is_abortion"]
+                abortion_messages = [
+                    entry["error_message"] for entry in abortion_doc["logdata"]
+                ]
+                assert any("npts" in message for message in abortion_messages)
+                assert any("will be killed" in message for message in abortion_messages)
+            finally:
+                self.db.drop_collection(collection)
+                self.db.drop_collection("abortions")
+                self.db.drop_collection("cemetery")
+
     def test_get_response(self):
         inv = obspy.read_inventory("python/tests/data/TA.035A.xml")
         net = "TA"
