@@ -634,7 +634,8 @@ the P-wave probabilities that meet the requested threshold to the datum's
 timestamps to probabilities.  An optional absolute-time
 :py:class:`TimeWindow <mspasspy.ccore.algorithms.basic.TimeWindow>` can
 restrict the annotation interval.  The function mutates the input datum and
-does not return a separate picks object.
+does not return a separate picks object.  It first calls ``rtoa()`` on the
+input, so a relative-time datum is converted to UTC in place before annotation.
 
 SeisBench is an optional dependency.  Install MsPASS with the ``seisbench``
 extra when this feature is needed, for example ``pip install 'mspass[seisbench]'``.

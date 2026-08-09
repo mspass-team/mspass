@@ -260,7 +260,8 @@ map-style functions above:
      - Run a supplied SeisBench model, or the default pretrained PhaseNet model,
        and retain candidate P arrivals above a probability threshold.
      - TimeSeries
-     - Writes ``p_wave_picks`` Metadata in place
+     - Calls ``rtoa()`` to ensure UTC time, then writes ``p_wave_picks``
+       Metadata in place
 
 See :ref:`Arrival Time Measurement Techniques <arrival_time_measurement>` for
 the complete workflow, preprocessing requirements, robust-stack controls, and
