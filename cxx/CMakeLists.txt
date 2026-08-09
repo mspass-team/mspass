@@ -46,6 +46,12 @@ endif ()
 message (STATUS "YAML_CPP_LIBRARIES   = ${YAML_CPP_LIBRARIES}")
 message (STATUS "YAML_CPP_INCLUDE_DIR = ${YAML_CPP_INCLUDE_DIR}")
 
+# Boost.Serialization archives are shared across MsPASS builds, so the Boost
+# version is a compatibility constraint rather than a minimum dependency.
+set (Boost_USE_STATIC_LIBS ON)
+if (DEFINED ENV{MSPASS_BOOST_ROOT} AND NOT "$ENV{MSPASS_BOOST_ROOT}" STREQUAL "")
+  set (BOOST_ROOT "$ENV{MSPASS_BOOST_ROOT}")
+endif ()
 find_package (Boost 1.86.0 EXACT COMPONENTS serialization)
 if (NOT Boost_FOUND)
   message (STATUS "Building Boost")

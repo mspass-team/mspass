@@ -1,5 +1,9 @@
 macro(fetch_boost _download_module_path _download_root)
     set(BOOST_DOWNLOAD_ROOT ${_download_root})
+    set(BOOST_INSTALL_ROOT ${_download_root})
+    if (DEFINED ENV{MSPASS_BOOST_ROOT} AND NOT "$ENV{MSPASS_BOOST_ROOT}" STREQUAL "")
+        set(BOOST_INSTALL_ROOT "$ENV{MSPASS_BOOST_ROOT}")
+    endif()
     configure_file(
         ${_download_module_path}/boost-download.cmake
         ${_download_root}/CMakeLists.txt
@@ -12,18 +16,26 @@ macro(fetch_boost _download_module_path _download_root)
             "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
         WORKING_DIRECTORY
             ${_download_root}
+        RESULT_VARIABLE BOOST_CONFIGURE_RESULT
         )
+    if (NOT BOOST_CONFIGURE_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to configure the Boost 1.86 build")
+    endif()
     execute_process(
         COMMAND
             "${CMAKE_COMMAND}" --build .
         WORKING_DIRECTORY
             ${_download_root}
+        RESULT_VARIABLE BOOST_BUILD_RESULT
         )
+    if (NOT BOOST_BUILD_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to build Boost 1.86 serialization")
+    endif()
 
-    set (BOOST_ROOT ${PROJECT_BINARY_DIR}/boost)
+    set (BOOST_ROOT ${BOOST_INSTALL_ROOT})
     set (Boost_NO_BOOST_CMAKE ON)
     set (Boost_USE_STATIC_LIBS ON)
-    set (Boost_INCLUDE_DIR ${BOOST_ROOT}/boost-src)
+    set (Boost_INCLUDE_DIR ${BOOST_ROOT}/include)
 
-    find_package (Boost 1.86.0 REQUIRED COMPONENTS serialization)
+    find_package (Boost 1.86.0 EXACT REQUIRED COMPONENTS serialization)
 endmacro()

@@ -164,7 +164,7 @@ RUN apt-get update \
        python3-dev python3-pip \
        openjdk-8-jdk \
        git cmake gfortran gdb \
-       liblapack-dev libyaml-dev \
+       libgsl-dev liblapack-dev libyaml-dev \
        zip unzip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
@@ -230,42 +230,29 @@ ENV MSPASS_HOME=/mspass
 
 FROM mspass-source AS runtime-package
 
-# Add cxx library
-RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
-    && mkdir build && cd build \
-    && cmake .. \
-    && make \
-    && make install \
-    && rm -rf ../build \
-	&& docker-clean
-
-# Install python components
+# Build the Python extension and C++ library once, then install the C++ artifacts
+# from the CMake build tree retained by setuptools.
 ADD data /mspass/data
 ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
 ADD python /mspass/python
 ADD .git /mspass/.git
-RUN pip3 install /mspass -v \
+RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp \
+	&& pip3 install /mspass -v \
+	&& cmake --install /mspass/build/temp.* \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean
 
 FROM mspass-source AS dev-package
 
-# Add cxx library with debug symbols
-RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp && cd /mspass/cxx \
-    && mkdir build && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Debug .. \
-    && make \
-    && make install \
-    && rm -rf ../build \
-	&& docker-clean
-
-# Add seisbench dependency in the dev container for development purpose
+# Build the debug Python extension and C++ library once.
 ADD data /mspass/data
 ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
 ADD python /mspass/python
 ADD .git /mspass/.git
-RUN MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench]' -v \
+RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp \
+	&& MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench]' -v \
+	&& cmake --install /mspass/build/temp.* \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean
 
 # Add docs and dependencies to build docs
