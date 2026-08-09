@@ -12,8 +12,15 @@ must accomplish cleanly.  This section is organized into subsections on
 each of the topics defined by CRUD.  At the end of this section we
 summarize some common options in CRUD operations.
 
+This chapter covers the supported :class:`~mspasspy.db.database.Database`
+interface.  When a task requires a direct collection query, aggregation,
+index, or PyMongo update, first read the lower-level
+:ref:`MongoDB and PyMongo primer <mongodb_and_mspass>`.  Keeping the two
+abstraction levels explicit helps avoid bypassing MsPASS waveform, error-log,
+and processing-history handling accidentally.
+
 The most common database operations are defined as methods in a class
-we give the obvious name Database.  Most MsPASS jobs need to the have following
+we give the obvious name Database.  Most MsPASS jobs need the following
 incantation at the top of the python job script:
 
 .. code-block:: python

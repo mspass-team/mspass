@@ -95,6 +95,17 @@ def test_annotate_arrival_time_threshold():
     assert len(mspass_picks) < len(seis_picks)
 
 
+def test_annotate_arrival_time_invalid_threshold_uses_default():
+    stream = get_trace_for_test()
+    expected = Trace2TimeSeries(stream[0])
+    annotate_arrival_time(expected, 0.2, model=pn_model)
+
+    for invalid_threshold in (-0.1, 1.1):
+        timeseries = Trace2TimeSeries(stream[0])
+        annotate_arrival_time(timeseries, invalid_threshold, model=pn_model)
+        assert timeseries["p_wave_picks"] == expected["p_wave_picks"]
+
+
 def test_annotate_arrival_time_window():
     """
     Test the annotate_arrival_time function with a time window.
@@ -163,6 +174,36 @@ def test_annotate_arrival_time_filters_trimmed_boundary_samples():
     picks = timeseries["p_wave_picks"]
     assert set(picks.keys()) == {1.0, 2.0, 3.0}
     assert all(window_start <= pick_time <= window_end for pick_time in picks)
+
+
+def test_annotate_arrival_time_adjusts_window_in_place():
+    trace = Trace(np.zeros(10))
+    trace.stats.starttime = UTCDateTime(0)
+    trace.stats.delta = 1.0
+
+    timeseries = Trace2TimeSeries(trace)
+    partial_window = TimeWindow(-2.0, 3.0)
+    annotate_arrival_time(
+        timeseries,
+        threshold=0,
+        time_window=partial_window,
+        model=_BoundaryPredictionModel(),
+    )
+    assert partial_window.start == 0.0
+    assert partial_window.end == 3.0
+    assert set(timeseries["p_wave_picks"]) == {0.0, 1.0, 2.0, 3.0}
+
+    timeseries = Trace2TimeSeries(trace)
+    disjoint_window = TimeWindow(20.0, 30.0)
+    annotate_arrival_time(
+        timeseries,
+        threshold=0,
+        time_window=disjoint_window,
+        model=_BoundaryPredictionModel(),
+    )
+    assert disjoint_window.start == 0.0
+    assert disjoint_window.end == 9.0
+    assert set(timeseries["p_wave_picks"]) == set(np.arange(10, dtype=float))
 
 
 class _NoPPhasePredictionModel(_BoundaryPredictionModel):
