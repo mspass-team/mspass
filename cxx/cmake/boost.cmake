@@ -49,6 +49,7 @@ macro(fetch_boost _download_module_path _download_root)
         Boost_INCLUDE_DIR
         Boost_INCLUDE_DIRS
         Boost_LIBRARIES
+        Boost_LIBRARY_DIR
         Boost_LIBRARY_DIRS
         Boost_LIBRARY_DIR_DEBUG
         Boost_LIBRARY_DIR_RELEASE

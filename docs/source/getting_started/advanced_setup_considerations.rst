@@ -55,8 +55,10 @@ build with ``MSPASS_FORCE_BUNDLED_BOOST`` enabled:
 
 .. code-block:: bash
 
-   cmake -S cxx -B build -DMSPASS_FORCE_BUNDLED_BOOST=ON
-   cmake --build build
+   mkdir -p build
+   cd build
+   cmake ../cxx -DMSPASS_FORCE_BUNDLED_BOOST=ON
+   cmake --build .
 
 The option is also available in ``ccmake``.  It skips installed Boost
 libraries and builds the project's pinned Boost version as a static ``-fPIC``
