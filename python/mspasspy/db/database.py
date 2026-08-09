@@ -988,8 +988,17 @@ class Database(pymongo.database.Database):
             # kind of data returned in the "abortions" list.
             # See Undertaker docstring or User Manual for concepts
             if len(abortions) > 0:
-                for md in abortions:
-                    self.stedronsky.handle_abortion(md)
+                for doc, abortion_elog in abortions:
+                    if object_type is TimeSeries:
+                        abortion = TimeSeries()
+                    else:
+                        abortion = Seismogram()
+                    for key in doc:
+                        abortion[key] = doc[key]
+                    abortion.elog += abortion_elog
+                    abortion["is_abortion"] = True
+                    abortion.kill()
+                    self.stedronsky.handle_abortion(abortion)
             if live and len(mdlist) > 0:
                 # note this function returns a clean ensemble with
                 # no dead data.  It will be considered bad only if is empty
@@ -1062,7 +1071,7 @@ class Database(pymongo.database.Database):
                     ensemble = SeismogramEnsemble()
             # elog referenced here comes from doclist2mdlist - a bit confusing
             # but delayed to here to construct ensemble first
-            if elog.size() < 0:
+            if elog.size() > 0:
                 ensemble.elog += elog
 
             # We post this even to dead ensmebles
@@ -8197,14 +8206,17 @@ def doclist2mdlist(
     a document to md is problematic.  The issues are defined in the
     related `doc2md` function that is used here for the atomic operation of
     converting a given document to a Metadata object.   The issue we have to
-    face is what to do with warning message and documents that have
+    face is what to do with warning messages and documents that have
     fatal flaws (marked dead when passed through doc2md).  Warning
-    messages are passed to the ErrorLogger component of the returned tuple.
+    messages from retained documents are passed to the ErrorLogger component
+    of the returned tuple.
     Callers should either print those messages or post them to the
     ensemble metadata that is expected to be constructed after calling
-    this function.   In "cautious" and "pedantic" mode doc2md may mark
+    this function.  In "cautious" and "pedantic" mode doc2md may mark
     a datum as bad with a kill return.  When a document is "killed"
-    by doc2md it is dropped and two thi
+    by doc2md it is dropped from the Metadata list and returned with its
+    corresponding ErrorLogger so the caller can preserve the reason for the
+    failed read.
 
     :param doclist:  list of documents to be converted to Metadata with schema
       constraints
@@ -8216,30 +8228,31 @@ def doclist2mdlist(
         0. filtered array of Metadata containers.
         1. live boolean.   Set False only if conversion of all the documents
            in doclist failed.
-        2. ErrorLogger where warning and kill messages are posted (see above).
-        3. an array of documents that could not be converted (i.e. marked
-           bad when processed with doc2md.)
+        2. ErrorLogger containing warnings from documents retained in the
+           Metadata list.
+        3. an array of ``(document, ErrorLogger)`` tuples for documents that
+           could not be converted (i.e. were marked bad by ``doc2md``).
 
     """
     mdlist = []
     ensemble_elog = ErrorLogger()
-    bodies = []
+    abortions = []
     for doc in doclist:
-        md, live, elog = doc2md(
+        md, datum_is_live, elog = doc2md(
             doc, database_schema, metadata_schema, wfcol, exclude_keys, mode
         )
-        if live:
+        if datum_is_live:
             mdlist.append(md)
+            if elog.size() > 0:
+                ensemble_elog += elog
         else:
-            bodies.append(doc)
-        if elog.size() > 0:
-            ensemble_elog += elog
+            abortions.append((doc, elog))
 
     if len(mdlist) == 0:
         live = False
     else:
         live = True
-    return [mdlist, live, ensemble_elog, bodies]
+    return [mdlist, live, ensemble_elog, abortions]
 
 
 def parse_normlist(input_nlist, db) -> list:
