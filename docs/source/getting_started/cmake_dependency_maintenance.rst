@@ -11,7 +11,9 @@ The official CMake `Using Dependencies Guide
 <https://cmake.org/cmake/help/latest/guide/using-dependencies/index.html>`__
 is the best general introduction.  MsPASS currently uses a system-first
 variant of that model: use an installed package when CMake can find it and,
-for selected dependencies, build a pinned source release otherwise.
+for selected dependencies, build from source otherwise.  Most fallbacks pin
+a release; the current GSL fallback's ``gsl-latest.tar.gz`` URL is a legacy
+exception and is not reproducible in the same way.
 
 How dependency discovery works
 ------------------------------
@@ -27,8 +29,9 @@ dependencies follow this sequence:
 #. The macro configures ``cxx/cmake/<package>-download.cmake`` as a small,
    separate CMake project.  That project uses `ExternalProject
    <https://cmake.org/cmake/help/latest/module/ExternalProject.html>`__ to
-   download, build, and install a pinned release beneath the MsPASS build
-   directory.
+   download, build, and install the configured source beneath the MsPASS
+   build directory.  New fallbacks should use a fixed release or commit;
+   GSL's moving ``gsl-latest.tar.gz`` URL is an existing exception.
 #. The macro sets the package-specific search hint, such as
    ``<Package>_DIR`` or ``<Package>_ROOT``, then calls ``find_package`` with
    ``REQUIRED``.  The rest of the build therefore consumes the same package
@@ -59,10 +62,11 @@ entry when that layer actually consumes or distributes the dependency.
    set the correct search hint, and finish with a required package lookup.
 
 ``cxx/cmake/<package>-download.cmake``
-   Define the pinned source URL or Git tag, checksum when an archive is used,
-   configure/build/install commands, and an install prefix inside the build
-   tree.  Static libraries linked into the Python extension must be compiled
-   as position-independent code; see CMake's
+   Pin the source URL, Git tag, or commit; provide a checksum when an archive
+   is used; and define the configure/build/install commands and an install
+   prefix inside the build tree.  Do not copy the legacy moving GSL URL when
+   adding a fallback.  Static libraries linked into the Python extension must
+   be compiled as position-independent code; see CMake's
    `POSITION_INDEPENDENT_CODE
    <https://cmake.org/cmake/help/latest/prop_tgt/POSITION_INDEPENDENT_CODE.html>`__
    reference.
