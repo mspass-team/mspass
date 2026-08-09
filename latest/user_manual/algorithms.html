@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Algorithms &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>Algorithms &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Importing Tabular Data" href="importing_tabular_data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -366,8 +366,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -755,6 +755,56 @@ utility for writing custom functions that use them inside another algorithm.</p>
 </table>
 </div>
 </section>
+<section id="arrival-time-and-multichannel-correlation-workflows">
+<h2>Arrival-time and multichannel-correlation workflows<a class="headerlink" href="#arrival-time-and-multichannel-correlation-workflows" title="Link to this heading">#</a></h2>
+<p>The <a class="reference internal" href="../python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.MCXcorStacking" title="mspasspy.algorithms.MCXcorStacking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.algorithms.MCXcorStacking</span></code></a> module contains the
+multichannel cross-correlation and robust-stacking workflow.  The
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.ml.arrival" title="mspasspy.algorithms.ml.arrival"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.algorithms.ml.arrival</span></code></a> module provides the optional
+SeisBench/PhaseNet arrival annotator.  These entry points have nonstandard
+multi-object or in-place contracts, so they are summarized separately from the
+map-style functions above:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id4">
+<caption><span class="caption-number">Table 5 </span><span class="caption-text">Arrival-time workflow entry points</span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 45.0%" />
+<col style="width: 15.0%" />
+<col style="width: 15.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Purpose</p></th>
+<th class="head"><p>Inputs</p></th>
+<th class="head"><p>Output or side effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP" title="mspasspy.algorithms.MCXcorStacking.MCXcorPrepP"><code class="xref py py-func docutils literal notranslate"><span class="pre">MCXcorPrepP</span></code></a></p></td>
+<td><p>Prepare a teleseismic P-wave ensemble and choose an initial beam for
+multichannel correlation.</p></td>
+<td><p>TimeSeriesEnsemble and noise window</p></td>
+<td><p>Prepares the input ensemble in place; returns it with the initial beam</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a></p></td>
+<td><p>Iteratively align an ensemble by cross-correlation and compute a robust
+stack.</p></td>
+<td><p>TimeSeriesEnsemble and initial beam</p></td>
+<td><p>Aligns the input ensemble in place; returns it with the final stack</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.ml.arrival.annotate_arrival_time" title="mspasspy.algorithms.ml.arrival.annotate_arrival_time"><code class="xref py py-func docutils literal notranslate"><span class="pre">annotate_arrival_time</span></code></a></p></td>
+<td><p>Run a supplied SeisBench model, or the default pretrained PhaseNet model,
+and retain candidate P arrivals above a probability threshold.</p></td>
+<td><p>TimeSeries</p></td>
+<td><p>Converts the input to UTC, may adjust a supplied <code class="docutils literal notranslate"><span class="pre">TimeWindow</span></code> in
+place, and writes <code class="docutils literal notranslate"><span class="pre">p_wave_picks</span></code> Metadata in place</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>See <a class="reference internal" href="arrival_time_measurement.html#arrival-time-measurement"><span class="std std-ref">Arrival Time Measurement Techniques</span></a> for
+the complete workflow, preprocessing requirements, robust-stack controls, and
+the distinction between candidate picks and event association.</p>
+</section>
 <section id="processing-objects">
 <h2>Processing Objects<a class="headerlink" href="#processing-objects" title="Link to this heading">#</a></h2>
 <p>This collection of things are “processing objects” meaning they implement
@@ -764,8 +814,8 @@ take inputs and emit an output.  The only difference is the syntax
 of a “method” compared to a simple function.  They also have the
 same API guarantees listed at the beginning of this section
 (i.e. the list of items in the first section).</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id4">
-<caption><span class="caption-number">Table 5 </span><span class="caption-text">Processing Objects</span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id5">
+<caption><span class="caption-number">Table 6 </span><span class="caption-text">Processing Objects</span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 9.1%" />
 <col style="width: 63.6%" />
@@ -1026,6 +1076,7 @@ generalized iterative deconvolution guidance.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#processing-functions">Processing Functions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonstandard-processing-functions">Nonstandard Processing Functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arrival-time-and-multichannel-correlation-workflows">Arrival-time and multichannel-correlation workflows</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#processing-objects">Processing Objects</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deconvolution-algorithms">Deconvolution algorithms</a></li>
 </ul>

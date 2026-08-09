@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Memory Management &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>Memory Management &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Parallel Processing" href="parallel_processing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -367,8 +367,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -571,7 +571,7 @@ The DAG for this workflow is illustrated below</p>
 <span id="dag-figure"></span><a class="reference internal image-reference" href="../_images/MapDAGFigure.png"><img alt="../_images/MapDAGFigure.png" src="../_images/MapDAGFigure.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-number">Fig. 18 </span><span class="caption-text">Block diagram illustration of DAG defined by example workflow.
+<p><span class="caption-number">Fig. 19 </span><span class="caption-text">Block diagram illustration of DAG defined by example workflow.
 The example shows how work would be partitions with five processors
 and five partitions.   The labels at the top are function names
 matching those used in the python code above.   Each box denotes an
@@ -632,7 +632,7 @@ for this example).</p>
 <span id="twoprocessoranimation-figure"></span><a class="reference internal image-reference" href="../_images/MapProcessing.gif"><img alt="../_images/MapProcessing.gif" src="../_images/MapProcessing.gif" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-number">Fig. 19 </span><span class="caption-text">Animated gif illustrating data flow for the same five partition
+<p><span class="caption-number">Fig. 20 </span><span class="caption-text">Animated gif illustrating data flow for the same five partition
 data set as illustrated above with only two processors.  The animation
 illustrates how the scheduler would assign each processor a data partition.
 Each worker sequentially processes one data object at a time as illustrated
@@ -1007,7 +1007,7 @@ reduce(fold) operation by the Metadata key <cite>source_id</cite>:</p>
 <span id="reduce-figure"></span><a class="reference internal image-reference" href="../_images/ReduceFigure.png"><img alt="../_images/ReduceFigure.png" src="../_images/ReduceFigure.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-number">Fig. 20 </span><span class="caption-text">Data flow diagram for example reduce operation to stack two
+<p><span class="caption-number">Fig. 21 </span><span class="caption-text">Data flow diagram for example reduce operation to stack two
 sources with a bag/rdd made up of atomic TimeSeries data with
 five partitions.   Dashed lines show concept of how partitions
 divide up the container of data illustrated as a stack of black

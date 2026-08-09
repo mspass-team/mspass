@@ -228,6 +228,45 @@ utility for writing custom functions that use them inside another algorithm.
      - TimeSeries or Seismogram
      - float
 
+Arrival-time and multichannel-correlation workflows
+----------------------------------------------------
+
+The :py:mod:`mspasspy.algorithms.MCXcorStacking` module contains the
+multichannel cross-correlation and robust-stacking workflow.  The
+:py:mod:`mspasspy.algorithms.ml.arrival` module provides the optional
+SeisBench/PhaseNet arrival annotator.  These entry points have nonstandard
+multi-object or in-place contracts, so they are summarized separately from the
+map-style functions above:
+
+.. list-table:: Arrival-time workflow entry points
+   :widths: 25 45 15 15
+   :header-rows: 1
+
+   * - Name
+     - Purpose
+     - Inputs
+     - Output or side effect
+   * - :py:func:`MCXcorPrepP<mspasspy.algorithms.MCXcorStacking.MCXcorPrepP>`
+     - Prepare a teleseismic P-wave ensemble and choose an initial beam for
+       multichannel correlation.
+     - TimeSeriesEnsemble and noise window
+     - Prepares the input ensemble in place; returns it with the initial beam
+   * - :py:func:`align_and_stack<mspasspy.algorithms.MCXcorStacking.align_and_stack>`
+     - Iteratively align an ensemble by cross-correlation and compute a robust
+       stack.
+     - TimeSeriesEnsemble and initial beam
+     - Aligns the input ensemble in place; returns it with the final stack
+   * - :py:func:`annotate_arrival_time<mspasspy.algorithms.ml.arrival.annotate_arrival_time>`
+     - Run a supplied SeisBench model, or the default pretrained PhaseNet model,
+       and retain candidate P arrivals above a probability threshold.
+     - TimeSeries
+     - Converts the input to UTC, may adjust a supplied ``TimeWindow`` in
+       place, and writes ``p_wave_picks`` Metadata in place
+
+See :ref:`Arrival Time Measurement Techniques <arrival_time_measurement>` for
+the complete workflow, preprocessing requirements, robust-stack controls, and
+the distinction between candidate picks and event association.
+
 Processing Objects
 -------------------------------------
 This collection of things are "processing objects" meaning they implement

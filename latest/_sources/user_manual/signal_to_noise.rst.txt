@@ -50,10 +50,25 @@ to define a signal window if the data had been converted to "relative time"
 (see section :ref:`time_standard_constraints`)
 with zero defined as a measured or predicted phase arrival time.
 
+.. _snr_time_windows_figure:
+
+.. figure:: ../_static/figures/snr_windows_and_bandwidth.svg
+   :alt: A waveform with separate noise and signal windows above a frequency-domain SNR passband diagram.
+   :align: center
+   :width: 92%
+
+   Time-domain metrics compare amplitudes measured in the noise and signal
+   windows (top).  ``FD_snr_estimator`` estimates spectra from the same windows
+   and finds a contiguous usable band with a search initialized at ``f0`` where
+   amplitude SNR exceeds ``band_cutoff_snr`` (bottom).  The illustrated case has
+   ``f0`` inside the band; the curves are schematic, not measured data.
+
 All algorithms to estimate *snr* require a `TimeWindow` defining what section of
 data should be used for computing some metric for signal and noise to
 compute the ratio.  The metric applied to each window may or may not always
-be the same.
+be the same.  The windows may have different lengths, but both must lie inside
+the datum.  Keep the noise window clear of the target arrival and choose a
+signal window long enough to contain the signal whose quality is being tested.
 
 Time Window Amplitude Metrics
 ______________________________
@@ -176,6 +191,15 @@ of the signal power spectral density to the estimated noise power spectral
 density.  The high-frequency search is bounded by 80% of Nyquist.  The
 ``band_cutoff_snr`` parameter therefore defines the minimum SNR at which the
 algorithm considers a signal to be present.
+
+The bottom panel of :numref:`snr_time_windows_figure` shows the resulting
+quantities.  ``low_f_band_edge`` and ``high_f_band_edge`` are the cutoff
+crossings that bound the accepted band.  ``bandwidth`` is reported in decibels
+as :math:`20\log_{10}(f_h/f_l)` when the low edge is nonzero, rather than as the
+linear difference :math:`f_h-f_l`.  ``bandwidth_fraction`` describes the usable
+fraction of the analyzed frequency range.  If no sufficiently wide band is
+found, the estimator returns no bandwidth metrics and records an ``Invalid``
+diagnostic; callers should not interpret that outcome as an SNR of zero.
 
 The signal and noise spectra are estimated with a multitaper method.  Its
 smoothing scale is controlled by the time-bandwidth product, ``tbp``, through

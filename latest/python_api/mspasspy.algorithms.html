@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -366,8 +366,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -923,15 +923,15 @@ dead and contain error messages describing the problem.</p>
 <p>&#64;author: pavlis</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.MCXcorPrepP">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">MCXcorPrepP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mad'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_beam_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bandwidth'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr_doc_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_f_corner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_f_corner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_parameter_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['MCXcor_f_low',</span> <span class="pre">'MCXcor_f_high',</span> <span class="pre">'MCXcor_npoles']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coda_level_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ptime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ptime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pPtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pPtime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PPtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPtime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'channel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_window_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_coda_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#MCXcorPrepP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP" title="Link to this definition">#</a></dt>
-<dd><p>Function used to preprocess an ensemble  to prepare input for
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">MCXcorPrepP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mad'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_beam_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bandwidth'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr_doc_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_f_corner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_f_corner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_parameter_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['MCXcor_f_low',</span> <span class="pre">'MCXcor_f_high',</span> <span class="pre">'MCXcor_npoles']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coda_level_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ptime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ptime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pPtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pPtime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PPtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPtime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'channel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_window_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_coda_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#MCXcorPrepP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP" title="Link to this definition">#</a></dt>
+<dd><p>Function used to preprocess an ensemble to prepare input for
 running multichannel cross-correlation and stacking method
 (automated dbxcor algorithm) of P phase data.  This function should
 not be used for anything but teleseismic P data.</p>
 <p>The multichannel correlation and stacking function in this module called
 <cite>align_and_stack</cite> requires one to define a number of parameters that
 in the original dbxcor implementation were input through a graphical
-user interface.   This function can be thought of a robot that will
+user interface.   This function can be thought of as a robot that will
 attempt to set all the required parameters automatically using signal processing.
 It will attempt to produce two inputs required by the <cite>align_and_stack</cite>:
 1.  What I call a “correlation window”.
@@ -985,16 +985,14 @@ The correlation window parameters computed earlier are then posted
 to the <cite>Metadata</cite> of that <cite>TimeSeries</cite> where <cite>align_and_stack</cite>
 can parse them to set the correlation time window.</p></li>
 </ol>
-<p>The function returns a copy of the input ensemble filtered to the
-average bandwidth as component 0 of a tuple.  Component 1 of that
-tuple contains an the initial beam estimate that should be used
-as the input to align_and_stack.
+<p>The function filters and prepares the input ensemble in place.  Component 0
+of the returned list is that same ensemble, and component 1 is the initial
+beam estimate that should be passed to <cite>align_and_stack</cite>.
 Callers should verify the beam signal is marked live.  A dead
 beam signal indicates the algorithm failed in one way or another.
 Errors at that level will result in messages being posted to the
 <cite>ErrorLogger</cite> container of the beam output (elog attribute).  Note also this
-algorithm can kill some ensemble members in the output that
-were marked live in the input.</p>
+algorithm can kill ensemble members that were marked live on input.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1005,23 +1003,23 @@ must have been processed with <cite>broadband_snr_QC</cite> or this function wil
 return a null result.  The function makes a tacit assumption that all
 the members of this ensemble are in relative time with 0 of each member
 being an estimate of the P wave arrival time.  It does no tests to
-validate this assumption so the assumption is wrong you will, at best,
-get junk as output.</p></li>
+validate this assumption, so if the assumption is wrong you will, at best,
+get junk as output.  This ensemble is filtered and prepared in place;
+members can be modified or killed.</p></li>
 <li><p><strong>noise_window</strong> (<cite>TimeWindow</cite> tacitly expected to be time relative
 to a measure of the P wave arrival time.) – time window defining the section of each
 ensemble member that is to be treated as “noise” for estimating
 a relative noise level.</p></li>
-<li><p><strong>noise_metric</strong> (<em>string</em><em> (</em><em>Must be one of:  &quot;mad&quot;</em><em> (</em><em>default</em><em>)</em><em>, </em><em>&quot;rms&quot;</em><em>,
-or </em><em>&quot;peak&quot;</em><em>)</em><em>.  Any other string will cause the function to throw a ValueError
-exception.</em>) – vector norm metric to use for measuring the
+<li><p><strong>noise_metric</strong> (string.  <code class="docutils literal notranslate"><span class="pre">&quot;rms&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;peak&quot;</span></code> select those
+metrics; every other value, including the default <code class="docutils literal notranslate"><span class="pre">&quot;mad&quot;</span></code>, uses median
+absolute deviation.) – vector norm metric to use for measuring the
 amplitude of the noise extracted from the data in the range defined by
 noise_window.</p></li>
-<li><p><strong>initial_beam_metric</strong> – key of attribute to extract from the
+<li><p><strong>initial_beam_metric</strong> (string (default “bandwidth”).  For a list of
+allowed values see the docstring of <cite>extract_initial_beam_estimate</cite>.) – key of attribute to extract from the
 output of <cite>broadband_snr_QC</cite> used to select initial beam signal.
-This argument is passed to the <cite>extract_initial_beam_estimate</cite> function for
-as the “metric” argument of that function.</p></li>
-<li><p><strong>initial_beam_metric</strong> – string (default “bandwidth”).  For a list of
-allowed values see the docstring of <cite>extract_initial_beam_estimate</cite>.</p></li>
+This argument is passed to <cite>extract_initial_beam_estimate</cite> as its
+<code class="docutils literal notranslate"><span class="pre">metric</span></code> argument.</p></li>
 <li><p><strong>snr_doc_key</strong> (string (default “Parrival” which is the default of
 <cite>broadband_snr_QC</cite>).) – key to use to fetch the subdocument containing the
 output of <cite>broadband_snr_QC</cite>.</p></li>
@@ -1036,12 +1034,17 @@ bandwidth to this value.   When defined, the internal call to
 <cite>estimate_ensemble_bandwidth</cite> is bypassed and the output data are filtered
 between the value defined by low_f_corner and high_f_corner.</p></li>
 <li><p><strong>npoles</strong> (<em>integer</em><em> (</em><em>default 4</em><em>)</em>) – number of poles to use for the Butterworth bandpass filter.</p></li>
-<li><p><strong>set_phases</strong> – boolean that if set True (default) the P phase time s
+<li><p><strong>filter_parameter_keys</strong> (list of three strings (default
+<code class="docutils literal notranslate"><span class="pre">[&quot;MCXcor_f_low&quot;,</span> <span class="pre">&quot;MCXcor_f_high&quot;,</span> <span class="pre">&quot;MCXcor_npoles&quot;]</span></code>)) – three Metadata keys used to record the low
+corner, high corner, and number of poles of the filter applied in place.</p></li>
+<li><p><strong>coda_level_factor</strong> (<em>float</em><em> (</em><em>default 4.0</em><em>)</em>) – multiplier applied to each member’s measured
+background-noise amplitude to define the coda-detection threshold.</p></li>
+<li><p><strong>set_phases</strong> – boolean that if set True (default) the arrival times for
 P, pP (if defined), and PP (if defined) are computed and posted to the
-output of each ensemble member.  If False the algorith assumes the
+output of each ensemble member.  If False the algorithm assumes the
 same quantities were previously calculated and can be fetched from the
 member TimeSeries Metadata container using keys defined by Ptime_key,
-pPtimme_key, and PPtime_key.</p></li>
+pPtime_key, and PPtime_key.</p></li>
 <li><p><strong>Ptime_key</strong></p></li>
 <li><p><strong>pPtime_key</strong></p></li>
 <li><p><strong>PPtime_key</strong> – These three arguments define alternative keys that
@@ -1050,7 +1053,10 @@ computed P, pP, and PP times to each member’s Metadata container.
 Changing any of these values is not really advised when set_phases is True.
 These are most useful if the phase arrival times were previously
 computed or measured and posted with different keys.</p></li>
-<li><p><strong>station_collection</strong> (<em>string</em><em> (</em><em>default &quot;channel&quot;</em><em>)</em>) – MonogDB collection name used to fetch
+<li><p><strong>model</strong> (<code class="docutils literal notranslate"><span class="pre">obspy.taup.TauPyModel</span></code> or None) – travel-time model used to compute P, pP, and PP arrivals when
+<code class="docutils literal notranslate"><span class="pre">set_phases</span></code> is True.  A default <code class="docutils literal notranslate"><span class="pre">TauPyModel(&quot;iasp91&quot;)</span></code> is created
+when this argument is None.</p></li>
+<li><p><strong>station_collection</strong> (<em>string</em><em> (</em><em>default &quot;channel&quot;</em><em>)</em>) – MongoDB collection name used to fetch
 receiver coordinate data.   Normal practice in MsPASS is to save
 receiver Metadata in two channels called “channel” and “site” and
 to load the coordinate data through normalization when the data are
@@ -1067,16 +1073,15 @@ use “site_lat” and “site_lon”.</p></li>
 correlation window is determined by running the internal
 <cite>_coda_duration</cite> function on each ensemble member and computing the
 range from the median of the ranges computed from all the ensemble
-members.  Each coda search, however, is constrained by the time so f
+members.  Each coda search, however, is constrained by the times of
 pP and/or PP.   As noted above the function uses the pP time for
 events with depths greater than 100 km but PP for shallow sources.
 To allow for hypocenter errors  the duration defined by
 P to pP or P to PP is multiplied by this factor to define the
 search start for the coda estimation.</p></li>
-<li><p><strong>minimum_coda_duration</strong> – if the estimate of coda duration
-computed internally is less than this value the correlation window
-is set to this value - relative time from P.
-:type minimum_coda_duration:  float (5.0 seconds)</p></li>
+<li><p><strong>minimum_coda_duration</strong> (<em>float</em><em> (</em><em>default 5.0 seconds</em><em>)</em>) – minimum accepted coda-duration estimate.
+Shorter estimates are excluded.  If no estimate exceeds this floor, the
+ensemble is killed and returned with a dead beam.</p></li>
 <li><p><strong>correlation_window_start</strong> (<em>float</em><em> (</em><em>default -3.0</em><em>)</em>) – the time of the correlation window
 set in the output “beam” is fixed as this value.   It is normally
 a negative number defining a time before P that no signal is likely to
@@ -1084,28 +1089,27 @@ have an arrival before this relative time.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple with two components.  Component 0 holds a copy of the
-input ensembled filtered with bandwidth range estimated by the
-algorithm but NOT time shifted. Component 1 is an best guess of
-a suitable initial beam estimate for running the robust stacking
-algorithm of dbxcor (it requires an initial bean estiamte).</p>
+<dd class="field-even"><p>two-element list.  Component 0 is the input ensemble
+after in-place filtering, phase-time conversion, Metadata updates, and
+any member kills.  Component 1 is an initial beam estimate suitable for
+the dbxcor robust-stacking algorithm.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.align_and_stack">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">align_and_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['correlation_window_start',</span> <span class="pre">'correlation_window_end']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_window_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['robust_window_start',</span> <span class="pre">'robust_window_end']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbxcor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_median_initial_stack</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_stack_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_weight_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'robust_stack_weight'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival_time_correction'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort_irregular_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demean_residuals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#align_and_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">align_and_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['correlation_window_start',</span> <span class="pre">'correlation_window_end']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_window_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['robust_window_start',</span> <span class="pre">'robust_window_end']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbxcor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_median_initial_stack</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_stack_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_weight_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'robust_stack_weight'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival_time_correction'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort_irregular_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demean_residuals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#align_and_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="Link to this definition">#</a></dt>
 <dd><p>This function uses an initial estimate of the array stack passed as
 the <cite>beam</cite> argument as a seed to a robust algorithm that will
 align all the data in the input ensemble by cross-correlation with
 the beam, apply a robust stack to the aligned signals, update the
 beam with the robust stack, and repeat until the changes to the
-beam signal are small.   Returns a copy of the ensemble time
-shifted to be aligned with beam time base and an updated beam
-estimate crated by the robust stack.  The shifts and the weights
-of each input signal are stored in the Metadata of each live ensemble
-member returned with keys defined by <cite>robust_weight_key</cite> and
+beam signal are small.  The input ensemble is modified in place to align
+its members with the beam time base, and the function returns that ensemble
+with an updated beam estimate created by the robust stack.  The shifts and
+weights of each input signal are stored in the Metadata of each live
+ensemble member returned with keys defined by <cite>robust_weight_key</cite> and
 <cite>time_shift_key</cite>.</p>
 <p>This function is a python implementation of the same basic
 algorithm used in the dbxcor program described by
@@ -1120,55 +1124,43 @@ This function uses a pythonic approach aimed to allow this function
 to be run in batch without user intervention.  The original dbxcor
 algorithm required four interactive picks to set the input.
 The way we set them for this automated algorithm is described in the
-following four itemize paragraphs:</p>
+following four numbered items:</p>
 <blockquote>
 <div><ol class="arabic">
-<li><p>The “correlation window”, which is the waveform segment
-used to compute cross-correlations between the beam and all
-ensmebled members, is set one of three ways.  The default
-uses the time window defined by the starttime and endtime of
-the <cite>beam</cite> signal as the cross-correlation window.
-Alternative, this window can be specified either by
-fetching values from the <cite>Metadata</cite> container of beam
-or via the <cite>correlation_window</cite> argument.   The algorithm
-first tests if <cite>correlation_window</cite> is set and is an
-instance of a <cite>TimeWindow</cite> object.   If the type of
-the argument is not a <cite>TimeWindow</cite> object an error is logged
-and the program reverts to using the span of the beam
-signal as the correlation window.   If <cite>correlation_window</cite>
-is a None (default) the algorithm then checks for a valid
-input via the <cite>correlation_window_keys</cite> argument.  If
-defined that argument is assumed to contain a pair of strings
-that can be used as keys to fetch start (component 0)
-and end times (component 1) from the Metadata container of
-the TimeSeries objct passed via beam. For example,</p>
+<li><p>The “correlation window”, which is the waveform segment used to
+compute cross-correlations between the beam and all ensemble
+members, is set one of three ways.  An explicit <cite>TimeWindow</cite>
+passed as <cite>correlation_window</cite> takes precedence; a truthy value of
+any other type raises <cite>TypeError</cite>, while a falsy value is treated
+as unset.  In the unset case, the algorithm checks the pair of beam
+Metadata keys supplied through <cite>correlation_window_keys</cite>.  For example,</p>
 <blockquote>
 <div><p>correlation_window_keys = [‘correlation_start’,’correlation_end’]</p>
 </div></blockquote>
-<p>would cause the function to attempt to fetch the
-start time with “correlation_start” and end time with
-“correlation_end”.  In the default both <cite>correlation_window</cite>
-and <cite>correlation_window_keys</cite> are None which cause the
-function to silently use the window defined as
-[beam.t0, beam.endtime()] as the correlation winow.
-If the optional boolean <cite>window_beam</cite> argument is set True
-the function will attempt to window the beam using a range
-input via either of the optional methods of setting the
-correlation window.  An error is logged and nothing happens if
-<cite>window_beam</cite> is set True and the default use of the beam
-window is being used.</p>
+<p>would cause the function to fetch the start time with
+“correlation_start” and end time with “correlation_end”.  By
+default, <cite>correlation_window_keys</cite> is
+[“correlation_window_start”, “correlation_window_end”].  The
+function first tries those beam Metadata keys and logs a complaint
+before falling back to the corresponding beam bound for each
+missing key.  Passing <cite>correlation_window_keys=None</cite> skips the
+Metadata lookup and silently uses [beam.t0, beam.endtime()] as the
+correlation window.  When <cite>window_beam</cite> is True, an explicit or
+Metadata-derived window is also applied to the beam.  With
+<cite>correlation_window_keys=None</cite>, the beam already defines the
+window and is left unchanged without an error.</p>
 </li>
 <li><p>The “robust window” is a concept used in dbxcor to
 implement a special robust stacking algorithm that is a novel
-feature of the dbxcor algorithm.   It uses a very aggresssive
+feature of the dbxcor algorithm.   It uses a very aggressive
 weighting scheme to downweight signals that do not match the
 beam.  The Pavlis and Vernon paper shows examples of how this
 algorithm can cleanly handle ensembles with a mix of high
 signal-to-noise data with pure junk and produce a clean
 stack that is defined.   Note recent experience has shown
 that with large, consistent ensembles the dbxcor robust
-estimate tends to converge to the focus on the signal closestbeam_correlation
-to the median stack.  The reason is that the median stack
+estimate tends to focus on the signal closest to the median
+stack.  The reason is that the median stack
 is always used as the initial estimator.   Hence, it can
 be thought of as a median stack that uses the full data
 set more completely.</p></li>
@@ -1180,7 +1172,7 @@ is to apply the  broadband_snr_QC function to the data before
 running this function and select the initial seed (beam) from
 one or more of the computed snr metrics.   In addition,
 with this approach I envision a two-stage computation where
-the some initial seed is used for a first pass.   The
+an initial seed is used for a first pass.   The
 return is then used to revise the correlation window by
 examining stack coherence metrics and then rerunning the
 algorithm.   The point is it is a research problem for
@@ -1197,54 +1189,32 @@ to manually or automatically pick an arrival time from the
 beam output.</p></li>
 </ol>
 </div></blockquote>
-<p>This function does some consistency checking of arguments to handle
-the different modes for handling the correlation and robust windows
-noted above.  It also applies a series of validation tests on the
-input ensemble before attempting to run.  Any of the following will
-cause the return to be a dead ensemble with an explanation in the
-elog container of the ensemble (in these situation the stack is an
-empty <cite>TimeSeries</cite> container):</p>
+<p>This function checks the window arguments and input ensemble before the
+iterative stack.  The resulting state changes are reported through the
+ensemble or beam error log:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li><p>Irregular sample intervals of live data.</p></li>
-<li><p>Any live data with the time reference set to UTC</p></li>
-<li><p>Inconsistency of the time range of the data and the
-time windows parsed for the correlation and robust windows.
-That is, it checks the time span of all member functions and
-if the time range of all members (min of start time and maximum end times).
-is not outside (inclusive) the range of the correlation and robust
-windows it is viewed as invalid.</p></li>
-<li><p>What we called the “robust window” in the dbxcor paper isextract_input_beam_estimate
-required to be inside (inclusive of endpoints) the cross-correlation window
-time window.   That could be relaxed but is a useful constraint because
-in my (glp) experience the most coherent part of phase arrivals is the
-first few cycles of the phase that is also the part cross-correlation
-needs to contain if it is to be stable.   The “robust window” should
-be set to focus on the section of the signal that will have the most
-coherent stack.</p></li>
+<li><p>Members with irregular sample intervals are killed.  The ensemble
+is killed only when no live members remain.</p></li>
+<li><p>All members are required to use relative time, but the function
+does not explicitly validate every member’s time reference.  The
+caller must convert UTC data before calling this function.</p></li>
+<li><p>If the correlation window lies outside the estimated median time
+span of the ensemble, the beam is marked dead and returned with the
+input ensemble.</p></li>
+<li><p>If the robust window extends beyond the cross-correlation window,
+it is clipped to those bounds, a Complaint is logged on the beam,
+and processing continues.</p></li>
 </ol>
 </div></blockquote>
-<p>There is a further complexity in the iteration sequence used by this algorithm
-for any robust stack method.  That is, time shifts computed by cross-correlation
-can potentially move the correlation window outside the bounds of the
-data received as input.   To reduce the impact of that potential problem
-the function has an optional argument called <cite>time_shift_limit</cite>
-that is validated against other inputs.   In particular, the function
-computes the average start and end time (keep in mind the assumption is the
-time base is time relative to the arrival time a particular phase)
-of the input ensemble.   If the difference between the average start time
-and the correlation window start time is less than <cite>time_shift_limit</cite>
-the input is viewed as problematic.   How that is handled depends on how
-the correlation window is set.  If it is received as constant
-(<cite>correlation_window</cite> argument) an exception will be thrown to abort
-the entire job.   It that window is extracted from the beam TimeSeries
-Metadata container a complaint is logged to the outputs.  An
-endtime inconsistency is treated the same way.  i.e. it is treated as
-a problem if the average ensemble endtime - the correlation window
-endtime is less than the <cite>time_shift_limit</cite>.</p>
+<p>Cross-correlation can estimate a shift larger than the useful range of the
+input.  The <cite>time_shift_limit</cite> argument is an absolute ceiling applied to
+each estimate: a larger positive or negative lag is clipped to the limit
+with its sign preserved.  It does not validate the correlation-window
+margins against the ensemble time span.</p>
 <p>A related issue is that arrival times estimated by this algorithm
 will be biased by the model mismatch with whatever signal was used
-as the initial beam estimae.  In dbxcor that was handled by forcing
+as the initial beam estimate.  In dbxcor that was handled by forcing
 the user to manually pick the first arrival of the computed stack.
 That could be done if desired but would require you to devise a scheme
 to do that picking.   The default here is handled by the boolean
@@ -1261,12 +1231,11 @@ by the <cite>output_stack_window</cite> argument.  See below for details.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite> with some fairly rigid requirements.
 (see above)) – ensemble of data to be aligned and stacked.
-This function requires all data to be on a relative time base.
-It will throw a MsPASSError exception if any live datum has a UTC time base.
-The assumption is all data have a time span that have the correlation
-and robust windows inside the data time range.   Both windows are
-carved from the inputs using the WindowData function which will kill
-any members that do not satisfy this requirement.</p></li>
+This function requires all data to be on a relative time base, but it
+does not explicitly validate every member’s time reference.  The caller
+must convert UTC data before use.  The correlation and robust windows
+are expected to lie within the ensemble’s usable time range; validation
+outcomes are described above.</p></li>
 <li><p><strong>beam</strong> (<cite>TimeSeries</cite>.  Must have a length consistent with window
 parameters.) – Estimate of stack (may be just one representative member)
 used as the seed for initial alignment and stacking.</p></li>
@@ -1274,7 +1243,9 @@ used as the seed for initial alignment and stacking.</p></li>
 (default) uses the recipe driven by <cite>correlation_window_keys</cite> (see above)) – Used to specify the time window for
 computing cross-correlations with the beam signal.   Closely linked to
 <cite>correlation_window_keys</cite> as described above.</p></li>
-<li><p><strong>correlation_window_keys</strong> – optional pair of Metadata keys used to
+<li><p><strong>correlation_window_keys</strong> (<em>iterable list containing two strings.  The
+default is</em><em> [</em><em>&quot;correlation_window_start&quot;</em><em>, </em><em>&quot;correlation_window_end&quot;</em><em>]</em><em>.
+Passing None uses the span</em><em> of </em><em>the beam signal without a Metadata lookup.</em>) – optional pair of Metadata keys used to
 extract cross-correlation window attributes from beam Metadata container.
 If defined component 0 is taken as the key for the start time of the window and
 component 1 the key for the end time.</p></li>
@@ -1284,50 +1255,47 @@ processing.   If False the beam signal is used directly in all cross-correlation
 Set False only if you can be sure secondary phases are not present in the
 unwindowed input.</p></li>
 <li><p><strong>robust_stack_window</strong> (If defined must be a <cite>TimeWindow</cite> object.
-If a None type (default) use the logic defined above to set this time window.) – Provide an explicity <cite>TimeWindow</cite> used for
+If a None type (default) use the logic defined above to set this time window.) – Provide an explicit <cite>TimeWindow</cite> used for
 extracting the robust window for this algorithm.   Interacts with the
 robust_stack_window_keys argument as described above.</p></li>
 <li><p><strong>robust_stack_window_keys</strong> (<em>iterable list</em><em> of </em><em>two strings</em>) – specifies a pair of strings to be used
-as keys to extract the strart time (component 0) and end time (component 1)
+as keys to extract the start time (component 0) and end time (component 1)
 of the robust time window to use from the beam <cite>TimeSeries</cite>.</p></li>
 <li><p><strong>output_stack_window</strong> (<cite>TimeWindow</cite> object.  If None (default) the range
-is derived from the ensemble member time ranges.) – optional <cite>TimeWindow</cite> to apply to the
+is derived from the median ensemble member time range.) – optional <cite>TimeWindow</cite> to apply to the
 computed robust stack output.   Default returns a stack spanning the
-inner range of all live members of the ensemble.</p></li>
+median start and end times of the live ensemble members.</p></li>
 <li><p><strong>robust_weight_key</strong> (<em>string</em>) – The robust weight used for each member to
 compute the robust stack output is posted to the Metadata container of
 each live member with this key.</p></li>
-<li><p><strong>robust_stack_method</strong> (<em>string  - must be one</em><em> of </em><em>options listed above.</em>) – keyword defining the method textract_input_beam_estimateo use for
+<li><p><strong>robust_stack_method</strong> (<em>string  - must be one</em><em> of </em><em>options listed above.</em>) – keyword defining the method to use for
 computing the robust stack.  Currently accepted value are:
 “dbxcor” (default) and “median”.</p></li>
-<li><p><strong>use_median_initial_stack</strong> – If True (default) use the median stack as the initial
-estimate of the stack in the first iterative pass.  When False the signal in the
-<cite>TimeSeries</cite> passed via the “beam” argument is used for the initial estimate.</p></li>
+<li><p><strong>use_median_initial_stack</strong> (<em>boolean</em><em> (</em><em>default True</em><em>)</em>) – currently has no effect.  The implementation
+always uses a median stack as the initial estimate, including when this
+value is False.</p></li>
 <li><p><strong>time_shift_key</strong> (<em>string</em><em>  (</em><em>default &quot;arrival_time_correction&quot;</em><em>)</em>) – the time shift applied relative to the starting
 point is posted to each live member with this key.  It is
-IMPORTANT to realize this is the time for this pass.  If thisextract_input_beam_estimatefunctions
+IMPORTANT to realize this is the time for this pass.  If this function
 is applied more than once and you reuse this key the shift from the
 previous run will be overwritten.  If you need to accumulate shifts
 it needs to be handled outside this function.</p></li>
-<li><p><strong>convergence</strong> (<em>real number</em><em> (</em><em>default 0.001</em><em>)</em>) – fractional change in robust stack estimates in
+<li><p><strong>convergence</strong> (<em>real number</em><em> (</em><em>default 0.01</em><em>)</em>) – fractional change in robust stack estimates in
 iterative loop to define convergence.  This should not be changed
 unless you deeply understand the algorithm.</p></li>
 <li><p><strong>time_shift_limit</strong> (<em>float</em>) – when time shifting data with the cross
 correlation algorithm any estimated time shift larger than
 this value will be truncated to this value with the sign
-of th shift preserved.</p></li>
-<li><p><strong>abort_irregular_sampling</strong> (<em>boolean</em>) – boolean that controls error
-handling of data with irregular sample rates.  This function uses
+of the shift preserved.</p></li>
+<li><p><strong>abort_irregular_sampling</strong> (<em>boolean</em><em> (</em><em>default False</em><em>)</em>) – currently has no effect.  This function uses
 a generous test for sample rate mismatch.  A mismatch is
 detected only if the computed time skew over the time span of
-the input beam signal is more than 1/2 of the beam sample interval
-(beam.dt).  When set true the function will
-abort with a ValueError exception if any ensemble member fails the
-sample interval test.  If False (the default) offending ensemble
-members are killed and a message is posted.  Note the actual
-ensemble is modified so the return may have fewer data live
-than the input when this mode is enabled.</p></li>
-<li><p><strong>residual_norm_floor</strong> (<em>float</em><em> (</em><em>default 0.01</em><em>)</em>) – floor on residuals used to compute dbxcor weight
+the input beam signal is more than half of the beam sample interval
+(<code class="docutils literal notranslate"><span class="pre">beam.dt</span></code>).  Offending ensemble members are always killed and a
+message is posted; setting this value to True does not currently raise
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.  The input ensemble can therefore return with fewer
+live members.</p></li>
+<li><p><strong>residual_norm_floor</strong> (<em>float</em><em> (</em><em>default 0.1</em><em>)</em>) – floor on residuals used to compute dbxcor weight
 function.  See docstring for <cite>dbxcor_weights</cite> for details.</p></li>
 <li><p><strong>demean_residuals</strong> – boolean controlling if the computed shifts
 are corrected with a demean operation.   Default is True which
@@ -1336,14 +1304,14 @@ have zero mean.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple with 0 containing the original ensemble but time
-shifted by cross-correlation.   Failed/discarded signals for the
-stack are not killed but can be detected by testing the
-key defined by the “time_shift_key” argument
-(default is ‘arrival_time_correction’) being set.
-i.e. that value will not be set for components dropped from
-the stack.   Component 1 of return tuple is the computed
-stack windowed to the range defined by <cite>stack_time_window</cite>.</p>
+<dd class="field-even"><p>two-element list with component 0 containing the input ensemble,
+modified in place by cross-correlation time shifts and member kills.
+On a successful return, every member still live has the key defined by
+<code class="docutils literal notranslate"><span class="pre">time_shift_key</span></code>.  With the <code class="docutils literal notranslate"><span class="pre">dbxcor</span></code> stack method, live members
+with positive final weight also have <code class="docutils literal notranslate"><span class="pre">robust_weight_key</span></code>; members
+killed by sampling or windowing failures are marked dead.  Component 1
+is the computed stack windowed to the range defined by
+<code class="docutils literal notranslate"><span class="pre">output_stack_window</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1417,9 +1385,9 @@ parameter.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>copy of ensemble with the members time shifted to align with
-the time base of beam.   Note if a window is defined it is not
-applied to the ensemble members.</p>
+<dd class="field-even"><p>the input ensemble with its members time shifted in place to align
+with the time base of beam.  If a window is defined it is used only for
+correlation and is not applied to the ensemble members.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1476,8 +1444,9 @@ ensemble members are all time aligned perfectly.</p>
 <p>Returns a numpy vector of weights.  Any dead data will have a weight of
 -1.0 (test for negative is sufficient).  In addition the function has a
 safety to handle receiving a vector of all zeros.  If the function detects
-all 0s for a datum marked live it will silently return a weight of 0
-for that datum.</p>
+an all-zero stack, every live member receives a weight of 0.  If an
+individual live datum is all zeros, that datum likewise receives a weight
+of 0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1578,7 +1547,7 @@ Default is False.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.estimate_ensemble_bandwidth">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">estimate_ensemble_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr_doc_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parrival'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#estimate_ensemble_bandwidth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.estimate_ensemble_bandwidth" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">estimate_ensemble_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr_doc_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parrival'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#estimate_ensemble_bandwidth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.estimate_ensemble_bandwidth" title="Link to this definition">#</a></dt>
 <dd><p>Estimate average bandwidth of an ensemble of data using the output of
 broadband_snr_QC.</p>
 <p>The original dbxcor program used a GUI that allowed the user to select one of
@@ -1593,15 +1562,16 @@ the two values defined by “low_f_band_edge” and “high_f_band_edge”.
 The verbose names should make their definition obvious.   This
 function returns the median of the values of all values of those
 two attributes extracted from all live members of the input ensemble.
-The result is returned as a tuple with the low frequency edge as 0
-and the high frequency edge as 1.    The expectation is that the
-data will be bandpass filtered between the low and high edges before
-running the <cite>align_and_stack</cite> function.</p>
+The result is returned as a three-element list containing the low
+frequency edge, high frequency edge, and number of live members used.
+The expectation is that the data will be bandpass filtered between the
+low and high edges before running the <cite>align_and_stack</cite> function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite>) – ensemble of data to be scanned</p></li>
-<li><p><strong>srn_doc_key</strong> – subdocument key of attributes computed by
+<li><p><strong>snr_doc_key</strong> (string (default “Parrival” = default of
+<cite>broadband_snr_QC</cite>)) – subdocument key of attributes computed by
 <cite>broadband_snr_QC</cite> to fetch as estimates of low and high frequency
 edges.</p></li>
 </ul>
@@ -1630,10 +1600,16 @@ output to a python dictionary (subdocument in pymongo jargon)
 fetched with a single key.  That key can be changed from
 the default “Parrival” (default of <cite>broadband_snr_QC</cite>) to
 something else via the “subdoc_key” argument.  This list of
-keys inside that subdocument that can be used to set what metric
-will be used are:  bandwidth, filtered_envelope, filtered_L2,
-filtered_Linf, or filtered_perc.  See the docstring for
-<cite>broadband_snr_QC</cite> for an explanation of each metric.</p>
+metric names accepted here map to the following keys produced by
+<cite>broadband_snr_QC</cite>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bandwidth</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">bandwidth</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filtered_envelope</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">snr_filtered_envelope_peak</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filtered_L2</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">snr_filtered_rms</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filtered_MAD</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">snr_filtered_mad</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filtered_Linf</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">snr_filtered_peak</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filtered_perc</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">snr_filtered_perc</span></code></p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1641,10 +1617,9 @@ filtered_Linf, or filtered_perc.  See the docstring for
 <li><p><strong>metric</strong> (<em>string</em>) – quality metric to use for selecting member to use
 as return.  Always scans for the maximum of specified value as it
 assume the value is some norm measure.   Accepted values at present
-are all those computed by <cite>broadband_snr_QC</cite>:  bandwidth,
-filtered_envelope, filtered_L2, filtered_Linf, or filtered_perc.
-Default is “bandwidth”.   A ValueError exception will be thrown
-if not one of those values.</p></li>
+are <code class="docutils literal notranslate"><span class="pre">bandwidth</span></code>, <code class="docutils literal notranslate"><span class="pre">filtered_envelope</span></code>, <code class="docutils literal notranslate"><span class="pre">filtered_L2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filtered_MAD</span></code>, <code class="docutils literal notranslate"><span class="pre">filtered_Linf</span></code>, and <code class="docutils literal notranslate"><span class="pre">filtered_perc</span></code>.  Default is
+<code class="docutils literal notranslate"><span class="pre">bandwidth</span></code>.  A <cite>ValueError</cite> is raised for any other value.</p></li>
 <li><p><strong>subdoc_key</strong> (<em>string</em>) – <cite>broadband_snr_QC</cite> normally posts output to
 a subdocument (dictionary).  This is the key that is used to
 extract that subdocument from each member.   Default is “Parrival”
@@ -1786,9 +1761,9 @@ beam are marked dead it does nothing but return d.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.robust_stack">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">robust_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbxcor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timespan_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ensemble_inner'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_fraction_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#robust_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.robust_stack" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">robust_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbxcor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timespan_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ensemble_inner'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_fraction_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#robust_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.robust_stack" title="Link to this definition">#</a></dt>
 <dd><p>Generic function for robust stacking live members of a <cite>TimeSeriesEnsemble</cite>.
-An optional initial stack estimate can be used via tha stack0 argument.
+An optional initial stack estimate can be used via the stack0 argument.
 The function currently supports two methods:  “median” for a median
 stack and “dbxcor” to implement the robust loss function
 used in the dbxcor program defined in Pavlis and Vernon (2010).
@@ -1799,23 +1774,22 @@ function (e.g. m-estimators or the dbxcor penalty function) require
 an initial estimator for the stack.  They do that because the
 penalty function is defined from a metric of residuals relative to
 the current estimate of center.   The median, however, does not
-require an initial estimator which complicates the API for this function.
-For the current options understand that stack0 is required for
-the dbxcor algorithm but will be ignored if median is requested.</p>
+require an initial estimator.  For the dbxcor method, <code class="docutils literal notranslate"><span class="pre">stack0</span></code> can
+supply that estimate; when it is omitted, this function computes a median
+stack for the initial estimate.  The median method always computes the
+sample median and ignores <code class="docutils literal notranslate"><span class="pre">stack0</span></code> values.</p>
 <p>The other complication of this function is handling of potential
 irregular time ranges of the ensemble input and how to set the
 time range for the output.   The problem is further complicated by
 use in an algorithm like <cite>align_and_stack</cite> in this module where
 the data can get shifted to have undefined data within the
-time range the data aims to utilize.   The behavior of the
-algorithm for this issue is controlled by the kwarg values
-with the keys “timespan_method” and “pad_fraction_cutoff”.
-As the name imply “timespan_method” defines how the time span
+time range the data aims to utilize.  The <code class="docutils literal notranslate"><span class="pre">timespan_method</span></code> argument
+defines how the time span
 for the stack should be defined.   The following options
 are supported:</p>
 <p>“stack0” - sets the time span to that of the input
 <cite>TimeSeries</cite> passed as stack0.  i.e. the range is set to
-stack0.dt to stack0.endtime().</p>
+stack0.t0 to stack0.endtime().</p>
 <p>“ensemble_inner” - (default) use the range defined by the “inner” method
 for computing the range with the function <cite>ensemble_time_range</cite>.
 (see <cite>ensemble_time_range</cite> docstring for the definition).</p>
@@ -1825,13 +1799,10 @@ for computing the range with the function <cite>ensemble_time_range</cite>.
 <p>“ensemble_median” -  use the range defined by the “median” method
 for computing the range with the function <cite>ensemble_time_range</cite>.
 (see <cite>ensemble_time_range</cite> docstring for the definition).</p>
-<p>These interact with the value passed via “fractional_mismatch_level”.
-When the time range computed is larger than the range of a particular
-member of the input ensemble this parameter determines whether or not
-the member will be used in the stack.  If the fraction of
-undefined samples (i.e. N_undefined/Nsamp) is greater than this cutoff
-that datum will be ignored.   Otherwise if there are undefined
-values they will be zero padded.</p>
+<p>When the selected range extends beyond a live ensemble member, that
+member is zero padded; the current implementation does not reject members
+based on the padded fraction.  <code class="docutils literal notranslate"><span class="pre">pad_fraction_cutoff</span></code> applies only when a
+dbxcor <code class="docutils literal notranslate"><span class="pre">stack0</span></code> must be padded to the selected range.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1842,12 +1813,12 @@ function will abort:   &quot;median&quot;</em><em> or </em><em>&quot;dbxcor&quot
 &quot;median&quot; will cause the function to return the median</em><em> of </em><em>the sample
 vectors while &quot;dbxcor&quot; applies the dbxcor method.</em>) – Defines a name string of the method to be used to
 compute the stack.</p></li>
-<li><p><strong>stack0</strong> (<em>TimeSeries.   Note the time span</em><em> of </em><em>this optional input
-must be the same</em><em> or </em><em>wider than the ensemble member range defined by
-the</em><em> (</em><em>internal to this module</em><em>) </em><em>validate_ensemble function</em><em> or </em><em>the
-return will be return as a copy</em><em> of </em><em>this TimeSeries marked dead.
-Default for this argument is None which means the median will be
-used for the initial stack for dbxcor</em>) – optional initial estimate for stack.  Estimators
+<li><p><strong>stack0</strong> (TimeSeries or None.  For dbxcor, the seed is windowed or
+padded to the selected time span and is returned dead when the missing
+fraction exceeds <code class="docutils literal notranslate"><span class="pre">pad_fraction_cutoff</span></code>.  A value is also required
+when <code class="docutils literal notranslate"><span class="pre">timespan_method=&quot;stack0&quot;</span></code> even if <code class="docutils literal notranslate"><span class="pre">method=&quot;median&quot;</span></code>, because
+it defines the output range.  The default None uses a median initial
+estimate for dbxcor.) – optional initial estimate for stack.  Estimators
 other than median I know of use a loss function for downweighting
 members of the stack that do not match the stack as defined by
 some misfit metric.   This argument can be used to input an optional
@@ -1855,29 +1826,36 @@ starting estimate of the stack for the dbxcor method.  By default it
 uses the median as the starting point, but this can be used to
 input something else.   Note the function will silently ignore this
 argument if method == “median”.</p></li>
-<li><p><strong>stack_md</strong> (<em>Metadata container</em><em> or </em><em>None.  If stack0 is defined
-this argument is ignored.   Otherwise it should be used to add
+<li><p><strong>stack_md</strong> (Metadata container or None.  When dbxcor uses <code class="docutils literal notranslate"><span class="pre">stack0</span></code>
+this argument is ignored.  Otherwise it should be used to add
 whatever Metadata is required to provide a tag that can be used to
 identify the output.  If not specified the stack Metadata
-will be only those produce from default construction</em><em> of </em><em>a
-TimeSeries.  That is almost never what you want.   Reiterate</em><em>,
-</em><em>however</em><em>, </em><em>that if stack0 is defined the output stack will be a
-clone</em><em> of </em><em>stack0 with possible modifications</em><em> of </em><em>time and data
-range attributes and anything the stack algorithm posts.</em>) – optional Metadata container to define the
+will be only those produce from default construction of a
+TimeSeries.  That is almost never what you want.   Reiterate,
+however, that if dbxcor uses stack0 the output stack will be a
+clone of stack0 with possible modifications of time and data
+range attributes and anything the stack algorithm posts.) – optional Metadata container to define the
 content of the stack output.  By default the output will have only
 Metadata that duplicate required internal attributes (e.g. t0 and npts).
-An exception is if stack0 is used the Metadata of that container will
-be copied and this argument will be ignored.</p></li>
+An exception is when dbxcor uses <code class="docutils literal notranslate"><span class="pre">stack0</span></code>: that seed’s Metadata is
+copied and this argument is ignored.</p></li>
+<li><p><strong>timespan_method</strong> (<em>string</em>) – method used to select the output time range.
+Accepted values are <code class="docutils literal notranslate"><span class="pre">&quot;ensemble_inner&quot;</span></code> (default),
+<code class="docutils literal notranslate"><span class="pre">&quot;ensemble_outer&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ensemble_median&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;stack0&quot;</span></code> as
+described above.</p></li>
+<li><p><strong>pad_fraction_cutoff</strong> (<em>float</em><em> (</em><em>default 0.05</em><em>)</em>) – maximum fraction of missing samples that may
+be zero padded when a dbxcor <code class="docutils literal notranslate"><span class="pre">stack0</span></code> is adjusted to the selected
+time range.  This value does not control padding of ensemble members.</p></li>
 <li><p><strong>residual_norm_floor</strong> (<em>float</em><em> (</em><em>default 0.01</em><em>)</em>) – floor on residuals used to compute dbxcor weight
 function.  See docstring for <cite>dbxcor_weights</cite> for details.  Ignored
 unless method is “dbxcor”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple containing the requested stack as component 0.  The
+<dd class="field-even"><p>two-element list containing the requested stack as component 0.  The
 stack is returned as a <cite>TimeSeries</cite>  with optional Metadata copied
 from the (optional) stack_md argument.   Component 1 is defined only
-for the dbxcor method in which case it a numpy array containing th e
+for the dbxcor method in which case it is a numpy array containing the
 robust weights returned by the dbxcor algorithm.  If the method is
 set to “median” component 1 will be returned as a None type.</p>
 </dd>
@@ -2644,7 +2622,7 @@ Or a TimeSeriesEnsemble object from a SeismogramEnsemble object</p>
 <li><p><strong>data</strong> (either <code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>) – data object to extract from.</p></li>
 <li><p><strong>component</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the index of component that will be extracted, it can only be 0, 1, or 2</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
-to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2712,7 +2690,7 @@ only one sided.</p>
 <li><p><strong>t1tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t1 of the tail taper</p></li>
 <li><p><strong>t0tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t0 of the tail taper</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
-to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2801,7 +2779,7 @@ as a signal to fetch this quantity from Metadata using the vp0_key.</p></li>
 <li><p><strong>vs0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Surface S wave velocity.  Default is None which is taken
 as a signal to fetch this quantity from Metadata using the vs0_key.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
-to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2831,7 +2809,7 @@ right. Setting t0 == t1 will disable the taper on the specified end (e.g., t0hea
 <li><p><strong>t1tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t1 of the tail taper</p></li>
 <li><p><strong>t0tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t0 of the tail taper</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
-to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2869,7 +2847,7 @@ polarity is geographic convention as clockwise angle from north.</p>
 <li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be rotated.</p></li>
 <li><p><strong>rotate_param</strong> (<em>see above for details.</em>) – the parameter that defines the rotation.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
-to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2900,7 +2878,7 @@ datum return will be marked dead.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be rotated.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
-to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2933,7 +2911,7 @@ internally stored time shift attribute.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be converted.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
-to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2959,7 +2937,7 @@ transformations to data.</p>
 <li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be transformed.</p></li>
 <li><p><strong>matrix</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – a 3x3 matrix that defines the transformation.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
-to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -3116,7 +3094,7 @@ data of the same length as the taper defined in the operator.</p>
 <li><p><strong>data</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be processed.</p></li>
 <li><p><strong>taper_array</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – the array that defines the taper</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
-to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -4675,7 +4653,8 @@ is ignored if the input is an atomic data type.</p></li>
 <dd><p>Predict the arrival time of the P wave using the provided seisbench WaveformModel.
 The arrival time will be saved as a dictionary in the input TimeSeries object and can be accessed using
 the key <code class="docutils literal notranslate"><span class="pre">p_wave_picks</span></code>. In the dictionary, the key is the arrival time in the UTC timestamp format,
-and the value is the probability of the pick.</p>
+and the value is the probability of the pick.  The input is converted to
+UTC in place with <code class="docutils literal notranslate"><span class="pre">rtoa()</span></code> before prediction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4683,9 +4662,15 @@ and the value is the probability of the pick.</p>
 <li><p><strong>threshold</strong> (<em>float</em>) – The probability threshold (0-1) to filter p-wave picks.
 Any picks with probability less than the threshold will be removed. Default value is 0.2.</p></li>
 <li><p><strong>time_window</strong> (<em>mspasspy.ccore.algorithms.basic.TimeWindow defined as absolute time in UTC</em>) – The time window (in utc timestamp) to filter the predicted arrival time.
-If not provided, the whole time series will be used.</p></li>
+If not provided, the whole time series will be used.  A partially
+overlapping window is clipped in place to the input data range.  A
+window with no overlap is reset in place to the full input range, so
+the whole time series is annotated.</p></li>
 <li><p><strong>model</strong> (<em>seisbench.models.base.WaveformModel</em>) – The model used to predict the arrival time.</p></li>
-<li><p><strong>model_args</strong> (<em>dict</em>) – arguments to initialize a new model if not provided</p></li>
+<li><p><strong>model_args</strong> (<em>dict</em>) – optional dictionary used when <code class="docutils literal notranslate"><span class="pre">model</span></code> is not
+provided.  Its <code class="docutils literal notranslate"><span class="pre">name</span></code> value selects the pretrained PhaseNet model;
+other keys are currently ignored.  The default model name is
+<code class="docutils literal notranslate"><span class="pre">&quot;stead&quot;</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -4982,7 +4967,7 @@ entire application in a map operator.</p></li>
 <li><p><strong>b</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>) – second signal</p></li>
 <li><p><strong>shift</strong> (<em>int</em>) – Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or
 2*shift samples. The sample with zero shift will be in the middle.</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper_multi" title="mspasspy.util.decorators.mspass_func_wrapper_multi"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -5123,7 +5108,7 @@ so the processing history and error logs can be preserved.</p>
 <cite>Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.detrend.html&gt;</cite> for details.</p></li>
 <li><p><strong>args</strong> – extra arguments</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -5178,7 +5163,7 @@ if you want to use these more obscure options.</p>
 ‘remez_fir’. as noted above You can refer to
 <cite>Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html&gt;</cite> for details.</p></li>
 <li><p><strong>args</strong> – extra arguments - see above as type value determines what is required here.</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to <a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -5204,7 +5189,7 @@ so the processing history and error logs can be preserved.</p>
 <li><p><strong>sampling_rate</strong> – The new sampling rate in Hz.</p></li>
 <li><p><strong>args</strong> – extra arguments.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>

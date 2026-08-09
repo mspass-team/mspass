@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>Index &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="_static/documentation_options.js?v=d791a11d"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -361,8 +361,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -2171,12 +2171,12 @@
 </li>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata10get_stringEKNSt6stringE">mspass::utility::Metadata::get_string (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata10is_definedEKNSt6stringE">mspass::utility::Metadata::is_defined (C++ function)</a>
 </li>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata4keysEv">mspass::utility::Metadata::keys (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata">mspass::utility::Metadata::Metadata (C++ function)</a>, <a href="cxx_api/mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata8MetadataERNSt8ifstreamEKNSt6stringE">[1]</a>, <a href="cxx_api/mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata8MetadataEv">[2]</a>
 </li>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata8modifiedEv">mspass::utility::Metadata::modified (C++ function)</a>
@@ -2219,9 +2219,17 @@
 </li>
       <li><a href="python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_dask_map">mspass_dask_map() (in module mspasspy.global_history.manager)</a>
 </li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper">mspass_func_wrapper() (in module mspasspy.util.decorators)</a>
+</li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper_multi">mspass_func_wrapper_multi() (in module mspasspy.util.decorators)</a>
+</li>
       <li><a href="python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_map">mspass_map() (in module mspasspy.global_history.manager)</a>
 </li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_method_wrapper">mspass_method_wrapper() (in module mspasspy.util.decorators)</a>
+</li>
       <li><a href="python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_reduce">mspass_reduce() (in module mspasspy.global_history.manager)</a>
+</li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_reduce_func_wrapper">mspass_reduce_func_wrapper() (in module mspasspy.util.decorators)</a>
 </li>
       <li><a href="python_api/mspasspy.reduce.html#mspasspy.reduce.mspass_spark_foldby">mspass_spark_foldby() (in module mspasspy.reduce)</a>
 </li>
@@ -3130,7 +3138,11 @@
 </li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.converter.Seismogram2Stream">Seismogram2Stream() (in module mspasspy.util.converter)</a>
 </li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_as_stream">seismogram_as_stream() (in module mspasspy.util.decorators)</a>
+</li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_copy_helper">seismogram_copy_helper() (in module mspasspy.util.decorators)</a>
+</li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_ensemble_as_stream">seismogram_ensemble_as_stream() (in module mspasspy.util.decorators)</a>
 </li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_ensemble_copy_helper">seismogram_ensemble_copy_helper() (in module mspasspy.util.decorators)</a>
 </li>
@@ -3190,10 +3202,10 @@
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.set_netcode_snetsta">set_netcode_snetsta() (in module mspasspy.preprocessing.css30.dbarrival)</a>
 </li>
-      <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.set_netcode_time_interval">set_netcode_time_interval() (in module mspasspy.preprocessing.css30.dbarrival)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.set_netcode_time_interval">set_netcode_time_interval() (in module mspasspy.preprocessing.css30.dbarrival)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MetadataDefinitions.set_readonly">set_readonly() (mspasspy.ccore.utility.MetadataDefinitions method)</a>
 
       <ul>
@@ -3382,14 +3394,18 @@
 </li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeries2Trace">TimeSeries2Trace() (in module mspasspy.util.converter)</a>
 </li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_as_trace">timeseries_as_trace() (in module mspasspy.util.decorators)</a>
+</li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_copy_helper">timeseries_copy_helper() (in module mspasspy.util.decorators)</a>
+</li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_ensemble_as_stream">timeseries_ensemble_as_stream() (in module mspasspy.util.decorators)</a>
 </li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_ensemble_copy_helper">timeseries_ensemble_copy_helper() (in module mspasspy.util.decorators)</a>
 </li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble">TimeSeriesEnsemble (class in mspasspy.ccore.seismic)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble">TimeSeriesEnsemble (class in mspasspy.ccore.seismic)</a>
+</li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.converter.TimeSeriesEnsemble2Stream">TimeSeriesEnsemble2Stream() (in module mspasspy.util.converter)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesVector">TimeSeriesVector (class in mspasspy.ccore.seismic)</a>

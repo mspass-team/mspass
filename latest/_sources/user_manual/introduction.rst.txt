@@ -15,10 +15,11 @@ Some key features of MsPASS are the following:
     needs to work with data that match the data models described in this
     manual.
 
--   It is essential that all users or potential user understand that MsPASS
-    was designed as a package to support *research* in seismology NOT
-    a *mission* like seismic network operations.  As a result MsPASS design
-    was shaped by several key axioms:
+-   MsPASS is a *research framework*: it supplies reusable data objects,
+    database interfaces, processing algorithms, and parallel-workflow tools
+    that researchers can assemble into project-specific methods.  It is not a
+    fixed application or an operational system for a mission such as seismic
+    network monitoring.  That distinction shaped several key design axioms:
 
     *  It must be as generic as possible.   That is essential to support basic research
        that is open-ended and wildly variable.

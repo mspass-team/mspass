@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.reduce &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>mspasspy.reduce &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.preprocessing" href="mspasspy.preprocessing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -366,8 +366,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -548,7 +548,7 @@ Note it is wrapped by mspass_reduce_func_wrapper, so the history and error logs 
 <li><p><strong>data1</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
 <li><p><strong>data2</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_reduce_func_wrapper</span></code>.</p></li>
+<a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.mspass_reduce_func_wrapper" title="mspasspy.util.decorators.mspass_reduce_func_wrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_reduce_func_wrapper</span></code></a>.</p></li>
 <li><p><strong>alg_id</strong> – alg_id is a unique id to record the usage of this function while preserving the history.
 Used in the mspass_reduce_func_wrapper.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name of the func we are gonna save while preserving the history.</p></li>

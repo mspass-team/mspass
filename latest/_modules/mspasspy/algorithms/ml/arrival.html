@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.ml.arrival &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>mspasspy.algorithms.ml.arrival &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../../../../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -361,8 +361,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -498,15 +498,22 @@
 <span class="sd">    Predict the arrival time of the P wave using the provided seisbench WaveformModel.</span>
 <span class="sd">    The arrival time will be saved as a dictionary in the input TimeSeries object and can be accessed using</span>
 <span class="sd">    the key ``p_wave_picks``. In the dictionary, the key is the arrival time in the UTC timestamp format,</span>
-<span class="sd">    and the value is the probability of the pick.</span>
+<span class="sd">    and the value is the probability of the pick.  The input is converted to</span>
+<span class="sd">    UTC in place with ``rtoa()`` before prediction.</span>
 
 <span class="sd">    :param timeseries: The time series data to predict the arrival time.</span>
 <span class="sd">    :param threshold: The probability threshold (0-1) to filter p-wave picks.</span>
 <span class="sd">        Any picks with probability less than the threshold will be removed. Default value is 0.2.</span>
 <span class="sd">    :param time_window: The time window (in utc timestamp) to filter the predicted arrival time.</span>
-<span class="sd">        If not provided, the whole time series will be used.</span>
+<span class="sd">        If not provided, the whole time series will be used.  A partially</span>
+<span class="sd">        overlapping window is clipped in place to the input data range.  A</span>
+<span class="sd">        window with no overlap is reset in place to the full input range, so</span>
+<span class="sd">        the whole time series is annotated.</span>
 <span class="sd">    :param model: The model used to predict the arrival time.</span>
-<span class="sd">    :param model_args: arguments to initialize a new model if not provided</span>
+<span class="sd">    :param model_args: optional dictionary used when ``model`` is not</span>
+<span class="sd">        provided.  Its ``name`` value selects the pretrained PhaseNet model;</span>
+<span class="sd">        other keys are currently ignored.  The default model name is</span>
+<span class="sd">        ``&quot;stead&quot;``.</span>
 <span class="sd">    :type timeseries: mspasspy.ccore.seismic.TimeSeries</span>
 <span class="sd">    :type threshold: float</span>
 <span class="sd">    :type time_window: mspasspy.ccore.algorithms.basic.TimeWindow defined as absolute time in UTC</span>
@@ -519,7 +526,7 @@
     <span class="c1"># Check the input arguments</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;Threshold should be in the range of [0, 1]. Using default threshold </span><span class="si">{}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;Threshold should be in the range of [0, 1]. Using default threshold </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">default_threshold</span>
             <span class="p">)</span>
         <span class="p">)</span>

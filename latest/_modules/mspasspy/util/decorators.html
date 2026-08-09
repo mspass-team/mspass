@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.decorators &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>mspasspy.util.decorators &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../../../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -361,8 +361,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -540,6 +540,7 @@
 <span class="sd">    This decorator can be used to adapt a processing function to the</span>
 <span class="sd">    mspass framework.  It can be used to handle the following nonstandard</span>
 <span class="sd">    functionality that would not appear in a function outside of mspass:</span>
+
 <span class="sd">        1.  This decorator can make a function dogmatic about the type of arg0.</span>
 <span class="sd">            A processing function in mspass normally requires arg0 to be a</span>
 <span class="sd">            seismic data type.   If the function being decorated handles</span>
@@ -982,7 +983,7 @@
 <span class="sd">       is taken to mean any return of the wrapped function will be ignored.  Note</span>
 <span class="sd">       that when function_return_key is anything but None, it is assumed the</span>
 <span class="sd">       returned object is the (usually modified) data object.</span>
-<span class="sd">     :param handles_ensembles:  set True (default) if the function this is applied to</span>
+<span class="sd">    :param handles_ensembles:  set True (default) if the function this is applied to</span>
 <span class="sd">       can hangle ensemble objects directly.   When False this decorator</span>
 <span class="sd">       applies the atomic function to each ensemble member in</span>
 <span class="sd">       a loop over members.</span>
@@ -1243,7 +1244,8 @@
 <span class="nd">@decorator</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">timeseries_as_trace</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This decorator converts all the mspasspy TimeSeries objects in user inputs (*args and **kargs)</span>
+<span class="sd">    This decorator converts all the mspasspy TimeSeries objects in user inputs</span>
+<span class="sd">    (``*args`` and ``**kwargs``)</span>
 <span class="sd">    to trace objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
 <span class="sd">    the trace objects will be converted back by overriding the data and metadata of the origin mspasspy objects. This</span>
 <span class="sd">    wrapper makes it easy to process mspasspy objects using Obspy methods.</span>
@@ -1333,7 +1335,8 @@
 <span class="nd">@decorator</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">seismogram_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This decorator converts all the mspasspy Seismogram objects in user inputs (*args and **kargs)</span>
+<span class="sd">    This decorator converts all the mspasspy Seismogram objects in user inputs</span>
+<span class="sd">    (``*args`` and ``**kwargs``)</span>
 <span class="sd">    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
 <span class="sd">    the stream objects will be converted back by overriding the data and metadata of the origin mspasspy objects.</span>
 
@@ -1385,7 +1388,8 @@
 <span class="nd">@decorator</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">timeseries_ensemble_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs (*args and **kargs)</span>
+<span class="sd">    This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs</span>
+<span class="sd">    (``*args`` and ``**kwargs``)</span>
 <span class="sd">    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
 <span class="sd">    the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</span>
 
@@ -1429,7 +1433,8 @@
 <span class="nd">@decorator</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">seismogram_ensemble_as_stream</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This decorator converts all the mspasspy Seismogram ensemble objects in user inputs (*args and **kargs)</span>
+<span class="sd">    This decorator converts all the mspasspy Seismogram ensemble objects in user inputs</span>
+<span class="sd">    (``*args`` and ``**kwargs``)</span>
 <span class="sd">    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,</span>
 <span class="sd">    the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</span>
 

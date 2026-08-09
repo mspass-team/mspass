@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MongoDB with MsPASS &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>Using MongoDB with MsPASS &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="What database schema should I use?" href="schema_choices.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -366,8 +366,8 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -499,6 +499,11 @@ many sources on database systems: CRUD (Create, Read, Update, and Delete),
 although not that order for pedagogic reasons.
 The final section covers an auxiliary issue of MongoDB: indexes.
 Indexes are critical for query performance, but are not required.</p>
+<p>This chapter teaches MongoDB concepts and direct PyMongo operations.  For
+normal waveform create, read, update, and delete operations, use the higher
+level <a class="reference internal" href="CRUD_operations.html#crud-operations"><span class="std std-ref">MsPASS Database CRUD API</span></a>.  The two guides are
+kept as separate layers so that users who only need the MsPASS API do not have
+to work through the lower-level query language first.</p>
 </section>
 <section id="concepts">
 <h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">#</a></h2>

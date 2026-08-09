@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.MCXcorStacking &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>mspasspy.algorithms.MCXcorStacking &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../../../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -361,8 +361,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -536,20 +536,24 @@
 <span class="sd">    fetched with a single key.  That key can be changed from</span>
 <span class="sd">    the default &quot;Parrival&quot; (default of `broadband_snr_QC`) to</span>
 <span class="sd">    something else via the &quot;subdoc_key&quot; argument.  This list of</span>
-<span class="sd">    keys inside that subdocument that can be used to set what metric</span>
-<span class="sd">    will be used are:  bandwidth, filtered_envelope, filtered_L2,</span>
-<span class="sd">    filtered_Linf, or filtered_perc.  See the docstring for</span>
-<span class="sd">    `broadband_snr_QC` for an explanation of each metric.</span>
+<span class="sd">    metric names accepted here map to the following keys produced by</span>
+<span class="sd">    `broadband_snr_QC`:</span>
+
+<span class="sd">    - ``bandwidth`` -&gt; ``bandwidth``</span>
+<span class="sd">    - ``filtered_envelope`` -&gt; ``snr_filtered_envelope_peak``</span>
+<span class="sd">    - ``filtered_L2`` -&gt; ``snr_filtered_rms``</span>
+<span class="sd">    - ``filtered_MAD`` -&gt; ``snr_filtered_mad``</span>
+<span class="sd">    - ``filtered_Linf`` -&gt; ``snr_filtered_peak``</span>
+<span class="sd">    - ``filtered_perc`` -&gt; ``snr_filtered_perc``</span>
 
 <span class="sd">    :param ensemble:   ensemble to be scanned</span>
 <span class="sd">    :type ensemble:  `TimeSeriesEnsemble`</span>
 <span class="sd">    :param metric:   quality metric to use for selecting member to use</span>
 <span class="sd">      as return.  Always scans for the maximum of specified value as it</span>
 <span class="sd">      assume the value is some norm measure.   Accepted values at present</span>
-<span class="sd">      are all those computed by `broadband_snr_QC`:  bandwidth,</span>
-<span class="sd">      filtered_envelope, filtered_L2, filtered_Linf, or filtered_perc.</span>
-<span class="sd">      Default is &quot;bandwidth&quot;.   A ValueError exception will be thrown</span>
-<span class="sd">      if not one of those values.</span>
+<span class="sd">      are ``bandwidth``, ``filtered_envelope``, ``filtered_L2``,</span>
+<span class="sd">      ``filtered_MAD``, ``filtered_Linf``, and ``filtered_perc``.  Default is</span>
+<span class="sd">      ``bandwidth``.  A `ValueError` is raised for any other value.</span>
 <span class="sd">    :type metric:  string</span>
 <span class="sd">    :param subdoc_key:   `broadband_snr_QC` normally posts output to</span>
 <span class="sd">      a subdocument (dictionary).  This is the key that is used to</span>
@@ -562,31 +566,33 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;bandwidth&quot;</span><span class="p">:</span>
-        <span class="n">key2use</span> <span class="o">=</span> <span class="s2">&quot;bandwidth&quot;</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_envelope&quot;</span><span class="p">:</span>
-        <span class="n">key2use</span> <span class="o">=</span> <span class="s2">&quot;filtered_envelope&quot;</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_L2&quot;</span><span class="p">:</span>
-        <span class="n">key2use</span> <span class="o">=</span> <span class="s2">&quot;filtered_L2&quot;</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;filtered_perc&quot;</span><span class="p">:</span>
-        <span class="n">key2use</span> <span class="o">=</span> <span class="s2">&quot;filtered_perc&quot;</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="n">metric_keys</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;bandwidth&quot;</span><span class="p">:</span> <span class="s2">&quot;bandwidth&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;filtered_envelope&quot;</span><span class="p">:</span> <span class="s2">&quot;snr_filtered_envelope_peak&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;filtered_L2&quot;</span><span class="p">:</span> <span class="s2">&quot;snr_filtered_rms&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;filtered_MAD&quot;</span><span class="p">:</span> <span class="s2">&quot;snr_filtered_mad&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;filtered_Linf&quot;</span><span class="p">:</span> <span class="s2">&quot;snr_filtered_peak&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;filtered_perc&quot;</span><span class="p">:</span> <span class="s2">&quot;snr_filtered_perc&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metric_keys</span><span class="p">:</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;extract_initial_beam_estimate:  illegal value for argument metric=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">metric</span>
         <span class="p">)</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must one of:  bandwidth, filtered_envelope, filtered_L2, filtered_MAD, filtered_Linf, or filtered_perc&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Must be one of: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">metric_keys</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">key2use</span> <span class="o">=</span> <span class="n">metric_keys</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span>
     <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
-    <span class="c1"># this holds metric values - use the index of to associate with correct member</span>
-    <span class="c1"># works because zero is never the maximum unless none are defined</span>
-    <span class="n">mvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="c1"># Use the index to associate each metric value with its ensemble member.</span>
+    <span class="c1"># Missing metrics must never outrank a defined value, including zero.</span>
+    <span class="n">mvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
     <span class="n">n_set</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">subdoc_key</span><span class="p">):</span>
             <span class="n">subdoc</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">subdoc_key</span><span class="p">]</span>
-            <span class="n">mvals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">subdoc</span><span class="p">[</span><span class="n">key2use</span><span class="p">]</span>
-            <span class="n">n_set</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">key2use</span> <span class="ow">in</span> <span class="n">subdoc</span><span class="p">:</span>
+                <span class="n">mvals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">subdoc</span><span class="p">[</span><span class="n">key2use</span><span class="p">]</span>
+                <span class="n">n_set</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">n_set</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">imax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">mvals</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">imax</span><span class="p">])</span>
@@ -600,7 +606,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">estimate_ensemble_bandwidth</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span>
     <span class="n">snr_doc_key</span><span class="o">=</span><span class="s2">&quot;Parrival&quot;</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Estimate average bandwidth of an ensemble of data using the output of</span>
 <span class="sd">    broadband_snr_QC.</span>
@@ -618,14 +624,14 @@
 <span class="sd">    The verbose names should make their definition obvious.   This</span>
 <span class="sd">    function returns the median of the values of all values of those</span>
 <span class="sd">    two attributes extracted from all live members of the input ensemble.</span>
-<span class="sd">    The result is returned as a tuple with the low frequency edge as 0</span>
-<span class="sd">    and the high frequency edge as 1.    The expectation is that the</span>
-<span class="sd">    data will be bandpass filtered between the low and high edges before</span>
-<span class="sd">    running the `align_and_stack` function.</span>
+<span class="sd">    The result is returned as a three-element list containing the low</span>
+<span class="sd">    frequency edge, high frequency edge, and number of live members used.</span>
+<span class="sd">    The expectation is that the data will be bandpass filtered between the</span>
+<span class="sd">    low and high edges before running the `align_and_stack` function.</span>
 
 <span class="sd">    :param ensemble:  ensemble of data to be scanned</span>
 <span class="sd">    :type ensemble:  `TimeSeriesEnsemble`</span>
-<span class="sd">    :param srn_doc_key:  subdocument key of attributes computed by</span>
+<span class="sd">    :param snr_doc_key:  subdocument key of attributes computed by</span>
 <span class="sd">      `broadband_snr_QC` to fetch as estimates of low and high frequency</span>
 <span class="sd">      edges.</span>
 <span class="sd">    :type snr_doc_key:  string (default &quot;Parrival&quot; = default of</span>
@@ -704,9 +710,9 @@
     <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Function used to preprocess an ensemble  to prepare input for</span>
+<span class="sd">    Function used to preprocess an ensemble to prepare input for</span>
 <span class="sd">    running multichannel cross-correlation and stacking method</span>
 <span class="sd">    (automated dbxcor algorithm) of P phase data.  This function should</span>
 <span class="sd">    not be used for anything but teleseismic P data.</span>
@@ -714,7 +720,7 @@
 <span class="sd">    The multichannel correlation and stacking function in this module called</span>
 <span class="sd">    `align_and_stack` requires one to define a number of parameters that</span>
 <span class="sd">    in the original dbxcor implementation were input through a graphical</span>
-<span class="sd">    user interface.   This function can be thought of a robot that will</span>
+<span class="sd">    user interface.   This function can be thought of as a robot that will</span>
 <span class="sd">    attempt to set all the required parameters automatically using signal processing.</span>
 <span class="sd">    It will attempt to produce two inputs required by the `align_and_stack`:</span>
 <span class="sd">    1.  What I call a &quot;correlation window&quot;.</span>
@@ -769,24 +775,23 @@
 <span class="sd">        to the `Metadata` of that `TimeSeries` where `align_and_stack`</span>
 <span class="sd">        can parse them to set the correlation time window.</span>
 
-<span class="sd">    The function returns a copy of the input ensemble filtered to the</span>
-<span class="sd">    average bandwidth as component 0 of a tuple.  Component 1 of that</span>
-<span class="sd">    tuple contains an the initial beam estimate that should be used</span>
-<span class="sd">    as the input to align_and_stack.</span>
+<span class="sd">    The function filters and prepares the input ensemble in place.  Component 0</span>
+<span class="sd">    of the returned list is that same ensemble, and component 1 is the initial</span>
+<span class="sd">    beam estimate that should be passed to `align_and_stack`.</span>
 <span class="sd">    Callers should verify the beam signal is marked live.  A dead</span>
 <span class="sd">    beam signal indicates the algorithm failed in one way or another.</span>
 <span class="sd">    Errors at that level will result in messages being posted to the</span>
 <span class="sd">    `ErrorLogger` container of the beam output (elog attribute).  Note also this</span>
-<span class="sd">    algorithm can kill some ensemble members in the output that</span>
-<span class="sd">    were marked live in the input.</span>
+<span class="sd">    algorithm can kill ensemble members that were marked live on input.</span>
 
 <span class="sd">    :param ensemble:   input ensemble of data to use.  As noted above it</span>
 <span class="sd">      must have been processed with `broadband_snr_QC` or this function will</span>
 <span class="sd">      return a null result.  The function makes a tacit assumption that all</span>
 <span class="sd">      the members of this ensemble are in relative time with 0 of each member</span>
 <span class="sd">      being an estimate of the P wave arrival time.  It does no tests to</span>
-<span class="sd">      validate this assumption so the assumption is wrong you will, at best,</span>
-<span class="sd">      get junk as output.</span>
+<span class="sd">      validate this assumption, so if the assumption is wrong you will, at best,</span>
+<span class="sd">      get junk as output.  This ensemble is filtered and prepared in place;</span>
+<span class="sd">      members can be modified or killed.</span>
 <span class="sd">    :type ensemble: `TimeSeriesEnsemble`  Note for most uses this is the</span>
 <span class="sd">      output of ExtractComponent of a `SeismogramEnsemble` processed with</span>
 <span class="sd">      `broadband_snr_QC` that is the longitudinal component for the P phase.</span>
@@ -798,14 +803,14 @@
 <span class="sd">    :param noise_metric:  vector norm metric to use for measuring the</span>
 <span class="sd">      amplitude of the noise extracted from the data in the range defined by</span>
 <span class="sd">      noise_window.</span>
-<span class="sd">    :type noise_metric: string (Must be one of:  &quot;mad&quot; (default), &quot;rms&quot;,</span>
-<span class="sd">      or &quot;peak&quot;).  Any other string will cause the function to throw a ValueError</span>
-<span class="sd">      exception.</span>
+<span class="sd">    :type noise_metric: string.  ``&quot;rms&quot;`` and ``&quot;peak&quot;`` select those</span>
+<span class="sd">      metrics; every other value, including the default ``&quot;mad&quot;``, uses median</span>
+<span class="sd">      absolute deviation.</span>
 <span class="sd">    :param initial_beam_metric:  key of attribute to extract from the</span>
 <span class="sd">      output of `broadband_snr_QC` used to select initial beam signal.</span>
-<span class="sd">      This argument is passed to the `extract_initial_beam_estimate` function for</span>
-<span class="sd">      as the &quot;metric&quot; argument of that function.</span>
-<span class="sd">    :param initial_beam_metric:  string (default &quot;bandwidth&quot;).  For a list of</span>
+<span class="sd">      This argument is passed to `extract_initial_beam_estimate` as its</span>
+<span class="sd">      ``metric`` argument.</span>
+<span class="sd">    :type initial_beam_metric:  string (default &quot;bandwidth&quot;).  For a list of</span>
 <span class="sd">      allowed values see the docstring of `extract_initial_beam_estimate`.</span>
 <span class="sd">    :param snr_doc_key:  key to use to fetch the subdocument containing the</span>
 <span class="sd">      output of `broadband_snr_QC`.</span>
@@ -825,12 +830,19 @@
 <span class="sd">      scan ensemble to estimate the frequency range)</span>
 <span class="sd">    :param npoles:  number of poles to use for the Butterworth bandpass filter.</span>
 <span class="sd">    :type npoles:  integer (default 4)</span>
-<span class="sd">    :param set_phases: boolean that if set True (default) the P phase time s</span>
+<span class="sd">    :param filter_parameter_keys: three Metadata keys used to record the low</span>
+<span class="sd">      corner, high corner, and number of poles of the filter applied in place.</span>
+<span class="sd">    :type filter_parameter_keys: list of three strings (default</span>
+<span class="sd">      ``[&quot;MCXcor_f_low&quot;, &quot;MCXcor_f_high&quot;, &quot;MCXcor_npoles&quot;]``)</span>
+<span class="sd">    :param coda_level_factor: multiplier applied to each member&#39;s measured</span>
+<span class="sd">      background-noise amplitude to define the coda-detection threshold.</span>
+<span class="sd">    :type coda_level_factor: float (default 4.0)</span>
+<span class="sd">    :param set_phases: boolean that if set True (default) the arrival times for</span>
 <span class="sd">      P, pP (if defined), and PP (if defined) are computed and posted to the</span>
-<span class="sd">      output of each ensemble member.  If False the algorith assumes the</span>
+<span class="sd">      output of each ensemble member.  If False the algorithm assumes the</span>
 <span class="sd">      same quantities were previously calculated and can be fetched from the</span>
 <span class="sd">      member TimeSeries Metadata container using keys defined by Ptime_key,</span>
-<span class="sd">      pPtimme_key, and PPtime_key.</span>
+<span class="sd">      pPtime_key, and PPtime_key.</span>
 <span class="sd">    :param Ptime_key:</span>
 <span class="sd">    :param pPtime_key:</span>
 <span class="sd">    :param PPtime_key:  These three arguments define alternative keys that</span>
@@ -839,7 +851,11 @@
 <span class="sd">      Changing any of these values is not really advised when set_phases is True.</span>
 <span class="sd">      These are most useful if the phase arrival times were previously</span>
 <span class="sd">      computed or measured and posted with different keys.</span>
-<span class="sd">    :param station_collection:   MonogDB collection name used to fetch</span>
+<span class="sd">    :param model: travel-time model used to compute P, pP, and PP arrivals when</span>
+<span class="sd">      ``set_phases`` is True.  A default ``TauPyModel(&quot;iasp91&quot;)`` is created</span>
+<span class="sd">      when this argument is None.</span>
+<span class="sd">    :type model: ``obspy.taup.TauPyModel`` or None</span>
+<span class="sd">    :param station_collection: MongoDB collection name used to fetch</span>
 <span class="sd">      receiver coordinate data.   Normal practice in MsPASS is to save</span>
 <span class="sd">      receiver Metadata in two channels called &quot;channel&quot; and &quot;site&quot; and</span>
 <span class="sd">      to load the coordinate data through normalization when the data are</span>
@@ -857,27 +873,26 @@
 <span class="sd">      correlation window is determined by running the internal</span>
 <span class="sd">      `_coda_duration` function on each ensemble member and computing the</span>
 <span class="sd">      range from the median of the ranges computed from all the ensemble</span>
-<span class="sd">      members.  Each coda search, however, is constrained by the time so f</span>
+<span class="sd">      members.  Each coda search, however, is constrained by the times of</span>
 <span class="sd">      pP and/or PP.   As noted above the function uses the pP time for</span>
 <span class="sd">      events with depths greater than 100 km but PP for shallow sources.</span>
 <span class="sd">      To allow for hypocenter errors  the duration defined by</span>
 <span class="sd">      P to pP or P to PP is multiplied by this factor to define the</span>
 <span class="sd">      search start for the coda estimation.</span>
 <span class="sd">    :type search_window_fraction: float (default 0.9)</span>
-<span class="sd">    :param minimum_coda_duration:   if the estimate of coda duration</span>
-<span class="sd">      computed internally is less than this value the correlation window</span>
-<span class="sd">      is set to this value - relative time from P.</span>
-<span class="sd">      :type minimum_coda_duration:  float (5.0 seconds)</span>
+<span class="sd">    :param minimum_coda_duration: minimum accepted coda-duration estimate.</span>
+<span class="sd">      Shorter estimates are excluded.  If no estimate exceeds this floor, the</span>
+<span class="sd">      ensemble is killed and returned with a dead beam.</span>
+<span class="sd">    :type minimum_coda_duration:  float (default 5.0 seconds)</span>
 <span class="sd">    :param correlation_window_start:  the time of the correlation window</span>
 <span class="sd">      set in the output &quot;beam&quot; is fixed as this value.   It is normally</span>
 <span class="sd">      a negative number defining a time before P that no signal is likely to</span>
 <span class="sd">      have an arrival before this relative time.</span>
 <span class="sd">    :type correlation_window_start:  float (default -3.0)</span>
-<span class="sd">    :return:  tuple with two components.  Component 0 holds a copy of the</span>
-<span class="sd">      input ensembled filtered with bandwidth range estimated by the</span>
-<span class="sd">      algorithm but NOT time shifted. Component 1 is an best guess of</span>
-<span class="sd">      a suitable initial beam estimate for running the robust stacking</span>
-<span class="sd">      algorithm of dbxcor (it requires an initial bean estiamte).</span>
+<span class="sd">    :return: two-element list.  Component 0 is the input ensemble</span>
+<span class="sd">      after in-place filtering, phase-time conversion, Metadata updates, and</span>
+<span class="sd">      any member kills.  Component 1 is an initial beam estimate suitable for</span>
+<span class="sd">      the dbxcor robust-stacking algorithm.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;MCXcorPrepP&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
@@ -1015,7 +1030,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># silently default to MAD - maybe should log an error to ensemble or throw an exception</span>
                 <span class="n">namp</span> <span class="o">=</span> <span class="n">MADAmplitude</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span>
-            <span class="n">coda_window</span> <span class="o">=</span> <span class="n">_coda_duration</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">coda_level_factor</span><span class="p">,</span> <span class="n">search_start</span><span class="o">=</span><span class="n">sr</span><span class="p">)</span>
+            <span class="n">coda_window</span> <span class="o">=</span> <span class="n">_coda_duration</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">namp</span> <span class="o">*</span> <span class="n">coda_level_factor</span><span class="p">,</span> <span class="n">search_start</span><span class="o">=</span><span class="n">sr</span><span class="p">)</span>
             <span class="c1"># silently drop any retun value less than the floor defined</span>
             <span class="c1"># by minimum_coda_duration</span>
             <span class="n">duration</span> <span class="o">=</span> <span class="n">coda_window</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="n">coda_window</span><span class="o">.</span><span class="n">start</span>
@@ -1023,10 +1038,10 @@
                 <span class="n">coda_duration</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coda_duration</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Calculation of correlation window from the envelop of filtered ensemble members failed</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;No data detected with signal level in the passband above the floor value=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;No data detected with signal level in the passband above </span><span class="si">{}</span><span class="s2"> times the measured noise level</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">coda_level_factor</span>
         <span class="p">)</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;noise_window range or value of floor value are likely inconsistent with the data</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;noise_window range or coda_level_factor are likely inconsistent with the data</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Killing this ensemble&quot;</span>
         <span class="n">enswork</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="n">enswork</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
@@ -1090,8 +1105,9 @@
 <span class="sd">    Returns a numpy vector of weights.  Any dead data will have a weight of</span>
 <span class="sd">    -1.0 (test for negative is sufficient).  In addition the function has a</span>
 <span class="sd">    safety to handle receiving a vector of all zeros.  If the function detects</span>
-<span class="sd">    all 0s for a datum marked live it will silently return a weight of 0</span>
-<span class="sd">    for that datum.</span>
+<span class="sd">    an all-zero stack, every live member receives a weight of 0.  If an</span>
+<span class="sd">    individual live datum is all zeros, that datum likewise receives a weight</span>
+<span class="sd">    of 0.</span>
 
 <span class="sd">    :param ensemble:  `TimeSeriesEnsemble` of data from which weights are to</span>
 <span class="sd">      be computed.</span>
@@ -1116,6 +1132,11 @@
     <span class="c1"># Scale the scack vector to be a unit vector</span>
     <span class="n">s_unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stack</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="n">nrm_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">stack</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nrm_s</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="n">wts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+        <span class="k">return</span> <span class="n">wts</span>
     <span class="n">s_unit</span> <span class="o">/=</span> <span class="n">nrm_s</span>
     <span class="n">N_s</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s_unit</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
@@ -1151,9 +1172,14 @@
                 <span class="c1"># denom.  Not needed her because of conditional chain here</span>
                 <span class="n">wts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d_dot_stack</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span>
 
-    <span class="c1"># rescale weights so largest is 1 - easier to understand</span>
-    <span class="n">maxwt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">wts</span><span class="p">)</span>
-    <span class="n">wts</span> <span class="o">/=</span> <span class="n">maxwt</span>
+    <span class="c1"># Rescale live-member weights so the largest is 1.  Leave the negative</span>
+    <span class="c1"># sentinel for dead members unchanged, and avoid dividing an all-zero</span>
+    <span class="c1"># live subset by zero.</span>
+    <span class="n">live_weight_indices</span> <span class="o">=</span> <span class="n">wts</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">live_weight_indices</span><span class="p">):</span>
+        <span class="n">maxwt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">wts</span><span class="p">[</span><span class="n">live_weight_indices</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">maxwt</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">wts</span><span class="p">[</span><span class="n">live_weight_indices</span><span class="p">]</span> <span class="o">/=</span> <span class="n">maxwt</span>
     <span class="k">return</span> <span class="n">wts</span></div>
 
 
@@ -1213,10 +1239,10 @@
     <span class="n">timespan_method</span><span class="o">=</span><span class="s2">&quot;ensemble_inner&quot;</span><span class="p">,</span>
     <span class="n">pad_fraction_cutoff</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
     <span class="n">residual_norm_floor</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic function for robust stacking live members of a `TimeSeriesEnsemble`.</span>
-<span class="sd">    An optional initial stack estimate can be used via tha stack0 argument.</span>
+<span class="sd">    An optional initial stack estimate can be used via the stack0 argument.</span>
 <span class="sd">    The function currently supports two methods:  &quot;median&quot; for a median</span>
 <span class="sd">    stack and &quot;dbxcor&quot; to implement the robust loss function</span>
 <span class="sd">    used in the dbxcor program defined in Pavlis and Vernon (2010).</span>
@@ -1228,25 +1254,24 @@
 <span class="sd">    an initial estimator for the stack.  They do that because the</span>
 <span class="sd">    penalty function is defined from a metric of residuals relative to</span>
 <span class="sd">    the current estimate of center.   The median, however, does not</span>
-<span class="sd">    require an initial estimator which complicates the API for this function.</span>
-<span class="sd">    For the current options understand that stack0 is required for</span>
-<span class="sd">    the dbxcor algorithm but will be ignored if median is requested.</span>
+<span class="sd">    require an initial estimator.  For the dbxcor method, ``stack0`` can</span>
+<span class="sd">    supply that estimate; when it is omitted, this function computes a median</span>
+<span class="sd">    stack for the initial estimate.  The median method always computes the</span>
+<span class="sd">    sample median and ignores ``stack0`` values.</span>
 
 <span class="sd">    The other complication of this function is handling of potential</span>
 <span class="sd">    irregular time ranges of the ensemble input and how to set the</span>
 <span class="sd">    time range for the output.   The problem is further complicated by</span>
 <span class="sd">    use in an algorithm like `align_and_stack` in this module where</span>
 <span class="sd">    the data can get shifted to have undefined data within the</span>
-<span class="sd">    time range the data aims to utilize.   The behavior of the</span>
-<span class="sd">    algorithm for this issue is controlled by the kwarg values</span>
-<span class="sd">    with the keys &quot;timespan_method&quot; and &quot;pad_fraction_cutoff&quot;.</span>
-<span class="sd">    As the name imply &quot;timespan_method&quot; defines how the time span</span>
+<span class="sd">    time range the data aims to utilize.  The ``timespan_method`` argument</span>
+<span class="sd">    defines how the time span</span>
 <span class="sd">    for the stack should be defined.   The following options</span>
 <span class="sd">    are supported:</span>
 
 <span class="sd">    &quot;stack0&quot; - sets the time span to that of the input</span>
 <span class="sd">    `TimeSeries` passed as stack0.  i.e. the range is set to</span>
-<span class="sd">    stack0.dt to stack0.endtime().</span>
+<span class="sd">    stack0.t0 to stack0.endtime().</span>
 
 <span class="sd">    &quot;ensemble_inner&quot; - (default) use the range defined by the &quot;inner&quot; method</span>
 <span class="sd">    for computing the range with the function `ensemble_time_range`.</span>
@@ -1260,13 +1285,10 @@
 <span class="sd">    for computing the range with the function `ensemble_time_range`.</span>
 <span class="sd">    (see `ensemble_time_range` docstring for the definition).</span>
 
-<span class="sd">    These interact with the value passed via &quot;fractional_mismatch_level&quot;.</span>
-<span class="sd">    When the time range computed is larger than the range of a particular</span>
-<span class="sd">    member of the input ensemble this parameter determines whether or not</span>
-<span class="sd">    the member will be used in the stack.  If the fraction of</span>
-<span class="sd">    undefined samples (i.e. N_undefined/Nsamp) is greater than this cutoff</span>
-<span class="sd">    that datum will be ignored.   Otherwise if there are undefined</span>
-<span class="sd">    values they will be zero padded.</span>
+<span class="sd">    When the selected range extends beyond a live ensemble member, that</span>
+<span class="sd">    member is zero padded; the current implementation does not reject members</span>
+<span class="sd">    based on the padded fraction.  ``pad_fraction_cutoff`` applies only when a</span>
+<span class="sd">    dbxcor ``stack0`` must be padded to the selected range.</span>
 
 <span class="sd">    :param ensemble:   input data to be stacked.   Should all be in</span>
 <span class="sd">        relative time with all members having the same relative time span.</span>
@@ -1285,34 +1307,43 @@
 <span class="sd">        uses the median as the starting point, but this can be used to</span>
 <span class="sd">        input something else.   Note the function will silently ignore this</span>
 <span class="sd">        argument if method == &quot;median&quot;.</span>
-<span class="sd">    :type stack0:  TimeSeries.   Note the time span of this optional input</span>
-<span class="sd">        must be the same or wider than the ensemble member range defined by</span>
-<span class="sd">        the (internal to this module) validate_ensemble function or the</span>
-<span class="sd">        return will be return as a copy of this TimeSeries marked dead.</span>
-<span class="sd">        Default for this argument is None which means the median will be</span>
-<span class="sd">        used for the initial stack for dbxcor</span>
+<span class="sd">    :type stack0: TimeSeries or None.  For dbxcor, the seed is windowed or</span>
+<span class="sd">        padded to the selected time span and is returned dead when the missing</span>
+<span class="sd">        fraction exceeds ``pad_fraction_cutoff``.  A value is also required</span>
+<span class="sd">        when ``timespan_method=&quot;stack0&quot;`` even if ``method=&quot;median&quot;``, because</span>
+<span class="sd">        it defines the output range.  The default None uses a median initial</span>
+<span class="sd">        estimate for dbxcor.</span>
 <span class="sd">    :param stack_md:   optional Metadata container to define the</span>
 <span class="sd">        content of the stack output.  By default the output will have only</span>
 <span class="sd">        Metadata that duplicate required internal attributes (e.g. t0 and npts).</span>
-<span class="sd">        An exception is if stack0 is used the Metadata of that container will</span>
-<span class="sd">        be copied and this argument will be ignored.</span>
-<span class="sd">    :type stack_md:  Metadata container or None.  If stack0 is defined</span>
-<span class="sd">        this argument is ignored.   Otherwise it should be used to add</span>
+<span class="sd">        An exception is when dbxcor uses ``stack0``: that seed&#39;s Metadata is</span>
+<span class="sd">        copied and this argument is ignored.</span>
+<span class="sd">    :type stack_md: Metadata container or None.  When dbxcor uses ``stack0``</span>
+<span class="sd">        this argument is ignored.  Otherwise it should be used to add</span>
 <span class="sd">        whatever Metadata is required to provide a tag that can be used to</span>
 <span class="sd">        identify the output.  If not specified the stack Metadata</span>
 <span class="sd">        will be only those produce from default construction of a</span>
 <span class="sd">        TimeSeries.  That is almost never what you want.   Reiterate,</span>
-<span class="sd">        however, that if stack0 is defined the output stack will be a</span>
+<span class="sd">        however, that if dbxcor uses stack0 the output stack will be a</span>
 <span class="sd">        clone of stack0 with possible modifications of time and data</span>
 <span class="sd">        range attributes and anything the stack algorithm posts.</span>
+<span class="sd">    :param timespan_method: method used to select the output time range.</span>
+<span class="sd">        Accepted values are ``&quot;ensemble_inner&quot;`` (default),</span>
+<span class="sd">        ``&quot;ensemble_outer&quot;``, ``&quot;ensemble_median&quot;``, and ``&quot;stack0&quot;`` as</span>
+<span class="sd">        described above.</span>
+<span class="sd">    :type timespan_method: string</span>
+<span class="sd">    :param pad_fraction_cutoff: maximum fraction of missing samples that may</span>
+<span class="sd">        be zero padded when a dbxcor ``stack0`` is adjusted to the selected</span>
+<span class="sd">        time range.  This value does not control padding of ensemble members.</span>
+<span class="sd">    :type pad_fraction_cutoff: float (default 0.05)</span>
 <span class="sd">    :param residual_norm_floor: floor on residuals used to compute dbxcor weight</span>
 <span class="sd">        function.  See docstring for `dbxcor_weights` for details.  Ignored</span>
 <span class="sd">        unless method is &quot;dbxcor&quot;</span>
 <span class="sd">    :type residual_norm_floor:   float (default 0.01)</span>
-<span class="sd">    :return:  tuple containing the requested stack as component 0.  The</span>
+<span class="sd">    :return: two-element list containing the requested stack as component 0.  The</span>
 <span class="sd">        stack is returned as a `TimeSeries`  with optional Metadata copied</span>
 <span class="sd">        from the (optional) stack_md argument.   Component 1 is defined only</span>
-<span class="sd">        for the dbxcor method in which case it a numpy array containing th e</span>
+<span class="sd">        for the dbxcor method in which case it is a numpy array containing the</span>
 <span class="sd">        robust weights returned by the dbxcor algorithm.  If the method is</span>
 <span class="sd">        set to &quot;median&quot; component 1 will be returned as a None type.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1371,7 +1402,7 @@
     <span class="n">dt</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
     <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">timespan</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="n">timespan</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
-    <span class="k">if</span> <span class="n">stack0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">stack0</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;dbxcor&quot;</span><span class="p">:</span>
         <span class="n">stack</span> <span class="o">=</span> <span class="n">WindowData_autopad</span><span class="p">(</span>
             <span class="n">stack0</span><span class="p">,</span>
             <span class="n">timespan</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
@@ -1398,9 +1429,9 @@
         <span class="n">stack</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">stack_md</span><span class="p">:</span>
             <span class="n">stack</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">stack_md</span><span class="p">)</span>
-            <span class="n">stack</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">timespan</span><span class="o">.</span><span class="n">start</span>
-            <span class="c1"># this works because we can assume ensemble is not empty and clean</span>
-            <span class="n">stack</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">stack</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">timespan</span><span class="o">.</span><span class="n">start</span>
+        <span class="c1"># this works because we can assume ensemble is not empty and clean</span>
+        <span class="n">stack</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
         <span class="c1"># Make sure the stack has the same time base as the input</span>
         <span class="n">stack</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tref</span>
         <span class="c1"># Always compute the median stack as a starting point</span>
@@ -1428,7 +1459,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># since method can only be median or dbxcor at this point this</span>
         <span class="c1"># block is exectuted only when method==&quot;dbxcor&quot;</span>
-        <span class="c1"># this works because _dbxcor returns a tuple of the right form</span>
+        <span class="c1"># this works because _dbxcor_stacker returns a two-element list</span>
         <span class="k">return</span> <span class="n">_dbxcor_stacker</span><span class="p">(</span>
             <span class="n">ensemble</span><span class="p">,</span>
             <span class="n">stack</span><span class="p">,</span>
@@ -1443,15 +1474,15 @@
     <span class="n">eps</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
     <span class="n">maxiterations</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
     <span class="n">residual_norm_floor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Runs the dbxcor robust stacking algorithm on `enemble` with initial</span>
 <span class="sd">    stack estimate stack0.</span>
-<span class="sd">    Returns a tuple with the stack as component 0 and a numpy vector</span>
+<span class="sd">    Returns a two-element list with the stack as component 0 and a numpy vector</span>
 <span class="sd">    of the final robust weights as component 1.</span>
 
 <span class="sd">    This function is intended to be used only internally in this module</span>
-<span class="sd">    as it has no safties and assumes ensemble and stack0 are what it expects.</span>
+<span class="sd">    as it has no safeguards and assumes ensemble and stack0 are what it expects.</span>
 
 <span class="sd">    :param ensemble:  TimeSeriesEnsemble assumed to have constant data</span>
 <span class="sd">      range and sample interval and not contain any dead data.</span>
@@ -1462,7 +1493,7 @@
 <span class="sd">    :param maxiterations:  maximum number of iterations (default 20)</span>
 <span class="sd">    :param residual_norm_floor: floor on residuals used to compute dbxcor weight</span>
 <span class="sd">      function.  See docstring for `dbxcor_weights` for details.</span>
-<span class="sd">    :type residual_norm_floor:   float (default 0.01)</span>
+<span class="sd">    :type residual_norm_floor:   float (default 0.1)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">stack</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">stack0</span><span class="p">)</span>
     <span class="c1"># useful shorthands</span>
@@ -1547,9 +1578,9 @@
 <span class="sd">    :type time_shift_limit: float (may abort if you use an int</span>
 <span class="sd">        because the value can to sent to a C++ method that it type</span>
 <span class="sd">        sensitive)</span>
-<span class="sd">    :return:   copy of ensemble with the members time shifted to align with</span>
-<span class="sd">        the time base of beam.   Note if a window is defined it is not</span>
-<span class="sd">        applied to the ensemble members.</span>
+<span class="sd">    :return: the input ensemble with its members time shifted in place to align</span>
+<span class="sd">        with the time base of beam.  If a window is defined it is used only for</span>
+<span class="sd">        correlation and is not applied to the ensemble members.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># this may not be necessary for internal use but if used</span>
@@ -1620,18 +1651,18 @@
     <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function uses an initial estimate of the array stack passed as</span>
 <span class="sd">    the `beam` argument as a seed to a robust algorithm that will</span>
 <span class="sd">    align all the data in the input ensemble by cross-correlation with</span>
 <span class="sd">    the beam, apply a robust stack to the aligned signals, update the</span>
 <span class="sd">    beam with the robust stack, and repeat until the changes to the</span>
-<span class="sd">    beam signal are small.   Returns a copy of the ensemble time</span>
-<span class="sd">    shifted to be aligned with beam time base and an updated beam</span>
-<span class="sd">    estimate crated by the robust stack.  The shifts and the weights</span>
-<span class="sd">    of each input signal are stored in the Metadata of each live ensemble</span>
-<span class="sd">    member returned with keys defined by `robust_weight_key` and</span>
+<span class="sd">    beam signal are small.  The input ensemble is modified in place to align</span>
+<span class="sd">    its members with the beam time base, and the function returns that ensemble</span>
+<span class="sd">    with an updated beam estimate created by the robust stack.  The shifts and</span>
+<span class="sd">    weights of each input signal are stored in the Metadata of each live</span>
+<span class="sd">    ensemble member returned with keys defined by `robust_weight_key` and</span>
 <span class="sd">    `time_shift_key`.</span>
 
 <span class="sd">    This function is a python implementation of the same basic</span>
@@ -1647,53 +1678,41 @@
 <span class="sd">    to be run in batch without user intervention.  The original dbxcor</span>
 <span class="sd">    algorithm required four interactive picks to set the input.</span>
 <span class="sd">    The way we set them for this automated algorithm is described in the</span>
-<span class="sd">    following four itemize paragraphs:</span>
+<span class="sd">    following four numbered items:</span>
 
-<span class="sd">        1.  The &quot;correlation window&quot;, which is the waveform segment</span>
-<span class="sd">            used to compute cross-correlations between the beam and all</span>
-<span class="sd">            ensmebled members, is set one of three ways.  The default</span>
-<span class="sd">            uses the time window defined by the starttime and endtime of</span>
-<span class="sd">            the `beam` signal as the cross-correlation window.</span>
-<span class="sd">            Alternative, this window can be specified either by</span>
-<span class="sd">            fetching values from the `Metadata` container of beam</span>
-<span class="sd">            or via the `correlation_window` argument.   The algorithm</span>
-<span class="sd">            first tests if `correlation_window` is set and is an</span>
-<span class="sd">            instance of a `TimeWindow` object.   If the type of</span>
-<span class="sd">            the argument is not a `TimeWindow` object an error is logged</span>
-<span class="sd">            and the program reverts to using the span of the beam</span>
-<span class="sd">            signal as the correlation window.   If `correlation_window`</span>
-<span class="sd">            is a None (default) the algorithm then checks for a valid</span>
-<span class="sd">            input via the `correlation_window_keys` argument.  If</span>
-<span class="sd">            defined that argument is assumed to contain a pair of strings</span>
-<span class="sd">            that can be used as keys to fetch start (component 0)</span>
-<span class="sd">            and end times (component 1) from the Metadata container of</span>
-<span class="sd">            the TimeSeries objct passed via beam. For example,</span>
+<span class="sd">        1.  The &quot;correlation window&quot;, which is the waveform segment used to</span>
+<span class="sd">            compute cross-correlations between the beam and all ensemble</span>
+<span class="sd">            members, is set one of three ways.  An explicit `TimeWindow`</span>
+<span class="sd">            passed as `correlation_window` takes precedence; a truthy value of</span>
+<span class="sd">            any other type raises `TypeError`, while a falsy value is treated</span>
+<span class="sd">            as unset.  In the unset case, the algorithm checks the pair of beam</span>
+<span class="sd">            Metadata keys supplied through `correlation_window_keys`.  For example,</span>
 
 <span class="sd">               correlation_window_keys = [&#39;correlation_start&#39;,&#39;correlation_end&#39;]</span>
 
-<span class="sd">            would cause the function to attempt to fetch the</span>
-<span class="sd">            start time with &quot;correlation_start&quot; and end time with</span>
-<span class="sd">            &quot;correlation_end&quot;.  In the default both `correlation_window`</span>
-<span class="sd">            and `correlation_window_keys` are None which cause the</span>
-<span class="sd">            function to silently use the window defined as</span>
-<span class="sd">            [beam.t0, beam.endtime()] as the correlation winow.</span>
-<span class="sd">            If the optional boolean `window_beam` argument is set True</span>
-<span class="sd">            the function will attempt to window the beam using a range</span>
-<span class="sd">            input via either of the optional methods of setting the</span>
-<span class="sd">            correlation window.  An error is logged and nothing happens if</span>
-<span class="sd">            `window_beam` is set True and the default use of the beam</span>
-<span class="sd">            window is being used.</span>
+<span class="sd">            would cause the function to fetch the start time with</span>
+<span class="sd">            &quot;correlation_start&quot; and end time with &quot;correlation_end&quot;.  By</span>
+<span class="sd">            default, `correlation_window_keys` is</span>
+<span class="sd">            [&quot;correlation_window_start&quot;, &quot;correlation_window_end&quot;].  The</span>
+<span class="sd">            function first tries those beam Metadata keys and logs a complaint</span>
+<span class="sd">            before falling back to the corresponding beam bound for each</span>
+<span class="sd">            missing key.  Passing `correlation_window_keys=None` skips the</span>
+<span class="sd">            Metadata lookup and silently uses [beam.t0, beam.endtime()] as the</span>
+<span class="sd">            correlation window.  When `window_beam` is True, an explicit or</span>
+<span class="sd">            Metadata-derived window is also applied to the beam.  With</span>
+<span class="sd">            `correlation_window_keys=None`, the beam already defines the</span>
+<span class="sd">            window and is left unchanged without an error.</span>
 <span class="sd">        2.  The &quot;robust window&quot; is a concept used in dbxcor to</span>
 <span class="sd">            implement a special robust stacking algorithm that is a novel</span>
-<span class="sd">            feature of the dbxcor algorithm.   It uses a very aggresssive</span>
+<span class="sd">            feature of the dbxcor algorithm.   It uses a very aggressive</span>
 <span class="sd">            weighting scheme to downweight signals that do not match the</span>
 <span class="sd">            beam.  The Pavlis and Vernon paper shows examples of how this</span>
 <span class="sd">            algorithm can cleanly handle ensembles with a mix of high</span>
 <span class="sd">            signal-to-noise data with pure junk and produce a clean</span>
 <span class="sd">            stack that is defined.   Note recent experience has shown</span>
 <span class="sd">            that with large, consistent ensembles the dbxcor robust</span>
-<span class="sd">            estimate tends to converge to the focus on the signal closestbeam_correlation</span>
-<span class="sd">            to the median stack.  The reason is that the median stack</span>
+<span class="sd">            estimate tends to focus on the signal closest to the median</span>
+<span class="sd">            stack.  The reason is that the median stack</span>
 <span class="sd">            is always used as the initial estimator.   Hence, it can</span>
 <span class="sd">            be thought of as a median stack that uses the full data</span>
 <span class="sd">            set more completely.</span>
@@ -1705,7 +1724,7 @@
 <span class="sd">            running this function and select the initial seed (beam) from</span>
 <span class="sd">            one or more of the computed snr metrics.   In addition,</span>
 <span class="sd">            with this approach I envision a two-stage computation where</span>
-<span class="sd">            the some initial seed is used for a first pass.   The</span>
+<span class="sd">            an initial seed is used for a first pass.   The</span>
 <span class="sd">            return is then used to revise the correlation window by</span>
 <span class="sd">            examining stack coherence metrics and then rerunning the</span>
 <span class="sd">            algorithm.   The point is it is a research problem for</span>
@@ -1721,53 +1740,31 @@
 <span class="sd">            to manually or automatically pick an arrival time from the</span>
 <span class="sd">            beam output.</span>
 
-<span class="sd">    This function does some consistency checking of arguments to handle</span>
-<span class="sd">    the different modes for handling the correlation and robust windows</span>
-<span class="sd">    noted above.  It also applies a series of validation tests on the</span>
-<span class="sd">    input ensemble before attempting to run.  Any of the following will</span>
-<span class="sd">    cause the return to be a dead ensemble with an explanation in the</span>
-<span class="sd">    elog container of the ensemble (in these situation the stack is an</span>
-<span class="sd">    empty `TimeSeries` container):</span>
+<span class="sd">    This function checks the window arguments and input ensemble before the</span>
+<span class="sd">    iterative stack.  The resulting state changes are reported through the</span>
+<span class="sd">    ensemble or beam error log:</span>
 
-<span class="sd">        1.  Irregular sample intervals of live data.</span>
-<span class="sd">        2.  Any live data with the time reference set to UTC</span>
-<span class="sd">        3.  Inconsistency of the time range of the data and the</span>
-<span class="sd">            time windows parsed for the correlation and robust windows.</span>
-<span class="sd">            That is, it checks the time span of all member functions and</span>
-<span class="sd">            if the time range of all members (min of start time and maximum end times).</span>
-<span class="sd">            is not outside (inclusive) the range of the correlation and robust</span>
-<span class="sd">            windows it is viewed as invalid.</span>
-<span class="sd">        4.  What we called the &quot;robust window&quot; in the dbxcor paper isextract_input_beam_estimate</span>
-<span class="sd">            required to be inside (inclusive of endpoints) the cross-correlation window</span>
-<span class="sd">            time window.   That could be relaxed but is a useful constraint because</span>
-<span class="sd">            in my (glp) experience the most coherent part of phase arrivals is the</span>
-<span class="sd">            first few cycles of the phase that is also the part cross-correlation</span>
-<span class="sd">            needs to contain if it is to be stable.   The &quot;robust window&quot; should</span>
-<span class="sd">            be set to focus on the section of the signal that will have the most</span>
-<span class="sd">            coherent stack.</span>
+<span class="sd">        1.  Members with irregular sample intervals are killed.  The ensemble</span>
+<span class="sd">            is killed only when no live members remain.</span>
+<span class="sd">        2.  All members are required to use relative time, but the function</span>
+<span class="sd">            does not explicitly validate every member&#39;s time reference.  The</span>
+<span class="sd">            caller must convert UTC data before calling this function.</span>
+<span class="sd">        3.  If the correlation window lies outside the estimated median time</span>
+<span class="sd">            span of the ensemble, the beam is marked dead and returned with the</span>
+<span class="sd">            input ensemble.</span>
+<span class="sd">        4.  If the robust window extends beyond the cross-correlation window,</span>
+<span class="sd">            it is clipped to those bounds, a Complaint is logged on the beam,</span>
+<span class="sd">            and processing continues.</span>
 
-<span class="sd">    There is a further complexity in the iteration sequence used by this algorithm</span>
-<span class="sd">    for any robust stack method.  That is, time shifts computed by cross-correlation</span>
-<span class="sd">    can potentially move the correlation window outside the bounds of the</span>
-<span class="sd">    data received as input.   To reduce the impact of that potential problem</span>
-<span class="sd">    the function has an optional argument called `time_shift_limit`</span>
-<span class="sd">    that is validated against other inputs.   In particular, the function</span>
-<span class="sd">    computes the average start and end time (keep in mind the assumption is the</span>
-<span class="sd">    time base is time relative to the arrival time a particular phase)</span>
-<span class="sd">    of the input ensemble.   If the difference between the average start time</span>
-<span class="sd">    and the correlation window start time is less than `time_shift_limit`</span>
-<span class="sd">    the input is viewed as problematic.   How that is handled depends on how</span>
-<span class="sd">    the correlation window is set.  If it is received as constant</span>
-<span class="sd">    (`correlation_window` argument) an exception will be thrown to abort</span>
-<span class="sd">    the entire job.   It that window is extracted from the beam TimeSeries</span>
-<span class="sd">    Metadata container a complaint is logged to the outputs.  An</span>
-<span class="sd">    endtime inconsistency is treated the same way.  i.e. it is treated as</span>
-<span class="sd">    a problem if the average ensemble endtime - the correlation window</span>
-<span class="sd">    endtime is less than the `time_shift_limit`.</span>
+<span class="sd">    Cross-correlation can estimate a shift larger than the useful range of the</span>
+<span class="sd">    input.  The `time_shift_limit` argument is an absolute ceiling applied to</span>
+<span class="sd">    each estimate: a larger positive or negative lag is clipped to the limit</span>
+<span class="sd">    with its sign preserved.  It does not validate the correlation-window</span>
+<span class="sd">    margins against the ensemble time span.</span>
 
 <span class="sd">    A related issue is that arrival times estimated by this algorithm</span>
 <span class="sd">    will be biased by the model mismatch with whatever signal was used</span>
-<span class="sd">    as the initial beam estimae.  In dbxcor that was handled by forcing</span>
+<span class="sd">    as the initial beam estimate.  In dbxcor that was handled by forcing</span>
 <span class="sd">    the user to manually pick the first arrival of the computed stack.</span>
 <span class="sd">    That could be done if desired but would require you to devise a scheme</span>
 <span class="sd">    to do that picking.   The default here is handled by the boolean</span>
@@ -1782,12 +1779,11 @@
 <span class="sd">    by the `output_stack_window` argument.  See below for details.</span>
 
 <span class="sd">    :param ensemble:   ensemble of data to be aligned and stacked.</span>
-<span class="sd">        This function requires all data to be on a relative time base.</span>
-<span class="sd">        It will throw a MsPASSError exception if any live datum has a UTC time base.</span>
-<span class="sd">        The assumption is all data have a time span that have the correlation</span>
-<span class="sd">        and robust windows inside the data time range.   Both windows are</span>
-<span class="sd">        carved from the inputs using the WindowData function which will kill</span>
-<span class="sd">        any members that do not satisfy this requirement.</span>
+<span class="sd">        This function requires all data to be on a relative time base, but it</span>
+<span class="sd">        does not explicitly validate every member&#39;s time reference.  The caller</span>
+<span class="sd">        must convert UTC data before use.  The correlation and robust windows</span>
+<span class="sd">        are expected to lie within the ensemble&#39;s usable time range; validation</span>
+<span class="sd">        outcomes are described above.</span>
 <span class="sd">    :type ensemble:  `TimeSeriesEnsemble` with some fairly rigid requirements.</span>
 <span class="sd">        (see above)</span>
 <span class="sd">    :param beam:  Estimate of stack (may be just one representative member)</span>
@@ -1803,42 +1799,43 @@
 <span class="sd">        extract cross-correlation window attributes from beam Metadata container.</span>
 <span class="sd">        If defined component 0 is taken as the key for the start time of the window and</span>
 <span class="sd">        component 1 the key for the end time.</span>
-<span class="sd">    :type correlation_window_key:  iterable list containing two strings.</span>
-<span class="sd">        Default is None which is taken to mean the span of the beam signal defines</span>
-<span class="sd">        the cross-correlation window.</span>
+<span class="sd">    :type correlation_window_keys: iterable list containing two strings.  The</span>
+<span class="sd">        default is [&quot;correlation_window_start&quot;, &quot;correlation_window_end&quot;].</span>
+<span class="sd">        Passing None uses the span of the beam signal without a Metadata lookup.</span>
 <span class="sd">    :param window_beam:  if True (default) the parsed cross-correlation window attributes</span>
 <span class="sd">        are applied to the beam signal as well as the data before starting</span>
 <span class="sd">        processing.   If False the beam signal is used directly in all cross-correlations.</span>
 <span class="sd">        Set False only if you can be sure secondary phases are not present in the</span>
 <span class="sd">        unwindowed input.</span>
-<span class="sd">    :param robust_stack_window: Provide an explicity `TimeWindow` used for</span>
+<span class="sd">    :param robust_stack_window: Provide an explicit `TimeWindow` used for</span>
 <span class="sd">        extracting the robust window for this algorithm.   Interacts with the</span>
 <span class="sd">        robust_stack_window_keys argument as described above.</span>
 <span class="sd">    :type robust_stack_window:  If defined must be a `TimeWindow` object.</span>
 <span class="sd">        If a None type (default) use the logic defined above to set this time window.</span>
 <span class="sd">    :param robust_stack_window_keys: specifies a pair of strings to be used</span>
-<span class="sd">        as keys to extract the strart time (component 0) and end time (component 1)</span>
+<span class="sd">        as keys to extract the start time (component 0) and end time (component 1)</span>
 <span class="sd">        of the robust time window to use from the beam `TimeSeries`.</span>
 <span class="sd">    :type robust_stack_window_keys: iterable list of two strings</span>
 <span class="sd">    :param output_stack_window:  optional `TimeWindow` to apply to the</span>
 <span class="sd">        computed robust stack output.   Default returns a stack spanning the</span>
-<span class="sd">        inner range of all live members of the ensemble.</span>
+<span class="sd">        median start and end times of the live ensemble members.</span>
 <span class="sd">    :type output_stack_window:  `TimeWindow` object.  If None (default) the range</span>
-<span class="sd">        is derived from the ensemble member time ranges.</span>
+<span class="sd">        is derived from the median ensemble member time range.</span>
 <span class="sd">    :param robust_weight_key:  The robust weight used for each member to</span>
 <span class="sd">        compute the robust stack output is posted to the Metadata container of</span>
 <span class="sd">        each live member with this key.</span>
 <span class="sd">    :type robust_weight_key:  string</span>
-<span class="sd">    :param robust_stack_method:   keyword defining the method textract_input_beam_estimateo use for</span>
+<span class="sd">    :param robust_stack_method: keyword defining the method to use for</span>
 <span class="sd">        computing the robust stack.  Currently accepted value are:</span>
 <span class="sd">        &quot;dbxcor&quot; (default) and &quot;median&quot;.</span>
 <span class="sd">    :type robust_stack_method:  string  - must be one of options listed above.</span>
-<span class="sd">    :param use_median_initial_stack:  If True (default) use the median stack as the initial</span>
-<span class="sd">        estimate of the stack in the first iterative pass.  When False the signal in the</span>
-<span class="sd">        `TimeSeries` passed via the &quot;beam&quot; argument is used for the initial estimate.</span>
+<span class="sd">    :param use_median_initial_stack: currently has no effect.  The implementation</span>
+<span class="sd">        always uses a median stack as the initial estimate, including when this</span>
+<span class="sd">        value is False.</span>
+<span class="sd">    :type use_median_initial_stack: boolean (default True)</span>
 <span class="sd">    :param time_shift_key:  the time shift applied relative to the starting</span>
 <span class="sd">        point is posted to each live member with this key.  It is</span>
-<span class="sd">        IMPORTANT to realize this is the time for this pass.  If thisextract_input_beam_estimatefunctions</span>
+<span class="sd">        IMPORTANT to realize this is the time for this pass.  If this function</span>
 <span class="sd">        is applied more than once and you reuse this key the shift from the</span>
 <span class="sd">        previous run will be overwritten.  If you need to accumulate shifts</span>
 <span class="sd">        it needs to be handled outside this function.</span>
@@ -1846,40 +1843,37 @@
 <span class="sd">    :param convergence:   fractional change in robust stack estimates in</span>
 <span class="sd">        iterative loop to define convergence.  This should not be changed</span>
 <span class="sd">        unless you deeply understand the algorithm.</span>
-<span class="sd">    :type convergence:  real number (default 0.001)</span>
+<span class="sd">    :type convergence:  real number (default 0.01)</span>
 <span class="sd">    :param time_shift_limit: when time shifting data with the cross</span>
 <span class="sd">        correlation algorithm any estimated time shift larger than</span>
 <span class="sd">        this value will be truncated to this value with the sign</span>
-<span class="sd">        of th shift preserved.</span>
+<span class="sd">        of the shift preserved.</span>
 <span class="sd">    :type time_shift_limit:  float</span>
-<span class="sd">    :param  abort_irregular_sampling: boolean that controls error</span>
-<span class="sd">        handling of data with irregular sample rates.  This function uses</span>
+<span class="sd">    :param abort_irregular_sampling: currently has no effect.  This function uses</span>
 <span class="sd">        a generous test for sample rate mismatch.  A mismatch is</span>
 <span class="sd">        detected only if the computed time skew over the time span of</span>
-<span class="sd">        the input beam signal is more than 1/2 of the beam sample interval</span>
-<span class="sd">        (beam.dt).  When set true the function will</span>
-<span class="sd">        abort with a ValueError exception if any ensemble member fails the</span>
-<span class="sd">        sample interval test.  If False (the default) offending ensemble</span>
-<span class="sd">        members are killed and a message is posted.  Note the actual</span>
-<span class="sd">        ensemble is modified so the return may have fewer data live</span>
-<span class="sd">        than the input when this mode is enabled.</span>
-<span class="sd">    :type abort_irregular_sampling:  boolean</span>
+<span class="sd">        the input beam signal is more than half of the beam sample interval</span>
+<span class="sd">        (``beam.dt``).  Offending ensemble members are always killed and a</span>
+<span class="sd">        message is posted; setting this value to True does not currently raise</span>
+<span class="sd">        ``ValueError``.  The input ensemble can therefore return with fewer</span>
+<span class="sd">        live members.</span>
+<span class="sd">    :type abort_irregular_sampling: boolean (default False)</span>
 <span class="sd">    :param residual_norm_floor: floor on residuals used to compute dbxcor weight</span>
 <span class="sd">        function.  See docstring for `dbxcor_weights` for details.</span>
-<span class="sd">    :type residual_norm_floor:   float (default 0.01)</span>
+<span class="sd">    :type residual_norm_floor:   float (default 0.1)</span>
 <span class="sd">    :param demean_residuals: boolean controlling if the computed shifts</span>
 <span class="sd">        are corrected with a demean operation.   Default is True which</span>
 <span class="sd">        means the set of all time shifts computed by this function will</span>
 <span class="sd">        have zero mean.</span>
 
-<span class="sd">    :return: tuple with 0 containing the original ensemble but time</span>
-<span class="sd">        shifted by cross-correlation.   Failed/discarded signals for the</span>
-<span class="sd">        stack are not killed but can be detected by testing the</span>
-<span class="sd">        key defined by the &quot;time_shift_key&quot; argument</span>
-<span class="sd">        (default is &#39;arrival_time_correction&#39;) being set.</span>
-<span class="sd">        i.e. that value will not be set for components dropped from</span>
-<span class="sd">        the stack.   Component 1 of return tuple is the computed</span>
-<span class="sd">        stack windowed to the range defined by `stack_time_window`.</span>
+<span class="sd">    :return: two-element list with component 0 containing the input ensemble,</span>
+<span class="sd">        modified in place by cross-correlation time shifts and member kills.</span>
+<span class="sd">        On a successful return, every member still live has the key defined by</span>
+<span class="sd">        ``time_shift_key``.  With the ``dbxcor`` stack method, live members</span>
+<span class="sd">        with positive final weight also have ``robust_weight_key``; members</span>
+<span class="sd">        killed by sampling or windowing failures are marked dead.  Component 1</span>
+<span class="sd">        is the computed stack windowed to the range defined by</span>
+<span class="sd">        ``output_stack_window``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;align_and_stack&quot;</span>
     <span class="c1"># xcor ensemble has the initial start time posted to each</span>
@@ -2158,7 +2152,7 @@
             <span class="n">tshift</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span> <span class="o">-</span> <span class="n">initial_starttime</span>
             <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="n">time_shift_key</span><span class="p">,</span> <span class="n">tshift</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">output_stack_window</span><span class="p">:</span>
-        <span class="c1"># this will clone the beam trace metadata automaticallyextract_input_beam_estimate</span>
+        <span class="c1"># this will clone the beam trace metadata automatically</span>
         <span class="c1"># using pad option assures t0 will be output_stack_window.start</span>
         <span class="c1"># and npts is consistent with window requested</span>
         <span class="n">output_stack</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span>

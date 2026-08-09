@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Arrival Time Measurement Techniques in MsPASS &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>Arrival Time Measurement Techniques in MsPASS &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Signal to Noise Ratio Estimation" href="signal_to_noise.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -367,8 +367,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -803,7 +803,7 @@ function called
 It provides a top-level interface for automatically preparing the filtered
 ensemble and initial beam required by
 <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a>.
-It returns those two objects as <code class="docutils literal notranslate"><span class="pre">(ensemble,</span> <span class="pre">beam)</span></code>.
+It returns a two-element list that can be unpacked as <code class="docutils literal notranslate"><span class="pre">ensemble,</span> <span class="pre">beam</span></code>.
 The parameters this function defines are discussed in the section above.
 See the docstring for the function for guidance on use and examples
 below and in the mspass tutorial repository.</p>
@@ -837,7 +837,7 @@ show the full function signature for <code class="docutils literal notranslate">
   <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
   <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
   <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-  <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+  <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1106,7 +1106,12 @@ the P-wave probabilities that meet the requested threshold to the datum’s
 timestamps to probabilities.  An optional absolute-time
 <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeWindow</span></code></a> can
 restrict the annotation interval.  The function mutates the input datum and
-does not return a separate picks object.</p>
+does not return a separate picks object.  It first calls <code class="docutils literal notranslate"><span class="pre">rtoa()</span></code> on the
+input, so a relative-time datum is converted to UTC in place before annotation.
+If a supplied <code class="docutils literal notranslate"><span class="pre">TimeWindow</span></code> partially overlaps the datum, bounds outside the
+datum are clipped in place to its UTC time range.  If the window has no
+overlap, both bounds are reset in place to the full datum range and the whole
+datum is annotated.</p>
 <p>SeisBench is an optional dependency.  Install MsPASS with the <code class="docutils literal notranslate"><span class="pre">seisbench</span></code>
 extra when this feature is needed, for example <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'mspass[seisbench]'</span></code>.
 The wrapper annotates candidate P-wave times; it is not an event associator or

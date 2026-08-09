@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Signal to Noise Ratio Estimation &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>Signal to Noise Ratio Estimation &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Header (Metadata) Math" href="header_math.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -367,8 +367,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -517,10 +517,23 @@ had been converted to “relative time”.   The example could be appropriate
 to define a signal window if the data had been converted to “relative time”
 (see section <a class="reference internal" href="time_standard_constraints.html#time-standard-constraints"><span class="std std-ref">Time Standard Constraints</span></a>)
 with zero defined as a measured or predicted phase arrival time.</p>
+<figure class="align-center" id="id1">
+<span id="snr-time-windows-figure"></span><a class="reference internal image-reference" href="../_images/snr_windows_and_bandwidth.svg"><img alt="A waveform with separate noise and signal windows above a frequency-domain SNR passband diagram." src="../_images/snr_windows_and_bandwidth.svg" style="width: 92%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 14 </span><span class="caption-text">Time-domain metrics compare amplitudes measured in the noise and signal
+windows (top).  <code class="docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code> estimates spectra from the same windows
+and finds a contiguous usable band with a search initialized at <code class="docutils literal notranslate"><span class="pre">f0</span></code> where
+amplitude SNR exceeds <code class="docutils literal notranslate"><span class="pre">band_cutoff_snr</span></code> (bottom).  The illustrated case has
+<code class="docutils literal notranslate"><span class="pre">f0</span></code> inside the band; the curves are schematic, not measured data.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <p>All algorithms to estimate <em>snr</em> require a <cite>TimeWindow</cite> defining what section of
 data should be used for computing some metric for signal and noise to
 compute the ratio.  The metric applied to each window may or may not always
-be the same.</p>
+be the same.  The windows may have different lengths, but both must lie inside
+the datum.  Keep the noise window clear of the target arrival and choose a
+signal window long enough to contain the signal whose quality is being tested.</p>
 </section>
 <section id="time-window-amplitude-metrics">
 <h2>Time Window Amplitude Metrics<a class="headerlink" href="#time-window-amplitude-metrics" title="Link to this heading">#</a></h2>
@@ -632,6 +645,14 @@ of the signal power spectral density to the estimated noise power spectral
 density.  The high-frequency search is bounded by 80% of Nyquist.  The
 <code class="docutils literal notranslate"><span class="pre">band_cutoff_snr</span></code> parameter therefore defines the minimum SNR at which the
 algorithm considers a signal to be present.</p>
+<p>The bottom panel of <a class="reference internal" href="#snr-time-windows-figure"><span class="std std-numref">Fig. 14</span></a> shows the resulting
+quantities.  <code class="docutils literal notranslate"><span class="pre">low_f_band_edge</span></code> and <code class="docutils literal notranslate"><span class="pre">high_f_band_edge</span></code> are the cutoff
+crossings that bound the accepted band.  <code class="docutils literal notranslate"><span class="pre">bandwidth</span></code> is reported in decibels
+as <span class="math notranslate nohighlight">\(20\log_{10}(f_h/f_l)\)</span> when the low edge is nonzero, rather than as the
+linear difference <span class="math notranslate nohighlight">\(f_h-f_l\)</span>.  <code class="docutils literal notranslate"><span class="pre">bandwidth_fraction</span></code> describes the usable
+fraction of the analyzed frequency range.  If no sufficiently wide band is
+found, the estimator returns no bandwidth metrics and records an <code class="docutils literal notranslate"><span class="pre">Invalid</span></code>
+diagnostic; callers should not interpret that outcome as an SNR of zero.</p>
 <p>The signal and noise spectra are estimated with a multitaper method.  Its
 smoothing scale is controlled by the time-bandwidth product, <code class="docutils literal notranslate"><span class="pre">tbp</span></code>, through
 the formula:</p>

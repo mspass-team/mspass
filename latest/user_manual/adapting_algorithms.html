@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Adapting an Existing Algorithm to MsPASS &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
+    <title>Adapting an Existing Algorithm to MsPASS &#8212; MsPASS 2.4.2.dev39+g9b3dd212 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
+    <script src="../_static/documentation_options.js?v=d791a11d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Graphics in MsPASS" href="graphics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev38" />
+  <meta name="docsearch:version" content="2.4.2.dev39" />
   </head>
   
   
@@ -366,8 +366,8 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">MsPASS Database CRUD API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
@@ -660,7 +660,7 @@ wrapped the functions with a name containing a leading underscore.)</p></li>
 <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code> to <code class="docutils literal notranslate"><span class="pre">_WindowData3C</span></code>.  The public function adds ensemble
 handling, short-segment policies, error logging, and object-history support.
 It is decorated with
-<code class="xref py py-func docutils literal notranslate"><span class="pre">mspass_func_wrapper()</span></code>.</p>
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper" title="mspasspy.util.decorators.mspass_func_wrapper"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspass_func_wrapper()</span></code></a>.</p>
 <p>A new atomic function commonly starts with this pattern:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
 
@@ -688,9 +688,9 @@ ensemble behavior.  Use <code class="docutils literal notranslate"><span class="
 arg0 and returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.  Object history is off by default; when callers set
 <code class="docutils literal notranslate"><span class="pre">object_history=True</span></code>, they must also supply <code class="docutils literal notranslate"><span class="pre">alg_id</span></code>.  For a class method
 whose first data argument follows <code class="docutils literal notranslate"><span class="pre">self</span></code>, use
-<code class="xref py py-func docutils literal notranslate"><span class="pre">mspass_method_wrapper()</span></code>.  Functions consuming
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_method_wrapper" title="mspasspy.util.decorators.mspass_method_wrapper"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspass_method_wrapper()</span></code></a>.  Functions consuming
 two MsPASS data objects require
-<code class="xref py py-func docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi()</span></code> or explicit error
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper_multi" title="mspasspy.util.decorators.mspass_func_wrapper_multi"><code class="xref py py-func docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi()</span></code></a> or explicit error
 and history handling.</p>
 </section>
 <section id="example-3-mixed-c-and-python-scale-function">
