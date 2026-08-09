@@ -147,6 +147,36 @@ function retry_mongosh_command {
   return 1
 }
 
+function ensure_shard_registered {
+  local shard_connection="$1"
+  local shard_name="${shard_connection%%/*}"
+  local ensure_script
+
+  if ! retry_mongosh_command "shard ${shard_name} primary" \
+    --host "$shard_connection" --quiet --eval \
+    'const hello = db.adminCommand({hello: 1}); if (!(hello.isWritablePrimary || hello.ismaster)) { quit(1); }'; then
+    return 1
+  fi
+
+  ensure_script="
+    const connection = \"${shard_connection}\";
+    const name = \"${shard_name}\";
+    const listed = db.adminCommand({listShards: 1});
+    if (!listed.ok) { quit(1); }
+    const existing = listed.shards.find((shard) => shard._id === name);
+    if (existing && existing.host !== connection) {
+      print(\"Shard \" + name + \" is registered as \" + existing.host + \" instead of \" + connection);
+      quit(1);
+    }
+    if (!existing) {
+      const added = sh.addShard(connection);
+      if (!added.ok) { quit(1); }
+    }
+  "
+  retry_mongosh_command "register shard ${shard_name}" \
+    --host "$HOSTNAME" --port "$MONGODB_PORT" --eval "$ensure_script"
+}
+
 # This sets defaults for this set of env variables
 if [[ -z ${MSPASS_DB_DIR} ]]; then
   MSPASS_DB_DIR=${MSPASS_WORKDIR}/db
@@ -444,6 +474,9 @@ if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
       start_db_scratch
     fi
   elif [ "$MSPASS_ROLE" = "dbmanager" ]; then
+    if [[ -n ${MSPASS_DB_READY_FILE:-} ]]; then
+      rm -f -- "$MSPASS_DB_READY_FILE"
+    fi
     # config server configuration
     MONGODB_CONFIG_PORT=$(($MONGODB_PORT+1))
     if [ -d ${MONGO_DATA}_config ]; then
@@ -492,26 +525,40 @@ if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
 
       # start a mongos router server
       mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
-      # add shard clusters
-      for i in ${MSPASS_SHARD_LIST[@]}; do
-        echo "add shard with host ${i}"
-        if ! retry_mongosh_command "add shard ${i}" \
-          --host "$HOSTNAME" --port "$MONGODB_PORT" --eval "sh.addShard(\"${i}\")"; then
+    fi
+
+    if [[ -z ${MSPASS_SHARD_LIST:-} ]]; then
+      echo "ERROR: MSPASS_SHARD_LIST must contain at least one shard" >&2
+      exit 1
+    fi
+    for i in ${MSPASS_SHARD_LIST[@]}; do
+      echo "ensure shard ${i} is reachable and registered"
+      if ! ensure_shard_registered "$i"; then
+        exit 1
+      fi
+    done
+
+    if [[ -n ${MSPASS_SHARD_DATABASE:-} ]]; then
+      # enable database sharding
+      echo "enable database $MSPASS_SHARD_DATABASE sharding"
+      if ! retry_mongosh_command "enable database $MSPASS_SHARD_DATABASE sharding" \
+        --host "$HOSTNAME" --port "$MONGODB_PORT" --eval "sh.enableSharding(\"${MSPASS_SHARD_DATABASE}\")"; then
+        exit 1
+      fi
+      # shard collection(using hashed)
+      for i in ${MSPASS_SHARD_COLLECTIONS[@]}; do
+        echo "shard collection $MSPASS_SHARD_DATABASE.${i%%:*} and shard key is ${i##*:}"
+        if ! retry_mongosh_command "shard collection $MSPASS_SHARD_DATABASE.${i%%:*}" \
+          --host "$HOSTNAME" --port "$MONGODB_PORT" --eval "sh.shardCollection(\"$MSPASS_SHARD_DATABASE.${i%%:*}\", {${i##*:}: \"hashed\"})"; then
           exit 1
         fi
       done
     fi
 
-    # enable database sharding
-    echo "enable database $MSPASS_SHARD_DATABASE sharding"
-    mongosh --host $HOSTNAME --port $MONGODB_PORT --eval "sh.enableSharding(\"${MSPASS_SHARD_DATABASE}\")"
-    sleep ${MSPASS_SLEEP_TIME}
-    # shard collection(using hashed)
-    for i in ${MSPASS_SHARD_COLLECTIONS[@]}; do
-      echo "shard collection $MSPASS_SHARD_DATABASE.${i%%:*} and shard key is ${i##*:}"
-      mongosh --host $HOSTNAME --port $MONGODB_PORT --eval "sh.shardCollection(\"$MSPASS_SHARD_DATABASE.${i%%:*}\", {${i##*:}: \"hashed\"})"
-      sleep ${MSPASS_SLEEP_TIME}
-    done
+    if [[ -n ${MSPASS_DB_READY_FILE:-} ]] && ! touch "$MSPASS_DB_READY_FILE"; then
+      echo "ERROR: could not create database readiness file $MSPASS_DB_READY_FILE" >&2
+      exit 1
+    fi
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "shard" ]; then
     [[ -n $MSPASS_SHARD_ID ]] || MSPASS_SHARD_ID=$MY_ID
