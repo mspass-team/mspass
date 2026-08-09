@@ -26,6 +26,12 @@ although not that order for pedagogic reasons.
 The final section covers an auxiliary issue of MongoDB: indexes.
 Indexes are critical for query performance, but are not required.
 
+This chapter teaches MongoDB concepts and direct PyMongo operations.  For
+normal waveform create, read, update, and delete operations, use the higher
+level :ref:`MsPASS Database CRUD API <CRUD_operations>`.  The two guides are
+kept as separate layers so that users who only need the MsPASS API do not have
+to work through the lower-level query language first.
+
 Concepts
 -------------
 MongoDB for RDBMS Users

@@ -89,8 +89,8 @@ Choose your path
 
    user_manual/database_concepts
    user_manual/schema_choices
-   user_manual/mongodb_and_mspass
-   user_manual/CRUD_operations
+   MongoDB and PyMongo primer <user_manual/mongodb_and_mspass>
+   MsPASS Database CRUD API <user_manual/CRUD_operations>
    user_manual/normalization
    user_manual/importing_data
    user_manual/importing_tabular_data
