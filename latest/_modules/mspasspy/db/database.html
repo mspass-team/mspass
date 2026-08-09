@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.2.dev32+gae8ef7a5 documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f3f95141"></script>
+    <script src="../../../_static/documentation_options.js?v=3fe60d42"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev32" />
+  <meta name="docsearch:version" content="2.4.2.dev38" />
   </head>
   
   
@@ -1517,8 +1517,17 @@
             <span class="c1"># kind of data returned in the &quot;abortions&quot; list.</span>
             <span class="c1"># See Undertaker docstring or User Manual for concepts</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">abortions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">abortions</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">handle_abortion</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">abortion_elog</span> <span class="ow">in</span> <span class="n">abortions</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
+                        <span class="n">abortion</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">abortion</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                        <span class="n">abortion</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="n">abortion</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">abortion_elog</span>
+                    <span class="n">abortion</span><span class="p">[</span><span class="s2">&quot;is_abortion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">abortion</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">handle_abortion</span><span class="p">(</span><span class="n">abortion</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">live</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># note this function returns a clean ensemble with</span>
                 <span class="c1"># no dead data.  It will be considered bad only if is empty</span>
@@ -1591,7 +1600,7 @@
                     <span class="n">ensemble</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">()</span>
             <span class="c1"># elog referenced here comes from doclist2mdlist - a bit confusing</span>
             <span class="c1"># but delayed to here to construct ensemble first</span>
-            <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">elog</span>
 
             <span class="c1"># We post this even to dead ensmebles</span>
@@ -8862,14 +8871,17 @@
 <span class="sd">    a document to md is problematic.  The issues are defined in the</span>
 <span class="sd">    related `doc2md` function that is used here for the atomic operation of</span>
 <span class="sd">    converting a given document to a Metadata object.   The issue we have to</span>
-<span class="sd">    face is what to do with warning message and documents that have</span>
+<span class="sd">    face is what to do with warning messages and documents that have</span>
 <span class="sd">    fatal flaws (marked dead when passed through doc2md).  Warning</span>
-<span class="sd">    messages are passed to the ErrorLogger component of the returned tuple.</span>
+<span class="sd">    messages from retained documents are passed to the ErrorLogger component</span>
+<span class="sd">    of the returned tuple.</span>
 <span class="sd">    Callers should either print those messages or post them to the</span>
 <span class="sd">    ensemble metadata that is expected to be constructed after calling</span>
-<span class="sd">    this function.   In &quot;cautious&quot; and &quot;pedantic&quot; mode doc2md may mark</span>
+<span class="sd">    this function.  In &quot;cautious&quot; and &quot;pedantic&quot; mode doc2md may mark</span>
 <span class="sd">    a datum as bad with a kill return.  When a document is &quot;killed&quot;</span>
-<span class="sd">    by doc2md it is dropped and two thi</span>
+<span class="sd">    by doc2md it is dropped from the Metadata list and returned with its</span>
+<span class="sd">    corresponding ErrorLogger so the caller can preserve the reason for the</span>
+<span class="sd">    failed read.</span>
 
 <span class="sd">    :param doclist:  list of documents to be converted to Metadata with schema</span>
 <span class="sd">      constraints</span>
@@ -8881,30 +8893,31 @@
 <span class="sd">        0. filtered array of Metadata containers.</span>
 <span class="sd">        1. live boolean.   Set False only if conversion of all the documents</span>
 <span class="sd">           in doclist failed.</span>
-<span class="sd">        2. ErrorLogger where warning and kill messages are posted (see above).</span>
-<span class="sd">        3. an array of documents that could not be converted (i.e. marked</span>
-<span class="sd">           bad when processed with doc2md.)</span>
+<span class="sd">        2. ErrorLogger containing warnings from documents retained in the</span>
+<span class="sd">           Metadata list.</span>
+<span class="sd">        3. an array of ``(document, ErrorLogger)`` tuples for documents that</span>
+<span class="sd">           could not be converted (i.e. were marked bad by ``doc2md``).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mdlist</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">ensemble_elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
-    <span class="n">bodies</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">abortions</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">doclist</span><span class="p">:</span>
-        <span class="n">md</span><span class="p">,</span> <span class="n">live</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">doc2md</span><span class="p">(</span>
+        <span class="n">md</span><span class="p">,</span> <span class="n">datum_is_live</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">doc2md</span><span class="p">(</span>
             <span class="n">doc</span><span class="p">,</span> <span class="n">database_schema</span><span class="p">,</span> <span class="n">metadata_schema</span><span class="p">,</span> <span class="n">wfcol</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">mode</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">live</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">datum_is_live</span><span class="p">:</span>
             <span class="n">mdlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ensemble_elog</span> <span class="o">+=</span> <span class="n">elog</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">bodies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">ensemble_elog</span> <span class="o">+=</span> <span class="n">elog</span>
+            <span class="n">abortions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">doc</span><span class="p">,</span> <span class="n">elog</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">live</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">live</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">,</span> <span class="n">live</span><span class="p">,</span> <span class="n">ensemble_elog</span><span class="p">,</span> <span class="n">bodies</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">,</span> <span class="n">live</span><span class="p">,</span> <span class="n">ensemble_elog</span><span class="p">,</span> <span class="n">abortions</span><span class="p">]</span></div>
 
 
 

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.ensembles &#8212; MsPASS 2.4.2.dev32+gae8ef7a5 documentation</title>
+    <title>mspasspy.db.ensembles &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f3f95141"></script>
+    <script src="../../../_static/documentation_options.js?v=3fe60d42"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev32" />
+  <meta name="docsearch:version" content="2.4.2.dev38" />
   </head>
   
   
@@ -690,131 +690,58 @@
     <span class="p">]</span>
     <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">sortlist</span><span class="p">)</span>
 
-    <span class="n">ndocs</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-
     <span class="c1"># We create an array of ensembles - one for each unique combination of</span>
     <span class="c1"># chan and loc.</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">ensemble_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">current_keys</span> <span class="o">=</span> <span class="n">seed_keys</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-            <span class="n">current</span> <span class="o">=</span> <span class="n">_initialize_ensemble</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tend</span><span class="p">)</span>
-            <span class="n">segments</span> <span class="o">=</span> <span class="n">TimeSeriesVector</span><span class="p">()</span>
-            <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+    <span class="n">current_keys</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">segments</span> <span class="o">=</span> <span class="n">TimeSeriesVector</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_current_segments</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">datum</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tend</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">test_keys</span> <span class="o">=</span> <span class="n">seed_keys</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-            <span class="c1"># Handle the last item specially.</span>
-            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">ndocs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">test_keys</span> <span class="o">==</span> <span class="n">current_keys</span><span class="p">:</span>
-                    <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="c1"># I don&#39;t think this will ever be executed but</span>
-                        <span class="c1"># it makes the logic more robust</span>
-                        <span class="n">datum</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tend</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">datum</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span>
-                            <span class="n">segments</span><span class="p">,</span>
-                            <span class="n">starttime</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
-                            <span class="n">endtime</span><span class="o">=</span><span class="n">tend</span><span class="p">,</span>
-                            <span class="n">fix_overlaps</span><span class="o">=</span><span class="n">fix_overlaps</span><span class="p">,</span>
-                            <span class="n">zero_gaps</span><span class="o">=</span><span class="n">zero_gaps</span><span class="p">,</span>
-                            <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
-                        <span class="p">)</span>
+            <span class="n">datum</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span>
+                <span class="n">segments</span><span class="p">,</span>
+                <span class="n">starttime</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
+                <span class="n">endtime</span><span class="o">=</span><span class="n">tend</span><span class="p">,</span>
+                <span class="n">fix_overlaps</span><span class="o">=</span><span class="n">fix_overlaps</span><span class="p">,</span>
+                <span class="n">zero_gaps</span><span class="o">=</span><span class="n">zero_gaps</span><span class="p">,</span>
+                <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span> <span class="ow">or</span> <span class="n">save_zombies</span><span class="p">:</span>
+            <span class="n">current</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
 
-                    <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span> <span class="ow">or</span> <span class="n">save_zombies</span><span class="p">:</span>
-                        <span class="n">current</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># This is special cleanup code to handle</span>
-                    <span class="c1"># the case when the last doc defines a new segment</span>
-                    <span class="c1"># May be confusing because here we break the</span>
-                    <span class="c1"># loop while if we are gluing segments we</span>
-                    <span class="c1"># continue through the next block.   Because of</span>
-                    <span class="c1"># the ordering of the data this block will only</span>
-                    <span class="c1"># be entered if the last doc is a new net:sta:chan:loc</span>
-                    <span class="c1"># that would otherwise initiate creation and appending</span>
-                    <span class="c1"># of a new segments vector.</span>
-                    <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
-                    <span class="n">datum</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tend</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>  <span class="c1"># do nothing further if dead</span>
-                        <span class="k">if</span> <span class="n">current_keys</span><span class="o">.</span><span class="n">same_channel</span><span class="p">(</span><span class="n">test_keys</span><span class="p">):</span>
-                            <span class="n">current</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">ensemble_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
-                            <span class="n">current</span> <span class="o">=</span> <span class="n">_initialize_ensemble</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tend</span><span class="p">)</span>
-                            <span class="n">current</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_current_ensemble</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># set_live refuses to revive an ensemble containing only zombies.</span>
+            <span class="n">current</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">ensemble_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
 
-                <span class="c1"># All cases for this cleanup have to push the latest</span>
-                <span class="c1"># ensemble to the output that is returned after exiting</span>
-                <span class="c1"># the loop</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="c1"># if all the contents of current are zombies this</span>
-                    <span class="c1"># method will refuse to set current as live</span>
-                    <span class="n">current</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># due to a feature of the C++ ensemble templates</span>
-                    <span class="c1"># this is not currently required but better to</span>
-                    <span class="c1"># be explicit in this kill</span>
-                    <span class="n">current</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-                <span class="n">ensemble_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="n">test_keys</span> <span class="o">=</span> <span class="n">seed_keys</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current_keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_keys</span> <span class="o">=</span> <span class="n">test_keys</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="n">_initialize_ensemble</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tend</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">test_keys</span> <span class="o">!=</span> <span class="n">current_keys</span><span class="p">:</span>
+            <span class="n">append_current_segments</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">current_keys</span><span class="o">.</span><span class="n">same_channel</span><span class="p">(</span><span class="n">test_keys</span><span class="p">):</span>
+                <span class="n">append_current_ensemble</span><span class="p">()</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="n">_initialize_ensemble</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tend</span><span class="p">)</span>
+            <span class="n">current_keys</span> <span class="o">=</span> <span class="n">test_keys</span>
+            <span class="n">segments</span> <span class="o">=</span> <span class="n">TimeSeriesVector</span><span class="p">()</span>
 
-            <span class="k">elif</span> <span class="n">test_keys</span> <span class="o">!=</span> <span class="n">current_keys</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">datum</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tend</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">datum</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span>
-                        <span class="n">segments</span><span class="p">,</span>
-                        <span class="n">starttime</span><span class="o">=</span><span class="n">tstart</span><span class="p">,</span>
-                        <span class="n">endtime</span><span class="o">=</span><span class="n">tend</span><span class="p">,</span>
-                        <span class="n">fix_overlaps</span><span class="o">=</span><span class="n">fix_overlaps</span><span class="p">,</span>
-                        <span class="n">zero_gaps</span><span class="o">=</span><span class="n">zero_gaps</span><span class="p">,</span>
-                        <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
-                    <span class="p">)</span>
-                <span class="c1"># Merge can kill data for a variety of reasons</span>
-                <span class="c1"># The cutsy boolean name controls if the dead are retained</span>
-                <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span> <span class="ow">or</span> <span class="n">save_zombies</span><span class="p">:</span>
-                    <span class="n">current</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
-                <span class="c1"># Decide if we need to start a new ensemble.  That</span>
-                <span class="c1"># happens here when the channel names do not match</span>
-                <span class="c1"># If they match we assume one of the other codes changed</span>
-                <span class="c1"># so we initialize the segments vector</span>
-                <span class="k">if</span> <span class="n">current_keys</span><span class="o">.</span><span class="n">same_channel</span><span class="p">(</span><span class="n">test_keys</span><span class="p">):</span>
-                    <span class="n">current_keys</span> <span class="o">=</span> <span class="n">test_keys</span>
-                    <span class="n">segments</span> <span class="o">=</span> <span class="n">TimeSeriesVector</span><span class="p">()</span>
-                    <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-                        <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="n">current</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># due to a feature of the C++ ensemble templates</span>
-                        <span class="c1"># this is not currently required but better to</span>
-                        <span class="c1"># be explicit in this kill</span>
-                        <span class="n">current</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-                    <span class="c1"># We always post current even if dead and empty</span>
-                    <span class="c1"># caller needs to handle null returns.</span>
-                    <span class="n">ensemble_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="n">ndocs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="n">current</span> <span class="o">=</span> <span class="n">_initialize_ensemble</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">tstart</span><span class="p">,</span> <span class="n">tend</span><span class="p">)</span>
-                        <span class="n">current_keys</span> <span class="o">=</span> <span class="n">test_keys</span>
-                        <span class="n">segments</span> <span class="o">=</span> <span class="n">TimeSeriesVector</span><span class="p">()</span>
-                        <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-                            <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
 
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
-                <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
-                <span class="n">current_keys</span> <span class="o">=</span> <span class="n">test_keys</span>
-
-        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">append_current_segments</span><span class="p">()</span>
+        <span class="n">append_current_ensemble</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">ensemble_list</span></div>
 

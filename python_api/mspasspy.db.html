@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.2.dev32+gae8ef7a5 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=f3f95141"></script>
+    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev32" />
+  <meta name="docsearch:version" content="2.4.2.dev38" />
   </head>
   
   
@@ -2757,14 +2757,17 @@ The function has to robustly handle the fact that sometimes converting
 a document to md is problematic.  The issues are defined in the
 related <cite>doc2md</cite> function that is used here for the atomic operation of
 converting a given document to a Metadata object.   The issue we have to
-face is what to do with warning message and documents that have
+face is what to do with warning messages and documents that have
 fatal flaws (marked dead when passed through doc2md).  Warning
-messages are passed to the ErrorLogger component of the returned tuple.
+messages from retained documents are passed to the ErrorLogger component
+of the returned tuple.
 Callers should either print those messages or post them to the
 ensemble metadata that is expected to be constructed after calling
-this function.   In “cautious” and “pedantic” mode doc2md may mark
+this function.  In “cautious” and “pedantic” mode doc2md may mark
 a datum as bad with a kill return.  When a document is “killed”
-by doc2md it is dropped and two thi</p>
+by doc2md it is dropped from the Metadata list and returned with its
+corresponding ErrorLogger so the caller can preserve the reason for the
+failed read.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>doclist</strong> (<em>any iterable container holding an array</em><em> of </em><em>dict containers
@@ -2778,9 +2781,10 @@ constraints</p>
 <li><p>filtered array of Metadata containers.</p></li>
 <li><p>live boolean.   Set False only if conversion of all the documents
 in doclist failed.</p></li>
-<li><p>ErrorLogger where warning and kill messages are posted (see above).</p></li>
-<li><p>an array of documents that could not be converted (i.e. marked
-bad when processed with doc2md.)</p></li>
+<li><p>ErrorLogger containing warnings from documents retained in the
+Metadata list.</p></li>
+<li><p>an array of <code class="docutils literal notranslate"><span class="pre">(document,</span> <span class="pre">ErrorLogger)</span></code> tuples for documents that
+could not be converted (i.e. were marked bad by <code class="docutils literal notranslate"><span class="pre">doc2md</span></code>).</p></li>
 </ol>
 </p>
 </dd>

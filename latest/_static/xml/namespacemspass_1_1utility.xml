@@ -27,6 +27,7 @@
     <innerclass refid="classmspass_1_1utility_1_1sort__by__stage" prot="public">mspass::utility::sort_by_stage</innerclass>
     <innerclass refid="structmspass_1_1utility_1_1_spherical_coordinate" prot="public">mspass::utility::SphericalCoordinate</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_vector_statistics" prot="public">mspass::utility::VectorStatistics</innerclass>
+    <innernamespace refid="namespacemspass_1_1utility_1_1detail">mspass::utility::detail</innernamespace>
     <innernamespace refid="namespacemspass_1_1utility_1_1memory__constants">mspass::utility::memory_constants</innernamespace>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3" prot="public" static="no" strong="yes">
@@ -473,7 +474,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="200" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" declline="200" declcolumn="14"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="204" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" declline="204" declcolumn="14"/>
       </memberdef>
       <memberdef kind="function" id="_antelope_pf_8h_1a668e6cab30a8a825f15bfe143ee339f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref></type>
@@ -492,7 +493,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="203" column="12" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" declline="203" declcolumn="12"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="207" column="12" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" declline="207" declcolumn="12"/>
       </memberdef>
       <memberdef kind="function" id="_error_logger_8h_1a19f2e16ad15873ff1530ba11933f0ed7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1045,12 +1046,12 @@
         </briefdescription>
         <detaileddescription>
 <para>Standard method returns a string defining the top level data directory for mspass.</para>
-<para>Programs often need a standard set of initialization files. In mspass we group these under a &quot;data&quot; directory. This procedure returns the top of the chain of data directories. Note this is the top of a directory chain and most application will need to add a subdirectory. e.g.</para>
+<para>Programs often need a standard set of initialization files. In mspass we group these under a &quot;data&quot; directory. This procedure first uses the data directory under MSPASS_HOME when that environment variable is defined. When called from the Python extension without MSPASS_HOME, it uses the data directory installed with the mspasspy package. Note this is the top of a directory chain and most applications will need to add a subdirectory. e.g.</para>
 <para>string datadir=mspass::utility::data_directory(); string mydatafile=datadir+&quot;/pf&quot;; </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/data_directory.cc" line="5" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/data_directory.cc" bodystart="5" bodyend="18" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/utility.h" declline="21" declcolumn="13"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/data_directory.cc" line="19" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/data_directory.cc" bodystart="19" bodyend="34" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/utility.h" declline="23" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="utility_8h_1ab6115394dc9bc0e57f7b97159df84668" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -1082,7 +1083,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc" line="9" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc" bodystart="9" bodyend="25" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/utility.h" declline="30" declcolumn="13"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc" line="9" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc" bodystart="9" bodyend="25" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/utility.h" declline="32" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="utility_8h_1a13a6393c4dc5fa8b256ec3aa67e6f171" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -1114,7 +1115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc" line="26" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc" bodystart="26" bodyend="43" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/utility.h" declline="39" declcolumn="13"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc" line="26" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc" bodystart="26" bodyend="43" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/utility.h" declline="41" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="_antelope_pf_8cc_1a36c120b3770caf7aca500c526141d6dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>

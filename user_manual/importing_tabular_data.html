@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Importing Tabular Data &#8212; MsPASS 2.4.2.dev32+gae8ef7a5 documentation</title>
+    <title>Importing Tabular Data &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=f3f95141"></script>
+    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Importing Data" href="importing_data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev32" />
+  <meta name="docsearch:version" content="2.4.2.dev38" />
   </head>
   
   
@@ -637,7 +637,8 @@ can be created with a variant of the following code fragment:</p>
 <p>where <code class="docutils literal notranslate"><span class="pre">usarray</span></code> is the database name (and file-name prefix).  The constructor
 also accepts an optional <code class="docutils literal notranslate"><span class="pre">pffile</span></code> argument defining the table layouts; when
 it is omitted, MsPASS loads the bundled <code class="docutils literal notranslate"><span class="pre">DatascopeDatabase.pf</span></code> through
-<code class="docutils literal notranslate"><span class="pre">$MSPASS_HOME</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">$MSPASS_HOME/data/pf</span></code> when <code class="docutils literal notranslate"><span class="pre">MSPASS_HOME</span></code> is set, or from the installed
+<code class="docutils literal notranslate"><span class="pre">mspasspy</span></code> package data otherwise.</p>
 <p>Experienced Datascope users will know that Datascope has a useful,
 albeit confusing, feature that allows the collection of
 files that define the database to be spread through multiple directories.

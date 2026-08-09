@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="151" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="151" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="155" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="155" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_antelope_pf_1ae2055483c16df9d35067a3538fe48d8b" prot="private" static="no" mutable="no">
         <type>std::map&lt; std::string, <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> &gt;</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="153" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="153" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="157" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="157" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -64,13 +64,13 @@
 <para>Construct from a base pf name. </para>
         </briefdescription>
         <detaileddescription>
-<para>This constructor acts like the antelope pfread function for parameter files constructed in plain C. That is, the argument is a base name sans the .pf extension. Like antelope&apos;s pfread it will follow the chain of directories defined by PFPATH. As with the antelope pfread procedure the last file read takes precendence. Note if PFPATH is not defined the path defaults to &quot;.&quot;. Further if pfbase begins with a slash (i.e. &quot;/&quot;) it is assumed to be the actual file name to read and the PFPATH feature is disabled.</para>
+<para>This constructor acts like the antelope pfread function for parameter files constructed in plain C. A relative base name is first read from the MsPASS data directory when available: MSPASS_HOME/data when MSPASS_HOME is set, or the installed mspasspy package data after the Python extension registers it. A standalone caller without MSPASS_HOME instead starts with the directories defined by PFPATH; if PFPATH is not defined, that path defaults to &quot;.&quot;. As with the antelope pfread procedure, the last file read takes precedence, so PFPATH or the current directory can override the MsPASS data file. Further if pfbase begins with a slash (i.e. &quot;/&quot;) it is assumed to be the actual file name to read and the PFPATH feature is disabled.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>pfbase</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a the base pf name (always adds .pf to each name in PFPATH)</para>
+<para>is the base pf name. Relative names may include or omit the .pf suffix; it is added when absent.</para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="81" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="325" bodyend="379"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="85" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="325" bodyend="386"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a768ccdd08e9b1eaebc904852cd36b8b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -118,7 +118,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="90" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="192" bodyend="268"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="94" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="192" bodyend="268"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
       </memberdef>
@@ -139,7 +139,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="92" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="381" bodyend="384"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="96" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="388" bodyend="391"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a64065097fb1ebc22192ce455cbeca3fb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
@@ -179,7 +179,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="102" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="385" bodyend="391"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="106" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="392" bodyend="398"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a7853329ba52cc91460a435057e6a8e85" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
@@ -221,7 +221,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="115" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="392" bodyend="399"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="119" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="399" bodyend="406"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a118fb63722ad11707cb2fbd58df5f6e6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
@@ -237,7 +237,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="117" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="400" bodyend="406"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="121" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="407" bodyend="413"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1ada5c4a1b9407cb17a0fa953946473211" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
@@ -253,7 +253,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="119" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="407" bodyend="413"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="123" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="414" bodyend="420"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1adcf3ebf85924a353c9c2d8d6666c4068" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -273,7 +273,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="132" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="423" bodyend="435"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="136" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="430" bodyend="442"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
       </memberdef>
@@ -294,7 +294,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="134" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="414" bodyend="422"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="138" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="421" bodyend="429"/>
         <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" compoundref="_metadata_8cc" startline="460" endline="466">mspass::utility::Metadata::operator=</references>
       </memberdef>
@@ -326,7 +326,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="148" column="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="152" column="8"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -346,7 +346,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="157" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="270" bodyend="299"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="161" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="270" bodyend="299"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -394,7 +394,7 @@ This version for MsPASS is derived from a similar thing called a PfStyleMetadata
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="61" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="61" bodyend="158"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="61" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="61" bodyend="162"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_antelope_pf_1aec63cc4c7b66e36254ee469f09d50abb" prot="public" virt="non-virtual"><scope>mspass::utility::AntelopePf</scope><name>AntelopePf</name></member>
       <member refid="classmspass_1_1utility_1_1_antelope_pf_1a35df43d52aca279262f4cb672cfe13ee" prot="public" virt="non-virtual"><scope>mspass::utility::AntelopePf</scope><name>AntelopePf</name></member>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Deploy MsPASS with Conda &#8212; MsPASS 2.4.2.dev32+gae8ef7a5 documentation</title>
+    <title>Deploy MsPASS with Conda &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=f3f95141"></script>
+    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Deploy MsPASS with Docker Compose" href="deploy_mspass_with_docker_compose.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev32" />
+  <meta name="docsearch:version" content="2.4.2.dev38" />
   </head>
   
   
@@ -528,11 +528,11 @@ checkout or <code class="docutils literal notranslate"><span class="pre">~/.loca
 <h2>About <code class="docutils literal notranslate"><span class="pre">MSPASS_HOME</span></code><a class="headerlink" href="#about-mspass-home" title="Link to this heading">#</a></h2>
 <p>The Conda package includes the standard MsPASS schema and parameter files, so
 you do not normally need to clone the repository or set <code class="docutils literal notranslate"><span class="pre">MSPASS_HOME</span></code>.</p>
-<p>Some older C++-backed interfaces still look for defaults below
-<code class="docutils literal notranslate"><span class="pre">$MSPASS_HOME/data</span></code>.  If one of those interfaces reports that a data file is
-missing, set <code class="docutils literal notranslate"><span class="pre">MSPASS_HOME</span></code> to the installed package directory for that
-shell:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_HOME</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>python<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;from pathlib import Path; import mspasspy; print(Path(mspasspy.__file__).resolve().parent)&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+<p>Python and C++-backed interfaces locate those files in the installed package
+when <code class="docutils literal notranslate"><span class="pre">MSPASS_HOME</span></code> is unset.  Set <code class="docutils literal notranslate"><span class="pre">MSPASS_HOME</span></code> only when you want to
+override the packaged files with a custom data directory.  Its value must be
+the parent of that custom <code class="docutils literal notranslate"><span class="pre">data</span></code> directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_HOME</span><span class="o">=</span>/path/to/custom/mspass
 </pre></div>
 </div>
 </section>

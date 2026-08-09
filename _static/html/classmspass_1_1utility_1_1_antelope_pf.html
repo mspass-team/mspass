@@ -74,7 +74,7 @@ MathJax.Hub.Config({
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MsPASS C++ API
-   &#160;<span id="projectnumber">2.4.2.dev32+gae8ef7a5</span>
+   &#160;<span id="projectnumber">2.4.2.dev38+g6708872f</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -374,10 +374,10 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Construct from a base pf name. </p>
-<p>This constructor acts like the antelope pfread function for parameter files constructed in plain C. That is, the argument is a base name sans the .pf extension. Like antelope's pfread it will follow the chain of directories defined by PFPATH. As with the antelope pfread procedure the last file read takes precendence. Note if PFPATH is not defined the path defaults to ".". Further if pfbase begins with a slash (i.e. "/") it is assumed to be the actual file name to read and the PFPATH feature is disabled.</p>
+<p>This constructor acts like the antelope pfread function for parameter files constructed in plain C. A relative base name is first read from the MsPASS data directory when available: MSPASS_HOME/data when MSPASS_HOME is set, or the installed mspasspy package data after the Python extension registers it. A standalone caller without MSPASS_HOME instead starts with the directories defined by PFPATH; if PFPATH is not defined, that path defaults to ".". As with the antelope pfread procedure, the last file read takes precedence, so PFPATH or the current directory can override the MsPASS data file. Further if pfbase begins with a slash (i.e. "/") it is assumed to be the actual file name to read and the PFPATH feature is disabled.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">pfbase</td><td>is a the base pf name (always adds .pf to each name in PFPATH)</td></tr>
+    <tr><td class="paramname">pfbase</td><td>is the base pf name. Relative names may include or omit the .pf suffix; it is added when absent.</td></tr>
   </table>
   </dd>
 </dl>
@@ -390,58 +390,65 @@ Additional Inherited Members</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">  325</span>                                       {</div>
 <div class="line"><span class="lineno">  326</span>  <span class="keywordflow">try</span> {</div>
 <div class="line"><span class="lineno">  327</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">list&lt;string&gt;</a> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>;</div>
-<div class="line"><span class="lineno">  328</span>    <span class="keyword">const</span> std::string <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass_home_envname</a>(<span class="stringliteral">&quot;MSPASS_HOME&quot;</span>);</div>
-<div class="line"><span class="lineno">  329</span>    <span class="keywordtype">char</span> *<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">base</a>;</div>
-<div class="line"><span class="lineno">  330</span>    <span class="comment">/* Note man page for getenv says explicitly the return of getenv should not</span></div>
-<div class="line"><span class="lineno">  331</span><span class="comment">            be touched - i.e. don&#39;t free it*/</span></div>
-<div class="line"><span class="lineno">  332</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">base</a> = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">getenv</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass_home_envname</a>.c_str());</div>
-<div class="line"><span class="lineno">  333</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">base</a> != <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">NULL</a>) {</div>
-<div class="line"><span class="lineno">  334</span>      <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.push_back(data_directory() + <span class="stringliteral">&quot;/pf/&quot;</span> + <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>);</div>
-<div class="line"><span class="lineno">  335</span>    }</div>
-<div class="line"><span class="lineno">  336</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">envname</a>(<span class="stringliteral">&quot;PFPATH&quot;</span>);</div>
-<div class="line"><span class="lineno">  337</span>    <span class="keywordtype">char</span> *s = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">getenv</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">envname</a>.c_str());</div>
-<div class="line"><span class="lineno">  338</span>    <span class="keywordflow">if</span> (s == <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">NULL</a>) {</div>
-<div class="line"><span class="lineno">  339</span>      <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.push_back(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>);</div>
-<div class="line"><span class="lineno">  340</span>    }</div>
-<div class="line"><span class="lineno">  341</span>    <span class="comment">/* Test to see if pfbase is an absolute path - if so just use</span></div>
-<div class="line"><span class="lineno">  342</span><span class="comment">     * it and ignore the pfpath feature */</span></div>
-<div class="line"><span class="lineno">  343</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>[0] == <span class="charliteral">&#39;/&#39;</span>) {</div>
-<div class="line"><span class="lineno">  344</span>      <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.push_back(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>);</div>
-<div class="line"><span class="lineno">  345</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  346</span>      <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a> = split_pfpath(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>, s);</div>
-<div class="line"><span class="lineno">  347</span>    }</div>
-<div class="line"><span class="lineno">  348</span>    list&lt;string&gt;::iterator <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>;</div>
-<div class="line"><span class="lineno">  349</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a>;</div>
-<div class="line"><span class="lineno">  350</span> </div>
-<div class="line"><span class="lineno">  351</span>    <span class="keywordflow">for</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a> = 0, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a> = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a> != <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>) {</div>
-<div class="line"><span class="lineno">  352</span>      <span class="comment">// Skip pf files that do not exist</span></div>
-<div class="line"><span class="lineno">  353</span>      <span class="keywordflow">if</span> (access(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>-&gt;c_str(), <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">R_OK</a>))</div>
-<div class="line"><span class="lineno">  354</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  355</span>      <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a> == 0) {</div>
-<div class="line"><span class="lineno">  356</span>        *<span class="keyword">this</span> = pfread(*<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>);</div>
-<div class="line"><span class="lineno">  357</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  358</span>        <a class="code hl_function" href="classmspass_1_1utility_1_1_antelope_pf.html#aec63cc4c7b66e36254ee469f09d50abb">AntelopePf</a> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfnext</a> = pfread(*<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>);</div>
-<div class="line"><span class="lineno">  359</span>        this-&gt;merge_pfmf(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfnext</a>);</div>
-<div class="line"><span class="lineno">  360</span>      }</div>
-<div class="line"><span class="lineno">  361</span>      ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a>;</div>
-<div class="line"><span class="lineno">  362</span>    }</div>
-<div class="line"><span class="lineno">  363</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a> == 0) {</div>
-<div class="line"><span class="lineno">  364</span>      <span class="keywordflow">if</span> (s == <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">NULL</a>) {</div>
-<div class="line"><span class="lineno">  365</span>        <span class="comment">// This was necessary to avoid seg faults when s was a null pointer</span></div>
-<div class="line"><span class="lineno">  366</span>        <span class="comment">// which happens when PFPATH is not set</span></div>
-<div class="line"><span class="lineno">  367</span>        <span class="keywordflow">throw</span> MsPASSError(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;PFPATH is not defined and default pf=&quot;</span>) +</div>
-<div class="line"><span class="lineno">  368</span>                              <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a> + <span class="stringliteral">&quot; was not found&quot;</span>,</div>
-<div class="line"><span class="lineno">  369</span>                          ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  370</span>      } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  371</span>        <span class="keywordflow">throw</span> MsPASSError(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;PFPATH=&quot;</span>) + s + <span class="stringliteral">&quot; had no pf files matching &quot;</span> +</div>
-<div class="line"><span class="lineno">  372</span>                              <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>,</div>
-<div class="line"><span class="lineno">  373</span>                          ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  374</span>      }</div>
-<div class="line"><span class="lineno">  375</span>    }</div>
-<div class="line"><span class="lineno">  376</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  377</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  378</span>  };</div>
-<div class="line"><span class="lineno">  379</span>}</div>
+<div class="line"><span class="lineno">  328</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">is_absolute</a> = !<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>.empty() &amp;&amp; <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>[0] == <span class="charliteral">&#39;/&#39;</span>;</div>
+<div class="line"><span class="lineno">  329</span>    <span class="keywordtype">string</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfname</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>);</div>
+<div class="line"><span class="lineno">  330</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">is_absolute</a> &amp;&amp; (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfname</a>.size() &lt; 3 ||</div>
+<div class="line"><span class="lineno">  331</span>                         <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfname</a>.compare(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfname</a>.size() - 3, 3, <span class="stringliteral">&quot;.pf&quot;</span>) != 0)) {</div>
+<div class="line"><span class="lineno">  332</span>      <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfname</a> += <span class="stringliteral">&quot;.pf&quot;</span>;</div>
+<div class="line"><span class="lineno">  333</span>    }</div>
+<div class="line"><span class="lineno">  334</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">is_absolute</a>) {</div>
+<div class="line"><span class="lineno">  335</span>      <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  336</span>        <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.push_back(data_directory() + <span class="stringliteral">&quot;/pf/&quot;</span> + <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfname</a>);</div>
+<div class="line"><span class="lineno">  337</span>      } <span class="keywordflow">catch</span> (<span class="keyword">const</span> MsPASSError &amp;) {</div>
+<div class="line"><span class="lineno">  338</span>        <span class="comment">/* A standalone C++ caller without MSPASS_HOME has no package data</span></div>
+<div class="line"><span class="lineno">  339</span><span class="comment">         * directory.  Preserve the existing PFPATH/current-directory search.</span></div>
+<div class="line"><span class="lineno">  340</span><span class="comment">         */</span></div>
+<div class="line"><span class="lineno">  341</span>      }</div>
+<div class="line"><span class="lineno">  342</span>    }</div>
+<div class="line"><span class="lineno">  343</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">envname</a>(<span class="stringliteral">&quot;PFPATH&quot;</span>);</div>
+<div class="line"><span class="lineno">  344</span>    <span class="keywordtype">char</span> *s = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">getenv</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">envname</a>.c_str());</div>
+<div class="line"><span class="lineno">  345</span>    <span class="comment">/* Test to see if pfbase is an absolute path - if so just use</span></div>
+<div class="line"><span class="lineno">  346</span><span class="comment">     * it and ignore the pfpath feature */</span></div>
+<div class="line"><span class="lineno">  347</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">is_absolute</a>) {</div>
+<div class="line"><span class="lineno">  348</span>      <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.push_back(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>);</div>
+<div class="line"><span class="lineno">  349</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (s == <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">NULL</a>) {</div>
+<div class="line"><span class="lineno">  350</span>      <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.push_back(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfname</a>);</div>
+<div class="line"><span class="lineno">  351</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  352</span>      <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">list&lt;string&gt;</a> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfpath_files</a> = split_pfpath(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfname</a>, s);</div>
+<div class="line"><span class="lineno">  353</span>      <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.splice(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.end(), <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfpath_files</a>);</div>
+<div class="line"><span class="lineno">  354</span>    }</div>
+<div class="line"><span class="lineno">  355</span>    list&lt;string&gt;::iterator <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>;</div>
+<div class="line"><span class="lineno">  356</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a>;</div>
+<div class="line"><span class="lineno">  357</span> </div>
+<div class="line"><span class="lineno">  358</span>    <span class="keywordflow">for</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a> = 0, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a> = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a> != <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pffiles</a>.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>) {</div>
+<div class="line"><span class="lineno">  359</span>      <span class="comment">// Skip pf files that do not exist</span></div>
+<div class="line"><span class="lineno">  360</span>      <span class="keywordflow">if</span> (access(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>-&gt;c_str(), <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">R_OK</a>))</div>
+<div class="line"><span class="lineno">  361</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  362</span>      <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a> == 0) {</div>
+<div class="line"><span class="lineno">  363</span>        *<span class="keyword">this</span> = pfread(*<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>);</div>
+<div class="line"><span class="lineno">  364</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  365</span>        <a class="code hl_function" href="classmspass_1_1utility_1_1_antelope_pf.html#aec63cc4c7b66e36254ee469f09d50abb">AntelopePf</a> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfnext</a> = pfread(*<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfptr</a>);</div>
+<div class="line"><span class="lineno">  366</span>        this-&gt;merge_pfmf(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfnext</a>);</div>
+<div class="line"><span class="lineno">  367</span>      }</div>
+<div class="line"><span class="lineno">  368</span>      ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a>;</div>
+<div class="line"><span class="lineno">  369</span>    }</div>
+<div class="line"><span class="lineno">  370</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">nread</a> == 0) {</div>
+<div class="line"><span class="lineno">  371</span>      <span class="keywordflow">if</span> (s == <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">NULL</a>) {</div>
+<div class="line"><span class="lineno">  372</span>        <span class="comment">// This was necessary to avoid seg faults when s was a null pointer</span></div>
+<div class="line"><span class="lineno">  373</span>        <span class="comment">// which happens when PFPATH is not set</span></div>
+<div class="line"><span class="lineno">  374</span>        <span class="keywordflow">throw</span> MsPASSError(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;PFPATH is not defined and default pf=&quot;</span>) +</div>
+<div class="line"><span class="lineno">  375</span>                              <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a> + <span class="stringliteral">&quot; was not found&quot;</span>,</div>
+<div class="line"><span class="lineno">  376</span>                          ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  377</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  378</span>        <span class="keywordflow">throw</span> MsPASSError(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;PFPATH=&quot;</span>) + s + <span class="stringliteral">&quot; had no pf files matching &quot;</span> +</div>
+<div class="line"><span class="lineno">  379</span>                              <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">pfbase</a>,</div>
+<div class="line"><span class="lineno">  380</span>                          ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  381</span>      }</div>
+<div class="line"><span class="lineno">  382</span>    }</div>
+<div class="line"><span class="lineno">  383</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  384</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  385</span>  };</div>
+<div class="line"><span class="lineno">  386</span>}</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_antelope_pf_html_aec63cc4c7b66e36254ee469f09d50abb"><div class="ttname"><a href="classmspass_1_1utility_1_1_antelope_pf.html#aec63cc4c7b66e36254ee469f09d50abb">mspass::utility::AntelopePf::AntelopePf</a></div><div class="ttdeci">AntelopePf()</div><div class="ttdef"><b>Definition</b> AntelopePf.h:64</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_af2b1cac0f295d9ab5fb240b8b5e12539"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get</a></div><div class="ttdeci">T get(const std::string key) const</div><div class="ttdef"><b>Definition</b> Metadata.h:477</div></div>
 </div><!-- fragment -->
@@ -572,10 +579,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">  381</span>                                               : <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>) {</div>
-<div class="line"><span class="lineno">  382</span>  pftbls = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.pftbls;</div>
-<div class="line"><span class="lineno">  383</span>  pfbranches = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.pfbranches;</div>
-<div class="line"><span class="lineno">  384</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  388</span>                                               : <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>) {</div>
+<div class="line"><span class="lineno">  389</span>  pftbls = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.pftbls;</div>
+<div class="line"><span class="lineno">  390</span>  pfbranches = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.pfbranches;</div>
+<div class="line"><span class="lineno">  391</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get()</a>.</p>
 
@@ -597,13 +604,13 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Return a list of keys for branches (Arrs) in the pf file. </p>
-<div class="fragment"><div class="line"><span class="lineno">  400</span>                                        {</div>
-<div class="line"><span class="lineno">  401</span>  map&lt;string, AntelopePf&gt;::const_iterator <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>;</div>
-<div class="line"><span class="lineno">  402</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">list&lt;string&gt;</a> result;</div>
-<div class="line"><span class="lineno">  403</span>  <span class="keywordflow">for</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> = pfbranches.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> != pfbranches.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>)</div>
-<div class="line"><span class="lineno">  404</span>    result.push_back((*iptr).first);</div>
-<div class="line"><span class="lineno">  405</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  406</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  407</span>                                        {</div>
+<div class="line"><span class="lineno">  408</span>  map&lt;string, AntelopePf&gt;::const_iterator <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>;</div>
+<div class="line"><span class="lineno">  409</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">list&lt;string&gt;</a> result;</div>
+<div class="line"><span class="lineno">  410</span>  <span class="keywordflow">for</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> = pfbranches.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> != pfbranches.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>)</div>
+<div class="line"><span class="lineno">  411</span>    result.push_back((*iptr).first);</div>
+<div class="line"><span class="lineno">  412</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  413</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get()</a>.</p>
 
@@ -627,19 +634,19 @@ Additional Inherited Members</h2></td></tr>
 <p>Return an object with only simple name:value pairs. </p>
 <p>The <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> parent of this object only handles name:value pairs. The values can, however, be any object boost::any can handle. The documentation says that means it is copy constructable. For now this method returns an object containin the boost::any values. Any Arr and Tbl entries are pushed directly to the output <a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> using boost::any and the two keys defined as const strings at the top of this file (pftbl_key and pfarr_key).</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classmspass_1_1utility_1_1_metadata.html" title="Type-safe metadata container used throughout MsPASS.">Metadata</a> sans any Arr and Tbl entries. </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  423</span>                                       {</div>
-<div class="line"><span class="lineno">  424</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  425</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a> result(<span class="keyword">dynamic_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a> &amp;<span class="keyword">&gt;</span>(*<span class="keyword">this</span>));</div>
-<div class="line"><span class="lineno">  426</span>    boost::any <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">aTbl</a> = this-&gt;pftbls;</div>
-<div class="line"><span class="lineno">  427</span>    <span class="comment">// boost::any&lt;map&lt;string,list&lt;string&gt;&gt; aTbl(this-&gt;pftbl);</span></div>
-<div class="line"><span class="lineno">  428</span>    boost::any <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">aArr</a> = this-&gt;pfbranches;</div>
-<div class="line"><span class="lineno">  429</span>    result.put&lt;boost::any&gt;(pftbl_key, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">aTbl</a>);</div>
-<div class="line"><span class="lineno">  430</span>    result.put&lt;boost::any&gt;(pfarr_key, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">aArr</a>);</div>
-<div class="line"><span class="lineno">  431</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  432</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  433</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  434</span>  };</div>
-<div class="line"><span class="lineno">  435</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  430</span>                                       {</div>
+<div class="line"><span class="lineno">  431</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  432</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a> result(<span class="keyword">dynamic_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a> &amp;<span class="keyword">&gt;</span>(*<span class="keyword">this</span>));</div>
+<div class="line"><span class="lineno">  433</span>    boost::any <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">aTbl</a> = this-&gt;pftbls;</div>
+<div class="line"><span class="lineno">  434</span>    <span class="comment">// boost::any&lt;map&lt;string,list&lt;string&gt;&gt; aTbl(this-&gt;pftbl);</span></div>
+<div class="line"><span class="lineno">  435</span>    boost::any <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">aArr</a> = this-&gt;pfbranches;</div>
+<div class="line"><span class="lineno">  436</span>    result.put&lt;boost::any&gt;(pftbl_key, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">aTbl</a>);</div>
+<div class="line"><span class="lineno">  437</span>    result.put&lt;boost::any&gt;(pfarr_key, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">aArr</a>);</div>
+<div class="line"><span class="lineno">  438</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  439</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  440</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  441</span>  };</div>
+<div class="line"><span class="lineno">  442</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get()</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata.html#ab2162ed3e7349998ee06ace77645bf77">mspass::utility::Metadata::put()</a>.</p>
 
@@ -676,14 +683,14 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  392</span>                                                        {</div>
-<div class="line"><span class="lineno">  393</span>  map&lt;string, AntelopePf&gt;::const_iterator <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>;</div>
-<div class="line"><span class="lineno">  394</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> = pfbranches.find(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">key</a>);</div>
-<div class="line"><span class="lineno">  395</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> == pfbranches.end())</div>
-<div class="line"><span class="lineno">  396</span>    <span class="keywordflow">throw</span> AntelopePfError(<span class="stringliteral">&quot;get_branch failed trying to find data for key=&quot;</span> +</div>
-<div class="line"><span class="lineno">  397</span>                          <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">key</a>);</div>
-<div class="line"><span class="lineno">  398</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>-&gt;second;</div>
-<div class="line"><span class="lineno">  399</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  399</span>                                                        {</div>
+<div class="line"><span class="lineno">  400</span>  map&lt;string, AntelopePf&gt;::const_iterator <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>;</div>
+<div class="line"><span class="lineno">  401</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> = pfbranches.find(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">key</a>);</div>
+<div class="line"><span class="lineno">  402</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> == pfbranches.end())</div>
+<div class="line"><span class="lineno">  403</span>    <span class="keywordflow">throw</span> AntelopePfError(<span class="stringliteral">&quot;get_branch failed trying to find data for key=&quot;</span> +</div>
+<div class="line"><span class="lineno">  404</span>                          <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">key</a>);</div>
+<div class="line"><span class="lineno">  405</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>-&gt;second;</div>
+<div class="line"><span class="lineno">  406</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get()</a>.</p>
 
@@ -719,13 +726,13 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  385</span>                                                       {</div>
-<div class="line"><span class="lineno">  386</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">map&lt;string, list&lt;string&gt;</a>&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">::const_iterator</a> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>;</div>
-<div class="line"><span class="lineno">  387</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> = pftbls.find(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">key</a>);</div>
-<div class="line"><span class="lineno">  388</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> == pftbls.end())</div>
-<div class="line"><span class="lineno">  389</span>    <span class="keywordflow">throw</span> AntelopePfError(<span class="stringliteral">&quot;get_tbl failed trying to find data for key=&quot;</span> + <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">key</a>);</div>
-<div class="line"><span class="lineno">  390</span>  <span class="keywordflow">return</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>-&gt;second);</div>
-<div class="line"><span class="lineno">  391</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  392</span>                                                       {</div>
+<div class="line"><span class="lineno">  393</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">map&lt;string, list&lt;string&gt;</a>&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">::const_iterator</a> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>;</div>
+<div class="line"><span class="lineno">  394</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> = pftbls.find(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">key</a>);</div>
+<div class="line"><span class="lineno">  395</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> == pftbls.end())</div>
+<div class="line"><span class="lineno">  396</span>    <span class="keywordflow">throw</span> AntelopePfError(<span class="stringliteral">&quot;get_tbl failed trying to find data for key=&quot;</span> + <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">key</a>);</div>
+<div class="line"><span class="lineno">  397</span>  <span class="keywordflow">return</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>-&gt;second);</div>
+<div class="line"><span class="lineno">  398</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get()</a>.</p>
 
@@ -747,15 +754,15 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator, </p>
-<div class="fragment"><div class="line"><span class="lineno">  414</span>                                                          {</div>
-<div class="line"><span class="lineno">  415</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>) {</div>
-<div class="line"><span class="lineno">  416</span>    <span class="comment">/* This uses a trick to use operator = of the parent object */</span></div>
-<div class="line"><span class="lineno">  417</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">Metadata::operator=</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>);</div>
-<div class="line"><span class="lineno">  418</span>    pftbls = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.pftbls;</div>
-<div class="line"><span class="lineno">  419</span>    pfbranches = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.pfbranches;</div>
-<div class="line"><span class="lineno">  420</span>  }</div>
-<div class="line"><span class="lineno">  421</span>  <span class="keywordflow">return</span> (*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  422</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  421</span>                                                          {</div>
+<div class="line"><span class="lineno">  422</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>) {</div>
+<div class="line"><span class="lineno">  423</span>    <span class="comment">/* This uses a trick to use operator = of the parent object */</span></div>
+<div class="line"><span class="lineno">  424</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">Metadata::operator=</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>);</div>
+<div class="line"><span class="lineno">  425</span>    pftbls = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.pftbls;</div>
+<div class="line"><span class="lineno">  426</span>    pfbranches = <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">parent</a>.pfbranches;</div>
+<div class="line"><span class="lineno">  427</span>  }</div>
+<div class="line"><span class="lineno">  428</span>  <span class="keywordflow">return</span> (*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  429</span>}</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aadbae283dfdb87a82832519a9955fdfa"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=</a></div><div class="ttdeci">Metadata &amp; operator=(const Metadata &amp;mdold)</div><div class="ttdef"><b>Definition</b> Metadata.cc:460</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get()</a>, and <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=()</a>.</p>
@@ -804,13 +811,13 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Return a list of keys for Tbls in the pf. </p>
-<div class="fragment"><div class="line"><span class="lineno">  407</span>                                        {</div>
-<div class="line"><span class="lineno">  408</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">map&lt;string, list&lt;string&gt;</a>&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">::const_iterator</a> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>;</div>
-<div class="line"><span class="lineno">  409</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">list&lt;string&gt;</a> result;</div>
-<div class="line"><span class="lineno">  410</span>  <span class="keywordflow">for</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> = pftbls.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> != pftbls.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>)</div>
-<div class="line"><span class="lineno">  411</span>    result.push_back((*iptr).first);</div>
-<div class="line"><span class="lineno">  412</span>  <span class="keywordflow">return</span> (result);</div>
-<div class="line"><span class="lineno">  413</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  414</span>                                        {</div>
+<div class="line"><span class="lineno">  415</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">map&lt;string, list&lt;string&gt;</a>&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">::const_iterator</a> <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>;</div>
+<div class="line"><span class="lineno">  416</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">list&lt;string&gt;</a> result;</div>
+<div class="line"><span class="lineno">  417</span>  <span class="keywordflow">for</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> = pftbls.begin(); <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a> != pftbls.end(); ++<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">iptr</a>)</div>
+<div class="line"><span class="lineno">  418</span>    result.push_back((*iptr).first);</div>
+<div class="line"><span class="lineno">  419</span>  <span class="keywordflow">return</span> (result);</div>
+<div class="line"><span class="lineno">  420</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get()</a>.</p>
 

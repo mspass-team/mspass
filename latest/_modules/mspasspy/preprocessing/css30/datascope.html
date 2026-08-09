@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.preprocessing.css30.datascope &#8212; MsPASS 2.4.2.dev32+gae8ef7a5 documentation</title>
+    <title>mspasspy.preprocessing.css30.datascope &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=f3f95141"></script>
+    <script src="../../../../_static/documentation_options.js?v=3fe60d42"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev32" />
+  <meta name="docsearch:version" content="2.4.2.dev38" />
   </head>
   
   
@@ -548,8 +548,8 @@
 
 <span class="sd">    :param dbname: root database name used by Datascope flat files.</span>
 <span class="sd">    :param pffile: optional parameter file defining table layouts; when</span>
-<span class="sd">        omitted the constructor searches ``$MSPASS_HOME/data/pf`` for the</span>
-<span class="sd">        bundled ``DatascopeDatabase.pf`` file.</span>
+<span class="sd">        omitted the constructor uses ``$MSPASS_HOME/data/pf`` if MSPASS_HOME</span>
+<span class="sd">        is defined, or the data directory installed with mspasspy otherwise.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbname</span><span class="p">,</span> <span class="n">pffile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -571,19 +571,20 @@
 
 <span class="sd">        :param pffile:  parameter file name used to create the data structure</span>
 <span class="sd">        used internally by this class.   If None (the default)</span>
-<span class="sd">        the constructor looks for a master file called DatascopeDatabase.pf</span>
-<span class="sd">        that it will attempt to read from $MsPASS_HOME/data/pf.</span>
+<span class="sd">        the constructor looks for a master file called DatascopeDatabase.pf.</span>
+<span class="sd">        It uses $MSPASS_HOME/data/pf when MSPASS_HOME is defined and the</span>
+<span class="sd">        package data directory otherwise.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbname</span> <span class="o">=</span> <span class="n">dbname</span>
         <span class="k">if</span> <span class="n">pffile</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MSPASS_HOME&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">home</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">&quot;AntelopeDatabase constructor: &quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot;MSPASS_HOME not defined.  Needed for default constructor</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot;Specify a full path for pf file name or set MsPASS_HOME&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span>
+                        <span class="s2">&quot;../../data/pf/DatascopeDatabase.pf&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s2">&quot;data/pf&quot;</span><span class="p">,</span> <span class="s2">&quot;DatascopeDatabase.pf&quot;</span><span class="p">)</span>

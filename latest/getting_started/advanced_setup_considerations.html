@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Advanced Setup Considerations &#8212; MsPASS 2.4.2.dev32+gae8ef7a5 documentation</title>
+    <title>Advanced Setup Considerations &#8212; MsPASS 2.4.2.dev38+g6708872f documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=f3f95141"></script>
+    <script src="../_static/documentation_options.js?v=3fe60d42"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Deploy MsPASS with Conda" href="deploy_mspass_with_conda.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev32" />
+  <meta name="docsearch:version" content="2.4.2.dev38" />
   </head>
   
   
@@ -511,6 +511,23 @@ Do not add <code class="docutils literal notranslate"><span class="pre">--user</
 second copy outside the environment.  Also avoid <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">pip</span></code>, which can
 modify files managed by the operating system.</p>
 </section>
+<section id="force-the-bundled-boost-build">
+<h2>Force the bundled Boost build<a class="headerlink" href="#force-the-bundled-boost-build" title="Link to this heading">#</a></h2>
+<p>MsPASS links the static Boost.Serialization library into its Python extension,
+so that library must be compiled as position-independent code.  If CMake finds
+an incompatible Boost library in a Conda or system prefix, configure the C++
+build with <code class="docutils literal notranslate"><span class="pre">MSPASS_FORCE_BUNDLED_BOOST</span></code> enabled:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>../cxx<span class="w"> </span>-DMSPASS_FORCE_BUNDLED_BOOST<span class="o">=</span>ON
+cmake<span class="w"> </span>--build<span class="w"> </span>.
+</pre></div>
+</div>
+<p>The option is also available in <code class="docutils literal notranslate"><span class="pre">ccmake</span></code>.  It skips installed Boost
+libraries and builds the project’s pinned Boost version as a static <code class="docutils literal notranslate"><span class="pre">-fPIC</span></code>
+library.  Leave the option off to retain the normal behavior of using a
+compatible installed Boost first.</p>
+</section>
 <section id="check-which-copy-is-imported">
 <h2>Check which copy is imported<a class="headerlink" href="#check-which-copy-is-imported" title="Link to this heading">#</a></h2>
 <p>If multiple installations may exist, check both the selected interpreter and
@@ -584,6 +601,7 @@ check before running tests.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#source-builds">Source builds</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-an-isolated-environment">Use an isolated environment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#force-the-bundled-boost-build">Force the bundled Boost build</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-which-copy-is-imported">Check which copy is imported</a></li>
 </ul>
   </nav></div>

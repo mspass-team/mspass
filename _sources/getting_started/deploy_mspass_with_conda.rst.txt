@@ -69,14 +69,14 @@ About ``MSPASS_HOME``
 The Conda package includes the standard MsPASS schema and parameter files, so
 you do not normally need to clone the repository or set ``MSPASS_HOME``.
 
-Some older C++-backed interfaces still look for defaults below
-``$MSPASS_HOME/data``.  If one of those interfaces reports that a data file is
-missing, set ``MSPASS_HOME`` to the installed package directory for that
-shell:
+Python and C++-backed interfaces locate those files in the installed package
+when ``MSPASS_HOME`` is unset.  Set ``MSPASS_HOME`` only when you want to
+override the packaged files with a custom data directory.  Its value must be
+the parent of that custom ``data`` directory:
 
 .. code-block:: bash
 
-   export MSPASS_HOME="$(python -c 'from pathlib import Path; import mspasspy; print(Path(mspasspy.__file__).resolve().parent)')"
+   export MSPASS_HOME=/path/to/custom/mspass
 
 MongoDB and other services
 --------------------------
