@@ -175,7 +175,8 @@ can be created with a variant of the following code fragment:
 where ``usarray`` is the database name (and file-name prefix).  The constructor
 also accepts an optional ``pffile`` argument defining the table layouts; when
 it is omitted, MsPASS loads the bundled ``DatascopeDatabase.pf`` through
-``$MSPASS_HOME``.
+``$MSPASS_HOME/data/pf`` when ``MSPASS_HOME`` is set, or from the installed
+``mspasspy`` package data otherwise.
 
 Experienced Datascope users will know that Datascope has a useful,
 albeit confusing, feature that allows the collection of

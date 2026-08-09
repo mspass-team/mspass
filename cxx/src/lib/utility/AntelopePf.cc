@@ -325,23 +325,32 @@ list<string> split_pfpath(string pfbase, char *s) {
 AntelopePf::AntelopePf(std::string pfbase) {
   try {
     list<string> pffiles;
-    try {
-      pffiles.push_back(data_directory() + "/pf/" + pfbase);
-    } catch (const MsPASSError &) {
-      /* A standalone C++ caller without MSPASS_HOME has no package data
-       * directory.  Preserve the existing PFPATH/current-directory search. */
+    const bool is_absolute = !pfbase.empty() && pfbase[0] == '/';
+    string pfname(pfbase);
+    if (!is_absolute && (pfname.size() < 3 ||
+                         pfname.compare(pfname.size() - 3, 3, ".pf") != 0)) {
+      pfname += ".pf";
+    }
+    if (!is_absolute) {
+      try {
+        pffiles.push_back(data_directory() + "/pf/" + pfname);
+      } catch (const MsPASSError &) {
+        /* A standalone C++ caller without MSPASS_HOME has no package data
+         * directory.  Preserve the existing PFPATH/current-directory search.
+         */
+      }
     }
     const string envname("PFPATH");
     char *s = getenv(envname.c_str());
-    if (s == NULL) {
-      pffiles.push_back(pfbase);
-    }
     /* Test to see if pfbase is an absolute path - if so just use
      * it and ignore the pfpath feature */
-    else if (pfbase[0] == '/') {
+    if (is_absolute) {
       pffiles.push_back(pfbase);
+    } else if (s == NULL) {
+      pffiles.push_back(pfname);
     } else {
-      pffiles = split_pfpath(pfbase, s);
+      list<string> pfpath_files = split_pfpath(pfname, s);
+      pffiles.splice(pffiles.end(), pfpath_files);
     }
     list<string>::iterator pfptr;
     int nread;

@@ -65,15 +65,18 @@ public:
   /*! \brief Construct from a base pf name.
 
   This constructor acts like the antelope pfread function for
-  parameter files constructed in plain C.   That is, the argument is
-  a base name sans the .pf extension.   Like antelope's pfread it
-  will follow the chain of directories defined by PFPATH.   As with
-  the antelope pfread procedure the last file read takes precendence.
-  Note if PFPATH is not defined the path defaults to ".".
+  parameter files constructed in plain C.  A relative base name is first
+  read from the MsPASS data directory: MSPASS_HOME/data when MSPASS_HOME is
+  set, or the installed mspasspy package data otherwise.  The constructor
+  then follows the chain of directories defined by PFPATH; if PFPATH is not
+  defined, that path defaults to ".".  As with the antelope pfread procedure,
+  the last file read takes precedence, so PFPATH or the current directory can
+  override the MsPASS data file.
   Further if pfbase begins with a slash (i.e. "/") it is assumed to be
   the actual file name to read and the PFPATH feature is disabled.
 
-    \param pfbase is a the base pf name (always adds .pf to each name in PFPATH)
+    \param pfbase is the base pf name.  Relative names may include or omit
+      the .pf suffix; it is added when absent.
 
     \exception - throws a MsPASSError object with an informative message if
       constuctor fails for any reason.
