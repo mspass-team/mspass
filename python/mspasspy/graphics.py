@@ -1370,4 +1370,5 @@ class LargeEnsemblePlotter(SeismicPlotter):
         handles = self.get_3Censemble_gcf()
         if handles:
             for gcf in handles:
-                gcf.clear()
+                if gcf:
+                    gcf.clear()

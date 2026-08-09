@@ -1530,6 +1530,7 @@ class Database(pymongo.database.Database):
             wf_collection = self[wf_collection_name]
             # We need to make sure storage_mode is set in all live data
             if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+                mspass_object.sync_metadata()
                 for d in mspass_object.member:
                     if d.live:
                         d["storage_mode"] = storage_mode
@@ -1567,7 +1568,6 @@ class Database(pymongo.database.Database):
 
             else:
                 # note else not elif because above guarantees only ensembles land here
-                mspass_object.sync_metadata()
                 for d in mspass_object.member:
                     d = self._atomic_save_all_documents(
                         d,
@@ -4392,6 +4392,7 @@ class Database(pymongo.database.Database):
                                 alg, message, ErrorSeverity.Invalid
                             )
                             mspass_object.kill()
+                            return
 
                         # These two lines are needed to properly initialize
                         # the DoubleVector before calling Trace2TimeSeries
@@ -4485,8 +4486,14 @@ class Database(pymongo.database.Database):
                     message += "Metadata value for npts is {} but datum attribute npts is {}\n".format(
                         mspass_object["npts"], mspass_object.npts
                     )
-                    message += "Illegal inconsistency that should not happen and is a fatal error"
-                    raise ValueError(message)
+                    message += "Illegal inconsistency; sample data were not loaded"
+                    mspass_object.elog.log_error(
+                        "Database._read_data_from_gridfs",
+                        message,
+                        ErrorSeverity.Invalid,
+                    )
+                    mspass_object.kill()
+                    return
             npts = mspass_object.npts
         if isinstance(mspass_object, TimeSeries):
             # fh.seek(16)
@@ -4498,8 +4505,8 @@ class Database(pymongo.database.Database):
             file_size = fh.tell()
             if file_size != npts * 8 * 3:
                 message = "Size mismatch in sample data.\n"
-                message += "Number of points in gridfs file=%d but wf document expected %d".format(
-                    file_size / 8, (3 * mspass_object["npts"])
+                message += "Number of points in gridfs file={} but wf document expected {}".format(
+                    file_size // 8, (3 * mspass_object["npts"])
                 )
                 mspass_object.elog.log_error(
                     "Database._read_data_from_gridfs",
@@ -5328,7 +5335,7 @@ class Database(pymongo.database.Database):
                 result.extend([netw])
         return result
 
-    def get_seed_site(self, net, sta, loc="NONE", time=-1.0, verbose=True):
+    def get_seed_site(self, net, sta, loc="NONE", time=-1.0, verbose=False):
         """
         The site collection is assumed to have a one to one
         mapping of net:sta:loc:starttime - endtime.
@@ -5339,16 +5346,9 @@ class Database(pymongo.database.Database):
         Returns None if there is no match.
 
         An all to common metadata problem is to have duplicate entries in
-        site for the same data.   The default behavior of this method is
-        to print a warning whenever a match is ambiguous
-        (i.e. more than on document matches the keys).  Set verbose false to
-        silence such warnings if you know they are harmless.
-
-        An all to common metadata problem is to have duplicate entries in
-        site for the same data.   The default behavior of this method is
-        to print a warning whenever a match is ambiguous
-        (i.e. more than on document matches the keys).  Set verbose false to
-        silence such warnings if you know they are harmless.
+        site for the same data.  Set ``verbose=True`` to print a warning
+        whenever a match is ambiguous (i.e. more than one document matches
+        the keys).  Such warnings are suppressed by default.
 
         The seed modifier in the name is to emphasize this method is
         for data originating as the SEED format that use net:sta:loc:chan
@@ -5366,12 +5366,9 @@ class Database(pymongo.database.Database):
           and will cause the function to simply return the first document
           matching the name keys only.   (This is rarely what you want, but
           there is no standard default for this argument.)
-        :param verbose:  When True (the default) this method will issue a
+        :param verbose:  When True this method will issue a
           print warning message when the match is ambiguous - multiple
-          docs match the specified keys.   When set False such warnings
-          will be suppressed.  Use false only if you know the duplicates
-          are harmless and you are running on a large data set and
-          you want to reduce the log size.
+          docs match the specified keys.  The default is False.
 
         :return: MongoDB doc matching query
         :rtype:  python dict (document) of result.  None if there is no match.
@@ -5396,7 +5393,7 @@ class Database(pymongo.database.Database):
             stadoc = dbsite.find_one(query)
             return stadoc
 
-    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0, verbose=True):
+    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0, verbose=False):
         """
         The channel collection is assumed to have a one to one
         mapping of net:sta:loc:chan:starttime - endtime.
@@ -5434,12 +5431,9 @@ class Database(pymongo.database.Database):
         :param loc:   optional loc code to made (empty string ok and common)
            default ignores loc in query.
         :param time: epoch time for requested metadata
-        :param verbose:  When True (the default) this method will issue a
+        :param verbose:  When True this method will issue a
            print warning message when the match is ambiguous - multiple
-           docs match the specified keys.   When set False such warnings
-           will be suppressed.  Use false only if you know the duplicates
-           are harmless and you are running on a large data set and
-           you want to reduce the log size.
+           docs match the specified keys.  The default is False.
 
         :return: handle to query return
         :rtype:  MondoDB Cursor object of query result.
@@ -5788,9 +5782,10 @@ class Database(pymongo.database.Database):
         to TimeSeries objects when it reads the data from the files
         indexed by this function.
 
-        :param dfile:  file name of data to be indexed.  Asssumed to be
-          the leaf node of the path - i.e. it contains no directory information
-          but just the file name.
+        :param dfile: file name or path of data to be indexed.  Strings and
+          :class:`pathlib.Path` objects are accepted.  An absolute path takes
+          precedence over ``dir``; a relative path is resolved beneath
+          ``dir`` or the current working directory when ``dir`` is None.
         :param dir:  directory name.  This can be a relative path from the
           current directory be be advised it will always be converted to an
           fully qualified path.  If it is undefined (the default) the function
@@ -5843,18 +5838,18 @@ class Database(pymongo.database.Database):
           generic handler to avoid aborts in a large job.
         """
         dbh = self[collection]
-        # If dir is not define assume current directory.  Otherwise
-        # use realpath to make sure the directory is the full path
-        # We store the full path in mongodb
-        if dir is None:
-            odir = os.getcwd()
-        else:
-            odir = os.path.abspath(dir)
         if dfile is None:
             dfile = self._get_dfile_uuid("mseed")
-        fname = os.path.join(odir, dfile)
-        # TODO:  should have a way to pass verbose to this function
-        # present verbose is not appropriate.
+        dfile_path = pathlib.Path(dfile)
+        if dfile_path.is_absolute():
+            file_path = dfile_path
+        else:
+            base_dir = pathlib.Path.cwd() if dir is None else pathlib.Path(dir)
+            file_path = base_dir / dfile_path
+        file_path = file_path.resolve()
+        odir = str(file_path.parent)
+        dfile = file_path.name
+        fname = str(file_path)
         ind, elog = _mseed_file_indexer(fname, segment_time_tears)
         if len(elog.get_error_log()) > 0 and "No such file or directory" in str(
             elog.get_error_log()
@@ -5881,11 +5876,11 @@ class Database(pymongo.database.Database):
             if "loc" in doc:
                 loc = doc["loc"]
                 chandoc = self.get_seed_channel(
-                    net, sta, chan, loc, time=stime, verbose=False
+                    net, sta, chan, loc, time=stime, verbose=verbose
                 )
             else:
                 chandoc = self.get_seed_channel(
-                    net, sta, chan, time=stime, verbose=False
+                    net, sta, chan, time=stime, verbose=verbose
                 )
             if chandoc != None:
                 doc["channel_id"] = chandoc["_id"]

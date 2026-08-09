@@ -75,6 +75,12 @@ def test_DatascopeDatabase():
     # because it is a key.  Probably needs a test for suffix option
     # of join
     assert len(dfj.columns) == 37
+    # Default join_keys requests a natural join using the right table's
+    # declared primary keys.
+    event_df = db.get_table("event")
+    natural_join = db.join(event_df, "event")
+    assert len(natural_join) == len(event_df)
+    assert "evid" in natural_join.columns
     # test get_nulls method.   expected to return a dict of
     # the size in the assert after the call
     nulls = db.get_nulls("site")

@@ -19,6 +19,7 @@ packages = ["earthscope-sdk"]
 # Only list packages where conda names differ from pip, or that expand to multiple packages.
 [conda_name_map]
 "dask[complete]" = ["dask", "distributed", "cloudpickle"]
+"graphviz" = ["python-graphviz", "graphviz"]
 
 # Conda-only runtime dependencies (C libraries, etc.) with no pip equivalent.
 # These are appended to the generated meta.yaml run: section.

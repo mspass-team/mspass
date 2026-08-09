@@ -18,6 +18,7 @@ def sliding_window_pipeline(
     a_args=None,
     a_kwargs=None,
     verbose=False,
+    progress_report_interval=10000,
 ):
     """
     Run a processing function and optional completion function on an
@@ -185,8 +186,10 @@ def sliding_window_pipeline(
        require kwargs.
     :param verbose:  boolean controlling output.  When False (default)
        the function itself is totally silent.  When set True it
-       prints a message for each submit and each return.  Not recommended for workflows
-       that use a large number of submits as the output can easily get huge.
+       prints periodic progress reports.
+    :param progress_report_interval: positive integer defining how many
+       completed items elapse between reports when ``verbose`` is True.
+       The default is 10000.  The final item is always reported.
 
     :return:   When the completion_function is not defined (default)
        this function will return a list of return values from each
@@ -218,6 +221,12 @@ def sliding_window_pipeline(
             alg
         )
         raise ValueError(message)
+    if (
+        isinstance(progress_report_interval, bool)
+        or not isinstance(progress_report_interval, int)
+        or progress_report_interval <= 0
+    ):
+        raise ValueError("progress_report_interval must be a positive integer")
     if pfunc_args is None:
         # this and the comparable logic with kwargs is needed or a type error will be thrown when we use it
         # this is how python accepts a null args
@@ -320,8 +329,6 @@ def sliding_window_pipeline(
         swsize = N
     i_d = 0
     for d in dlist:
-        if verbose:
-            print("Submitting item number ", i_d)
         f = dask_client.submit(processing_function, d, *pfunc_args, **pfunc_kwargs)
         futures_list.append(f)
         i_d += 1
@@ -334,8 +341,6 @@ def sliding_window_pipeline(
     seq = ddist.as_completed(futures_list)
     for f in seq:
         f_result = f.result()
-        if verbose:
-            print("Handling result number ", number_handled)
         if run_completion_function:
             f_result = completion_function(f_result, *cfunc_args, **cfunc_kwargs)
             if accumulator is None:
@@ -348,9 +353,12 @@ def sliding_window_pipeline(
         # found to be necessary to assure dask doesn't hog memory held by f
         dask_client.cancel(f)
         del f
+        number_handled += 1
+        if verbose and (
+            number_handled % progress_report_interval == 0 or number_handled == N
+        ):
+            print(f"Handled {number_handled} of {N} items")
         if i_d < N:
-            if verbose:
-                print("Submitting item number ", i_d)
             f = dask_client.submit(
                 processing_function, dlist[i_d], *pfunc_args, **pfunc_kwargs
             )

@@ -88,6 +88,28 @@ def Metadata_cmp(a, b):
     return True
 
 
+class _NoMatchWithoutLog:
+    def find_one(self, _datum):
+        return [None, None]
+
+
+def test_normalize_logs_every_kill_and_honors_kill_on_failure():
+    datum = TimeSeries(1)
+    datum.set_live()
+    result = normalize(datum, _NoMatchWithoutLog())
+    assert result.dead()
+    assert result.elog.size() == 1
+    assert "_NoMatchWithoutLog found no matching metadata" in str(
+        result.elog.get_error_log()
+    )
+
+    datum = TimeSeries(1)
+    datum.set_live()
+    result = normalize(datum, _NoMatchWithoutLog(), kill_on_failure=False)
+    assert result.live
+    assert result.elog.size() == 0
+
+
 class TestNormalize:
     def setup_class(self):
         client = DBClient("localhost")

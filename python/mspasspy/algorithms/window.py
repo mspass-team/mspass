@@ -935,28 +935,18 @@ def merge(
     This function is a workhorse for handling continuous data that are
     universally stored today as a series of files.   The input to this
     function is an array of TimeSeries objects that are assummed to be
-    created from a set of data stored in such files.   The data are assumed
-    to be from a common stream of a single channel and sorted so the
-    array index defines a time order.  The algorithm attempts to glue the
-    segments together into a single time series that is returned.
+    created from a set of data stored in such files.  The data are assumed
+    to be from a common stream of a single channel.  They are sorted by start
+    time internally before the algorithm glues the segments together into a
+    single time series that is returned.
     The algorithm by default assumes the input is "clean" which means
     the endtime of each input TimeSeries is 1 sample ahead of the start time
     of the next segment (i.e. (segment[i+1].t0()-segment[i].endtime()) == dt).
     The actual test is that the time difference is less than dt/2.
 
-    This algorithm treats two conditions as a fatal error and will throw
-    a MsPASSError when the condition occurs:
-
-        1.   It checks that the input array of TimeSeries data are in
-             time order.
-        2.   It checks that the inputs all have the same sample rate.
-        3.   If fix_overlaps is False if an overlap is found it
-             is considered an exception.
-
-    Either of these conditions will cause the function to throw an
-    exception.  The assumption is that either is a user error created
-    by failing to reading the directions that emphasize this requirement
-    for the input.
+    Inputs with inconsistent sample rates are treated as a fatal error and
+    cause a :class:`MsPASSError` to be thrown.  If ``fix_overlaps`` is False,
+    an overlap produces a dead output with an error-log entry.
 
     Other conditions can cause the output to be marked dead with an
     error message posted to the output's elog attribute.  These are:
@@ -1036,8 +1026,9 @@ def merge(
     stored as a list of "TimeWindow" objects with the Metadata key "gaps".
 
     :param tsvector:  array of TimeSeries data that are to be spliced
-      together to create a single output.   The contents must all have
-      the same sample rate and be sorted by starttime.
+      together to create a single output.  The contents must all have
+      the same sample rate.  Input order is arbitrary; the function sorts
+      segments by start time.
     :type tsvector:  expected to be a TimeSeriesVector, which is the name
       we give in the pybind11 code to a C++ std:vector<TimeSeries> container.
       Any iterable container of TimeSeries data will be accepted, however,
@@ -1089,14 +1080,11 @@ def merge(
       time range.  The result may be marked dead for a variety of reasons
       with error messages explaining why in the return elog attribute.
     """
-    if not isinstance(tsvector, TimeSeriesVector):
-        # We assume this will throw an exception if tsvector is not iterable
-        # or doesn't contain TimeSeries objects
-        dvector = TimeSeriesVector()
-        for d in tsvector:
-            dvector.append(d)
-    else:
-        dvector = tsvector
+    # sorted will raise a useful exception if the input is not iterable or
+    # does not contain objects with the TimeSeries t0 attribute.
+    dvector = TimeSeriesVector()
+    for d in sorted(tsvector, key=lambda datum: datum.t0):
+        dvector.append(d)
     if fix_overlaps:
         dvector = repair_overlaps(dvector)
     spliced_data = splice_segments(dvector, object_history)

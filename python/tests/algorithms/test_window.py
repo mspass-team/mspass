@@ -29,7 +29,7 @@ from mspasspy.ccore.algorithms.amplitudes import (
 )
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.window import scale
-from mspasspy.algorithms.window import WindowData, TopMute, WindowData_autopad
+from mspasspy.algorithms.window import WindowData, TopMute, WindowData_autopad, merge
 
 
 # Build a simple _CoreTimeSeries and _CoreSeismogram with
@@ -45,6 +45,31 @@ def setbasics(d, n):
     d.t0 = 0.0
     d.tref = TimeReferenceType.Relative
     d.live = True
+
+
+def test_merge_sorts_segments_by_start_time():
+    first = TimeSeries(3)
+    first.set_dt(1.0)
+    first.t0 = 0.0
+    first.set_live()
+    first.data[0] = 0.0
+    first.data[1] = 1.0
+    first.data[2] = 2.0
+
+    second = TimeSeries(3)
+    second.set_dt(1.0)
+    second.t0 = 3.0
+    second.set_live()
+    second.data[0] = 3.0
+    second.data[1] = 4.0
+    second.data[2] = 5.0
+
+    result = merge([second, first])
+
+    assert result.live
+    assert result.t0 == 0.0
+    assert result.npts == 6
+    assert np.array_equal(np.asarray(result.data), np.arange(6.0))
 
 
 def test_scale():

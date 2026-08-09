@@ -268,7 +268,7 @@ class DatascopeDatabase:
             right_suffix = "_" + table
         df_right = self.get_table(table)
         if join_keys == "right_primary":
-            right_jkeys = self.get_keys(table)
+            right_jkeys = self.get_primary_keys(table)
             left_jkeys = right_jkeys
         elif isinstance(join_keys, list):
             right_jkeys = join_keys

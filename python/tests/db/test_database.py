@@ -1,7 +1,9 @@
 import copy
+import inspect
 import io
 import os
 import pickle
+from pathlib import Path
 
 import gridfs
 import numpy as np
@@ -50,6 +52,16 @@ import datetime
 from mspasspy.db.database import Database, geoJSON_doc
 from mspasspy.db.client import DBClient
 from mspasspy.db.collection import Collection
+
+
+def test_seed_lookup_verbose_defaults():
+    assert (
+        inspect.signature(Database.get_seed_site).parameters["verbose"].default is False
+    )
+    assert (
+        inspect.signature(Database.get_seed_channel).parameters["verbose"].default
+        is False
+    )
 
 
 class TestDatabase:
@@ -283,6 +295,26 @@ class TestDatabase:
         )
         assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
 
+        # A fatal end-time inconsistency must not be undone by the later
+        # nonempty-data check.
+        bad_trace = Mock()
+        bad_trace.stats = Mock()
+        bad_trace.stats.npts = 3
+        bad_trace.stats.starttime = obspy.UTCDateTime(0)
+        bad_trace.stats.endtime = obspy.UTCDateTime(99)
+        bad_trace.stats.delta = 1.0
+        bad_trace.data = np.array([1.0, 2.0, 3.0])
+        inconsistent_ts = TimeSeries()
+        inconsistent_ts.npts = 3
+        inconsistent_ts.t0 = 0.0
+        inconsistent_ts.dt = 1.0
+        with patch("mspasspy.db.database.obspy.read", return_value=[bad_trace]):
+            self.db._read_data_from_dfile(
+                inconsistent_ts, dir, dfile, foff, nbytes, format="mseed"
+            )
+        assert inconsistent_ts.dead()
+        assert "Inconsistent endtimes" in str(inconsistent_ts.elog.get_error_log())
+
     def test_save_and_read_gridfs(self):
         tmp_seis = get_live_seismogram()
         seis_return = self.db._save_sample_data_to_gridfs(tmp_seis)
@@ -319,6 +351,14 @@ class TestDatabase:
         tmp_ts_2.npts = 255
         self.db._read_data_from_gridfs(tmp_ts_2, gridfs_id)
         assert np.isclose(tmp_ts.data, tmp_ts_2.data).all()
+
+        inconsistent_ts = TimeSeries()
+        inconsistent_ts.npts = 255
+        inconsistent_ts["npts"] = 254
+        inconsistent_ts.set_live()
+        self.db._read_data_from_gridfs(inconsistent_ts, gridfs_id)
+        assert inconsistent_ts.dead()
+        assert "Metadata value for npts" in str(inconsistent_ts.elog.get_error_log())
 
         gfsh = gridfs.GridFS(self.db)
         assert gfsh.exists(gridfs_id)
@@ -1586,13 +1626,15 @@ class TestDatabase:
         self.db.drop_collection("abortions")
 
     def test_index_mseed_file(self):
-        dir = "python/tests/data/"
+        dir = Path("python/tests/data/").resolve()
         dfile = "3channels.mseed"
-        fname = os.path.join(dir, dfile)
-        self.db.index_mseed_file(fname, collection="wf_miniseed")
+        fname = dir / dfile
+        self.db.index_mseed_file(fname, dir=dir, collection="wf_miniseed")
         assert self.db["wf_miniseed"].count_documents({}) == 3
 
         for doc in self.db["wf_miniseed"].find():
+            assert doc["dir"] == str(dir)
+            assert doc["dfile"] == dfile
             ts = self.db.read_data(doc, collection="wf_miniseed")
             assert ts.npts == len(ts.data)
 
@@ -2598,7 +2640,7 @@ class TestDatabase:
         # assert res['tst'] == time
         # assert res['starttime'] == time_new
 
-    def test_save_ensemble_data(self):
+    def test_save_ensemble_data(self, tmp_path):
         """
         Tests writer for ensembles.   In v1 this was done with
         different methods.  From v2 forward the recommended use is
@@ -2629,6 +2671,25 @@ class TestDatabase:
         # data being tested - avoids confusing dependencies that
         # were present in earlier versions of this test script
         ts_ensemble0 = copy.deepcopy(ts_ensemble)
+
+        # An explicit output directory must win over stale ensemble metadata,
+        # both for the sample file and the waveform documents.
+        conflicting_ensemble = copy.deepcopy(ts_ensemble0)
+        conflicting_ensemble["dir"] = str(tmp_path / "stale")
+        output_dir = tmp_path / "requested"
+        conflicting_ensemble = self.db.save_data(
+            conflicting_ensemble,
+            storage_mode="file",
+            dir=output_dir,
+            dfile="ensemble.bin",
+            return_data=True,
+        )
+        assert (output_dir / "ensemble.bin").is_file()
+        assert not (tmp_path / "stale").exists()
+        for member in conflicting_ensemble.member:
+            assert member["dir"] == str(output_dir.resolve())
+            doc = self.db["wf_TimeSeries"].find_one({"_id": member["_id"]})
+            assert doc["dir"] == str(output_dir.resolve())
         # First test save in backward compatibility with
         # save_ensemble_data using directory list and dfile list.
         # Note this function may be deprecated in future releases

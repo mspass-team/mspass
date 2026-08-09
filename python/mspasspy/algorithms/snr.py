@@ -610,9 +610,11 @@ def FD_snr_estimator(
       object using it's size() method and if it the log is not empty (size >0)
       the caller should handle that condition.   For normal use that means
       pushing any messages the log contains to the original data object's
-      error log.  Component 0 will also be empty with no log entry if
-      the estimated bandwidth falls below the threshold defined by the
-      parameter signal_detection_minimum_bandwidth.
+      error log.  Component 0 is normally empty when the estimated bandwidth
+      falls below ``signal_detection_minimum_bandwidth``.  When
+      ``save_spectra`` is True, it instead contains the saved spectra and
+      window metadata, but no bandwidth metrics.  The logger contains an
+      Invalid entry in either case.
     """
     algname = "FN_snr_estimator"
     my_logger = ErrorLogger()
@@ -707,13 +709,20 @@ def FD_snr_estimator(
                 bandwidth = 0.0
         else:
             bandwidth = bwd.bandwidth()
+        if save_spectra:
+            snrdata["signal_spectrum"] = pickle.dumps(S)
+            snrdata["noise_spectrum"] = pickle.dumps(N)
+            snrdata["signal_window_start_time"] = signal_window.start
+            snrdata["signal_window_end_time"] = signal_window.end
+            snrdata["noise_window_start_time"] = noise_window.start
+            snrdata["noise_window_end_time"] = noise_window.end
         # here we return empty result if the bandwidth is too low
         if bandwidth < signal_detection_minimum_bandwidth:
             message = "Estimated bandwidth={} below detection minimum={}".format(
                 bandwidth, signal_detection_minimum_bandwidth
             )
             my_logger.log_error(algname, message, ErrorSeverity.Invalid)
-            return [dict(), my_logger]
+            return [snrdata, my_logger]
         # These estimates are always computed and posted once we pass the above test for validity
         snrdata["low_f_band_edge"] = bwd.low_edge_f
         snrdata["high_f_band_edge"] = bwd.high_edge_f
@@ -722,14 +731,6 @@ def FD_snr_estimator(
         snrdata["spectrum_frequency_range"] = bwd.f_range
         snrdata["bandwidth"] = bandwidth
         snrdata["bandwidth_fraction"] = bwd.bandwidth_fraction()
-        if save_spectra:
-            snrdata["signal_spectrum"] = pickle.dumps(S)
-            snrdata["noise_spectrum"] = pickle.dumps(N)
-            snrdata["signal_window_start_time"] = signal_window.start
-            snrdata["signal_window_end_time"] = signal_window.end
-            snrdata["noise_window_start_time"] = noise_window.start
-            snrdata["noise_window_end_time"] = noise_window.end
-
     except MsPASSError as err:
         newmessage = _reformat_mspass_error(
             err,
@@ -1061,10 +1062,9 @@ def arrival_snr(
     )
     if elog.size() > 0:
         data_object.elog += elog
-    # FD_snr_estimator returns an empty dictionary if the snr
-    # calculation fails or indicates no signal is present.  This
-    # block combines that with the kill_null_signals in this logic
-    if len(snrdata) > 0:
+    # A low-bandwidth result can contain diagnostic spectra without valid
+    # SNR metrics, so bandwidth is the validity marker here.
+    if "bandwidth" in snrdata:
         snrdata["phase"] = phase_name
         data_object[metadata_output_key] = snrdata
     elif kill_null_signals:
@@ -1314,10 +1314,9 @@ def broadband_snr_QC(
     )
     if elog.size() > 0:
         data_object.elog += elog
-    # FD_snr_estimator returns an empty dictionary if the snr
-    # calculation fails or indicates no signal is present.  This
-    # block combines that with the kill_null_signals in this logic
-    if len(snrdata) == 0:
+    # A low-bandwidth result can contain diagnostic spectra without valid
+    # SNR metrics, so bandwidth is the validity marker here.
+    if "bandwidth" not in snrdata:
         data_object.elog.log_error(
             "broadband_snr_QC",
             "FD_snr_estimator flagged this datum as having no detectable signal",

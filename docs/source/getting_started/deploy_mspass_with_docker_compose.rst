@@ -146,7 +146,9 @@ Other common changes are:
   Do not request more CPU or memory than Docker has available.
 * Add the same bind mount to every service that needs access to waveform data
   stored outside the project directory.  Paths used by notebooks and workers
-  must refer to the common path inside the containers.
+  must refer to the common path inside the containers.  This includes targets
+  of symbolic links: a link into an unmounted host directory is broken inside
+  the containers.
 
 After editing the file, check its resolved configuration before restarting:
 
