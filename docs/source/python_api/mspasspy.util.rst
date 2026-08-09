@@ -7,7 +7,7 @@ Common utility entry points
 ``mspasspy.util`` contains adapters and workflow helpers that are easy to miss
 when browsing by algorithm name.  Start with the entries below before writing
 a project-specific conversion or ensemble loop; the generated module reference
-that follows lists every public member.
+that follows provides the remaining module-level API reference.
 
 .. list-table:: Common utility entry points
    :widths: 22 48 30
@@ -39,8 +39,10 @@ that follows lists every public member.
        :py:func:`~mspasspy.util.seismic.ensemble_time_range`, and
        :py:func:`~mspasspy.util.seismic.sort_ensemble`
      - :ref:`Seismic data object concepts <data_object_design_concepts>`
-   * - Regularize sampling before ensemble processing
-     - :py:func:`~mspasspy.util.seismic.regularize_sampling`
+   * - Validate ensemble sampling
+     - :py:func:`~mspasspy.util.seismic.regularize_sampling` checks sample
+       intervals and, by default, kills mismatched members; it does not
+       resample data
      - :ref:`Arrival-time processing <arrival_time_measurement>`
    * - Clean Metadata and manage dead data
      - :py:class:`~mspasspy.util.Janitor.Janitor`,
@@ -49,9 +51,9 @@ that follows lists every public member.
      - :ref:`Cleaning Metadata <cleaning_metadata>` and
        :ref:`handling errors <handling_errors>`
    * - Adapt an external function to MsPASS objects
-     - :mod:`mspasspy.util.decorators`, especially
-       ``mspass_func_wrapper``, ``mspass_method_wrapper``, and the ObsPy
-       conversion decorators
+     - :py:func:`~mspasspy.util.decorators.mspass_func_wrapper`,
+       :py:func:`~mspasspy.util.decorators.mspass_method_wrapper`, and the
+       ObsPy conversion decorators documented below
      - :ref:`Adapting algorithms <adapting_algorithms>`
 
 converter
@@ -72,6 +74,26 @@ db_utils
 
 decorators
 ----------
+
+The principal decorators are listed explicitly because their signature-
+preserving implementation prevents Sphinx from discovering them as functions
+defined by this module.
+
+.. autofunction:: mspasspy.util.decorators.mspass_func_wrapper
+
+.. autofunction:: mspasspy.util.decorators.mspass_func_wrapper_multi
+
+.. autofunction:: mspasspy.util.decorators.mspass_method_wrapper
+
+.. autofunction:: mspasspy.util.decorators.mspass_reduce_func_wrapper
+
+.. autofunction:: mspasspy.util.decorators.timeseries_as_trace
+
+.. autofunction:: mspasspy.util.decorators.seismogram_as_stream
+
+.. autofunction:: mspasspy.util.decorators.timeseries_ensemble_as_stream
+
+.. autofunction:: mspasspy.util.decorators.seismogram_ensemble_as_stream
 
 .. automodule:: mspasspy.util.decorators
     :members:

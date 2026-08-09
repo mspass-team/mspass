@@ -65,6 +65,7 @@ def mspass_func_wrapper(
     This decorator can be used to adapt a processing function to the
     mspass framework.  It can be used to handle the following nonstandard
     functionality that would not appear in a function outside of mspass:
+
         1.  This decorator can make a function dogmatic about the type of arg0.
             A processing function in mspass normally requires arg0 to be a
             seismic data type.   If the function being decorated handles
@@ -507,7 +508,7 @@ def mspass_method_wrapper(
        is taken to mean any return of the wrapped function will be ignored.  Note
        that when function_return_key is anything but None, it is assumed the
        returned object is the (usually modified) data object.
-     :param handles_ensembles:  set True (default) if the function this is applied to
+    :param handles_ensembles:  set True (default) if the function this is applied to
        can hangle ensemble objects directly.   When False this decorator
        applies the atomic function to each ensemble member in
        a loop over members.
@@ -759,7 +760,8 @@ def timeseries_ensemble_copy_helper(es1, es2):
 @decorator
 def timeseries_as_trace(func, *args, **kwargs):
     """
-    This decorator converts all the mspasspy TimeSeries objects in user inputs (*args and **kargs)
+    This decorator converts all the mspasspy TimeSeries objects in user inputs
+    (``*args`` and ``**kwargs``)
     to trace objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
     the trace objects will be converted back by overriding the data and metadata of the origin mspasspy objects. This
     wrapper makes it easy to process mspasspy objects using Obspy methods.
@@ -843,7 +845,8 @@ def seismogram_ensemble_copy_helper(es1, es2):
 @decorator
 def seismogram_as_stream(func, *args, **kwargs):
     """
-    This decorator converts all the mspasspy Seismogram objects in user inputs (*args and **kargs)
+    This decorator converts all the mspasspy Seismogram objects in user inputs
+    (``*args`` and ``**kwargs``)
     to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
     the stream objects will be converted back by overriding the data and metadata of the origin mspasspy objects.
 
@@ -895,7 +898,8 @@ def seismogram_as_stream(func, *args, **kwargs):
 @decorator
 def timeseries_ensemble_as_stream(func, *args, **kwargs):
     """
-    This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs (*args and **kargs)
+    This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs
+    (``*args`` and ``**kwargs``)
     to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
     the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.
 
@@ -939,7 +943,8 @@ def timeseries_ensemble_as_stream(func, *args, **kwargs):
 @decorator
 def seismogram_ensemble_as_stream(func, *args, **kwargs):
     """
-    This decorator converts all the mspasspy Seismogram ensemble objects in user inputs (*args and **kargs)
+    This decorator converts all the mspasspy Seismogram ensemble objects in user inputs
+    (``*args`` and ``**kwargs``)
     to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
     the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.
 

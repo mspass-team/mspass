@@ -1052,9 +1052,9 @@ def beam_align(ensemble, beam, window=None, time_shift_limit=10.0):
     :type time_shift_limit: float (may abort if you use an int
         because the value can to sent to a C++ method that it type
         sensitive)
-    :return:   copy of ensemble with the members time shifted to align with
-        the time base of beam.   Note if a window is defined it is not
-        applied to the ensemble members.
+    :return: the input ensemble with its members time shifted in place to align
+        with the time base of beam.  If a window is defined it is used only for
+        correlation and is not applied to the ensemble members.
 
     """
     # this may not be necessary for internal use but if used
@@ -1129,11 +1129,11 @@ def align_and_stack(
     align all the data in the input ensemble by cross-correlation with
     the beam, apply a robust stack to the aligned signals, update the
     beam with the robust stack, and repeat until the changes to the
-    beam signal are small.   Returns a copy of the ensemble time
-    shifted to be aligned with beam time base and an updated beam
-    estimate crated by the robust stack.  The shifts and the weights
-    of each input signal are stored in the Metadata of each live ensemble
-    member returned with keys defined by `robust_weight_key` and
+    beam signal are small.  The input ensemble is modified in place to align
+    its members with the beam time base, and the function returns that ensemble
+    with an updated beam estimate created by the robust stack.  The shifts and
+    weights of each input signal are stored in the Metadata of each live
+    ensemble member returned with keys defined by `robust_weight_key` and
     `time_shift_key`.
 
     This function is a python implementation of the same basic
@@ -1374,9 +1374,9 @@ def align_and_stack(
         means the set of all time shifts computed by this function will
         have zero mean.
 
-    :return: tuple with 0 containing the original ensemble but time
-        shifted by cross-correlation.   Failed/discarded signals for the
-        stack are not killed but can be detected by testing the
+    :return: tuple with component 0 containing the input ensemble, modified in
+        place by cross-correlation time shifts.  Failed/discarded signals for
+        the stack are not killed but can be detected by testing the
         key defined by the "time_shift_key" argument
         (default is 'arrival_time_correction') being set.
         i.e. that value will not be set for components dropped from

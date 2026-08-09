@@ -636,6 +636,8 @@ timestamps to probabilities.  An optional absolute-time
 restrict the annotation interval.  The function mutates the input datum and
 does not return a separate picks object.  It first calls ``rtoa()`` on the
 input, so a relative-time datum is converted to UTC in place before annotation.
+If a supplied ``TimeWindow`` extends beyond the datum, its bounds are also
+clipped in place to the datum's UTC time range.
 
 SeisBench is an optional dependency.  Install MsPASS with the ``seisbench``
 extra when this feature is needed, for example ``pip install 'mspass[seisbench]'``.

@@ -255,7 +255,7 @@ map-style functions above:
      - Iteratively align an ensemble by cross-correlation and compute a robust
        stack.
      - TimeSeriesEnsemble and initial beam
-     - Aligned ensemble and final stack
+     - Aligns the input ensemble in place; returns it with the final stack
    * - :py:func:`annotate_arrival_time<mspasspy.algorithms.ml.arrival.annotate_arrival_time>`
      - Run a supplied SeisBench model, or the default pretrained PhaseNet model,
        and retain candidate P arrivals above a probability threshold.

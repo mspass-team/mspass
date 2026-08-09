@@ -21,13 +21,15 @@ def annotate_arrival_time(
     Predict the arrival time of the P wave using the provided seisbench WaveformModel.
     The arrival time will be saved as a dictionary in the input TimeSeries object and can be accessed using
     the key ``p_wave_picks``. In the dictionary, the key is the arrival time in the UTC timestamp format,
-    and the value is the probability of the pick.
+    and the value is the probability of the pick.  The input is converted to
+    UTC in place with ``rtoa()`` before prediction.
 
     :param timeseries: The time series data to predict the arrival time.
     :param threshold: The probability threshold (0-1) to filter p-wave picks.
         Any picks with probability less than the threshold will be removed. Default value is 0.2.
     :param time_window: The time window (in utc timestamp) to filter the predicted arrival time.
-        If not provided, the whole time series will be used.
+        If not provided, the whole time series will be used.  Bounds outside
+        the input data range are clipped in place on this object.
     :param model: The model used to predict the arrival time.
     :param model_args: arguments to initialize a new model if not provided
     :type timeseries: mspasspy.ccore.seismic.TimeSeries
