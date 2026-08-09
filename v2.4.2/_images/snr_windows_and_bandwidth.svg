@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Signal-to-noise windows and frequency-domain bandwidth</title>
+  <desc id="desc">The upper panel shows a small-amplitude noise window before an arrival and a larger-amplitude signal window after it. The lower panel shows an amplitude signal-to-noise curve crossing a cutoff at low and high frequency edges around a starting frequency.</desc>
+  <defs>
+    <style>
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; }
+      .axis { stroke: #334155; stroke-width: 2; }
+      .tick { stroke: #64748b; stroke-width: 1.5; }
+      .wave { fill: none; stroke: #172554; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+      .ratio { fill: none; stroke: #7c3aed; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+      .guide { stroke: #64748b; stroke-width: 2; stroke-dasharray: 8 7; }
+      .edge { stroke: #0369a1; stroke-width: 2; stroke-dasharray: 5 5; }
+      .label { fill: #0f172a; font: 20px sans-serif; }
+      .small { fill: #334155; font: 17px sans-serif; }
+      .panel-title { fill: #0f172a; font: 600 22px sans-serif; }
+    </style>
+  </defs>
+
+  <rect class="panel" x="30" y="25" width="1140" height="270" rx="10"/>
+  <text class="panel-title" x="60" y="62">Time-domain windows</text>
+  <rect x="115" y="82" width="360" height="165" fill="#dbeafe" opacity="0.8"/>
+  <rect x="690" y="82" width="350" height="165" fill="#ffedd5" opacity="0.9"/>
+  <line class="axis" x1="80" y1="205" x2="1120" y2="205"/>
+  <line class="guide" x1="655" y1="82" x2="655" y2="252"/>
+  <path class="wave" d="M80 204 L95 199 L110 208 L125 203 L140 211 L155 196 L170 207 L185 201 L200 210 L215 198 L230 204 L245 209 L260 194 L275 207 L290 201 L305 211 L320 197 L335 206 L350 202 L365 209 L380 196 L395 205 L410 200 L425 208 L440 198 L455 204 L470 205 L485 201 L500 207 L515 199 L530 205 L545 202 L560 208 L575 197 L590 204 L605 202 L620 207 L635 199 L650 204 L665 201 L680 207 L695 190 L710 218 L725 162 L740 240 L755 128 L770 257 L785 150 L800 231 L815 168 L830 222 L845 181 L860 214 L875 187 L890 211 L905 192 L920 208 L935 195 L950 206 L965 198 L980 205 L995 200 L1010 207 L1025 199 L1040 205 L1055 201 L1070 207 L1085 200 L1100 204 L1120 203"/>
+  <text class="label" x="225" y="112">Noise window</text>
+  <text class="label" x="800" y="112">Signal window</text>
+  <text class="small" x="610" y="76">arrival, t = 0</text>
+  <text class="small" x="96" y="276">noise start</text>
+  <text class="small" x="420" y="276">noise end</text>
+  <text class="small" x="670" y="276">signal start</text>
+  <text class="small" x="986" y="276">signal end</text>
+  <text class="label" x="1065" y="235">time</text>
+
+  <rect class="panel" x="30" y="320" width="1140" height="275" rx="10"/>
+  <text class="panel-title" x="60" y="357">Frequency-domain usable bandwidth</text>
+  <rect x="390" y="378" width="480" height="155" fill="#dcfce7" opacity="0.85"/>
+  <line class="axis" x1="95" y1="535" x2="1120" y2="535"/>
+  <line class="axis" x1="95" y1="535" x2="95" y2="380"/>
+  <line class="guide" x1="95" y1="465" x2="1120" y2="465"/>
+  <line class="edge" x1="390" y1="395" x2="390" y2="548"/>
+  <line class="edge" x1="870" y1="395" x2="870" y2="548"/>
+  <line class="guide" x1="630" y1="395" x2="630" y2="548"/>
+  <path class="ratio" d="M105 517 C165 515 220 510 275 497 C325 486 355 474 390 465 C440 442 480 420 535 411 C585 402 615 404 630 407 C690 414 735 427 780 442 C825 454 850 461 870 465 C930 480 995 501 1110 518"/>
+  <text class="small" x="105" y="455">band_cutoff_snr</text>
+  <text class="small" x="495" y="405">accepted passband</text>
+  <text class="small" x="365" y="574">f_low</text>
+  <text class="small" x="615" y="574">f0</text>
+  <text class="small" x="845" y="574">f_high</text>
+  <text class="label" x="1035" y="568">frequency</text>
+  <text class="label" transform="translate(64 520) rotate(-90)">amplitude SNR</text>
+</svg>

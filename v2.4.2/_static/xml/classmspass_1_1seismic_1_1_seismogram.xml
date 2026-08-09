@@ -1,0 +1,1070 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classmspass_1_1seismic_1_1_seismogram" kind="class" language="C++" prot="public">
+    <compoundname>mspass::seismic::Seismogram</compoundname>
+    <basecompoundref refid="classmspass_1_1seismic_1_1_core_seismogram" prot="public" virt="non-virtual">mspass::seismic::CoreSeismogram</basecompoundref>
+    <basecompoundref refid="classmspass_1_1utility_1_1_processing_history" prot="public" virt="non-virtual">mspass::utility::ProcessingHistory</basecompoundref>
+    <derivedcompoundref refid="classmspass_1_1seismic_1_1_seismogram_w_gaps" prot="public" virt="non-virtual">mspass::seismic::SeismogramWGaps</derivedcompoundref>
+    <includes refid="_seismogram_8h" local="no">Seismogram.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a427934e69f38a6e5d195fe6a8563021c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Seismogram::Seismogram</definition>
+        <argsstring>()</argsstring>
+        <name>Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::Seismogram</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor. Only runs subclass default constructors. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="17" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="17" bodyend="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ad590dfa3a949494f55a93a567e785f51" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Seismogram::Seismogram</definition>
+        <argsstring>(const size_t nsamples)</argsstring>
+        <name>Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::Seismogram</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+          <declname>nsamples</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Bare bones constructor allocates space and little else.</para>
+<para>Sometimes it is helpful to construct a skeleton that can be fleshed out manually. This constructor allocates a 3xnsamples array and sets the matrix to all zeros. It also sets the orientation information to cardinal and defines the data in relative time units. The data are marked dead because the assumption is the caller will fill out commonly needed basic Metadata, load some kind of sample data into the data matrix, and then call the set_live method when that process is completed. That kind of manipulation is most common in preparing simulation or test data where the common tags on real data do not exist and need to be defined manually for the simulatioon or test. The history section is initialized with the default constructor, which currently means it is empty. If a simulation or test requires a history origin the user must load it manaually.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nsamples</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the number of 3c vector samples to iniitalize the object with (creates a 3xnsamples matrix). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="38" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="8" bodyend="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ac11cc7bd179af91d62637caffbc070b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Seismogram::Seismogram</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d)</argsstring>
+        <name>Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::Seismogram</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Construct from lower level <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>In MsPASS <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> has the primary functions that define the concept of a three-component seismogram. <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> implements mspass specific features needed to mesh with the mspass processing system. This constructor clones onlyh the <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> components and initializes the ProcessingHistory with the default constructor leaves the history in an empty state. Users should call methods in ProcessingHistory to initiate a valid history chain. Processing can continue if left in that state, but the history chain will have an undefined origin. Job information will also be lost if not initialized (see BasicProcessingHistory)</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the data to be copied to create the new <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="53" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="15" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ad9ee134debc951e675eb93f94b172e40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Seismogram::Seismogram</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, const std::string alg)</argsstring>
+        <name>Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::Seismogram</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
+          <declname>alg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Contruct from a core seismogram and initialize history as origin.</para>
+<para>This constructor is a variant of a similar one built only from a <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>. This constuctor is intended to be used mainly on simulation data created by some mechanism (e.g. a python procedure). It is more rigid that the simple one arg constructor as it will create a top level history record. The record will mark the result as an origin with an id set as a uuid created by a random number generator (boost implementation). The jobname and jobid are frozen as &quot;test&quot;. Use a different constructor and/or reset job info if more flexibility is desired. Use of this constructor is recommended only for test python programs that do not need to interact with MongoDB.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>core data to be cloned </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>alg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the algorithm name to set for the origin history record. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="71" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="17" bodyend="27"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="653" endline="659">mspass::utility::ProcessingHistory::newid</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" compoundref="_processing_history_8cc" startline="150" endline="172">mspass::utility::ProcessingHistory::set_as_origin</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ae4126ada587a52ed991ed25308a5c9cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Seismogram::Seismogram</definition>
+        <argsstring>(const mspass::seismic::BasicTimeSeries &amp;bts, const mspass::utility::Metadata &amp;md)</argsstring>
+        <name>Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::Seismogram</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">mspass::seismic::BasicTimeSeries</ref> &amp;</type>
+          <declname>bts</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+<para>Partial constructor from base classes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is a partial constructor useful sometimes for building a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object from scratch such as in a simultion. It clones the Metadata and uses attributes in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to build a framework that data can be added into. It initialzies the data array to npts stored in the <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> passed to the constructor.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>bts</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> that overrides any md data. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>md</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the Metadata cloned to make the partially constructed object. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="83" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="28" bodyend="48"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ab87672dc6adffed90b0dc9c144219d44" compoundref="_basic_time_series_8h" startline="109" endline="112">mspass::seismic::BasicTimeSeries::force_t0_shift</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" compoundref="_core_seismogram_8cc" startline="1040" endline="1065">mspass::seismic::CoreSeismogram::set_npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" compoundref="_core_seismogram_8cc" startline="1023" endline="1039">mspass::seismic::CoreSeismogram::set_t0</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ac3f8c8200710fe0d3ef211c7c758e864" compoundref="_basic_time_series_8h" startline="235" endline="235">mspass::seismic::BasicTimeSeries::set_tref</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" compoundref="_basic_time_series_8h" startline="274">mspass::seismic::BasicTimeSeries::t0shift</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ac0f23a3d725302665f4ff0c576b39237" compoundref="_basic_time_series_8h" startline="169" endline="169">mspass::seismic::BasicTimeSeries::timetype</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a5705fbcf6d39464827889bc2e96dfb92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Seismogram::Seismogram</definition>
+        <argsstring>(const mspass::seismic::BasicTimeSeries &amp;b, const mspass::utility::Metadata &amp;m, const mspass::utility::ProcessingHistory &amp;his, const bool card, const bool ortho, const mspass::utility::dmatrix &amp;tm, const mspass::utility::dmatrix &amp;uin)</argsstring>
+        <name>Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::Seismogram</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">mspass::seismic::BasicTimeSeries</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">mspass::utility::ProcessingHistory</ref> &amp;</type>
+          <declname>his</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+          <declname>card</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+          <declname>ortho</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref> &amp;</type>
+          <declname>tm</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref> &amp;</type>
+          <declname>uin</declname>
+        </param>
+        <briefdescription>
+<para>Construct from all pieces. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This constructor build a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object from all the pieces that define this highest level object in mspass. This constructor is planned to be hidden from python programmers and not exposed with pybind11 wrappers because is has some potentially undesirable side effects if not used carefully. The primary purpose of this constructor is for serialization and deserializaton in spark with pickle. The pickle interface is purely in C for this function so again python programmers don&apos;t need to see this constructor. The parameter names are obvious because they are associated one for one with the objects they are used to construct. The only exceptions are card and ortho which are booleans used to set the internal booleans components_are_cardinal and components_are_orthogonal respectively (two internals users should not mess with). tm is also a dmatrix representation the tmatrix stored internally as a 2d C array, but we use the dmatrix to mesh with serialization. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="104" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="57" bodyend="70"/>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="520">mspass::seismic::CoreSeismogram::components_are_cardinal</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="511">mspass::seismic::CoreSeismogram::components_are_orthogonal</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" compoundref="_basic_time_series_8cc" startline="63" endline="74">mspass::seismic::BasicTimeSeries::operator=</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" compoundref="_metadata_8cc" startline="460" endline="466">mspass::utility::Metadata::operator=</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="528">mspass::seismic::CoreSeismogram::tmatrix</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">mspass::seismic::CoreSeismogram::u</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1acbb2f19850e7f5d4e9452ed3728b2b32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Seismogram::Seismogram</definition>
+        <argsstring>(const Metadata &amp;md, const std::string jobname=std::string(&quot;test&quot;), const std::string jobid=std::string(&quot;UNDEFINED&quot;), const std::string readername=std::string(&quot;load3C&quot;), const std::string algid=std::string(&quot;0&quot;))</argsstring>
+        <name>Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::Seismogram</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
+          <declname>jobname</declname>
+          <defval>std::string(&quot;test&quot;)</defval>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
+          <declname>jobid</declname>
+          <defval>std::string(&quot;UNDEFINED&quot;)</defval>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
+          <declname>readername</declname>
+          <defval>std::string(&quot;load3C&quot;)</defval>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
+          <declname>algid</declname>
+          <defval>std::string(&quot;0&quot;)</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Constructor driven by a Metadata object.</para>
+<para>The flexibilityof Metadata makes it helpful at times to build a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object driven by Metadata key:value pairs. This implementation always uses file io to read the actual data and clone the Metadata. ProcessingHistory is initialized to define the result as raw data. The id field is set from Metadata using the special (frozen) key &quot;wf_id&quot; that is assumed to hold the string representation of an ObjectID of the waveform read.</para>
+<para>Note all but the Metadata argument are defaulted, but setting the jobname and jobid is strongly recommended to avoid ambiguity - these define a unique run of a particular workflow.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>md</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the Metadata that is used to drive the constructor. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>jobname</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the jobname (defaults to test, but should be changed) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>jobid</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the identifier for the processing job. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>readername</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the algorithm name assigned to the top level history record. Defaults to &quot;load3C&quot; </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>algid</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the algorithm identifier assigned to the top level history record. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="131" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="71" bodyend="106"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3" compoundref="_metadata_8cc" startline="392" endline="402">mspass::utility::Metadata::get_bool</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" compoundref="_metadata_8h" startline="189" endline="197">mspass::utility::Metadata::get_string</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="653" endline="659">mspass::utility::ProcessingHistory::newid</references>
+        <references refid="namespacemspass_1_1seismic_1ae150f608f6b8bf8a77f934f325170eb6">mspass::seismic::SEISMICMD_rawdata</references>
+        <references refid="namespacemspass_1_1seismic_1a8429ed597db1b001609ef812ed118e25">mspass::seismic::SEISMICMD_uuid</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" compoundref="_processing_history_8cc" startline="150" endline="172">mspass::utility::ProcessingHistory::set_as_origin</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1aec67690fe76c0d6c41dc096bc2f400ae" compoundref="_processing_history_8cc" startline="660" endline="660">mspass::utility::ProcessingHistory::set_id</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1abe8702f0b485cea3357b92c9f0226023" compoundref="_processing_history_8h" startline="89" endline="89">mspass::utility::BasicProcessingHistory::set_jobid</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1af6c7149734faa2c0b4d51fa8e317db27" compoundref="_processing_history_8h" startline="93" endline="93">mspass::utility::BasicProcessingHistory::set_jobname</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1afaaac8777afb9a25b91b1b4b09b3652d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Seismogram::Seismogram</definition>
+        <argsstring>(const Metadata &amp;md, bool load_data)</argsstring>
+        <name>Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::Seismogram</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+          <declname>load_data</declname>
+        </param>
+        <briefdescription>
+<para>Construct from Metadata definition that includes data path. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A Metadata object is sufficiently general that it can contain enough information to contruct an object from attributes contained in it. This constuctor uses that approach, with the actual loading of data being an option (on by default). In mspass this is constructor is used to load data with Metadata constructed from MongoDB and then using the path created from two parameters (dir and dfile used as in css3.0 wfdisc) to read data. The API is general but the implementation in mspass is very rigid. It blindly assumes the data being read are binary doubles in the right byte order and ordered in the native order for dmatrix (Fortran order). i.e. the constuctor does a raw fread of ns*3 doubles into the internal array used in the dmatrix implementation.</para>
+<para>A second element of the Metadata that is special for MsPASS is the handling of the transformation matrix by this constructor. In MsPASS the transformation matrix is stored as a python object in MongoDB. This constructor aims to fetch that entity with the key &apos;tmatrix&apos;. To be more robust and simpler to use with data not loaded from mongodb we default tmatrix to assume the data are in standard coordinates. That is, if the key tmatrix is not defined in Metadata passed as arg0, the constructor assumes it should set the transformation matrix to an identity. Use set_transformation_matrix if that assumption is wrong for your data.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>md</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the Metadata used for the construction.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>load_data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if true (default) a file name is constructed from dir+&quot;/&quot;+dfile, the file is openned, fseek is called to foff, data are read with fread, and the file is closed. If false a dmatrix for u is still created of size 3xns, but the matrix is only initialized to all zeros.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>Will</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>throw a MsPASSError if required metadata are missing. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="172" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="172" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a275d43464679a4cb963fba217d9383c0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Seismogram::Seismogram</definition>
+        <argsstring>(const Seismogram &amp;parent)</argsstring>
+        <name>Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::Seismogram</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard copy constructor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="176" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="176" bodyend="178"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a78a4e2bc62921e3f81a211cb8ec8f460" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual mspass::seismic::Seismogram::~Seismogram</definition>
+        <argsstring>()</argsstring>
+        <name>~Seismogram</name>
+        <qualifiedname>mspass::seismic::Seismogram::~Seismogram</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Virtual destructor for safe deletion through base-class pointers. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="180" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="180" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a68ddfc28edecdb64a007d5163adb9292" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+        <definition>Seismogram &amp; mspass::seismic::Seismogram::operator=</definition>
+        <argsstring>(const Seismogram &amp;parent)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard assignment operator. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="182" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="107" bodyend="113"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1aaa906f3915cfd8ba04adefedc35032e7" compoundref="_core_seismogram_8cc" startline="889" endline="903">mspass::seismic::CoreSeismogram::operator=</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" compoundref="_processing_history_8cc" startline="689" endline="702">mspass::utility::ProcessingHistory::operator=</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1afda01f1d624af58307fef617709dd3ee" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+        <definition>Seismogram &amp; mspass::seismic::Seismogram::operator+=</definition>
+        <argsstring>(const Seismogram &amp;d)</argsstring>
+        <name>operator+=</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator+=</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Add another <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> sample-by-sample in place.</para>
+<para>The <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> samples are added and the error logs are merged. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> to add to this object. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to this modified <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="189" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="189" bodyend="194"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a872c24ce10dce2f7f964af1c53c0f562" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+        <definition>Seismogram &amp; mspass::seismic::Seismogram::operator+=</definition>
+        <argsstring>(const CoreSeismogram &amp;d)</argsstring>
+        <name>operator+=</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator+=</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Add <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> sample values in place.</para>
+<para>ProcessingHistory and the local error log are left unchanged. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>core samples to add. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to this modified <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="201" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="201" bodyend="204"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a7784e499ffc9498bd9bb482f7c3671aa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref></type>
+        <definition>const Seismogram mspass::seismic::Seismogram::operator+</definition>
+        <argsstring>(const Seismogram &amp;other) const</argsstring>
+        <name>operator+</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator+</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the sample-by-sample sum of two <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> objects.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> to add. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>new <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> containing the sum. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="210" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="210" bodyend="214"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a7255f1997e9491ba0162de5f4a6d0596" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref></type>
+        <definition>const CoreSeismogram mspass::seismic::Seismogram::operator+</definition>
+        <argsstring>(const CoreSeismogram &amp;other) const</argsstring>
+        <name>operator+</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator+</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the sample-by-sample sum with a <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>core samples to add. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>new <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> containing the sum. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="220" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="220" bodyend="224"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ab51e08822110b0da44aa8562e543b756" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+        <definition>Seismogram &amp; mspass::seismic::Seismogram::operator*=</definition>
+        <argsstring>(const double scale)</argsstring>
+        <name>operator*=</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator*=</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <declname>scale</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Scale all component samples in place.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>scale</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>multiplicative factor applied to every sample. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to this modified <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="230" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="230" bodyend="233"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ac9c981a1580158a30682bbc16b1c5a75" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+        <definition>Seismogram &amp; mspass::seismic::Seismogram::operator-=</definition>
+        <argsstring>(const Seismogram &amp;d)</argsstring>
+        <name>operator-=</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator-=</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Subtract another <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> sample-by-sample in place.</para>
+<para>The <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> samples are subtracted and the error logs are merged. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> to subtract from this object. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to this modified <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="240" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="240" bodyend="245"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ab2365fe65700d5dbb2da099fc00f7db9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+        <definition>Seismogram &amp; mspass::seismic::Seismogram::operator-=</definition>
+        <argsstring>(const CoreSeismogram &amp;d)</argsstring>
+        <name>operator-=</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator-=</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Subtract <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> sample values in place.</para>
+<para>ProcessingHistory and the local error log are left unchanged. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>core samples to subtract. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>reference to this modified <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="252" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="252" bodyend="255"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a1d421ff7ab8e542bd3f74872d209d9f9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref></type>
+        <definition>const Seismogram mspass::seismic::Seismogram::operator-</definition>
+        <argsstring>(const Seismogram &amp;other) const</argsstring>
+        <name>operator-</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator-</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the sample-by-sample difference of two <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> objects.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> to subtract. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>new <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> containing the difference. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="261" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="261" bodyend="265"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1af4ebc6f620f7a7ecc54b18224516612d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref></type>
+        <definition>const CoreSeismogram mspass::seismic::Seismogram::operator-</definition>
+        <argsstring>(const CoreSeismogram &amp;other) const</argsstring>
+        <name>operator-</name>
+        <qualifiedname>mspass::seismic::Seismogram::operator-</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the sample-by-sample difference with a <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>core samples to subtract. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>new <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> containing the difference. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="271" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="271" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a6a08b90222beaf43809a3691f80b61c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <definition>void mspass::seismic::Seismogram::load_history</definition>
+        <argsstring>(const mspass::utility::ProcessingHistory &amp;h)</argsstring>
+        <name>load_history</name>
+        <qualifiedname>mspass::seismic::Seismogram::load_history</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">mspass::utility::ProcessingHistory</ref> &amp;</type>
+          <declname>h</declname>
+        </param>
+        <briefdescription>
+<para>Load just the ProcessingHistory data from another data source. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Some algorithms don&apos;t handle processing history. In those situations it can prove helpful to manage ProcessingHistory separately and load the history data through this method.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>h</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the ProcessingHistory data to copy into this <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="284" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="114" bodyend="116"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" compoundref="_processing_history_8cc" startline="689" endline="702">mspass::utility::ProcessingHistory::operator=</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a80ca1e43523f8826e18ac2a656d54ba2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+        <definition>size_t mspass::seismic::Seismogram::memory_use</definition>
+        <argsstring>() const</argsstring>
+        <name>memory_use</name>
+        <qualifiedname>mspass::seismic::Seismogram::memory_use</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return an estimate of the memmory use by the data in this object.</para>
+<para>Memory consumed by a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object is needed to implement the <bold>sizeof</bold> method in python that dask/spark use to manage memory. Without that feature we had memory fault issues. Note the estimate this method returns should not be expected to be exact. The MsPASS implementation or any alternative implementation avoids an exact calculation because it requries an (expensive) traversal of multiple map containers. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="294" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="117" bodyend="132"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" compoundref="_metadata_8h" startline="475">mspass::utility::Metadata::changed_or_set</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">mspass::utility::Metadata::md</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="672">mspass::utility::ProcessingHistory::nodes</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_seismogram_1a427934e69f38a6e5d195fe6a8563021c" compoundref="_seismogram_8h" startline="17" endline="19">Seismogram</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1a13450cb0a04da9b190832a73834fb6cf" compoundref="_error_logger_8h" startline="115" endline="115">mspass::utility::ErrorLogger::size</references>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Implemntation of <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> for MsPASS. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This is the working version of a three-component seismogram object used in the MsPASS framework. It extends <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> by adding ProcessingHistory. <linebreak/>
+ </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>mspass::seismic::BasicTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
+      </node>
+      <node id="2">
+        <label>mspass::seismic::CoreSeismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>mspass::seismic::Seismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>mspass::seismic::SeismogramWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="7">
+        <label>mspass::utility::BasicProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
+      </node>
+      <node id="4">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>mspass::utility::ProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_processing_history"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>mspass::seismic::BasicTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
+      </node>
+      <node id="2">
+        <label>mspass::seismic::CoreSeismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>u</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>mspass::seismic::Seismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="8">
+        <label>mspass::utility::BasicProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
+      </node>
+      <node id="9">
+        <label>mspass::utility::ErrorLogger</label>
+        <link refid="classmspass_1_1utility_1_1_error_logger"/>
+      </node>
+      <node id="4">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>mspass::utility::ProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_processing_history"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>elog</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>mspass::utility::dmatrix</label>
+        <link refid="classmspass_1_1utility_1_1dmatrix"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="13" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="14" bodyend="295"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>accumulate</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a667e046c02eb06959c3632c9157161b6" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>add_many_inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>add_one_input</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>append_chain</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adfb9a7a1162b72d5d33e7e3430117611" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>ator</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a28dd8e5f6b22ab7b24b522cafb8f91c5" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>BasicProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a8b077e34de9e1e0a25c24e781c1d235d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>BasicProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a50db83159f5d5fd204c2a8d74a43649a" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>BasicProcessingHistory</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>BasicTimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a8945a16bf52101d89dbc6f7b907b3fd9" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>BasicTimeSeries</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>begin</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a1dd1a9469bca89f7e07c6aa928dc4a09" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>cardinal</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>change_key</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>changed_or_set</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1afbcd32c36bbabff34fb51e382da69d83" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>clean_accumulate_uuids</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>clear</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>clear_modified</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>components_are_cardinal</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>components_are_orthogonal</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>CoreSeismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a88d2aa5099488eb2cbdbd1188c81339e" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>CoreSeismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a8c7307434dac26ca63ac423b55ecb5ec" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>CoreSeismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a67232df3f9d1e1b5ac245f97478adee9" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>CoreSeismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a9c993726c259d7a6f1c213d0d04db5ba" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>CoreSeismogram</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a89df41edb1ff1e92abd5a4f864c36673" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>created_by</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>current_nodedata</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>dead</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>dt</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>elog</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>end</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>endtime</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>erase</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ab87672dc6adffed90b0dc9c144219d44" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>force_t0_shift</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1adccfb78a6ebcdf62039e5cb351566438" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>free_surface_transformation</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5d6876ed25c3f5d93052239ec828a3c5" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a8de95c06d1c6e064e261c1cde49f0ff9" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a461fa38069a9b499e6381cb4cad3b14d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a7904a74f5d29f63c92d0607c6d76d1a3" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af526cc7f00976c793f104b32539768f7" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a2ed7fd2682fe3b127ef3148c48cc9cd2" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a2269c377a085fa237380ef7223016438" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af6039a832c2a9174fba5138313e22af0" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5db9d3c7df64572dbea4dcad4697af2b" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab3c0669e8079562da593df78c9719270" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa417fcccd6e5ba621b5def12ab8d98ad" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a991516933477580b6b59dd578819df06" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get_any</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>get_bool</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>get_double</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>get_int</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get_long</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get_nodes</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>get_string</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a1d49cd81d43cded641b84864081cb74a" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get_t0shift</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1aae2950b408052bda849ba07c4ea9b018" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>get_transformation_matrix</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>id</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1aec695e46a390b9cf55f1919af803fb33" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>is_defined</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>is_empty</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a477b2020ad7e3c753999e3906cd8eb58" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>is_origin</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a440cedfda00fd0b7211ed4673f09426e" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>is_raw</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a35cd2643171f354ded06e1a34681961d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>is_saved</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a8cfd15514483fc2701e53ba1be8412e9" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>is_volatile</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1ac3ffa201ded102104675f2daccd379d9" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>jid</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a6d8756ffc6b2b0a3b068d2014c2f8a6c" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>jnm</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a42047587403f5f37567a870f23554da6" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>jobid</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a16963d48a18867fe480a276ac5d32844" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>jobname</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>keys</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>kill</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a8aae898b7cf2f75d111b3eb6d8184396" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>live</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a6a08b90222beaf43809a3691f80b61c6" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>load_history</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1ab5152d2f6a4706e635d6ca16e68b9bcc" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>map_as_saved</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>md</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aea80df11992ca2c7ff915aab5fcba6f5" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>mdt</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a80ca1e43523f8826e18ac2a656d54ba2" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>memory_use</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a4f2cb1d5af0500a526fa8745aa52db36" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>merge</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Metadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5255fc3ae6accb650f221c9065a92eff" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Metadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afa617529be5501b6b059091118a1a51f" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Metadata</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>mlive</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ad42258d0cd85b4a3e28eb1448cafe62e" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>modified</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>mt0</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a986da6a438099a371a0b0a9556f2c8b3" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>new_ensemble_process</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a75af2861c06a905968cc9c727b8cc877" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>new_map</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1ae0225ef6ba03dc64ebb711bb54b1554d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>new_map</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>newid</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>nodes</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>npts</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>nsamp</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a82d681c60d2e64fab12b92e3244ce052" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>number_inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a95006e7f8009c6d9a5c43d7e086c441b" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>number_inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a04eaa592369744d85f54da21b8de9776" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>number_of_stages</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1ab51e08822110b0da44aa8562e543b756" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator*=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a7784e499ffc9498bd9bb482f7c3671aa" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a7255f1997e9491ba0162de5f4a6d0596" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::Seismogram</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1afda01f1d624af58307fef617709dd3ee" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a872c24ce10dce2f7f964af1c53c0f562" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::Seismogram</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a1d421ff7ab8e542bd3f74872d209d9f9" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator-</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1af4ebc6f620f7a7ecc54b18224516612d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator-</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1ac9c981a1580158a30682bbc16b1c5a75" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator-=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1ab2365fe65700d5dbb2da099fc00f7db9" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator-=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a68ddfc28edecdb64a007d5163adb9292" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1aaa906f3915cfd8ba04adefedc35032e7" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::CoreSeismogram::"><scope>mspass::seismic::Seismogram</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::BasicTimeSeries::"><scope>mspass::seismic::Seismogram</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::Seismogram</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::ProcessingHistory::"><scope>mspass::seismic::Seismogram</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a4b552f2657fdad975723d9fc73e7875a" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::BasicProcessingHistory::"><scope>mspass::seismic::Seismogram</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a1b8fc85ca5a5e14d2e2cdd51a9697fcc" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator[]</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1abdf52d3336018194da73d6832150169d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>operator[]</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a41711bd9b0c88089e6e217f318c01de2" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>orthogonal</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>ProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a225e2e1941f342f3764c2c27854ad2f6" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>ProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a80dc3ba4e28743d0b13c105dc62428aa" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>ProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aec776bbbbf8528903432d9b30d1272d8" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aefee14db8cda9c7143a0eb7bf2d1be1f" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a11ef6cbc1adec7964e2d9c3a4ead15b1" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab3989b1152e9b7b3dcce36aaec89f46d" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1adc016a9bb2288f1f0a7687cfa6844ceb" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa60d283b9eaae245294914557c723c30" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a45c295b33cdbcc297b7429235b81de9a" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1add02049febdc316d70d0fb62e96b2e36" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put_bool</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aafaa017f0e16f37a81a6abdb406a1e08" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put_double</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5fe91d35373564958386f08915b7ce3c" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put_int</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab1ede27ae9810767832f0879ccbfd234" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put_long</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa8402af6778236df398ff0fe25911e21" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put_object</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5efd5678db951e3517c5667fefe93ddf" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>put_string</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ab52a292c7c7bc8fc5fef68db9eb847e0" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>rotate</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a8bfacfda2b33e2df7938695126fbb0db" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>rotate</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a895a06c26825e8abe8c8617622cf8d5e" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>rotate</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a756ee542caaa6001f9f40fed3607ff7e" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>rotate_to_standard</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21faa1455f1b3a0b723e7ee136ac4d2b" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>rtoa</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>sample_number</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21bbb21d3debe26b9c185dc0c93651d0" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>samprate</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a427934e69f38a6e5d195fe6a8563021c" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Seismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1ad590dfa3a949494f55a93a567e785f51" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Seismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1ac11cc7bd179af91d62637caffbc070b0" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Seismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1ad9ee134debc951e675eb93f94b172e40" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Seismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1ae4126ada587a52ed991ed25308a5c9cb" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Seismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a5705fbcf6d39464827889bc2e96dfb92" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Seismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1acbb2f19850e7f5d4e9452ed3728b2b32" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Seismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1afaaac8777afb9a25b91b1b4b09b3652d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Seismogram</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a275d43464679a4cb963fba217d9383c0" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>Seismogram</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>set_as_origin</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a5e51c2c6d3a1aa02281ba242a1d15bf2" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>set_dt</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1aec67690fe76c0d6c41dc096bc2f400ae" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>set_id</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1abe8702f0b485cea3357b92c9f0226023" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>set_jobid</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1af6c7149734faa2c0b4d51fa8e317db27" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>set_jobname</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>set_live</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>set_npts</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>set_t0</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a94e13495475bfb8c1e62f40006f13bdc" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>set_transformation_matrix</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ad60b2dca7acfd76ff1f8d677ef609f8a" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>set_transformation_matrix</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a686a13c4938df315e175cd249a52b74e" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>set_transformation_matrix</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ac3f8c8200710fe0d3ef211c7c758e864" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>set_tref</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a35bf7426cc825e9b3dcf3226816d8316" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>shift</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a1e83b446d82202d808504429b0257eb0" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>shifted</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>size</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1afe65cff0547c9b75ea3ce9a7aa6b20f7" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>stage</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a1ef35389afcd6d4305442a3720398a34" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>status</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a629ae308ad656912abd32d086730f35d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>sync_npts</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>t0</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>t0shift</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>t0shift_is_valid</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>time</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a8bcb6a1e85d833514d7e9bd28a04d3e8" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>time_axis</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a858bde44fbc9801ba833970604c965d1" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>time_is_relative</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf47da6a5d44415cf8a3b70e9a0bc5d5" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>time_is_UTC</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a83c9a758b4a05ebddf09e17373b1e656" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>time_reference</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ac0f23a3d725302665f4ff0c576b39237" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>timetype</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>tmatrix</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ae9ea31f9e36577a51660c61e0749d4a6" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>transform</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>tref</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>type</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>u</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1a1d7a9ab1e25e01694cc733ad2b98c6b7" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>~BasicMetadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a54309603aef4519ce67980b3cf58aef2" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>~BasicProcessingHistory</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a2839e2405b168e0f1ad4d236f31eac8e" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>~BasicTimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a22f733f1d159422844f3091450813445" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>~CoreSeismogram</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a6d06560c0b169240031c6a274dc7990f" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>~Metadata</name></member>
+      <member refid="classmspass_1_1seismic_1_1_seismogram_1a78a4e2bc62921e3f81a211cb8ec8f460" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>~Seismogram</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

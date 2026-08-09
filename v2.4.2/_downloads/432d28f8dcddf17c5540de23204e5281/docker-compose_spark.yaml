@@ -1,0 +1,65 @@
+services:
+
+  mspass-db:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}/:/home"
+    ports:
+      - 27017:27017
+    environment:
+      MSPASS_ROLE: db
+      MONGODB_PORT: 27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet 
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 5s
+
+  mspass-scheduler:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}:/home"
+    ports:
+      - 7077:7077
+    environment:
+      MSPASS_ROLE: scheduler
+      MSPASS_SCHEDULER: spark
+      SPARK_MASTER_PORT: 7077
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 10s
+  
+  mspass-worker:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}:/home"
+    depends_on:
+      mspass-scheduler:
+        condition: service_healthy
+    environment:
+      MSPASS_ROLE: worker
+      MSPASS_SCHEDULER: spark
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+  
+  mspass-frontend:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}:/home"
+    ports:
+      - 8888:8888
+    depends_on:
+      mspass-db:
+        condition: service_healthy
+      mspass-scheduler:
+        condition: service_healthy
+    environment:
+      MSPASS_ROLE: frontend
+      MSPASS_SCHEDULER: spark
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+      MSPASS_DB_ADDRESS: mspass-db
+      MSPASS_JUPYTER_PWD: mspass
+      JUPYTER_PORT: 8888
