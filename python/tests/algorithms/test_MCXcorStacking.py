@@ -204,6 +204,12 @@ def test_dbxcor_weights_preserves_zero_and_dead_sentinels():
     assert np.all(np.isfinite(weights))
     assert np.array_equal(weights, np.array([0.0, 1.0, -1.0]))
 
+    zero_stack_weights = dbxcor_weights(
+        ensemble, _make_live_timeseries([0.0, 0.0])
+    )
+    assert np.all(np.isfinite(zero_stack_weights))
+    assert np.array_equal(zero_stack_weights, np.array([0.0, 0.0, -1.0]))
+
 
 def test_robust_stack_median_ignores_stack0_values():
     ensemble = TimeSeriesEnsemble()

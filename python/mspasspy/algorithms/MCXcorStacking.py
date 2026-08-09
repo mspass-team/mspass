@@ -619,8 +619,9 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.1):
     Returns a numpy vector of weights.  Any dead data will have a weight of
     -1.0 (test for negative is sufficient).  In addition the function has a
     safety to handle receiving a vector of all zeros.  If the function detects
-    all 0s for a datum marked live it will silently return a weight of 0
-    for that datum.
+    an all-zero stack, every live member receives a weight of 0.  If an
+    individual live datum is all zeros, that datum likewise receives a weight
+    of 0.
 
     :param ensemble:  `TimeSeriesEnsemble` of data from which weights are to
       be computed.
@@ -645,6 +646,11 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.1):
     # Scale the scack vector to be a unit vector
     s_unit = np.array(stack.data)
     nrm_s = np.linalg.norm(stack.data)
+    if nrm_s == 0.0:
+        for i in range(N):
+            if ensemble.member[i].dead():
+                wts[i] = -1.0
+        return wts
     s_unit /= nrm_s
     N_s = len(s_unit)
     for i in range(N):
