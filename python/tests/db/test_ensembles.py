@@ -285,3 +285,67 @@ def test_ensembles():
     assert enslist[1]["chan"] == "BHZ"
     assert len(enslist[0].member) == 3
     assert len(enslist[1].member) == 3
+
+
+def test_time_interval_reader_single_segment_groups():
+    """Every matching single-segment station is returned exactly once."""
+    dbclient = DBClient("localhost")
+    database_name = "test_time_interval_reader_single_segments"
+    dbclient.drop_database(database_name)
+    db = Database(
+        dbclient,
+        database_name,
+        db_schema="mspass_lite.yaml",
+        md_schema="mspass_lite.yaml",
+    )
+    starttime = 10000.0
+    endtime = 10020.0
+    stations = ["SINGLE01", "SINGLE02"]
+    channels = ["BH1", "BH2", "BHZ"]
+
+    try:
+        for channel in channels:
+            for station in stations:
+                datum = make_one_ts(
+                    starttime - 10.0,
+                    endtime + 10.0,
+                    sta=station,
+                    chan=channel,
+                )
+                datum["segment_id"] = f"{channel}-{station}"
+                db.save_data(datum, collection="wf_TimeSeries")
+
+        ensembles = TimeIntervalReader(
+            db,
+            starttime,
+            endtime,
+            collection="wf_TimeSeries",
+        )
+        assert [ensemble["chan"] for ensemble in ensembles] == channels
+        for ensemble in ensembles:
+            channel = ensemble["chan"]
+            segment_ids = [datum["segment_id"] for datum in ensemble.member]
+            assert segment_ids == [f"{channel}-{station}" for station in stations]
+            assert len(segment_ids) == len(set(segment_ids))
+
+        single = TimeIntervalReader(
+            db,
+            starttime,
+            endtime,
+            collection="wf_TimeSeries",
+            base_query={"segment_id": "BHZ-SINGLE01"},
+        )
+        assert len(single) == 1
+        assert len(single[0].member) == 1
+        assert single[0].member[0]["segment_id"] == "BHZ-SINGLE01"
+
+        empty = TimeIntervalReader(
+            db,
+            starttime,
+            endtime,
+            collection="wf_TimeSeries",
+            base_query={"segment_id": "missing"},
+        )
+        assert empty == []
+    finally:
+        dbclient.drop_database(database_name)
