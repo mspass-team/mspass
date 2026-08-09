@@ -22,7 +22,6 @@ macro(fetch_yaml_cpp _download_module_path _download_root)
             ${_download_root}
         )
 #    list (APPEND CMAKE_MODULE_PATH ${PROJECT_BINARY_DIR}/yaml-cpp/lib/cmake/yaml-cpp/)
-    set (yaml-cpp_DIR ${PROJECT_BINARY_DIR}/yaml-cpp/lib/cmake/yaml
--cpp/)
+    set (yaml-cpp_DIR ${PROJECT_BINARY_DIR}/yaml-cpp/lib/cmake/yaml-cpp/)
     find_package (yaml-cpp REQUIRED)
 endmacro()

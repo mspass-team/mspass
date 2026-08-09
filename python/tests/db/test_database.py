@@ -49,7 +49,11 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
 from bson.objectid import ObjectId
 import datetime
-from mspasspy.db.database import Database, geoJSON_doc
+from mspasspy.db.database import (
+    Database,
+    _managed_collection_cursor,
+    geoJSON_doc,
+)
 from mspasspy.db.client import DBClient
 from mspasspy.db.collection import Collection
 
@@ -62,6 +66,48 @@ def test_seed_lookup_verbose_defaults():
         inspect.signature(Database.get_seed_channel).parameters["verbose"].default
         is False
     )
+
+
+def test_managed_collection_cursor_default_mode():
+    cursor = mock.MagicMock()
+    cursor.__enter__.return_value = cursor
+    cursor.__iter__.return_value = iter([{"_id": 1}])
+    collection = mock.MagicMock()
+    collection.find.return_value = cursor
+
+    with _managed_collection_cursor(collection, {"key": "value"}) as documents:
+        assert list(documents) == [{"_id": 1}]
+
+    collection.find.assert_called_once_with({"key": "value"})
+    collection.database.client.start_session.assert_not_called()
+    cursor.__exit__.assert_called_once()
+
+
+def test_managed_collection_cursor_refreshes_explicit_session():
+    cursor = mock.MagicMock()
+    cursor.__enter__.return_value = cursor
+    cursor.__iter__.return_value = iter([{"_id": 1}, {"_id": 2}])
+    session = mock.MagicMock()
+    session.__enter__.return_value = session
+    session.session_id = {"id": "session-id"}
+    client = mock.MagicMock()
+    client.start_session.return_value = session
+    collection = mock.MagicMock()
+    collection.database.client = client
+    collection.find.return_value = cursor
+
+    with patch("mspasspy.db.database.time.monotonic", side_effect=[0.0, 301.0, 302.0]):
+        with _managed_collection_cursor(
+            collection, {}, no_cursor_timeout=True
+        ) as documents:
+            assert list(documents) == [{"_id": 1}, {"_id": 2}]
+
+    collection.find.assert_called_once_with({}, no_cursor_timeout=True, session=session)
+    client.admin.command.assert_called_once_with(
+        {"refreshSessions": [session.session_id]}
+    )
+    cursor.__exit__.assert_called_once()
+    session.__exit__.assert_called_once()
 
 
 class TestDatabase:
@@ -172,6 +218,28 @@ class TestDatabase:
             dummy = db.database_schema.site
         with pytest.raises(MsPASSError, match="not defined"):
             dummy = db.database_schema["source"]
+
+    def test_read_inventory_with_managed_cursor(self):
+        source_inventory = obspy.read_inventory("python/tests/data/TA.035A.xml")
+        document_id = self.db.site.insert_one(
+            {
+                "net": "CURSOR_TEST",
+                "sta": "CURSOR_TEST",
+                "serialized_inventory": pickle.dumps(source_inventory.networks[0]),
+            }
+        ).inserted_id
+        try:
+            inventory = self.db.read_inventory(
+                net="CURSOR_TEST",
+                sta="CURSOR_TEST",
+                no_cursor_timeout=True,
+            )
+
+            assert inventory is not None
+            assert len(inventory.networks) == 1
+            assert inventory.networks[0].code == "TA"
+        finally:
+            self.db.site.delete_one({"_id": document_id})
 
     def test_save_elogs(self):
         tmp_ts = get_live_timeseries()
@@ -1793,7 +1861,7 @@ class TestDatabase:
         )
         assert save_res.live
 
-        fixed_cnt = self.db.clean_collection("wf_TimeSeries")
+        fixed_cnt = self.db.clean_collection("wf_TimeSeries", no_cursor_timeout=True)
         assert fixed_cnt == {"npts": 1, "delta": 1}
 
     def test_clean(self, capfd):
@@ -3091,6 +3159,74 @@ class TestDatabase:
             "key2" in seis_ensemble_metadata
             and seis_ensemble_metadata["key2"] == "value2"
         )
+
+    def test_read_ensemble_data_preserves_read_errors(self):
+        """Read failures retain their logs and are saved as abortions."""
+        cases = [
+            ("wf_TimeSeries", TimeSeries, TimeSeriesEnsemble, self.test_ts),
+            ("wf_Seismogram", Seismogram, SeismogramEnsemble, self.test_seis),
+        ]
+        warning_key = "issue_670_live_warning"
+        abortion_key = "issue_670_abortion"
+
+        for collection, object_type, ensemble_type, template in cases:
+            self.db.drop_collection(collection)
+            self.db.drop_collection("abortions")
+            self.db.drop_collection("cemetery")
+            try:
+                saved_ids = []
+                for _ in range(3):
+                    datum = copy.deepcopy(template)
+                    saved = self.db.save_data(
+                        datum,
+                        collection=collection,
+                        storage_mode="gridfs",
+                        return_data=True,
+                    )
+                    saved_ids.append(saved["_id"])
+
+                self.db[collection].update_one(
+                    {"_id": saved_ids[0]}, {"$set": {warning_key: True}}
+                )
+                self.db[collection].update_one(
+                    {"_id": saved_ids[2]},
+                    {"$set": {"npts": "not-an-integer", abortion_key: True}},
+                )
+
+                cursor = self.db[collection].find({"_id": {"$in": saved_ids}})
+                ensemble = self.db.read_data(
+                    cursor,
+                    collection=collection,
+                    mode="cautious",
+                )
+
+                assert isinstance(ensemble, ensemble_type)
+                assert ensemble.live
+                assert len(ensemble.member) == 2
+                ensemble_messages = [
+                    error.message for error in ensemble.elog.get_error_log()
+                ]
+                assert any(warning_key in message for message in ensemble_messages)
+                assert not any(
+                    "will be killed" in message for message in ensemble_messages
+                )
+
+                assert self.db.abortions.count_documents({}) == 1
+                assert self.db.cemetery.count_documents({}) == 0
+                abortion_doc = self.db.abortions.find_one({})
+                assert abortion_doc["type"] == str(object_type)
+                assert abortion_doc["tombstone"]["_id"] == saved_ids[2]
+                assert abortion_doc["tombstone"][abortion_key]
+                assert abortion_doc["tombstone"]["is_abortion"]
+                abortion_messages = [
+                    entry["error_message"] for entry in abortion_doc["logdata"]
+                ]
+                assert any("npts" in message for message in abortion_messages)
+                assert any("will be killed" in message for message in abortion_messages)
+            finally:
+                self.db.drop_collection(collection)
+                self.db.drop_collection("abortions")
+                self.db.drop_collection("cemetery")
 
     def test_get_response(self):
         inv = obspy.read_inventory("python/tests/data/TA.035A.xml")

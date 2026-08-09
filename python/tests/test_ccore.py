@@ -19,6 +19,7 @@ from mspasspy.ccore.seismic import (
     TimeReferenceType,
 )
 from mspasspy.ccore.utility import (
+    AntelopePf,
     AtomicType,
     copy_selected_metadata,
     dmatrix,
@@ -1781,6 +1782,44 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
 
     phred_copy = pickle.loads(pickle.dumps(phred))
     assert str(phred.get_nodes()) == str(phred_copy.get_nodes())
+
+
+@pytest.mark.parametrize("pfbase", ["attribute_maps", "attribute_maps.pf"])
+def test_antelope_pf_uses_packaged_data_without_mspass_home(
+    pfbase, tmp_path, monkeypatch
+):
+    monkeypatch.delenv("MSPASS_HOME", raising=False)
+    monkeypatch.chdir(tmp_path)
+
+    custom_pfpath = tmp_path / "pfpath"
+    custom_pfpath.mkdir()
+    (custom_pfpath / "attribute_maps.pf").write_text(
+        "source_marker pfpath\n" "pfpath_only &Arr{\nmarker sentinel\n}\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("PFPATH", str(custom_pfpath))
+
+    packaged = AntelopePf(pfbase)
+
+    assert "css3.0" in packaged.arr_keys()
+    assert "pfpath_only" in packaged.arr_keys()
+    assert packaged.get_string("source_marker") == "pfpath"
+
+    custom_home = tmp_path / "custom"
+    custom_pf = custom_home / "data" / "pf" / "attribute_maps.pf"
+    custom_pf.parent.mkdir(parents=True)
+    custom_pf.write_text(
+        "source_marker mspass_home\n" "override &Arr{\nmarker sentinel\n}\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("MSPASS_HOME", str(custom_home))
+
+    overridden = AntelopePf(pfbase)
+
+    assert "override" in overridden.arr_keys()
+    assert "pfpath_only" in overridden.arr_keys()
+    assert "css3.0" not in overridden.arr_keys()
+    assert overridden.get_string("source_marker") == "pfpath"
 
 
 def test_MsPASSError():

@@ -108,15 +108,17 @@ if [ "$DB_SHARDING" = true ] ; then
         SHARD_LOGS_PATH[$i]="$username@${WORKER_LIST_ARR[$i]}.${HOSTNAME_BASE}:/tmp/logs/mongo_log_shard_$i"
     done
 
+    DB_READY_FILE="$WORK_DIR/.mspass-db-ready-${SLURM_JOB_ID:-$$}"
+    rm -f -- "$DB_READY_FILE"
+
     APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+    APPTAINERENV_MSPASS_DB_READY_FILE=$DB_READY_FILE \
     APPTAINERENV_MSPASS_SHARD_DATABASE=${SHARD_DATABASE} \
     APPTAINERENV_MSPASS_SHARD_COLLECTIONS=${SHARD_COLLECTIONS[@]} \
     APPTAINERENV_MSPASS_SHARD_LIST=${SHARD_LIST[@]} \
     APPTAINERENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
     APPTAINERENV_MSPASS_ROLE=dbmanager $APP_COM &
-
-    # ensure enough time for dbmanager to finish
-    sleep 30
+    DBMANAGER_PID=$!
 
     # start a shard container in each worker node
     # mipexec could be cleaner while ssh would induce more complexity
@@ -129,6 +131,27 @@ if [ "$DB_SHARDING" = true ] ; then
         APPTAINERENV_MSPASS_ROLE=shard \
         mpiexec.hydra -n 1 -ppn 1 -hosts ${WORKER_LIST_ARR[i]} $APP_COM &
     done
+
+    DB_READY_TIMEOUT=900
+    DB_READY_WAITED=0
+    while [[ ! -f "$DB_READY_FILE" ]]; do
+        if ! kill -0 "$DBMANAGER_PID" 2>/dev/null; then
+            wait "$DBMANAGER_PID"
+            DBMANAGER_STATUS=$?
+            if ((DBMANAGER_STATUS == 0)); then
+                DBMANAGER_STATUS=1
+            fi
+            echo "dbmanager exited before MongoDB sharding was ready" >&2
+            exit "$DBMANAGER_STATUS"
+        fi
+        if ((DB_READY_WAITED >= DB_READY_TIMEOUT)); then
+            echo "timed out waiting for MongoDB sharding readiness" >&2
+            exit 1
+        fi
+        sleep 2
+        DB_READY_WAITED=$((DB_READY_WAITED + 2))
+    done
+    rm -f -- "$DB_READY_FILE"
 
     # Launch the jupyter notebook frontend in the primary node.
     # Run in batch mode if the script was

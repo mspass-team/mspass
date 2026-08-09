@@ -146,6 +146,7 @@ class TestDBClean:
                 "starttime",
                 "-r",
                 "calib:rename_calib",
+                "--no-cursor-timeout",
             ]
         )
 

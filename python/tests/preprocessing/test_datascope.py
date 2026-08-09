@@ -16,6 +16,15 @@ def compare_selected(A, B, key):
         return False
 
 
+def test_default_parameter_file_uses_packaged_data(tmp_path, monkeypatch):
+    monkeypatch.delenv("MSPASS_HOME", raising=False)
+    monkeypatch.chdir(tmp_path)
+
+    db = DatascopeDatabase("unused")
+
+    assert db.get_primary_keys("event") == ["evid"]
+
+
 # testing section - pytest prototype
 def test_DatascopeDatabase():
     """

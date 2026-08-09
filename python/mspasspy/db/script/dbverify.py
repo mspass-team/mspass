@@ -7,7 +7,8 @@ dbverify - MsPASS database verify command line tool
 .. topic:: Usage
 
     dbverify dbname [-t testname] [-c col ... ]
-            [-n n1 ...] [-r k1 ...][-e n] [-v] [-h | --help]
+            [-n n1 ...] [-r k1 ...][-e n] [-v]
+            [--no-cursor-timeout] [-h | --help]
 
 .. topic:: Description
 
@@ -103,6 +104,11 @@ argument attached to the -t flag:
     1000.  Smaller numbers are often useful in verbose mode and larger numbers
     may be needed for data sets assembled from multiple sources with different
     problems.
+
+* --no-cursor-timeout:
+    Keeps each collection scan cursor alive with an explicit MongoDB session
+    that MsPASS refreshes periodically.  Use this for large data sets when
+    processing one cursor batch could exceed MongoDB's idle timeout.
 
 .. topic:: EXAMPLES
 
@@ -243,7 +249,9 @@ def print_bad_wf_docs(dbcol, idlist):
         print("////////////////////////////////////////////////////////")
 
 
-def run_check_links(db, wfcollection, nrmlist, elimit, verbose):
+def run_check_links(
+    db, wfcollection, nrmlist, elimit, verbose, no_cursor_timeout=False
+):
     """
     Run the verify function called check_links and produces a reasonable
     summary or readable (verbose) printed output of the results.
@@ -276,7 +284,10 @@ def run_check_links(db, wfcollection, nrmlist, elimit, verbose):
 
     for nrmcol in nrmlist:
         errs = db._check_links(
-            xref_key=nrmcol, collection=wfcollection, error_limit=elimit
+            xref_key=nrmcol,
+            collection=wfcollection,
+            error_limit=elimit,
+            no_cursor_timeout=no_cursor_timeout,
         )
         broken = errs[0]
         undef = errs[1]
@@ -321,7 +332,7 @@ def run_check_links(db, wfcollection, nrmlist, elimit, verbose):
                 )
 
 
-def run_check_attribute_types(db, col, elimit, verbose):
+def run_check_attribute_types(db, col, elimit, verbose, no_cursor_timeout=False):
     """
     Run the verify function called check_attribute_types and produces
     a reasonable summary or readable (verbose) printed output of the results.
@@ -352,7 +363,11 @@ def run_check_attribute_types(db, col, elimit, verbose):
     # definitions for each collection listed.  Verbose is
     # also always off.  Note the solution to enter one from
     # an input is to use json.loads
-    errs = db._check_attribute_types(col, error_limit=elimit)
+    errs = db._check_attribute_types(
+        col,
+        error_limit=elimit,
+        no_cursor_timeout=no_cursor_timeout,
+    )
     mismatch = errs[0]
     undef = errs[1]
     print("check_attribute_types result for collection=", col)
@@ -426,7 +441,9 @@ def run_check_attribute_types(db, col, elimit, verbose):
             print(json_util.dumps(mmkeys, indent=2))
 
 
-def run_check_required(db, col, required_list, elimit, verbose):
+def run_check_required(
+    db, col, required_list, elimit, verbose, no_cursor_timeout=False
+):
     """
     Each standard collection in mspass has some key attributes that
     are essential to be useful.   This test should be run to verify
@@ -439,7 +456,12 @@ def run_check_required(db, col, required_list, elimit, verbose):
     readable layout with json_util.dumps.
 
     """
-    errs = db._check_required(col, required_list, error_limit=elimit)
+    errs = db._check_required(
+        col,
+        required_list,
+        error_limit=elimit,
+        no_cursor_timeout=no_cursor_timeout,
+    )
     mismatch = errs[0]
     undef = errs[1]
     print("////Results from run_check_required on collection=", col)
@@ -532,7 +554,10 @@ def main(args=None):
         args = sys.argv[1:]
     parser = argparse.ArgumentParser(
         prog="dbverify",
-        usage="%(prog)s dbname [-t TEST -c [collection ...] -n [normalize ... ] -error_limit n -v]",
+        usage=(
+            "%(prog)s dbname [-t TEST -c [collection ...] "
+            "-n [normalize ... ] -error_limit n -v --no-cursor-timeout]"
+        ),
         description="MsPASS database verify program",
     )
     parser.add_argument(
@@ -589,6 +614,14 @@ def main(args=None):
         action="store_true",
         help="When used print offending values.  Otherwise just return a summary",
     )
+    parser.add_argument(
+        "--no-cursor-timeout",
+        action="store_true",
+        help=(
+            "Keep collection scan cursors alive with periodically refreshed "
+            "MongoDB sessions"
+        ),
+    )
 
     args = parser.parse_args(args)
     test_to_run = args.test
@@ -600,6 +633,7 @@ def main(args=None):
     reqlist = args.require
     verbose = args.verbose
     elimit = args.error_limit
+    no_cursor_timeout = args.no_cursor_timeout
 
     # If python had a switch case it would be used here.  this
     # is the list of known tests.  the program can only run one
@@ -615,7 +649,7 @@ def main(args=None):
         if not isinstance(col, str):
             print("Invalid value parsed for -c option=", col)
             exit(-1)
-        run_check_links(db, col, normalize, elimit, verbose)
+        run_check_links(db, col, normalize, elimit, verbose, no_cursor_timeout)
     elif test_to_run == "required":
         if len(col_to_test) > 1:
             print("WARNING:  required test can only be run on one collection at a time")
@@ -634,10 +668,10 @@ def main(args=None):
             required_list = get_required(col)
         else:
             required_list = reqlist
-        run_check_required(db, col, required_list, elimit, verbose)
+        run_check_required(db, col, required_list, elimit, verbose, no_cursor_timeout)
     elif test_to_run == "schema_check":
         for col in col_to_test:
-            run_check_attribute_types(db, col, elimit, verbose)
+            run_check_attribute_types(db, col, elimit, verbose, no_cursor_timeout)
     else:
         print("Unrecognized value for --test value parsed=", test_to_run)
         print("Must be one of:  normalization, required, or schema_check")

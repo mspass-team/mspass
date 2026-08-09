@@ -16,6 +16,7 @@
 
 #include "python/utility/Publicdmatrix_py.h"
 #include "python/utility/boost_any_converter_py.h"
+#include "src/lib/utility/data_directory.h"
 
 namespace mspass {
 namespace mspasspy {
@@ -25,6 +26,19 @@ using namespace std;
 using namespace mspass::utility;
 
 namespace {
+void register_python_package_data_directory() {
+  py::object package_file = py::module_::import("mspasspy").attr("__file__");
+  if (package_file.is_none())
+    return;
+
+  py::module_ path = py::module_::import("os.path");
+  py::object package_directory =
+      path.attr("dirname")(path.attr("abspath")(package_file));
+  const std::string data_directory =
+      path.attr("join")(package_directory, "data").cast<std::string>();
+  mspass::utility::detail::set_python_package_data_directory(data_directory);
+}
+
 bool is_expected_python_conversion_error(py::error_already_set &err) {
   return err.matches(PyExc_TypeError) || err.matches(PyExc_ValueError) ||
          err.matches(PyExc_OverflowError);
@@ -230,6 +244,7 @@ static PyGetSetDef MsPASSError_getsetters[] = {
 };
 
 PYBIND11_MODULE(utility, m) {
+  register_python_package_data_directory();
   m.attr("__name__") = "mspasspy.ccore.utility";
   m.doc() = "A submodule for utility namespace of ccore";
 
