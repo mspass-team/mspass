@@ -127,6 +127,26 @@ if [[ -z $MSPASS_SLEEP_TIME ]]; then
   MSPASS_SLEEP_TIME=15
 fi
 
+function retry_mongosh_command {
+  local description="$1"
+  shift
+  local attempt
+  local max_attempts=20
+
+  for ((attempt = 1; attempt <= max_attempts; attempt++)); do
+    if mongosh "$@"; then
+      return 0
+    fi
+    if ((attempt < max_attempts)); then
+      echo "$description is not ready (attempt $attempt/$max_attempts); retrying in ${MSPASS_SLEEP_TIME}s"
+      sleep "$MSPASS_SLEEP_TIME"
+    fi
+  done
+
+  echo "ERROR: $description failed after $max_attempts attempts" >&2
+  return 1
+}
+
 # This sets defaults for this set of env variables
 if [[ -z ${MSPASS_DB_DIR} ]]; then
   MSPASS_DB_DIR=${MSPASS_WORKDIR}/db
@@ -475,8 +495,10 @@ if [ "$MSPASS_START_LOCAL_SERVICES" = "true" ]; then
       # add shard clusters
       for i in ${MSPASS_SHARD_LIST[@]}; do
         echo "add shard with host ${i}"
-        sleep ${MSPASS_SLEEP_TIME}
-        mongosh --host $HOSTNAME --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
+        if ! retry_mongosh_command "add shard ${i}" \
+          --host "$HOSTNAME" --port "$MONGODB_PORT" --eval "sh.addShard(\"${i}\")"; then
+          exit 1
+        fi
       done
     fi
 
