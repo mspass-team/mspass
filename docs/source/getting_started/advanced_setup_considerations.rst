@@ -48,6 +48,26 @@ Do not add ``--user`` inside a Conda or virtual environment: it can install a
 second copy outside the environment.  Also avoid ``sudo pip``, which can
 modify files managed by the operating system.
 
+Force the bundled Boost build
+-----------------------------
+
+MsPASS links the static Boost.Serialization library into its Python extension,
+so that library must be compiled as position-independent code.  If CMake finds
+an incompatible Boost library in a Conda or system prefix, configure the C++
+build with ``MSPASS_FORCE_BUNDLED_BOOST`` enabled:
+
+.. code-block:: bash
+
+   mkdir -p build
+   cd build
+   cmake ../cxx -DMSPASS_FORCE_BUNDLED_BOOST=ON
+   cmake --build .
+
+The option is also available in ``ccmake``.  It skips installed Boost
+libraries and builds the project's pinned Boost version as a static ``-fPIC``
+library.  Leave the option off to retain the normal behavior of using a
+compatible installed Boost first.
+
 Check which copy is imported
 ----------------------------
 
