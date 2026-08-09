@@ -3,8 +3,10 @@ import io
 import copy
 import pathlib
 import pickle
+import time
 import urllib.request
 from array import array
+from contextlib import contextmanager
 import pandas as pd
 
 # WARNING fcntl is unix specific.
@@ -57,6 +59,39 @@ from mspasspy.ccore.utility import (
 from mspasspy.db.collection import Collection
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util.converter import Textfile2Dataframe
+
+_CURSOR_SESSION_REFRESH_INTERVAL_SECONDS = 300.0
+
+
+@contextmanager
+def _managed_collection_cursor(collection, query, no_cursor_timeout=False):
+    """Yield a cursor that is closed reliably after a collection scan.
+
+    Long-running scans use an explicit session because MongoDB's session idle
+    timeout can otherwise close a cursor even when ``no_cursor_timeout`` is
+    enabled.  Refreshing the session every five minutes keeps it well below
+    the server's default 30-minute session timeout.
+    """
+    if not no_cursor_timeout:
+        with collection.find(query) as cursor:
+            yield cursor
+        return
+
+    client = collection.database.client
+    with client.start_session() as session:
+        with collection.find(query, no_cursor_timeout=True, session=session) as cursor:
+            last_refresh = time.monotonic()
+
+            def refreshing_documents():
+                nonlocal last_refresh
+                for document in cursor:
+                    yield document
+                    now = time.monotonic()
+                    if now - last_refresh >= _CURSOR_SESSION_REFRESH_INTERVAL_SECONDS:
+                        client.admin.command({"refreshSessions": [session.session_id]})
+                        last_refresh = now
+
+            yield refreshing_documents()
 
 
 class Database(pymongo.database.Database):
@@ -1619,6 +1654,7 @@ class Database(pymongo.database.Database):
         delete_missing_required=False,
         verbose=False,
         verbose_keys=None,
+        no_cursor_timeout=False,
     ):
         """
         This method can be used to fix a subset of common database problems
@@ -1670,6 +1706,12 @@ class Database(pymongo.database.Database):
         :param verbose: Set to ``True`` to print all the operations. Default is ``False``.
         :param verbose_keys: a list of keys you want to added to better identify problems when error happens. It's used in the print messages.
         :type verbose_keys: :class:`list` of :class:`str`
+        :param no_cursor_timeout: Set to ``True`` for a collection scan that
+          may run long enough for MongoDB to expire an idle cursor.  MsPASS
+          then uses an explicit session, refreshes it periodically, and closes
+          both the cursor and session when processing ends.  Default is
+          ``False``.
+        :type no_cursor_timeout: :class:`bool`
         """
         if query is None:
             query = {}
@@ -1688,25 +1730,25 @@ class Database(pymongo.database.Database):
         if matchsize == 0:
             return fixed_cnt
         else:
-            docs = col.find(query)
-            for doc in docs:
-                if "_id" in doc:
-                    fixed_attr_cnt = self.clean(
-                        doc["_id"],
-                        collection,
-                        rename_undefined,
-                        delete_undefined,
-                        required_xref_list,
-                        delete_missing_xref,
-                        delete_missing_required,
-                        verbose,
-                        verbose_keys,
-                    )
-                    for k, v in fixed_attr_cnt.items():
-                        if k not in fixed_cnt:
-                            fixed_cnt[k] = 1
-                        else:
-                            fixed_cnt[k] += v
+            with _managed_collection_cursor(col, query, no_cursor_timeout) as documents:
+                for doc in documents:
+                    if "_id" in doc:
+                        fixed_attr_cnt = self.clean(
+                            doc["_id"],
+                            collection,
+                            rename_undefined,
+                            delete_undefined,
+                            required_xref_list,
+                            delete_missing_xref,
+                            delete_missing_required,
+                            verbose,
+                            verbose_keys,
+                        )
+                        for k, v in fixed_attr_cnt.items():
+                            if k not in fixed_cnt:
+                                fixed_cnt[k] = 1
+                            else:
+                                fixed_cnt[k] += v
 
         return fixed_cnt
 
@@ -2123,7 +2165,14 @@ class Database(pymongo.database.Database):
 
         return is_mismatch_key
 
-    def _delete_attributes(self, collection, keylist, query=None, verbose=False):
+    def _delete_attributes(
+        self,
+        collection,
+        keylist,
+        query=None,
+        verbose=False,
+        no_cursor_timeout=False,
+    ):
         """
         Deletes all occurrences of attributes linked to keys defined
         in a list of keywords passed as (required) keylist argument.
@@ -2139,20 +2188,21 @@ class Database(pymongo.database.Database):
         :param verbose:  when ``True`` edit will produce a line of printed
           output describing what was deleted.  Use this option only if
           you know from dbverify the number of changes to be made are small.
+        :param no_cursor_timeout: when ``True`` keep the scan cursor's explicit
+          MongoDB session alive until processing is complete.
 
         :return:  dict keyed by the keys of all deleted entries.  The value
           of each entry is the number of documents the key was deleted from.
         :rtype: :class:`dict`
         """
         dbcol = self[collection]
-        cursor = dbcol.find(query)
         counts = dict()
         # preload counts to 0 so we get a return saying 0 when no changes
         # are made
         for k in keylist:
             counts[k] = 0
-        try:
-            for doc in cursor:
+        with _managed_collection_cursor(dbcol, query, no_cursor_timeout) as documents:
+            for doc in documents:
                 id = doc.pop("_id")
                 n = 0
                 todel = dict()
@@ -2173,11 +2223,16 @@ class Database(pymongo.database.Database):
                         n += 1
                 if n > 0:
                     dbcol.update_one({"_id": id}, {"$unset": todel})
-        finally:
-            cursor.close()
         return counts
 
-    def _rename_attributes(self, collection, rename_map, query=None, verbose=False):
+    def _rename_attributes(
+        self,
+        collection,
+        rename_map,
+        query=None,
+        verbose=False,
+        no_cursor_timeout=False,
+    ):
         """
         Renames specified keys for all or a subset of documents in a
         MongoDB collection.   The updates are driven by an input python
@@ -2195,6 +2250,8 @@ class Database(pymongo.database.Database):
           output describing what was deleted.  Use this option only if
           you know from dbverify the number of changes to be made are small.
           When false the function runs silently.
+        :param no_cursor_timeout: when ``True`` keep the scan cursor's explicit
+          MongoDB session alive until processing is complete.
 
         :return:  dict keyed by the keys of all changed entries.  The value
           of each entry is the number of documents changed.  The keys are the
@@ -2202,14 +2259,13 @@ class Database(pymongo.database.Database):
           the rename_map.
         """
         dbcol = self[collection]
-        cursor = dbcol.find(query)
         counts = dict()
         # preload counts to 0 so we get a return saying 0 when no changes
         # are made
         for k in rename_map:
             counts[k] = 0
-        try:
-            for doc in cursor:
+        with _managed_collection_cursor(dbcol, query, no_cursor_timeout) as documents:
+            for doc in documents:
                 id = doc.pop("_id")
                 n = 0
                 for k in rename_map:
@@ -2230,11 +2286,11 @@ class Database(pymongo.database.Database):
                         counts[k] += 1
                         n += 1
                 dbcol.replace_one({"_id": id}, doc)
-        finally:
-            cursor.close()
         return counts
 
-    def _fix_attribute_types(self, collection, query=None, verbose=False):
+    def _fix_attribute_types(
+        self, collection, query=None, verbose=False, no_cursor_timeout=False
+    ):
         """
         This function attempts to fix type collisions in the schema defined
         for the specified database and collection.  It tries to fix any
@@ -2260,14 +2316,15 @@ class Database(pymongo.database.Database):
           printed output for each change it makes.  The default is false.
           Needless verbose should be avoided unless you are certain the
           number of changes it will make are small.
+        :param no_cursor_timeout: when ``True`` keep the scan cursor's explicit
+          MongoDB session alive until processing is complete.
         """
         dbcol = self[collection]
         schema = self.database_schema
         col_schema = schema[collection]
         counts = dict()
-        cursor = dbcol.find(query)
-        try:
-            for doc in cursor:
+        with _managed_collection_cursor(dbcol, query, no_cursor_timeout) as documents:
+            for doc in documents:
                 n = 0
                 id = doc.pop("_id")
                 if verbose:
@@ -2320,9 +2377,6 @@ class Database(pymongo.database.Database):
 
                 if n > 0:
                     dbcol.update_one({"_id": id}, {"$set": up_d})
-        finally:
-            cursor.close()
-
         return counts
 
     def _check_links(
@@ -2332,6 +2386,7 @@ class Database(pymongo.database.Database):
         wfquery=None,
         verbose=False,
         error_limit=1000,
+        no_cursor_timeout=False,
     ):
         """
         This function checks for missing cross-referencing ids in a
@@ -2364,6 +2419,8 @@ class Database(pymongo.database.Database):
           The number should be large enough to catch all condition but
           not so huge it become cumbersome.  With no limit or a memory
           fault is even possible on a huge dataset.
+        :param no_cursor_timeout: when ``True`` keep each scan cursor's explicit
+          MongoDB session alive until processing is complete.
         :return:  returns a tuple with two lists.  Both lists are ObjectIds
           of the scanned wf collection that have errors.  component 0
           of the tuple contains ids of wf entries that have the normalization
@@ -2447,9 +2504,10 @@ class Database(pymongo.database.Database):
                 )
                 print("This should resolve links to ", normalize, " collection")
 
-            cursor = dbwf.find(wfquery)
-            try:
-                for doc in cursor:
+            with _managed_collection_cursor(
+                dbwf, wfquery, no_cursor_timeout
+            ) as documents:
+                for doc in documents:
                     wfid = doc["_id"]
                     is_bad_xref_key, is_bad_wf = self._check_xref_key(
                         doc, wf_collection, xref_key
@@ -2479,13 +2537,15 @@ class Database(pymongo.database.Database):
                         or len(missing_id_list) >= error_limit
                     ):
                         break
-            finally:
-                cursor.close()
-
         return tuple([bad_id_list, missing_id_list])
 
     def _check_attribute_types(
-        self, collection, query=None, verbose=False, error_limit=1000
+        self,
+        collection,
+        query=None,
+        verbose=False,
+        error_limit=1000,
+        no_cursor_timeout=False,
     ):
         """
         This function checks the integrity of all attributes
@@ -2520,6 +2580,8 @@ class Database(pymongo.database.Database):
           The number should be large enough to catch all condition but
           not so huge it become cumbersome.  With no limit or a memory
           fault is even possible on a huge dataset.
+        :param no_cursor_timeout: when ``True`` keep the scan cursor's explicit
+          MongoDB session alive until processing is complete.
         :return:  returns a tuple with two python dict containers.
           The component 0 python dict contains details of type mismatch errors.
           Component 1 contains details for data with undefined keys.
@@ -2547,11 +2609,10 @@ class Database(pymongo.database.Database):
                 + " yields zero matching documents",
                 "Fatal",
             )
-        cursor = dbcol.find(query)
         bad_type_docs = dict()
         undefined_key_docs = dict()
-        try:
-            for doc in cursor:
+        with _managed_collection_cursor(dbcol, query, no_cursor_timeout) as documents:
+            for doc in documents:
                 bad_types = dict()
                 undefined_keys = dict()
                 id = doc["_id"]
@@ -2588,9 +2649,6 @@ class Database(pymongo.database.Database):
                     or len(bad_type_docs) >= error_limit
                 ):
                     break
-        finally:
-            cursor.close()
-
         return tuple([bad_type_docs, undefined_key_docs])
 
     def _check_required(
@@ -2600,6 +2658,7 @@ class Database(pymongo.database.Database):
         query=None,
         verbose=False,
         error_limit=100,
+        no_cursor_timeout=False,
     ):
         """
         This function applies a test to assure a list of attributes
@@ -2638,6 +2697,8 @@ class Database(pymongo.database.Database):
           The number should be large enough to catch all condition but
           not so huge it become cumbersome.  With no limit or a memory
           fault is even possible on a huge dataset.
+        :param no_cursor_timeout: when ``True`` keep the scan cursor's explicit
+          MongoDB session alive until processing is complete.
         :return:  tuple with two components. Both components contain a
           python dict container keyed by ObjectId of problem documents.
           The values in the component 0 dict are themselves python dict
@@ -2679,9 +2740,8 @@ class Database(pymongo.database.Database):
             )
         undef = dict()
         wrong_types = dict()
-        cursor = dbcol.find(query)
-        try:
-            for doc in cursor:
+        with _managed_collection_cursor(dbcol, query, no_cursor_timeout) as documents:
+            for doc in documents:
                 id = doc["_id"]
                 undef_this = list()
                 wrong_this = dict()
@@ -2698,8 +2758,6 @@ class Database(pymongo.database.Database):
                     wrong_types[id] = wrong_this
                 if len(wrong_types) >= error_limit or len(undef) >= error_limit:
                     break
-        finally:
-            cursor.close()
         return tuple([wrong_types, undef])
 
     def update_metadata(
@@ -4898,7 +4956,6 @@ class Database(pymongo.database.Database):
         queryrecord["net"] = record_to_test["net"]
         queryrecord["sta"] = record_to_test["sta"]
         queryrecord["loc"] = record_to_test["loc"]
-        matches = dbsite.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
@@ -4914,11 +4971,12 @@ class Database(pymongo.database.Database):
             stm = st0 - time_fudge_factor
             etp = et0 + time_fudge_factor
             etm = et0 - time_fudge_factor
-            for x in matches:
-                sttest = x["starttime"]
-                ettest = x["endtime"]
-                if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
-                    return False
+            with _managed_collection_cursor(dbsite, queryrecord) as matches:
+                for x in matches:
+                    sttest = x["starttime"]
+                    ettest = x["endtime"]
+                    if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
+                        return False
             return True
 
     def _channel_is_not_in_db(self, record_to_test):
@@ -4938,7 +4996,6 @@ class Database(pymongo.database.Database):
         queryrecord["sta"] = record_to_test["sta"]
         queryrecord["loc"] = record_to_test["loc"]
         queryrecord["chan"] = record_to_test["chan"]
-        matches = dbchannel.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
@@ -4954,11 +5011,12 @@ class Database(pymongo.database.Database):
             stm = st0 - time_fudge_factor
             etp = et0 + time_fudge_factor
             etm = et0 - time_fudge_factor
-            for x in matches:
-                sttest = x["starttime"]
-                ettest = x["endtime"]
-                if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
-                    return False
+            with _managed_collection_cursor(dbchannel, queryrecord) as matches:
+                for x in matches:
+                    sttest = x["starttime"]
+                    ettest = x["endtime"]
+                    if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
+                        return False
             return True
 
     def _handle_null_starttime(self, t):
@@ -5285,7 +5343,9 @@ class Database(pymongo.database.Database):
         print("number of channel records saved=", n_chan_saved)
         return tuple([n_site_saved, n_chan_saved, n_site_processed, n_chan_processed])
 
-    def read_inventory(self, net=None, sta=None, loc=None, time=None):
+    def read_inventory(
+        self, net=None, sta=None, loc=None, time=None, no_cursor_timeout=False
+    ):
         """
         Loads an obspy inventory object limited by one or more
         keys.   Default is to load the entire contents of the
@@ -5304,6 +5364,12 @@ class Database(pymongo.database.Database):
           startime<time<endtime.  Input is assumed an
           epoch time NOT an obspy UTCDateTime. Use a conversion
           to epoch time if necessary.
+        :param no_cursor_timeout: Set to ``True`` when reading an inventory
+          large enough that processing a cursor batch may exceed MongoDB's
+          idle timeout.  MsPASS then uses an explicit session, refreshes it
+          periodically, and closes both the cursor and session when the scan
+          ends.  Default is ``False``.
+        :type no_cursor_timeout: :class:`bool`
         :return:  obspy Inventory of all stations matching the
           query parameters
         :rtype:  obspy Inventory
@@ -5324,15 +5390,17 @@ class Database(pymongo.database.Database):
         if matchsize == 0:
             return None
         else:
-            stations = dbsite.find(query)
-            for s in stations:
-                serialized = s["serialized_inventory"]
-                netw = pickle.loads(serialized)
-                # It might be more efficient to build a list of
-                # Network objects but here we add them one
-                # station at a time.  Note the extend method
-                # if poorly documented in obspy
-                result.extend([netw])
+            with _managed_collection_cursor(
+                dbsite, query, no_cursor_timeout
+            ) as stations:
+                for s in stations:
+                    serialized = s["serialized_inventory"]
+                    netw = pickle.loads(serialized)
+                    # It might be more efficient to build a list of
+                    # Network objects but here we add them one
+                    # station at a time.  Note the extend method
+                    # if poorly documented in obspy
+                    result.extend([netw])
         return result
 
     def get_seed_site(self, net, sta, loc="NONE", time=-1.0, verbose=False):

@@ -49,7 +49,11 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
 from bson.objectid import ObjectId
 import datetime
-from mspasspy.db.database import Database, geoJSON_doc
+from mspasspy.db.database import (
+    Database,
+    _managed_collection_cursor,
+    geoJSON_doc,
+)
 from mspasspy.db.client import DBClient
 from mspasspy.db.collection import Collection
 
@@ -62,6 +66,48 @@ def test_seed_lookup_verbose_defaults():
         inspect.signature(Database.get_seed_channel).parameters["verbose"].default
         is False
     )
+
+
+def test_managed_collection_cursor_default_mode():
+    cursor = mock.MagicMock()
+    cursor.__enter__.return_value = cursor
+    cursor.__iter__.return_value = iter([{"_id": 1}])
+    collection = mock.MagicMock()
+    collection.find.return_value = cursor
+
+    with _managed_collection_cursor(collection, {"key": "value"}) as documents:
+        assert list(documents) == [{"_id": 1}]
+
+    collection.find.assert_called_once_with({"key": "value"})
+    collection.database.client.start_session.assert_not_called()
+    cursor.__exit__.assert_called_once()
+
+
+def test_managed_collection_cursor_refreshes_explicit_session():
+    cursor = mock.MagicMock()
+    cursor.__enter__.return_value = cursor
+    cursor.__iter__.return_value = iter([{"_id": 1}, {"_id": 2}])
+    session = mock.MagicMock()
+    session.__enter__.return_value = session
+    session.session_id = {"id": "session-id"}
+    client = mock.MagicMock()
+    client.start_session.return_value = session
+    collection = mock.MagicMock()
+    collection.database.client = client
+    collection.find.return_value = cursor
+
+    with patch("mspasspy.db.database.time.monotonic", side_effect=[0.0, 301.0, 302.0]):
+        with _managed_collection_cursor(
+            collection, {}, no_cursor_timeout=True
+        ) as documents:
+            assert list(documents) == [{"_id": 1}, {"_id": 2}]
+
+    collection.find.assert_called_once_with({}, no_cursor_timeout=True, session=session)
+    client.admin.command.assert_called_once_with(
+        {"refreshSessions": [session.session_id]}
+    )
+    cursor.__exit__.assert_called_once()
+    session.__exit__.assert_called_once()
 
 
 class TestDatabase:
@@ -172,6 +218,28 @@ class TestDatabase:
             dummy = db.database_schema.site
         with pytest.raises(MsPASSError, match="not defined"):
             dummy = db.database_schema["source"]
+
+    def test_read_inventory_with_managed_cursor(self):
+        source_inventory = obspy.read_inventory("python/tests/data/TA.035A.xml")
+        document_id = self.db.site.insert_one(
+            {
+                "net": "CURSOR_TEST",
+                "sta": "CURSOR_TEST",
+                "serialized_inventory": pickle.dumps(source_inventory.networks[0]),
+            }
+        ).inserted_id
+        try:
+            inventory = self.db.read_inventory(
+                net="CURSOR_TEST",
+                sta="CURSOR_TEST",
+                no_cursor_timeout=True,
+            )
+
+            assert inventory is not None
+            assert len(inventory.networks) == 1
+            assert inventory.networks[0].code == "TA"
+        finally:
+            self.db.site.delete_one({"_id": document_id})
 
     def test_save_elogs(self):
         tmp_ts = get_live_timeseries()
@@ -1793,7 +1861,7 @@ class TestDatabase:
         )
         assert save_res.live
 
-        fixed_cnt = self.db.clean_collection("wf_TimeSeries")
+        fixed_cnt = self.db.clean_collection("wf_TimeSeries", no_cursor_timeout=True)
         assert fixed_cnt == {"npts": 1, "delta": 1}
 
     def test_clean(self, capfd):

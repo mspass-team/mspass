@@ -43,7 +43,10 @@ def main(args=None):
         args = sys.argv[1:]
     parser = argparse.ArgumentParser(
         prog="dbclean",
-        usage="%(prog)s dbname collection [-ft] [-d k1 ...] [-r kold:knew ... ] [-v] [-h]",
+        usage=(
+            "%(prog)s dbname collection [-ft] [-d k1 ...] "
+            "[-r kold:knew ... ] [-v] [--no-cursor-timeout] [-h]"
+        ),
         description="MsPASS program to fix most errors detected by dbverify",
     )
     parser.add_argument(
@@ -81,6 +84,14 @@ def main(args=None):
         action="store_true",
         help="When used be echo each fix - default works silently",
     )
+    parser.add_argument(
+        "--no-cursor-timeout",
+        action="store_true",
+        help=(
+            "Keep the collection scan cursor alive with a periodically "
+            "refreshed MongoDB session"
+        ),
+    )
 
     args = parser.parse_args(args)
     dbname = args.dbname
@@ -89,6 +100,7 @@ def main(args=None):
     delete = args.delete
     rename = args.rename
     verbose = args.verbose
+    no_cursor_timeout = args.no_cursor_timeout
 
     # not a very robust way to detect this condition but it should work
     # it is not robust because it assumes a behavior in argparse for
@@ -120,19 +132,33 @@ def main(args=None):
     # accumulate counts of edits for each key
 
     if enable_deletion:
-        delcounts = db._delete_attributes(collection, delete, verbose=verbose)
+        delcounts = db._delete_attributes(
+            collection,
+            delete,
+            verbose=verbose,
+            no_cursor_timeout=no_cursor_timeout,
+        )
         print("delete processing compeleted on collection=", collection)
         print("Number of documents changed for each key requested follow:")
         print(json_util.dumps(delcounts, indent=4))
     if enable_rename:
-        repcounts = db._rename_attributes(collection, rename_map, verbose=verbose)
+        repcounts = db._rename_attributes(
+            collection,
+            rename_map,
+            verbose=verbose,
+            no_cursor_timeout=no_cursor_timeout,
+        )
         print("rename processing compeleted on collection=", collection)
         print("Here is the set of changes requested:")
         print(json_util.dumps(rename_map))
         print("Number of documents changed for each key requested follow:")
         print(json_util.dumps(repcounts, indent=4))
     if fixtypes:
-        fixcounts = db._fix_attribute_types(collection, verbose=verbose)
+        fixcounts = db._fix_attribute_types(
+            collection,
+            verbose=verbose,
+            no_cursor_timeout=no_cursor_timeout,
+        )
         print("fixtype processing compeleted on collection=", collection)
         print("Keys of documents changed and number changed follow:")
         print(json_util.dumps(fixcounts, indent=4))
