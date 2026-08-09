@@ -27,6 +27,7 @@ from mspasspy.io.distributed import (
     read_to_dataframe,
 )
 from mspasspy.db.normalize import ObjectIdMatcher
+from mspasspy.ccore.seismic import TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.ccore.utility import ErrorSeverity
 from mspasspy.util.db_utils import MongoDBWorker
 
@@ -1216,6 +1217,53 @@ def test_read_distributed_ensemble(
     # Clean up: close dask client
     if scheduler == "dask":
         dask_client.close()
+
+
+@pytest.mark.parametrize("scheduler", ["dask", "spark"])
+def test_read_distributed_ensemble_all_queries_empty(
+    request,
+    setup_environment,
+    TimeSeriesEnsemble_generator,
+    scheduler,
+):
+    """Verify failed ensemble queries return empty ensembles of the requested type."""
+    if scheduler == "spark":
+        context = request.getfixturevalue("spark_context")
+        dask_client = None
+    else:
+        context = None
+        dask_client = request.getfixturevalue("dask_test_client")
+
+    client = DBClient("localhost")
+    db = client.get_database(testdbname)
+    srcid_list = get_srclist_by_tag(db, "timeseries")
+    querylist = [{"source_id": srcid} for srcid in srcid_list]
+    assert len(querylist) == number_ensembles
+    assert "wf_Seismogram" not in db.list_collection_names()
+
+    for collection, expected_type in (
+        ("wf_TimeSeries", TimeSeriesEnsemble),
+        ("wf_Seismogram", SeismogramEnsemble),
+    ):
+        bag_or_rdd = read_distributed_data(
+            querylist,
+            db,
+            collection=collection,
+            data_tag="missing-data-tag",
+            scheduler=scheduler,
+            spark_context=context,
+        )
+        ensembles = _collect_parallel_data(bag_or_rdd, scheduler, dask_client)
+
+        assert len(ensembles) == number_ensembles
+        for ensemble in ensembles:
+            assert isinstance(ensemble, expected_type)
+            assert ensemble.dead()
+            assert len(ensemble.member) == 0
+            assert ensemble.elog.size() == 1
+            error = ensemble.elog.get_error_log()[0]
+            assert error.algorithm == "Database.read_data"
+            assert "Returning an empty ensemble marked dead" in error.message
 
 
 # TODO  test sort_clause feature
