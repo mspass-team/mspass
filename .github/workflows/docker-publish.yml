@@ -437,7 +437,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -467,14 +466,14 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      - name: Build dev image (amd64)
+      - name: Build and push dev image (amd64)
         uses: docker/build-push-action@v7
         if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           target: dev
           platforms: linux/amd64
-          push: false
+          push: true
           tags: ${{ steps.amd64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-contexts: |
@@ -548,7 +547,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log in to Docker Hub
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -578,14 +576,14 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      - name: Build dev image (arm64)
+      - name: Build and push dev image (arm64)
         uses: docker/build-push-action@v7
         if: ${{ github.event_name == 'pull_request' }}
         with:
           context: .
           target: dev
           platforms: linux/arm64
-          push: false
+          push: true
           tags: ${{ steps.arm64-dev-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-contexts: |
@@ -613,7 +611,6 @@ jobs:
 
   publish-dev-manifest:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' }}
     needs:
       - build-dev
       - build-dev-arm64
