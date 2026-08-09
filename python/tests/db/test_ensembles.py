@@ -3,6 +3,8 @@ from mspasspy.db.ensembles import TimeIntervalReader
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
 import numpy as np
+from bson import ObjectId
+from unittest.mock import patch
 
 
 def make_one_ts(
@@ -292,12 +294,7 @@ def test_time_interval_reader_single_segment_groups():
     dbclient = DBClient("localhost")
     database_name = "test_time_interval_reader_single_segments"
     dbclient.drop_database(database_name)
-    db = Database(
-        dbclient,
-        database_name,
-        db_schema="mspass_lite.yaml",
-        md_schema="mspass_lite.yaml",
-    )
+    db = Database(dbclient, database_name)
     starttime = 10000.0
     endtime = 10020.0
     stations = ["SINGLE01", "SINGLE02"]
@@ -313,14 +310,18 @@ def test_time_interval_reader_single_segment_groups():
                     chan=channel,
                 )
                 datum["segment_id"] = f"{channel}-{station}"
-                db.save_data(datum, collection="wf_TimeSeries")
+                db.save_data(datum, collection="wf_miniseed")
 
-        ensembles = TimeIntervalReader(
-            db,
-            starttime,
-            endtime,
-            collection="wf_TimeSeries",
-        )
+        with patch.object(db, "read_data", wraps=db.read_data) as read_data:
+            ensembles = TimeIntervalReader(
+                db,
+                starttime,
+                endtime,
+            )
+        read_ids = [call.args[0]["_id"] for call in read_data.call_args_list]
+        assert len(read_ids) == len(channels) * len(stations)
+        assert len(read_ids) == len(set(read_ids))
+
         assert [ensemble["chan"] for ensemble in ensembles] == channels
         for ensemble in ensembles:
             channel = ensemble["chan"]
@@ -332,18 +333,43 @@ def test_time_interval_reader_single_segment_groups():
             db,
             starttime,
             endtime,
-            collection="wf_TimeSeries",
             base_query={"segment_id": "BHZ-SINGLE01"},
         )
         assert len(single) == 1
         assert len(single[0].member) == 1
         assert single[0].member[0]["segment_id"] == "BHZ-SINGLE01"
 
+        source_ids = [ObjectId(), ObjectId()]
+        output_tag = "time_interval_reader_test"
+        for source_id in source_ids:
+            for ensemble in TimeIntervalReader(db, starttime, endtime):
+                ensemble["source_id"] = source_id
+                db.save_data(
+                    ensemble,
+                    storage_mode="gridfs",
+                    data_tag=output_tag,
+                )
+
+        expected_ids = [
+            f"{channel}-{station}" for channel in channels for station in stations
+        ]
+        assert db.wf_TimeSeries.count_documents({"data_tag": output_tag}) == len(
+            source_ids
+        ) * len(expected_ids)
+        for source_id in source_ids:
+            saved_ids = sorted(
+                doc["segment_id"]
+                for doc in db.wf_TimeSeries.find(
+                    {"source_id": source_id, "data_tag": output_tag}
+                )
+            )
+            assert saved_ids == expected_ids
+            assert len(saved_ids) == len(set(saved_ids))
+
         empty = TimeIntervalReader(
             db,
             starttime,
             endtime,
-            collection="wf_TimeSeries",
             base_query={"segment_id": "missing"},
         )
         assert empty == []
