@@ -10,6 +10,8 @@ functions.
 """
 
 import pickle
+from unittest.mock import patch
+
 import numpy as np
 from scipy import signal
 from numpy.random import randn
@@ -21,6 +23,7 @@ from mspasspy.ccore.seismic import (
     DoubleVector,
 )
 from mspasspy.ccore.algorithms.basic import TimeWindow
+from mspasspy.ccore.algorithms.amplitudes import MADAmplitude
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.algorithms.window import scale
@@ -29,8 +32,11 @@ from obspy.taup import TauPyModel
 from mspasspy.algorithms.MCXcorStacking import (
     align_and_stack,
     _coda_duration,
+    dbxcor_weights,
+    extract_initial_beam_estimate,
     MCXcorPrepP,
     number_live,
+    robust_stack,
     _set_phases,
     regularize_sampling,
     ensemble_time_range,
@@ -131,6 +137,95 @@ def print_elog(mspass_object):
             print("Error Message:  ", log.message)
             print("Badness:  ", log.badness)
         print(separator)
+
+
+@pytest.mark.parametrize(
+    ("metric", "stored_key"),
+    [
+        ("bandwidth", "bandwidth"),
+        ("filtered_envelope", "snr_filtered_envelope_peak"),
+        ("filtered_L2", "snr_filtered_rms"),
+        ("filtered_MAD", "snr_filtered_mad"),
+        ("filtered_Linf", "snr_filtered_peak"),
+        ("filtered_perc", "snr_filtered_perc"),
+    ],
+)
+def test_extract_initial_beam_estimate_metric_mapping(metric, stored_key):
+    ensemble = TimeSeriesEnsemble()
+    for candidate_index, value in enumerate((None, 1.0, 3.0)):
+        datum = TimeSeries()
+        datum.set_npts(1)
+        datum.set_live()
+        datum["candidate_index"] = candidate_index
+        datum["Parrival"] = {} if value is None else {stored_key: value}
+        ensemble.member.append(datum)
+    ensemble.set_live()
+
+    beam = extract_initial_beam_estimate(ensemble, metric=metric)
+
+    assert beam.live
+    assert beam["candidate_index"] == 2
+    assert beam is not ensemble.member[2]
+
+
+def test_extract_initial_beam_estimate_rejects_unknown_metric():
+    ensemble = TimeSeriesEnsemble()
+    datum = TimeSeries()
+    datum.set_npts(1)
+    datum.set_live()
+    ensemble.member.append(datum)
+    ensemble.set_live()
+    with pytest.raises(ValueError, match="Must be one of"):
+        extract_initial_beam_estimate(ensemble, metric="not-a-metric")
+
+
+def _make_live_timeseries(data, t0=0.0, dt=1.0):
+    datum = TimeSeries()
+    datum.dt = dt
+    datum.t0 = t0
+    datum.set_npts(len(data))
+    datum.data = DoubleVector(data)
+    datum.set_live()
+    return datum
+
+
+def test_dbxcor_weights_preserves_zero_and_dead_sentinels():
+    stack = _make_live_timeseries([1.0, 1.0])
+    ensemble = TimeSeriesEnsemble()
+    ensemble.member.append(_make_live_timeseries([0.0, 0.0]))
+    ensemble.member.append(_make_live_timeseries([1.0, 1.0]))
+    dead_member = _make_live_timeseries([1.0, 1.0])
+    dead_member.kill()
+    ensemble.member.append(dead_member)
+    ensemble.set_live()
+
+    weights = dbxcor_weights(ensemble, stack)
+
+    assert np.all(np.isfinite(weights))
+    assert np.array_equal(weights, np.array([0.0, 1.0, -1.0]))
+
+
+def test_robust_stack_median_ignores_stack0_values():
+    ensemble = TimeSeriesEnsemble()
+    ensemble.member.append(_make_live_timeseries([1.0, 3.0], t0=10.0, dt=0.5))
+    ensemble.member.append(_make_live_timeseries([3.0, 5.0], t0=10.0, dt=0.5))
+    ensemble.set_live()
+    stack0 = _make_live_timeseries([100.0, 100.0], t0=10.0, dt=0.5)
+
+    stack, weights = robust_stack(ensemble, method="median", stack0=stack0)
+
+    assert stack.live
+    assert np.allclose(stack.data, np.array([2.0, 4.0]))
+    assert stack.t0 == 10.0
+    assert stack.dt == 0.5
+    assert stack.npts == 2
+    assert weights is None
+
+    dbxcor_stack, dbxcor_weights_output = robust_stack(
+        ensemble, method="dbxcor", stack0=stack0
+    )
+    assert dbxcor_stack.live
+    assert np.all(np.isfinite(dbxcor_weights_output))
 
 
 def test_align_and_stack():
@@ -575,9 +670,30 @@ def test_MCXcorPrepP():
     # the test data are the output of an ExtractComponent ensemble an the
     # member were normalized by the site collection.   Hence we have to
     # change the station_collection argument to site - default is channel
-    [e, beam] = MCXcorPrepP(
-        e, nw, station_collection="site", correlation_window_start=-2.0
-    )
+    coda_levels = []
+
+    def record_coda_level(datum, level, *args, **kwargs):
+        noise_start = datum.t0 if datum.t0 < nw.start else nw.start
+        noise_data = WindowData(
+            datum, noise_start, nw.end, short_segment_handling="truncate"
+        )
+        coda_levels.append((level, 4.0 * MADAmplitude(noise_data)))
+        return _coda_duration(datum, level, *args, **kwargs)
+
+    with patch(
+        "mspasspy.algorithms.MCXcorStacking._coda_duration",
+        side_effect=record_coda_level,
+    ):
+        [e, beam] = MCXcorPrepP(
+            e,
+            nw,
+            station_collection="site",
+            correlation_window_start=-2.0,
+            coda_level_factor=4.0,
+        )
+    assert coda_levels
+    for observed, expected in coda_levels:
+        assert np.isclose(observed, expected)
     assert number_live(e) == N
     assert np.isclose(beam["correlation_window_start"], -2.0)
     assert np.isclose(beam["correlation_window_end"], 154.65957854747774)
@@ -629,10 +745,12 @@ def test_MCXcorPrepP():
     [eo, beam] = MCXcorPrepP(e, nw, station_collection="site")
     assert eo.dead()
     assert beam.dead()
-    # no signals present.
+    # No signals present.  Use zeros instead of random noise: a threshold
+    # scaled to a random record's own MAD can legitimately be crossed by
+    # excursions in a sufficiently long record.
     e = TimeSeriesEnsemble(e0)
     for i in range(len(e.member)):
-        e.member[i].data = DoubleVector(np.random.normal(size=e.member[i].npts))
+        e.member[i].data = DoubleVector(np.zeros(e.member[i].npts))
     [eo, beam] = MCXcorPrepP(e, nw, station_collection="site")
     assert eo.dead()
     assert eo.elog.size() == 1

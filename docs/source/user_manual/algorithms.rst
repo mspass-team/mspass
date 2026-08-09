@@ -250,7 +250,7 @@ map-style functions above:
      - Prepare a teleseismic P-wave ensemble and choose an initial beam for
        multichannel correlation.
      - TimeSeriesEnsemble and noise window
-     - Prepared ensemble and beam
+     - Prepares the input ensemble in place; returns it with the initial beam
    * - :py:func:`align_and_stack<mspasspy.algorithms.MCXcorStacking.align_and_stack>`
      - Iteratively align an ensemble by cross-correlation and compute a robust
        stack.
@@ -260,8 +260,8 @@ map-style functions above:
      - Run a supplied SeisBench model, or the default pretrained PhaseNet model,
        and retain candidate P arrivals above a probability threshold.
      - TimeSeries
-     - Calls ``rtoa()`` to ensure UTC time, then writes ``p_wave_picks``
-       Metadata in place
+     - Converts the input to UTC, may adjust a supplied ``TimeWindow`` in
+       place, and writes ``p_wave_picks`` Metadata in place
 
 See :ref:`Arrival Time Measurement Techniques <arrival_time_measurement>` for
 the complete workflow, preprocessing requirements, robust-stack controls, and

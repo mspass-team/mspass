@@ -327,7 +327,7 @@ function called
 It provides a top-level interface for automatically preparing the filtered
 ensemble and initial beam required by
 :py:func:`align_and_stack <mspasspy.algorithms.MCXcorStacking.align_and_stack>`.
-It returns those two objects as ``(ensemble, beam)``.
+It returns a two-element list that can be unpacked as ``ensemble, beam``.
 The parameters this function defines are discussed in the section above.
 See the docstring for the function for guidance on use and examples
 below and in the mspass tutorial repository.
@@ -364,7 +364,7 @@ show the full function signature for ``align_and_stack``:
     checks_arg0_type=True,
     handles_dead_data=True,
     **kwargs,
-    ) -> tuple:
+    ) -> list:
 
 .. note::
 
@@ -636,8 +636,10 @@ timestamps to probabilities.  An optional absolute-time
 restrict the annotation interval.  The function mutates the input datum and
 does not return a separate picks object.  It first calls ``rtoa()`` on the
 input, so a relative-time datum is converted to UTC in place before annotation.
-If a supplied ``TimeWindow`` extends beyond the datum, its bounds are also
-clipped in place to the datum's UTC time range.
+If a supplied ``TimeWindow`` partially overlaps the datum, bounds outside the
+datum are clipped in place to its UTC time range.  If the window has no
+overlap, both bounds are reset in place to the full datum range and the whole
+datum is annotated.
 
 SeisBench is an optional dependency.  Install MsPASS with the ``seisbench``
 extra when this feature is needed, for example ``pip install 'mspass[seisbench]'``.

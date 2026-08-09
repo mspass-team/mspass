@@ -28,10 +28,15 @@ def annotate_arrival_time(
     :param threshold: The probability threshold (0-1) to filter p-wave picks.
         Any picks with probability less than the threshold will be removed. Default value is 0.2.
     :param time_window: The time window (in utc timestamp) to filter the predicted arrival time.
-        If not provided, the whole time series will be used.  Bounds outside
-        the input data range are clipped in place on this object.
+        If not provided, the whole time series will be used.  A partially
+        overlapping window is clipped in place to the input data range.  A
+        window with no overlap is reset in place to the full input range, so
+        the whole time series is annotated.
     :param model: The model used to predict the arrival time.
-    :param model_args: arguments to initialize a new model if not provided
+    :param model_args: optional dictionary used when ``model`` is not
+        provided.  Its ``name`` value selects the pretrained PhaseNet model;
+        other keys are currently ignored.  The default model name is
+        ``"stead"``.
     :type timeseries: mspasspy.ccore.seismic.TimeSeries
     :type threshold: float
     :type time_window: mspasspy.ccore.algorithms.basic.TimeWindow defined as absolute time in UTC
@@ -44,7 +49,7 @@ def annotate_arrival_time(
     # Check the input arguments
     if not 0 <= threshold <= 1:
         logging.warning(
-            "Threshold should be in the range of [0, 1]. Using default threshold {}}".format(
+            "Threshold should be in the range of [0, 1]. Using default threshold {}".format(
                 default_threshold
             )
         )
