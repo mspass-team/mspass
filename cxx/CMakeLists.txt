@@ -48,12 +48,16 @@ message (STATUS "YAML_CPP_INCLUDE_DIR = ${YAML_CPP_INCLUDE_DIR}")
 
 # Boost.Serialization archives are shared across MsPASS builds, so the Boost
 # version is a compatibility constraint rather than a minimum dependency.
+option (MSPASS_FORCE_BUNDLED_BOOST
+  "Ignore installed Boost libraries and build the pinned bundled Boost" OFF)
 set (Boost_USE_STATIC_LIBS ON)
 if (DEFINED ENV{MSPASS_BOOST_ROOT} AND NOT "$ENV{MSPASS_BOOST_ROOT}" STREQUAL "")
   set (BOOST_ROOT "$ENV{MSPASS_BOOST_ROOT}")
 endif ()
-find_package (Boost 1.86.0 EXACT COMPONENTS serialization)
-if (NOT Boost_FOUND)
+if (NOT MSPASS_FORCE_BUNDLED_BOOST)
+  find_package (Boost 1.86.0 EXACT COMPONENTS serialization)
+endif ()
+if (MSPASS_FORCE_BUNDLED_BOOST OR NOT Boost_FOUND)
   message (STATUS "Building Boost")
   include (cmake/boost.cmake)
   fetch_boost (
