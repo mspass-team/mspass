@@ -65,13 +65,14 @@ public:
   /*! \brief Construct from a base pf name.
 
   This constructor acts like the antelope pfread function for
-  parameter files constructed in plain C.  A relative base name is first
-  read from the MsPASS data directory: MSPASS_HOME/data when MSPASS_HOME is
-  set, or the installed mspasspy package data otherwise.  The constructor
-  then follows the chain of directories defined by PFPATH; if PFPATH is not
-  defined, that path defaults to ".".  As with the antelope pfread procedure,
-  the last file read takes precedence, so PFPATH or the current directory can
-  override the MsPASS data file.
+  parameter files constructed in plain C.  A relative base name is first read
+  from the MsPASS data directory when available: MSPASS_HOME/data when
+  MSPASS_HOME is set, or the installed mspasspy package data after the Python
+  extension registers it.  A standalone caller without MSPASS_HOME instead
+  starts with the directories defined by PFPATH; if PFPATH is not defined,
+  that path defaults to ".".  As with the antelope pfread procedure, the last
+  file read takes precedence, so PFPATH or the current directory can override
+  the MsPASS data file.
   Further if pfbase begins with a slash (i.e. "/") it is assumed to be
   the actual file name to read and the PFPATH feature is disabled.
 
