@@ -17,6 +17,9 @@ the ``mspasspy.ccore`` C++ extension.  Follow the project's
 for the required compilers and libraries.  The current package metadata
 requires Python 3.10 or newer.
 
+Core maintainers adding or changing a compiled third-party library should
+also follow :ref:`cmake_dependency_maintenance`.
+
 Use an isolated environment
 ---------------------------
 
