@@ -56,8 +56,7 @@ from mspasspy.db.collection import Collection
 
 def test_seed_lookup_verbose_defaults():
     assert (
-        inspect.signature(Database.get_seed_site).parameters["verbose"].default
-        is False
+        inspect.signature(Database.get_seed_site).parameters["verbose"].default is False
     )
     assert (
         inspect.signature(Database.get_seed_channel).parameters["verbose"].default
@@ -314,9 +313,7 @@ class TestDatabase:
                 inconsistent_ts, dir, dfile, foff, nbytes, format="mseed"
             )
         assert inconsistent_ts.dead()
-        assert "Inconsistent endtimes" in str(
-            inconsistent_ts.elog.get_error_log()
-        )
+        assert "Inconsistent endtimes" in str(inconsistent_ts.elog.get_error_log())
 
     def test_save_and_read_gridfs(self):
         tmp_seis = get_live_seismogram()
@@ -361,9 +358,7 @@ class TestDatabase:
         inconsistent_ts.set_live()
         self.db._read_data_from_gridfs(inconsistent_ts, gridfs_id)
         assert inconsistent_ts.dead()
-        assert "Metadata value for npts" in str(
-            inconsistent_ts.elog.get_error_log()
-        )
+        assert "Metadata value for npts" in str(inconsistent_ts.elog.get_error_log())
 
         gfsh = gridfs.GridFS(self.db)
         assert gfsh.exists(gridfs_id)
