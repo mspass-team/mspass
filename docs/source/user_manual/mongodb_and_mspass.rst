@@ -386,6 +386,20 @@ The examples above show the most common, simple usage.
 Both accept a required-or-defaulted filter and an optional projection;
 additional behavior is controlled by documented keyword arguments.
 
+MongoDB can expire a cursor when processing one returned batch takes too
+long.  A direct PyMongo loop should use a ``with`` statement so the cursor is
+always closed, although that context manager does not prevent expiry.
+Setting ``no_cursor_timeout=True`` alone is not sufficient for an indefinitely
+long scan because MongoDB's logical session timeout still applies.  The MsPASS
+``clean_collection`` method and the
+``dbclean`` and ``dbverify`` commands provide an opt-in
+``no_cursor_timeout``/``--no-cursor-timeout`` mode for large data sets.  That
+mode opens an explicit session, refreshes it periodically, and closes both the
+cursor and session when the scan ends.  See MongoDB's `cursor timeout
+documentation
+<https://www.mongodb.com/docs/manual/reference/method/cursor.nocursortimeout/#session-idle-timeout-overrides-nocursortimeout>`__
+for the server-side details.
+
 1.  The first argument defines the query filter.  The default is an empty dictionary
     that is interpreted as "all".
 2.  The second argument defines a "projection".  It is a list of field names

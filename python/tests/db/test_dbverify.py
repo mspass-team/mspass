@@ -124,7 +124,14 @@ class TestDBVerify:
         doc3_str = json_util.dumps(doc3, indent=2)
 
         # default normalization test
-        dbverify.main(["test_dbverify", "-t", "normalization"])
+        dbverify.main(
+            [
+                "test_dbverify",
+                "-t",
+                "normalization",
+                "--no-cursor-timeout",
+            ]
+        )
         out, err = capfd.readouterr()
         assert (
             out
