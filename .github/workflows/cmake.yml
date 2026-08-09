@@ -1,6 +1,16 @@
 name: CMake
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ master ]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -11,10 +21,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
 
     - name: Install Dependencies
-      run: sudo apt-get update && sudo apt-get install -yq gfortran libboost-dev libboost-serialization-dev liblapack-dev
+      run: sudo apt-get update && sudo apt-get install -yq gfortran libboost-dev libboost-serialization-dev libgsl-dev liblapack-dev libyaml-cpp-dev
 
     - name: Create Build Environment
       shell: bash

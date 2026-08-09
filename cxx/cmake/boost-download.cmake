@@ -15,6 +15,6 @@ ExternalProject_Add(
   CONFIGURE_COMMAND ./bootstrap.sh --prefix=${PROJECT_BINARY_DIR} --with-toolset=gcc
   BUILD_COMMAND ./b2 cxxflags=-fPIC --with-serialization -j 8
   BUILD_IN_SOURCE 1
-  INSTALL_COMMAND ./b2 install
+  INSTALL_COMMAND ./b2 cxxflags=-fPIC --with-serialization -j 8 install
   TEST_COMMAND ""
   )

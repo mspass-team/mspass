@@ -2,8 +2,15 @@ name: Python package
 
 "on":
   push:
+    branches: [ master ]
+    tags: [ 'v*.*.*' ]
   pull_request:
+    branches: [ master ]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -32,14 +39,14 @@ jobs:
         distribution: temurin
         java-version: '17'
     - name: Install CXX Dependencies
-      run: sudo apt-get update && sudo apt-get install -yq cmake gfortran libboost-dev libboost-serialization-dev liblapack-dev
+      run: sudo apt-get update && sudo apt-get install -yq gfortran libboost-dev libboost-serialization-dev libgsl-dev liblapack-dev libyaml-cpp-dev
     - name: Install MongoDB
       uses: supercharge/mongodb-github-action@1.12.1
     - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade --upgrade-strategy eager \
-          setuptools setuptools_scm wheel numpy cmake pytest pytest-cov
+          setuptools setuptools_scm wheel numpy pytest pytest-cov
     - name: Install Spark Python Dependencies
       env:
         PYSPARK_HADOOP_VERSION: "3"
