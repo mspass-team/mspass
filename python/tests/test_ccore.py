@@ -19,6 +19,7 @@ from mspasspy.ccore.seismic import (
     TimeReferenceType,
 )
 from mspasspy.ccore.utility import (
+    AntelopePf,
     AtomicType,
     copy_selected_metadata,
     dmatrix,
@@ -1781,6 +1782,26 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
 
     phred_copy = pickle.loads(pickle.dumps(phred))
     assert str(phred.get_nodes()) == str(phred_copy.get_nodes())
+
+
+def test_antelope_pf_uses_packaged_data_without_mspass_home(tmp_path, monkeypatch):
+    monkeypatch.delenv("MSPASS_HOME", raising=False)
+    monkeypatch.delenv("PFPATH", raising=False)
+    monkeypatch.chdir(tmp_path)
+
+    packaged = AntelopePf("attribute_maps.pf")
+
+    assert "css3.0" in packaged.arr_keys()
+
+    custom_home = tmp_path / "custom"
+    custom_pf = custom_home / "data" / "pf" / "attribute_maps.pf"
+    custom_pf.parent.mkdir(parents=True)
+    custom_pf.write_text("override &Arr{\nmarker sentinel\n}\n", encoding="utf-8")
+    monkeypatch.setenv("MSPASS_HOME", str(custom_home))
+
+    overridden = AntelopePf("attribute_maps.pf")
+
+    assert "override" in overridden.arr_keys()
 
 
 def test_MsPASSError():

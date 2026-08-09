@@ -10,9 +10,11 @@ namespace utility {
 mspass.
 
 Programs often need a standard set of initialization files.  In mspass we
-group these under a "data" directory.  This procedure returns the top of the
-chain of data directories.  Note this is the top of a directory chain and
-most application will need to add a subdirectory.   e.g.
+group these under a "data" directory.  This procedure first uses the data
+directory under MSPASS_HOME when that environment variable is defined.  When
+called from the Python extension without MSPASS_HOME, it uses the data
+directory installed with the mspasspy package.  Note this is the top of a
+directory chain and most applications will need to add a subdirectory.  e.g.
 
 string datadir=mspass::utility::data_directory();
 string mydatafile=datadir+"/pf";

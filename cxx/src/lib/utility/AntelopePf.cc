@@ -325,13 +325,11 @@ list<string> split_pfpath(string pfbase, char *s) {
 AntelopePf::AntelopePf(std::string pfbase) {
   try {
     list<string> pffiles;
-    const std::string mspass_home_envname("MSPASS_HOME");
-    char *base;
-    /* Note man page for getenv says explicitly the return of getenv should not
-            be touched - i.e. don't free it*/
-    base = getenv(mspass_home_envname.c_str());
-    if (base != NULL) {
+    try {
       pffiles.push_back(data_directory() + "/pf/" + pfbase);
+    } catch (const MsPASSError &) {
+      /* A standalone C++ caller without MSPASS_HOME has no package data
+       * directory.  Preserve the existing PFPATH/current-directory search. */
     }
     const string envname("PFPATH");
     char *s = getenv(envname.c_str());

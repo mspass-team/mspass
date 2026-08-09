@@ -71,8 +71,8 @@ class DatascopeDatabase:
 
     :param dbname: root database name used by Datascope flat files.
     :param pffile: optional parameter file defining table layouts; when
-        omitted the constructor searches ``$MSPASS_HOME/data/pf`` for the
-        bundled ``DatascopeDatabase.pf`` file.
+        omitted the constructor uses ``$MSPASS_HOME/data/pf`` if MSPASS_HOME
+        is defined, or the data directory installed with mspasspy otherwise.
     """
 
     def __init__(self, dbname, pffile=None):
@@ -94,19 +94,20 @@ class DatascopeDatabase:
 
         :param pffile:  parameter file name used to create the data structure
         used internally by this class.   If None (the default)
-        the constructor looks for a master file called DatascopeDatabase.pf
-        that it will attempt to read from $MsPASS_HOME/data/pf.
+        the constructor looks for a master file called DatascopeDatabase.pf.
+        It uses $MSPASS_HOME/data/pf when MSPASS_HOME is defined and the
+        package data directory otherwise.
 
         """
         self.dbname = dbname
         if pffile == None:
             home = os.getenv("MSPASS_HOME")
             if home == None:
-                raise MsPASSError(
-                    "AntelopeDatabase constructor: "
-                    + "MSPASS_HOME not defined.  Needed for default constructor\n"
-                    + "Specify a full path for pf file name or set MsPASS_HOME",
-                    "Fatal",
+                path = os.path.abspath(
+                    os.path.join(
+                        os.path.dirname(__file__),
+                        "../../data/pf/DatascopeDatabase.pf",
+                    )
                 )
             else:
                 path = os.path.join(home, "data/pf", "DatascopeDatabase.pf")
