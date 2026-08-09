@@ -151,6 +151,10 @@ following:
 
       docker run --mount src=/home/myname/python,target=/mnt,type=bind -p 8888:8888 mspass/mspass
 
+    The same rule applies to symbolic links.  If a mounted directory contains
+    a link whose target is outside that mount, add a mount for the target as
+    well; otherwise the link is not resolvable inside Docker or Apptainer.
+
     To make that module accessible with the same import command as above you
     would need to change the python search path.  For this example, you could
     add that directory to the Python search path before importing:

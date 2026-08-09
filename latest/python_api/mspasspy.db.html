@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.2.dev29+gf528d06a documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.2.dev30+g8c7b6d94 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8c4b90f6"></script>
+    <script src="../_static/documentation_options.js?v=8dfb96a7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev29" />
+  <meta name="docsearch:version" content="2.4.2.dev30" />
   </head>
   
   
@@ -932,7 +932,7 @@ a raw epoch time stored as a python float.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.get_seed_channel">
-<span class="sig-name descname"><span class="pre">get_seed_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_channel" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_seed_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_channel" title="Link to this definition">#</a></dt>
 <dd><p>The channel collection is assumed to have a one to one
 mapping of net:sta:loc:chan:starttime - endtime.
 This method uses a restricted query to match the
@@ -968,12 +968,9 @@ normalize module.</p>
 <li><p><strong>loc</strong> – optional loc code to made (empty string ok and common)
 default ignores loc in query.</p></li>
 <li><p><strong>time</strong> – epoch time for requested metadata</p></li>
-<li><p><strong>verbose</strong> – When True (the default) this method will issue a
+<li><p><strong>verbose</strong> – When True this method will issue a
 print warning message when the match is ambiguous - multiple
-docs match the specified keys.   When set False such warnings
-will be suppressed.  Use false only if you know the duplicates
-are harmless and you are running on a large data set and
-you want to reduce the log size.</p></li>
+docs match the specified keys.  The default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -987,7 +984,7 @@ you want to reduce the log size.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.get_seed_site">
-<span class="sig-name descname"><span class="pre">get_seed_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NONE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_site" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_seed_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NONE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_site" title="Link to this definition">#</a></dt>
 <dd><p>The site collection is assumed to have a one to one
 mapping of net:sta:loc:starttime - endtime.
 This method uses a restricted query to match the
@@ -996,15 +993,9 @@ The (optional) time arg is used for a range match to find
 period between the site startime and endtime.
 Returns None if there is no match.</p>
 <p>An all to common metadata problem is to have duplicate entries in
-site for the same data.   The default behavior of this method is
-to print a warning whenever a match is ambiguous
-(i.e. more than on document matches the keys).  Set verbose false to
-silence such warnings if you know they are harmless.</p>
-<p>An all to common metadata problem is to have duplicate entries in
-site for the same data.   The default behavior of this method is
-to print a warning whenever a match is ambiguous
-(i.e. more than on document matches the keys).  Set verbose false to
-silence such warnings if you know they are harmless.</p>
+site for the same data.  Set <code class="docutils literal notranslate"><span class="pre">verbose=True</span></code> to print a warning
+whenever a match is ambiguous (i.e. more than one document matches
+the keys).  Such warnings are suppressed by default.</p>
 <p>The seed modifier in the name is to emphasize this method is
 for data originating as the SEED format that use net:sta:loc:chan
 as the primary index.</p>
@@ -1022,12 +1013,9 @@ default ignores loc in query.</p></li>
 and will cause the function to simply return the first document
 matching the name keys only.   (This is rarely what you want, but
 there is no standard default for this argument.)</p></li>
-<li><p><strong>verbose</strong> – When True (the default) this method will issue a
+<li><p><strong>verbose</strong> – When True this method will issue a
 print warning message when the match is ambiguous - multiple
-docs match the specified keys.   When set False such warnings
-will be suppressed.  Use false only if you know the duplicates
-are harmless and you are running on a large data set and
-you want to reduce the log size.</p></li>
+docs match the specified keys.  The default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1117,9 +1105,10 @@ indexed by this function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dfile</strong> – file name of data to be indexed.  Asssumed to be
-the leaf node of the path - i.e. it contains no directory information
-but just the file name.</p></li>
+<li><p><strong>dfile</strong> – file name or path of data to be indexed.  Strings and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code> objects are accepted.  An absolute path takes
+precedence over <code class="docutils literal notranslate"><span class="pre">dir</span></code>; a relative path is resolved beneath
+<code class="docutils literal notranslate"><span class="pre">dir</span></code> or the current working directory when <code class="docutils literal notranslate"><span class="pre">dir</span></code> is None.</p></li>
 <li><p><strong>dir</strong> – directory name.  This can be a relative path from the
 current directory be be advised it will always be converted to an
 fully qualified path.  If it is undefined (the default) the function

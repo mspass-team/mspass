@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Run MsPASS with Docker &#8212; MsPASS 2.4.2.dev29+gf528d06a documentation</title>
+    <title>Run MsPASS with Docker &#8212; MsPASS 2.4.2.dev30+g8c7b6d94 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8c4b90f6"></script>
+    <script src="../_static/documentation_options.js?v=8dfb96a7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Getting Started in a Nutshell" href="quick_start.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev29" />
+  <meta name="docsearch:version" content="2.4.2.dev30" />
   </head>
   
   
@@ -508,6 +508,14 @@ terminal, and run:</p>
 path on the host does not automatically exist at the same path inside the
 container.  The mount option explicitly connects the host project directory
 to the container’s <code class="docutils literal notranslate"><span class="pre">/home</span></code> directory.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A symbolic link inside a bind-mounted directory works only when its target
+is also visible at the corresponding path inside the container.  A link to
+an unmounted host directory appears broken to MsPASS.  Bind-mount every
+external waveform directory explicitly and use the container-side path in
+waveform metadata.</p>
+</div>
 <p>The two important options are:</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">8888:8888</span></code></dt><dd><p>Makes the JupyterLab server available on port <code class="docutils literal notranslate"><span class="pre">8888</span></code> of your computer.</p>

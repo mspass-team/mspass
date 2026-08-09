@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.2.dev29+gf528d06a documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.2.dev30+g8c7b6d94 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=8c4b90f6"></script>
+    <script src="../../../_static/documentation_options.js?v=8dfb96a7"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev29" />
+  <meta name="docsearch:version" content="2.4.2.dev30" />
   </head>
   
   
@@ -2026,6 +2026,7 @@
             <span class="n">wf_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span>
             <span class="c1"># We need to make sure storage_mode is set in all live data</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">sync_metadata</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                         <span class="n">d</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">storage_mode</span>
@@ -2063,7 +2064,6 @@
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># note else not elif because above guarantees only ensembles land here</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">sync_metadata</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atomic_save_all_documents</span><span class="p">(</span>
                         <span class="n">d</span><span class="p">,</span>
@@ -4931,6 +4931,7 @@
                                 <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
                             <span class="p">)</span>
                             <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                            <span class="k">return</span>
 
                         <span class="c1"># These two lines are needed to properly initialize</span>
                         <span class="c1"># the DoubleVector before calling Trace2TimeSeries</span>
@@ -5024,8 +5025,14 @@
                     <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Metadata value for npts is </span><span class="si">{}</span><span class="s2"> but datum attribute npts is </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">],</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>
                     <span class="p">)</span>
-                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal inconsistency that should not happen and is a fatal error&quot;</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal inconsistency; sample data were not loaded&quot;</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="s2">&quot;Database._read_data_from_gridfs&quot;</span><span class="p">,</span>
+                        <span class="n">message</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                    <span class="k">return</span>
             <span class="n">npts</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
             <span class="c1"># fh.seek(16)</span>
@@ -5037,8 +5044,8 @@
             <span class="n">file_size</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">file_size</span> <span class="o">!=</span> <span class="n">npts</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Size mismatch in sample data.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Number of points in gridfs file=</span><span class="si">%d</span><span class="s2"> but wf document expected </span><span class="si">%d</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">file_size</span> <span class="o">/</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">])</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Number of points in gridfs file=</span><span class="si">{}</span><span class="s2"> but wf document expected </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">file_size</span> <span class="o">//</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">])</span>
                 <span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                     <span class="s2">&quot;Database._read_data_from_gridfs&quot;</span><span class="p">,</span>
@@ -5875,7 +5882,7 @@
 
 <div class="viewcode-block" id="Database.get_seed_site">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_site">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_seed_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_seed_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The site collection is assumed to have a one to one</span>
 <span class="sd">        mapping of net:sta:loc:starttime - endtime.</span>
@@ -5886,16 +5893,9 @@
 <span class="sd">        Returns None if there is no match.</span>
 
 <span class="sd">        An all to common metadata problem is to have duplicate entries in</span>
-<span class="sd">        site for the same data.   The default behavior of this method is</span>
-<span class="sd">        to print a warning whenever a match is ambiguous</span>
-<span class="sd">        (i.e. more than on document matches the keys).  Set verbose false to</span>
-<span class="sd">        silence such warnings if you know they are harmless.</span>
-
-<span class="sd">        An all to common metadata problem is to have duplicate entries in</span>
-<span class="sd">        site for the same data.   The default behavior of this method is</span>
-<span class="sd">        to print a warning whenever a match is ambiguous</span>
-<span class="sd">        (i.e. more than on document matches the keys).  Set verbose false to</span>
-<span class="sd">        silence such warnings if you know they are harmless.</span>
+<span class="sd">        site for the same data.  Set ``verbose=True`` to print a warning</span>
+<span class="sd">        whenever a match is ambiguous (i.e. more than one document matches</span>
+<span class="sd">        the keys).  Such warnings are suppressed by default.</span>
 
 <span class="sd">        The seed modifier in the name is to emphasize this method is</span>
 <span class="sd">        for data originating as the SEED format that use net:sta:loc:chan</span>
@@ -5913,12 +5913,9 @@
 <span class="sd">          and will cause the function to simply return the first document</span>
 <span class="sd">          matching the name keys only.   (This is rarely what you want, but</span>
 <span class="sd">          there is no standard default for this argument.)</span>
-<span class="sd">        :param verbose:  When True (the default) this method will issue a</span>
+<span class="sd">        :param verbose:  When True this method will issue a</span>
 <span class="sd">          print warning message when the match is ambiguous - multiple</span>
-<span class="sd">          docs match the specified keys.   When set False such warnings</span>
-<span class="sd">          will be suppressed.  Use false only if you know the duplicates</span>
-<span class="sd">          are harmless and you are running on a large data set and</span>
-<span class="sd">          you want to reduce the log size.</span>
+<span class="sd">          docs match the specified keys.  The default is False.</span>
 
 <span class="sd">        :return: MongoDB doc matching query</span>
 <span class="sd">        :rtype:  python dict (document) of result.  None if there is no match.</span>
@@ -5946,7 +5943,7 @@
 
 <div class="viewcode-block" id="Database.get_seed_channel">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_channel">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_seed_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_seed_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The channel collection is assumed to have a one to one</span>
 <span class="sd">        mapping of net:sta:loc:chan:starttime - endtime.</span>
@@ -5984,12 +5981,9 @@
 <span class="sd">        :param loc:   optional loc code to made (empty string ok and common)</span>
 <span class="sd">           default ignores loc in query.</span>
 <span class="sd">        :param time: epoch time for requested metadata</span>
-<span class="sd">        :param verbose:  When True (the default) this method will issue a</span>
+<span class="sd">        :param verbose:  When True this method will issue a</span>
 <span class="sd">           print warning message when the match is ambiguous - multiple</span>
-<span class="sd">           docs match the specified keys.   When set False such warnings</span>
-<span class="sd">           will be suppressed.  Use false only if you know the duplicates</span>
-<span class="sd">           are harmless and you are running on a large data set and</span>
-<span class="sd">           you want to reduce the log size.</span>
+<span class="sd">           docs match the specified keys.  The default is False.</span>
 
 <span class="sd">        :return: handle to query return</span>
 <span class="sd">        :rtype:  MondoDB Cursor object of query result.</span>
@@ -6350,9 +6344,10 @@
 <span class="sd">        to TimeSeries objects when it reads the data from the files</span>
 <span class="sd">        indexed by this function.</span>
 
-<span class="sd">        :param dfile:  file name of data to be indexed.  Asssumed to be</span>
-<span class="sd">          the leaf node of the path - i.e. it contains no directory information</span>
-<span class="sd">          but just the file name.</span>
+<span class="sd">        :param dfile: file name or path of data to be indexed.  Strings and</span>
+<span class="sd">          :class:`pathlib.Path` objects are accepted.  An absolute path takes</span>
+<span class="sd">          precedence over ``dir``; a relative path is resolved beneath</span>
+<span class="sd">          ``dir`` or the current working directory when ``dir`` is None.</span>
 <span class="sd">        :param dir:  directory name.  This can be a relative path from the</span>
 <span class="sd">          current directory be be advised it will always be converted to an</span>
 <span class="sd">          fully qualified path.  If it is undefined (the default) the function</span>
@@ -6405,18 +6400,18 @@
 <span class="sd">          generic handler to avoid aborts in a large job.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbh</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
-        <span class="c1"># If dir is not define assume current directory.  Otherwise</span>
-        <span class="c1"># use realpath to make sure the directory is the full path</span>
-        <span class="c1"># We store the full path in mongodb</span>
-        <span class="k">if</span> <span class="nb">dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dfile_uuid</span><span class="p">(</span><span class="s2">&quot;mseed&quot;</span><span class="p">)</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
-        <span class="c1"># TODO:  should have a way to pass verbose to this function</span>
-        <span class="c1"># present verbose is not appropriate.</span>
+        <span class="n">dfile_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">dfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dfile_path</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">dfile_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="k">if</span> <span class="nb">dir</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">/</span> <span class="n">dfile_path</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">odir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">dfile</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="n">ind</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">segment_time_tears</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="s2">&quot;No such file or directory&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span>
             <span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()</span>
@@ -6443,11 +6438,11 @@
             <span class="k">if</span> <span class="s2">&quot;loc&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                 <span class="n">loc</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
                 <span class="n">chandoc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_seed_channel</span><span class="p">(</span>
-                    <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">stime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">stime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">chandoc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_seed_channel</span><span class="p">(</span>
-                    <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">stime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">stime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">chandoc</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;channel_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chandoc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.2.dev29+gf528d06a documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.2.dev30+g8c7b6d94 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8c4b90f6"></script>
+    <script src="../_static/documentation_options.js?v=8dfb96a7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev29" />
+  <meta name="docsearch:version" content="2.4.2.dev30" />
   </head>
   
   
@@ -5580,9 +5580,11 @@ metrics will be posted to this logger.  Users should then test this
 object using it’s size() method and if it the log is not empty (size &gt;0)
 the caller should handle that condition.   For normal use that means
 pushing any messages the log contains to the original data object’s
-error log.  Component 0 will also be empty with no log entry if
-the estimated bandwidth falls below the threshold defined by the
-parameter signal_detection_minimum_bandwidth.</p>
+error log.  Component 0 is normally empty when the estimated bandwidth
+falls below <code class="docutils literal notranslate"><span class="pre">signal_detection_minimum_bandwidth</span></code>.  When
+<code class="docutils literal notranslate"><span class="pre">save_spectra</span></code> is True, it instead contains the saved spectra and
+window metadata, but no bandwidth metrics.  The logger contains an
+Invalid entry in either case.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -6441,29 +6443,17 @@ with native MsPASS TimeSeries objects.</p>
 <p>This function is a workhorse for handling continuous data that are
 universally stored today as a series of files.   The input to this
 function is an array of TimeSeries objects that are assummed to be
-created from a set of data stored in such files.   The data are assumed
-to be from a common stream of a single channel and sorted so the
-array index defines a time order.  The algorithm attempts to glue the
-segments together into a single time series that is returned.
+created from a set of data stored in such files.  The data are assumed
+to be from a common stream of a single channel.  They are sorted by start
+time internally before the algorithm glues the segments together into a
+single time series that is returned.
 The algorithm by default assumes the input is “clean” which means
 the endtime of each input TimeSeries is 1 sample ahead of the start time
 of the next segment (i.e. (segment[i+1].t0()-segment[i].endtime()) == dt).
 The actual test is that the time difference is less than dt/2.</p>
-<p>This algorithm treats two conditions as a fatal error and will throw
-a MsPASSError when the condition occurs:</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><p>It checks that the input array of TimeSeries data are in
-time order.</p></li>
-<li><p>It checks that the inputs all have the same sample rate.</p></li>
-<li><p>If fix_overlaps is False if an overlap is found it
-is considered an exception.</p></li>
-</ol>
-</div></blockquote>
-<p>Either of these conditions will cause the function to throw an
-exception.  The assumption is that either is a user error created
-by failing to reading the directions that emphasize this requirement
-for the input.</p>
+<p>Inputs with inconsistent sample rates are treated as a fatal error and
+cause a <code class="xref py py-class docutils literal notranslate"><span class="pre">MsPASSError</span></code> to be thrown.  If <code class="docutils literal notranslate"><span class="pre">fix_overlaps</span></code> is False,
+an overlap produces a dead output with an error-log entry.</p>
 <p>Other conditions can cause the output to be marked dead with an
 error message posted to the output’s elog attribute.  These are:</p>
 <blockquote>
@@ -6546,8 +6536,9 @@ stored as a list of “TimeWindow” objects with the Metadata key “gaps”.</
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tsvector</strong> – array of TimeSeries data that are to be spliced
-together to create a single output.   The contents must all have
-the same sample rate and be sorted by starttime.</p></li>
+together to create a single output.  The contents must all have
+the same sample rate.  Input order is arbitrary; the function sorts
+segments by start time.</p></li>
 <li><p><strong>starttime</strong> (<em>double - assumed to be a UTC time expressed as a unix
 epoch time.</em>) – (optional) start time to apply for windowing the
 output.  Default is None which means the output will be created

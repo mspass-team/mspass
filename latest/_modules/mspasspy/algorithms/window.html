@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.window &#8212; MsPASS 2.4.2.dev29+gf528d06a documentation</title>
+    <title>mspasspy.algorithms.window &#8212; MsPASS 2.4.2.dev30+g8c7b6d94 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=8c4b90f6"></script>
+    <script src="../../../_static/documentation_options.js?v=8dfb96a7"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev29" />
+  <meta name="docsearch:version" content="2.4.2.dev30" />
   </head>
   
   
@@ -1426,28 +1426,18 @@
 <span class="sd">    This function is a workhorse for handling continuous data that are</span>
 <span class="sd">    universally stored today as a series of files.   The input to this</span>
 <span class="sd">    function is an array of TimeSeries objects that are assummed to be</span>
-<span class="sd">    created from a set of data stored in such files.   The data are assumed</span>
-<span class="sd">    to be from a common stream of a single channel and sorted so the</span>
-<span class="sd">    array index defines a time order.  The algorithm attempts to glue the</span>
-<span class="sd">    segments together into a single time series that is returned.</span>
+<span class="sd">    created from a set of data stored in such files.  The data are assumed</span>
+<span class="sd">    to be from a common stream of a single channel.  They are sorted by start</span>
+<span class="sd">    time internally before the algorithm glues the segments together into a</span>
+<span class="sd">    single time series that is returned.</span>
 <span class="sd">    The algorithm by default assumes the input is &quot;clean&quot; which means</span>
 <span class="sd">    the endtime of each input TimeSeries is 1 sample ahead of the start time</span>
 <span class="sd">    of the next segment (i.e. (segment[i+1].t0()-segment[i].endtime()) == dt).</span>
 <span class="sd">    The actual test is that the time difference is less than dt/2.</span>
 
-<span class="sd">    This algorithm treats two conditions as a fatal error and will throw</span>
-<span class="sd">    a MsPASSError when the condition occurs:</span>
-
-<span class="sd">        1.   It checks that the input array of TimeSeries data are in</span>
-<span class="sd">             time order.</span>
-<span class="sd">        2.   It checks that the inputs all have the same sample rate.</span>
-<span class="sd">        3.   If fix_overlaps is False if an overlap is found it</span>
-<span class="sd">             is considered an exception.</span>
-
-<span class="sd">    Either of these conditions will cause the function to throw an</span>
-<span class="sd">    exception.  The assumption is that either is a user error created</span>
-<span class="sd">    by failing to reading the directions that emphasize this requirement</span>
-<span class="sd">    for the input.</span>
+<span class="sd">    Inputs with inconsistent sample rates are treated as a fatal error and</span>
+<span class="sd">    cause a :class:`MsPASSError` to be thrown.  If ``fix_overlaps`` is False,</span>
+<span class="sd">    an overlap produces a dead output with an error-log entry.</span>
 
 <span class="sd">    Other conditions can cause the output to be marked dead with an</span>
 <span class="sd">    error message posted to the output&#39;s elog attribute.  These are:</span>
@@ -1527,8 +1517,9 @@
 <span class="sd">    stored as a list of &quot;TimeWindow&quot; objects with the Metadata key &quot;gaps&quot;.</span>
 
 <span class="sd">    :param tsvector:  array of TimeSeries data that are to be spliced</span>
-<span class="sd">      together to create a single output.   The contents must all have</span>
-<span class="sd">      the same sample rate and be sorted by starttime.</span>
+<span class="sd">      together to create a single output.  The contents must all have</span>
+<span class="sd">      the same sample rate.  Input order is arbitrary; the function sorts</span>
+<span class="sd">      segments by start time.</span>
 <span class="sd">    :type tsvector:  expected to be a TimeSeriesVector, which is the name</span>
 <span class="sd">      we give in the pybind11 code to a C++ std:vector&lt;TimeSeries&gt; container.</span>
 <span class="sd">      Any iterable container of TimeSeries data will be accepted, however,</span>
@@ -1580,14 +1571,11 @@
 <span class="sd">      time range.  The result may be marked dead for a variety of reasons</span>
 <span class="sd">      with error messages explaining why in the return elog attribute.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tsvector</span><span class="p">,</span> <span class="n">TimeSeriesVector</span><span class="p">):</span>
-        <span class="c1"># We assume this will throw an exception if tsvector is not iterable</span>
-        <span class="c1"># or doesn&#39;t contain TimeSeries objects</span>
-        <span class="n">dvector</span> <span class="o">=</span> <span class="n">TimeSeriesVector</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tsvector</span><span class="p">:</span>
-            <span class="n">dvector</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dvector</span> <span class="o">=</span> <span class="n">tsvector</span>
+    <span class="c1"># sorted will raise a useful exception if the input is not iterable or</span>
+    <span class="c1"># does not contain objects with the TimeSeries t0 attribute.</span>
+    <span class="n">dvector</span> <span class="o">=</span> <span class="n">TimeSeriesVector</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tsvector</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">datum</span><span class="p">:</span> <span class="n">datum</span><span class="o">.</span><span class="n">t0</span><span class="p">):</span>
+        <span class="n">dvector</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fix_overlaps</span><span class="p">:</span>
         <span class="n">dvector</span> <span class="o">=</span> <span class="n">repair_overlaps</span><span class="p">(</span><span class="n">dvector</span><span class="p">)</span>
     <span class="n">spliced_data</span> <span class="o">=</span> <span class="n">splice_segments</span><span class="p">(</span><span class="n">dvector</span><span class="p">,</span> <span class="n">object_history</span><span class="p">)</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Deploy MsPASS with Docker Compose &#8212; MsPASS 2.4.2.dev29+gf528d06a documentation</title>
+    <title>Deploy MsPASS with Docker Compose &#8212; MsPASS 2.4.2.dev30+g8c7b6d94 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8c4b90f6"></script>
+    <script src="../_static/documentation_options.js?v=8dfb96a7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Command Line Docker Desktop Operation" href="command_line_desktop.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev29" />
+  <meta name="docsearch:version" content="2.4.2.dev30" />
   </head>
   
   
@@ -664,7 +664,9 @@ example, <code class="docutils literal notranslate"><span class="pre">9999:8888<
 Do not request more CPU or memory than Docker has available.</p></li>
 <li><p>Add the same bind mount to every service that needs access to waveform data
 stored outside the project directory.  Paths used by notebooks and workers
-must refer to the common path inside the containers.</p></li>
+must refer to the common path inside the containers.  This includes targets
+of symbolic links: a link into an unmounted host directory is broken inside
+the containers.</p></li>
 </ul>
 <p>After editing the file, check its resolved configuration before restarting:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>config

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>How do I develop a new workflow from scratch? &#8212; MsPASS 2.4.2.dev29+gf528d06a documentation</title>
+    <title>How do I develop a new workflow from scratch? &#8212; MsPASS 2.4.2.dev30+g8c7b6d94 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8c4b90f6"></script>
+    <script src="../_static/documentation_options.js?v=8dfb96a7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Frequently Asked Questions (FAQ)" href="FAQ.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev29" />
+  <meta name="docsearch:version" content="2.4.2.dev30" />
   </head>
   
   
@@ -613,6 +613,9 @@ With Docker this could be mounted on the standard container:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span>/home/myname/python,target<span class="o">=</span>/mnt,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>mspass/mspass
 </pre></div>
 </div>
+<p>The same rule applies to symbolic links.  If a mounted directory contains
+a link whose target is outside that mount, add a mount for the target as
+well; otherwise the link is not resolvable inside Docker or Apptainer.</p>
 <p>To make that module accessible with the same import command as above you
 would need to change the python search path.  For this example, you could
 add that directory to the Python search path before importing:</p>

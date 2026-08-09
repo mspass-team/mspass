@@ -48,6 +48,14 @@ path on the host does not automatically exist at the same path inside the
 container.  The mount option explicitly connects the host project directory
 to the container's ``/home`` directory.
 
+.. warning::
+
+   A symbolic link inside a bind-mounted directory works only when its target
+   is also visible at the corresponding path inside the container.  A link to
+   an unmounted host directory appears broken to MsPASS.  Bind-mount every
+   external waveform directory explicitly and use the container-side path in
+   waveform metadata.
+
 The two important options are:
 
 ``-p 8888:8888``
