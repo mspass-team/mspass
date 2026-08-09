@@ -62,7 +62,7 @@ cluster = ddist.LocalCluster(
 dask_client = cluster.get_client()
 
 
-def test_sliding_window_pipeline():
+def test_sliding_window_pipeline(capsys):
     """
     Test function for `sliding_window_pipeline` function.
 
@@ -94,10 +94,19 @@ def test_sliding_window_pipeline():
         assert x in expected_out
     # repeat with verbose on and sliding_window_size set auto
     result = sliding_window_pipeline(
-        dlist, simple_no_args, dask_client, sliding_window_size="auto", verbose=True
+        dlist,
+        simple_no_args,
+        dask_client,
+        sliding_window_size="auto",
+        verbose=True,
+        progress_report_interval=3,
     )
     for x in result:
         assert x in expected_out
+    progress = capsys.readouterr().out
+    for handled in (3, 6, 9, 10):
+        assert f"Handled {handled} of 10 items" in progress
+    assert "Submitting item" not in progress
 
     # run function with an arg to pfunc_args
     result = sliding_window_pipeline(
@@ -251,6 +260,10 @@ def test_swp_error_handlers():
     # test arg0 handling
     with pytest.raises(ValueError, match="Illegal value for arg0"):
         result = sliding_window_pipeline(42, simple_no_args, dask_client)
+    with pytest.raises(ValueError, match="progress_report_interval"):
+        sliding_window_pipeline(
+            [], simple_no_args, dask_client, progress_report_interval=0
+        )
     # test arg1 handling
     with pytest.raises(
         ValueError,

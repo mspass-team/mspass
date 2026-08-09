@@ -1235,7 +1235,7 @@ class RFdeconProcessor:
             on zero lag.
         """
         if self.__is_3c_engine:
-            return self.processor.actual_output()
+            return TimeSeries(self.processor.actual_output())
         if hasattr(self, "dvector"):
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
@@ -1243,7 +1243,7 @@ class RFdeconProcessor:
         if self.__uses_noise and hasattr(self, "nvector"):
             self.processor.loadnoise(DoubleVector(self.nvector))
         self.processor.process()
-        return self.processor.actual_output()
+        return TimeSeries(self.processor.actual_output())
 
     def output_shaping_wavelet(self):
         """
@@ -1257,7 +1257,7 @@ class RFdeconProcessor:
         suitable for WindowData and other metadata-aware TimeSeries APIs.
         """
         if self.__is_3c_engine:
-            return self.processor.output_shaping_wavelet()
+            return TimeSeries(self.processor.output_shaping_wavelet())
         if hasattr(self, "dvector"):
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
@@ -1265,7 +1265,7 @@ class RFdeconProcessor:
         if self.__uses_noise and hasattr(self, "nvector"):
             self.processor.loadnoise(DoubleVector(self.nvector))
         self.processor.process()
-        return self.processor.output_shaping_wavelet()
+        return TimeSeries(self.processor.output_shaping_wavelet())
 
     def ideal_output(self):
         """

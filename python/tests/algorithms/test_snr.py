@@ -258,6 +258,19 @@ def test_FD_snr_estimator():
     assert sigspec.nf() == 6002
     assert nspec.nf() == 15002
 
+    # Spectra are diagnostic output and should remain available even when
+    # the estimated bandwidth is below the requested detection threshold.
+    low_bandwidth_output = FD_snr_estimator(
+        TimeSeries(ts0),
+        noise_window=nwin,
+        signal_window=swin,
+        signal_detection_minimum_bandwidth=1000.0,
+        save_spectra=True,
+    )
+    assert low_bandwidth_output[1].size() == 1
+    assert pickle.loads(low_bandwidth_output[0]["signal_spectrum"]).nf() == 6002
+    assert pickle.loads(low_bandwidth_output[0]["noise_spectrum"]).nf() == 15002
+
 
 def test_FD_snr_estimator_error_handlers():
     """

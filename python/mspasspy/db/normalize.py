@@ -3379,7 +3379,15 @@ def normalize(
     find_output = matcher.find_one(mspass_object)
     # api of BasicMatcher specified a pair return we handle here
     if find_output[0] is None:
-        mspass_object.kill()
+        if kill_on_failure:
+            if find_output[1] is None or find_output[1].size() == 0:
+                message = "{} found no matching metadata for this datum".format(
+                    type(matcher).__name__
+                )
+                mspass_object.elog.log_error(
+                    "normalize", message, ErrorSeverity.Invalid
+                )
+            mspass_object.kill()
     else:
         # this could be done with operator+= in C++ with appropriate
         # casting but I think this is the only solution here

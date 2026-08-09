@@ -159,7 +159,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 EXPOSE 27017
 
 RUN apt-get update \
-    && apt-get install -y wget ssh rsync vim-tiny less \
+    && apt-get install -y wget ssh rsync vim-tiny less graphviz \
        build-essential python3-setuptools \
        python3-dev python3-pip \
        openjdk-8-jdk \
@@ -361,6 +361,7 @@ RUN set -eux; \
         cmake \
         gfortran \
         git \
+        graphviz \
         libblas-dev \
         libgsl-dev \
         liblapack-dev \
