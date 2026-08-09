@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MongoDB with MsPASS &#8212; MsPASS 2.4.2.dev31+g9fb3d674 documentation</title>
+    <title>Using MongoDB with MsPASS &#8212; MsPASS 2.4.2.dev32+gae8ef7a5 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=739fa95d"></script>
+    <script src="../_static/documentation_options.js?v=f3f95141"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="What database schema should I use?" href="schema_choices.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev31" />
+  <meta name="docsearch:version" content="2.4.2.dev32" />
   </head>
   
   
@@ -837,6 +837,18 @@ match a particular query.</p></li>
 The examples above show the most common, simple usage.
 Both accept a required-or-defaulted filter and an optional projection;
 additional behavior is controlled by documented keyword arguments.</p>
+<p>MongoDB can expire a cursor when processing one returned batch takes too
+long.  A direct PyMongo loop should use a <code class="docutils literal notranslate"><span class="pre">with</span></code> statement so the cursor is
+always closed, although that context manager does not prevent expiry.
+Setting <code class="docutils literal notranslate"><span class="pre">no_cursor_timeout=True</span></code> alone is not sufficient for an indefinitely
+long scan because MongoDB’s logical session timeout still applies.  The MsPASS
+<code class="docutils literal notranslate"><span class="pre">clean_collection</span></code> and <code class="docutils literal notranslate"><span class="pre">read_inventory</span></code> methods and the
+<code class="docutils literal notranslate"><span class="pre">dbclean</span></code> and <code class="docutils literal notranslate"><span class="pre">dbverify</span></code> commands provide an opt-in
+<code class="docutils literal notranslate"><span class="pre">no_cursor_timeout</span></code>/<code class="docutils literal notranslate"><span class="pre">--no-cursor-timeout</span></code> mode for large data sets.  That
+mode opens an explicit session, refreshes it periodically, and closes both the
+cursor and session when the scan ends.  See MongoDB’s <a class="reference external" href="https://www.mongodb.com/docs/manual/reference/method/cursor.nocursortimeout/#session-idle-timeout-overrides-nocursortimeout">cursor timeout
+documentation</a>
+for the server-side details.</p>
 <ol class="arabic simple">
 <li><p>The first argument defines the query filter.  The default is an empty dictionary
 that is interpreted as “all”.</p></li>

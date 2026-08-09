@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.2.dev31+g9fb3d674 documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.2.dev32+gae8ef7a5 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=739fa95d"></script>
+    <script src="../../../_static/documentation_options.js?v=f3f95141"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.2.dev31" />
+  <meta name="docsearch:version" content="2.4.2.dev32" />
   </head>
   
   
@@ -478,8 +478,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">array</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="c1"># WARNING fcntl is unix specific.</span>
@@ -532,6 +534,39 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseSchema</span><span class="p">,</span> <span class="n">MetadataSchema</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Textfile2Dataframe</span>
+
+<span class="n">_CURSOR_SESSION_REFRESH_INTERVAL_SECONDS</span> <span class="o">=</span> <span class="mf">300.0</span>
+
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_managed_collection_cursor</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Yield a cursor that is closed reliably after a collection scan.</span>
+
+<span class="sd">    Long-running scans use an explicit session because MongoDB&#39;s session idle</span>
+<span class="sd">    timeout can otherwise close a cursor even when ``no_cursor_timeout`` is</span>
+<span class="sd">    enabled.  Refreshing the session every five minutes keeps it well below</span>
+<span class="sd">    the server&#39;s default 30-minute session timeout.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">no_cursor_timeout</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">cursor</span>
+        <span class="k">return</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">client</span>
+    <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">start_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">last_refresh</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">refreshing_documents</span><span class="p">():</span>
+                <span class="k">nonlocal</span> <span class="n">last_refresh</span>
+                <span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">document</span>
+                    <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">now</span> <span class="o">-</span> <span class="n">last_refresh</span> <span class="o">&gt;=</span> <span class="n">_CURSOR_SESSION_REFRESH_INTERVAL_SECONDS</span><span class="p">:</span>
+                        <span class="n">client</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">({</span><span class="s2">&quot;refreshSessions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">session_id</span><span class="p">]})</span>
+                        <span class="n">last_refresh</span> <span class="o">=</span> <span class="n">now</span>
+
+            <span class="k">yield</span> <span class="n">refreshing_documents</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Database">
@@ -2119,6 +2154,7 @@
         <span class="n">delete_missing_required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method can be used to fix a subset of common database problems</span>
@@ -2170,6 +2206,12 @@
 <span class="sd">        :param verbose: Set to ``True`` to print all the operations. Default is ``False``.</span>
 <span class="sd">        :param verbose_keys: a list of keys you want to added to better identify problems when error happens. It&#39;s used in the print messages.</span>
 <span class="sd">        :type verbose_keys: :class:`list` of :class:`str`</span>
+<span class="sd">        :param no_cursor_timeout: Set to ``True`` for a collection scan that</span>
+<span class="sd">          may run long enough for MongoDB to expire an idle cursor.  MsPASS</span>
+<span class="sd">          then uses an explicit session, refreshes it periodically, and closes</span>
+<span class="sd">          both the cursor and session when processing ends.  Default is</span>
+<span class="sd">          ``False``.</span>
+<span class="sd">        :type no_cursor_timeout: :class:`bool`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2188,25 +2230,25 @@
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">fixed_cnt</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">docs</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                    <span class="n">fixed_attr_cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span>
-                        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
-                        <span class="n">collection</span><span class="p">,</span>
-                        <span class="n">rename_undefined</span><span class="p">,</span>
-                        <span class="n">delete_undefined</span><span class="p">,</span>
-                        <span class="n">required_xref_list</span><span class="p">,</span>
-                        <span class="n">delete_missing_xref</span><span class="p">,</span>
-                        <span class="n">delete_missing_required</span><span class="p">,</span>
-                        <span class="n">verbose</span><span class="p">,</span>
-                        <span class="n">verbose_keys</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fixed_attr_cnt</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fixed_cnt</span><span class="p">:</span>
-                            <span class="n">fixed_cnt</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">fixed_cnt</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span>
+            <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">documents</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                        <span class="n">fixed_attr_cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span>
+                            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+                            <span class="n">collection</span><span class="p">,</span>
+                            <span class="n">rename_undefined</span><span class="p">,</span>
+                            <span class="n">delete_undefined</span><span class="p">,</span>
+                            <span class="n">required_xref_list</span><span class="p">,</span>
+                            <span class="n">delete_missing_xref</span><span class="p">,</span>
+                            <span class="n">delete_missing_required</span><span class="p">,</span>
+                            <span class="n">verbose</span><span class="p">,</span>
+                            <span class="n">verbose_keys</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fixed_attr_cnt</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fixed_cnt</span><span class="p">:</span>
+                                <span class="n">fixed_cnt</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">fixed_cnt</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span>
 
         <span class="k">return</span> <span class="n">fixed_cnt</span></div>
 
@@ -2630,7 +2672,14 @@
 
         <span class="k">return</span> <span class="n">is_mismatch_key</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_delete_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">keylist</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_delete_attributes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">collection</span><span class="p">,</span>
+        <span class="n">keylist</span><span class="p">,</span>
+        <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deletes all occurrences of attributes linked to keys defined</span>
 <span class="sd">        in a list of keywords passed as (required) keylist argument.</span>
@@ -2646,20 +2695,21 @@
 <span class="sd">        :param verbose:  when ``True`` edit will produce a line of printed</span>
 <span class="sd">          output describing what was deleted.  Use this option only if</span>
 <span class="sd">          you know from dbverify the number of changes to be made are small.</span>
+<span class="sd">        :param no_cursor_timeout: when ``True`` keep the scan cursor&#39;s explicit</span>
+<span class="sd">          MongoDB session alive until processing is complete.</span>
 
 <span class="sd">        :return:  dict keyed by the keys of all deleted entries.  The value</span>
 <span class="sd">          of each entry is the number of documents the key was deleted from.</span>
 <span class="sd">        :rtype: :class:`dict`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbcol</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
-        <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="n">counts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="c1"># preload counts to 0 so we get a return saying 0 when no changes</span>
         <span class="c1"># are made</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keylist</span><span class="p">:</span>
             <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span><span class="n">dbcol</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">documents</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
                 <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">todel</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -2680,11 +2730,16 @@
                         <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">dbcol</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$unset&quot;</span><span class="p">:</span> <span class="n">todel</span><span class="p">})</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">counts</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_rename_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">rename_map</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rename_attributes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">collection</span><span class="p">,</span>
+        <span class="n">rename_map</span><span class="p">,</span>
+        <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Renames specified keys for all or a subset of documents in a</span>
 <span class="sd">        MongoDB collection.   The updates are driven by an input python</span>
@@ -2702,6 +2757,8 @@
 <span class="sd">          output describing what was deleted.  Use this option only if</span>
 <span class="sd">          you know from dbverify the number of changes to be made are small.</span>
 <span class="sd">          When false the function runs silently.</span>
+<span class="sd">        :param no_cursor_timeout: when ``True`` keep the scan cursor&#39;s explicit</span>
+<span class="sd">          MongoDB session alive until processing is complete.</span>
 
 <span class="sd">        :return:  dict keyed by the keys of all changed entries.  The value</span>
 <span class="sd">          of each entry is the number of documents changed.  The keys are the</span>
@@ -2709,14 +2766,13 @@
 <span class="sd">          the rename_map.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbcol</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
-        <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="n">counts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="c1"># preload counts to 0 so we get a return saying 0 when no changes</span>
         <span class="c1"># are made</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">rename_map</span><span class="p">:</span>
             <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span><span class="n">dbcol</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">documents</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
                 <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">rename_map</span><span class="p">:</span>
@@ -2737,11 +2793,11 @@
                         <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">dbcol</span><span class="o">.</span><span class="n">replace_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="n">doc</span><span class="p">)</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">counts</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_attribute_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_attribute_types</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function attempts to fix type collisions in the schema defined</span>
 <span class="sd">        for the specified database and collection.  It tries to fix any</span>
@@ -2767,14 +2823,15 @@
 <span class="sd">          printed output for each change it makes.  The default is false.</span>
 <span class="sd">          Needless verbose should be avoided unless you are certain the</span>
 <span class="sd">          number of changes it will make are small.</span>
+<span class="sd">        :param no_cursor_timeout: when ``True`` keep the scan cursor&#39;s explicit</span>
+<span class="sd">          MongoDB session alive until processing is complete.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbcol</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span>
         <span class="n">col_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
         <span class="n">counts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span><span class="n">dbcol</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">documents</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
@@ -2827,9 +2884,6 @@
 
                 <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">dbcol</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">up_d</span><span class="p">})</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
         <span class="k">return</span> <span class="n">counts</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_links</span><span class="p">(</span>
@@ -2839,6 +2893,7 @@
         <span class="n">wfquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">error_limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function checks for missing cross-referencing ids in a</span>
@@ -2871,6 +2926,8 @@
 <span class="sd">          The number should be large enough to catch all condition but</span>
 <span class="sd">          not so huge it become cumbersome.  With no limit or a memory</span>
 <span class="sd">          fault is even possible on a huge dataset.</span>
+<span class="sd">        :param no_cursor_timeout: when ``True`` keep each scan cursor&#39;s explicit</span>
+<span class="sd">          MongoDB session alive until processing is complete.</span>
 <span class="sd">        :return:  returns a tuple with two lists.  Both lists are ObjectIds</span>
 <span class="sd">          of the scanned wf collection that have errors.  component 0</span>
 <span class="sd">          of the tuple contains ids of wf entries that have the normalization</span>
@@ -2954,9 +3011,10 @@
                 <span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This should resolve links to &quot;</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="s2">&quot; collection&quot;</span><span class="p">)</span>
 
-            <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbwf</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">wfquery</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span>
+                <span class="n">dbwf</span><span class="p">,</span> <span class="n">wfquery</span><span class="p">,</span> <span class="n">no_cursor_timeout</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">documents</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
                     <span class="n">wfid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
                     <span class="n">is_bad_xref_key</span><span class="p">,</span> <span class="n">is_bad_wf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_xref_key</span><span class="p">(</span>
                         <span class="n">doc</span><span class="p">,</span> <span class="n">wf_collection</span><span class="p">,</span> <span class="n">xref_key</span>
@@ -2986,13 +3044,15 @@
                         <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_id_list</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">error_limit</span>
                     <span class="p">):</span>
                         <span class="k">break</span>
-            <span class="k">finally</span><span class="p">:</span>
-                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">bad_id_list</span><span class="p">,</span> <span class="n">missing_id_list</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_attribute_types</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error_limit</span><span class="o">=</span><span class="mi">1000</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">collection</span><span class="p">,</span>
+        <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">error_limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function checks the integrity of all attributes</span>
@@ -3027,6 +3087,8 @@
 <span class="sd">          The number should be large enough to catch all condition but</span>
 <span class="sd">          not so huge it become cumbersome.  With no limit or a memory</span>
 <span class="sd">          fault is even possible on a huge dataset.</span>
+<span class="sd">        :param no_cursor_timeout: when ``True`` keep the scan cursor&#39;s explicit</span>
+<span class="sd">          MongoDB session alive until processing is complete.</span>
 <span class="sd">        :return:  returns a tuple with two python dict containers.</span>
 <span class="sd">          The component 0 python dict contains details of type mismatch errors.</span>
 <span class="sd">          Component 1 contains details for data with undefined keys.</span>
@@ -3054,11 +3116,10 @@
                 <span class="o">+</span> <span class="s2">&quot; yields zero matching documents&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="n">bad_type_docs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">undefined_key_docs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span><span class="n">dbcol</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">documents</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
                 <span class="n">bad_types</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
                 <span class="n">undefined_keys</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
                 <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
@@ -3095,9 +3156,6 @@
                     <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">bad_type_docs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">error_limit</span>
                 <span class="p">):</span>
                     <span class="k">break</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">bad_type_docs</span><span class="p">,</span> <span class="n">undefined_key_docs</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_required</span><span class="p">(</span>
@@ -3107,6 +3165,7 @@
         <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">error_limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function applies a test to assure a list of attributes</span>
@@ -3145,6 +3204,8 @@
 <span class="sd">          The number should be large enough to catch all condition but</span>
 <span class="sd">          not so huge it become cumbersome.  With no limit or a memory</span>
 <span class="sd">          fault is even possible on a huge dataset.</span>
+<span class="sd">        :param no_cursor_timeout: when ``True`` keep the scan cursor&#39;s explicit</span>
+<span class="sd">          MongoDB session alive until processing is complete.</span>
 <span class="sd">        :return:  tuple with two components. Both components contain a</span>
 <span class="sd">          python dict container keyed by ObjectId of problem documents.</span>
 <span class="sd">          The values in the component 0 dict are themselves python dict</span>
@@ -3186,9 +3247,8 @@
             <span class="p">)</span>
         <span class="n">undef</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">wrong_types</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span><span class="n">dbcol</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">documents</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
                 <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
                 <span class="n">undef_this</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
                 <span class="n">wrong_this</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -3205,8 +3265,6 @@
                     <span class="n">wrong_types</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">wrong_this</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wrong_types</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">error_limit</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">undef</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">error_limit</span><span class="p">:</span>
                     <span class="k">break</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">wrong_types</span><span class="p">,</span> <span class="n">undef</span><span class="p">])</span>
 
 <div class="viewcode-block" id="Database.update_metadata">
@@ -5438,7 +5496,6 @@
         <span class="n">queryrecord</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record_to_test</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
         <span class="n">queryrecord</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record_to_test</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
         <span class="n">queryrecord</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record_to_test</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
-        <span class="n">matches</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">queryrecord</span><span class="p">)</span>
         <span class="c1"># this returns a warning that count is depricated but</span>
         <span class="c1"># I&#39;m getting confusing results from google search on the</span>
         <span class="c1"># topic so will use this for now</span>
@@ -5454,11 +5511,12 @@
             <span class="n">stm</span> <span class="o">=</span> <span class="n">st0</span> <span class="o">-</span> <span class="n">time_fudge_factor</span>
             <span class="n">etp</span> <span class="o">=</span> <span class="n">et0</span> <span class="o">+</span> <span class="n">time_fudge_factor</span>
             <span class="n">etm</span> <span class="o">=</span> <span class="n">et0</span> <span class="o">-</span> <span class="n">time_fudge_factor</span>
-            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
-                <span class="n">sttest</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
-                <span class="n">ettest</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">sttest</span> <span class="o">&gt;</span> <span class="n">stm</span> <span class="ow">and</span> <span class="n">sttest</span> <span class="o">&lt;</span> <span class="n">stp</span> <span class="ow">and</span> <span class="n">ettest</span> <span class="o">&gt;</span> <span class="n">etm</span> <span class="ow">and</span> <span class="n">ettest</span> <span class="o">&lt;</span> <span class="n">etp</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span><span class="n">dbsite</span><span class="p">,</span> <span class="n">queryrecord</span><span class="p">)</span> <span class="k">as</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="n">sttest</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
+                    <span class="n">ettest</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">sttest</span> <span class="o">&gt;</span> <span class="n">stm</span> <span class="ow">and</span> <span class="n">sttest</span> <span class="o">&lt;</span> <span class="n">stp</span> <span class="ow">and</span> <span class="n">ettest</span> <span class="o">&gt;</span> <span class="n">etm</span> <span class="ow">and</span> <span class="n">ettest</span> <span class="o">&lt;</span> <span class="n">etp</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
             <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_channel_is_not_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record_to_test</span><span class="p">):</span>
@@ -5478,7 +5536,6 @@
         <span class="n">queryrecord</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record_to_test</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
         <span class="n">queryrecord</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record_to_test</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
         <span class="n">queryrecord</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record_to_test</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
-        <span class="n">matches</span> <span class="o">=</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">queryrecord</span><span class="p">)</span>
         <span class="c1"># this returns a warning that count is depricated but</span>
         <span class="c1"># I&#39;m getting confusing results from google search on the</span>
         <span class="c1"># topic so will use this for now</span>
@@ -5494,11 +5551,12 @@
             <span class="n">stm</span> <span class="o">=</span> <span class="n">st0</span> <span class="o">-</span> <span class="n">time_fudge_factor</span>
             <span class="n">etp</span> <span class="o">=</span> <span class="n">et0</span> <span class="o">+</span> <span class="n">time_fudge_factor</span>
             <span class="n">etm</span> <span class="o">=</span> <span class="n">et0</span> <span class="o">-</span> <span class="n">time_fudge_factor</span>
-            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
-                <span class="n">sttest</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
-                <span class="n">ettest</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">sttest</span> <span class="o">&gt;</span> <span class="n">stm</span> <span class="ow">and</span> <span class="n">sttest</span> <span class="o">&lt;</span> <span class="n">stp</span> <span class="ow">and</span> <span class="n">ettest</span> <span class="o">&gt;</span> <span class="n">etm</span> <span class="ow">and</span> <span class="n">ettest</span> <span class="o">&lt;</span> <span class="n">etp</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span><span class="n">dbchannel</span><span class="p">,</span> <span class="n">queryrecord</span><span class="p">)</span> <span class="k">as</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="n">sttest</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
+                    <span class="n">ettest</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">sttest</span> <span class="o">&gt;</span> <span class="n">stm</span> <span class="ow">and</span> <span class="n">sttest</span> <span class="o">&lt;</span> <span class="n">stp</span> <span class="ow">and</span> <span class="n">ettest</span> <span class="o">&gt;</span> <span class="n">etm</span> <span class="ow">and</span> <span class="n">ettest</span> <span class="o">&lt;</span> <span class="n">etp</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
             <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_handle_null_starttime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
@@ -5830,7 +5888,9 @@
 
 <div class="viewcode-block" id="Database.read_inventory">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_inventory">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">read_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_inventory</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads an obspy inventory object limited by one or more</span>
 <span class="sd">        keys.   Default is to load the entire contents of the</span>
@@ -5849,6 +5909,12 @@
 <span class="sd">          startime&lt;time&lt;endtime.  Input is assumed an</span>
 <span class="sd">          epoch time NOT an obspy UTCDateTime. Use a conversion</span>
 <span class="sd">          to epoch time if necessary.</span>
+<span class="sd">        :param no_cursor_timeout: Set to ``True`` when reading an inventory</span>
+<span class="sd">          large enough that processing a cursor batch may exceed MongoDB&#39;s</span>
+<span class="sd">          idle timeout.  MsPASS then uses an explicit session, refreshes it</span>
+<span class="sd">          periodically, and closes both the cursor and session when the scan</span>
+<span class="sd">          ends.  Default is ``False``.</span>
+<span class="sd">        :type no_cursor_timeout: :class:`bool`</span>
 <span class="sd">        :return:  obspy Inventory of all stations matching the</span>
 <span class="sd">          query parameters</span>
 <span class="sd">        :rtype:  obspy Inventory</span>
@@ -5869,15 +5935,17 @@
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">stations</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stations</span><span class="p">:</span>
-                <span class="n">serialized</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;serialized_inventory&quot;</span><span class="p">]</span>
-                <span class="n">netw</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
-                <span class="c1"># It might be more efficient to build a list of</span>
-                <span class="c1"># Network objects but here we add them one</span>
-                <span class="c1"># station at a time.  Note the extend method</span>
-                <span class="c1"># if poorly documented in obspy</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">netw</span><span class="p">])</span>
+            <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span>
+                <span class="n">dbsite</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">stations</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stations</span><span class="p">:</span>
+                    <span class="n">serialized</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;serialized_inventory&quot;</span><span class="p">]</span>
+                    <span class="n">netw</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+                    <span class="c1"># It might be more efficient to build a list of</span>
+                    <span class="c1"># Network objects but here we add them one</span>
+                    <span class="c1"># station at a time.  Note the extend method</span>
+                    <span class="c1"># if poorly documented in obspy</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">netw</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 
