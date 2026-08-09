@@ -4956,7 +4956,6 @@ class Database(pymongo.database.Database):
         queryrecord["net"] = record_to_test["net"]
         queryrecord["sta"] = record_to_test["sta"]
         queryrecord["loc"] = record_to_test["loc"]
-        matches = dbsite.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
@@ -4972,11 +4971,12 @@ class Database(pymongo.database.Database):
             stm = st0 - time_fudge_factor
             etp = et0 + time_fudge_factor
             etm = et0 - time_fudge_factor
-            for x in matches:
-                sttest = x["starttime"]
-                ettest = x["endtime"]
-                if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
-                    return False
+            with _managed_collection_cursor(dbsite, queryrecord) as matches:
+                for x in matches:
+                    sttest = x["starttime"]
+                    ettest = x["endtime"]
+                    if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
+                        return False
             return True
 
     def _channel_is_not_in_db(self, record_to_test):
@@ -4996,7 +4996,6 @@ class Database(pymongo.database.Database):
         queryrecord["sta"] = record_to_test["sta"]
         queryrecord["loc"] = record_to_test["loc"]
         queryrecord["chan"] = record_to_test["chan"]
-        matches = dbchannel.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
@@ -5012,11 +5011,12 @@ class Database(pymongo.database.Database):
             stm = st0 - time_fudge_factor
             etp = et0 + time_fudge_factor
             etm = et0 - time_fudge_factor
-            for x in matches:
-                sttest = x["starttime"]
-                ettest = x["endtime"]
-                if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
-                    return False
+            with _managed_collection_cursor(dbchannel, queryrecord) as matches:
+                for x in matches:
+                    sttest = x["starttime"]
+                    ettest = x["endtime"]
+                    if sttest > stm and sttest < stp and ettest > etm and ettest < etp:
+                        return False
             return True
 
     def _handle_null_starttime(self, t):
@@ -5343,7 +5343,9 @@ class Database(pymongo.database.Database):
         print("number of channel records saved=", n_chan_saved)
         return tuple([n_site_saved, n_chan_saved, n_site_processed, n_chan_processed])
 
-    def read_inventory(self, net=None, sta=None, loc=None, time=None):
+    def read_inventory(
+        self, net=None, sta=None, loc=None, time=None, no_cursor_timeout=False
+    ):
         """
         Loads an obspy inventory object limited by one or more
         keys.   Default is to load the entire contents of the
@@ -5362,6 +5364,12 @@ class Database(pymongo.database.Database):
           startime<time<endtime.  Input is assumed an
           epoch time NOT an obspy UTCDateTime. Use a conversion
           to epoch time if necessary.
+        :param no_cursor_timeout: Set to ``True`` when reading an inventory
+          large enough that processing a cursor batch may exceed MongoDB's
+          idle timeout.  MsPASS then uses an explicit session, refreshes it
+          periodically, and closes both the cursor and session when the scan
+          ends.  Default is ``False``.
+        :type no_cursor_timeout: :class:`bool`
         :return:  obspy Inventory of all stations matching the
           query parameters
         :rtype:  obspy Inventory
@@ -5382,15 +5390,17 @@ class Database(pymongo.database.Database):
         if matchsize == 0:
             return None
         else:
-            stations = dbsite.find(query)
-            for s in stations:
-                serialized = s["serialized_inventory"]
-                netw = pickle.loads(serialized)
-                # It might be more efficient to build a list of
-                # Network objects but here we add them one
-                # station at a time.  Note the extend method
-                # if poorly documented in obspy
-                result.extend([netw])
+            with _managed_collection_cursor(
+                dbsite, query, no_cursor_timeout
+            ) as stations:
+                for s in stations:
+                    serialized = s["serialized_inventory"]
+                    netw = pickle.loads(serialized)
+                    # It might be more efficient to build a list of
+                    # Network objects but here we add them one
+                    # station at a time.  Note the extend method
+                    # if poorly documented in obspy
+                    result.extend([netw])
         return result
 
     def get_seed_site(self, net, sta, loc="NONE", time=-1.0, verbose=False):

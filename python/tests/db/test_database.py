@@ -219,6 +219,28 @@ class TestDatabase:
         with pytest.raises(MsPASSError, match="not defined"):
             dummy = db.database_schema["source"]
 
+    def test_read_inventory_with_managed_cursor(self):
+        source_inventory = obspy.read_inventory("python/tests/data/TA.035A.xml")
+        document_id = self.db.site.insert_one(
+            {
+                "net": "CURSOR_TEST",
+                "sta": "CURSOR_TEST",
+                "serialized_inventory": pickle.dumps(source_inventory.networks[0]),
+            }
+        ).inserted_id
+        try:
+            inventory = self.db.read_inventory(
+                net="CURSOR_TEST",
+                sta="CURSOR_TEST",
+                no_cursor_timeout=True,
+            )
+
+            assert inventory is not None
+            assert len(inventory.networks) == 1
+            assert inventory.networks[0].code == "TA"
+        finally:
+            self.db.site.delete_one({"_id": document_id})
+
     def test_save_elogs(self):
         tmp_ts = get_live_timeseries()
         tmp_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)

@@ -391,7 +391,7 @@ long.  A direct PyMongo loop should use a ``with`` statement so the cursor is
 always closed, although that context manager does not prevent expiry.
 Setting ``no_cursor_timeout=True`` alone is not sufficient for an indefinitely
 long scan because MongoDB's logical session timeout still applies.  The MsPASS
-``clean_collection`` method and the
+``clean_collection`` and ``read_inventory`` methods and the
 ``dbclean`` and ``dbverify`` commands provide an opt-in
 ``no_cursor_timeout``/``--no-cursor-timeout`` mode for large data sets.  That
 mode opens an explicit session, refreshes it periodically, and closes both the
