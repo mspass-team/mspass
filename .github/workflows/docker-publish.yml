@@ -26,10 +26,10 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   # Keep BuildKit cache out of GitHub Actions cache entries.
   CACHE_IMAGE: ghcr.io/${{ github.repository }}
-  SPARK_VERSION: 3.0.0
-  SPARK_ARCHIVE: spark-3.0.0-bin-hadoop2.7.tgz
-  SPARK_URL: https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
-  SPARK_SHA512: f5652835094d9f69eb3260e20ca9c2d58e8bdf85a8ed15797549a518b23c862b75a329b38d4248f8427e4310718238c60fae0f9d1afb3c70fb390d3e9cce2e49
+  SPARK_VERSION: 3.5.8
+  SPARK_ARCHIVE: spark-3.5.8-bin-hadoop3.tgz
+  SPARK_URL: https://archive.apache.org/dist/spark/spark-3.5.8/spark-3.5.8-bin-hadoop3.tgz
+  SPARK_SHA512: 5d5d2e6e111182ee1210d4a46a17ae27107c7ccc70433da0ded3d8197e027f949b00445bb5678ed0c1d5c59f12993d9b9ed12e43686d5aad89a9ec570e93a083
 
 jobs:
   download-spark:

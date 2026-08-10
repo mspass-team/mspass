@@ -14,12 +14,12 @@ ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
 ARG GEOLAB_BASE_IMAGE=ghcr.io/mspass-team/geolab-base-mirror@sha256:7aa0b713de225288188163c13519efce1ac5248ea386e734d88ad7c54b0abe27
 ARG PYTHON_VERSION=3.12
 ARG DASK_LABEXTENSION_VERSION=7.0.0
-ARG SPARK_VERSION=3.0.0
-ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop2.7
+ARG SPARK_VERSION=3.5.8
+ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop3
 ARG SPARK_ARCHIVE=${SPARK_PACKAGE}.tgz
 ARG APACHE_MIRROR=https://archive.apache.org/dist
 ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/${SPARK_ARCHIVE}
-ARG SPARK_SHA512=f5652835094d9f69eb3260e20ca9c2d58e8bdf85a8ed15797549a518b23c862b75a329b38d4248f8427e4310718238c60fae0f9d1afb3c70fb390d3e9cce2e49
+ARG SPARK_SHA512=5d5d2e6e111182ee1210d4a46a17ae27107c7ccc70433da0ded3d8197e027f949b00445bb5678ed0c1d5c59f12993d9b9ed12e43686d5aad89a9ec570e93a083
 
 FROM scratch AS spark-build-assets
 
@@ -174,7 +174,7 @@ ARG TARGETARCH
 
 # Prepare the environment
 ARG SPARK_VERSION
-ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop2.7
+ARG SPARK_PACKAGE=spark-${SPARK_VERSION}-bin-hadoop3
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-${TARGETARCH}
 ENV SPARK_HOME=/usr/local/spark
@@ -191,7 +191,7 @@ RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
 RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_path.txt && \
 	PYTHON_SITE_PACKAGES_PATH=$(cat site_packages_path.txt) && \
 	ln -s /usr/local/spark/python/pyspark ${PYTHON_SITE_PACKAGES_PATH}/pyspark && \
-	unzip /usr/local/spark/python/lib/py4j-0.10.9-src.zip -d ${PYTHON_SITE_PACKAGES_PATH}/  \
+	unzip /usr/local/spark/python/lib/py4j-*-src.zip -d ${PYTHON_SITE_PACKAGES_PATH}/  \
 	&& docker-clean
 
 # Patch pyspark for machines don't have localhost defined in /etc/hosts
@@ -201,6 +201,7 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && zip /usr/local/spark/python/lib/pyspark.zip pyspark/accumulators.py \
     && rm -r ./pyspark \
 	&& docker-clean
+RUN python -c "import pyspark; expected='${SPARK_VERSION}'; assert pyspark.__version__ == expected, (pyspark.__version__, expected)"
 
 # Install Python tooling
 RUN pip3 --no-cache-dir install --upgrade pip \

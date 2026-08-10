@@ -10,8 +10,8 @@ except ImportError:
     pass
 try:
     import pyspark
-except ImportError:
-    pass
+except Exception:
+    pyspark = None
 from bson.objectid import ObjectId
 from mspasspy.ccore.utility import MsPASSError, AntelopePf
 from mspasspy.util.converter import AntelopePf2dict
@@ -562,10 +562,8 @@ class GlobalHistoryManager:
         except NameError:
             pass
 
-        try:
+        if pyspark is not None:
             pyspark.RDD.mspass_map = mspass_spark_map
-        except NameError:
-            pass
 
         # modify pyspark/dask reduce to our defined reduce
         try:
@@ -573,10 +571,8 @@ class GlobalHistoryManager:
         except NameError:
             pass
 
-        try:
+        if pyspark is not None:
             pyspark.RDD.mspass_reduce = mspass_spark_reduce
-        except NameError:
-            pass
 
     def logging(self, alg_id, alg_name, parameters):
         """
