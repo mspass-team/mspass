@@ -9,15 +9,16 @@ from mspasspy.global_history.manager import GlobalHistoryManager
 
 try:
     from pyspark import SparkConf, SparkContext
-
-    _mspasspy_has_pyspark = True
-except ImportError:
-    _mspasspy_has_pyspark = False
-
-try:
     from pyspark.sql import SparkSession
-except ImportError:
+except Exception as err:
+    SparkConf = None
+    SparkContext = None
+    SparkSession = None
     _mspasspy_has_pyspark = False
+    _mspasspy_pyspark_import_error = err
+else:
+    _mspasspy_has_pyspark = True
+    _mspasspy_pyspark_import_error = None
 
 try:
     from dask.distributed import Client as DaskClient
@@ -27,6 +28,16 @@ except ImportError:
     _mspasspy_has_dask_distributed = False
 
 from mspasspy.ccore.utility import MsPASSError
+
+
+def _require_pyspark():
+    if _mspasspy_has_pyspark:
+        return
+
+    message = "Spark scheduler was requested, but PySpark could not be imported"
+    if _mspasspy_pyspark_import_error is not None:
+        message += ": " + str(_mspasspy_pyspark_import_error)
+    raise MsPASSError(message + ".", "Fatal")
 
 
 def _address_has_port(address):
@@ -147,6 +158,16 @@ class Client:
         MSPASS_SCHEDULER_ADDRESS = os.environ.get("MSPASS_SCHEDULER_ADDRESS")
         DASK_SCHEDULER_PORT = os.environ.get("DASK_SCHEDULER_PORT")
         SPARK_MASTER_PORT = os.environ.get("SPARK_MASTER_PORT")
+
+        if (
+            dask_client is None
+            and not _mspasspy_has_pyspark
+            and (
+                scheduler == "spark"
+                or (scheduler is None and MSPASS_SCHEDULER == "spark")
+            )
+        ):
+            _require_pyspark()
 
         # create a database client
         # priority: parameter -> env -> default
@@ -427,6 +448,8 @@ class Client:
                 + " is found.",
                 "Fatal",
             )
+        if scheduler == "spark":
+            _require_pyspark()
 
         prev_scheduler = self._scheduler
         self._scheduler = scheduler
