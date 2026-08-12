@@ -67,7 +67,11 @@ services:
       MSPASS_SCHEDULER: dask
       DASK_SCHEDULER_PORT: 8786
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8786
+      test:
+        - CMD
+        - python
+        - -c
+        - "import distributed; client = distributed.Client('tcp://127.0.0.1:8786', timeout='2s'); client.scheduler_info(); client.close()"
       interval: 10s
       timeout: 60s
       retries: 5
@@ -78,7 +82,8 @@ services:
     volumes:
       - "${PWD}/:/home"
     depends_on:
-      - mspass-scheduler
+      mspass-scheduler:
+        condition: service_healthy
     environment:
       MSPASS_ROLE: worker
       MSPASS_SCHEDULER: dask
@@ -91,8 +96,10 @@ services:
     ports:
       - 8888:8888
     depends_on:
-      - mspass-dbmanager
-      - mspass-scheduler
+      mspass-dbmanager:
+        condition: service_started
+      mspass-scheduler:
+        condition: service_healthy
     environment:
       MSPASS_ROLE: frontend
       MSPASS_SCHEDULER: dask
