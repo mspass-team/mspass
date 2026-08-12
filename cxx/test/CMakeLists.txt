@@ -1,6 +1,7 @@
 include(CTest)
 if(BUILD_TESTING)
   add_subdirectory(amap)
+  add_subdirectory(arithmetic)
   add_subdirectory(decon_serialization)
   add_subdirectory(data_directory)
   add_subdirectory(dmatrix)
@@ -19,6 +20,8 @@ if(BUILD_TESTING)
 
 # note this test needs to access a data file in the run directory. 
 # we set that with WORKING_DIRECTORY and the special symbol after the keyword
+  add_test(NAME test_waveform_arithmetic
+    COMMAND ${PROJECT_BINARY_DIR}/test/arithmetic/test_waveform_arithmetic)
   add_test(NAME test_decon_serialization COMMAND ${PROJECT_BINARY_DIR}/test/decon_serialization/test_decon_serialization WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/decon_serialization)
   add_test(NAME test_data_directory
     COMMAND ${PROJECT_BINARY_DIR}/test/data_directory/test_data_directory)

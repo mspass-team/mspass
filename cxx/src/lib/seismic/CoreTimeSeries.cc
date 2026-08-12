@@ -3,6 +3,7 @@
 #include "mspass/seismic/keywords.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
+#include "waveform_arithmetic.h"
 #include <vector>
 namespace mspass::seismic {
 using namespace std;
@@ -65,42 +66,13 @@ CoreTimeSeries &CoreTimeSeries::operator=(const CoreTimeSeries &tsi) {
 /*  Sum operator for CoreTimeSeries object */
 
 CoreTimeSeries &CoreTimeSeries::operator+=(const CoreTimeSeries &data) {
-  int i, iend, jend;
-  size_t i0;
-  size_t j, j0;
-  // Sun's compiler complains about const objects without this.
-  CoreTimeSeries &d = const_cast<CoreTimeSeries &>(data);
-  // Silently do nothing if d is marked dead
-  if (!d.mlive)
+  // Silently do nothing if data is marked dead
+  if (data.dead())
     return (*this);
-  // Silently do nothing if d does not overlap with data to contain sum
-  if ((d.endtime() < mt0) || (d.mt0 > (this->endtime())))
-    return (*this);
-  if (d.tref != (this->tref))
-    throw MsPASSError("CoreTimeSeries += operator cannot handle data with "
-                      "inconsistent time base\n",
-                      ErrorSeverity::Invalid);
-  /* this defines the range of left and right hand sides to be summed */
-  i = d.sample_number(this->mt0);
-  if (i < 0) {
-    j0 = this->sample_number(d.t0());
-    i0 = 0;
-  } else {
-    j0 = 0;
-    i0 = i;
-  }
-  iend = d.sample_number(this->endtime());
-  jend = this->sample_number(d.endtime());
-  if (iend >= (d.npts())) {
-    iend = d.npts() - 1;
-  }
-  if (jend >= this->npts()) {
-    jend = this->npts() - 1;
-  }
-  // cout << "i0="<<i0<<" j0="<<j0<<" iend="<<iend<<" jend="<<jend<<endl;
-  /*  Now do the actual sum using the computed ranges */
-  for (i = i0, j = j0; i <= iend && j <= jend; ++i, ++j)
-    this->s[j] += d.s[i];
+  const auto overlap =
+      detail::arithmetic_overlap(*this, data, "CoreTimeSeries::operator+=");
+  for (std::size_t i = 0; i < overlap.count; ++i)
+    this->s[overlap.lhs_begin + i] += data.s[overlap.rhs_begin + i];
   return (*this);
 }
 /* IMPORTANT:  this code is absolutely identical to that for operator+=
@@ -108,42 +80,13 @@ except the += in the last loop becomes -=.  Any changes in operator+=
 must have exactly the same change here (other than a message with a
 tag to the function)*/
 CoreTimeSeries &CoreTimeSeries::operator-=(const CoreTimeSeries &data) {
-  int i, iend, jend;
-  size_t i0;
-  size_t j, j0;
-  // Sun's compiler complains about const objects without this.
-  CoreTimeSeries &d = const_cast<CoreTimeSeries &>(data);
-  // Silently do nothing if d is marked dead
-  if (!d.mlive)
+  // Silently do nothing if data is marked dead
+  if (data.dead())
     return (*this);
-  // Silently do nothing if d does not overlap with data to contain sum
-  if ((d.endtime() < mt0) || (d.mt0 > (this->endtime())))
-    return (*this);
-  if (d.tref != (this->tref))
-    throw MsPASSError("CoreTimeSeries += operator cannot handle data with "
-                      "inconsistent time base\n",
-                      ErrorSeverity::Invalid);
-  /* this defines the range of left and right hand sides to be summed */
-  i = d.sample_number(this->mt0);
-  if (i < 0) {
-    j0 = this->sample_number(d.t0());
-    i0 = 0;
-  } else {
-    j0 = 0;
-    i0 = i;
-  }
-  iend = d.sample_number(this->endtime());
-  jend = this->sample_number(d.endtime());
-  if (iend >= (d.npts())) {
-    iend = d.npts() - 1;
-  }
-  if (jend >= this->npts()) {
-    jend = this->npts() - 1;
-  }
-  // cout << "i0="<<i0<<" j0="<<j0<<" iend="<<iend<<" jend="<<jend<<endl;
-  /*  Now do the actual sum using the computed ranges */
-  for (i = i0, j = j0; i <= iend && j <= jend; ++i, ++j)
-    this->s[j] -= d.s[i];
+  const auto overlap =
+      detail::arithmetic_overlap(*this, data, "CoreTimeSeries::operator-=");
+  for (std::size_t i = 0; i < overlap.count; ++i)
+    this->s[overlap.lhs_begin + i] -= data.s[overlap.rhs_begin + i];
   return (*this);
 }
 const CoreTimeSeries
