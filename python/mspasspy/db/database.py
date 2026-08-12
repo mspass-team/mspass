@@ -6006,21 +6006,19 @@ class Database(pymongo.database.Database):
           MongoDB document id with each elog entry)
         :param normalize_channel:  boolean controlling normalization with
           the channel collection.   When set True (default is false) the
-          method will call the Database.get_seed_channel method, extract
-          the id from the result, and set the result as "channel_id" before
-          writing the wf_miniseed document.  Set this argument true if
-          you have a relatively complete channel collection assembled
-          before running a workflow to index a set of miniseed files
-          (a common raw data starting point).
-        :param verbose:  boolean passed to get_seed_channel.  This
-          argument has no effect unless normalize_channel is set True.
-          It is necessary because the get_seed_channel function has no
-          way to log errors except calling print.  A very common metadata
-          error is duplicate and/or time overlaps in channel metadata.
-          Those are usually harmless so the default for this parameter is
-          False.  Set this True if you are using inline normalization
-          (normalize_channel set True) and you aren't certain your
-          channel collection has no serious inconsistencies.
+          method queries the channel collection with each segment's net,
+          sta, chan, optional loc, and start time.  It stores the matching
+          channel document id only when that query returns exactly one
+          document.  Set this argument true if you have a relatively complete
+          channel collection assembled before running a workflow to index a
+          set of miniseed files (a common raw data starting point).
+        :param verbose:  when True, print the query for any channel
+          normalization attempt that returns multiple documents.  This
+          argument has no effect unless normalize_channel is True.  Duplicate
+          or overlapping channel metadata are common and may be harmless, but
+          this method cannot choose one safely: it leaves ``channel_id`` unset
+          when the query is ambiguous.  Enable verbose output to identify and
+          clean those channel records before relying on inline normalization.
         :param sample_rate_tolerance: nonnegative relative tolerance used to
           decide whether packet sample rates belong to the same index entry.
           The default, ``1.0e-4``, matches libmseed's sample-rate tolerance.
@@ -6051,6 +6049,10 @@ class Database(pymongo.database.Database):
             elog.get_error_log()
         ):
             raise FileNotFoundError(str(elog.get_error_log()))
+        if len(ind) == 0:
+            if return_ids:
+                return [[], []]
+            return None
         ids_affected = []
         for i in ind:
             doc = self._convert_mseed_index(i, sample_rate_tolerance)
@@ -6060,26 +6062,28 @@ class Database(pymongo.database.Database):
             doc["dfile"] = dfile
             # mseed is dogmatically UTC so we always set it this way
             doc["time_standard"] = "UTC"
+            if normalize_channel:
+                channel_query = {
+                    "net": doc["net"],
+                    "sta": doc["sta"],
+                    "chan": doc["chan"],
+                    "starttime": {"$lt": doc["starttime"]},
+                    "endtime": {"$gt": doc["starttime"]},
+                }
+                if "loc" in doc:
+                    channel_query["loc"] = doc["loc"]
+                match_count = self.channel.count_documents(channel_query)
+                if match_count == 1:
+                    doc["channel_id"] = self.channel.find_one(channel_query)["_id"]
+                elif match_count > 1 and verbose:
+                    print(
+                        "index_mseed_file: channel normalization query returned",
+                        match_count,
+                        "documents; channel_id was not set for query",
+                        channel_query,
+                    )
             thisid = dbh.insert_one(doc).inserted_id
             ids_affected.append(thisid)
-        if normalize_channel:
-            # these quantities are always defined unless there was a read error
-            # and I don't think we can get here if we had a read error.
-            net = doc["net"]
-            sta = doc["sta"]
-            chan = doc["chan"]
-            stime = doc["starttime"]
-            if "loc" in doc:
-                loc = doc["loc"]
-                chandoc = self.get_seed_channel(
-                    net, sta, chan, loc, time=stime, verbose=verbose
-                )
-            else:
-                chandoc = self.get_seed_channel(
-                    net, sta, chan, time=stime, verbose=verbose
-                )
-            if chandoc != None:
-                doc["channel_id"] = chandoc["_id"]
 
         # log_ids is created here so it is defined but empty in
         # the tuple returned when return_ids is true
@@ -6100,13 +6104,12 @@ class Database(pymongo.database.Database):
                         "process_id": x.p_id,
                     }
                 )
-            docentry = {"logdata": logdata}
             # To mesh with the standard elog collection we add a copy of the
             # error messages with a tag for each id in the ids_affected list.
             # That should make elog connection to wf_miniseed records exactly
             # like wf_TimeSeries records but with a different collection link
             for wfid in ids_affected:
-                docentry["wf_miniseed_id"] = wfid
+                docentry = {"logdata": logdata, "wf_miniseed_id": wfid}
                 elogid = elog_col.insert_one(docentry).inserted_id
                 log_ids.append(elogid)
         if return_ids:
