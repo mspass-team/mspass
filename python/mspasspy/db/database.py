@@ -61,6 +61,7 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util.converter import Textfile2Dataframe
 
 _CURSOR_SESSION_REFRESH_INTERVAL_SECONDS = 300.0
+_MISSING_METADATA_VALUE = object()
 
 
 @contextmanager
@@ -1548,12 +1549,11 @@ class Database(pymongo.database.Database):
         if mspass_object.live:
             # We remove dead bodies from ensembles to simplify saving
             # data below.
+            bodies = None
             if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
                 mspass_object, bodies = self.stedronsky.bring_out_your_dead(
                     mspass_object
                 )
-                if not cremate and len(bodies.member) > 0:
-                    self.stedronsky.bury(bodies)
             # schema isn't needed for handling the dead, but we do need it
             # for creating wf documents
             schema = self.metadata_schema
@@ -1572,60 +1572,99 @@ class Database(pymongo.database.Database):
                 # A weird construct
                 wf_collection_name = save_schema.collection("_id")
             wf_collection = self[wf_collection_name]
-            # We need to make sure storage_mode is set in all live data
+            mspass_object = self._kill_zero_length_live(mspass_object)
             if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
                 mspass_object.sync_metadata()
-                for d in mspass_object.member:
-                    if d.live:
-                        d["storage_mode"] = storage_mode
+                atomic_objects = list(mspass_object.member)
             else:
-                # only atomic data can land here
-                mspass_object["storage_mode"] = storage_mode
+                atomic_objects = [mspass_object]
 
-            # Extend this method to add new storge modes
-            # Note this implementation alters metadata in mspass_object
-            # and all members of ensembles
-            mspass_object = self._save_sample_data(
-                mspass_object,
-                storage_mode=storage_mode,
-                dir=dir,
-                dfile=dfile,
-                format=format,
-                overwrite=overwrite,
-            )
-            # ensembles need to loop over members to do the atomic operations
-            # remaining.  Hence, this conditional
-            if isinstance(mspass_object, (TimeSeries, Seismogram)):
-                mspass_object = self._atomic_save_all_documents(
-                    mspass_object,
-                    save_schema,
-                    exclude_keys,
-                    mode,
-                    wf_collection,
-                    save_history,
-                    data_tag,
-                    storage_mode,
-                    normalizing_collections,
-                    alg_name,
-                    alg_id,
-                )
+            rollback_state = self._new_write_rollback_state(atomic_objects)
+            history_resets = []
+            try:
+                for datum in atomic_objects:
+                    if datum.live:
+                        datum["storage_mode"] = storage_mode
 
-            else:
-                # note else not elif because above guarantees only ensembles land here
-                for d in mspass_object.member:
-                    d = self._atomic_save_all_documents(
-                        d,
-                        save_schema,
-                        exclude_keys,
-                        mode,
+                prepared_documents = []
+                for datum in atomic_objects:
+                    prepared_documents.append(
+                        (
+                            datum,
+                            self._prepare_atomic_save_document(
+                                datum,
+                                save_schema,
+                                exclude_keys,
+                                mode,
+                                data_tag,
+                                storage_mode,
+                                normalizing_collections,
+                            ),
+                        )
+                    )
+
+                if storage_mode == "file" and any(
+                    datum.live for datum in atomic_objects
+                ):
+                    dir, dfile, format = self._resolve_file_destination(
+                        mspass_object, dir=dir, dfile=dfile, format=format
+                    )
+                    file_state = self._capture_file_write(
+                        os.path.join(dir, dfile), overwrite
+                    )
+                    rollback_state["files"].append(file_state)
+                    mspass_object = self._save_sample_data(
+                        mspass_object,
+                        storage_mode=storage_mode,
+                        dir=dir,
+                        dfile=dfile,
+                        format=format,
+                        overwrite=overwrite,
+                        raise_on_error=True,
+                    )
+                    if not overwrite:
+                        file_state["segments"] = self._file_write_segments(
+                            mspass_object
+                        )
+                elif storage_mode == "gridfs":
+                    for datum in atomic_objects:
+                        if datum.live:
+                            new_gridfs_id = self._reserve_gridfs_write(
+                                datum, overwrite, rollback_state
+                            )
+                            self._save_sample_data(
+                                datum,
+                                storage_mode="gridfs",
+                                overwrite=overwrite,
+                                new_gridfs_id=new_gridfs_id,
+                            )
+
+                for datum, insertion_dict in prepared_documents:
+                    datum, history_reset = self._atomic_save_all_documents(
+                        datum,
+                        insertion_dict,
                         wf_collection,
                         save_history,
                         data_tag,
                         storage_mode,
-                        normalizing_collections,
                         alg_name,
                         alg_id,
+                        rollback_state,
                     )
+                    if history_reset is not None:
+                        history_resets.append(history_reset)
+
+                if bodies is not None and not cremate and len(bodies.member) > 0:
+                    self.stedronsky.bury(bodies)
+
+                for history_reset in history_resets:
+                    self._reset_processing_history(*history_reset)
+            except Exception:
+                try:
+                    self._rollback_write_artifacts(rollback_state)
+                except Exception:
+                    pass
+                raise
         else:
             # may need to clean Metadata before calling this method
             # to assure there are not values that will cause MongoDB
@@ -2778,6 +2817,7 @@ class Database(pymongo.database.Database):
         force_keys=None,
         normalizing_collections=["channel", "site", "source"],
         alg_name="Database.update_metadata",
+        _commit=True,
     ):
         """
         Use this method if you want to save the output of a processing algorithm
@@ -3060,10 +3100,12 @@ class Database(pymongo.database.Database):
         # ugly python indentation with this logic.  We always land here in
         # any mode when we've passed over the entire metadata dict
         # if it is dead, it's considered something really bad happens, we should not update the object
-        if mspass_object.live:
+        if mspass_object.live and _commit:
             wf_collection.update_one(
                 {"_id": wfid}, {"$set": insertion_dict}, upsert=True
             )
+        if not _commit:
+            return insertion_dict
         return mspass_object
 
     def update_data(
@@ -3156,12 +3198,15 @@ class Database(pymongo.database.Database):
             save_schema = schema.TimeSeries
         else:
             save_schema = schema.Seismogram
-        # First update metadata.  update_metadata will throw an exception
-        # only for usage errors.   We test the elog size to check if there
-        # are other warning messages and add a summary if there were any
-        logsize0 = mspass_object.elog.size()
+        if collection:
+            wf_collection_name = collection
+        else:
+            wf_collection_name = save_schema.collection("_id")
+        wf_collection = self[wf_collection_name]
+        rollback_state = self._new_write_rollback_state([mspass_object])
         try:
-            self.update_metadata(
+            logsize0 = mspass_object.elog.size()
+            update_record = self.update_metadata(
                 mspass_object,
                 collection=collection,
                 mode=mode,
@@ -3169,36 +3214,32 @@ class Database(pymongo.database.Database):
                 force_keys=force_keys,
                 normalizing_collections=normalizing_collections,
                 alg_name=alg_name,
+                _commit=False,
             )
-        except:
-            raise
-        logsize = mspass_object.elog.size()
-        # A bit verbose, but we post this warning to make it clear the
-        # problem originated from update_data - probably not really needed
-        # but better to be though I think
-        if logsize > logsize0:
-            mspass_object.elog.log_error(
-                alg_name,
-                "update_metadata posted {nerr} messages during update".format(
-                    nerr=(logsize - logsize0)
-                ),
-                ErrorSeverity.Complaint,
+            logsize = mspass_object.elog.size()
+            if logsize > logsize0:
+                mspass_object.elog.log_error(
+                    alg_name,
+                    "update_metadata posted {nerr} messages during update".format(
+                        nerr=(logsize - logsize0)
+                    ),
+                    ErrorSeverity.Complaint,
+                )
+
+            if not mspass_object.live:
+                elog_id_name = self.database_schema.default_name("elog") + "_id"
+                old_elog_id = (
+                    mspass_object[elog_id_name]
+                    if elog_id_name in mspass_object
+                    else None
+                )
+                self._save_elog(mspass_object, elog_id=old_elog_id, data_tag=data_tag)
+                return mspass_object
+
+            old_waveform_document = wf_collection.find_one(
+                {"_id": mspass_object["_id"]}
             )
 
-        # optional handle history - we need to update the wf record later with this value
-        # if it is set
-        update_record = dict()
-        history_obj_id_name = (
-            self.database_schema.default_name("history_object") + "_id"
-        )
-        history_object_id = None
-        if not mspass_object.is_empty():
-            history_object_id = self._save_history(mspass_object, alg_name, alg_id)
-            update_record[history_obj_id_name] = history_object_id
-
-        # Now handle update of sample data.  The gridfs method used here
-        # handles that correctly based on the gridfs id.
-        if mspass_object.live:
             if "storage_mode" in mspass_object:
                 storage_mode = mspass_object["storage_mode"]
                 if not storage_mode == "gridfs":
@@ -3218,80 +3259,101 @@ class Database(pymongo.database.Database):
                 )
                 mspass_object["storage_mode"] = "gridfs"
                 update_record["storage_mode"] = "gridfs"
-            # This logic overwrites the content if the magic key
-            # "gridfs_id" exists in the input. In both cases gridfs_id is set
-            # in returned
-            if "gridfs_id" in mspass_object:
-                mspass_object = self._save_sample_data_to_gridfs(
-                    mspass_object,
-                    overwrite=True,
-                )
-            else:
-                mspass_object = self._save_sample_data_to_gridfs(
-                    mspass_object, overwrite=False
-                )
-
-            # There is a possible efficiency gain right here.  Not sure if
-            # gridfs_id is altered when the sample data are updated in place.
-            # if we can be sure the returned gridfs_id is the same as theresult
-            # input in that case, we would omit gridfs_id from the update
-            # record and most data would not require the final update
-            # transaction below
+            overwrite_gridfs = "gridfs_id" in mspass_object
+            new_gridfs_id = self._reserve_gridfs_write(
+                mspass_object, overwrite_gridfs, rollback_state
+            )
+            self._save_sample_data_to_gridfs(
+                mspass_object,
+                overwrite=overwrite_gridfs,
+                new_gridfs_id=new_gridfs_id,
+            )
             update_record["gridfs_id"] = mspass_object["gridfs_id"]
-            # should define wf_collection here because if the mspass_object is dead
-            if collection:
-                wf_collection_name = collection
-            else:
-                # This returns a string that is the collection name for this atomic data type
-                # A weird construct
-                wf_collection_name = save_schema.collection("_id")
-            wf_collection = self[wf_collection_name]
+
+            history_obj_id_name = (
+                self.database_schema.default_name("history_object") + "_id"
+            )
+            history_object_id = None
+            history_save_uuid = None
+            if not mspass_object.is_empty():
+                history_source = ProcessingHistory(mspass_object)
+                history_save_uuid = history_source.id()
+                history_object_id = ObjectId()
+                history_collection_name = self.database_schema.default_name(
+                    "history_object"
+                )
+                self._record_new_document(
+                    rollback_state, history_collection_name, history_object_id
+                )
+                self._save_history(
+                    mspass_object,
+                    alg_name,
+                    alg_id,
+                    history_id=history_object_id,
+                    wf_id=mspass_object["_id"],
+                    wf_collection_name=wf_collection_name,
+                )
+                update_record[history_obj_id_name] = history_object_id
 
             elog_id = None
             if mspass_object.elog.size() > 0:
                 elog_id_name = self.database_schema.default_name("elog") + "_id"
-                # FIXME I think here we should check if elog_id field exists in the mspass_object
-                # and we should update the elog entry if mspass_object already had one
                 if elog_id_name in mspass_object:
                     old_elog_id = mspass_object[elog_id_name]
                 else:
                     old_elog_id = None
-                # elog ids will be updated in the wf col when saving metadata
-                elog_id = self._save_elog(
-                    mspass_object, elog_id=old_elog_id, data_tag=data_tag
+                if old_elog_id is not None:
+                    old_elog_document = self[
+                        self.database_schema.default_name("elog")
+                    ].find_one({"_id": old_elog_id})
+                    if old_elog_document is not None:
+                        rollback_state["old_elog_docs"].append(
+                            (
+                                self.database_schema.default_name("elog"),
+                                copy.deepcopy(old_elog_document),
+                            )
+                        )
+                elog_id = ObjectId()
+                self._record_new_document(
+                    rollback_state,
+                    self.database_schema.default_name("elog"),
+                    elog_id,
+                )
+                self._save_elog(
+                    mspass_object,
+                    elog_id=old_elog_id,
+                    data_tag=data_tag,
+                    new_elog_id=elog_id,
+                    wf_id=mspass_object["_id"],
+                    wf_collection_name=wf_collection_name,
                 )
                 update_record[elog_id_name] = elog_id
 
-                # update elog collection
-                # we have to do the xref to wf collection like this too
-                elog_col = self[self.database_schema.default_name("elog")]
-                wf_id_name = wf_collection_name + "_id"
-                filter_ = {"_id": elog_id}
-                elog_col.update_one(
-                    filter_, {"$set": {wf_id_name: mspass_object["_id"]}}
-                )
-            # finally we need to update the wf document if we set anything
-            # in update_record
             if len(update_record):
                 filter_ = {"_id": mspass_object["_id"]}
-                wf_collection.update_one(filter_, {"$set": update_record})
-                # we may probably set the elog_id field in the mspass_object
+                rollback_state["old_waveforms"].append(
+                    (
+                        wf_collection_name,
+                        copy.deepcopy(old_waveform_document),
+                        mspass_object["_id"],
+                        copy.deepcopy(update_record),
+                    )
+                )
+                wf_collection.update_one(filter_, {"$set": update_record}, upsert=True)
                 if elog_id:
                     mspass_object[elog_id_name] = elog_id
-                # we may probably set the history_object_id field in the mspass_object
                 if history_object_id:
                     mspass_object[history_obj_id_name] = history_object_id
-        else:
-            # Dead data land here
-            elog_id_name = self.database_schema.default_name("elog") + "_id"
-            if elog_id_name in mspass_object:
-                old_elog_id = mspass_object[elog_id_name]
-            else:
-                old_elog_id = None
-            elog_id = self._save_elog(
-                mspass_object, elog_id=old_elog_id, data_tag=data_tag
-            )
-
+                if history_save_uuid is not None:
+                    self._reset_processing_history(
+                        mspass_object, alg_name, alg_id, history_save_uuid
+                    )
+        except Exception:
+            try:
+                self._rollback_write_artifacts(rollback_state)
+            except Exception:
+                pass
+            raise
         return mspass_object
 
     def read_ensemble_data(
@@ -4035,9 +4097,251 @@ class Database(pymongo.database.Database):
             mspass_object["cardinal"] = mspass_object.cardinal()
             mspass_object["orthogonal"] = mspass_object.orthogonal()
 
-    def _save_history(self, mspass_object, alg_name=None, alg_id=None, collection=None):
+    def _new_write_rollback_state(self, mspass_objects):
+        """Capture caller references and initialize one compensation ledger."""
+        history_id_name = self.database_schema.default_name("history_object") + "_id"
+        elog_id_name = self.database_schema.default_name("elog") + "_id"
+        reference_keys = (
+            "_id",
+            "storage_mode",
+            "gridfs_id",
+            "dir",
+            "dfile",
+            "foff",
+            "nbytes",
+            "format",
+            history_id_name,
+            elog_id_name,
+        )
+        references = []
+        for datum in mspass_objects:
+            values = {}
+            for key in reference_keys:
+                if key in datum:
+                    values[key] = datum[key]
+                else:
+                    values[key] = _MISSING_METADATA_VALUE
+            references.append((datum, values))
+        return {
+            "references": references,
+            "files": [],
+            "new_gridfs_ids": [],
+            "old_gridfs": [],
+            "new_documents": [],
+            "old_elog_docs": [],
+            "old_waveforms": [],
+        }
+
+    def _record_new_document(self, rollback_state, collection_name, document_id):
+        """Record whether a reserved document id was already occupied."""
+        existed = (
+            self[collection_name].find_one({"_id": document_id}, {"_id": 1}) is not None
+        )
+        rollback_state["new_documents"].append((collection_name, document_id, existed))
+
+    @staticmethod
+    def _capture_file_write(path, overwrite):
+        """Capture just enough file state to remove or restore this write."""
+        directory = os.path.dirname(path)
+        existed = os.path.exists(path)
+        return {
+            "path": path,
+            "directory": directory,
+            "directory_existed": os.path.isdir(directory),
+            "existed": existed,
+            "original_size": os.path.getsize(path) if existed else 0,
+            "original_bytes": (
+                pathlib.Path(path).read_bytes() if existed and overwrite else None
+            ),
+            "segments": [],
+        }
+
+    @staticmethod
+    def _file_write_segments(mspass_object):
+        """Return the byte ranges written by a completed append operation."""
+        if isinstance(mspass_object, (TimeSeries, Seismogram)):
+            data = [mspass_object]
+        else:
+            data = mspass_object.member
+        segments = []
+        for datum in data:
+            if datum.dead() or "foff" not in datum:
+                continue
+            data_format = datum["format"] if "format" in datum else "binary"
+            if data_format == "binary":
+                sample_size = 24 if isinstance(datum, Seismogram) else 8
+                nbytes = sample_size * datum.npts
+            elif "nbytes" in datum:
+                nbytes = datum["nbytes"]
+            else:
+                continue
+            start = int(datum["foff"])
+            segments.append((start, start + int(nbytes)))
+        return sorted(segments)
+
+    def _reserve_gridfs_write(self, mspass_object, overwrite, rollback_state):
+        """Reserve a known GridFS id and preserve any overwritten object."""
+        new_gridfs_id = ObjectId()
+        rollback_state["new_gridfs_ids"].append(
+            (
+                new_gridfs_id,
+                copy.deepcopy(self["fs.files"].find_one({"_id": new_gridfs_id})),
+                list(
+                    self["fs.chunks"]
+                    .find({"files_id": new_gridfs_id})
+                    .sort("n", pymongo.ASCENDING)
+                ),
+            )
+        )
+        if overwrite and "gridfs_id" in mspass_object:
+            old_gridfs_id = mspass_object["gridfs_id"]
+            gfsh = gridfs.GridFS(self)
+            if gfsh.exists(old_gridfs_id):
+                rollback_state["old_gridfs"].append(
+                    (
+                        old_gridfs_id,
+                        copy.deepcopy(
+                            self["fs.files"].find_one({"_id": old_gridfs_id})
+                        ),
+                        list(
+                            self["fs.chunks"]
+                            .find({"files_id": old_gridfs_id})
+                            .sort("n", pymongo.ASCENDING)
+                        ),
+                    )
+                )
+        return new_gridfs_id
+
+    def _rollback_write_artifacts(self, rollback_state):
+        """Compensate recorded artifacts without replacing the original exception."""
+        for collection_name, old_document, waveform_id, updated_values in reversed(
+            rollback_state["old_waveforms"]
+        ):
+            try:
+                collection = self[collection_name]
+                if old_document is None:
+                    delete_filter = {"_id": waveform_id}
+                    delete_filter.update(updated_values)
+                    collection.delete_one(delete_filter)
+                else:
+                    for key, new_value in updated_values.items():
+                        update_filter = {"_id": waveform_id, key: new_value}
+                        if key in old_document:
+                            update = {"$set": {key: old_document[key]}}
+                        else:
+                            update = {"$unset": {key: ""}}
+                        collection.find_one_and_update(update_filter, update)
+            except Exception:
+                pass
+
+        for collection_name, document_id, existed in reversed(
+            rollback_state["new_documents"]
+        ):
+            try:
+                # insert_one is atomic.  A pre-existing document means the
+                # reserved-id insert could not have changed that document.
+                if not existed:
+                    self[collection_name].delete_one({"_id": document_id})
+            except Exception:
+                pass
+        for collection_name, old_document in reversed(rollback_state["old_elog_docs"]):
+            try:
+                self[collection_name].replace_one(
+                    {"_id": old_document["_id"]}, old_document, upsert=True
+                )
+            except Exception:
+                pass
+
+        for gridfs_id, file_document, chunk_documents in reversed(
+            rollback_state["new_gridfs_ids"]
+        ):
+            try:
+                gfsh = gridfs.GridFS(self)
+                # GridFS writes chunks before the fs.files document.  Delete by
+                # id unconditionally so a failed upload cannot leave partial
+                # chunks that are invisible to exists().
+                gfsh.delete(gridfs_id)
+                if file_document is not None:
+                    self["fs.files"].insert_one(file_document)
+                if chunk_documents:
+                    self["fs.chunks"].insert_many(chunk_documents)
+            except Exception:
+                pass
+        for gridfs_id, file_document, chunk_documents in reversed(
+            rollback_state["old_gridfs"]
+        ):
+            try:
+                gfsh = gridfs.GridFS(self)
+                gfsh.delete(gridfs_id)
+                self["fs.files"].insert_one(file_document)
+                if chunk_documents:
+                    self["fs.chunks"].insert_many(chunk_documents)
+            except Exception:
+                pass
+
+        for file_state in reversed(rollback_state["files"]):
+            try:
+                path = file_state["path"]
+                original_bytes = file_state["original_bytes"]
+                segments = file_state["segments"]
+                if original_bytes is not None:
+                    pathlib.Path(path).write_bytes(original_bytes)
+                elif segments and os.path.exists(path):
+                    with open(path, "r+b") as handle:
+                        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+                        for start, end in reversed(segments):
+                            handle.seek(end)
+                            tail = handle.read()
+                            handle.seek(start)
+                            handle.write(tail)
+                            handle.truncate(start + len(tail))
+                elif file_state["existed"] and os.path.exists(path):
+                    with open(path, "r+b") as handle:
+                        handle.truncate(file_state["original_size"])
+                elif os.path.exists(path):
+                    os.remove(path)
+                if not file_state["directory_existed"] and os.path.isdir(
+                    file_state["directory"]
+                ):
+                    os.rmdir(file_state["directory"])
+            except Exception:
+                pass
+
+        for datum, values in rollback_state["references"]:
+            try:
+                for key, value in values.items():
+                    if value is _MISSING_METADATA_VALUE:
+                        datum.erase(key)
+                    else:
+                        datum[key] = value
+            except Exception:
+                pass
+
+    @staticmethod
+    def _reset_processing_history(mspass_object, alg_name, alg_id, save_uuid):
+        if isinstance(mspass_object, TimeSeries):
+            atomic_type = AtomicType.TIMESERIES
+        else:
+            atomic_type = AtomicType.SEISMOGRAM
+        mspass_object.clear_history()
+        mspass_object.set_as_origin(alg_name, alg_id, str(save_uuid), atomic_type)
+
+    def _save_history(
+        self,
+        mspass_object,
+        alg_name=None,
+        alg_id=None,
+        collection=None,
+        history_id=None,
+        wf_id=None,
+        wf_collection_name=None,
+    ):
         """
         Save the processing history of a mspasspy object.
+
+        This method only persists the history document.  The caller must not
+        reset the datum's in-memory history until the waveform reference is
+        durable.
 
         :param mspass_object: the target object.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -4069,16 +4373,20 @@ class Database(pymongo.database.Database):
         # Global History implemetnation should allow adding job_name
         # and job_id to this function call.  For now they are dropped
         insert_dict = history2doc(proc_history, alg_id=alg_id, alg_name=alg_name)
-        # We need this below, but history2doc sets it with the "_id" key
-        current_uuid = insert_dict["save_uuid"]
+        if history_id is not None:
+            insert_dict["_id"] = history_id
+        if wf_id is not None:
+            if wf_collection_name is None:
+                if atomic_type == AtomicType.TIMESERIES:
+                    wf_collection_name = self.metadata_schema.TimeSeries.collection(
+                        "_id"
+                    )
+                else:
+                    wf_collection_name = self.metadata_schema.Seismogram.collection(
+                        "_id"
+                    )
+            insert_dict[wf_collection_name + "_id"] = wf_id
         history_id = history_col.insert_one(insert_dict).inserted_id
-
-        # clear the history chain of the mspass object
-        mspass_object.clear_history()
-        # set_as_origin with uuid set to the newly generated id
-        # Note we have to convert to a string to match C++ function type
-        mspass_object.set_as_origin(alg_name, alg_id, str(current_uuid), atomic_type)
-
         return history_id
 
     def _load_history(
@@ -4188,6 +4496,9 @@ class Database(pymongo.database.Database):
         collection=None,
         create_tombstone=True,
         data_tag=None,
+        new_elog_id=None,
+        wf_id=None,
+        wf_collection_name=None,
     ):
         """
         Save error log for a data object. Data objects in MsPASS contain an error log object used to post any
@@ -4207,15 +4518,17 @@ class Database(pymongo.database.Database):
             update_metadata_def = self.metadata_schema.Seismogram
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
-        wf_id_name = update_metadata_def.collection("_id") + "_id"
+        if wf_collection_name is None:
+            wf_collection_name = update_metadata_def.collection("_id")
+        wf_id_name = wf_collection_name + "_id"
 
         if not collection:
             collection = self.database_schema.default_name("elog")
 
         # TODO: Need to discuss whether the _id should be linked in a dead elog entry. It
         # might be confusing to link the dead elog to an alive wf record.
-        oid = None
-        if "_id" in mspass_object:
+        oid = wf_id
+        if oid is None and "_id" in mspass_object:
             oid = mspass_object["_id"]
 
         if mspass_object.dead() and mspass_object.elog.size() == 0:
@@ -4234,6 +4547,8 @@ class Database(pymongo.database.Database):
                 docentry["data_tag"] = data_tag
             if oid:
                 docentry[wf_id_name] = oid
+            if new_elog_id is not None:
+                docentry["_id"] = new_elog_id
 
             if mspass_object.dead():
                 docentry["tombstone"] = dict(mspass_object)
@@ -6210,6 +6525,8 @@ class Database(pymongo.database.Database):
         dfile=None,
         format=None,
         overwrite=False,
+        new_gridfs_id=None,
+        raise_on_error=False,
     ):
         """
         Function to save sample data arrays for any MsPASS data objects.
@@ -6313,11 +6630,13 @@ class Database(pymongo.database.Database):
                     dfile,
                     format,
                     overwrite,
+                    raise_on_error=raise_on_error,
                 )
             elif storage_mode == "gridfs":
                 mspass_object = self._save_sample_data_to_gridfs(
                     mspass_object,
                     overwrite,
+                    new_gridfs_id=new_gridfs_id,
                 )
             else:
                 message = (
@@ -6331,6 +6650,24 @@ class Database(pymongo.database.Database):
             message += "Type arg0 passed=" + str(type(mspass_object))
             raise TypeError(message)
 
+    def _resolve_file_destination(
+        self, mspass_object, dir=None, dfile=None, format=None
+    ):
+        if format is None:
+            format = "binary"
+        if dir is None:
+            if mspass_object.is_defined("dir"):
+                dir = mspass_object["dir"]
+            else:
+                dir = os.getcwd()
+        dir = os.path.abspath(dir)
+        if dfile is None:
+            if mspass_object.is_defined("dfile"):
+                dfile = mspass_object["dfile"]
+            else:
+                dfile = self._get_dfile_uuid(format)
+        return dir, dfile, format
+
     def _save_sample_data_to_file(
         self,
         mspass_object,
@@ -6338,6 +6675,7 @@ class Database(pymongo.database.Database):
         dfile=None,
         format=None,
         overwrite=False,
+        raise_on_error=False,
     ):
         """
         Private method to write sample data to a file.  Default is binary
@@ -6438,25 +6776,9 @@ class Database(pymongo.database.Database):
         # return immediately if the datum is marked dead
         if mspass_object.dead():
             return mspass_object
-        if format is None:
-            format = "binary"
-
-        if dir is None:
-            if mspass_object.is_defined("dir"):
-                dir = mspass_object["dir"]
-                # convert to fullpath if necessary
-                dir = os.path.abspath(dir)
-            else:
-                dir = os.getcwd()
-        else:
-            dir = os.path.abspath(dir)
-
-        # note not else here as it means accept dfile value passed by arg
-        if dfile is None:
-            if mspass_object.is_defined("dfile"):
-                dfile = mspass_object["dfile"]
-            else:
-                dfile = self._get_dfile_uuid(format)
+        dir, dfile, format = self._resolve_file_destination(
+            mspass_object, dir=dir, dfile=dfile, format=format
+        )
 
         if os.path.exists(dir):
             if not os.access(dir, os.W_OK):
@@ -6491,6 +6813,8 @@ class Database(pymongo.database.Database):
                 try:
                     foff = _fwrite_to_file(mspass_object, dir, dfile)
                 except MsPASSError as merr:
+                    if raise_on_error:
+                        raise
                     mspass_object.elog.log_error(merr)
                     mspass_object.kill()
                     # Use a dead datum to flag failure - caller must never
@@ -6554,6 +6878,8 @@ class Database(pymongo.database.Database):
                     # this works because pytbin11 support overloading
                     foff_list = _fwrite_to_file(mspass_object, dir, dfile)
                 except MsPASSError as merr:
+                    if raise_on_error:
+                        raise
                     mspass_object.elog.log_error(merr)
                     mspass_object.kill()
                     # Use a dead datum to flag failure.
@@ -6628,6 +6954,7 @@ class Database(pymongo.database.Database):
         self,
         mspass_object,
         overwrite=False,
+        new_gridfs_id=None,
     ):
         """
         Saves the sample data array for a mspass seismic data object using
@@ -6668,7 +6995,10 @@ class Database(pymongo.database.Database):
                     gfsh.delete(gridfs_id)
             # verdion 2 had a transpose here that seemed unncessary
             ub = bytes(np.array(mspass_object.data))
-            gridfs_id = gfsh.put(ub)
+            if new_gridfs_id is None:
+                gridfs_id = gfsh.put(ub)
+            else:
+                gridfs_id = gfsh.put(ub, _id=new_gridfs_id)
             mspass_object["gridfs_id"] = gridfs_id
             mspass_object["storage_mode"] = "gridfs"
         elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
@@ -6684,32 +7014,17 @@ class Database(pymongo.database.Database):
 
         return mspass_object
 
-    def _atomic_save_all_documents(
+    def _prepare_atomic_save_document(
         self,
         mspass_object,
         save_schema,
         exclude_keys,
         mode,
-        wf_collection,
-        save_history,
         data_tag,
         storage_mode,
         normalizing_collections,
-        alg_name,
-        alg_id,
     ):
-        """
-        Does all the MongoDB operations needed to save an atomic
-        MsPASS data object.   That means the wf document,
-        elog entries if defined, and history data if defined and requested.
-
-        This is a private method that exists only to eliminate redundant
-        code in the top-level save_data method.   Ensembles are handled
-        by a loop over atomic data members calling this function for
-        each member.   Because it is for only internal use the
-        argument list is fixed (in other words no kwargs).   See
-        save_data for what the arguments mean.
-        """
+        """Finish schema conversion without making a persistent write."""
         self._sync_metadata_before_update(mspass_object)
         insertion_dict, aok, elog = md2doc(
             mspass_object,
@@ -6753,6 +7068,31 @@ class Database(pymongo.database.Database):
         else:
             # gridfs default
             insertion_dict["storage_mode"] = "gridfs"
+        return insertion_dict
+
+    def _atomic_save_all_documents(
+        self,
+        mspass_object,
+        insertion_dict,
+        wf_collection,
+        save_history,
+        data_tag,
+        storage_mode,
+        alg_name,
+        alg_id,
+        rollback_state,
+    ):
+        """Save child documents and finish with one waveform insert."""
+        if storage_mode == "gridfs" and "gridfs_id" in mspass_object:
+            insertion_dict["gridfs_id"] = mspass_object["gridfs_id"]
+        elif storage_mode == "file":
+            for key in ("dir", "dfile", "foff", "nbytes", "format"):
+                if key in mspass_object:
+                    insertion_dict[key] = mspass_object[key]
+
+        history_reset = None
+        history_object_id = None
+        wfid = ObjectId()
         # We depend on Undertaker to save history for dead data
         if save_history and mspass_object.live:
             history_obj_id_name = (
@@ -6773,54 +7113,70 @@ class Database(pymongo.database.Database):
                 # vi ProcessingStatus
                 if isinstance(mspass_object, TimeSeries):
                     atomic_type = AtomicType.TIMESERIES
+                    history_source = TimeSeries(mspass_object)
                 elif isinstance(mspass_object, Seismogram):
                     atomic_type = AtomicType.SEISMOGRAM
+                    history_source = Seismogram(mspass_object)
                 else:
                     raise TypeError("only TimeSeries and Seismogram are supported")
-                mspass_object.new_map(
+                history_source.new_map(
                     alg_name, alg_id, atomic_type, ProcessingStatus.SAVED
                 )
-                history_object_id = self._save_history(mspass_object, alg_name, alg_id)
+                history_object_id = ObjectId()
+                self._record_new_document(
+                    rollback_state,
+                    self.database_schema.default_name("history_object"),
+                    history_object_id,
+                )
+                self._save_history(
+                    history_source,
+                    alg_name,
+                    alg_id,
+                    history_id=history_object_id,
+                    wf_id=wfid,
+                    wf_collection_name=wf_collection.name,
+                )
                 insertion_dict[history_obj_id_name] = history_object_id
-                mspass_object[history_obj_id_name] = history_object_id
+                history_reset = (
+                    mspass_object,
+                    alg_name,
+                    alg_id,
+                    history_source.id(),
+                )
         # save elogs if the size of elog is greater than 0
         elog_id = None
         if mspass_object.elog.size() > 0:
             elog_id_name = self.database_schema.default_name("elog") + "_id"
-            # elog ids will be updated in the wf col when saving metadata
-            elog_id = self._save_elog(mspass_object, elog_id=None, data_tag=data_tag)
+            elog_id = ObjectId()
+            self._record_new_document(
+                rollback_state,
+                self.database_schema.default_name("elog"),
+                elog_id,
+            )
+            self._save_elog(
+                mspass_object,
+                elog_id=None,
+                data_tag=data_tag,
+                new_elog_id=elog_id,
+                wf_id=wfid,
+                wf_collection_name=wf_collection.name,
+            )
             insertion_dict[elog_id_name] = elog_id
-            mspass_object[elog_id_name] = elog_id
 
-        # finally ready to insert the wf doc - keep the id as we'll need
-        # it for tagging any elog entries.
-        # Note we don't save if something above killed mspass_object.
-        # currently that only happens with errors in md2doc, but if there
-        # are changes use the kill mechanism
         if mspass_object.live:
-            wfid = wf_collection.insert_one(insertion_dict).inserted_id
-
-            # Put wfid into the object's meta as the new definition of
-            # the parent of this waveform
+            insertion_dict["_id"] = wfid
+            self._record_new_document(rollback_state, wf_collection.name, wfid)
+            wf_collection.insert_one(insertion_dict)
             mspass_object["_id"] = wfid
-            if save_history and mspass_object.live:
-                # When history is enable we need to do an update to put the
-                # wf collection id as a cross-reference.    Any value stored
-                # above with saave_history may be incorrect.  We use a
-                # stock test with the is_empty method for know if history data is present
-                if not mspass_object.is_empty():
-                    history_object_col = self[
-                        self.database_schema.default_name("history_object")
-                    ]
-                    wf_id_name = wf_collection.name + "_id"
-                    filter_ = {"_id": history_object_id}
-                    update_dict = {wf_id_name: wfid}
-                    history_object_col.update_one(filter_, {"$set": update_dict})
+            if history_object_id is not None:
+                mspass_object[history_obj_id_name] = history_object_id
+            if elog_id is not None:
+                mspass_object[elog_id_name] = elog_id
         else:
             mspass_object = self.stedronsky.bury(
                 mspass_object, save_history=save_history
             )
-        return mspass_object
+        return mspass_object, history_reset
 
     @staticmethod
     def _download_windowed_mseed_file(
