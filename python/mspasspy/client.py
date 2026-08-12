@@ -100,6 +100,24 @@ def _build_scheduler_endpoint(
     return endpoint
 
 
+def _build_database_address(database_address, database_port=None):
+    if database_port is None or database_port == "":
+        return database_address
+
+    has_scheme = "://" in database_address
+    parsed_address = urlsplit(
+        database_address if has_scheme else "//" + database_address
+    )
+    if parsed_address.port is not None:
+        return database_address
+
+    parsed_address = parsed_address._replace(
+        netloc=parsed_address.netloc + ":" + str(database_port)
+    )
+    result = parsed_address.geturl()
+    return result if has_scheme else result[2:]
+
+
 def _build_dask_scheduler_address(scheduler_address, scheduler_port=None):
     return _build_scheduler_endpoint(
         scheduler_address,
@@ -225,20 +243,13 @@ class Client:
 
         # create a database client
         # priority: parameter -> env -> default
-        database_host_has_port = False
         if database_host:
             database_address = database_host
-            # check if database_host contains port number already
-            if ":" in database_address:
-                database_host_has_port = True
-
         elif MSPASS_DB_ADDRESS:
             database_address = MSPASS_DB_ADDRESS
         else:
             database_address = "127.0.0.1"
-        # add port
-        if not database_host_has_port and MONGODB_PORT:
-            database_address += ":" + MONGODB_PORT
+        database_address = _build_database_address(database_address, MONGODB_PORT)
 
         try:
             self._db_client = DBClient(database_address)
@@ -256,12 +267,9 @@ class Client:
         self._default_collection = collection
 
         # create a Global History Manager
-        if schema:
-            global_history_manager_db = Database(
-                self._db_client, database_name, db_schema=schema
-            )
-        else:
-            global_history_manager_db = Database(self._db_client, database_name)
+        global_history_manager_db = Database(
+            self._db_client, database_name, schema=schema
+        )
         self._global_history_manager = GlobalHistoryManager(
             global_history_manager_db, job_name, collection=collection
         )
@@ -496,8 +504,8 @@ class Client:
         :return: :class:`mspasspy.db.database.Database`
         """
         if not database_name:
-            return Database(self._db_client, self._default_database_name)
-        return Database(self._db_client, database_name)
+            database_name = self._default_database_name
+        return Database(self._db_client, database_name, schema=self._default_schema)
 
     def get_global_history_manager(self):
         """
@@ -570,27 +578,37 @@ class Client:
         :param database_port: the port of database client
         :type database_port: :class:`str`
         """
-        database_host_has_port = False
-        database_address = database_host
-        # check if port is already in the database_host address
-        if ":" in database_host:
-            database_host_has_port = True
-        # add port
-        if not database_host_has_port and database_port:
-            database_address += ":" + database_port
-        # sanity check
-        temp_db_client = self._db_client
+        database_address = _build_database_address(database_host, database_port)
+        replacement_db_client = None
+        current_history_manager = self._global_history_manager
+        current_history_db = current_history_manager.history_db
         try:
-            self._db_client = DBClient(database_address)
-            self._db_client.server_info()
+            replacement_db_client = DBClient(database_address)
+            replacement_db_client.server_info()
+            replacement_history_db = Database(
+                replacement_db_client,
+                current_history_db.name,
+                db_schema=current_history_db.database_schema,
+                md_schema=current_history_db.metadata_schema,
+            )
+            replacement_history_manager = GlobalHistoryManager(
+                replacement_history_db,
+                current_history_manager.job_name,
+                collection=current_history_manager.collection,
+            )
         except Exception as err:
-            # restore the _db_client
-            self._db_client = temp_db_client
+            if replacement_db_client is not None:
+                replacement_db_client.close()
             raise MsPASSError(
                 "Runntime error: cannot create a database client with: "
                 + database_address,
                 "Fatal",
-            )
+            ) from err
+
+        self._db_client, self._global_history_manager = (
+            replacement_db_client,
+            replacement_history_manager,
+        )
 
     def set_global_history_manager(self, history_db, job_name, collection=None):
         """
