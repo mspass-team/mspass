@@ -1,38 +1,28 @@
-name: code-format
+name: Black formatting
 
-on: [pull_request]
+"on":
+  pull_request:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  black-format:
+    name: black-format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check files using the black formatter
-        uses: psf/black@stable
-        id: action_black
+      - uses: actions/setup-python@v5
         with:
-          options: "--verbose"
-          jupyter: true
-          src: "./python"
-      - name: Check for formatting changes
-        id: check-changes
+          python-version: "3.13"
+          cache: pip
+      - name: Install pinned Black
+        run: python -m pip install 'black[jupyter]==25.1.0' pytest pyyaml
+      - name: Verify the formatting policy
+        run: pytest -q python/tests/test_black_workflow.py
+      - name: Check formatting without modifying files
+        shell: bash
         run: |
-          git diff --quiet || changed=true && echo "has_changes=${changed:-false}" >> $GITHUB_OUTPUT
-          echo "Detected changes: ${{ steps.check-changes.outputs.has_changes }}"
-      - name: Create Pull Request
-        if: steps.check-changes.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Format Python code with psf/black push"
-          commit-message: ":art: Format Python code with psf/black"
-          body: |
-            There appear to be some python formatting errors in ${{ github.sha }}. This pull request
-            uses the [psf/black](https://github.com/psf/black) formatter to fix these issues.
-          base: ${{ github.head_ref }} # Creates pull request onto pull request or commit branch
-          branch: "black-formatting/${{ github.head_ref }}"
-      #- name: Annotate diff changes using reviewdog
-      #  if: steps.action_black.outputs.is_formatted == 'true'
-      #  uses: reviewdog/action-suggester@v1
-      #  with:
-      #    tool_name: blackfmt
+          shopt -s globstar nullglob
+          notebooks=(docs/**/*.ipynb)
+          black --workers 1 --check --diff python/mspasspy python/tests "${notebooks[@]}"

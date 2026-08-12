@@ -131,6 +131,25 @@ Before opening a pull request:
 2. Run relevant tests locally when possible.
 3. Keep documentation in sync with user-facing behavior changes.
 
+CI checks Python, test, and documentation-notebook formatting with Black
+25.1.0.  Run the same read-only check from the repository root with:
+
+```bash
+python -m pip install 'black[jupyter]==25.1.0'
+shopt -s globstar nullglob
+notebooks=(docs/**/*.ipynb)
+black --workers 1 --check --diff python/mspasspy python/tests "${notebooks[@]}"
+```
+
+To apply the corresponding formatting locally, run the final command without
+`--check --diff`:
+
+```bash
+shopt -s globstar nullglob
+notebooks=(docs/**/*.ipynb)
+black --workers 1 python/mspasspy python/tests "${notebooks[@]}"
+```
+
 ## License
 
 This project is licensed under the **BSD 3-Clause License**. See [LICENSE](LICENSE) for details.

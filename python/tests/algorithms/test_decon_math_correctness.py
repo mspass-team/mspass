@@ -34,7 +34,8 @@ def _write_scalar_pf(
     if window_end is None:
         window_end = float(nfft - 1)
     pf = tmp_path / "scalar_decon.pf"
-    pf.write_text(f"""
+    pf.write_text(
+        f"""
 target_sample_interval 1.0
 operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
@@ -43,7 +44,8 @@ damping_factor {damping:.12f}
 water_level {water_level:.12f}
 shaping_wavelet_dt 1.0
 shaping_wavelet_type none
-""")
+"""
+    )
     return pfread(str(pf))
 
 
@@ -62,7 +64,8 @@ def _write_time_domain_ls_pf(
     if model_length is not None:
         model_length_line = f"model_length {model_length}\n"
     pf = tmp_path / "time_domain_ls.pf"
-    pf.write_text(f"""
+    pf.write_text(
+        f"""
 target_sample_interval 1.0
 operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
@@ -71,7 +74,8 @@ damping_factor {damping:.12f}
 {model_length_line}shaping_wavelet_dt 1.0
 shaping_wavelet_type {shaping_wavelet_type}
 shaping_wavelet_frequency {shaping_frequency:.12f}
-""")
+"""
+    )
     return pfread(str(pf))
 
 
@@ -86,7 +90,8 @@ def _write_multitaper_pf(
     shaping_frequency=1.0,
 ):
     pf = tmp_path / "multitaper_decon.pf"
-    pf.write_text(f"""
+    pf.write_text(
+        f"""
 target_sample_interval 0.05
 operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
@@ -97,13 +102,15 @@ number_tapers 4
 shaping_wavelet_dt 0.05
 shaping_wavelet_type {shaping_wavelet_type}
 shaping_wavelet_frequency {shaping_frequency:.12f}
-""")
+"""
+    )
     return pfread(str(pf))
 
 
 def _write_noise_stable_pf(tmp_path, *, window_start=0.0, window_end=63.0, nfft=128):
     pf = tmp_path / "noise_stable_decon.pf"
-    pf.write_text(f"""
+    pf.write_text(
+        f"""
 target_sample_interval 1.0
 operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
@@ -117,7 +124,8 @@ ns_gid_snr_taper_low 1.0
 ns_gid_snr_taper_high 3.0
 shaping_wavelet_dt 1.0
 shaping_wavelet_type none
-""")
+"""
+    )
     return pfread(str(pf))
 
 
@@ -261,7 +269,8 @@ def test_fft_window_sample_count_uses_rounding_near_integer_boundary(tmp_path):
     # value yields 32 samples, while rounding preserves the intended 33.
     window_end = np.nextafter((n - 1) * dt, 0.0)
     pf_file = tmp_path / "rounding_fft_length.pf"
-    pf_file.write_text(f"""
+    pf_file.write_text(
+        f"""
 target_sample_interval {dt:.17g}
 operator_nfft {n}
 deconvolution_data_window_start 0.0
@@ -270,7 +279,8 @@ damping_factor 1.0e-12
 water_level 1.0e-12
 shaping_wavelet_dt {dt:.17g}
 shaping_wavelet_type none
-""")
+"""
+    )
     pf = pfread(str(pf_file))
     engine = LeastSquareDecon(pf)
     wavelet = np.zeros(n)
