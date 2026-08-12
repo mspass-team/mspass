@@ -3199,6 +3199,14 @@ class Database(pymongo.database.Database):
         # Now handle update of sample data.  The gridfs method used here
         # handles that correctly based on the gridfs id.
         if mspass_object.live:
+            original_storage_mode = (
+                mspass_object["storage_mode"]
+                if "storage_mode" in mspass_object
+                else None
+            )
+            file_to_gridfs_transition = (
+                original_storage_mode == "file" and "gridfs_id" not in mspass_object
+            )
             if "storage_mode" in mspass_object:
                 storage_mode = mspass_object["storage_mode"]
                 if not storage_mode == "gridfs":
@@ -3210,6 +3218,8 @@ class Database(pymongo.database.Database):
                         ErrorSeverity.Complaint,
                     )
                     mspass_object["storage_mode"] = "gridfs"
+                    if file_to_gridfs_transition:
+                        update_record["storage_mode"] = "gridfs"
             else:
                 mspass_object.elog.log_error(
                     alg_name,
@@ -3247,40 +3257,60 @@ class Database(pymongo.database.Database):
                 wf_collection_name = save_schema.collection("_id")
             wf_collection = self[wf_collection_name]
 
+            new_gridfs_id = (
+                mspass_object["gridfs_id"] if file_to_gridfs_transition else None
+            )
             elog_id = None
-            if mspass_object.elog.size() > 0:
-                elog_id_name = self.database_schema.default_name("elog") + "_id"
-                # FIXME I think here we should check if elog_id field exists in the mspass_object
-                # and we should update the elog entry if mspass_object already had one
-                if elog_id_name in mspass_object:
-                    old_elog_id = mspass_object[elog_id_name]
-                else:
-                    old_elog_id = None
-                # elog ids will be updated in the wf col when saving metadata
-                elog_id = self._save_elog(
-                    mspass_object, elog_id=old_elog_id, data_tag=data_tag
-                )
-                update_record[elog_id_name] = elog_id
+            try:
+                if mspass_object.elog.size() > 0:
+                    elog_id_name = self.database_schema.default_name("elog") + "_id"
+                    # FIXME I think here we should check if elog_id field exists in the mspass_object
+                    # and we should update the elog entry if mspass_object already had one
+                    if elog_id_name in mspass_object:
+                        old_elog_id = mspass_object[elog_id_name]
+                    else:
+                        old_elog_id = None
+                    # elog ids will be updated in the wf col when saving metadata
+                    elog_id = self._save_elog(
+                        mspass_object, elog_id=old_elog_id, data_tag=data_tag
+                    )
+                    update_record[elog_id_name] = elog_id
 
-                # update elog collection
-                # we have to do the xref to wf collection like this too
-                elog_col = self[self.database_schema.default_name("elog")]
-                wf_id_name = wf_collection_name + "_id"
-                filter_ = {"_id": elog_id}
-                elog_col.update_one(
-                    filter_, {"$set": {wf_id_name: mspass_object["_id"]}}
-                )
-            # finally we need to update the wf document if we set anything
-            # in update_record
-            if len(update_record):
-                filter_ = {"_id": mspass_object["_id"]}
-                wf_collection.update_one(filter_, {"$set": update_record})
-                # we may probably set the elog_id field in the mspass_object
-                if elog_id:
-                    mspass_object[elog_id_name] = elog_id
-                # we may probably set the history_object_id field in the mspass_object
-                if history_object_id:
-                    mspass_object[history_obj_id_name] = history_object_id
+                    # update elog collection
+                    # we have to do the xref to wf collection like this too
+                    elog_col = self[self.database_schema.default_name("elog")]
+                    wf_id_name = wf_collection_name + "_id"
+                    filter_ = {"_id": elog_id}
+                    elog_col.update_one(
+                        filter_, {"$set": {wf_id_name: mspass_object["_id"]}}
+                    )
+                # finally we need to update the wf document if we set anything
+                # in update_record
+                if len(update_record):
+                    filter_ = {"_id": mspass_object["_id"]}
+                    result = wf_collection.update_one(filter_, {"$set": update_record})
+                    if file_to_gridfs_transition and result.matched_count != 1:
+                        raise MsPASSError(
+                            "Database.update_data could not find the waveform "
+                            "document to update",
+                            ErrorSeverity.Invalid,
+                        )
+            except BaseException:
+                if new_gridfs_id is not None:
+                    try:
+                        gfsh = gridfs.GridFS(self)
+                        if gfsh.exists(new_gridfs_id):
+                            gfsh.delete(new_gridfs_id)
+                    finally:
+                        mspass_object.erase("gridfs_id")
+                        mspass_object["storage_mode"] = original_storage_mode
+                raise
+            # we may probably set the elog_id field in the mspass_object
+            if elog_id:
+                mspass_object[elog_id_name] = elog_id
+            # we may probably set the history_object_id field in the mspass_object
+            if history_object_id:
+                mspass_object[history_obj_id_name] = history_object_id
         else:
             # Dead data land here
             elog_id_name = self.database_schema.default_name("elog") + "_id"
