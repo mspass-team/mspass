@@ -20,6 +20,8 @@ import os
 import re
 import tempfile
 import warnings
+from collections.abc import Mapping
+from functools import wraps
 from importlib import resources
 
 from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, Seismogram, TimeSeries
@@ -1462,6 +1464,55 @@ class RFdeconProcessor:
         return np.linalg.norm(err.data) / np.linalg.norm(io.data)
 
 
+_SCALAR_NOISE_ALGORITHMS = frozenset(
+    (
+        "MultiTaperPowerXcor",
+        "MultiTaperXcor",
+        "MultiTaperPowerSpecDiv",
+        "MultiTaperSpecDiv",
+    )
+)
+
+
+def _validate_scalar_noise_argument(func):
+    """Normalize external scalar noise before the MsPASS exception wrapper."""
+
+    @wraps(func)
+    def validated(d, *args, **kwargs):
+        noisedata = kwargs.get("noisedata")
+        engine = kwargs.get("engine")
+        if isinstance(engine, RFdeconProcessor):
+            uses_scalar_noise = engine.uses_noise and not engine.is_3c_engine
+        else:
+            uses_scalar_noise = (
+                engine is None
+                and kwargs.get("alg", "LeastSquares") in _SCALAR_NOISE_ALGORITHMS
+            )
+
+        if (
+            uses_scalar_noise
+            and noisedata is not None
+            and not isinstance(noisedata, TimeSeries)
+        ):
+            if (
+                isinstance(noisedata, (str, bytes, Mapping))
+                or getattr(noisedata, "ndim", 1) != 1
+            ):
+                raise TypeError(
+                    "noisedata must be a TimeSeries or one-dimensional numeric iterable"
+                )
+            try:
+                kwargs["noisedata"] = DoubleVector(noisedata)
+            except (TypeError, ValueError, RuntimeError, OverflowError) as err:
+                raise TypeError(
+                    "noisedata must be a TimeSeries or one-dimensional numeric iterable"
+                ) from err
+        return func(d, *args, **kwargs)
+
+    return validated
+
+
+@_validate_scalar_noise_argument
 @mspass_func_wrapper
 def RFdecon(
     d,
@@ -1506,7 +1557,8 @@ def RFdecon(
     use the d, wavelet, and (if required) noise arguments to load
     each component separately.  Note d is dogmatically required
     to be three component data.  Conventional scalar methods accept
-    optional wavelet and noisedata as plain numeric vectors.  GID methods
+    optional wavelet and noisedata as TimeSeries objects or one-dimensional
+    numeric iterables.  GID methods
     accept prepared TimeSeries inputs or one-dimensional numeric vectors;
     raw wavelet vectors are converted to TimeSeries using the processor target
     sample interval and ``wavelet_t0``.  Omitting ``wavelet_t0`` retains the
@@ -1786,7 +1838,10 @@ def RFdecon(
             processor.loadwavelet(d, window=True, component=wcomp)
         if processor.uses_noise:
             if noisedata is not None:
-                processor.loadnoise(noisedata, dtype="raw_vector")
+                if isinstance(noisedata, TimeSeries):
+                    processor.loadnoise(noisedata, dtype="TimeSeries")
+                else:
+                    processor.loadnoise(noisedata, dtype="raw_vector")
             else:
                 processor.loadnoise(d, window=True, component=ncomp)
     except MsPASSError as err:
