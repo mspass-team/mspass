@@ -16,6 +16,42 @@ from mspasspy.algorithms.basic import ExtractComponent
 # not sure that is necessary but this makes context clearer
 from mspasspy.algorithms.window import scale as mspass_scale_function
 
+_MAX_PLOT_ARRAY_BYTES = 536870912
+
+
+def _validate_plot_grid(npts, dt):
+    if npts <= 0:
+        raise ValueError("plot input is empty")
+    if not numpy.isfinite(dt) or dt <= 0.0:
+        raise ValueError("plot sample interval must be finite and positive")
+
+
+def _checked_plot_allocation(rows, columns, itemsize):
+    max_index = numpy.iinfo(numpy.intp).max
+    if rows < 0 or columns < 0 or itemsize <= 0:
+        raise ValueError("plot array dimensions and item size must be positive")
+    if rows and columns > max_index // rows:
+        raise MemoryError("plot array dimensions overflow the platform index size")
+    elements = rows * columns
+    if elements and itemsize > max_index // elements:
+        raise MemoryError("plot array byte size overflows the platform index size")
+    byte_count = elements * itemsize
+    if byte_count > _MAX_PLOT_ARRAY_BYTES:
+        raise MemoryError("plot array exceeds the 512 MiB allocation limit")
+    return byte_count
+
+
+def _allocate_plot_matrix(rows, columns, dtype=numpy.float64):
+    dtype = numpy.dtype(dtype)
+    _checked_plot_allocation(rows, columns, dtype.itemsize)
+    return numpy.zeros(shape=(rows, columns), dtype=dtype)
+
+
+def _sample_coordinates(t0, dt, npts):
+    _validate_plot_grid(npts, dt)
+    _checked_plot_allocation(1, npts, numpy.dtype(numpy.float64).itemsize)
+    return t0 + numpy.arange(npts, dtype=numpy.float64) * dt
+
 
 def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False):
     """
@@ -68,10 +104,8 @@ def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False
     """
     npts, ntraces = section.shape  # time/traces
     if ntraces < 1:
-        raise IndexError("Nothing to plot")
-    if npts < 1:
-        raise IndexError("Nothing to plot")
-    t = numpy.linspace(t0, t0 + dt * npts, npts)
+        raise ValueError("plot input is empty")
+    t = _sample_coordinates(t0, dt, npts)
     amp = 1.0  # normalization factor
     gmin = 0.0  # global minimum
     toffset = 0.0  # offset in time to make 0 centered
@@ -79,8 +113,9 @@ def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False
         gmax = section.max()
         gmin = section.min()
         amp = gmax - gmin
-        toffset = 0.5
-    plt.ylim(max(t), 0)
+        if amp != 0.0:
+            toffset = 0.5
+    plt.ylim(t[-1], t[0])
     if ranges is None:
         ranges = (0, ntraces)
     x0, x1 = ranges
@@ -88,7 +123,10 @@ def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False
     dx = (x1 - x0) / ntraces
     plt.xlim(x0 - dx / 2.0, x1 + dx / 2.0)
     for i, trace in enumerate(section.transpose()):
-        tr = (((trace - gmin) / amp) - toffset) * scale * dx
+        if normalize and amp == 0.0:
+            tr = numpy.zeros_like(trace, dtype=numpy.float64)
+        else:
+            tr = (((trace - gmin) / amp) - toffset) * scale * dx
         x = x0 + i * dx  # x position for this trace
         plt.plot(x + tr, t, "k")
         if color != None:
@@ -140,15 +178,13 @@ def image_raw(
     """
     npts, maxtraces = section.shape  # time/traces
     if maxtraces < 1:
-        raise IndexError("Nothing to plot")
-    if npts < 1:
-        raise IndexError("Nothing to plot")
-    t = numpy.linspace(t0, t0 + dt * npts, npts)
+        raise ValueError("plot input is empty")
+    t = _sample_coordinates(t0, dt, npts)
     data = section
     if ranges is None:
         ranges = (0, maxtraces - 1)
     x0, x1 = ranges
-    extent = (x0 - 0.5, x1 + 0.5, t[npts - 1], t[0])
+    extent = (x0 - 0.5, x1 + 0.5, t[-1], t[0])
     if aspect is None:  # guarantee a rectangular picture
         aspect = numpy.round((x1 - x0) / numpy.max(t))
         if aspect <= 0.0:
@@ -182,14 +218,18 @@ def tse2nparray(ens):
     :return: three-element list ``[t0, dt, data]`` containing the earliest
         start time, sample interval, and 2-D NumPy array.
     :rtype: list
-    :raises RuntimeError: if ensemble members have inconsistent sample rates
-        or imply an unreasonably large time span.
+    :raises ValueError: if the ensemble is empty or a sample grid is invalid.
+    :raises RuntimeError: if ensemble members have inconsistent sample rates.
+    :raises MemoryError: if the output matrix exceeds the allocation limit.
     """
     nseis = len(ens.member)
+    if nseis == 0:
+        raise ValueError("cannot convert an empty ensemble")
     tmax = 0.0
     tmin = 0.0
     dt = 0.0
     for i in range(nseis):
+        _validate_plot_grid(ens.member[i].npts, ens.member[i].dt)
         if i == 0:
             tmin = ens.member[i].t0
             tmax = ens.member[i].endtime()
@@ -208,13 +248,11 @@ def tse2nparray(ens):
     # spanning years.  The calculation here uses a threshold on size
     # as a sanity check to avoid absurd malloc requests
     n = nseis
-    m = int((tmax - tmin) / dt + 1)
-    Mmax = 10000000  # size limit hard wired
-    if m > Mmax:
-        raise RuntimeError(
-            "tse2dmatix:  irrational computed time range - you are probably incorrectly using data with large range of absolute times"
-        )
-    work = numpy.zeros(shape=[m, n])
+    sample_span = (tmax - tmin) / dt
+    if not numpy.isfinite(sample_span):
+        raise MemoryError("ensemble time span overflows the plot sample grid")
+    m = int(sample_span + 1)
+    work = _allocate_plot_matrix(m, n)
     # The algorithm used here is horribly inefficient if there are large
     # differences in start and end times but this approach is safer
     for j in range(n):
@@ -240,6 +278,8 @@ def seis2nparray(d):
     """
     tmin = d.t0
     dt = d.dt
+    _validate_plot_grid(d.npts, dt)
+    _checked_plot_allocation(3, d.npts, numpy.dtype(numpy.float64).itemsize)
     work = numpy.array(d.data)
     return [tmin, dt, work]
 
@@ -256,6 +296,8 @@ def ts2nparray(d):
     """
     tmin = d.t0
     dt = d.dt
+    _validate_plot_grid(d.npts, dt)
+    _checked_plot_allocation(1, d.npts, numpy.dtype(numpy.float64).itemsize)
     work = numpy.array(d.data)
     return [tmin, dt, work]
 
@@ -940,14 +982,12 @@ class SeismicPlotter(BasicSeismicPlotter):
             if self.title != None:
                 plt.title(self.title)
         elif isinstance(d, TimeSeries):
-            if d.npts <= 0:
-                raise IndexError(base_error + "data vector is empty.  Nothing to plot")
+            _validate_plot_grid(d.npts, d.dt)
             self.figre = self._wtva_TimeSeries(d, fill)
             if self.title != None:
                 plt.title(self.title)
         elif isinstance(d, Seismogram):
-            if d.npts <= 0:
-                raise IndexError(base_error + "data vector is empty.  Nothing to plot")
+            _validate_plot_grid(d.npts, d.dt)
             self.figure = self._wtva_Seismogram(d, fill)
             if self.title != None:
                 plt.title(self.title)
@@ -971,14 +1011,12 @@ class SeismicPlotter(BasicSeismicPlotter):
             if self.title != None:
                 plt.title(self.title)
         elif isinstance(d, TimeSeries):
-            if d.npts <= 0:
-                raise IndexError(base_error + "data vector is empty.  Nothing to plot")
+            _validate_plot_grid(d.npts, d.dt)
             self.figure = self._imageplot_TimeSeries(d)
             if self.title != None:
                 plt.title(self.title)
         elif isinstance(d, Seismogram):
-            if d.npts <= 0:
-                raise IndexError(base_error + "data vector is empty.  Nothing to plot")
+            _validate_plot_grid(d.npts, d.dt)
             self.figure = self._imageplot_Seismogram(d)
             if self.title != None:
                 plt.title(self.title)
@@ -990,7 +1028,8 @@ class SeismicPlotter(BasicSeismicPlotter):
         # a single trace - pretty much like the obspy plot but with optional
         # shading.  It assumes d is a TimeSeries.
 
-        t = numpy.linspace(d.t0, d.t0 + d.dt * d.npts, d.npts)
+        t = _sample_coordinates(d.t0, d.dt, d.npts)
+        plt.xlim(t[0], t[-1])
         # We don't need a gain factor here - will be needed for an image overlay through
         plt.plot(t, d.data, "k")
         if fill:
@@ -1119,10 +1158,8 @@ class SeismicPlotter(BasicSeismicPlotter):
             dt = min(dt, d.member[i].dt)
         # compute the number of points for the time axis
         nt = int((tmax - tmin) / dt) + 1
-        # WARNING - this assumes size of nt is limited by error checking
-        # in get_ensemble_size called above.  Prone to malloc error if nt
-        # is huge - easy to do with absolute time data segments
-        work = numpy.zeros(shape=[ndata, nt])
+        # Guard the full matrix byte size before requesting the allocation.
+        work = _allocate_plot_matrix(ndata, nt)
         for i in range(ndata):
             # skip data marked dead
             if d.member[i].dead():
@@ -1201,7 +1238,8 @@ class SeismicPlotter(BasicSeismicPlotter):
     def _imageplot_TimeSeries(self, d):
         # somewhat inefficient, but TimeSeries size in this context
         # would always be small enough to be irrelevant
-        work = numpy.zeros(shape=[1, d.npts])
+        _validate_plot_grid(d.npts, d.dt)
+        work = _allocate_plot_matrix(1, d.npts)
         extent = (d.t0, d.endtime(), -1.0, 1.0)
         for j in range(d.npts):
             work[0, j] = d.data[j]
