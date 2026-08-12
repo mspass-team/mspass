@@ -1,0 +1,227 @@
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+import mspasspy.algorithms.snr as snr_module
+import mspasspy.ccore.seismic as seismic_binding
+from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum
+from mspasspy.ccore.utility import Metadata
+
+
+def _spectrum(values, df=1.0, dt=0.05):
+    return PowerSpectrum(
+        Metadata(),
+        DoubleVector(values),
+        df,
+        "test spectrum",
+        0.0,
+        dt,
+        20,
+    )
+
+
+def _signal_and_noise():
+    noise = _spectrum([1.0] * 11)
+    signal = _spectrum([0.25] + [4.0] * 8 + [0.25, 0.25])
+    return signal, noise
+
+
+def test_contract_suite_uses_worktree_module_and_real_binding():
+    expected_module = Path(__file__).resolve().parents[2] / "mspasspy/algorithms/snr.py"
+    assert Path(snr_module.__file__).resolve() == expected_module
+    assert Path(seismic_binding.__file__).suffix == ".so"
+
+
+@pytest.mark.parametrize(
+    "f_max,expected_high_edge",
+    [(4.0, 4.0), (4.6, 4.0), (8.0, 8.0), (20.0, 8.0), (None, 8.0)],
+)
+def test_fmax_is_bounded_by_eighty_percent_of_nyquist(f_max, expected_high_edge):
+    signal, noise = _signal_and_noise()
+
+    result = snr_module.EstimateBandwidth(
+        signal, noise, snr_threshold=1.5, f0=1.0, f_max=f_max
+    )
+
+    assert result.high_edge_f == expected_high_edge
+    assert result.f_range == 10.0
+
+
+@pytest.mark.parametrize(
+    "f_max", [0.0, -1.0, np.nan, np.inf, -np.inf, "8.0", True, np.bool_(True)]
+)
+def test_invalid_fmax_raises_value_error_before_spectrum_access(f_max):
+    signal, noise = _signal_and_noise()
+    signal.spectrum = DoubleVector()
+
+    with pytest.raises(ValueError, match="f_max must be a finite positive number"):
+        snr_module.EstimateBandwidth(signal, noise, f0=0.0, f_max=f_max)
+
+
+@pytest.mark.parametrize("f0", [0.0, 8.0])
+def test_f0_accepts_both_inclusive_frequency_bounds(f0):
+    signal, noise = _signal_and_noise()
+
+    result = snr_module.EstimateBandwidth(signal, noise, f0=f0)
+
+    assert result.f_range == 10.0
+
+
+def test_numpy_real_scalars_are_valid_numeric_arguments():
+    signal, noise = _signal_and_noise()
+
+    result = snr_module.EstimateBandwidth(
+        signal,
+        noise,
+        f0=np.int64(1),
+        f_max=np.float32(8.0),
+        df_smoother=np.float64(0.1),
+    )
+
+    assert result.high_edge_f == 8.0
+
+
+@pytest.mark.parametrize(
+    "f0",
+    [
+        -1.0,
+        np.nextafter(8.0, np.inf),
+        np.nan,
+        np.inf,
+        -np.inf,
+        "1.0",
+        True,
+        np.bool_(True),
+    ],
+)
+def test_invalid_f0_raises_value_error_instead_of_index_error(f0):
+    signal, noise = _signal_and_noise()
+    signal.spectrum = DoubleVector()
+
+    with pytest.raises(
+        ValueError, match=r"f0 must be finite and in the range \[0, high_f_ceiling\]"
+    ):
+        snr_module.EstimateBandwidth(signal, noise, f0=f0)
+
+
+@pytest.mark.parametrize("width,expected_nwin", [(0.1, 1), (3.0, 3), (100.0, 11)])
+def test_smoothing_replaces_snrdata_with_exact_same_mode_convolution(
+    monkeypatch, width, expected_nwin
+):
+    signal, noise = _signal_and_noise()
+    real_convolve = np.convolve
+    captured = {}
+
+    def capture_convolve(values, kernel, mode):
+        captured["values"] = np.array(values, copy=True)
+        captured["kernel"] = np.array(kernel, copy=True)
+        captured["mode"] = mode
+        captured["output"] = real_convolve(values, kernel, mode=mode)
+        return captured["output"]
+
+    monkeypatch.setattr(snr_module.np, "convolve", capture_convolve)
+
+    snr_module.EstimateBandwidth(signal, noise, f0=1.0, df_smoother=width)
+
+    expected_input = np.sqrt(np.asarray(signal.spectrum) / np.asarray(noise.spectrum))
+    expected_kernel = np.ones(expected_nwin) / expected_nwin
+    np.testing.assert_array_equal(captured["values"], expected_input)
+    np.testing.assert_array_equal(captured["kernel"], expected_kernel)
+    assert captured["mode"] == "same"
+    np.testing.assert_array_equal(
+        captured["output"],
+        real_convolve(expected_input, expected_kernel, mode="same"),
+    )
+
+
+def test_convolution_return_value_drives_the_bandwidth_result(monkeypatch):
+    signal, noise = _signal_and_noise()
+    calls = []
+
+    def replace_with_below_threshold(values, kernel, mode):
+        calls.append((np.array(values), np.array(kernel), mode))
+        return np.zeros_like(values)
+
+    monkeypatch.setattr(snr_module.np, "convolve", replace_with_below_threshold)
+
+    result = snr_module.EstimateBandwidth(signal, noise, f0=1.0, df_smoother=3.0)
+
+    assert len(calls) == 1
+    assert result.low_edge_f == 0.0
+    assert result.high_edge_f == 0.0
+    assert result.low_edge_snr == 0.0
+    assert result.high_edge_snr == 0.0
+    assert result.f_range == 10.0
+
+
+@pytest.mark.parametrize(
+    "width",
+    [0.0, -1.0, np.nan, np.inf, -np.inf, "1.0", True, np.bool_(True)],
+)
+def test_invalid_smoothing_width_raises_before_convolution(monkeypatch, width):
+    signal, noise = _signal_and_noise()
+    convolve = pytest.fail
+    monkeypatch.setattr(snr_module.np, "convolve", convolve)
+
+    with pytest.raises(
+        ValueError, match="df_smoother must be a finite positive number"
+    ):
+        snr_module.EstimateBandwidth(signal, noise, f0=1.0, df_smoother=width)
+
+
+def test_no_smoothed_value_at_threshold_returns_null_bandwidth():
+    signal = _spectrum([1.0] * 11)
+    noise = _spectrum([1.0] * 11)
+
+    result = snr_module.EstimateBandwidth(
+        signal,
+        noise,
+        snr_threshold=1.5,
+        f0=0.0,
+        df_smoother=100.0,
+    )
+
+    assert result.low_edge_f == 0.0
+    assert result.high_edge_f == 0.0
+    assert result.low_edge_snr == 0.0
+    assert result.high_edge_snr == 0.0
+    assert result.f_range == 10.0
+
+
+def test_value_equal_to_threshold_counts_as_reaching_it():
+    signal = _spectrum([1.0, 1.0, 2.25, 1.0, 1.0])
+    noise = _spectrum([1.0] * 5)
+
+    result = snr_module.EstimateBandwidth(signal, noise, snr_threshold=1.5, f0=2.0)
+
+    assert result.low_edge_f == 2.0
+    assert result.high_edge_f == 2.0
+    assert result.low_edge_snr == 1.5
+    assert result.high_edge_snr == 1.5
+    assert result.f_range == 4.0
+
+
+def test_searches_do_not_index_below_zero_or_past_a_truncated_spectrum():
+    noise = _spectrum([1.0] * 5)
+    signal = _spectrum([0.25, 4.0, 4.0, 4.0, 4.0])
+
+    below_start_result = snr_module.EstimateBandwidth(signal, noise, f0=0.0)
+    terminal_result = snr_module.EstimateBandwidth(signal, noise, f0=8.0)
+
+    assert below_start_result.low_edge_f == 0.0
+    assert below_start_result.high_edge_f == 0.0
+    assert terminal_result.high_edge_f == 4.0
+
+
+def test_truncated_noise_grid_is_checked_before_sample_number():
+    signal = _spectrum([4.0] * 5)
+    noise = _spectrum([1.0] * 2)
+
+    result = snr_module.EstimateBandwidth(signal, noise, f0=0.0)
+
+    assert result.low_edge_f == 0.0
+    assert result.low_edge_snr == 2.0
+    assert result.high_edge_f == 2.0
+    assert result.high_edge_snr == 1.0
+    assert result.f_range == 4.0
