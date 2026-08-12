@@ -252,7 +252,7 @@ ADD pyproject.toml /mspass/pyproject.toml
 ADD python /mspass/python
 ADD .git /mspass/.git
 RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp \
-	&& MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench]' -v \
+	&& MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench,test]' -v \
 	&& cmake --install /mspass/build/temp.* \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean
 
