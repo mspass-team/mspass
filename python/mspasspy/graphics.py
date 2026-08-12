@@ -60,6 +60,16 @@ def _sample_coordinates(t0, dt, npts):
     return t0 + numpy.arange(npts, dtype=numpy.float64) * dt
 
 
+_VALID_PLOT_STYLES = ("wt", "wtva", "img", "wtvaimg")
+
+
+def _validate_plot_style(caller, style):
+    if not isinstance(style, str) or style not in _VALID_PLOT_STYLES:
+        accepted = ", ".join(_VALID_PLOT_STYLES)
+        raise TypeError(
+            f"{caller}: style {style!r} is invalid; expected one of {accepted}"
+        )
+
 def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False):
     """
     Plot a numpy 2D array (matrix) in a wiggle trace, variable area
@@ -577,6 +587,7 @@ class SectionPlotter:
             fill_color are ignored for this style so no exceptions should
             occur when the method is called with this value of newstyle.
         """
+        _validate_plot_style("SectionPlotter.change_style", newstyle)
         if newstyle == "wtva":
             if fill_color == None:
                 raise RuntimeError(
@@ -618,10 +629,6 @@ class SectionPlotter:
             self._color_map = None
             self._fill_color = None
             self._use_variable_area = False
-        else:
-            raise RuntimeError(
-                "SectionPlotter.change_style:  unknown style type=" + newstyle
-            )
 
     def plot(self, d):
         """
@@ -836,16 +843,10 @@ class SeismicPlotter(BasicSeismicPlotter):
         # Should be smaller than 1/screem horizontal pixel maximum size
         self._RANGE_RATIO_TEST = 0.0001
         self._default_single_ts_aspect = 0.25
-        if style in ["wt", "wtva", "img", "wtvaimg"]:
-            # use change_style to simply default style as this does more than
-            # just set a string name
-            self.change_style(style)
-        else:
-            message = "SeismicPlotter constuctor:  "
-            message += "Illegal valeu for style={}\n".format(style)
-            message + +"Must string froom this list of keywords:"
-            message += "wt, wtva, img, wtvaimg"
-            raise TypeError(message)
+        _validate_plot_style("SeismicPlotter constructor", style)
+        # use change_style to simply default style as this does more than
+        # just set a string name
+        self.change_style(style)
         # These are set whenever a plot is made.
         # None signals they aren't yet defined and need to be
         # initialized.
@@ -900,6 +901,7 @@ class SeismicPlotter(BasicSeismicPlotter):
             fill_color are ignored for this style so no exceptions should
             occur when the method is called with this value of newstyle.
         """
+        _validate_plot_style("SeismicPlotter.change_style", newstyle)
         if newstyle == "wtva":
             if fill_color == None:
                 raise RuntimeError(
@@ -933,10 +935,6 @@ class SeismicPlotter(BasicSeismicPlotter):
             self.style = "wt"
             self._color_map = None
             self._fill_color = None
-        else:
-            raise RuntimeError(
-                "SectionPlotter.change_style:  unknown style type=" + newstyle
-            )
         self.style = newstyle
 
     def plot(self, d):
@@ -1002,7 +1000,7 @@ class SeismicPlotter(BasicSeismicPlotter):
                 plt.title(self.title)
         elif isinstance(d, TimeSeries):
             _validate_plot_grid(d.npts, d.dt)
-            self.figre = self._wtva_TimeSeries(d, fill)
+            self.figure = self._wtva_TimeSeries(d, fill)
             if self.title != None:
                 plt.title(self.title)
         elif isinstance(d, Seismogram):
@@ -1216,6 +1214,9 @@ class SeismicPlotter(BasicSeismicPlotter):
             scale = numpy.abs([work.max(), work.min()]).max()
             vmin = -scale
             vmax = scale
+        else:
+            vmin = self._vmin
+            vmax = self._vmax
         # imshow handles topdown or updown order with this parameter
         if self._plot_topdown:
             origin_position = "upper"
@@ -1262,12 +1263,17 @@ class SeismicPlotter(BasicSeismicPlotter):
         extent = (d.t0, d.endtime(), -1.0, 1.0)
         for j in range(d.npts):
             work[0, j] = d.data[j]
-        if self._aspect == None:
+        if self._aspect is None:
             aspect = self._default_single_ts_aspect
+        else:
+            aspect = self._aspect
         if self._vmin is None and self._vmax is None:
             scale = numpy.abs([work.max(), work.min()]).max()
             vmin = -scale
             vmax = scale
+        else:
+            vmin = self._vmin
+            vmax = self._vmax
         plt.imshow(
             work,
             aspect=aspect,
