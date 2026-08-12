@@ -4,10 +4,15 @@ set -eu
 export HOME=/home/jovyan
 export NB_HOME=/home/jovyan
 export MSPASS_WORK_DIR=/home/jovyan
+configured_workspace_root="${MSPASS_WORKDIR:-/home/jovyan}"
 export MSPASS_WORKDIR=/home/jovyan
 export MSPASS_DB_DIR="${MSPASS_DB_DIR:-/home/jovyan/db}"
 export MSPASS_LOG_DIR="${MSPASS_LOG_DIR:-/home/jovyan/logs}"
 export MSPASS_WORKER_DIR="${MSPASS_WORKER_DIR:-/home/jovyan/work}"
+MONGO_DATA_DIR_IS_EXPLICITLY_EMPTY=false
+if [ "${MONGO_DATA_DIR+x}" = "x" ] && [ -z "$MONGO_DATA_DIR" ]; then
+    MONGO_DATA_DIR_IS_EXPLICITLY_EMPTY=true
+fi
 export MONGO_DATA_DIR="${MONGO_DATA_DIR:-$MSPASS_DB_DIR/data}"
 export MONGO_LOG="${MONGO_LOG:-$MSPASS_LOG_DIR/mongo_log}"
 
@@ -33,12 +38,59 @@ case "${MSPASS_ENABLE_LOCAL_DASK}" in
         ;;
 esac
 
-mkdir -p "$MONGO_DATA_DIR" "$MSPASS_LOG_DIR" "$MSPASS_WORKER_DIR"
+refuse_mongo_reset() {
+    echo "Fatal: refusing to reset MongoDB data directory: $1" >&2
+    exit 1
+}
 
 if [ "${MSPASS_RESET_MONGO_DB:-false}" = "true" ]; then
-    rm -rf "$MONGO_DATA_DIR"
-    mkdir -p "$MONGO_DATA_DIR"
+    if [ "$MONGO_DATA_DIR_IS_EXPLICITLY_EMPTY" = "true" ]; then
+        refuse_mongo_reset "MONGO_DATA_DIR is empty."
+    fi
+    case "$MONGO_DATA_DIR" in
+        /*) ;;
+        *) refuse_mongo_reset "MONGO_DATA_DIR must be an absolute path: $MONGO_DATA_DIR" ;;
+    esac
+
+    if ! mongo_db_root=$(realpath -m -- "$MSPASS_DB_DIR"); then
+        refuse_mongo_reset "cannot canonicalize MSPASS_DB_DIR: $MSPASS_DB_DIR"
+    fi
+    if ! mongo_data_target=$(realpath -m -- "$MONGO_DATA_DIR"); then
+        refuse_mongo_reset "cannot canonicalize MONGO_DATA_DIR: $MONGO_DATA_DIR"
+    fi
+    if ! home_root=$(realpath -m -- "$HOME"); then
+        refuse_mongo_reset "cannot canonicalize HOME: $HOME"
+    fi
+    if ! workspace_root=$(realpath -m -- "$configured_workspace_root"); then
+        refuse_mongo_reset \
+            "cannot canonicalize configured MSPASS_WORKDIR: $configured_workspace_root"
+    fi
+
+    case "$mongo_data_target" in
+        /|"$home_root"|"$workspace_root"|"$mongo_db_root")
+            refuse_mongo_reset "unsafe target: $mongo_data_target"
+            ;;
+    esac
+
+    mongo_db_prefix="${mongo_db_root%/}/"
+    case "$mongo_data_target" in
+        "$mongo_db_prefix"*) ;;
+        *)
+            refuse_mongo_reset \
+                "target escapes MongoDB root $mongo_db_root: $mongo_data_target"
+            ;;
+    esac
+
+    if [ -e "$mongo_data_target" ] && [ ! -d "$mongo_data_target" ]; then
+        refuse_mongo_reset "target is not a directory: $mongo_data_target"
+    fi
+
+    export MONGO_DATA_DIR="$mongo_data_target"
+    echo "Resetting MongoDB data directory: $MONGO_DATA_DIR"
+    rm -rf -- "$MONGO_DATA_DIR"
 fi
+
+mkdir -p "$MONGO_DATA_DIR" "$MSPASS_LOG_DIR" "$MSPASS_WORKER_DIR"
 
 MONGO_PID=""
 DASK_SCHEDULER_PID=""
