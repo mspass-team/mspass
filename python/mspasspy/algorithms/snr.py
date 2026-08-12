@@ -638,7 +638,7 @@ def FD_snr_estimator(
                 ntapers=ntapers, tbp=tbp
             )
         )
-        message += "ntapers must be >= round(2*tbp)"
+        message += "ntapers must be <= round(2*tbp)={}".format(round(2 * tbp))
         raise MsPASSError(message, ErrorSeverity.Fatal)
     if data_object.dead():
         my_logger.log_error(
@@ -1630,7 +1630,6 @@ def visualize_qcdata(
     :type qc_subdoc_key:  string or None.  Default "Parrival"
        is default of `broadband_arrival_QC`.
     """
-    import matplotlib.pyplot as plt
 
     def pts2box(xmin, xmax, ymin, ymax) -> tuple:
         """
@@ -1647,14 +1646,17 @@ def visualize_qcdata(
     if isinstance(d, Seismogram):
         d = _ExtractComponent(d, component)
     if not isinstance(d, TimeSeries):
-        message = "arg0 value must be a TimeSeries object\n"
-        message += "Actual type={}".str(type(d))
-        raise ValueError(message)
+        raise TypeError(
+            "visualize_qcdata: arg0 must be a TimeSeries or Seismogram; "
+            "actual type={}".format(type(d))
+        )
     if qc_subdoc_key:
-        doc = d[qc_subdoc_key]
+        doc = d[qc_subdoc_key] if d.is_defined(qc_subdoc_key) else {}
     else:
         doc = dict(d)
     if "signal_spectrum" in doc and "noise_spectrum" in doc:
+        import matplotlib.pyplot as plt
+
         pdata = doc["signal_spectrum"]
         S = pickle.loads(pdata)
         pdata = doc["noise_spectrum"]
@@ -1699,8 +1701,11 @@ def visualize_qcdata(
             )
             print("Cannot make the time series data showing oiginal and filtered data")
     else:
-        message = (
-            "Missing required metadata with keys signal_spectrum and noise_spectrum\n"
+        missing = [
+            key for key in ("signal_spectrum", "noise_spectrum") if key not in doc
+        ]
+        message = "visualize_qcdata: missing required spectrum metadata: {}\n".format(
+            ", ".join(missing)
         )
         message += "You probably need to run the data through broadband_snr_QC with save_spectra set True"
-        raise MsPASSError("visuallize_qcdata", message, ErrorSeverity.Invalid)
+        raise MsPASSError(message, ErrorSeverity.Invalid)
