@@ -179,6 +179,7 @@ def fetch_and_validate_bandwidth_data(
             message += "is not defined for this datum"
             d.elog.log_error(alg, message, ErrorSeverity.Invalid)
             d.kill()
+            return [d, None, None]
     else:
         bdvals = fetch_bandwidth_data(d, bdkeys)
         d = validate_bandwidth_data(d, bdvals, bdkeys)
@@ -445,8 +446,9 @@ def CNRRFDecon(
         if window_output:
             signal_window = TimeWindow(seis.t0, seis.endtime())
 
-    if noise_spectrum:
+    if noise_spectrum is not None:
         if noise_spectrum.dead():
+            d.elog += noise_spectrum.elog
             message = "Received noise_spectrum PowerSpectrum object marked dead - cannot process this datum"
             d.elog.log_error(alg, message, ErrorSeverity.Invalid)
             d.kill()
@@ -548,7 +550,9 @@ def CNRRFDecon(
             message += "If this occurs a lot check decon parameters"
             d.elog.log_error(alg, message, ErrorSeverity.Invalid)
             d.kill()
-            return [d, None, None]
+            if return_wavelet:
+                return [d, None, None]
+            return d
 
         QCmd = engine.QCMetrics()
         # convert to a dict for posting
@@ -750,9 +754,14 @@ def CNRArrayDecon(
         if return_wavelet:
             return [ensemble, None, None]
         return ensemble
+    if isinstance(beam, Seismogram):
+        beam_component = _validate_component_index(
+            beam_component, "beam_component", prog
+        )
 
+    noise_fallback_message = None
     # if noise_spectrum is defined noise_windowing is ignored
-    if noise_spectrum:
+    if noise_spectrum is not None:
         psnoise = noise_spectrum
     elif signal_window and noise_window:
         # logic means both have to be defined
@@ -773,47 +782,61 @@ def CNRArrayDecon(
             else:
                 return ensemble
         if isinstance(n2use, TimeSeries) and use_3C_noise:
-            message = (
+            noise_fallback_message = (
                 "beam is a TimeSeries but requested 3C noise with windowing enabled\n"
             )
-            message += "Using windowed scalar beam data to compute noise spectrum"
-            ensemble.elog.log_error(prog, message, ErrorSeverity.Complaint)
-        if isinstance(beam, Seismogram):
-            beam_component = _validate_component_index(
-                beam_component, "beam_component", prog
+            noise_fallback_message += (
+                "Using windowed scalar beam data to compute noise spectrum"
             )
-            if not use_3C_noise:
-                n2use = ExtractComponent(n2use, beam_component)
-            # noise is extracted, now we need to extract the beam component
-            # as the wavelet
-            beam = ExtractComponent(beam, beam_component)
-        if use_3C_noise:
-            psnoise = engine.compute_noise_spectrum3C(n2use)
+        if isinstance(n2use, Seismogram) and use_3C_noise:
+            psnoise = engine.compute_noise_spectrum_3C(n2use)
         else:
+            if isinstance(n2use, Seismogram):
+                n2use = ExtractComponent(n2use, beam_component)
             psnoise = engine.compute_noise_spectrum(n2use)
-        # we cannot proceed if the noise spectrum estimation failed
-        if psnoise.dead():
-            ensemble.elog += psnoise.elog
-            ensemble.log_error(
-                prog,
-                "compute_noise_spectrum failed - cannot process this ensemble",
-                ErrorSeverity.Invalid,
-            )
-            ensemble.kill()
-            if return_wavelet:
-                return [ensemble, None, None]
-            else:
-                return ensemble
-        beam = WindowData(beam, signal_window.start, signal_window.end)
     else:
         message = "Illegal argument combination.\n"
         message += "When noise_spectrum is not set both noise_window and signal_windows are required\n"
         message += "See docstring for this function"
         raise ValueError(message)
+    # we cannot proceed if the noise spectrum estimation failed
+    if psnoise.dead():
+        if noise_fallback_message:
+            ensemble.elog.log_error(
+                prog, noise_fallback_message, ErrorSeverity.Complaint
+            )
+        ensemble.elog += psnoise.elog
+        ensemble.elog.log_error(
+            prog,
+            "compute_noise_spectrum failed - cannot process this ensemble",
+            ErrorSeverity.Invalid,
+        )
+        ensemble.kill()
+        if return_wavelet:
+            return [ensemble, None, None]
+        return ensemble
+
+    if isinstance(beam, Seismogram):
+        beam = ExtractComponent(beam, beam_component)
+    if noise_spectrum is None:
+        beam = WindowData(beam, signal_window.start, signal_window.end)
     if signal_window:
         ensout = WindowData(ensemble, signal_window.start, signal_window.end)
     else:
         ensout = ensemble
+    if noise_fallback_message:
+        ensout.elog.log_error(prog, noise_fallback_message, ErrorSeverity.Complaint)
+
+    if use_wavelet_bandwidth:
+        [beam, flow, fhigh] = fetch_and_validate_bandwidth_data(
+            beam, bandwidth_keys, bandwidth_subdocument_key
+        )
+        if beam.dead():
+            ensout.elog += beam.elog
+            ensout.kill()
+            if return_wavelet:
+                return [ensout, None, None]
+            return ensout
 
     # this is a key step that computes the inverse operator in the
     # frequency domain.  In this algorithm that inverse is applied to all
@@ -837,23 +860,6 @@ def CNRArrayDecon(
         else:
             return ensout
 
-    if use_wavelet_bandwidth:
-        [beam, flow, fhigh] = fetch_and_validate_bandwidth_data(
-            beam, bandwidth_keys, bandwidth_subdocument_key
-        )
-        # the above can kill - no choice in this case but to kill the entire
-        # ensemble.  This is so bad it maybe should be an exception
-        # or allow an option to abort on this error
-        if beam.dead():
-            message = "Invalid bandwidth data encountered when trying to fetch from beam datum\n"
-            message += "Details in earlier log message - killing entire ensemble"
-            ensout.elog = beam.elog
-            ensout.elog.log_error(prog, message, ErrorSeverity.Invalid)
-            ensout.kill()
-            if return_wavelet:
-                return [ensout, None, None]
-            else:
-                return ensout
     for i in range(len(ensout.member)):
         if ensout.member[i].live:
             d = ensout.member[i]  # only an alias in this context
