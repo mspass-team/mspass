@@ -65,6 +65,27 @@ class MTPowerSpectrumEngine:
         needs to support vector input or a TimeSeries - returns a PowerSpectrum
         Cannot use mspass decorator because it supports raw data vectors
         """
+        if isinstance(d, TimeSeries):
+            input_length = d.npts
+        elif isinstance(d, DoubleVector):
+            input_length = len(d)
+        elif isinstance(d, np.ndarray):
+            if d.ndim != 1:
+                raise TypeError(
+                    "MTPowerSpectrumEngine.apply: numpy array input must be one-dimensional"
+                )
+            input_length = len(d)
+        else:
+            raise TypeError(
+                "MTPowerSpectrumEngine.apply: arg0 must be a TimeSeries, "
+                "DoubleVector, or one-dimensional numpy array"
+            )
+        if input_length != self.winsize:
+            raise ValueError(
+                "MTPowerSpectrumEngine.apply: input length={} does not match "
+                "winsize={}".format(input_length, self.winsize)
+            )
+
         # All inputs end up filling a numpy array passed to MTSpec below
         if isinstance(d, TimeSeries):
             y = np.array(d.data)
@@ -80,17 +101,13 @@ class MTPowerSpectrumEngine:
             # a future maintenance issue
             md["npts"] = len(d)
             md["delta"] = dt
-        elif isinstance(d, np.ndarray):
+        else:
             y = d
             md = Metadata()
             # These are mspass schema standard names - could be
             # a future maintenance issue
             md["npts"] = len(d)
             md["delta"] = dt
-        else:
-            raise TypeError(
-                "MTPowerSpectrumEngine.apply:  arg0 has invalid type - must be TimeSeries, DoubleVector, or numpy array"
-            )
         self.MTSpec_instance = MTSpec(
             y,
             nw=self.tbp,
