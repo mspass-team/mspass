@@ -7,16 +7,19 @@ services:
     volumes:
       - "${PWD}/:/home"
     ports:
-      - 27017:27017
+      - "127.0.0.1:27017:27017"
     depends_on:
       - mspass-shard-0
       - mspass-shard-1
     environment:
       MSPASS_ROLE: dbmanager
+      MSPASS_MONGO_AUTH: "true"
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_INITDB_ROOT_USERNAME:?}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INITDB_ROOT_PASSWORD:?}"
       MSPASS_SHARD_LIST: rs0/mspass-shard-0:27017 rs1/mspass-shard-1:27017
       MONGODB_PORT: 27017
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet 
+      test: ["CMD-SHELL", "mongosh --host 127.0.0.1 --port 27017 admin --quiet --eval 'if (!db.auth(process.env.MONGO_INITDB_ROOT_USERNAME, process.env.MONGO_INITDB_ROOT_PASSWORD)) { quit(1); }' --eval 'if (!db.runCommand({ping: 1}).ok) { quit(1); }'"]
       interval: 10s
       timeout: 60s
       retries: 5
@@ -29,11 +32,14 @@ services:
       - "${PWD}/:/home"
     environment:
       MSPASS_ROLE: shard
+      MSPASS_MONGO_AUTH: "true"
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_INITDB_ROOT_USERNAME:?}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INITDB_ROOT_PASSWORD:?}"
       MSPASS_SHARD_ID: 0
       MONGODB_PORT: 27017
       SHARD_DB_PATH: scratch
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet 
+      test: ["CMD-SHELL", "mongosh --host 127.0.0.1 --port 27017 admin --quiet --eval 'if (!db.auth(process.env.MONGO_INITDB_ROOT_USERNAME, process.env.MONGO_INITDB_ROOT_PASSWORD)) { quit(1); }' --eval 'if (!db.runCommand({ping: 1}).ok) { quit(1); }'"]
       interval: 10s
       timeout: 60s
       retries: 5
@@ -46,11 +52,14 @@ services:
       - "${PWD}/:/home"
     environment:
       MSPASS_ROLE: shard
+      MSPASS_MONGO_AUTH: "true"
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_INITDB_ROOT_USERNAME:?}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INITDB_ROOT_PASSWORD:?}"
       MSPASS_SHARD_ID: 1
       MONGODB_PORT: 27017
       SHARD_DB_PATH: scratch
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      test: ["CMD-SHELL", "mongosh --host 127.0.0.1 --port 27017 admin --quiet --eval 'if (!db.auth(process.env.MONGO_INITDB_ROOT_USERNAME, process.env.MONGO_INITDB_ROOT_PASSWORD)) { quit(1); }' --eval 'if (!db.runCommand({ping: 1}).ok) { quit(1); }'"]
       interval: 10s
       timeout: 60s
       retries: 5
@@ -61,7 +70,7 @@ services:
     volumes:
       - "${PWD}/:/home"
     ports:
-      - 8786:8786
+      - "127.0.0.1:8786:8786"
     environment:
       MSPASS_ROLE: scheduler
       MSPASS_SCHEDULER: dask
@@ -89,7 +98,7 @@ services:
     volumes:
       - "${PWD}/:/home"
     ports:
-      - 8888:8888
+      - "127.0.0.1:8888:8888"
     depends_on:
       - mspass-dbmanager
       - mspass-scheduler
@@ -98,5 +107,8 @@ services:
       MSPASS_SCHEDULER: dask
       MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
       MSPASS_DB_ADDRESS: mspass-dbmanager
-      MSPASS_JUPYTER_PWD: mspass
+      MSPASS_MONGO_AUTH: "true"
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_INITDB_ROOT_USERNAME:?}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INITDB_ROOT_PASSWORD:?}"
+      JUPYTER_TOKEN: "${JUPYTER_TOKEN:-}"
       JUPYTER_PORT: 8888
