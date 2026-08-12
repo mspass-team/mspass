@@ -228,11 +228,10 @@ types differs in a few important ways:
 
 .. warning::
 
-   Use ``SeismicPlotter`` for atomic ``TimeSeries`` and ``Seismogram`` data.
-   The current ``SectionPlotter`` atomic ``TimeSeries`` path raises an error,
-   and its atomic ``Seismogram`` conversion does not orient the sample matrix
-   as three traces.  Its ensemble paths support all four plot styles described
-   above.
+   Atomic ``TimeSeries`` and ``Seismogram`` inputs to ``SectionPlotter`` are
+   deprecated and unsupported.  ``SectionPlotter.plot`` raises ``TypeError``
+   for both types and directs callers to ``SeismicPlotter``.  The ensemble
+   paths continue to support all four plot styles described above.
 
 A final point is that plotting earthquake data nearly always requires some
 form of scaling to prevent strong signals from clipping while weaker but valid
