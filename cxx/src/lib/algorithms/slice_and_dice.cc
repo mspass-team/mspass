@@ -9,7 +9,6 @@ using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::utility;
 
-
 /* \brief Extracts a requested time window of data from a parent coreSeismogram
 object.
 
@@ -35,18 +34,10 @@ CoreSeismogram WindowData(const CoreSeismogram &parent, const TimeWindow &tw) {
     CoreSeismogram tmp;
     return (tmp);
   }
-  int is = parent.sample_number(tw.start);
-  /* This calculation was used in earlier versions but was found to
-     differ by 1 depending on the subsample timing of t0 of parent.  the
-     problem is that sample_number uses rounding which can produce that
-     effect due to a subtle interaction with tw.start and tw.end
-     relative to the sample grid.
-  int ie=parent.sample_number(tw.end);
-  */
-  int outns, ie;
-  outns = round((tw.end - tw.start) / parent.dt()) + 1;
-  ie = is + outns - 1;
-  if ((is < 0) || (ie > parent.npts())) {
+  const int is = parent.sample_number(tw.start);
+  const int ie = parent.sample_number(tw.end);
+  const int outns = ie - is + 1;
+  if ((is < 0) || (ie >= static_cast<int>(parent.npts()))) {
     ostringstream mess;
     mess << "WindowData(CoreSeismogram):  Window mismatch" << endl
          << "Window start time=" << tw.start << " is sample number " << is
@@ -59,7 +50,7 @@ CoreSeismogram WindowData(const CoreSeismogram &parent, const TimeWindow &tw) {
   result.u = dmatrix(3, outns);
   result.set_npts(outns);
   /* shift the start time appropriately*/
-  result.set_t0(result.t0() + parent.dt()*static_cast<float>(is));
+  result.set_t0(result.t0() + parent.dt() * static_cast<float>(is));
   // Perhaps should do this with blas or memcpy for efficiency
   //  but this makes the algorithm much clearer
   int i, ii, k;
@@ -94,19 +85,10 @@ CoreTimeSeries WindowData(const CoreTimeSeries &parent, const TimeWindow &tw) {
     CoreTimeSeries tmp;
     return (tmp);
   }
-  int is = parent.sample_number(tw.start);
-  /* This calculation was used in earlier versions but was found to
-     differ by 1 depending on the subsample timing of t0 of parent.  the
-     problem is that sample_number uses rounding which can produce that
-     effect due to a subtle interaction with tw.start and tw.end
-     relative to the sample grid.
-  int ie=parent.sample_number(tw.end);
-  */
-  int outns, ie;
-  outns = round((tw.end - tw.start) / parent.dt()) + 1;
-  ie = is + outns - 1;
-  // Ridiculous (int) case to silence a bogus compiler warning
-  if ((is < 0) || (ie > ((int)parent.npts()))) {
+  const int is = parent.sample_number(tw.start);
+  const int ie = parent.sample_number(tw.end);
+  const int outns = ie - is + 1;
+  if ((is < 0) || (ie >= static_cast<int>(parent.npts()))) {
     ostringstream mess;
     mess << "WindowData(CoreTimeSeries):  Window mismatch" << endl
          << "Window start time=" << tw.start << " is sample number " << is
@@ -119,7 +101,7 @@ CoreTimeSeries WindowData(const CoreTimeSeries &parent, const TimeWindow &tw) {
   result.s.reserve(outns);
   result.set_npts(outns);
   /* shift the start time appropriately*/
-  result.set_t0(result.t0() + parent.dt()*static_cast<float>(is));
+  result.set_t0(result.t0() + parent.dt() * static_cast<float>(is));
   // Necessary to use the push_back method below or we get leading zeros
   // result.s.clear();
   // for(int i=is;i<=ie && i<parent.npts();++i) result.s.push_back(parent.s[i]);
@@ -155,18 +137,10 @@ Seismogram WindowData(const Seismogram &parent, const TimeWindow &tw) {
   if (parent.dead()) {
     return parent;
   }
-  int is = parent.sample_number(tw.start);
-  /* This calculation was used in earlier versions but was found to
-     differ by 1 depending on the subsample timing of t0 of parent.  the
-     problem is that sample_number uses rounding which can produce that
-     effect due to a subtle interaction with tw.start and tw.end
-     relative to the sample grid.
-  int ie=parent.sample_number(tw.end);
-  */
-  int outns, ie;
-  outns = round((tw.end - tw.start) / parent.dt()) + 1;
-  ie = is + outns - 1;
-  if ((is < 0) || (ie >= parent.npts())) {
+  const int is = parent.sample_number(tw.start);
+  const int ie = parent.sample_number(tw.end);
+  const int outns = ie - is + 1;
+  if ((is < 0) || (ie >= static_cast<int>(parent.npts()))) {
     ostringstream mess;
     mess << "WindowData(Seismogram):  Window mismatch" << endl
          << "Window start time=" << tw.start << " is sample number " << is
@@ -211,7 +185,7 @@ Seismogram WindowData(const Seismogram &parent, const TimeWindow &tw) {
   mdtmp.put_long(SEISMICMD_npts, outns);
   Seismogram result(btstmp, mdtmp);
   /* shift the start time appropriately*/
-  result.set_t0(result.t0() + parent.dt()*static_cast<float>(is));
+  result.set_t0(result.t0() + parent.dt() * static_cast<float>(is));
 
   // Perhaps should do this with blas or memcpy for efficiency
   //  but this makes the algorithm much clearer
@@ -252,19 +226,10 @@ TimeSeries WindowData(const TimeSeries &parent, const TimeWindow &tw) {
     TimeSeries tmp;
     return (tmp);
   }
-  int is = parent.sample_number(tw.start);
-  /* This calculation was used in earlier versions but was found to
-     differ by 1 depending on the subsample timing of t0 of parent.  the
-     problem is that sample_number uses rounding which can produce that
-     effect due to a subtle interaction with tw.start and tw.end
-     relative to the sample grid.
-  int ie=parent.sample_number(tw.end);
-  */
-  int outns, ie;
-  outns = round((tw.end - tw.start) / parent.dt()) + 1;
-  ie = is + outns - 1;
-  // Ridiculous (int) case to silence a bogus compiler warning
-  if ((is < 0) || (ie > ((int)parent.npts()))) {
+  const int is = parent.sample_number(tw.start);
+  const int ie = parent.sample_number(tw.end);
+  const int outns = ie - is + 1;
+  if ((is < 0) || (ie >= static_cast<int>(parent.npts()))) {
     ostringstream mess;
     mess << "WindowData(TimeSeries):  Window mismatch" << endl
          << "Window start time=" << tw.start << " is sample number " << is
@@ -298,7 +263,7 @@ TimeSeries WindowData(const TimeSeries &parent, const TimeWindow &tw) {
   btstmp.set_npts(outns);
   TimeSeries result(btstmp, dynamic_cast<const Metadata &>(parent));
   /* shift the start time appropriately*/
-  result.set_t0(result.t0() + parent.dt()*static_cast<float>(is));
+  result.set_t0(result.t0() + parent.dt() * static_cast<float>(is));
   /* That constuctor initalizes s to zeroes so we can copy directly
   to the container without push_back.  memcpy might buy a small performance
   gain but would make this more fragile that it already is. */
