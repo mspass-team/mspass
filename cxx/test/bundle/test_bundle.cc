@@ -287,7 +287,7 @@ int main(int argc, char **argv)
   cout << "Test handling of incomplete bundles"<<endl;
   ens2=ens0;
   ens2.member.erase(ens2.member.begin());
-  ens2.member.erase(ens2.member.end());
+  ens2.member.erase(ens2.member.end()-1);
   ens3c=bundle_seed_data(ens2);
   print_output(ens3c);
   assert(compare_stas(ens3c,pattern));
