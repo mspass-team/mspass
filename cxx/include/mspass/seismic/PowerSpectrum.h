@@ -68,8 +68,8 @@ public:
   /*! \brief power at a given frequency.
 
   Returns the power estimate at a specified frequency.  Uses a linear
-  interpolation between nearest neighbors.  Returns the frequency exceeds
-  the Nyquist silently returns 0.
+  interpolation between nearest neighbors.  Frequencies outside the stored
+  frequency grid silently return 0.
 
   \param f is the frequency for which amplitude is desired.
 
