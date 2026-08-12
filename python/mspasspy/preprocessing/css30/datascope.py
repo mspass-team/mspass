@@ -310,11 +310,10 @@ class DatascopeDatabase:
         `df` to Datascope table inferred from the `table` argument.
         That is, the method attempts to write the contents of df to
         a file "db.table" with an optional diretory (dir argument).
-        It will immediately throw an exception if any of the df column
-        keys do not match an attribute name for the schema defined for
-        the specified table.  Missing keys will be written as the
-        null value defined for the schema using the pf file loaded
-        with the class constructor.
+        Input columns that are not defined by the target schema are dropped
+        after printing a warning.  Missing keys are written as the null value
+        defined for the schema using the pf file loaded with the class
+        constructor.
 
         Default behavior is to write to the Datascope handle defined as
         the "self" by the class constructor.   An alternative instance
@@ -324,8 +323,9 @@ class DatascopeDatabase:
         clear any previous content.
 
         :param df: pandas DataFrame containing data to be written.  Note the
-            column names must match css3.0 schema mames or an exception will
-            be thrown.
+            target-schema columns are written in schema order.  Extra columns
+            are dropped after printing a warning, and missing columns are
+            filled with the schema null value.
         :type df:  pandas DataFrame
         :param db:  output handle.   Default is None which is taken to mean
             use this instance.
@@ -399,6 +399,9 @@ class DatascopeDatabase:
             need_to_rearrange = True
 
         if need_to_rearrange:
+            # Initialize the copy before the loop so a DataFrame with no
+            # columns still has a valid output object.
+            dfout = pd.DataFrame(df)
             # note we can use the keys list as is for input to dataframe's
             # reindex method.  However, to do that we have to add nulls
             # for any dfkeys that don't have values for an attribute defines
@@ -438,8 +441,12 @@ class DatascopeDatabase:
                 for k in null_columns:
                     nullvalue = nulls[k]
                     # a bit obscure python syntax to full array with null values and
-                    # insert in one line
-                    dfout[k] = pd.Series([nullvalue for x in range(len(dfout.index))])
+                    # insert in one line.  Use the DataFrame index to avoid
+                    # pandas aligning a default RangeIndex to unrelated labels.
+                    dfout[k] = pd.Series(
+                        [nullvalue for x in range(len(dfout.index))],
+                        index=dfout.index,
+                    )
 
             # Now we rearrange - simple with reindex method of pandas
             dfout = dfout.reindex(columns=keys)
