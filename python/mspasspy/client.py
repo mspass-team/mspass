@@ -35,6 +35,10 @@ else:
 from mspasspy.ccore.utility import MsPASSError
 
 
+def _env_flag_true(value):
+    return isinstance(value, str) and value.lower() in ("true", "1", "yes")
+
+
 def _require_pyspark():
     if _mspasspy_has_pyspark:
         return
@@ -222,6 +226,9 @@ class Client:
         # check env variables
         MSPASS_DB_ADDRESS = os.environ.get("MSPASS_DB_ADDRESS")
         MONGODB_PORT = os.environ.get("MONGODB_PORT")
+        MSPASS_MONGO_AUTH = os.environ.get("MSPASS_MONGO_AUTH", "false")
+        MONGO_INITDB_ROOT_USERNAME = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
+        MONGO_INITDB_ROOT_PASSWORD = os.environ.get("MONGO_INITDB_ROOT_PASSWORD")
         MSPASS_SCHEDULER = os.environ.get("MSPASS_SCHEDULER")
         MSPASS_SCHEDULER_ADDRESS = os.environ.get("MSPASS_SCHEDULER_ADDRESS")
         DASK_SCHEDULER_PORT = os.environ.get("DASK_SCHEDULER_PORT")
@@ -243,6 +250,7 @@ class Client:
 
         # create a database client
         # priority: parameter -> env -> default
+        database_client_options = {}
         if database_host:
             database_address = database_host
         elif MSPASS_DB_ADDRESS:
@@ -250,9 +258,26 @@ class Client:
         else:
             database_address = "127.0.0.1"
         database_address = _build_database_address(database_address, MONGODB_PORT)
+        if (
+            _env_flag_true(MSPASS_MONGO_AUTH)
+            and MONGO_INITDB_ROOT_USERNAME
+            and MONGO_INITDB_ROOT_PASSWORD
+        ):
+            parsed_database_address = (
+                urlsplit(database_address) if "://" in database_address else None
+            )
+            if (
+                parsed_database_address is None
+                or parsed_database_address.username is None
+            ):
+                database_client_options = {
+                    "username": MONGO_INITDB_ROOT_USERNAME,
+                    "password": MONGO_INITDB_ROOT_PASSWORD,
+                    "authSource": "admin",
+                }
 
         try:
-            self._db_client = DBClient(database_address)
+            self._db_client = DBClient(database_address, **database_client_options)
             self._db_client.server_info()
         except Exception as err:
             raise MsPASSError(
