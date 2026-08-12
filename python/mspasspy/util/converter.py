@@ -716,9 +716,8 @@ def Textfile2Dataframe(
 
     #   Convert data in each column to the type given in type_dict
     if type_dict is not None:
-        for field, type in type_dict.items():
-            if field in df:
-                df[field].astype(type)
+        for field, dtype in type_dict.items():
+            df[field] = df[field].astype(dtype)
 
     if attributes_to_use is not None:
         df = df[attributes_to_use]
