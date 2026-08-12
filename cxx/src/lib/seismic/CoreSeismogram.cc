@@ -542,6 +542,8 @@ void CoreSeismogram::rotate(SphericalCoordinate &xsc) {
     // This will be left handed
     tmatrix[2][2] = -1.0;
     dscal(nsamp, -1.0, u.get_address(2, 0), 3);
+    components_are_cardinal = false;
+    components_are_orthogonal = true;
     return;
   }
 
