@@ -4563,33 +4563,37 @@ class Database(pymongo.database.Database):
                     return
             npts = mspass_object.npts
         if isinstance(mspass_object, TimeSeries):
-            # fh.seek(16)
-            float_array = array("d")
-            float_array.frombytes(fh.read(mspass_object.get("npts") * 8))
-            mspass_object.data = DoubleVector(float_array)
+            sample_count = npts
         elif isinstance(mspass_object, Seismogram):
-            np_arr = np.frombuffer(fh.read(npts * 8 * 3))
-            file_size = fh.tell()
-            if file_size != npts * 8 * 3:
-                message = "Size mismatch in sample data.\n"
-                message += "Number of points in gridfs file={} but wf document expected {}".format(
-                    file_size // 8, (3 * mspass_object["npts"])
-                )
-                mspass_object.elog.log_error(
-                    "Database._read_data_from_gridfs",
-                    message,
-                    ErrorSeverity.Invalid,
-                )
-                mspass_object.kill()
-                return
-            # v1 did a transpose on write that this reversed - unnecessary
-            # np_arr = np_arr.reshape(npts, 3).transpose()
-            np_arr = np_arr.reshape(3, npts)
-            mspass_object.data = dmatrix(np_arr)
+            sample_count = 3 * npts
         else:
             message = "Database._read_data_from_gridfs:  arg0 must be a TimeSeries or Seismogram\n"
             message += "Actual type=" + str(type(mspass_object))
             raise TypeError(message)
+        expected_nbytes = sample_count * 8
+        payload = fh.read(expected_nbytes + 1)
+        if len(payload) != expected_nbytes:
+            message = "Size mismatch in sample data.\n"
+            message += "Read {} bytes from gridfs but expected exactly {} for {} samples".format(
+                len(payload), expected_nbytes, sample_count
+            )
+            mspass_object.elog.log_error(
+                "Database._read_data_from_gridfs",
+                message,
+                ErrorSeverity.Invalid,
+            )
+            mspass_object.kill()
+            return
+        if isinstance(mspass_object, TimeSeries):
+            float_array = array("d")
+            float_array.frombytes(payload)
+            mspass_object.data = DoubleVector(float_array)
+        else:
+            np_arr = np.frombuffer(payload)
+            # v1 did a transpose on write that this reversed - unnecessary
+            # np_arr = np_arr.reshape(npts, 3).transpose()
+            np_arr = np_arr.reshape(3, npts)
+            mspass_object.data = dmatrix(np_arr)
         if mspass_object.npts > 0:
             mspass_object.set_live()
         else:
