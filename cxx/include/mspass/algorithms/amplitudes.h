@@ -9,6 +9,8 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/VectorStatistics.h"
+#include <algorithm>
+#include <cmath>
 #include <sstream>
 namespace mspass::algorithms::amplitudes {
 double PeakAmplitude(const mspass::seismic::CoreTimeSeries &d);
@@ -47,9 +49,10 @@ units.
 \param level has two different contexts.   For PercAmplitude it must be a
  a number n with 0<n<=1.0
 \param win defines a time window to use for computing the amplitude.
- It the window exeeds the data range it will be reduced to the range of
- the data.  Similarly, if the window is invalid (defined as end time less
- than start time) the window will be adjusted to the full data range.
+ If the window exceeds the data range it is clipped to the physical
+ intersection.  A reversed window selects the full data range.  A disjoint
+ or zero-width intersection raises MsPASSError with Invalid severity before
+ the datum is changed.
 \return computed amplitude
 */
 
@@ -70,32 +73,23 @@ double scale(Tdata &d, const ScalingMethod method, const double level,
     if (d.is_defined(scale_factor_key)) {
       newcalib = d.get_double(scale_factor_key);
     }
-    /* Handle time windowing. Log window mismatches but silently handle
-    cast where the window is invalid - used as a way to override any
-    time windowing */
+    /* A reversed window is the public signal for full-record scaling.
+    Otherwise measure only the physical intersection with the datum. */
     mspass::algorithms::TimeWindow ampwindow;
     if (win.start > win.end) {
       ampwindow.start = d.t0();
       ampwindow.end = d.endtime();
-    } else if ((fabs(win.start - d.t0()) / d.dt() > 0.5) ||
-               (fabs(win.end - d.endtime()) / d.dt() > 0.5)) {
-      std::stringstream ss;
-      ss << "Window time range is inconsistent with input data range"
-         << std::endl
-         << "Input data starttime=" << d.t0()
-         << " and window start time=" << win.start
-         << " Difference=" << d.t0() - win.start << std::endl
-         << "Input data endtime=" << d.endtime()
-         << " and window end time=" << win.end
-         << " Difference=" << d.endtime() - win.end << std::endl
-         << "One or the other exceeds 1/sample interval=" << d.dt() << std::endl
-         << "Window for amplitude calculation changed to data range";
-      d.elog.log_error("scale", ss.str(),
-                       mspass::utility::ErrorSeverity::Complaint);
-      ampwindow.start = d.t0();
-      ampwindow.end = d.endtime();
     } else {
-      ampwindow = win;
+      ampwindow.start = std::max(win.start, d.t0());
+      ampwindow.end = std::min(win.end, d.endtime());
+      if (ampwindow.start >= ampwindow.end) {
+        std::stringstream ss;
+        ss << "scale:  amplitude measurement window [" << win.start << ", "
+           << win.end << "] has no positive-width intersection with data "
+           << "range [" << d.t0() << ", " << d.endtime() << "]";
+        throw mspass::utility::MsPASSError(
+            ss.str(), mspass::utility::ErrorSeverity::Invalid);
+      }
     }
     Tdata windowed_data;
     windowed_data = mspass::algorithms::WindowData(d, ampwindow);
@@ -219,7 +213,6 @@ double scale_ensemble(mspass::seismic::Ensemble<Tdata> &d,
     typename std::vector<Tdata>::iterator dptr;
     std::vector<double> amps;
     amps.reserve(d.member.size());
-    size_t nlive(0);
     for (dptr = d.member.begin(); dptr != d.member.end(); ++dptr) {
       double amplitude;
       if (dptr->dead())
@@ -238,23 +231,27 @@ double scale_ensemble(mspass::seismic::Ensemble<Tdata> &d,
       default:
         amplitude = RMSAmplitude(*dptr);
       };
-      ++nlive;
-      amps.push_back(log(amplitude));
+      if ((amplitude > 0.0) && std::isfinite(amplitude))
+        amps.push_back(std::log(amplitude));
     }
-    /*Silently return a 0 if there are no live data members*/
-    if (nlive == 0)
+    /* Silently return 0 without mutation when no member can define a gain. */
+    if (amps.empty())
       return 0.0;
-    mspass::utility::VectorStatistics<double> ampstats(amps);
-    if (use_mean) {
-      avgamp = ampstats.mean();
+    if (amps.size() == 1) {
+      avgamp = amps.front();
     } else {
-      avgamp = ampstats.median();
+      mspass::utility::VectorStatistics<double> ampstats(amps);
+      if (use_mean) {
+        avgamp = ampstats.mean();
+      } else {
+        avgamp = ampstats.median();
+      }
     }
 
     /* restore to a value instead of natural log*/
-    avgamp = exp(avgamp);
-    /* Silently do nothing if all the data are zero.   Would be better to
-    log an error but use as a "Core" object doesn't contain an elog attribute*/
+    avgamp = std::exp(avgamp);
+    /* A core ensemble has no error-log channel, so a nonpositive result is a
+    silent no-op consistent with the no-eligible-member case above. */
     if (avgamp <= 0.0) {
       return 0.0;
     }
