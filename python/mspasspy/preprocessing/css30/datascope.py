@@ -285,7 +285,7 @@ class DatascopeDatabase:
                 "AntelopeDatabase.join:  Illegal type="
                 + str(type(join_keys))
                 + " for join_key arg.\nMust be string, list, or dict",
-                "Fatal",
+                ErrorSeverity.Fatal,
             )
         # merge allows variations for left, right, inner, outter, and cross
         # for the how clause.  Default users the merge default of 'inner'
@@ -513,7 +513,7 @@ class DatascopeDatabase:
                 raise MsPASSError(
                     "parse_attribute_name_tbl:  unsupported data type file="
                     + typenamein,
-                    "Fatal",
+                    ErrorSeverity.Fatal,
                 )
             dtypes[name] = typ
             # this works becasue typ is now a python "type" class which
@@ -667,7 +667,6 @@ class DatascopeDatabase:
             do not define miniseed and (2) tuples failing the existence
             check (if enabled)
         """
-        alg = "DatascopeDatabase.wfdisc2doclist"
         if verbose:
             base_warning = "DatascopeDatabase.wfdisc2doclist (WARNING):  "
         if snetsta_xref is None:
@@ -679,13 +678,11 @@ class DatascopeDatabase:
                 nets[k] = snetsta_xref[k][0]
                 seedsta[k] = snetsta_xref[k][1]
         else:
-            message = "snetsta_xref parameter is invalid type={}\n".format(
-                type(snetsta_xref)
+            message = (
+                "DatascopeDatabase.wfdisc2doclist: snetsta_xref has invalid "
+                "type={}.  It must be a dict or None.".format(type(snetsta_xref))
             )
-            message += (
-                "Expected to be a python dictionary created by parse_snetsta method"
-            )
-            raise MsPASSError(alg, message, ErrorSeverity.Fatal)
+            raise MsPASSError(message, ErrorSeverity.Fatal)
         nets["default"] = default_net
 
         df = self.get_table("wfdisc")
