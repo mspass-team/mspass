@@ -1,8 +1,23 @@
-# Strip the 'v' from the version tag
-{% if GIT_DESCRIBE_TAG is defined %}
+# Container builds do not include .git; use the version and revision resolved by
+# the workflow.  Keep the existing git-derived behavior for non-container builds.
+{% if environ.get('MSPASS_VERSION') %}
+{%   set version = environ.get('MSPASS_VERSION') %}
+{% elif GIT_DESCRIBE_TAG is defined %}
 {%   set version = GIT_DESCRIBE_TAG[1:] %}
 {% else %}
 {%   set version = "0.0.0" %}
+{% endif %}
+{% if environ.get('MSPASS_VCS_REF') %}
+{%   set vcs_ref = environ.get('MSPASS_VCS_REF') %}
+{% elif GIT_FULL_HASH is defined %}
+{%   set vcs_ref = GIT_FULL_HASH %}
+{% else %}
+{%   set vcs_ref = "unknown" %}
+{% endif %}
+{% if GIT_DESCRIBE_NUMBER is defined %}
+{%   set describe_number = GIT_DESCRIBE_NUMBER %}
+{% else %}
+{%   set describe_number = environ.get('GIT_DESCRIBE_NUMBER', 0) %}
 {% endif %}
 
 package:
@@ -16,9 +31,12 @@ build:
   script: scripts/conda_build.sh
   script_env:
     - MSPASS_BOOST_ROOT
+{% if environ.get('SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MSPASSPY') %}
+    - SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MSPASSPY
+{% endif %}
   include_recipe: False
-  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
-  string: py{{ CONDA_PY }}_{{ GIT_DESCRIBE_NUMBER|int }}_g{{ GIT_FULL_HASH[:8] }}
+  number: {{ describe_number }}
+  string: py{{ CONDA_PY }}_{{ describe_number|int }}_g{{ vcs_ref[:8] }}
 
 requirements:
   build:
