@@ -1,0 +1,139 @@
+name: Static gates
+
+"on":
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: Detect native changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      native: ${{ steps.filter.outputs.native }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            native:
+              - 'cxx/**'
+
+  ruff:
+    name: Ruff fatal errors
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install Ruff
+        run: python -m pip install ruff==0.12.8
+      - name: Check fatal Python errors
+        run: ruff check --select E9,F63,F7,F82 python/mspasspy python/tests
+
+  asan:
+    name: Native ASan
+    needs: changes
+    if: ${{ needs.changes.outputs.native == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      BUILD_DIRECTORY: build-asan
+      CC: clang
+      CXX: clang++
+    steps:
+      - uses: actions/checkout@v6
+      - name: Cache Boost 1.86
+        uses: actions/cache@v5
+        with:
+          path: ${{ runner.temp }}/mspass-boost-1.86.0
+          key: mspass-boost-1.86.0-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/boost-download.cmake') }}
+      - name: Configure Boost 1.86 cache
+        run: echo "MSPASS_BOOST_ROOT=${RUNNER_TEMP}/mspass-boost-1.86.0" >> "$GITHUB_ENV"
+      - name: Install native dependencies
+        run: sudo apt-get update && sudo apt-get install -yq gfortran libgsl-dev liblapack-dev libyaml-cpp-dev
+      - name: Configure ASan
+        run: >-
+          cmake -S cxx -B "$BUILD_DIRECTORY"
+          -DBUILD_TESTING=ON
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer"
+          -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer"
+      - name: Build ASan
+        run: cmake --build "$BUILD_DIRECTORY" --config RelWithDebInfo --parallel 2
+      - name: Run full ASan test suite
+        working-directory: ${{ env.BUILD_DIRECTORY }}
+        env:
+          ASAN_OPTIONS: halt_on_error=1:abort_on_error=1:detect_leaks=1
+        run: ctest --output-on-failure
+
+  ubsan:
+    name: Native UBSan
+    needs: changes
+    if: ${{ needs.changes.outputs.native == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      BUILD_DIRECTORY: build-ubsan
+      CC: clang
+      CXX: clang++
+    steps:
+      - uses: actions/checkout@v6
+      - name: Cache Boost 1.86
+        uses: actions/cache@v5
+        with:
+          path: ${{ runner.temp }}/mspass-boost-1.86.0
+          key: mspass-boost-1.86.0-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/boost-download.cmake') }}
+      - name: Configure Boost 1.86 cache
+        run: echo "MSPASS_BOOST_ROOT=${RUNNER_TEMP}/mspass-boost-1.86.0" >> "$GITHUB_ENV"
+      - name: Install native dependencies
+        run: sudo apt-get update && sudo apt-get install -yq gfortran libgsl-dev liblapack-dev libyaml-cpp-dev
+      - name: Configure UBSan
+        run: >-
+          cmake -S cxx -B "$BUILD_DIRECTORY"
+          -DBUILD_TESTING=ON
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DCMAKE_C_FLAGS="-fsanitize=undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer"
+          -DCMAKE_CXX_FLAGS="-fsanitize=undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer"
+      - name: Build UBSan
+        run: cmake --build "$BUILD_DIRECTORY" --config RelWithDebInfo --parallel 2
+      - name: Run full UBSan test suite
+        working-directory: ${{ env.BUILD_DIRECTORY }}
+        env:
+          UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+        run: ctest --output-on-failure
+
+  static-gates:
+    name: static-gates
+    if: ${{ always() }}
+    needs: [changes, ruff, asan, ubsan]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every applicable gate
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          NATIVE_CHANGED: ${{ needs.changes.outputs.native }}
+          RUFF_RESULT: ${{ needs.ruff.result }}
+          ASAN_RESULT: ${{ needs.asan.result }}
+          UBSAN_RESULT: ${{ needs.ubsan.result }}
+        run: |
+          set -euo pipefail
+          test "$CHANGES_RESULT" = success
+          test "$RUFF_RESULT" = success
+          if [[ "$NATIVE_CHANGED" == true ]]; then
+            test "$ASAN_RESULT" = success
+            test "$UBSAN_RESULT" = success
+          elif [[ "$NATIVE_CHANGED" == false ]]; then
+            test "$ASAN_RESULT" = skipped
+            test "$UBSAN_RESULT" = skipped
+          else
+            exit 1
+          fi
