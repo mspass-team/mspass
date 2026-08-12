@@ -843,42 +843,6 @@ def Stream2SeismogramEnsemble(stream):
 obspy.core.Stream.toSeismogramEnsemble = Stream2SeismogramEnsemble
 
 
-def _all_members_match(ens, key):
-    """
-    This is a helper function for below.  I scans ens to assure all members
-    of the ensemble have the same value for the requested key. It uses
-    the python operator == for testing.  That can fail for a variety of
-    reasons the "match" may be overly restrictive for some types of data
-    linked to key.
-
-    :param ens:  ensemble data to scan.  Function will throw a MsPASS error if
-      the data this symbol is associated with is not a mspass ensemble object.
-    :param key:  key whose values are to be tested for all members of ens.
-    :return:  True of all members match, false if there are any differences.
-      Note if a key is not defined in a live member the result will be false.
-      Dead data are ignored.
-    """
-    if isinstance(ens, TimeSeriesEnsemble) or isinstance(ens, SeismogramEnsemble):
-        nlive = 0
-        for d in ens.member:
-            if d.live:
-                if nlive == 0:
-                    val0 = d[key]
-                    nlive += 1
-                else:
-                    if not key in d:
-                        return False
-                    val = d[key]
-                    if val0 != val:
-                        return False
-                    nlive += 1
-        return True
-    else:
-        raise MsPASSError(
-            "_all_members_match:  input is not a mspass ensemble object", "Invalid"
-        )
-
-
 def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=False):
     """
     It may be necessary to call this function after conversion from
@@ -893,7 +857,7 @@ def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=
 
     Two different approaches can be used to do this copy.  The faster,
     but least reliable method is to simply copy the values from the first
-    member of the ensemble.  That approach is enabled by default.
+    live member of the ensemble.  That approach is enabled by default.
     It is completely reliable when used after a conversion from an obspy
     Stream but ONLY if the data began life as a mspass ensemble with
     exactly the same keys set as global.   The type example of that
@@ -901,12 +865,12 @@ def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=
     via the mspass decorators.
 
     A more cautious algorithm can be enabled by setting check_all_members
-    True. In that mode the list of keys received is tested with a
-    not equal test for against each member.  Note we do not do anything
-    fancy with floating point data to allow for finite precision.
+    True. In that mode each requested key is required in every live member,
+    and values are compared with the Python ``==`` operator.  Note we do not
+    do anything fancy with floating point data to allow for finite precision.
     The reason is Metadata float values are normally expected to be
-    constant data.  In that case an != test will yield false when the
-    comparison is between two copies.  The not equal test may fail, however,
+    constant data.  In that case an equality test will yield true when the
+    comparison is between two copies.  The equality test may fail, however,
     if used with computed floating point numbers.   An example where
     that is possible would be spatial gathers like PP data assembled by
     midpoint coordinates.  If you need to build gathers in such a context
@@ -914,7 +878,7 @@ def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=
     document collection in MongoDB that defines the geometry of that
     point.  There may be other examples, but the point is don't trust
     computed floating point values to work.  It will also not work if
-    the values of a key-value pair don't support an != comparison.
+    the values of a key-value pair don't support an ``==`` comparison.
     That could be common if the value request for copy was a python object.
 
     :param ens:  ensemble data to be processed.  The function will throw
@@ -929,43 +893,59 @@ def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=
       will be removed from all members.  This option is only allowed
       if check_all_members is set True.  It will be silently ignored if
       check_all_members is False.
+    :return: None.  The input ensemble is modified in place.
     """
+
     alg = "post_ensemble_metadata"
 
     if isinstance(ens, TimeSeriesEnsemble) or isinstance(ens, SeismogramEnsemble):
+        live_members = [d for d in ens.member if d.live]
+        if not live_members:
+            return
+
         md = Metadata()
-        for d in ens.member:
-            if d.live:
-                for k in keys:
-                    if not k in d:
+        source = live_members[0]
+        for k in keys:
+            if k not in source:
+                raise MsPASSError(
+                    alg
+                    + ":  no data matching requested key="
+                    + k
+                    + " in the first live member.  Cannot post to ensemble",
+                    ErrorSeverity.Invalid,
+                )
+            md[k] = source[k]
+
+            if check_all_members:
+                for d in live_members[1:]:
+                    if k not in d:
                         raise MsPASSError(
                             alg
                             + ":  no data matching requested key="
                             + k
-                            + " Cannot post to ensemble",
-                            "Invalid",
+                            + " in a live member.  Cannot post to ensemble",
+                            ErrorSeverity.Invalid,
                         )
-                    md[k] = d[k]
-        if check_all_members:
-            for d in ens.member:
-                for k in keys:
-                    if not _all_members_match(ens, k):
+                    if not d[k] == md[k]:
                         raise MsPASSError(
                             alg
                             + ":  Data mismatch data members with key="
                             + k
                             + "\n  In check_all_members mode all values associated with this key must match",
-                            "Invalid",
+                            ErrorSeverity.Invalid,
                         )
+
+        ens.update_metadata(md)
+        if check_all_members:
             if clean_members:
                 for d in ens.member:
                     for k in keys:
-                        d.erase(k)
-        ens.update_metadata(md)
+                        if k in d:
+                            d.erase(k)
 
     else:
         raise MsPASSError(
             alg
             + ":  Illegal data received.  This function runs only on mspass ensemble objects",
-            "Invalid",
+            ErrorSeverity.Invalid,
         )
