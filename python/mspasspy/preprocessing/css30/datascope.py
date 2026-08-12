@@ -55,6 +55,7 @@ by unreadable by Datascope.
 """
 
 import os
+import warnings
 from mspasspy.ccore.utility import AntelopePf, MsPASSError, ErrorSeverity
 import pandas as pd
 import numpy as np
@@ -310,11 +311,9 @@ class DatascopeDatabase:
         `df` to Datascope table inferred from the `table` argument.
         That is, the method attempts to write the contents of df to
         a file "db.table" with an optional diretory (dir argument).
-        It will immediately throw an exception if any of the df column
-        keys do not match an attribute name for the schema defined for
-        the specified table.  Missing keys will be written as the
-        null value defined for the schema using the pf file loaded
-        with the class constructor.
+        Input columns that are not defined by the target schema are dropped
+        with one warning.  Missing keys are written as the null value defined
+        for the schema using the pf file loaded with the class constructor.
 
         Default behavior is to write to the Datascope handle defined as
         the "self" by the class constructor.   An alternative instance
@@ -324,8 +323,9 @@ class DatascopeDatabase:
         clear any previous content.
 
         :param df: pandas DataFrame containing data to be written.  Note the
-            column names must match css3.0 schema mames or an exception will
-            be thrown.
+            target-schema columns are written in schema order.  Extra columns
+            are dropped with a UserWarning, and missing columns are filled
+            with the schema null value.
         :type df:  pandas DataFrame
         :param db:  output handle.   Default is None which is taken to mean
             use this instance.
@@ -387,65 +387,27 @@ class DatascopeDatabase:
                 fmt += " "
             keys.append(fmtlist[i][0])
             i += 1
-        # only rearrange columns if necessary - an expensive operation
-        dfkeys = df.columns
-        need_to_rearrange = False
-        if len(keys) == len(dfkeys):
-            for i in range(len(keys)):
-                if keys[i] != dfkeys[i]:
-                    need_to_rearrange = True
-                    break
-        else:
-            need_to_rearrange = True
-
-        if need_to_rearrange:
-            # note we can use the keys list as is for input to dataframe's
-            # reindex method.  However, to do that we have to add nulls
-            # for any dfkeys that don't have values for an attribute defines
-            # in keys.  First, however, we have to delete any dfkey
-            # columns not define in keys
-            for k in dfkeys:
-                dropped_keys = list()
-                if k not in keys:
-                    dropped_keys.append(k)
-                if len(dropped_keys) > 0:
-                    # intentionally do not throw an exception here but
-                    # just post a warning because this method is expected
-                    # to only be run interactively
-                    message = "Warning:   The following attributes in the "
-                    message += (
-                        "input DataFrame are not defined in the schema for table "
-                    )
-                    message += table + "\n"
-                    for k in dropped_keys:
-                        message += k + " "
-                    print(message)
-                    dfout = df.drop(axis=1, labels=dropped_keys)
-                else:
-                    # we need this copy if we don't have any key issues
-                    dfout = pd.DataFrame(df)
-            # since they could change we have to reset this list
-            dfkeys = dfout.columns
-            # now get alist of missing attributes and add them using
-            # the null value for that attribute defined by the table schema
-            null_columns = list()
-            for k in keys:
-                if k not in dfkeys:
-                    null_columns.append(k)
-            if len(null_columns) > 0:
-                attributes = self._parse_attribute_name_tbl(table)
-                nulls = attributes[2]
-                for k in null_columns:
-                    nullvalue = nulls[k]
-                    # a bit obscure python syntax to full array with null values and
-                    # insert in one line
-                    dfout[k] = pd.Series([nullvalue for x in range(len(dfout.index))])
-
-            # Now we rearrange - simple with reindex method of pandas
-            dfout = dfout.reindex(columns=keys)
-        else:
-            # in this case we just set the symbol and don't even cpy it
-            dfout = df
+        dropped_keys = sorted((key for key in df.columns if key not in keys), key=str)
+        if dropped_keys:
+            warnings.warn(
+                "The following input DataFrame columns are not defined in "
+                "the schema for table {} and were dropped: {}".format(
+                    table, ", ".join(str(key) for key in dropped_keys)
+                ),
+                UserWarning,
+                stacklevel=2,
+            )
+        dfout = df.drop(columns=dropped_keys).copy()
+        missing_keys = [key for key in keys if key not in dfout.columns]
+        if missing_keys:
+            nulls = self._parse_attribute_name_tbl(table)[2]
+            for key in missing_keys:
+                dfout[key] = pd.Series(
+                    [nulls[key] for _ in range(len(dfout.index))],
+                    index=dfout.index,
+                    dtype=object,
+                )
+        dfout = dfout.reindex(columns=keys)
         fname = outdir + dbname + "." + table
         if append:
             mode = "a"
