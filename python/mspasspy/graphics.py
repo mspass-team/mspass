@@ -9,12 +9,22 @@ from mspasspy.ccore.seismic import (
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
-from mspasspy.util.seismic import number_live
 from mspasspy.algorithms.basic import ExtractComponent
 
 # set as this alias to avoid collision with internal scale
 # not sure that is necessary but this makes context clearer
 from mspasspy.algorithms.window import scale as mspass_scale_function
+
+
+def _validated_live_members(ensemble):
+    """Return live members after validating their sample intervals."""
+    live_members = [member for member in ensemble.member if member.live]
+    for member in live_members:
+        if not numpy.isfinite(member.dt) or member.dt <= 0.0:
+            raise ValueError(
+                "Every live ensemble member must have a finite, positive dt"
+            )
+    return live_members
 
 
 def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False):
@@ -885,6 +895,11 @@ class SeismicPlotter(BasicSeismicPlotter):
         :param d: data object or ensemble to plot.
         :return: ``None``; figures are created through matplotlib state.
         """
+        if isinstance(d, (TimeSeriesEnsemble, SeismogramEnsemble)):
+            if d.dead():
+                return None
+            if not _validated_live_members(d):
+                return None
         # make copy always to prevent unintentional scaling of input data
         if self.normalize:
             d2plot = self._deepcopy(d)
@@ -1019,6 +1034,7 @@ class SeismicPlotter(BasicSeismicPlotter):
         # the ratio of that time interval to data time interval span is too
         # small.
         moderror = "SeismicPlotter._get_ensemble_size (Error):  "
+        _validated_live_members(d)
         ndata = len(d.member)
         if ndata <= 0:
             raise RuntimeError("Trying to plot an empty ensemble")
@@ -1097,12 +1113,13 @@ class SeismicPlotter(BasicSeismicPlotter):
             # figure_title='Component %d' % k
             # plt.figure(figure_title)
             plt.figure(k)
-            handle = self._wtva(dcomp)
+            handle = self._wtva(dcomp, fill)
             figure_handles.append(handle)
         # plt.show()
         return figure_handles
 
     def _imageplot_TimeSeriesEnsemble(self, d):
+        live_members = _validated_live_members(d)
         ndata, tmin, tmax = self._get_ensemble_size(d)
         extent = (tmin, tmax, -0.5, float(ndata) - 0.5)
         # left off here - below is copy from SectionPlotter
@@ -1114,9 +1131,7 @@ class SeismicPlotter(BasicSeismicPlotter):
         # use a crude boxcar resampling for data with larger dt
         # Boxcar resampling is implict in use of time method which gets the
         # nearest sample
-        dt = 10000000.0
-        for i in range(ndata):
-            dt = min(dt, d.member[i].dt)
+        dt = min(member.dt for member in live_members)
         # compute the number of points for the time axis
         nt = int((tmax - tmin) / dt) + 1
         # WARNING - this assumes size of nt is limited by error checking
@@ -1144,7 +1159,7 @@ class SeismicPlotter(BasicSeismicPlotter):
             # tmax test shouldn't be necessary but small cost for safety
             while t <= endtime and t <= tmax:
                 k = d.member[i].sample_number(t)
-                if k > 0 and k < npts:
+                if k >= 0 and k < npts:
                     work[iwork, j] = d.member[i].data[k]
                 t += dt
                 j += 1
@@ -1168,7 +1183,7 @@ class SeismicPlotter(BasicSeismicPlotter):
             origin_position = "lower"
         plt.imshow(
             work,
-            aspect="auto",
+            aspect=aspect,
             cmap=self._color_map,
             origin=origin_position,
             extent=extent,
@@ -1308,9 +1323,8 @@ class LargeEnsemblePlotter(SeismicPlotter):
         :type ens:  Must be either a TimeSeriesEnsemble of SeismogramEnsemle
            or the method will throw a TypeError exception.
         :param skip_the_dead:  Boolean controllng how dead data are
-           handed.  When True (default) dead data will be silently skippped.
-           When False all dead data will create an empty plot cell in
-           the position of the body.
+           handled.  Retained for call compatibility; dead members are always
+           excluded from frame membership.
 
         """
         alg = "LargeEnsemblePlotter.plot"
@@ -1325,28 +1339,23 @@ class LargeEnsemblePlotter(SeismicPlotter):
                 alg
                 + "received ensemble marked dead - cannot  plot ensemble marked dead"
             )
-            return
-        N = len(ens.member)
-        Nlive = number_live(ens)
-        if Nlive <= 0:
+            return None
+        live_members = _validated_live_members(ens)
+        if not live_members:
             print(alg + " ensemble has no live members - nothing to plot")
-        if isinstance(ens, TimeSeriesEnsemble):
-            e2plot = TimeSeriesEnsemble()
-        else:
-            e2plot = SeismogramEnsemble()
-        count = 0
+            return None
+
+        ensemble_type = (
+            TimeSeriesEnsemble
+            if isinstance(ens, TimeSeriesEnsemble)
+            else SeismogramEnsemble
+        )
+        e2plot = ensemble_type()
         frame_number = 0
-        for i in range(len(ens.member)):
-            # shorthand
-            d = ens.member[i]
-            if skip_the_dead and d.dead():
-                # ddebug
-                print("skipping member ", i)
-                continue
-            if count < self.members_per_frame and i != (N - 1):
-                e2plot.member.append(d)
-                count += 1
-            else:
+        for member in live_members:
+            e2plot.member.append(member)
+            if len(e2plot.member) == self.members_per_frame:
+                e2plot.set_live()
                 if frame_number > 0:
                     self._clear_figure_canvases()
                 super().plot(e2plot)
@@ -1355,8 +1364,14 @@ class LargeEnsemblePlotter(SeismicPlotter):
                 # continue on producing multiple plot frames.
                 plt.show()
                 frame_number += 1
-                count = 0
-                e2plot.member.clear()
+                e2plot = ensemble_type()
+        if len(e2plot.member) > 0:
+            e2plot.set_live()
+            if frame_number > 0:
+                self._clear_figure_canvases()
+            super().plot(e2plot)
+            plt.show()
+        return None
 
     def _clear_figure_canvases(self):
         """
