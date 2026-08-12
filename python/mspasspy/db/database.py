@@ -3338,6 +3338,14 @@ class Database(pymongo.database.Database):
         # Now handle update of sample data.  The gridfs method used here
         # handles that correctly based on the gridfs id.
         if mspass_object.live:
+            original_storage_mode = (
+                mspass_object["storage_mode"]
+                if "storage_mode" in mspass_object
+                else None
+            )
+            file_to_gridfs_transition = (
+                original_storage_mode == "file" and "gridfs_id" not in mspass_object
+            )
             if "storage_mode" in mspass_object:
                 storage_mode = mspass_object["storage_mode"]
                 if not storage_mode == "gridfs":
@@ -3349,6 +3357,8 @@ class Database(pymongo.database.Database):
                         ErrorSeverity.Complaint,
                     )
                     mspass_object["storage_mode"] = "gridfs"
+                    if file_to_gridfs_transition:
+                        update_record["storage_mode"] = "gridfs"
             else:
                 mspass_object.elog.log_error(
                     alg_name,
@@ -3395,7 +3405,6 @@ class Database(pymongo.database.Database):
                             "to the waveform",
                             ErrorSeverity.Invalid,
                         )
-
                 if mspass_object.elog.size() > 0:
                     elog_id_name = self.database_schema.default_name("elog") + "_id"
                     # FIXME I think here we should check if elog_id field exists in the mspass_object
