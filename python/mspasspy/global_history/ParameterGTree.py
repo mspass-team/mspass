@@ -274,17 +274,9 @@ class ParameterGTree(collections.OrderedDict):
 
     def prune(self, key):
         """
-        Remove a branch or leaf defined by key from self. Return a copy of the
-        branch/leaf pruned in the process (like get_branch/get_leaf but self is altered)
+        Remove a branch or leaf defined by key from self and return its value.
         """
-        if key not in self:
-            raise MsPASSError("[Error] Wrong Key, Please check your input key again.")
-        if key in self.get_leaf_keys():
-            ret_val = self.get_leaf(key)
-        if key in self.get_branch_keys():
-            ret_val = self.get_branch(key)
-        collections.OrderedDict.popitem(self, key)
-        return ret_val
+        return collections.OrderedDict.pop(self, key)
 
     def get(self, key, seperator="."):
         """
