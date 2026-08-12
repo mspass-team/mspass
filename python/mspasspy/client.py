@@ -3,7 +3,6 @@ import pymongo
 from urllib.parse import urlsplit
 
 from mspasspy.db.client import DBClient
-from mspasspy.util.db_utils import MongoDBWorker
 from mspasspy.db.database import Database
 from mspasspy.global_history.manager import GlobalHistoryManager
 
@@ -22,10 +21,16 @@ else:
 
 try:
     from dask.distributed import Client as DaskClient
+except ImportError as err:
+    DaskClient = None
+    MongoDBWorker = None
+    _mspasspy_has_dask_distributed = False
+    _mspasspy_dask_import_error = err
+else:
+    from mspasspy.util.db_utils import MongoDBWorker
 
     _mspasspy_has_dask_distributed = True
-except ImportError:
-    _mspasspy_has_dask_distributed = False
+    _mspasspy_dask_import_error = None
 
 from mspasspy.ccore.utility import MsPASSError
 
@@ -40,23 +45,64 @@ def _require_pyspark():
     raise MsPASSError(message + ".", "Fatal")
 
 
-def _address_has_port(address):
-    if "://" in address:
-        parsed_address = urlsplit(address)
-    else:
-        parsed_address = urlsplit("//" + address)
+def _require_dask():
+    if _mspasspy_has_dask_distributed:
+        return
+
+    message = "Dask scheduler was requested, but dask.distributed could not be imported"
+    if _mspasspy_dask_import_error is not None:
+        message += ": " + str(_mspasspy_dask_import_error)
+    raise MsPASSError(message + ".", "Fatal")
+
+
+def _build_scheduler_endpoint(
+    scheduler_address,
+    scheduler_port=None,
+    default_port=None,
+    default_scheme=None,
+):
+    endpoint = scheduler_address
+    if default_scheme == "spark" and (
+        endpoint == "local"
+        or (endpoint.startswith("local[") and endpoint.endswith("]"))
+    ):
+        return endpoint
+    if default_scheme and "://" not in endpoint:
+        endpoint = default_scheme + "://" + endpoint
+
+    parse_target = endpoint if "://" in endpoint else "//" + endpoint
+    parsed_address = urlsplit(parse_target)
     try:
-        return parsed_address.port is not None
-    except ValueError:
-        return False
+        embedded_port = parsed_address.port
+    except ValueError as err:
+        raise MsPASSError(
+            "Invalid scheduler address: " + scheduler_address,
+            "Fatal",
+        ) from err
+
+    if embedded_port is not None:
+        return endpoint
+
+    if scheduler_port is None or scheduler_port == "":
+        scheduler_port = default_port
+    if scheduler_port is None or scheduler_port == "":
+        return endpoint
+
+    parsed_address = parsed_address._replace(
+        netloc=parsed_address.netloc + ":" + str(scheduler_port)
+    )
+    endpoint = parsed_address.geturl()
+    if "://" not in scheduler_address:
+        endpoint = endpoint.removeprefix("//")
+    return endpoint
 
 
 def _build_dask_scheduler_address(scheduler_address, scheduler_port=None):
-    if _address_has_port(scheduler_address):
-        return scheduler_address
-    if scheduler_port is None or scheduler_port == "":
-        scheduler_port = "8786"
-    return scheduler_address + ":" + str(scheduler_port)
+    return _build_scheduler_endpoint(
+        scheduler_address,
+        scheduler_port=scheduler_port,
+        default_port="8786",
+    )
 
 
 class Client:
@@ -131,6 +177,7 @@ class Client:
                 "Fatal",
             )
         if dask_client is not None:
+            _require_dask()
             if scheduler == "none":
                 raise MsPASSError(
                     "dask_client cannot be used when scheduler is none.",
@@ -168,6 +215,10 @@ class Client:
             )
         ):
             _require_pyspark()
+        if not _mspasspy_has_dask_distributed and (
+            scheduler == "dask" or (scheduler is None and MSPASS_SCHEDULER == "dask")
+        ):
+            _require_dask()
 
         # create a database client
         # priority: parameter -> env -> default
@@ -245,81 +296,168 @@ class Client:
 
         # scheduler configuration
         if self._scheduler == "spark":
-            scheduler_host_has_port = False
             if scheduler_host:
-                self._spark_master_url = scheduler_host
-                # add spark:// prefix if not exist
-                if "spark://" not in scheduler_host:
-                    self._spark_master_url = "spark://" + self._spark_master_url
-                # check if spark host address contains port number already
-                if self._spark_master_url.count(":") == 2:
-                    scheduler_host_has_port = True
-
+                scheduler_address = scheduler_host
             elif MSPASS_SCHEDULER_ADDRESS:
-                self._spark_master_url = MSPASS_SCHEDULER_ADDRESS
-                # add spark:// prefix if not exist
-                if "spark://" not in MSPASS_SCHEDULER_ADDRESS:
-                    self._spark_master_url = "spark://" + self._spark_master_url
+                scheduler_address = MSPASS_SCHEDULER_ADDRESS
             else:
-                self._spark_master_url = "local"
+                scheduler_address = None
 
-            # add port number
-            # 1. not the default 'local'
-            # 2. scheduler_host and does not contain port number
-            # 3. SPARK_MASTER_PORT exists
-            if (
-                (scheduler_host or MSPASS_SCHEDULER_ADDRESS)
-                and not scheduler_host_has_port
-                and SPARK_MASTER_PORT
-            ):
-                self._spark_master_url += ":" + SPARK_MASTER_PORT
+            if scheduler_address is None:
+                spark_master_url = "local"
+            else:
+                spark_master_url = _build_scheduler_endpoint(
+                    scheduler_address,
+                    scheduler_port=SPARK_MASTER_PORT,
+                    default_scheme="spark",
+                )
 
             # sanity check
             try:
-                spark = (
-                    SparkSession.builder.appName("mspass")
-                    .master(self._spark_master_url)
-                    .getOrCreate()
-                )
-                self._spark_context = spark.sparkContext
+                spark_context = self._create_spark_context(spark_master_url)
             except Exception as err:
                 raise MsPASSError(
                     "Runntime error: cannot create a spark configuration with: "
-                    + self._spark_master_url,
+                    + spark_master_url,
                     "Fatal",
-                )
+                ) from err
+            self._commit_spark_scheduler(spark_context, spark_master_url)
 
         elif self._scheduler == "dask":
             # if no defind scheduler_host and no MSPASS_SCHEDULER_ADDRESS, use local cluster to create a client
             if dask_client is not None:
-                self._dask_client = dask_client
+                try:
+                    self._register_dask_plugin(dask_client)
+                except Exception as err:
+                    raise MsPASSError(
+                        "Runntime error: cannot configure the provided dask client",
+                        "Fatal",
+                    ) from err
+                self._commit_dask_scheduler(dask_client, None, owned=False)
             elif not scheduler_host and not MSPASS_SCHEDULER_ADDRESS:
-                self._dask_client = DaskClient()
+                try:
+                    new_dask_client = self._create_dask_client()
+                except Exception as err:
+                    raise MsPASSError(
+                        "Runntime error: cannot create a local dask client",
+                        "Fatal",
+                    ) from err
+                self._commit_dask_scheduler(new_dask_client, None, owned=True)
             else:
                 if scheduler_host:
                     scheduler_address = scheduler_host
                 else:
                     scheduler_address = MSPASS_SCHEDULER_ADDRESS
 
-                self._dask_client_address = _build_dask_scheduler_address(
+                dask_client_address = _build_dask_scheduler_address(
                     scheduler_address, DASK_SCHEDULER_PORT
                 )
                 # sanity check
                 try:
-                    self._dask_client = DaskClient(self._dask_client_address)
+                    new_dask_client = self._create_dask_client(dask_client_address)
                 except Exception as err:
                     raise MsPASSError(
                         "Runntime error: cannot create a dask client with: "
-                        + self._dask_client_address,
+                        + dask_client_address,
                         "Fatal",
-                    )
+                    ) from err
+                self._commit_dask_scheduler(
+                    new_dask_client, dask_client_address, owned=True
+                )
         elif not self._scheduler_disabled:
             print("There is no spark or dask installed, this client has no scheduler")
 
-        # Auto-register MongoDB worker plugin for dask to avoid DB serialization leaks
-        if self._scheduler == "dask":
-            mongo_plugin = MongoDBWorker(self, dbclient_key="dbclient")
-            self._dask_client.register_plugin(mongo_plugin, name="mongodb_worker")
+    def _register_dask_plugin(self, dask_client):
+        mongo_plugin = MongoDBWorker(self, dbclient_key="dbclient")
+        dask_client.register_plugin(mongo_plugin, name="mongodb_worker")
+
+    def _create_dask_client(self, scheduler_address=None):
+        _require_dask()
+        if scheduler_address is None:
+            dask_client = DaskClient()
+        else:
+            dask_client = DaskClient(scheduler_address)
+        try:
+            self._register_dask_plugin(dask_client)
+        except Exception:
+            dask_client.close()
+            raise
+        return dask_client
+
+    @staticmethod
+    def _create_spark_context(spark_master_url):
+        spark = (
+            SparkSession.builder.appName("mspass")
+            .master(spark_master_url)
+            .getOrCreate()
+        )
+        spark_context = spark.sparkContext
+        if spark_context.master != spark_master_url:
+            raise RuntimeError(
+                "SparkSession.getOrCreate() returned master "
+                + str(spark_context.master)
+                + " instead of "
+                + spark_master_url
+            )
+        return spark_context
+
+    def _commit_dask_scheduler(self, dask_client, scheduler_address, owned):
+        old_scheduler = getattr(self, "_scheduler", None)
+        old_dask_client = getattr(self, "_dask_client", None)
+        old_dask_owned = getattr(self, "_dask_client_owned", False)
+        old_spark_context = getattr(self, "_spark_context", None)
+        old_spark_owned = getattr(self, "_spark_context_owned", False)
+
+        self._scheduler = "dask"
+        self._scheduler_disabled = False
+        self._dask_client = dask_client
+        self._dask_client_address = scheduler_address
+        self._dask_client_owned = owned
+        for attribute in (
+            "_spark_context",
+            "_spark_master_url",
+            "_spark_context_owned",
+        ):
+            if hasattr(self, attribute):
+                delattr(self, attribute)
+
+        if old_scheduler == "dask" and old_dask_client is not None and old_dask_owned:
+            old_dask_client.close()
+        elif (
+            old_scheduler == "spark"
+            and old_spark_context is not None
+            and old_spark_owned
+        ):
+            old_spark_context.stop()
+
+    def _commit_spark_scheduler(self, spark_context, spark_master_url):
+        old_scheduler = getattr(self, "_scheduler", None)
+        old_dask_client = getattr(self, "_dask_client", None)
+        old_dask_owned = getattr(self, "_dask_client_owned", False)
+        old_spark_context = getattr(self, "_spark_context", None)
+        old_spark_owned = getattr(self, "_spark_context_owned", False)
+
+        self._scheduler = "spark"
+        self._scheduler_disabled = False
+        self._spark_context = spark_context
+        self._spark_master_url = spark_master_url
+        self._spark_context_owned = True
+        for attribute in (
+            "_dask_client",
+            "_dask_client_address",
+            "_dask_client_owned",
+        ):
+            if hasattr(self, attribute):
+                delattr(self, attribute)
+
+        if old_scheduler == "dask" and old_dask_client is not None and old_dask_owned:
+            old_dask_client.close()
+        elif (
+            old_scheduler == "spark"
+            and old_spark_context is not None
+            and old_spark_owned
+        ):
+            old_spark_context.stop()
 
     def get_database_client(self):
         """
@@ -448,93 +586,59 @@ class Client:
                 + " is found.",
                 "Fatal",
             )
-        if scheduler == "spark":
-            _require_pyspark()
-
-        prev_scheduler = self._scheduler
-        self._scheduler = scheduler
-        if scheduler == "spark":
-            scheduler_host_has_port = False
-
-            self._spark_master_url = scheduler_host
-            # add spark:// prefix if not exist
-            if "spark://" not in scheduler_host:
-                self._spark_master_url = "spark://" + self._spark_master_url
-            # check if spark host address contains port number already
-            if self._spark_master_url.count(":") == 2:
-                scheduler_host_has_port = True
-
-            # add port
-            if not scheduler_host_has_port and scheduler_port:
-                self._spark_master_url += ":" + scheduler_port
-
-            # sanity check
-            prev_spark_context = None
-            prev_spark_conf = None
-            if hasattr(self, "_spark_context"):
-                prev_spark_context = self._spark_context
-                prev_spark_conf = self._spark_context.getConf()
-            try:
-                if hasattr(self, "_spark_context") and isinstance(
-                    self._spark_context, SparkContext
-                ):
-                    # update the confinguration
-                    spark_conf = self._spark_context._conf.setMaster(
-                        self._spark_master_url
-                    )
-                else:
-                    spark_conf = (
-                        SparkConf()
-                        .setAppName("mspass")
-                        .setMaster(self._spark_master_url)
-                    )
-                # stop the previous spark context
-                # FIXME if the new context does not start, we shouldn't stop the previous here.
-                # if prev_spark_context:
-                #    prev_spark_context.stop()
-                # create a new spark context -> might cause error so that execute exception code
-                spark = SparkSession.builder.config(conf=spark_conf).getOrCreate()
-                self._spark_context = spark.sparkContext
-            except Exception as err:
-                # restore the spark context by the previous spark configuration
-                if prev_spark_conf:
-                    self._spark_context = SparkContext.getOrCreate(conf=prev_spark_conf)
-                # restore the scheduler type
-                if self._scheduler == "spark" and prev_scheduler == "dask":
-                    self._scheduler = prev_scheduler
-                raise MsPASSError(
-                    "Runntime error: cannot create a spark configuration with: "
-                    + self._spark_master_url,
-                    "Fatal",
-                )
-            # close previous dask client if success
-            if hasattr(self, "_dask_client"):
-                del self._dask_client
-
-        elif scheduler == "dask":
-            self._dask_client_address = _build_dask_scheduler_address(
-                scheduler_host, scheduler_port
+        if not type(scheduler_host) is str:
+            raise MsPASSError(
+                "scheduler_host should be a string but "
+                + str(type(scheduler_host))
+                + " is found.",
+                "Fatal",
             )
 
-            # sanity check
-            prev_dask_client = None
-            if hasattr(self, "_dask_client"):
-                prev_dask_client = self._dask_client
-            try:
-                # create a new dask client
-                self._dask_client = DaskClient(self._dask_client_address)
-            except Exception as err:
-                # restore the dask client if exists
-                if prev_dask_client:
-                    self._dask_client = prev_dask_client
-                # restore the scheduler type
-                if self._scheduler == "dask" and prev_scheduler == "spark":
-                    self._scheduler = prev_scheduler
+        if scheduler == "spark":
+            _require_pyspark()
+            spark_master_url = _build_scheduler_endpoint(
+                scheduler_host,
+                scheduler_port=scheduler_port,
+                default_scheme="spark",
+            )
+            if getattr(self, "_scheduler", None) == "spark":
+                active_master = getattr(self, "_spark_master_url", None)
+                if active_master is None:
+                    active_master = getattr(
+                        getattr(self, "_spark_context", None), "master", None
+                    )
+                if active_master == spark_master_url:
+                    return
                 raise MsPASSError(
-                    "Runntime error: cannot create a dask client with: "
-                    + self._dask_client_address,
+                    "Runntime error: cannot create a spark configuration with: "
+                    + spark_master_url
+                    + "; refusing to change active Spark master from "
+                    + str(active_master)
+                    + " because SparkSession.getOrCreate() cannot guarantee the switch.",
                     "Fatal",
                 )
-            # remove previous spark context if success setting new dask client
-            if hasattr(self, "_spark_context"):
-                del self._spark_context
+
+            try:
+                spark_context = self._create_spark_context(spark_master_url)
+            except Exception as err:
+                raise MsPASSError(
+                    "Runntime error: cannot create a spark configuration with: "
+                    + spark_master_url,
+                    "Fatal",
+                ) from err
+            self._commit_spark_scheduler(spark_context, spark_master_url)
+
+        else:
+            _require_dask()
+            dask_client_address = _build_dask_scheduler_address(
+                scheduler_host, scheduler_port
+            )
+            try:
+                dask_client = self._create_dask_client(dask_client_address)
+            except Exception as err:
+                raise MsPASSError(
+                    "Runntime error: cannot create a dask client with: "
+                    + dask_client_address,
+                    "Fatal",
+                ) from err
+            self._commit_dask_scheduler(dask_client, dask_client_address, owned=True)
