@@ -1,3 +1,7 @@
+import math
+from functools import wraps
+from numbers import Real
+
 from mspasspy.util.decorators import mspass_func_wrapper
 from mspasspy.ccore.algorithms.basic import LinearTaper, CosineTaper, VectorTaper
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
@@ -12,6 +16,29 @@ from mspasspy.ccore.seismic import (
 )
 from mspasspy.ccore.utility import SphericalCoordinate
 import numpy as np
+
+
+def _validate_lqt_angle_pair(func):
+    """Reject invalid explicit LQT angles before the generic data wrapper."""
+
+    @wraps(func)
+    def guarded(data, *args, **kwargs):
+        phi = kwargs.get("phi")
+        theta = kwargs.get("theta")
+        if (phi is None) != (theta is None):
+            raise TypeError(
+                "phi and theta must either both be None or both be supplied"
+            )
+        if phi is not None and any(
+            isinstance(angle, bool)
+            or not isinstance(angle, Real)
+            or not math.isfinite(angle)
+            for angle in (phi, theta)
+        ):
+            raise TypeError("phi and theta must be finite numeric values")
+        return func(data, *args, **kwargs)
+
+    return guarded
 
 
 @mspass_func_wrapper
@@ -614,7 +641,7 @@ def transform_to_RTZ(
     :return:  transformed version of input.  For ensembles the entire ensemble
         is transformed.
     """
-    if phi:
+    if phi is not None:
         if angle_units == "degrees":
             phi_rad = np.radians(phi)
         else:
@@ -649,7 +676,7 @@ def transform_to_RTZ(
             data.rotate_to_standard()
             data.rotate(phi_rad)
         except MsPASSError as merr:
-            data.log_error(merr)
+            data.elog.log_error("transform_to_RTZ", merr.message, merr.severity)
             data.kill()
     elif isinstance(data, SeismogramEnsemble):
         for i in range(len(data.member)):
@@ -659,6 +686,7 @@ def transform_to_RTZ(
                 key=key,
                 phi=phi,
                 angle_units=angle_units,
+                key_is_backazimuth=key_is_backazimuth,
                 object_history=object_history,
                 alg_name=alg_name,
                 alg_id=alg_id,
@@ -675,6 +703,7 @@ def transform_to_RTZ(
     return data
 
 
+@_validate_lqt_angle_pair
 @mspass_func_wrapper
 def transform_to_LQT(
     data,
@@ -767,7 +796,7 @@ def transform_to_LQT(
      :return:  transformed version of input.  For ensembles the entire ensemble
          is transformed.
     """
-    if phi and theta:
+    if phi is not None:
         if angle_units == "degrees":
             phi_rad = np.radians(phi)
             theta_rad = np.radians(theta)
@@ -825,7 +854,7 @@ def transform_to_LQT(
             # change the sign of T to keep coordinates right handed == LQT
             # data.data[2,:] = -x
         except MsPASSError as merr:
-            data.log_error(merr)
+            data.elog.log_error("transform_to_LQT", merr.message, merr.severity)
             data.kill()
     elif isinstance(data, SeismogramEnsemble):
         for i in range(len(data.member)):
