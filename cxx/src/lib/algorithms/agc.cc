@@ -1,142 +1,69 @@
 #include "mspass/algorithms/algorithms.h"
 #include "mspass/seismic/Seismogram.h"
-#include <math.h>
-#include <stdlib.h>
-#include <string>
-namespace mspass::algorithms {
-using namespace std;
-using namespace mspass::seismic;
-using namespace mspass::utility;
+#include "mspass/utility/MsPASSError.h"
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <sstream>
 
-/* This uses the same algorithm as seismic unix BUT with a vector ssq
- * instead of the scalar form.   Returns a gain function a the same sample
- * rate as teh original data with the gain factor applied to each 3c sample.
- * The gain is averaged over scale twin ramping on and off using the same
- * cumulative approach used in seismic unix algorithm. */
-/* This function uses the same algorith as seismic unix BUT with a vector ssq
-   instead of the scalar form used for a simple time series.  Returns a
-   gain function at the same sample rate as the original data.  The original
-   data can then be restored by scaling each vector sample by 1/gain at
-   each sample.   */
+namespace mspass::algorithms {
+using mspass::seismic::BasicTimeSeries;
+using mspass::seismic::Seismogram;
+using mspass::seismic::TimeSeries;
+using mspass::utility::dmatrix;
+using mspass::utility::ErrorSeverity;
+using mspass::utility::Metadata;
+using mspass::utility::MsPASSError;
+
 TimeSeries agc(Seismogram &d, const double twin) {
-  try {
-    /* First deal with the processing history */
-    dmatrix agcdata(3, d.npts());
-    double val, rms, ssq, gain, lastgain;
-    size_t i, k;
-    CoreTimeSeries gf(dynamic_cast<BasicTimeSeries &>(d),
-                      dynamic_cast<Metadata &>(d));
-    gf.set_t0(d.t0() + gf.dt());
-    gf.set_npts(d.npts());
-    /* this is inefficient but needed to mesh with older push_back algorithm. */
-    gf.s.clear();
-    int nwin, iwagc;
-    nwin = round(twin / (d.dt()));
-    iwagc = nwin / 2;
-    if (iwagc <= 0) {
-      d.elog.log_error(
-          "agc", "Illegal gain time window - resolves to less than one sample",
-          ErrorSeverity::Invalid);
-      return TimeSeries();
-    }
-    if (iwagc > d.npts())
-      iwagc = d.npts();
-    /* First compute sum of squares in initial wondow to establish the
-     * initial scale */
-    for (i = 0, ssq = 0.0; i < iwagc; ++i) {
-      for (k = 0; k < 3; ++k) {
-        val = d.u(k, i);
-        ssq += val * val;
-      }
-    }
-    int normalization;
-    normalization = 3 * iwagc;
-    rms = ssq / ((double)normalization);
-    if (rms > 0.0) {
-      gain = 1.0 / sqrt(rms);
-      for (k = 0; k < 3; ++k) {
-        agcdata(k, 0) = gain * d.u(k, 0);
-      }
-      gf.s.push_back(gain);
-    } else {
-      gf.s.push_back(0.0);
-      lastgain = 0.0;
-    }
-    for (i = 1; i <= iwagc; ++i) {
-      for (k = 0; k < 3; ++k) {
-        val = d.u(k, i + iwagc);
-        ssq += val * val;
-        ++normalization;
-      }
-      rms = ssq / ((double)normalization);
-      if (rms > 0.0) {
-        lastgain = gain;
-        gain = 1.0 / sqrt(rms);
-      } else {
-        if (lastgain == 0.0)
-          gain = 0.0;
-        else
-          gain = lastgain;
-      }
-      gf.s.push_back(gain);
-      lastgain = gain;
-      for (k = 0; k < 3; ++k)
-        agcdata(k, i) = gain * d.u(k, i);
-    }
-    int isave;
-    for (i = iwagc + 1, isave = iwagc + 1; i < d.npts() - iwagc; ++i, ++isave) {
-      for (k = 0; k < 3; ++k) {
-        val = d.u(k, i + iwagc);
-        ssq += val * val;
-        val = d.u(k, i - iwagc);
-        ssq -= val * val;
-      }
-      rms = ssq / ((double)normalization);
-      if (rms > 0.0) {
-        lastgain = gain;
-        gain = 1.0 / sqrt(rms);
-      } else {
-        if (lastgain == 0.0)
-          gain = 0.0;
-        else
-          gain = lastgain;
-      }
-      gf.s.push_back(gain);
-      lastgain = gain;
-      for (k = 0; k < 3; ++k)
-        agcdata(k, i) = gain * d.u(k, i);
-    }
-    /* ramping off */
-    for (i = isave; i < d.npts(); ++i) {
-      for (k = 0; k < 3; ++k) {
-        val = d.u(k, i - iwagc);
-        ssq -= val * val;
-        --normalization;
-      }
-      rms = ssq / ((double)normalization);
-      if (rms > 0.0) {
-        lastgain = gain;
-        gain = 1.0 / sqrt(rms);
-      } else {
-        if (lastgain == 0.0)
-          gain = 0.0;
-        else
-          gain = lastgain;
-      }
-      gf.s.push_back(gain);
-      lastgain = gain;
-      for (k = 0; k < 3; ++k)
-        agcdata(k, i) = gain * d.u(k, i);
-    }
-    d.u = agcdata;
-    gf.set_live();
-    gf.set_npts(gf.s.size());
-    return gf;
-  } catch (...) {
-    string uxperr("Something threw an unexpected exception");
-    d.elog.log_error("agc", uxperr, ErrorSeverity::Invalid);
-    /* Return an empty TimeSeries object in this case. */
-    return TimeSeries();
+  if (!std::isfinite(twin) || twin <= 0.0) {
+    std::ostringstream message;
+    message << "agc: twin must be finite and positive; received " << twin;
+    throw MsPASSError(message.str(), ErrorSeverity::Invalid);
   }
+  if (!std::isfinite(d.dt()) || d.dt() <= 0.0) {
+    std::ostringstream message;
+    message << "agc: input dt must be finite and positive; received " << d.dt();
+    throw MsPASSError(message.str(), ErrorSeverity::Invalid);
+  }
+  const std::size_t sample_count = d.npts();
+  if (sample_count == 0)
+    throw MsPASSError("agc: input must contain at least one sample",
+                      ErrorSeverity::Invalid);
+
+  const double requested_half_window =
+      std::floor(std::round(twin / d.dt()) / 2.0);
+  const std::size_t maximum_half_window = (sample_count - 1) / 2;
+  const std::size_t half_window = static_cast<std::size_t>(std::min(
+      requested_half_window, static_cast<double>(maximum_half_window)));
+
+  TimeSeries gain_function(dynamic_cast<BasicTimeSeries &>(d),
+                           dynamic_cast<Metadata &>(d));
+  dmatrix output(3, sample_count);
+
+  for (std::size_t i = 0; i < sample_count; ++i) {
+    const std::size_t first = i > half_window ? i - half_window : 0;
+    const std::size_t last = std::min(sample_count - 1, i + half_window);
+    const std::size_t window_sample_count = last - first + 1;
+
+    double energy = 0.0;
+    for (std::size_t j = first; j <= last; ++j) {
+      for (std::size_t component = 0; component < 3; ++component) {
+        const double sample = d.u(component, j);
+        energy += sample * sample;
+      }
+    }
+
+    const double gain =
+        energy > 0.0 ? 1.0 / std::sqrt(energy / (3.0 * window_sample_count))
+                     : 0.0;
+    gain_function.s[i] = gain;
+    for (std::size_t component = 0; component < 3; ++component)
+      output(component, i) = gain * d.u(component, i);
+  }
+
+  d.u = output;
+  gain_function.set_live();
+  return gain_function;
 }
 } // namespace mspass::algorithms

@@ -13,16 +13,10 @@ namespace mspass::algorithms {
 /* \brief Apply agc operator to three component seismogram data.
 
    Automatic gain control (agc) is a standard operation in seismic
-reflection processing.  The algorithm used her is a variant of that in
-seismic unix but applied to vector data.   That is scaling is no
-determined by absolute value of each sample but th vector amplitude of
-each sample.  Scaling is determined by the average vector amplitude
-over a specified time window length.  There isa  ramp in and ramp off
-range of size equal to the window length.   agc was notorious in the
-early days of seismic processing for making it impossible to recover
-true amplitude.   We remove that problem here by returning a TimeSeries
-object whose contents contain the gain applied to each sample of the
-original data.
+reflection processing.  Each three-component sample is scaled by the inverse
+RMS amplitude in a centered, inclusive window.  Windows are truncated at data
+boundaries.  A zero-energy window has zero gain.  The gain applied at every
+sample is returned so callers can inspect the operation.
 
 \param d - data to apply the operator to.  Note it is altered.
 \param twin - length of the agc operator in seconds
@@ -30,8 +24,9 @@ original data.
 \return TimeSeries object with the same number of samples as d. The
   value of each sample is the gain applied at the comparable sample in d.
 
-This function does not throw an exception, but can post errors to the
-ErrorLogger object that is a member of Seismogram.
+\exception MsPASSError with Invalid severity if twin or the input sample
+interval is nonfinite or nonpositive, or if the input contains no samples.
+Rejected inputs are not modified.
 */
 mspass::seismic::TimeSeries agc(mspass::seismic::Seismogram &d,
                                 const double twin);
