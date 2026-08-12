@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
+<<<<<<< HEAD
 from copy import deepcopy
 import math
+=======
+import math
+from numbers import Real
+>>>>>>> 89c398e9 (Fix Gather resampling and time conversion)
 
 import xarray as xr
 import dask.array as da
@@ -29,6 +34,12 @@ from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, ErrorLogger
 
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.resample import resample, ScipyDecimator, ScipyResampler
+
+
+def _is_finite_number(value):
+    return (
+        isinstance(value, Real) and not isinstance(value, bool) and math.isfinite(value)
+    )
 
 
 def isOldEnsembleObject(obj):
@@ -65,8 +76,11 @@ def resample_ensemble(ens, dt=None):
         raise TypeError("Can't resample the object, not an old ensemble object")
     if dt is None:
         dt = ens.member[0].dt
-    decimator = ScipyDecimator(dt)
-    resampler = ScipyResampler(dt)
+    if not _is_finite_number(dt) or dt <= 0.0:
+        raise ValueError("target dt must be a finite positive number")
+    sampling_rate = 1.0 / dt
+    decimator = ScipyDecimator(sampling_rate)
+    resampler = ScipyResampler(sampling_rate)
     return resample(ens, decimator, resampler)
 
 
@@ -90,8 +104,10 @@ def regularize_ensemble(ens, regularizer=None):
         for i in range(nmembers):
             ens.member[i] = regularizer(ens.member[i])
     else:
-        starttime = min([ens.member[i].t0 for i in range(nmembers)])
-        endtime = max([ens.member[i].endtime() for i in range(nmembers)])
+        starttime = max(ens.member[i].t0 for i in range(nmembers))
+        endtime = min(ens.member[i].endtime() for i in range(nmembers))
+        if endtime <= starttime:
+            raise ValueError("ensemble members do not have a common time interval")
         for i in range(nmembers):
             ens.member[i] = WindowData(ens.member[i], starttime, endtime)
     return ens
@@ -844,27 +860,41 @@ class BasicGather(ABC):
         Convert the relative time to absolute time
         """
         if not self.time_is_relative():
-            return
+            return self
 
-        if self.t0shift <= 100.0:
-            raise MsPASSError(
-                "time shift to return to UTC time is not defined", "Invalid"
-            )
+        shift_key = "starttime_shift"
+        if shift_key not in self.ensemble_metadata:
+            raise ValueError("ensemble metadata does not define starttime_shift")
+        shift = self.ensemble_metadata[shift_key]
+        if not _is_finite_number(shift):
+            raise ValueError("starttime_shift must be a finite number")
 
+<<<<<<< HEAD
         # TODO: do we need to check if the items are live or dead here?
         self.member_metadata["starttime"].applymap(lambda x: (x + self.t0shift))
 
         self.t0shift = 0
         self._ensemble_metadata["is_utc"] = True
+=======
+        self.member_metadata["starttime"] = self.member_metadata["starttime"] + shift
+        self.ensemble_metadata[shift_key] = 0.0
+        self.ensemble_metadata["is_utc"] = True
+        return self
+>>>>>>> 89c398e9 (Fix Gather resampling and time conversion)
 
     def ator(self, shift):
         """
         Convert the absolut time to relative time
         """
         if not self.time_is_UTC():
-            return
-        self.t0shift = shift
-        self.member_metadata["time"].applymap(lambda x: (x - self.t0shift))
+            return self
+        if not _is_finite_number(shift):
+            raise ValueError("shift must be a finite number")
+
+        self.member_metadata["starttime"] = self.member_metadata["starttime"] - shift
+        self.ensemble_metadata["starttime_shift"] = shift
+        self.ensemble_metadata["is_utc"] = False
+        return self
 
     def shift(self, timeshift):
         """
@@ -872,9 +902,16 @@ class BasicGather(ABC):
         :param timeshift: the shift time range
         :type timeshift: float
         """
-        old_t0shift = self.t0shift
+        if not _is_finite_number(timeshift):
+            raise ValueError("timeshift must be a finite number")
+        shift_key = "starttime_shift"
+        old_shift = (
+            self.ensemble_metadata[shift_key]
+            if shift_key in self.ensemble_metadata
+            else 0.0
+        )
         self.rtoa()
-        self.ator(old_t0shift + timeshift)
+        return self.ator(old_shift + timeshift)
 
     # The following methods in BasicTimeSeries are optional.  It isn't
     # clear to me if their use is required - at least initially.  With
