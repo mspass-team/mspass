@@ -1,4 +1,8 @@
-This module utilizes the Amazon Lambda function to preprocess the data object stored in AWS S3. This is initially developed for the SCEDC dataset that is stored in S3, however could also be generalized and applied to any data object stored in S3. 
+This module utilizes the Amazon Lambda function to preprocess the data object stored in AWS S3. This is initially developed for the SCEDC dataset that is stored in S3, however could also be generalized and applied to any data object stored in S3.
+
+The example targets the AWS Lambda Python 3.13 x86_64 runtime.  Its checked-in
+`base.zip` is built in the AWS Python 3.13 image and contains Python 3.13 native
+extensions; it must not be reused with another runtime or architecture.
 
 **AWS Lambda:**
 
@@ -20,6 +24,22 @@ Here is a typical workflow of using lambda functions:
 **Prerequisites:**
 
 To use lambda functions, users should have their own AWS account. And Create an IAM role that has full AmazonS3FullAccess, AWSLambda_FullAccess, and AWSLambdaBasicExecutionRole permissions. For more information and instruction, check out https://console.aws.amazon.com/iam/home#/roles. The account information will be used when creating and calling lambda functions.
+
+**Rebuilding the deployment bundle:**
+
+Docker with Buildx is required.  From the repository root, run:
+
+```bash
+scripts/aws_lambda_examples/build_base_zip.sh
+```
+
+The build uses the immutable AWS Lambda Python 3.13 image digest in
+`Dockerfile.bundle`, installs every bundled dependency from the version-and-hash
+lock in `bundle-requirements.txt`, imports every installed top-level module, and
+performs a native ObsPy MiniSEED round trip before exporting `base.zip`.  The
+AWS runtime supplies boto3/botocore, so they are deliberately not duplicated in
+the archive.  The build is fixed to `linux/amd64`, matching Lambda's default
+x86_64 architecture.
 
 ***Note:***
 * Because the size of response payload is limited, we can have two different API: 
