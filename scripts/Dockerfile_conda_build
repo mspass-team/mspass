@@ -1,6 +1,6 @@
-FROM continuumio/miniconda3:latest
+FROM continuumio/miniconda3:latest AS build
 
-RUN conda install -n base -y conda-build anaconda-client && \
+RUN conda install -n base -y conda-build && \
     conda config --add channels conda-forge && \
     conda config --set anaconda_upload no && \
     conda clean -afy
@@ -11,7 +11,6 @@ RUN mv /mspass /mspasspy_build && cd /mspasspy_build && git status
 
 ARG PYTHON_VERSION
 ARG TARGETARCH
-ARG ANACONDA_API_TOKEN
 
 ENV PATH /opt/conda/bin:$PATH
 ENV MSPASS_BOOST_ROOT=/tmp/mspass-boost-1.86.0
@@ -25,6 +24,8 @@ RUN cd /mspasspy_build \
     && export CONDA_BUILD_DEBUG=1 \
     && PACKAGE_PATH=$(conda build . --python ${PYTHON_VERSION} --output) \
     && conda build . --python ${PYTHON_VERSION} --debug \
-    && if [ "$PYTHON_VERSION" = "3.13" ]; then \
-       anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label main --label py${PYTHON_VERSION} --force ; \
-       else anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${PYTHON_VERSION} --force ; fi
+    && mkdir -p /conda-package \
+    && cp "$PACKAGE_PATH" /conda-package/
+
+FROM scratch AS package
+COPY --from=build /conda-package/ /
