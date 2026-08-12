@@ -6,12 +6,17 @@ Created on Tue Jan 28 09:15:40 2025
 @author: pavlis
 """
 from abc import ABC, abstractmethod
-import yaml   
+import math
 import os
+import shlex
 import subprocess
-#import mock_subprocess as subprocess
-import copy
 import time
+
+from distributed import Client
+from pymongo import MongoClient
+import yaml
+
+from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 
 
 class BasicMsPASSLauncher(ABC):
@@ -215,9 +220,9 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
           a new configuration to verify it is what you want. 
         
         """
-        message0="HPCClusterLauncher constructor:  "
+        message0 = "HPCClusterLauncher constructor:  "
         if verbose:
-            print("Loading configuration file=",configuration_file)
+            print("Loading configuration file=", configuration_file)
         super().__init__(configuration_file)
         # The base class constructor creates this image of the yaml 
         # file.  It only extracts common attributes.  Here we 
@@ -230,101 +235,95 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         # at present this is local version of mpiexec
         self.worker_run_command = cluster_config["worker_run_command"]
         self.task_scheduler = cluster_config["task_scheduler"]
-        
-        # This last complex block sets hostnames that 
-        # define the MsPASS frameworK;  database, scheduler, workers, and primary
-        # note primary as a minimum means the host to run the python/jupyter 
-        # script
-        js = cluster_config["job_scheduler"]
-        if js=="slurm":
-            if verbose:
-                print("job scheduler set as slurm")
-            ph=cluster_config["primary_host"]
-            dbh=cluster_config["database_host"]
-            sh=cluster_config["scheduler_host"]
-            wh=cluster_config["worker_hosts"]
-            if (ph=="auto") or (dbh=="auto") or (sh=="auto") or (wh=="auto"):
-                # this executes a slurm command to fetch nodes assigned to 
-                # this job
-                runline = ["scontrol","show","hostname"]
-                comout = subprocess.run(runline,
-                                        capture_output=True,
-                                        text=True,
-                                        )
-                hostlist = comout.stdout.split()
 
-                if len(hostlist)==0:
-                    if self.primary_node_workers==0:
-                        message = message0
-                        message += "scontrol command yielded an empty list of hostnames\n"
-                        message += "Cannot continue"
-                        raise RuntimeError(message)
-                    else:
-                        comout = subprocess.run(["hostname"],
-                                                 capture_output=True,
-                                                 text=True)
-                        hostlist=[comout.stdout]
-                # comout contans a list of host names. By default for 
-                # auto use the first in the list as primary
-                primary=hostlist[0].strip()   # needed because of appended newline
-                if ph=="auto":
-                    self.primary_node=copy.deepcopy(primary)
-                else:
-                    self.primary_node = ph
-                if dbh=="auto":
-                    self.database_host=copy.deepcopy(primary)
-                else:
-                    self.database_host = dbh
-                if sh=="auto":
-                    self.scheduler_host = copy.deepcopy(primary)
-                else:
-                    self.scheduler_list = sh
-                if wh=="auto":
-                    # note worker_hoss exclude primary
-                    self.worker_hosts = []
-                    for i in range(1,len(hostlist),1):
-                        self.worker_hosts.append(hostlist[i].strip())  # strip needed to remove newline
-                            
-                    if len(self.worker_hosts)<=0 and self.primary_node_workers==0:
-                        message = message0
-                        message += "Illegal configuration\n"
-                        message += "scontrol  returned only a single hostname "
-                        message += "but primary_node_workers was set to 0\n"
-                        message += "To run on a single node set primary_node_workers to a postive value\n"
-                        message += "To run on multiple nodes change your slurm commands at the top of this job"
-                        raise RuntimeError(message)
-                if verbose:
-                    print("Primary node name=",self.primary_node)
-                    print("database hostname=",self.database_host)
-                    print("scheduler hostname=",self.scheduler_host)
-                    print("Worker hostname(s)=",self.worker_hosts)
-            if cluster_config["setup_tunnel"]:
-                s = cluster_config["tunnel_setup_command"]
-                print("Attempting to set up ssh communication tunnel to node=",
-                      self.primary_node)
-                print("Using this command line: {} {}".format(s,self.primary_node))
-                # IMPORTANT:  actual implementation requires last arg 
-                # to be primary hostname 
-                arglist=s.split()
-                arglist.append(self.primary_node)
-                comout = subprocess.run(runline,
-                                        capture_output=True,
-                                        text=True)
-                print("Successfully created tunnels to allow connection to ",self.primary_node)
-            # these are set by the launch method but it is good practice 
-            # to initialize them here
-            self.scheduler_process = None
-            self.dbserver_process = None
-            self.primary_worker_process = None
-            self.remote_worker_process = None
-            self.jupyter_process=None
-            if auto_launch:
-                self.launch(verbose=verbose)
-        else:
+        self.scheduler_process = None
+        self.dbserver_process = None
+        self.primary_worker_process = None
+        self.remote_worker_process = None
+        self.jupyter_process = None
+
+        js = cluster_config["job_scheduler"]
+        if js != "slurm":
             message = message0
             message += "Cannot handle job_scheduler={}\n".format(js)
             message += "Currently only support slurm"
             raise ValueError(message)
+
+        if verbose:
+            print("job scheduler set as slurm")
+        primary_setting = cluster_config["primary_host"]
+        database_setting = cluster_config["database_host"]
+        scheduler_setting = cluster_config["scheduler_host"]
+        worker_setting = cluster_config["worker_hosts"]
+        needs_discovery = any(
+            value == "auto"
+            for value in (
+                primary_setting,
+                database_setting,
+                scheduler_setting,
+                worker_setting,
+            )
+        )
+        hostlist = []
+        if needs_discovery:
+            completed = subprocess.run(
+                ["scontrol", "show", "hostname"],
+                capture_output=True,
+                text=True,
+            )
+            hostlist = [
+                host.strip() for host in completed.stdout.split() if host.strip()
+            ]
+            if not hostlist:
+                if self.primary_node_workers == 0:
+                    raise RuntimeError(
+                        message0
+                        + "scontrol command yielded an empty list of hostnames\n"
+                        + "Cannot continue"
+                    )
+                completed = subprocess.run(["hostname"], capture_output=True, text=True)
+                hostname = completed.stdout.strip()
+                if not hostname:
+                    raise RuntimeError(
+                        message0 + "hostname command returned no hostname"
+                    )
+                hostlist = [hostname]
+
+        self.primary_node = (
+            hostlist[0] if primary_setting == "auto" else primary_setting
+        )
+        self.database_host = (
+            self.primary_node if database_setting == "auto" else database_setting
+        )
+        self.scheduler_host = (
+            self.primary_node if scheduler_setting == "auto" else scheduler_setting
+        )
+        if worker_setting == "auto":
+            self.worker_hosts = [host for host in hostlist if host != self.primary_node]
+        elif isinstance(worker_setting, str):
+            self.worker_hosts = [worker_setting] if worker_setting else []
+        else:
+            self.worker_hosts = list(worker_setting)
+
+        if not self.worker_hosts and self.primary_node_workers == 0:
+            raise RuntimeError(
+                message0
+                + "no remote workers were configured and primary_node_workers is 0"
+            )
+        if verbose:
+            print("Primary node name=", self.primary_node)
+            print("database hostname=", self.database_host)
+            print("scheduler hostname=", self.scheduler_host)
+            print("Worker hostname(s)=", self.worker_hosts)
+
+        if cluster_config["setup_tunnel"]:
+            tunnel_args = shlex.split(cluster_config["tunnel_setup_command"])
+            tunnel_args.append(self.primary_node)
+            subprocess.run(tunnel_args, capture_output=True, text=True, check=True)
+
+        if auto_launch:
+            self.launch(verbose=verbose)
+
     def __del__(self):
         """
         Class destructor. 
@@ -333,8 +332,148 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         This instance is little more than a call to self.shutdown()
         which shuts down all the containers as gracefully as possible.  
         """
-        self.shutdown()
-    def launch(self,verbose=False):
+        try:
+            self.shutdown()
+        except Exception:
+            pass
+
+    @staticmethod
+    def _startup_settings():
+        try:
+            timeout = float(os.environ.get("MSPASS_STARTUP_TIMEOUT_SECONDS", "120"))
+            poll_interval = float(
+                os.environ.get("MSPASS_STARTUP_POLL_SECONDS", "2")
+            )
+        except ValueError as error:
+            raise MsPASSError(
+                "HPCClusterLauncher startup timeout and poll values must be numbers",
+                ErrorSeverity.Invalid,
+            ) from error
+        if (
+            not math.isfinite(timeout)
+            or timeout <= 0.0
+            or not math.isfinite(poll_interval)
+            or poll_interval <= 0.0
+        ):
+            raise MsPASSError(
+                "HPCClusterLauncher startup timeout and poll values must be finite and positive",
+                ErrorSeverity.Invalid,
+            )
+        return timeout, poll_interval
+
+    @staticmethod
+    def _popen(args):
+        return subprocess.Popen(
+            args,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+        )
+
+    @staticmethod
+    def _stop_process(process):
+        if process is None:
+            return
+        if process.poll() is None:
+            process.terminate()
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=10)
+
+    def _cleanup_owned_processes(self):
+        first_error = None
+        for attribute in (
+            "jupyter_process",
+            "primary_worker_process",
+            "remote_worker_process",
+            "dbserver_process",
+            "scheduler_process",
+        ):
+            process = getattr(self, attribute, None)
+            try:
+                self._stop_process(process)
+            except Exception as error:
+                if first_error is None:
+                    first_error = error
+            finally:
+                setattr(self, attribute, None)
+        if first_error is not None:
+            raise first_error
+
+    def _raise_startup_error(self, message):
+        try:
+            self._cleanup_owned_processes()
+        except Exception as cleanup_error:
+            message += "; cleanup failed: {}".format(cleanup_error)
+        raise MsPASSError(message, ErrorSeverity.Invalid)
+
+    def _require_running(self, name, process):
+        if process is None:
+            self._raise_startup_error(
+                "HPCClusterLauncher: {} was not started".format(name)
+            )
+        status = process.poll()
+        if status is not None:
+            self._raise_startup_error(
+                "HPCClusterLauncher: {} exited during startup with code {}".format(
+                    name, status
+                )
+            )
+
+    def _probe_database(self):
+        client = MongoClient(self.database_host, serverSelectionTimeoutMS=2000)
+        try:
+            client.admin.command("ping")
+        finally:
+            client.close()
+
+    def _probe_scheduler(self):
+        client = Client(self.scheduler_host, timeout="2s")
+        try:
+            client.scheduler_info()
+        finally:
+            client.close()
+
+    def _wait_for_services(self):
+        timeout, poll_interval = self._startup_settings()
+        deadline = time.monotonic() + timeout
+        while True:
+            self._require_running("scheduler", self.scheduler_process)
+            self._require_running("database", self.dbserver_process)
+            database_ready = False
+            scheduler_ready = False
+            try:
+                self._probe_database()
+                database_ready = True
+            except Exception:
+                pass
+            try:
+                self._probe_scheduler()
+                scheduler_ready = True
+            except Exception:
+                pass
+            if database_ready and scheduler_ready:
+                return
+            remaining = deadline - time.monotonic()
+            if remaining <= 0.0:
+                self._raise_startup_error(
+                    "HPCClusterLauncher: services did not become ready within {} seconds".format(
+                        timeout
+                    )
+                )
+            time.sleep(min(poll_interval, remaining))
+
+    def _container_args(self, environment):
+        return self._initialize_container_runargs() + [
+            self.container_env_flag,
+            ",".join(environment),
+            self.container,
+        ]
+
+    def launch(self, verbose=False):
         """
         Call this method to launch all the MsPASS containized components.
         
@@ -350,146 +489,67 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         If workers are run on theh primary there will also be a defined 
         valued for "self.primary_worker_process".  
         """
-        runline = self._initialize_container_runargs()
-        runline.append(self.container_env_flag)
-        envlist = "MSPASS_ROLE=scheduler,MSPASS_WORK_DIR={}".format(self.working_directory)
-        envlist += ",MSPASS_SCHEDULER={}".format(self.task_scheduler)
-        envlist += ",MSPASS_SCHEDULER_ADDRESS={}".format(self.primary_node)
-        runline.append(envlist)
-        runline.append(self.container)
-        # We have to use this lower level function in subprocess 
-        # for two reason:  (a) nonblocking launch to run the container 
-        # from a new process and (b) keeping the output allows graceful 
-        # shutdown in the shutdown method
-        self.scheduler_process = subprocess.Popen(runline,
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    close_fds=True,
-                                )
-        if verbose:
-            print("Successfully launched scheduler")
-        print("Debug:  launch line")
-        print(runline)
-        # now do a similar thing for database 
-        # note this implementation doesn't handle shrarding
-        runline = self._initialize_container_runargs()
-        runline.append(self.container_env_flag)
-        envlist = "MSPASS_ROLE=db,"
-        envlist += "MSPASS_WORK_DIR={},".format(self.working_directory)
-        envlist += "MSPASS_DB_DIR={}".format(self.database_directory)
-        runline.append(envlist)
-        runline.append(self.container)
-
-        self.dbserver_process = subprocess.Popen(runline,
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    close_fds=True,
-                                )
-        if verbose:
-            print("Successfully launched db")
-        print("Debug:  launch line")
-        print(runline)
-        # Now launch workers on hosts that are not primaary host
-        worker_run_args=self._build_worker_run_args()
-        if len(worker_run_args)>0:
-            print("launching workers on remote hosts")
-            self.remote_worker_process = subprocess.Popen(worker_run_args,
-                                        stdin=subprocess.PIPE,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE,
-                                        close_fds=True,
-                                    )
-        # do not trap error of no worker nodes and no workers 
-        # assigned to primary - assume constructor traps that condition.
-        print("Launching worker container on primary node")
-        if self.primary_node_workers>0:
-            # we have to launch this container differently soo 
-            # we have to prepare a somewhat different run line
-            # could not make this work with worker_arg unless we used 
-            # shell=True.   In that case we build a command line instead of 
-            # a list like runline
-            runline = self._initialize_container_runargs()
-            srun =""
-            for s in runline:
-                srun += s
-                srun += " "
-            srun += self.container_env_flag
-            srun += " "
-            envlist = "MSPASS_ROLE=worker,"
-            envlist += "MSPASS_WORK_DIR={},".format(self.working_directory)
-            #envlist += "MSPASS_SCHEDULER_ADDRESS={}".format(self.scheduler_host)
-            envlist += "MSPASS_SCHEDULER_ADDRESS={},".format(self.scheduler_host)
-            #envlist += "MSPASS_DB_ADDRESS={},".format(self.database_host)
-            envlist += 'MSPASS_WORKER_ARG="--nworkers={} --nthreads 1"'.format(self.primary_node_workers)
-            srun += envlist + " " + self.container
-            print("command line sent to Popen")
-            print(srun)
-            #self.primary_worker_process = subprocess.Popen(runline,
-            self.primary_worker_process = subprocess.Popen(srun,shell=True,
-                                        stdin=subprocess.PIPE,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE,
-                                        close_fds=True,
-                                    )
-            print("Launched workers on primary node")
-            
-        # Exit immmeditaly if any of the contaienrs  have exited
-        if self.status(verbose=False) == 0:
-            def stat_message(c):
-                if self.status(container=c,verbose=False):
-                    m = c + " container is running\n"
-                else:
-                    m = c + "container is NOT running\n"
-                return m
-            message = "HPCClusterLauncher:  cluster initiation failed\n"
-            for con in ["db","scheduler","primary_worker"]:
-                m = stat_message(con)
-                message += m
-            raise RuntimeError(message)
+        # Validate these settings before starting any process.  Otherwise an
+        # invalid value would leave the scheduler and database children alive.
+        self._startup_settings()
+        try:
+            self.scheduler_process = self._popen(
+                self._container_args(
+                    [
+                        "MSPASS_ROLE=scheduler",
+                        "MSPASS_WORK_DIR={}".format(self.working_directory),
+                        "MSPASS_SCHEDULER={}".format(self.task_scheduler),
+                        "MSPASS_SCHEDULER_ADDRESS={}".format(self.scheduler_host),
+                    ]
+                )
+            )
+            self._require_running("scheduler", self.scheduler_process)
+            self.dbserver_process = self._popen(
+                self._container_args(
+                    [
+                        "MSPASS_ROLE=db",
+                        "MSPASS_WORK_DIR={}".format(self.working_directory),
+                        "MSPASS_DB_DIR={}".format(self.database_directory),
+                    ]
+                )
+            )
+            self._require_running("database", self.dbserver_process)
+            self._wait_for_services()
+            worker_args = self._build_worker_run_args()
+            if worker_args:
+                self.remote_worker_process = self._popen(worker_args)
+                self._require_running("remote worker", self.remote_worker_process)
+            if self.primary_node_workers > 0:
+                self.primary_worker_process = self._popen(
+                    self._container_args(
+                        [
+                            "MSPASS_ROLE=worker",
+                            "MSPASS_WORK_DIR={}".format(self.working_directory),
+                            "MSPASS_SCHEDULER_ADDRESS={}".format(self.scheduler_host),
+                            "MSPASS_DB_ADDRESS={}".format(self.database_host),
+                            "MSPASS_WORKER_ARG=--nworkers={} --nthreads 1".format(
+                                self.primary_node_workers
+                            ),
+                        ]
+                    )
+                )
+                self._require_running("primary worker", self.primary_worker_process)
+            if verbose:
+                print("Successfully launched MongoDB, scheduler, and workers")
+        except MsPASSError:
+            raise
+        except Exception as error:
+            message = "HPCClusterLauncher launch failed: {}".format(error)
+            try:
+                self._cleanup_owned_processes()
+            except Exception as cleanup_error:
+                message += "; cleanup failed: {}".format(cleanup_error)
+            raise MsPASSError(message, ErrorSeverity.Invalid) from error
 
     def shutdown(self):
-        # shutdown in reverse order to start
-        # first workers
-        # I think we only need to handle primary node container.  
-        # The contaners on other nodes have to be shut down by slurm
-        # unless here is an mpitrick I am unaware of
-        if self.jupyter_process:
-            try :
-                self.jupyter_process.terminate()
-                self.jupyter_process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                print("Jupyter notebook server (frontend) did not respond to terminate method")
-                print("Reverting to less graceful kill")
-                self.jupyter_process.kill()
-        if self.primary_worker_process:
-            try :
-                self.primary_worker_process.terminate()
-                self.primary_worker_process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                print("Worker container on primary node did not respond to terminate method")
-                print("Reverting to less graceful kill")
-                self.primary_worker_process.kill()
-        # now database - should always be running so no need for not None 
-        # test for the rest of these
-        try :
-            self.dbserver_process.terminate()
-            self.dbserver_process.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            print("Database server container did not respond to terminate method")
-            print("Reverting to less graceful kill")
-            self.dbserver_process.kill()
-        # finally terminate the scheduler
-        try :
-            self.scheduler_process.terminate()
-            self.scheduler_process.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            print("Scheduler container did not respond to terminate method")
-            print("Reverting to less graceful kill")
-            self.scheduler_process.kill()
+        self._cleanup_owned_processes()
 
-    def run(self,pyscript):
+    def run(self, pyscript):
         """
         Runs pyscript the primary node using this cluster.
         
@@ -500,32 +560,22 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         """
         # this can be made more elaborate.  Here I just run 
         # a script
-        print("Trying to run python script file=",pyscript)
-        runline=[]
-        # I am going to hard code this for now 
-        runline.append("apptainer")
-        runline.append("run")
-        crarg=self.container_run_args.split()
-        for arg in crarg:
-            runline.append(arg)
-        runline.append("--env")
-        envlist = "MSPASS_ROLE=frontend"
-        envlist += ",MSPASS_WORK_DIR={}".format(self.working_directory)
-        envlist += ",MSPASS_DB_ADDRESS={}".format(self.database_host)
-        envlist += ",MSPASS_SCHEDULER_ADDRESS={}".format(self.scheduler_host)
-        runline.append(envlist)
-        runline.append(self.container)
-        runline.append("--batch")
-        runline.append(pyscript)
-        print("running script")
-        print("Debug:  launch line")
-        print(runline)
-        
-        runout=subprocess.run(runline,capture_output=True,text=True)
+        print("Trying to run python script file=", pyscript)
+        self._wait_for_services()
+        runline = self._container_args(
+            [
+                "MSPASS_ROLE=frontend",
+                "MSPASS_WORK_DIR={}".format(self.working_directory),
+                "MSPASS_DB_ADDRESS={}".format(self.database_host),
+                "MSPASS_SCHEDULER_ADDRESS={}".format(self.scheduler_host),
+            ]
+        ) + ["--batch", pyscript]
+        runout = subprocess.run(runline, capture_output=True, text=True)
         print("stdout from this job")
         print(runout.stdout)
         print("stderr from this job")
         print(runout.stderr)
+
     def interactive_session(self):
         """
         Use this method to launch the jupyter server to initiate an 
@@ -535,18 +585,20 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         """
         print("Launching frontend container running juptyer server")
         print("Use cut-and-paste of url printed below to connect")
-        runline = self._initialize_container_runargs()
-        runline.append("--env")
-        envlist = "MSPASS_ROLE=frontend,"
-        envlist += "MSPASS_WORK_DIR={}".format(self.working_directory)
-        runline.append(envlist)
-        runline.append(self.container)
-        self.jupyter_process=subprocess.Popen(runline,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = self.jupyter_process.communicate()
-        print(stdout)
-        print(stderr)
+        self._wait_for_services()
+        runline = self._container_args(
+            [
+                "MSPASS_ROLE=frontend",
+                "MSPASS_WORK_DIR={}".format(self.working_directory),
+                "MSPASS_DB_ADDRESS={}".format(self.database_host),
+                "MSPASS_SCHEDULER_ADDRESS={}".format(self.scheduler_host),
+            ]
+        )
+        self.jupyter_process = self._popen(runline)
+        self._require_running("frontend", self.jupyter_process)
+        return self.jupyter_process
 
-    def status(self,container="all",verbose=True)->int:
+    def status(self, container="all", verbose=True) -> int:
         """
         Check the status of one or more of the containers managed by this object.
         
@@ -560,14 +612,16 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
             "scheduler" - check only the contaner running the dask or
                 or spark scheduler
             "primary_worker" - check status of the worker container running on 
-                the primary node.  Note there is currently no support for 
-                workers spwaned on other nodes. 
+                the primary node.
+            "remote_worker" - check the worker launcher for remote nodes.
+            "frontend" - check the interactive frontend, when one was launched.
                 
         Any other values for arg0 will cause this method to throw a 
         ValueError exception.
         
         :param container: container keywords noted above for arg0.  i.e. 
-           must be one of "db","scheduler", "primary_worker", or "all" (default)
+           must be one of "db", "scheduler", "primary_worker", "remote_worker",
+           "frontend", or "all" (default)
         :type container:  string
         :param verbose:  boolean that when True (default) uses print to 
            post a status message for container(s) requested.  When false 
@@ -575,12 +629,18 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         :return:  int status.  1 means the container(s) tested were all 
            running.  0 means one or more have died.
         """
-        all_containers=["db","scheduler","primary_worker"]
-        if container=="all":
-            statlist=all_containers
+        all_containers = [
+            "db",
+            "scheduler",
+            "primary_worker",
+            "remote_worker",
+            "frontend",
+        ]
+        if container == "all":
+            statlist = all_containers
         else:
             if container in all_containers:
-                statlist=[container]
+                statlist = [container]
             else:
                 message = "HPCClusterLauncher.status:  component={}".format(container)
                 message += " invalid\n"
@@ -588,29 +648,39 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
                 for c in all_containers:
                     message += c + " "
                 raise ValueError(message)
-        def verbose_message(container_name,poll_return):
+
+        def verbose_message(container_name, poll_return):
             if poll_return is None:
-                print(container_name," is running")
+                print(container_name, " is running")
             else:
-                print(container_name, " has exited with code=",poll_return)
-        retval=1
+                print(container_name, " has exited with code=", poll_return)
+
+        retval = 1
         for container in statlist:
             match container:
                 case "db":
-                    stat = self.dbserver_process.poll()
+                    process = self.dbserver_process
                 case "scheduler":
-                    stat = self.scheduler_process.poll()
+                    process = self.scheduler_process
                 case "primary_worker":
-                    stat = self.primary_worker_process.poll()
+                    process = self.primary_worker_process
+                case "remote_worker":
+                    process = self.remote_worker_process
+                case "frontend":
+                    process = self.jupyter_process
+            if process is None:
+                if container in ("db", "scheduler"):
+                    retval = 0
+                continue
+            stat = process.poll()
             if verbose:
-                verbose_message(container,stat)
-            if stat:
+                verbose_message(container, stat)
+            if stat is not None:
                 retval = 0
-                
-        return retval
-                        
 
-    def _initialize_container_runargs(self)->list:
+        return retval
+
+    def _initialize_container_runargs(self) -> list:
         """
         This private method creates the initial list of args 
         used to run a container driven by two key-value pairs 
@@ -623,15 +693,16 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         Returns a list that is is the starting point for the list of 
         args used for subprocess.run and subprocess.Popen. 
         """
-        crargs=[]
-        rtmp=self.container_run_command.split()
+        crargs = []
+        rtmp = self.container_run_command.split()
         for arg in rtmp:
             crargs.append(arg)
-        rtmp=self.container_run_args.split()
+        rtmp = self.container_run_args.split()
         for arg in rtmp:
             crargs.append(arg)
         return crargs
-    def _build_worker_run_args(self)->list:
+
+    def _build_worker_run_args(self) -> list:
         """
         Private method that constructs the command to launch 
         workers on nodes other than the primary node.   Uses the 
@@ -645,11 +716,11 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         here are no workers assigned to primary.
         """
         nnodes = len(self.worker_hosts)
-        if nnodes==0:
-                return []
-        arglist=[]
-        #cthis allows args to be entered on teh run line in config file
-        tlist=self.worker_run_command.split()
+        if nnodes == 0:
+            return []
+        arglist = []
+        # cthis allows args to be entered on teh run line in config file
+        tlist = self.worker_run_command.split()
         for arg in tlist:
             arglist.append(arg)
         # these are actually locked to mpiexec so this isn't 
@@ -668,21 +739,24 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
             arglist.append(arg)
         # apptainer mthod for setting environment variables loaded 
         # in contaer
-        arglist.append("--env")
-        envlist = "MSPASS_ROLE=worker,"
-        envlist += "MSPASS_WORK_DIR={},".format(self.working_directory)
-        envlist += "MSPASS_SCHEDULER_ADDRESS={},".format(self.scheduler_host)
-        envlist += "MSPASS_DB_ADDRESS={}".format(self.database_host)
-        envlist += "MSPASS_WORKER_ARG=\"--nworkers={} --nthreads 1\"".format(self.workers_per_node)
-        arglist.append(envlist)
+        arglist.append(self.container_env_flag)
+        arglist.append(
+            ",".join(
+                [
+                    "MSPASS_ROLE=worker",
+                    "MSPASS_WORK_DIR={}".format(self.working_directory),
+                    "MSPASS_SCHEDULER_ADDRESS={}".format(self.scheduler_host),
+                    "MSPASS_DB_ADDRESS={}".format(self.database_host),
+                    "MSPASS_WORKER_ARG=--nworkers={} --nthreads 1".format(
+                        self.workers_per_node
+                    ),
+                ]
+            )
+        )
         arglist.append(self.container)
-        # also backgrounded 
-        arglist.append("&")
         return arglist
-            
-            
-            
-    
+
+
 class DesktopLauncher(BasicMsPASSLauncher):
     """
     Launcher for running MsPASS on a desktop in the all-in-one mode.
