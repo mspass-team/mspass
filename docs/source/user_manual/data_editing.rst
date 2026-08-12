@@ -310,12 +310,11 @@ the constructor is different and has this signature:
 
 where ``executioner_list`` is expected to be any iterable container made up
 only of Python objects that are instances of Executioner subclasses. (All the
-classes covered in this document are subclasses of Executioner.)  Use a
-reusable iterable such as a list or tuple rather than a one-shot generator,
-because the constructor iterates over it once for validation and again to
-copy it.  ``FiringSquad`` itself has no verbose constructor option.  Any
-testers needing verbose output must have that option enabled during their
-construction.
+classes covered in this document are subclasses of Executioner.)  The input is
+materialized once, so reusable containers and one-shot generators preserve the
+same execution order.  ``FiringSquad`` itself has no verbose constructor
+option.  Any testers needing verbose output must have that option enabled
+during their construction.
 
 When the ``kill_if_true`` method is called for this class the list of
 executioners are called in order defined by the list.  The victim cannot
