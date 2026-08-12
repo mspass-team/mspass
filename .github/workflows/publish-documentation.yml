@@ -1,0 +1,45 @@
+name: Publish documentation
+
+"on":
+  workflow_call:
+    inputs:
+      version_match:
+        required: true
+        type: string
+
+concurrency:
+  group: gh-pages-writer
+  queue: max
+  cancel-in-progress: false
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Download documentation
+      uses: actions/download-artifact@v4
+      with:
+        name: documentation-html
+        path: docs/build/html
+    - name: Prepare Documentation for GitHub Pages
+      env:
+        MSPASS_DOCS_VERSION_MATCH: ${{ inputs.version_match }}
+      run: |
+        python docs/scripts/prepare_versioned_docs.py \
+          --html-dir docs/build/html \
+          --site-dir docs/build/site \
+          --site-url https://www.mspass.org \
+          --version-match "$MSPASS_DOCS_VERSION_MATCH"
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: docs/build/site
+        CLEAN: true
