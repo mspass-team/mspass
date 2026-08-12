@@ -851,7 +851,7 @@ class Database(pymongo.database.Database):
         # same for ensemble
         if normalize_ensemble is None:
             normalize_ensemble_list = []
-        elif len(normalizer_list) == 0:
+        elif len(normalize_ensemble) == 0:
             normalize_ensemble_list = []
         else:
             normalize_ensemble_list = parse_normlist(normalize_ensemble, self)
@@ -1076,7 +1076,7 @@ class Database(pymongo.database.Database):
                     if normalize_ensemble:
                         for matcher in normalize_ensemble_list:
                             # use this conditional because normalizers can kill
-                            if mspass_object.live:
+                            if ensemble.live:
                                 # scope qualifier needed to avoid name collsion with normalize argument
                                 ensemble = normalize_module.normalize(ensemble, matcher)
                             else:
@@ -1091,23 +1091,6 @@ class Database(pymongo.database.Database):
                                     if d.dead():
                                         d["is_abortion"] = True
                                         break
-                    if load_history:
-                        history_obj_id_name = (
-                            self.database_schema.default_name("history_object") + "_id"
-                        )
-                        for d in ensemble.member:
-                            if d.live:
-                                if d.is_defined(history_obj_id_name):
-                                    history_id = d[history_obj_id_name]
-                                else:
-                                    history_id = None
-                                self._load_history(
-                                    mspass_object,
-                                    history_id,
-                                    alg_name=alg_name,
-                                    alg_id=alg_id,
-                                    define_as_raw=define_as_raw,
-                                )
                     # make sure we didn't kill all members
                     kill_me = True
                     for d in ensemble.member:
@@ -1116,6 +1099,23 @@ class Database(pymongo.database.Database):
                             break
                     if kill_me:
                         ensemble.kill()
+                if load_history:
+                    history_obj_id_name = (
+                        self.database_schema.default_name("history_object") + "_id"
+                    )
+                    for d in ensemble.member:
+                        if d.live:
+                            if d.is_defined(history_obj_id_name):
+                                history_id = d[history_obj_id_name]
+                            else:
+                                history_id = None
+                            self._load_history(
+                                d,
+                                history_id,
+                                alg_name=alg_name,
+                                alg_id=alg_id,
+                                define_as_raw=define_as_raw,
+                            )
 
             else:
                 # Default constructed container assumed marked dead
