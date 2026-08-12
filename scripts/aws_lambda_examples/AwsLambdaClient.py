@@ -1,7 +1,6 @@
 import base64
-import io
+import binascii
 import boto3
-import sys
 import os
 import zipfile
 import tempfile
@@ -54,8 +53,7 @@ class AwsLambdaClient:
             aws_secret_access_key=self.aws_secret_access_key,
             region_name=self.region_name,
         )
-        client = aws_session.client(client_type, self.region_name)
-        return client
+        return aws_session.client(client_type)
 
     @staticmethod
     def _updateZip(zip_path, filename):
@@ -94,12 +92,14 @@ class AwsLambdaClient:
         """
 
         s3_client = self.create_aws_client("s3")
+        self._updateZip("base.zip", "process.py")
         self._updateZip("base.zip", "aws_lambda_func_def.py")
-        s3_client.put_object(
-            Key="base.zip",
-            Bucket=self.lambda_upload_bucket,
-            Body=open("base.zip", "rb"),
-        )
+        with open("base.zip", "rb") as archive:
+            s3_client.put_object(
+                Key="base.zip",
+                Bucket=self.lambda_upload_bucket,
+                Body=archive,
+            )
 
         lambda_client = self.create_aws_client("lambda")
         lambda_client.create_function(
@@ -122,12 +122,12 @@ class AwsLambdaClient:
         :param request: an dictionary that contains all the arguments passed to the lambda function. It will be dumped as a json string and then used as the payload of request.
         It should at least contain four elements: ‘src_bucket’, ‘dst_bucket’, ‘src_key’, ‘dst_key’. They will indicate the input and output object of this lambda call.
         :return: a dict that contain two elements:
-            1) ret_type: two possible value: ‘key’ or ‘value’,
+            1) ret_type: two possible values: ‘key’ or ‘content’,
                 ‘key’ means that the output object is saved to some place in s3.
-                ‘value’ means that the output object is directly returned through payload
+                ‘content’ means that the output object is directly returned through payload
             2) ret_value:
                 If ret_type=’key’, ret_value will be the key of the output object in s3.
-                If ret_type=’value’, ret_value will be the bytes of the returning object.
+                If ret_type=’content’, ret_value will be the decoded output bytes.
         """
 
         lambda_client = self.create_aws_client("lambda")
@@ -138,21 +138,72 @@ class AwsLambdaClient:
             Payload=json.dumps(request),
         )
 
-        response_payload = json.loads(response["Payload"].read())
-        ret_type = response_payload["ret_type"]
-        if (
-            ret_type == "key"
-        ):  #   The output file is saved to another bucket (s3_output_bucket).
-            ret_value = response_payload["ret_value"]
-            print(
-                "The window given is too large, can't be returned immediately,\nPlease check {}".format(
-                    ret_value
-                )
+        payload_stream = response.get("Payload")
+        if payload_stream is None or not hasattr(payload_stream, "read"):
+            raise RuntimeError(
+                f"Lambda {function_name!r} returned no readable Payload stream"
             )
-        elif ret_type == "content":
-            ret_value = base64.b64decode(response_payload["ret_value"].encode("utf-8"))
-        else:
-            raise Exception("Undefined return type when calling " + function, "Fatal")
+        try:
+            raw_payload = payload_stream.read()
+        except Exception as error:
+            raise RuntimeError(
+                f"Failed to read the response from Lambda {function_name!r}"
+            ) from error
+        finally:
+            close = getattr(payload_stream, "close", None)
+            if close is not None:
+                close()
 
-        ret_dict = {"return_type": ret_type, "ret_value": ret_value}
-        return ret_dict
+        if response.get("FunctionError"):
+            raise RuntimeError(
+                f"Lambda {function_name!r} failed with FunctionError "
+                f"{response['FunctionError']!r}"
+            )
+
+        try:
+            if isinstance(raw_payload, bytes):
+                decoded_payload = raw_payload.decode("utf-8")
+            elif isinstance(raw_payload, str):
+                decoded_payload = raw_payload
+            else:
+                raise TypeError(
+                    f"Payload.read() returned {type(raw_payload).__name__}, not bytes"
+                )
+            response_payload = json.loads(decoded_payload)
+        except (UnicodeDecodeError, json.JSONDecodeError, TypeError) as error:
+            raise RuntimeError(
+                f"Lambda {function_name!r} returned malformed UTF-8/JSON"
+            ) from error
+
+        if not isinstance(response_payload, dict) or set(response_payload) != {
+            "ret_type",
+            "ret_value",
+        }:
+            raise RuntimeError(
+                f"Lambda {function_name!r} returned a malformed response object"
+            )
+        ret_type = response_payload["ret_type"]
+        encoded_value = response_payload["ret_value"]
+        if ret_type == "key":
+            if not isinstance(encoded_value, str) or not encoded_value:
+                raise RuntimeError(
+                    f"Lambda {function_name!r} returned an invalid S3 key"
+                )
+            ret_value = encoded_value
+        elif ret_type == "content":
+            if not isinstance(encoded_value, str):
+                raise RuntimeError(
+                    f"Lambda {function_name!r} returned non-string base64 content"
+                )
+            try:
+                ret_value = base64.b64decode(encoded_value, validate=True)
+            except (binascii.Error, ValueError) as error:
+                raise RuntimeError(
+                    f"Lambda {function_name!r} returned invalid base64 content"
+                ) from error
+        else:
+            raise RuntimeError(
+                f"Lambda {function_name!r} returned unknown ret_type {ret_type!r}"
+            )
+
+        return {"ret_type": ret_type, "ret_value": ret_value}

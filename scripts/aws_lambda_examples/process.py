@@ -2,15 +2,34 @@
 
 import os
 import boto3
-import obspy
 import json
 import base64
-import shutil
+import tempfile
 from aws_lambda_func_def import lambda_func
 
-
 _DEBUG_FLAG_ = False  # When set to True, debugging log will be printed
-MAX_PAYLOAD = 6 * 1000000  # The maximum payload of lambda function is 6MB
+MAX_PAYLOAD = 6000000  # Maximum final UTF-8 JSON response size for synchronous Invoke
+
+
+def _serialized_response(response):
+    return json.dumps(
+        response,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+
+
+def _fits_invoke_response(serialized_response):
+    return len(serialized_response) <= MAX_PAYLOAD
+
+
+def _remove_file(path):
+    if path is None:
+        return
+    try:
+        os.remove(path)
+    except FileNotFoundError:
+        pass
 
 
 def process(event):
@@ -18,8 +37,9 @@ def process(event):
     A wrapper function for the user-defined aws lambda functions.
     First download the source object from s3 bucket.
     Then execute the lambda function defined by user.
-    Finally, return the content of the timewindow if the file size is less than 6MB,
-    Otherwise, dump that output file to another s3 bucket, and return the file location.
+    Finally, return the content when its compact UTF-8 JSON response is no
+    larger than 6,000,000 bytes.  Otherwise, upload the output to S3 and return
+    its key.
     """
     if _DEBUG_FLAG_:
         print(event)
@@ -35,51 +55,56 @@ def process(event):
     src_key = event["src_key"]
     dst_key = event["dst_key"]
 
-    # Download file from the source S3 bucket.
     session = boto3.Session()
-    s3 = boto3.client("s3", region_name="us-west-2")  #   BY DEFAULT
-    tempfile = "/tmp/" + os.path.basename(src_key)
-    if _DEBUG_FLAG_:
-        print("Downloading {} to {}".format(src_key, tempfile))
-    s3.download_file(src_bucket, src_key, tempfile)
-
-    if not os.path.isfile(tempfile):
-        raise Exception(
-            "Could not download {} from {} to {}".format(src_key, src_bucket, tempfile)
+    s3 = session.client("s3")
+    suffix = os.path.splitext(os.path.basename(src_key))[1]
+    input_path = None
+    output_path = None
+    try:
+        input_handle = tempfile.NamedTemporaryFile(
+            prefix="mspass-lambda-input-", suffix=suffix, delete=False
         )
-
-    # Call user-defined function
-    outfile = lambda_func(tempfile, event)
-    if not os.path.isfile(outfile):
-        raise Exception("Could not write output file {}".format(outfile))
-
-    os.remove(tempfile)
-
-    # Check the size of output file
-    output_size = os.path.getsize(outfile)
-    if _DEBUG_FLAG_:
-        print("The size of {} is {}".format(outfile, output_size / 1000000.0))
-    if output_size > MAX_PAYLOAD:  #   We have to save that to another s3 bucket
-        save_to_s3 = True
-
-    # Save output to the output s3 bucket
-    if save_to_s3:
+        input_path = input_handle.name
+        input_handle.close()
         if _DEBUG_FLAG_:
-            print("Saving {} to {}".format(outfile, dst_key))
-        s3.upload_file(outfile, dst_bucket, dst_key)
+            print("Downloading {} to {}".format(src_key, input_path))
+        s3.download_file(src_bucket, src_key, input_path)
+        if not os.path.isfile(input_path):
+            raise RuntimeError(
+                "Could not download {} from {} to {}".format(
+                    src_key, src_bucket, input_path
+                )
+            )
 
-    ret_dict = {}
-    if save_to_s3:
-        ret_dict["ret_type"] = "key"
-        ret_dict["ret_value"] = dst_bucket + "::" + dst_key
-    else:
-        ret_dict["ret_type"] = "content"
-        outfile_bytes = open(outfile, "rb").read()
-        ret_dict["ret_value"] = base64.b64encode(outfile_bytes).decode("utf-8")
+        candidate_path = lambda_func(input_path, event)
+        if not isinstance(candidate_path, str) or not os.path.isfile(candidate_path):
+            raise RuntimeError(f"Could not write output file {candidate_path!r}")
+        output_path = candidate_path
 
-    os.remove(outfile)
+        with open(output_path, "rb") as output_stream:
+            output_bytes = output_stream.read()
+        content_response = {
+            "ret_type": "content",
+            "ret_value": base64.b64encode(output_bytes).decode("utf-8"),
+        }
+        serialized_content = _serialized_response(content_response)
+        if not _fits_invoke_response(serialized_content):
+            save_to_s3 = True
 
-    return ret_dict
+        if save_to_s3:
+            if not isinstance(dst_key, str) or not dst_key:
+                raise RuntimeError("dst_key must be a nonempty S3 key")
+            if _DEBUG_FLAG_:
+                print("Saving {} to {}".format(output_path, dst_key))
+            s3.upload_file(output_path, dst_bucket, dst_key)
+            return {"ret_type": "key", "ret_value": dst_key}
+        return content_response
+    finally:
+        try:
+            _remove_file(output_path)
+        finally:
+            if output_path != input_path:
+                _remove_file(input_path)
 
 
 def handler(event, context):

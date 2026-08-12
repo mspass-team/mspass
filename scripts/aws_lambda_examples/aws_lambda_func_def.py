@@ -16,13 +16,8 @@ def lambda_func(input_path, event):
         "AwsLambdaClient.call_lambda_function". The user-specified parameters can be extracted as follows:
             arg1 = event['arg1']
             arg2 = event['arg2']
-    :return: a dict that contain two elements:
-        1) ret_type: two possible value: ‘key’ or ‘value’, 
-            ‘key’ means that the output object is saved to some place in s3.
-            ‘value’ means that the output object is directly returned through payload
-        2) ret_value:
-            If ret_type=’key’, ret_value will be the key of the output object in s3.
-            If ret_type=’value’, ret_value will be the bytes of the returning object.
+    :return: the path of the output file.  The process wrapper converts that
+        file to the ``content`` or ``key`` Invoke response protocol.
     """
 '''
 
@@ -38,7 +33,7 @@ def lambda_func(input_path, event):
         t0shift = event["t0shift"]
 
     basename = os.path.basename(input_path)
-    (filename, ext) = os.path.splitext(basename)
+    filename, ext = os.path.splitext(basename)
     filename = filename + "_{}_{}".format(duration, t0shift) + ext
     outfile = "/tmp/" + filename
 

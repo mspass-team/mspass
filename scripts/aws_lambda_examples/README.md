@@ -22,7 +22,10 @@ Here is a typical workflow of using lambda functions:
 To use lambda functions, users should have their own AWS account. And Create an IAM role that has full AmazonS3FullAccess, AWSLambda_FullAccess, and AWSLambdaBasicExecutionRole permissions. For more information and instruction, check out https://console.aws.amazon.com/iam/home#/roles. The account information will be used when creating and calling lambda functions.
 
 ***Note:***
-* Because the size of response payload is limited, we can have two different API: 
-    * When the size of the object to return is small enough (Less than 5~6 MB), it can be dumped into the payload. In such a case, the return value of the call_lambda_function is a data object, which is directly obtained from the lambda function call.
-    * When the size of the object to return is larger than 5~6MB, it can’t be transmitted through the lambda payload. So we can just return the location of the output object, and let the user download it later. 
+* The response protocol has exactly two forms: `ret_type="content"` carries
+  base64 content in `ret_value`, while `ret_type="key"` carries the nonempty
+  S3 output key in `ret_value`.
+* Inline content is selected only when the final compact UTF-8 JSON response,
+  including the base64 expansion and field syntax, is no larger than 6,000,000
+  bytes.  Larger results are uploaded to the configured destination bucket.
 * The maximum running time of one execution is 15 mins, so the lambda function can’t be used to do heavy work. The main point of  lambda function is to help do some trivial preprocessing on data on aws s3. If some heavy calculations are to be done, the better way is to download the data and do it locally.
