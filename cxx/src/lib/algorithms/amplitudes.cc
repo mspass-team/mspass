@@ -4,11 +4,31 @@
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
+#include <cmath>
+#include <cstddef>
+
+namespace {
+double normalize_percentile(const double percentile) {
+  if (!std::isfinite(percentile) || percentile <= 0.0 || percentile > 100.0) {
+    std::stringstream ss;
+    ss << "PercAmplitude: received percentile value=" << percentile << '\n'
+       << "Must be a fraction in (0, 1] or a percentage in (1, 100]";
+    throw mspass::utility::MsPASSError(ss.str(),
+                                       mspass::utility::ErrorSeverity::Invalid);
+  }
+  return percentile > 1.0 ? percentile / 100.0 : percentile;
+}
+
+std::size_t percentile_index(const std::size_t sample_count,
+                             const double percentile) {
+  return static_cast<std::size_t>(
+      std::floor(percentile * static_cast<double>(sample_count - 1)));
+}
+} // namespace
+
 namespace mspass::algorithms::amplitudes {
 using namespace std;
 using namespace mspass::seismic;
-using mspass::utility::ErrorSeverity;
-using mspass::utility::MsPASSError;
 
 /* Series of overloaded functions to measure peak amplitudes for
 different types of seismic data objects.  These are used in
@@ -70,21 +90,10 @@ double RMSAmplitude(const CoreSeismogram &d) {
     sumsq += (*ptr) * (*ptr);
   return sqrt(sumsq / d.npts());
 }
-double PercAmplitude(const CoreTimeSeries &d, const double perc) {
-  double percfrac;
-  if (perc > 100.0 || perc <= 0.0) {
-    stringstream ss;
-    ss << "PercAmplitude:  received perc value=" << perc << endl
-       << "Must be a nonzero percentage from 1 to 100 or a fraction value less "
-          "than 1"
-       << endl;
-    throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
-  } else if (perc <= 1.0) {
-    percfrac = perc;
-  } else {
-    // Land her for actual percentage values
-    percfrac = perc / 100.0;
-  }
+double PercAmplitude(const CoreTimeSeries &d, const double percentile) {
+  if (d.dead() || d.npts() == 0)
+    return 0.0;
+  const double percentile_fraction = normalize_percentile(percentile);
   vector<double> amps;
   amps = d.s;
   vector<double>::iterator ptr;
@@ -92,23 +101,22 @@ double PercAmplitude(const CoreTimeSeries &d, const double perc) {
     *ptr = fabs(*ptr);
   sort(amps.begin(), amps.end());
   size_t n = amps.size();
-  size_t iperc = static_cast<size_t>(percfrac * static_cast<double>(n));
+  size_t iperc = percentile_index(n, percentile_fraction);
   return amps[iperc];
 }
-double PercAmplitude(const CoreSeismogram &d, const double perc) {
+double PercAmplitude(const CoreSeismogram &d, const double percentile) {
+  if (d.dead() || d.npts() == 0)
+    return 0.0;
+  const double percentile_fraction = normalize_percentile(percentile);
   vector<double> amps;
   amps.reserve(d.npts());
-  for (int i = 0; i < d.npts(); ++i) {
+  for (size_t i = 0; i < d.npts(); ++i) {
     double thisamp = dnrm2(3, d.u.get_address(0, i), 1);
     amps.push_back(thisamp);
   }
   sort(amps.begin(), amps.end());
   size_t n = amps.size();
-  /* n-1 because C arrays start at 0 */
-  size_t iperc = static_cast<size_t>(perc * static_cast<double>(n));
-  /* Silently return 100% if iperc exceeds the range of amps*/
-  if (iperc >= amps.size())
-    iperc = amps.size() - 1;
+  size_t iperc = percentile_index(n, percentile_fraction);
   return amps[iperc];
 }
 /* This pair could be made a template, but they are so simple

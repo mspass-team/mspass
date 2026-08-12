@@ -86,8 +86,8 @@ def test_scale():
     dts.data[6] = 5.0
     dts.data[7] = 1.0
     dts.data[8] = -6.0
-    # MAD o=f above should be 2
-    # perf of 0.8 should be 4
+    # MAD of the absolute amplitudes above is 3
+    # p=0.8 uses floor(p*(n-1)), yielding 5 for this 9-sample vector
     # rms should be just over 10=10.010993957
     print("Starting tests for time series data of amplitude functions")
     ampmad = MADAmplitude(dts)
@@ -101,7 +101,7 @@ def test_scale():
     print("Peak amplitude=", amppeak)
     print("80% clip level amplitude=", ampperf80)
     assert amppeak == 100.0
-    assert ampperf80 == 6.0
+    assert ampperf80 == 5.0
     print("Starting comparable tests for 3c data")
     d3c.data[0, 0] = 3.0
     d3c.data[0, 1] = 2.0
@@ -118,7 +118,7 @@ def test_scale():
     print("Peak amplitude=", amppeak)
     print("60% clip level amplitude=", ampperf60)
     assert amppeak == 200.0
-    assert ampperf60 == 4.0
+    assert ampperf60 == 3.0
     assert ampmad == 3.0
     amptest = round(amprms, 2)
     assert amptest == 89.48

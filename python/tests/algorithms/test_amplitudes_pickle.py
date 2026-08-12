@@ -33,7 +33,7 @@ def _make_timeseries_5():
 
 
 def _make_timeseries_window():
-    """CoreTimeSeries from test_window: Peak=100, RMS≈33.49, Perc(0.8)=6."""
+    """CoreTimeSeries from test_window: Peak=100, RMS≈33.49, Perc(0.8)=5."""
     d = _CoreTimeSeries(9)
     d.npts = 9
     d.set_dt(0.01)
@@ -101,8 +101,8 @@ def test_PercAmplitude_captured_in_closure_picklable():
 
     def _compute():
         d = _make_timeseries_window()
-        return PercAmplitude(d, 0.8)  # 80% clip = 6.0
+        return PercAmplitude(d, 0.8)  # lower 80th percentile = 5.0
 
     pickled = cloudpickle.dumps(_compute)
     fn_restored = cloudpickle.loads(pickled)
-    assert fn_restored() == 6.0, f"Round-trip pickle: expected 6.0, got {fn_restored()}"
+    assert fn_restored() == 5.0, f"Round-trip pickle: expected 5.0, got {fn_restored()}"

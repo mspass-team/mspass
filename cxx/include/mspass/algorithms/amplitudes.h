@@ -15,10 +15,18 @@ double PeakAmplitude(const mspass::seismic::CoreTimeSeries &d);
 double PeakAmplitude(const mspass::seismic::CoreSeismogram &d);
 double RMSAmplitude(const mspass::seismic::CoreTimeSeries &d);
 double RMSAmplitude(const mspass::seismic::CoreSeismogram &d);
+/*! Compute a lower-quantile absolute amplitude.
+
+The percentile can be supplied either as a fraction in ``(0, 1]`` or as a
+percentage in ``(1, 100]``.  For ``n`` sorted amplitudes the selected index is
+``floor(p * (n - 1))``, where ``p`` is the normalized fraction.  Dead or empty
+data return 0.0; invalid percentiles on live, nonempty data throw
+MsPASSError with Invalid severity.
+*/
 double PercAmplitude(const mspass::seismic::CoreTimeSeries &d,
-                     const double perf);
+                     const double percentile);
 double PercAmplitude(const mspass::seismic::CoreSeismogram &d,
-                     const double perf);
+                     const double percentile);
 double MADAmplitude(const mspass::seismic::CoreTimeSeries &d);
 double MADAmplitude(const mspass::seismic::CoreSeismogram &d);
 enum class ScalingMethod {
