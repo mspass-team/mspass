@@ -1,11 +1,17 @@
 #!/bin/sh
 set -eu
 
-for arg in "$@"; do
-    command_name=${arg##*/}
-    if [ "$command_name" = "jupyterhub-singleuser" ]; then
+command_name=${1:-}
+command_name=${command_name##*/}
+case "$command_name" in
+    jupyterhub-singleuser)
         exec /usr/sbin/start-mspass-geolab.sh "$@"
-    fi
-done
+        ;;
+    jupyter)
+        if [ "${2:-}" = "lab" ]; then
+            exec /usr/sbin/start-mspass-geolab.sh "$@"
+        fi
+        ;;
+esac
 
 exec "$@"
