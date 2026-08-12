@@ -7,6 +7,9 @@ from mspasspy.ccore.seismic import (
 from mspasspy.ccore.utility import Metadata, ErrorSeverity, MsPASSError
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from bson import json_util
+import math
+import numbers
+
 import numpy as np
 import pandas as pd
 
@@ -109,7 +112,7 @@ def regularize_sampling(ensemble, dt_expected, Nsamp=10000, abort_on_error=False
     data created by some older digitizers that skewed the recorded sample interval to force
     time computed from N*dt to match time stamps on successive data packets.
     The formula used is the datum dt is declared constant if the difference from
-    the expected dt is less than or equal to dt_expected/2*(Nsamp-1).  That means
+    the expected dt is less than or equal to dt_expected/(2*(Nsamp-1)).  That means
     the computed endtime difference from that using dt_expected is less than
     or equal to dt/2.
 
@@ -149,28 +152,42 @@ def regularize_sampling(ensemble, dt_expected, Nsamp=10000, abort_on_error=False
 
     """
     alg = "regularize_sampling"
+    if isinstance(Nsamp, bool) or not isinstance(Nsamp, numbers.Integral) or Nsamp < 2:
+        raise ValueError("regularize_sampling: Nsamp must be an integer >= 2")
+    if (
+        isinstance(dt_expected, bool)
+        or not isinstance(dt_expected, numbers.Real)
+        or not math.isfinite(dt_expected)
+        or dt_expected <= 0.0
+    ):
+        raise ValueError(
+            "regularize_sampling: dt_expected must be a finite positive real number"
+        )
     if ensemble.dead():
         return ensemble
     # this formula will flag any ensemble member for which the sample
     # rate yields a computed end time that differs from the beam
     # by more than one half sample
     delta_dt_cutoff = dt_expected / (2.0 * (Nsamp - 1))
+    invalid_members = []
     for i in range(len(ensemble.member)):
         d = ensemble.member[i]
         if d.live:
-            if not np.isclose(dt_expected, d.dt):
-                if abs(dt_expected - d.dt) > delta_dt_cutoff:
-                    message = str()
-                    message = "Member {} of input ensemble has different sample rate={} than expected dt={}".format(
-                        i, d.dt, dt_expected
-                    )
-                    if abort_on_error:
-                        raise ValueError(message)
-                    else:
-                        ensemble.member[i].elog.log_error(
-                            alg, message, ErrorSeverity.Invalid
-                        )
-                        ensemble.member[i].kill()
+            invalid = (
+                not math.isfinite(d.dt)
+                or d.dt <= 0.0
+                or abs(dt_expected - d.dt) > delta_dt_cutoff
+            )
+            if invalid:
+                message = "Member {} of input ensemble has different sample rate={} than expected dt={}".format(
+                    i, d.dt, dt_expected
+                )
+                invalid_members.append((i, message))
+    if abort_on_error and invalid_members:
+        raise ValueError(invalid_members[0][1])
+    for i, message in invalid_members:
+        ensemble.member[i].elog.log_error(alg, message, ErrorSeverity.Invalid)
+        ensemble.member[i].kill()
     if not abort_on_error:
         nlive = number_live(ensemble)
         if nlive <= 0:
@@ -275,7 +292,7 @@ def sort_ensemble(ensemble, key, nullvalue=0.0, ascending=True, drop_dead=True):
     if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
         message = "arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object\n"
         message += "Actual type={}".format(type(ensemble))
-        raise MsPASSError(alg, message, ErrorSeverity.Fatal)
+        raise MsPASSError(alg + ": " + message, ErrorSeverity.Fatal)
     vallist = list()
     indexlist = list()
     for i in range(len(ensemble.member)):
