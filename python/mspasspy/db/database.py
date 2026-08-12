@@ -1926,28 +1926,40 @@ class Database(pymongo.database.Database):
             else:
                 print_messages.append("{}{}".format(log_helper, error_msg))
 
-        # 3. try to fix the mismtach errors in the doc
-        update_dict = {}
+        # 3. try to fix the mismtach errors in the doc.  Record only the
+        # fields this clean operation changes so an unrelated concurrent
+        # update cannot be overwritten by the scanned snapshot.
+        set_updates = {}
+        unset_updates = {}
         for k in doc:
             if k == "_id":
                 continue
             # if not the schema keys, ignore schema type check enforcement
             if not self.database_schema[collection].is_defined(k):
                 # delete undefined attributes in the doc if delete_undefined is True
-                if not delete_undefined:
+                if delete_undefined:
+                    unset_updates[k] = ""
+                else:
                     # try to rename the user specified keys
                     if k in rename_undefined:
-                        update_dict[rename_undefined[k]] = doc[k]
-                    else:
-                        update_dict[k] = doc[k]
+                        new_key = rename_undefined[k]
+                        if new_key != k:
+                            set_updates[new_key] = doc[k]
+                            unset_updates[k] = ""
+                        elif k in set_updates:
+                            set_updates[k] = doc[k]
+                    elif k in set_updates:
+                        set_updates[k] = doc[k]
                 continue
             # to remove aliases, get the unique key name defined in the schema
             unique_k = self.database_schema[collection].unique_name(k)
             if not isinstance(doc[k], self.database_schema[collection].type(unique_k)):
                 try:
-                    update_dict[unique_k] = self.database_schema[collection].type(
+                    set_updates[unique_k] = self.database_schema[collection].type(
                         unique_k
                     )(doc[k])
+                    if unique_k != k:
+                        unset_updates[k] = ""
                     print_messages.append(
                         "{}attribute {} conversion from {} to {} is done.".format(
                             log_helper,
@@ -1961,6 +1973,7 @@ class Database(pymongo.database.Database):
                     else:
                         fixed_cnt[k] = 1
                 except:
+                    unset_updates[k] = ""
                     print_messages.append(
                         "{}attribute {} conversion from {} to {} cannot be done.".format(
                             log_helper,
@@ -1970,13 +1983,25 @@ class Database(pymongo.database.Database):
                         )
                     )
             else:
-                # attribute values remain the same
-                update_dict[unique_k] = doc[k]
+                # Canonicalize aliases without rewriting an already-canonical
+                # field that did not change.
+                if unique_k != k:
+                    set_updates[unique_k] = doc[k]
+                    unset_updates[k] = ""
+                elif unique_k in set_updates:
+                    set_updates[unique_k] = doc[k]
 
         # 4. update the fixed attributes in the document in the collection
         filter_ = {"_id": doc["_id"]}
-        # use replace_one here because there may be some aliases in the document
-        col.replace_one(filter_, update_dict)
+        for key in set_updates:
+            unset_updates.pop(key, None)
+        update_document = {}
+        if set_updates:
+            update_document["$set"] = set_updates
+        if unset_updates:
+            update_document["$unset"] = unset_updates
+        if update_document:
+            col.update_one(filter_, update_document)
 
         if verbose:
             for msg in print_messages:
@@ -2275,12 +2300,15 @@ class Database(pymongo.database.Database):
             counts[k] = 0
         with _managed_collection_cursor(dbcol, query, no_cursor_timeout) as documents:
             for doc in documents:
-                id = doc.pop("_id")
-                n = 0
+                id = doc["_id"]
+                original_doc = dict(doc)
+                original_doc.pop("_id")
+                working_doc = dict(doc)
+                working_doc.pop("_id")
+                touched_keys = set()
                 for k in rename_map:
-                    n = 0
-                    if k in doc:
-                        val = doc.pop(k)
+                    if k in working_doc:
+                        val = working_doc.pop(k)
                         newkey = rename_map[k]
                         if verbose:
                             print("Document id=", id)
@@ -2291,10 +2319,26 @@ class Database(pymongo.database.Database):
                                 newkey,
                             )
                             print("Attribute value=", val)
-                        doc[newkey] = val
+                        working_doc[newkey] = val
+                        if newkey != k:
+                            touched_keys.update((k, newkey))
                         counts[k] += 1
-                        n += 1
-                dbcol.replace_one({"_id": id}, doc)
+                set_updates = {}
+                unset_updates = {}
+                for key in touched_keys:
+                    if key not in working_doc:
+                        unset_updates[key] = ""
+                    elif (
+                        key not in original_doc or working_doc[key] != original_doc[key]
+                    ):
+                        set_updates[key] = working_doc[key]
+                update_document = {}
+                if set_updates:
+                    update_document["$set"] = set_updates
+                if unset_updates:
+                    update_document["$unset"] = unset_updates
+                if update_document:
+                    dbcol.update_one({"_id": id}, update_document)
         return counts
 
     def _fix_attribute_types(
