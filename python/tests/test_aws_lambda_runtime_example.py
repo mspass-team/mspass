@@ -57,6 +57,7 @@ def test_create_function_uses_python_313_bundle_contract(tmp_path, monkeypatch):
 
     with zipfile.ZipFile(tmp_path / "base.zip", "w") as archive:
         archive.writestr("process.py", "def handler(event, context): return event\n")
+    shutil.copy2(EXAMPLE_ROOT / "process.py", tmp_path)
     shutil.copy2(EXAMPLE_ROOT / "aws_lambda_func_def.py", tmp_path)
     monkeypatch.chdir(tmp_path)
 

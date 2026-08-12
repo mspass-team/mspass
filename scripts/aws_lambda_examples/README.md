@@ -42,7 +42,11 @@ the archive.  The build is fixed to `linux/amd64`, matching Lambda's default
 x86_64 architecture.
 
 ***Note:***
-* Because the size of response payload is limited, we can have two different API: 
-    * When the size of the object to return is small enough (Less than 5~6 MB), it can be dumped into the payload. In such a case, the return value of the call_lambda_function is a data object, which is directly obtained from the lambda function call.
-    * When the size of the object to return is larger than 5~6MB, it can’t be transmitted through the lambda payload. So we can just return the location of the output object, and let the user download it later. 
+* The Lambda response protocol has two required forms: `ret_type="content"`
+  carries base64 content in `ret_value`, while `ret_type="key"` carries the
+  existing `bucket::key` S3 location in `ret_value`.  `call_lambda_function`
+  continues to expose the public `return_type` and `ret_value` fields.
+* Inline content is selected only when the final UTF-8 JSON response,
+  including the base64 expansion and field syntax, is no larger than 6,000,000
+  bytes.  Larger results are uploaded to the configured destination bucket.
 * The maximum running time of one execution is 15 mins, so the lambda function can’t be used to do heavy work. The main point of  lambda function is to help do some trivial preprocessing on data on aws s3. If some heavy calculations are to be done, the better way is to download the data and do it locally.
