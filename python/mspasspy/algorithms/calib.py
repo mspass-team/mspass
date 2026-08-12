@@ -1,4 +1,6 @@
 import pickle
+import math
+import numbers
 import numpy as np
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
@@ -186,9 +188,10 @@ class ApplyCalibEngine:
         loaded in the cache by the constructor.   By default the key
         used is "channel_id".  That can be changed with the "id_key"
         argument.  If a match is found all
-        the sample valued are multiplied by calib AND the calib attribute is
-        set.   Note a complaint will be issued if calib was found to already
-        be defined in  AND is not 1.0 (a default sometimes appropriate)
+        the sample values are multiplied by calib AND the calib attribute is
+        set to the cumulative conversion factor applied to the samples.  Note
+        a complaint will be issued if calib was found to already be defined
+        AND is not 1.0 (a default sometimes appropriate).
 
         This method can easily become a mass murderer.   By default any
         datum with an undefined calib value in the cache of this object will
@@ -214,11 +217,23 @@ class ApplyCalibEngine:
                     if idstr in self.calib:
                         this_calib = self.calib[idstr]
                         if "calib" in d:
-                            if not np.isclose(d["calib"], 1.0):
-                                old_calib = d["calib"]
-                                new_metadata_calib = old_calib * this_calib
+                            old_calib = d["calib"]
+                            if (
+                                isinstance(old_calib, bool)
+                                or not isinstance(old_calib, numbers.Real)
+                                or not math.isfinite(old_calib)
+                            ):
+                                message = (
+                                    "Existing calib metadata must be a finite numeric value; "
+                                    + "received {}".format(repr(old_calib))
+                                )
+                                d.elog.log_error(alg, message, ErrorSeverity.Invalid)
+                                d.kill()
+                                return d
+                            new_metadata_calib = old_calib * this_calib
+                            if not np.isclose(old_calib, 1.0):
                                 message = "calib was already defined in this datum as {}\n".format(
-                                    d["calib"]
+                                    old_calib
                                 )
                                 message += "Data will be multiplied by calib defined in this object={}\n".format(
                                     this_calib
@@ -228,10 +243,10 @@ class ApplyCalibEngine:
                                 )
                                 message += "Amplitudes may be wrong with this datum"
                                 d.elog.log_error(alg, message, ErrorSeverity.Complaint)
-                                d["calib"] = new_metadata_calib
-                            else:
-                                d["calib"] = this_calib
+                        else:
+                            new_metadata_calib = this_calib
                         d.data *= this_calib
+                        d["calib"] = new_metadata_calib
                     else:
                         message = "calib factor could not be determined\n"
                         message += "Response data missing or flawed"
@@ -241,7 +256,9 @@ class ApplyCalibEngine:
                         else:
                             d.elog.log_error(alg, message, ErrorSeverity.Complaint)
                 else:
-                    message = "Missing required channel_id need to get calib factor"
+                    message = "Missing required {} needed to get calib factor".format(
+                        id_key
+                    )
                     if kill_if_undefined:
                         d.elog.log_error(alg, message, ErrorSeverity.Invalid)
                         d.kill()
@@ -249,7 +266,9 @@ class ApplyCalibEngine:
                         d.elog.log_error(alg, message, ErrorSeverity.Complaint)
         elif isinstance(d, TimeSeriesEnsemble):
             for i in range(len(d.member)):
-                d.member[i] = self.apply_calib(d.member[i])
+                d.member[i] = self.apply_calib(
+                    d.member[i], id_key=id_key, kill_if_undefined=kill_if_undefined
+                )
         else:
             message = "Illegal input data type={}".format(str(type(d)))
             raise ValueError(message)
