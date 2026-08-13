@@ -25,9 +25,36 @@ bool sample_interval_invalid(const mspass::seismic::BasicTimeSeries &d,
   return frac >= DTSKEW;
 }
 
-/* CNR samples the regularizing spectrum through the operator Nyquist.  A
- * generic valid PowerSpectrum can still be incompatible when it was computed
- * from a different parent sample interval or was frequency-truncated. */
+double PowerSpectrumTerminalFrequency(const PowerSpectrum &spectrum) {
+  return spectrum.f0() + spectrum.df() * static_cast<double>(spectrum.nf() - 1);
+}
+
+bool OddFFTTerminalCoversNyquist(const PowerSpectrum &spectrum,
+                                 const double operator_dt,
+                                 const double operator_nyquist,
+                                 const double tolerance) {
+  if (abs(spectrum.f0()) > tolerance)
+    return false;
+  const double fft_size_exact = 1.0 / (spectrum.df() * operator_dt);
+  if (!std::isfinite(fft_size_exact) || fft_size_exact < 3.0 ||
+      fft_size_exact > static_cast<double>(numeric_limits<int>::max()))
+    return false;
+  const int fft_size = static_cast<int>(round(fft_size_exact));
+  const double size_tolerance =
+      max(1.0e-10, 1.0e-10 * static_cast<double>(fft_size));
+  if (abs(fft_size_exact - static_cast<double>(fft_size)) > size_tolerance ||
+      fft_size % 2 == 0 ||
+      spectrum.nf() != static_cast<size_t>(fft_size / 2 + 1))
+    return false;
+  const double represented_endpoint =
+      PowerSpectrumTerminalFrequency(spectrum) + 0.5 * spectrum.df();
+  return abs(represented_endpoint - operator_nyquist) <= tolerance;
+}
+
+/* CNR samples the regularizing spectrum through the operator Nyquist.  An
+ * odd-length real FFT has no sample exactly at Nyquist, so its final positive
+ * bin covers the half-bin ending at Nyquist when its grid dimensions and
+ * spacing identify that exact FFT geometry. */
 void ValidateCNRNoiseSpectrum(const PowerSpectrum &spectrum,
                               const double operator_dt,
                               const string &caller) {
@@ -42,16 +69,22 @@ void ValidateCNRNoiseSpectrum(const PowerSpectrum &spectrum,
     throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
   }
   const double operator_nyquist = 1.0 / (2.0 * operator_dt);
-  const double spectrum_fmax =
-      spectrum.f0() + spectrum.df() * static_cast<double>(spectrum.nf() - 1);
+  const double spectrum_fmax = PowerSpectrumTerminalFrequency(spectrum);
   const double tolerance = max(1.0e-12, operator_nyquist * 1.0e-10);
-  if (spectrum_fmax + tolerance < operator_nyquist) {
+  if (spectrum_fmax + tolerance < operator_nyquist &&
+      !OddFFTTerminalCoversNyquist(spectrum, operator_dt, operator_nyquist,
+                                   tolerance)) {
     stringstream ss;
-    ss << caller << ": noise PowerSpectrum maximum frequency="
-       << spectrum_fmax << " does not cover operator Nyquist="
-       << operator_nyquist;
+    ss << caller << ": noise PowerSpectrum maximum frequency=" << spectrum_fmax
+       << " with frequency spacing=" << spectrum.df()
+       << " does not cover operator Nyquist=" << operator_nyquist;
     throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
   }
+}
+
+double CNRNoisePower(const PowerSpectrum &spectrum, const double frequency) {
+  return spectrum.power(
+      min(frequency, PowerSpectrumTerminalFrequency(spectrum)));
 }
 
 TimeSeries InvalidActualOutput(const TimeSeries &wavelet,
@@ -758,7 +791,7 @@ void CNRDeconEngine::compute_gwl_inverse(const TimeSeries &wavelet,
       f = df * static_cast<double>(j);
       if (f > fNy)
         f = 2.0 * fNy - f; // Fold frequency axis
-      double namp = sqrt(psnoise.power(f));
+      double namp = sqrt(CNRNoisePower(psnoise, f));
       /* An exact spectral null carries no phase or amplitude information, so
        * its Moore-Penrose inverse gain is zero.  Use a finite placeholder for
        * the vector division below, then explicitly zero that output bin. */
@@ -862,7 +895,7 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries &wavelet,
       f = df * static_cast<double>(k);
       if (f > fNy)
         f = 2.0 * fNy - f; // Fold frequency axis
-      double namp = sqrt(psnoise.power(f));
+      double namp = sqrt(CNRNoisePower(psnoise, f));
       double theta;
       if (namp > scaled_noise_floor) {
         theta = damp * namp;
@@ -987,7 +1020,7 @@ Seismogram CNRDeconEngine::process(const Seismogram &d,
         f = df * static_cast<double>(j);
         Complex64 z = numerator[j];
         double sigamp = abs(z);
-        double namp = sqrt(psnoise.power(f));
+        double namp = sqrt(CNRNoisePower(psnoise, f));
         const double snr = FiniteCNRAmplitudeSNR(sigamp, namp);
 
         if (snr > snrmax)
@@ -1132,7 +1165,7 @@ Seismogram CNRDeconEngine::process_with_current_shaping(
         f = df * static_cast<double>(j);
         Complex64 z = numerator[j];
         double sigamp = abs(z);
-        double namp = sqrt(psnoise.power(f));
+        double namp = sqrt(CNRNoisePower(psnoise, f));
         const double snr = FiniteCNRAmplitudeSNR(sigamp, namp);
 
         if (snr > snrmax)

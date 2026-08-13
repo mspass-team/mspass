@@ -1242,7 +1242,7 @@ def test_CNRDeconEngine_process_accepts_exact_nfft_datum(process_path):
 def test_CNRDeconEngine_rejects_incompatible_external_power_spectrum(
     invalid_kind, error_match
 ):
-    """External PSDs must match dt and cover every queried CNR frequency."""
+    """External PSDs must match dt and cover the CNR grid within half a bin."""
     d0 = make_test_data(noise_level=0.1)
     datum = WindowData(d0, -5.0, 30.0)
     noise = WindowData(ExtractComponent(d0, 2), -45.0, -5.0)
@@ -1302,6 +1302,58 @@ def test_CNRDeconEngine_rejects_incompatible_external_power_spectrum(
     assert np.isfinite(recovered.data).all()
     assert np.array_equal(recovered.data, baseline.data)
     assert np.array_equal(shaping_after, shaping_before)
+
+
+def test_CNRDeconEngine_accepts_odd_fft_noise_spectrum_terminal():
+    """The final odd-FFT bin represents the half-bin through Nyquist."""
+    d0 = make_test_data(noise_level=0.1)
+    datum = WindowData(d0, -5.0, 30.0)
+    source = make_simulation_wavelet()
+    engine = CNRDeconEngine(pfread("data/pf/CNRDeconEngine.pf"))
+    reference_engine = CNRDeconEngine(pfread("data/pf/CNRDeconEngine.pf"))
+    nfft = 601
+    dt = engine.get_operator_dt()
+    df = 1.0 / (nfft * dt)
+    power_values = [1.0 + index / 100.0 for index in range(nfft // 2 + 1)]
+    power = DoubleVector(power_values)
+    odd_spectrum = PowerSpectrum(Metadata(), power, df, "odd_fft", 0.0, dt, nfft)
+    reference_spectrum = PowerSpectrum(
+        Metadata(),
+        DoubleVector(power_values + [power_values[-1]]),
+        df,
+        "terminal_extended",
+        0.0,
+        dt,
+        nfft,
+    )
+
+    assert odd_spectrum.frequency(odd_spectrum.nf() - 1) == pytest.approx(
+        odd_spectrum.Nyquist() - df / 2.0
+    )
+    engine.initialize_inverse_operator(source, odd_spectrum)
+    reference_engine.initialize_inverse_operator(source, reference_spectrum)
+    result = engine.process(datum, odd_spectrum, 0.02, 2.0)
+    reference_result = reference_engine.process(datum, reference_spectrum, 0.02, 2.0)
+    assert result.live
+    assert np.isfinite(np.asarray(result.data)).all()
+    assert np.array_equal(result.data, reference_result.data)
+    assert np.array_equal(
+        engine.inverse_wavelet(source, 0.0).data,
+        reference_engine.inverse_wavelet(source, 0.0).data,
+    )
+    assert dict(engine.QCMetrics()) == dict(reference_engine.QCMetrics())
+
+    truncated = PowerSpectrum(
+        Metadata(),
+        DoubleVector([1.0] * (nfft // 2)),
+        df,
+        "truncated_odd_fft",
+        0.0,
+        dt,
+        nfft,
+    )
+    with pytest.raises(MsPASSError, match="does not cover operator Nyquist"):
+        engine.initialize_inverse_operator(source, truncated)
 
 
 def test_CNRDeconEngine_rejects_overflowing_frequency_grid_transactionally():
