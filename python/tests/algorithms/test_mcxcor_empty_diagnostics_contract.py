@@ -1,5 +1,7 @@
 import os
+import subprocess
 from contextlib import ExitStack
+from importlib.metadata import distribution, version
 from numbers import Real
 from pathlib import Path
 from unittest.mock import patch
@@ -19,14 +21,26 @@ from mspasspy.ccore.utility import ErrorSeverity
 
 
 @pytest.fixture(scope="module", autouse=True)
-def _verify_worktree_module():
+def _verify_selected_build_module():
     source_root = os.environ.get("MSPASS_TEST_SOURCE_ROOT")
-    assert source_root, "MSPASS_TEST_SOURCE_ROOT must identify the tree under test"
-    module_path = Path(mcx.__file__).resolve()
-    expected_root = (Path(source_root).resolve() / "mspasspy").resolve()
-    assert module_path.is_relative_to(
-        expected_root
-    ), f"loaded {module_path}, expected a module below {expected_root}"
+    relative_path = Path("mspasspy/algorithms/MCXcorStacking.py")
+    if source_root:
+        expected_module = Path(source_root) / relative_path
+    else:
+        expected_module = distribution("mspasspy").locate_file(relative_path)
+        installed_version = version("mspasspy")
+        installed_commit = installed_version.partition("+g")[2].partition(".")[0]
+        assert installed_commit, "installed mspasspy version lacks a source commit"
+        repository_root = next(
+            parent
+            for parent in Path(__file__).resolve().parents
+            if (parent / ".git").exists()
+        )
+        checkout_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=repository_root, text=True
+        ).strip()
+        assert checkout_commit.startswith(installed_commit)
+    assert Path(mcx.__file__).resolve() == Path(expected_module).resolve()
 
 
 def _live_timeseries(data, *, t0=0.0, dt=1.0):
