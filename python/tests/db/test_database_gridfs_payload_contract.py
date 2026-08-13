@@ -1,4 +1,7 @@
 import io
+import os
+import subprocess
+from importlib.metadata import distribution, version
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -104,11 +107,29 @@ def _read_payload(monkeypatch, datum, payload):
     return payload_reader
 
 
-def test_contract_suite_uses_worktree_module_and_real_binding():
-    expected_module = (
-        Path(__file__).resolve().parents[2] / "mspasspy" / "db" / "database.py"
-    )
-    assert Path(database_module.__file__).resolve() == expected_module
+def _assert_module_from_selected_build(module, relative_path):
+    source_root = os.environ.get("MSPASS_TEST_SOURCE_ROOT")
+    if source_root:
+        expected_module = Path(source_root) / relative_path
+    else:
+        expected_module = distribution("mspasspy").locate_file(relative_path)
+        installed_version = version("mspasspy")
+        installed_commit = installed_version.partition("+g")[2].partition(".")[0]
+        assert installed_commit, "installed mspasspy version lacks a source commit"
+        repository_root = next(
+            parent
+            for parent in Path(__file__).resolve().parents
+            if (parent / ".git").exists()
+        )
+        checkout_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=repository_root, text=True
+        ).strip()
+        assert checkout_commit.startswith(installed_commit)
+    assert Path(module.__file__).resolve() == Path(expected_module).resolve()
+
+
+def test_contract_suite_uses_selected_build_and_real_binding():
+    _assert_module_from_selected_build(database_module, "mspasspy/db/database.py")
     assert Path(seismic_binding.__file__).suffix == ".so"
 
 
