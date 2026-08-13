@@ -1,3 +1,5 @@
+import copy
+
 from decorator import decorator
 
 from mspasspy.util.converter import Stream2Seismogram, Trace2TimeSeries
@@ -725,30 +727,90 @@ def is_input_dead(*args, **kwargs):
     return False
 
 
-def timeseries_copy_helper(ts1, ts2):
-    """ """
-    # keys in this list are ignored - for now only one but made a list
-    # to simplify additions later
-    metadata_to_ignore = ["CONVERTER_ENSEMBLE_KEYS"]
-    ts1.npts = ts2.npts
-    ts1.dt = ts2.dt
-    ts1.tref = ts2.tref
-    ts1.live = ts2.live
-    ts1.t0 = ts2.t0
-    for k in ts2.keys():  # other metadata copy
-        if k not in metadata_to_ignore:
-            # because this is used only in decorator we can assure
-            # overrides are consistent
-            ts1[k] = ts2[k]
-    # We need to clear this/these too as if they were already there the
-    # above logic preserves them
-    for k in metadata_to_ignore:
-        if ts1.is_defined(k):
-            ts1.erase(k)
-    ts1.data = ts2.data
+_CONVERTER_METADATA_KEYS = {
+    "CONVERTER_ENSEMBLE_KEYS",
+    "_mspass_time_reference",
+    "_mspass_t0_shift",
+    "_mspass_relative_t0",
+    "_mspass_live",
+    "_mspass_member_index",
+    "_mspass_component_index",
+}
 
 
-def timeseries_ensemble_copy_helper(es1, es2):
+def _capture_time_state(data):
+    """Capture state that ObsPy cannot represent without loss."""
+    shift_key = "starttime_shift"
+    return {
+        "tref": data.tref,
+        "t0": data.t0,
+        "shifted": data.shifted(),
+        "t0_shift": data.get_t0shift(),
+        "shift_key_defined": data.is_defined(shift_key),
+        "shift_key_value": data[shift_key] if data.is_defined(shift_key) else None,
+        "live": data.live,
+        "relative_t0_anchor": False,
+    }
+
+
+def _post_time_state(trace, state, member_index=None, component_index=None):
+    """Post MsPASS-only state and ordering information to an ObsPy Trace."""
+    trace.stats["_mspass_time_reference"] = (
+        "Relative" if state["tref"].name == "Relative" else "UTC"
+    )
+    trace.stats["_mspass_t0_shift"] = state["t0_shift"]
+    trace.stats["_mspass_live"] = state["live"]
+    if state["tref"].name == "Relative":
+        trace.stats["_mspass_relative_t0"] = state["t0"]
+    if member_index is not None:
+        trace.stats["_mspass_member_index"] = member_index
+    if component_index is not None:
+        trace.stats["_mspass_component_index"] = component_index
+
+
+def _restore_time_state(destination, state):
+    """Restore state that was saved before conversion to ObsPy."""
+    destination.tref = state["tref"]
+    if state["shifted"]:
+        destination.force_t0_shift(state["t0_shift"])
+    shift_key = "starttime_shift"
+    if state["shift_key_defined"]:
+        destination[shift_key] = state["shift_key_value"]
+    elif destination.is_defined(shift_key):
+        destination.erase(shift_key)
+    destination.live = state["live"]
+
+
+def _copy_atomic_state(destination, source, state):
+    """Copy a processed atomic datum while keeping its core state coherent."""
+    for key in source.keys():
+        if key not in _CONVERTER_METADATA_KEYS:
+            destination[key] = source[key]
+    for key in _CONVERTER_METADATA_KEYS:
+        if destination.is_defined(key):
+            destination.erase(key)
+
+    # set_npts allocates and clears the sample buffer, so data must follow it.
+    destination.npts = source.npts
+    destination.data = source.data
+    destination.dt = source.dt
+    if state["relative_t0_anchor"]:
+        destination.t0 = state["t0"] + source.t0
+    else:
+        destination.t0 = source.t0
+    if destination.is_defined("endtime"):
+        destination["endtime"] = destination.endtime()
+    _restore_time_state(destination, state)
+
+
+def timeseries_copy_helper(ts1, ts2, _time_state=None):
+    """Copy processed samples and sampling state into a TimeSeries."""
+    if _time_state is None:
+        _time_state = _capture_time_state(ts1)
+    _copy_atomic_state(ts1, ts2, _time_state)
+
+
+def timeseries_ensemble_copy_helper(es1, es2, _time_states=None):
     """
     Copy converted time-series ensemble state back to the original object.
 
@@ -756,13 +818,64 @@ def timeseries_ensemble_copy_helper(es1, es2):
     :param es2: source ensemble reconstructed after conversion.
     :return: ``None``; ``es1`` is modified in place.
     """
+    if len(es1.member) != len(es2.member):
+        raise ValueError(
+            "Processed Stream member count does not match the input "
+            "TimeSeriesEnsemble"
+        )
+    if _time_states is None:
+        _time_states = [_capture_time_state(member) for member in es1.member]
     for i in range(len(es1.member)):
-        timeseries_copy_helper(es1.member[i], es2.member[i])
-    # fixme: not sure in what algorithm the length of es1 and es2 would be different
-    # also, the following does not address uninitiated history issues in the extended elements
-    # same problem applies to the seismogram_ensemble_copy_helper
-    if len(es2.member) > len(es1.member):
-        es1.member.extend(es2.member[len(es1.member) :])
+        timeseries_copy_helper(es1.member[i], es2.member[i], _time_states[i])
+
+
+def _timeseries_to_trace(data, state, member_index=None):
+    """Convert through an isolated copy and post MsPASS-only state."""
+    source = TimeSeries(data)
+    source.set_live()
+    if state["tref"].name == "Relative":
+        state["relative_t0_anchor"] = True
+        source.t0 = 0.0
+    trace = source.toTrace()
+    trace.stats = copy.deepcopy(trace.stats)
+    _post_time_state(trace, state, member_index=member_index)
+    return trace
+
+
+def _timeseries_ensemble_to_stream(ensemble, states):
+    """Convert an ensemble without mutating its members during conversion."""
+    source = TimeSeriesEnsemble(ensemble)
+    for index, member in enumerate(source.member):
+        member.set_live()
+        if states[index]["tref"].name == "Relative":
+            states[index]["relative_t0_anchor"] = True
+            member.t0 = 0.0
+    stream = source.toStream()
+    for index, trace in enumerate(stream):
+        trace.stats = copy.deepcopy(trace.stats)
+        _post_time_state(trace, states[index], member_index=index)
+    return stream
+
+
+def _validate_timeseries_ensemble_stream(stream, member_count):
+    if len(stream) != member_count:
+        raise ValueError(
+            "Processed Stream member count does not match the input "
+            "TimeSeriesEnsemble"
+        )
+    for index, trace in enumerate(stream):
+        if trace.stats.get("_mspass_member_index") != index:
+            raise ValueError(
+                "Processed Stream member order does not match the input "
+                "TimeSeriesEnsemble"
+            )
+
+
+def _return_ensemble_identity(result, conversions):
+    for original, converted in conversions:
+        if result is None or result is converted:
+            return original
+    return result
 
 
 @decorator
@@ -779,35 +892,45 @@ def timeseries_as_trace(func, *args, **kwargs):
     :param kwargs: extra kv arguments
     :return: the output of func
     """
-    if is_input_dead(*args, **kwargs):
-        return
     converted_args = []
     converted_args_ids = []
+    time_states = {}
     converted_kwargs = {}
     converted_kwargs_keys = []
+    kw_time_states = {}
     for i in range(len(args)):
         if isinstance(args[i], TimeSeries):
-            converted_args.append(args[i].toTrace())
+            state = _capture_time_state(args[i])
+            converted = _timeseries_to_trace(args[i], state)
+            converted_args.append(converted)
             converted_args_ids.append(i)
+            time_states[i] = state
         else:
             converted_args.append(args[i])
     for k in kwargs:
         if isinstance(kwargs[k], TimeSeries):
-            converted_kwargs[k] = kwargs[k].toTrace()
+            state = _capture_time_state(kwargs[k])
+            converted = _timeseries_to_trace(kwargs[k], state)
+            converted_kwargs[k] = converted
             converted_kwargs_keys.append(k)
+            kw_time_states[k] = state
         else:
             converted_kwargs[k] = kwargs[k]
     res = func(*converted_args, **converted_kwargs)
+    converted_results = {}
     for i in converted_args_ids:
-        ts = Trace2TimeSeries(converted_args[i])
-        timeseries_copy_helper(args[i], ts)
+        converted_results[i] = Trace2TimeSeries(converted_args[i])
+    converted_kw_results = {}
     for k in converted_kwargs_keys:
-        ts = Trace2TimeSeries(converted_kwargs[k])
-        timeseries_copy_helper(kwargs[k], ts)
+        converted_kw_results[k] = Trace2TimeSeries(converted_kwargs[k])
+    for i in converted_args_ids:
+        timeseries_copy_helper(args[i], converted_results[i], time_states[i])
+    for k in converted_kwargs_keys:
+        timeseries_copy_helper(kwargs[k], converted_kw_results[k], kw_time_states[k])
     return res
 
 
-def seismogram_copy_helper(seis1, seis2):
+def seismogram_copy_helper(seis1, seis2, _time_state=None):
     """
     Copy converted seismogram state back to the original object.
 
@@ -815,28 +938,12 @@ def seismogram_copy_helper(seis1, seis2):
     :param seis2: source seismogram reconstructed after conversion.
     :return: ``None``; ``seis1`` is modified in place.
     """
-    # keys in this list are ignored - for now only one but made a list
-    # to simplify additions later
-    metadata_to_ignore = ["CONVERTER_ENSEMBLE_KEYS"]
-    seis1.npts = seis2.npts
-    seis1.dt = seis2.dt
-    seis1.tref = seis2.tref
-    seis1.live = seis2.live
-    seis1.t0 = seis2.t0
-    for k in seis2.keys():  # other metadata copy
-        if k not in metadata_to_ignore:
-            # because this is used only in decorator we can assure
-            # overrides are consistent
-            seis1[k] = seis2[k]
-    # We need to clear this/these too as if they were already there the
-    # above logic preserves them
-    for k in metadata_to_ignore:
-        if seis1.is_defined(k):
-            seis1.erase(k)
-    seis1.data = seis2.data
+    if _time_state is None:
+        _time_state = _capture_time_state(seis1)
+    _copy_atomic_state(seis1, seis2, _time_state)
 
 
-def seismogram_ensemble_copy_helper(es1, es2):
+def seismogram_ensemble_copy_helper(es1, es2, _time_states=None):
     """
     Copy converted seismogram ensemble state back to the original object.
 
@@ -844,10 +951,74 @@ def seismogram_ensemble_copy_helper(es1, es2):
     :param es2: source ensemble reconstructed after conversion.
     :return: ``None``; ``es1`` is modified in place.
     """
+    if len(es1.member) != len(es2.member):
+        raise ValueError(
+            "Processed Stream member count does not match the input "
+            "SeismogramEnsemble"
+        )
+    if _time_states is None:
+        _time_states = [_capture_time_state(member) for member in es1.member]
     for i in range(len(es1.member)):
-        seismogram_copy_helper(es1.member[i], es2.member[i])
-    if len(es2.member) > len(es1.member):
-        es1.member.extend(es2.member[len(es1.member) :])
+        seismogram_copy_helper(es1.member[i], es2.member[i], _time_states[i])
+
+
+def _seismogram_to_stream(data, state, member_index=None):
+    """Convert through an isolated copy and post MsPASS-only state."""
+    source = Seismogram(data)
+    source.set_live()
+    if state["tref"].name == "Relative":
+        state["relative_t0_anchor"] = True
+        source.t0 = 0.0
+    stream = source.toStream()
+    for component_index, trace in enumerate(stream):
+        trace.stats = copy.deepcopy(trace.stats)
+        _post_time_state(
+            trace,
+            state,
+            member_index=member_index,
+            component_index=component_index,
+        )
+    return stream
+
+
+def _seismogram_ensemble_to_stream(ensemble, states):
+    """Convert an ensemble without mutating its members during conversion."""
+    source = SeismogramEnsemble(ensemble)
+    for index, member in enumerate(source.member):
+        member.set_live()
+        if states[index]["tref"].name == "Relative":
+            states[index]["relative_t0_anchor"] = True
+            member.t0 = 0.0
+    stream = source.toStream()
+    for trace_index, trace in enumerate(stream):
+        trace.stats = copy.deepcopy(trace.stats)
+        member_index, component_index = divmod(trace_index, 3)
+        _post_time_state(
+            trace,
+            states[member_index],
+            member_index=member_index,
+            component_index=component_index,
+        )
+    return stream
+
+
+def _validate_seismogram_stream(stream, member_count, ensemble_name):
+    if len(stream) != 3 * member_count:
+        raise ValueError(
+            "Processed Stream member count does not match the input " + ensemble_name
+        )
+    for trace_index, trace in enumerate(stream):
+        member_index, component_index = divmod(trace_index, 3)
+        if trace.stats.get("_mspass_component_index") != component_index:
+            raise ValueError(
+                "Processed Stream component order does not match the input "
+                + ensemble_name
+            )
+        if member_count > 1 and trace.stats.get("_mspass_member_index") != member_index:
+            raise ValueError(
+                "Processed Stream member order does not match the input "
+                + ensemble_name
+            )
 
 
 @decorator
@@ -863,43 +1034,47 @@ def seismogram_as_stream(func, *args, **kwargs):
     :param kwargs: extra kv arguments
     :return: the output of func
     """
-    if is_input_dead(*args, **kwargs):
-        return
     converted_args = []
     converted_kwargs = {}
     converted_args_ids = []
     converted_kwargs_keys = []
-    converted = False
+    time_states = {}
+    kw_time_states = {}
     for i in range(len(args)):
         if isinstance(args[i], Seismogram):
-            converted_args.append(args[i].toStream())
+            state = _capture_time_state(args[i])
+            converted = _seismogram_to_stream(args[i], state)
+            converted_args.append(converted)
             converted_args_ids.append(i)
-            converted = True
+            time_states[i] = state
         else:
             converted_args.append(args[i])
     for k in kwargs:
         if isinstance(kwargs[k], Seismogram):
-            converted_kwargs[k] = kwargs[k].toStream()
+            state = _capture_time_state(kwargs[k])
+            converted = _seismogram_to_stream(kwargs[k], state)
+            converted_kwargs[k] = converted
             converted_kwargs_keys.append(k)
-            converted = True
+            kw_time_states[k] = state
         else:
             converted_kwargs[k] = kwargs[k]
     res = func(*converted_args, **converted_kwargs)
-    if converted:
-        # todo save relative time attribute
-        # fixme cardinal here
-        for i in converted_args_ids:
-            seis = Stream2Seismogram(converted_args[i], cardinal=True)
-            args[i].data = seis.data
-            # metadata copy
-            for k in seis.keys():
-                args[i][k] = seis[k]
-        for k in converted_kwargs_keys:
-            seis = Stream2Seismogram(converted_kwargs[k], cardinal=True)
-            kwargs[k].data = seis.data
-            # metadata copy
-            for key in seis.keys():
-                kwargs[k][key] = seis[key]
+    for i in converted_args_ids:
+        _validate_seismogram_stream(converted_args[i], 1, "Seismogram")
+    for k in converted_kwargs_keys:
+        _validate_seismogram_stream(converted_kwargs[k], 1, "Seismogram")
+    converted_results = {
+        i: Stream2Seismogram(converted_args[i], cardinal=True)
+        for i in converted_args_ids
+    }
+    converted_kw_results = {
+        k: Stream2Seismogram(converted_kwargs[k], cardinal=True)
+        for k in converted_kwargs_keys
+    }
+    for i in converted_args_ids:
+        seismogram_copy_helper(args[i], converted_results[i], time_states[i])
+    for k in converted_kwargs_keys:
+        seismogram_copy_helper(kwargs[k], converted_kw_results[k], kw_time_states[k])
     return res
 
 
@@ -916,36 +1091,51 @@ def timeseries_ensemble_as_stream(func, *args, **kwargs):
     :param kwargs: extra kv arguments
     :return: the output of func
     """
-    if is_input_dead(*args, **kwargs):
-        return
     converted_args = []
     converted_kwargs = {}
     converted_args_ids = []
     converted_kwargs_keys = []
-    converted = False
+    time_states = {}
+    kw_time_states = {}
+    conversions = []
     for i in range(len(args)):
         if isinstance(args[i], TimeSeriesEnsemble):
-            converted_args.append(args[i].toStream())
+            states = [_capture_time_state(member) for member in args[i].member]
+            converted = _timeseries_ensemble_to_stream(args[i], states)
+            converted_args.append(converted)
             converted_args_ids.append(i)
-            converted = True
+            time_states[i] = states
+            conversions.append((args[i], converted))
         else:
             converted_args.append(args[i])
     for k in kwargs:
         if isinstance(kwargs[k], TimeSeriesEnsemble):
-            converted_kwargs[k] = kwargs[k].toStream()
+            states = [_capture_time_state(member) for member in kwargs[k].member]
+            converted = _timeseries_ensemble_to_stream(kwargs[k], states)
+            converted_kwargs[k] = converted
             converted_kwargs_keys.append(k)
-            converted = True
+            kw_time_states[k] = states
+            conversions.append((kwargs[k], converted))
         else:
             converted_kwargs[k] = kwargs[k]
     res = func(*converted_args, **converted_kwargs)
-    if converted:
-        for i in converted_args_ids:
-            tse = converted_args[i].toTimeSeriesEnsemble()
-            timeseries_ensemble_copy_helper(args[i], tse)
-        for k in converted_kwargs_keys:
-            tse = converted_kwargs[k].toTimeSeriesEnsemble()
-            timeseries_ensemble_copy_helper(kwargs[k], tse)
-    return res
+    for i in converted_args_ids:
+        _validate_timeseries_ensemble_stream(converted_args[i], len(args[i].member))
+    for k in converted_kwargs_keys:
+        _validate_timeseries_ensemble_stream(converted_kwargs[k], len(kwargs[k].member))
+    converted_results = {
+        i: converted_args[i].toTimeSeriesEnsemble() for i in converted_args_ids
+    }
+    converted_kw_results = {
+        k: converted_kwargs[k].toTimeSeriesEnsemble() for k in converted_kwargs_keys
+    }
+    for i in converted_args_ids:
+        timeseries_ensemble_copy_helper(args[i], converted_results[i], time_states[i])
+    for k in converted_kwargs_keys:
+        timeseries_ensemble_copy_helper(
+            kwargs[k], converted_kw_results[k], kw_time_states[k]
+        )
+    return _return_ensemble_identity(res, conversions)
 
 
 @decorator
@@ -961,36 +1151,55 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
     :param kwargs: extra kv arguments
     :return: the output of func
     """
-    if is_input_dead(*args, **kwargs):
-        return
     converted_args = []
     converted_kwargs = {}
     converted_args_ids = []
     converted_kwargs_keys = []
-    converted = False
+    time_states = {}
+    kw_time_states = {}
+    conversions = []
     for i in range(len(args)):
         if isinstance(args[i], SeismogramEnsemble):
-            converted_args.append(args[i].toStream())
+            states = [_capture_time_state(member) for member in args[i].member]
+            converted = _seismogram_ensemble_to_stream(args[i], states)
+            converted_args.append(converted)
             converted_args_ids.append(i)
-            converted = True
+            time_states[i] = states
+            conversions.append((args[i], converted))
         else:
             converted_args.append(args[i])
     for k in kwargs:
         if isinstance(kwargs[k], SeismogramEnsemble):
-            converted_kwargs[k] = kwargs[k].toStream()
+            states = [_capture_time_state(member) for member in kwargs[k].member]
+            converted = _seismogram_ensemble_to_stream(kwargs[k], states)
+            converted_kwargs[k] = converted
             converted_kwargs_keys.append(k)
-            converted = True
+            kw_time_states[k] = states
+            conversions.append((kwargs[k], converted))
         else:
             converted_kwargs[k] = kwargs[k]
     res = func(*converted_args, **converted_kwargs)
-    if converted:
-        for i in converted_args_ids:
-            seis_e = converted_args[i].toSeismogramEnsemble()
-            seismogram_ensemble_copy_helper(args[i], seis_e)
-        for k in converted_kwargs_keys:
-            seis_e = converted_kwargs[k].toSeismogramEnsemble()
-            seismogram_ensemble_copy_helper(kwargs[k], seis_e)
-    return res
+    for i in converted_args_ids:
+        _validate_seismogram_stream(
+            converted_args[i], len(args[i].member), "SeismogramEnsemble"
+        )
+    for k in converted_kwargs_keys:
+        _validate_seismogram_stream(
+            converted_kwargs[k], len(kwargs[k].member), "SeismogramEnsemble"
+        )
+    converted_results = {
+        i: converted_args[i].toSeismogramEnsemble() for i in converted_args_ids
+    }
+    converted_kw_results = {
+        k: converted_kwargs[k].toSeismogramEnsemble() for k in converted_kwargs_keys
+    }
+    for i in converted_args_ids:
+        seismogram_ensemble_copy_helper(args[i], converted_results[i], time_states[i])
+    for k in converted_kwargs_keys:
+        seismogram_ensemble_copy_helper(
+            kwargs[k], converted_kw_results[k], kw_time_states[k]
+        )
+    return _return_ensemble_identity(res, conversions)
 
 
 @decorator
