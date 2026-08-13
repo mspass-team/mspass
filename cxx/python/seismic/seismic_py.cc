@@ -936,8 +936,9 @@ PYBIND11_MODULE(seismic, m) {
       "Set the frequency defined for first component of vector holding spectrum")
     .def("set_dt",&BasicSpectrum::set_dt,"Set the parent data sample interval")
     .def("set_npts",&BasicSpectrum::set_npts,"Set the number of points of the parent spectrum")
+    .def("timeseries_npts",&BasicSpectrum::timeseries_npts,
+      "Return the number of samples in the parent time series")
   ;
-
 
   py::class_<PowerSpectrum,BasicSpectrum,Metadata>(m,"PowerSpectrum",
                   "Container for power spectrum estimates")
