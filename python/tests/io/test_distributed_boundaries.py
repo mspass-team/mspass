@@ -1,6 +1,8 @@
 import os
+import subprocess
 import sys
 import uuid
+from importlib.metadata import distribution, version
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -21,10 +23,26 @@ from mspasspy.io.distributed import (
     read_to_dataframe,
 )
 
-SOURCE_PYTHON_ROOT = Path(
-    os.environ.get("MSPASS_TEST_SOURCE_ROOT", Path(__file__).resolve().parents[2])
-)
-EXPECTED_MODULE = SOURCE_PYTHON_ROOT / "mspasspy/io/distributed.py"
+
+def _assert_module_from_selected_build(module, relative_path):
+    source_root = os.environ.get("MSPASS_TEST_SOURCE_ROOT")
+    if source_root:
+        expected_module = Path(source_root) / relative_path
+    else:
+        expected_module = distribution("mspasspy").locate_file(relative_path)
+        installed_version = version("mspasspy")
+        installed_commit = installed_version.partition("+g")[2].partition(".")[0]
+        assert installed_commit, "installed mspasspy version lacks a source commit"
+        repository_root = next(
+            parent
+            for parent in Path(__file__).resolve().parents
+            if (parent / ".git").exists()
+        )
+        checkout_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=repository_root, text=True
+        ).strip()
+        assert checkout_commit.startswith(installed_commit)
+    assert Path(module.__file__).resolve() == Path(expected_module).resolve()
 
 
 class RecordingCollection:
@@ -82,8 +100,10 @@ def mongo_database():
         client.close()
 
 
-def test_contract_suite_loads_expected_worktree_module():
-    assert Path(distributed_module.__file__).resolve() == EXPECTED_MODULE
+def test_contract_suite_loads_expected_build_module():
+    _assert_module_from_selected_build(
+        distributed_module, Path("mspasspy/io/distributed.py")
+    )
 
 
 def test_empty_dask_partition_returns_empty_without_insert():
