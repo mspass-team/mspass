@@ -19,12 +19,6 @@ BandwidthData EstimateBandwidth(const double signal_df, const PowerSpectrum &s,
                                 const double snr_threshold, const double tbp,
                                 const double fhs,
                                 const bool fix_high_edge_to_fhs) {
-  /* This number defines a scaling to correct for difference in window length
-  for signal and noise windows.   It assumes the noise process is stationary
-  which pretty is pretty much essential for this entire algorithm to make
-  sense anyway. */
-  double window_length_correction =
-      static_cast<double>(s.nf()) / static_cast<double>(n.nf());
   /* Set the starting search points at low (based on noise tbp) and high (80%
   fny) sides */
   double flow_start, fhigh_start;
@@ -54,7 +48,7 @@ BandwidthData EstimateBandwidth(const double signal_df, const PowerSpectrum &s,
     namp = n.power(f);
     namp = sqrt(namp);
     if (namp > 0.0)
-      snrnow = window_length_correction * sigamp / namp;
+      snrnow = sigamp / namp;
     else {
       if (sigamp > 0.0)
         snrnow = NOISE_FREE;
@@ -96,7 +90,7 @@ BandwidthData EstimateBandwidth(const double signal_df, const PowerSpectrum &s,
     sigamp = sqrt(s.power(fhigh_start));
     namp = sqrt(n.power(fhigh_start));
     if (namp > 0.0)
-      snrnow = window_length_correction * sigamp / namp;
+      snrnow = sigamp / namp;
     else {
       if (sigamp > 0.0)
         snrnow = NOISE_FREE;
@@ -112,7 +106,7 @@ BandwidthData EstimateBandwidth(const double signal_df, const PowerSpectrum &s,
       sigamp = sqrt(s.spectrum[i]);
       namp = sqrt(n.power(f));
       if (namp > 0.0)
-        snrnow = window_length_correction * sigamp / namp;
+        snrnow = sigamp / namp;
       else {
         if (sigamp > 0.0)
           snrnow = NOISE_FREE;
@@ -147,8 +141,8 @@ Metadata BandwidthStatistics(const PowerSpectrum &s, const PowerSpectrum &n,
   /* the algorithm below will fail if either of these conditions is true so
   we trap that and return a null result.   Caller must handle the null
   return correctly*/
-  if ((bwd.f_range <= 0.0) || ((bwd.high_edge_f - bwd.low_edge_f) < s.df())
-       || s.dead() || n.dead() || s.nf()<=0 || n.nf()<=0) {
+  if ((bwd.f_range <= 0.0) || ((bwd.high_edge_f - bwd.low_edge_f) < s.df()) ||
+      s.dead() || n.dead() || s.nf() <= 0 || n.nf() <= 0) {
     result.put_double("median_snr", 0.0);
     result.put_double("maximum_snr", 0.0);
     result.put_double("minimum_snr", 0.0);
@@ -158,9 +152,6 @@ Metadata BandwidthStatistics(const PowerSpectrum &s, const PowerSpectrum &n,
     result.put_bool("stats_are_valid", false);
     return result;
   }
-  /* As noted above this correction is needed for an irregular window size*/
-  double window_length_correction =
-      static_cast<double>(s.nf()) / static_cast<double>(n.nf());
   std::vector<double> bandsnr;
   double f;
   for (f = bwd.low_edge_f; f < bwd.high_edge_f && f < s.Nyquist();
@@ -174,7 +165,7 @@ Metadata BandwidthStatistics(const PowerSpectrum &s, const PowerSpectrum &n,
       else
         snr = INDETERMINATE;
     } else {
-      snr = window_length_correction * signal_amp / noise_amp;
+      snr = signal_amp / noise_amp;
     }
     bandsnr.push_back(snr);
   }
