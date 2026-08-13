@@ -9,7 +9,6 @@ from mspasspy.ccore.utility import ErrorSeverity
 from mspasspy.db import matcher as matcher_module
 from mspasspy.db.matcher import ID_matcher, NMF
 
-
 SOURCE_PYTHON_ROOT = Path(
     os.environ.get("MSPASS_TEST_SOURCE_ROOT", Path(__file__).resolve().parents[2])
 )
