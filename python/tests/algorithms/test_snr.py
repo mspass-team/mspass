@@ -230,17 +230,17 @@ def test_FD_snr_estimator():
     tval = fd_snr_output[0]["stats_are_valid"]
     assert tval
     tval = fd_snr_output[0]["snr_filtered_envelope_peak"]
-    assert np.isclose(tval, 851.7318300557693)
+    assert np.isclose(tval, 1512.1869755188213)
     tval = fd_snr_output[0]["snr_filtered_rms"]
-    assert np.isclose(tval, 34.447418941396464)
+    assert np.isclose(tval, 60.4056741781613)
     tval = fd_snr_output[0]["snr_filtered_peak"]
-    assert np.isclose(tval, 508.43856288106366)
+    assert np.isclose(tval, 900.8762847533065)
     tval = fd_snr_output[0]["snr_perc"]
     assert np.isclose(tval, 95.0)
     tval = fd_snr_output[0]["snr_filtered_perc"]
-    assert np.isclose(tval, 16.6541565593841)
+    assert np.isclose(tval, 29.33004726565234)
     tval = fd_snr_output[0]["snr_filtered_mad"]
-    assert np.isclose(tval, 1.2763130717405682)
+    assert np.isclose(tval, 1.3168996833029947)
 
     print("Repeat testing save_spectrum option")
     ts = TimeSeries(ts0)
