@@ -551,9 +551,12 @@ class GlobalHistoryManager:
                 "history_global"
             )
 
-        # create unique index -> (alg_name, parameters)
-        self.history_db[self.collection].create_index(
-            [("alg_name", pymongo.TEXT), ("parameters", pymongo.TEXT)],
+        # Invocation records can repeat the same algorithm identity, so the
+        # unique identity registry must be a separate collection.
+        self.algorithm_collection = self.collection + "_algorithms"
+        self.history_db[self.algorithm_collection].create_index(
+            [("alg_name", pymongo.ASCENDING), ("parameters", pymongo.ASCENDING)],
+            unique=True,
         )
 
         # modify pyspark/dask map to our defined map
@@ -601,23 +604,32 @@ class GlobalHistoryManager:
 
     def get_alg_id(self, alg_name, parameters):
         """
-        Save the usage of the algorithm in the map/reduce operation
+        Return the unique ID for an exact algorithm identity.
 
         :param alg_name: the name of the algorithm
         :type alg_name: :class:`str`
-        :param alg_id: the UUID of the combination of algorithm_name and parameters
-        :type alg_id: :class:`bson.objectid.ObjectId`
         :param parameters: the parameters of the algorithm
         :type parameters: :class:`str`
         """
-        # no alg_name and parameters combination in the database
-        if not self.history_db[self.collection].count_documents(
-            {"alg_name": alg_name, "parameters": parameters}
-        ):
-            return None
-
-        doc = self.history_db[self.collection].find_one(
-            {"alg_name": alg_name, "parameters": parameters}
+        # Preserve an exact legacy invocation's ID without rewriting that record.
+        legacy_doc = self.history_db[self.collection].find_one(
+            {"alg_name": alg_name, "parameters": parameters}, {"alg_id": 1}
+        )
+        if legacy_doc and legacy_doc.get("alg_id"):
+            alg_id = legacy_doc["alg_id"]
+        else:
+            alg_id = ObjectId()
+        doc = self.history_db[self.algorithm_collection].find_one_and_update(
+            {"alg_name": alg_name, "parameters": parameters},
+            {
+                "$setOnInsert": {
+                    "alg_name": alg_name,
+                    "parameters": parameters,
+                    "alg_id": alg_id,
+                }
+            },
+            upsert=True,
+            return_document=pymongo.ReturnDocument.AFTER,
         )
         return doc["alg_id"]
 
@@ -650,13 +662,23 @@ class GlobalHistoryManager:
         :param parameters: the parameters of the algorithm user would like to set
         :type parameters: :class:`str`
         """
-        doc = self.history_db[self.collection].find_one({"alg_id": alg_id})
-        if not doc:
-            raise MsPASSError("No such history record with alg_id = " + alg_id, "Fatal")
+        identity_doc = self.history_db[self.algorithm_collection].find_one(
+            {"alg_id": alg_id}
+        )
+        invocation_doc = self.history_db[self.collection].find_one({"alg_id": alg_id})
+        if not identity_doc and not invocation_doc:
+            raise MsPASSError(
+                "No such history record with alg_id = " + str(alg_id), "Fatal"
+            )
 
         update_dict = {}
         update_dict["alg_name"] = alg_name
         update_dict["parameters"] = parameters
+        self.history_db[self.algorithm_collection].update_one(
+            {"alg_id": alg_id},
+            {"$set": update_dict, "$setOnInsert": {"alg_id": alg_id}},
+            upsert=True,
+        )
         self.history_db[self.collection].update_many(
             {"alg_id": alg_id}, {"$set": update_dict}
         )
