@@ -71,7 +71,7 @@ jobs:
         env:
           MSPASS_CMAKE_BUILD_TYPE: Release
         run: |
-          python -m pip install --upgrade pip setuptools setuptools_scm wheel numpy pytest
+          python -m pip install --upgrade pip setuptools setuptools_scm wheel Cython numpy py-cpuinfo pytest
           python -m pip install --no-cache-dir --no-build-isolation .
       - name: Import installed package and native extension
         run: python -c 'import mspasspy, mspasspy.ccore'

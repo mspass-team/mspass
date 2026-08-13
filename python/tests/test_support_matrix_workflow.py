@@ -54,9 +54,13 @@ def test_every_support_job_builds_imports_and_runs_the_workflow_test():
     install = next(
         step for step in steps if step.get("name") == "Build and install MsPASS"
     )
+    bootstrap, project_install = install["run"].splitlines()
+    assert bootstrap == (
+        "python -m pip install --upgrade pip setuptools setuptools_scm wheel "
+        "Cython numpy py-cpuinfo pytest"
+    )
     assert (
-        "python -m pip install --no-cache-dir --no-build-isolation ."
-        in install["run"].splitlines()
+        "python -m pip install --no-cache-dir --no-build-isolation ." == project_install
     )
     assert "python -c 'import mspasspy, mspasspy.ccore'" in runs
     assert "pytest -q python/tests/test_workflow.py" in runs
