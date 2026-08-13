@@ -1,10 +1,12 @@
 import io
 import multiprocessing
 import os
-from pathlib import Path
+import subprocess
 import time
 import urllib.error
 import uuid
+from importlib.metadata import distribution, version
+from pathlib import Path
 
 import botocore.exceptions
 import numpy as np
@@ -18,10 +20,26 @@ from mspasspy.ccore.utility import ErrorSeverity
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
 
-SOURCE_PYTHON_ROOT = Path(
-    os.environ.get("MSPASS_TEST_SOURCE_ROOT", Path(__file__).resolve().parents[2])
-)
-EXPECTED_DATABASE_MODULE = SOURCE_PYTHON_ROOT / "mspasspy" / "db" / "database.py"
+
+def _assert_module_from_selected_build(module, relative_path):
+    source_root = os.environ.get("MSPASS_TEST_SOURCE_ROOT")
+    if source_root:
+        expected_module = Path(source_root) / relative_path
+    else:
+        expected_module = distribution("mspasspy").locate_file(relative_path)
+        installed_version = version("mspasspy")
+        installed_commit = installed_version.partition("+g")[2].partition(".")[0]
+        assert installed_commit, "installed mspasspy version lacks a source commit"
+        repository_root = next(
+            parent
+            for parent in Path(__file__).resolve().parents
+            if (parent / ".git").exists()
+        )
+        checkout_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=repository_root, text=True
+        ).strip()
+        assert checkout_commit.startswith(installed_commit)
+    assert Path(module.__file__).resolve() == Path(expected_module).resolve()
 
 
 class FakeBody:
@@ -135,10 +153,8 @@ def database():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_database_module_loaded_from_selected_worktree():
-    assert (
-        Path(database_module.__file__).resolve() == EXPECTED_DATABASE_MODULE.resolve()
-    )
+def assert_database_module_loaded_from_selected_build():
+    _assert_module_from_selected_build(database_module, Path("mspasspy/db/database.py"))
 
 
 @pytest.mark.parametrize(
