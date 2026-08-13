@@ -92,8 +92,11 @@ jobs:
             cp312-manylinux_x86_64
             cp313-manylinux_x86_64
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
+          # MsPASS CMake tests need libpython, which manylinux archives by default.
           CIBW_BEFORE_ALL_LINUX: >-
-            dnf install -y gcc-gfortran gsl-devel lapack-devel
+            dnf install -y gcc-gfortran gsl-devel lapack-devel &&
+            tar -xJf /opt/_internal/static-libs-for-embedding-only.tar.xz
+            -C /opt/_internal
           CIBW_ENVIRONMENT: MSPASS_CMAKE_BUILD_TYPE=Release
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >-
             auditwheel repair -w {dest_dir} {wheel}
