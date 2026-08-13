@@ -886,19 +886,18 @@ class TestManager:
 
     def test_get_alg_id(self):
         manager_db = Database(self.client, "test_manager")
-        assert not self.manager.get_alg_id("aaa", "bbb")
-        res = manager_db["history_global"].find_one(
-            {
-                "alg_name": "new_stack",
-                "parameters": '{"object_history": "True", "alg_id": "3"}',
-            }
+        alg_id = self.manager.get_alg_id("aaa", "bbb")
+        assert isinstance(alg_id, ObjectId)
+        assert self.manager.get_alg_id("aaa", "bbb") == alg_id
+        identity_document = manager_db[self.manager.algorithm_collection].find_one(
+            {"alg_name": "aaa", "parameters": "bbb"}
         )
-        assert (
-            self.manager.get_alg_id(
-                "new_stack", '{"object_history": "True", "alg_id": "3"}'
-            )
-            == res["alg_id"]
-        )
+        assert identity_document == {
+            "_id": identity_document["_id"],
+            "alg_name": "aaa",
+            "parameters": "bbb",
+            "alg_id": alg_id,
+        }
 
     def test_get_alg_list(self):
         assert (
@@ -921,13 +920,17 @@ class TestManager:
             )
             == 3
         )
-        res = manager_db["history_global"].find_one(
+        identity_document = manager_db[self.manager.algorithm_collection].find_one(
             {
                 "alg_name": "stack",
                 "parameters": '{"object_history": "True", "alg_id": "3"}',
             }
         )
-        alg_id = res["alg_id"]
+        alg_id = identity_document["alg_id"]
+        matching_invocation_count = manager_db["history_global"].count_documents(
+            {"alg_id": alg_id}
+        )
+        assert matching_invocation_count == 3
         self.manager.set_alg_name_and_parameters(
             alg_id, "test_alg_name", "test_parameters"
         )
@@ -944,12 +947,20 @@ class TestManager:
             manager_db["history_global"].count_documents(
                 {"alg_name": "test_alg_name", "parameters": "test_parameters"}
             )
-            == 3
+            == matching_invocation_count
         )
         res = manager_db["history_global"].find_one(
             {"alg_name": "test_alg_name", "parameters": "test_parameters"}
         )
         assert res["alg_id"] == alg_id
+        assert manager_db[self.manager.algorithm_collection].find_one(
+            {"alg_id": alg_id}
+        ) == {
+            "_id": identity_document["_id"],
+            "alg_name": "test_alg_name",
+            "parameters": "test_parameters",
+            "alg_id": alg_id,
+        }
 
     def test_object_history(self, spark_context):
         manager_db = Database(self.client, "test_manager")
