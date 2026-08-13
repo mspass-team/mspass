@@ -802,6 +802,9 @@ PYBIND11_MODULE(utility, m) {
     .def(py::init<>())
     .def(py::init<const ErrorLogger&>())
     .def(py::init<int>(), py::arg("job_id"), "Construct with a job id")
+    .def(py::init<int,const std::list<LogData>&>(),
+      py::arg("job_id"), py::arg("messages"),
+      "Restore a logger from field-level records")
     .def("set_job_id",&ErrorLogger::set_job_id,
       py::arg("job_id"),
       "Set the job id attached to future log entries")
@@ -912,6 +915,21 @@ PYBIND11_MODULE(utility, m) {
     .def(py::init<>())
     .def(py::init<const std::string,const std::string>())
     .def(py::init<const ProcessingHistory&>())
+    .def(py::init([](const std::string &job_name, const std::string &job_id,
+                     const py::list &edges, const NodeData &current,
+                     const ErrorLogger &elog) {
+      std::multimap<std::string, NodeData> nodes;
+      for (const auto &edge : edges) {
+        const auto item = edge.cast<py::tuple>();
+        if (item.size() != 2)
+          throw py::value_error("history edge must contain key and node");
+        nodes.emplace(item[0].cast<std::string>(), item[1].cast<NodeData>());
+      }
+      return ProcessingHistory(job_name, job_id, nodes, current, elog);
+    }),
+      py::arg("job_name"), py::arg("job_id"), py::arg("edges"),
+      py::arg("current"), py::arg("elog"),
+      "Restore a processing history from field-level records")
     .def("is_empty",&ProcessingHistory::is_empty,
       "Return true if the processing chain is empty")
     .def("is_raw",&ProcessingHistory::is_raw,

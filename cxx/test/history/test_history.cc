@@ -96,6 +96,7 @@ int print_history(const ProcessingHistory& ph, const string title)
 }
 int main(int argc, char **argv)
 {
+  int failures = 0;
   try{
     cout << "Trying constructor for base class BasicProcessingHistory"<<endl;
     BasicProcessingHistory bh;
@@ -273,15 +274,38 @@ int main(int argc, char **argv)
     cout << "Testing clean_accumulate_uuids"<<endl;
     phred_1.clean_accumulate_uuids();
     print_history(phred_1,"After clean_accumulate_uuids");
+
+    cout << "Testing field-level restoration constructor" << endl;
+    ErrorLogger restored_elog(42);
+    restored_elog.log_error("restore", "diagnostic", ErrorSeverity::Complaint);
+    const multimap<string, NodeData> restored_nodes = phred_1.get_nodes();
+    const NodeData restored_current = phred_1.current_nodedata();
+    ProcessingHistory restored("restored-job", "restored-id", restored_nodes,
+                               restored_current, restored_elog);
+    if (restored.jobname() != "restored-job")
+      ++failures;
+    if (restored.jobid() != "restored-id")
+      ++failures;
+    if (restored.get_nodes().size() != restored_nodes.size())
+      ++failures;
+    if (restored.current_nodedata() != restored_current)
+      ++failures;
+    if (restored.elog.get_job_id() != 42)
+      ++failures;
+    if (restored.elog.size() != 1)
+      ++failures;
   }
   catch(MsPASSError& merr)
   {
     cerr << "MsPASSError caught:"<<endl;
     merr.log_error();
+    ++failures;
   }
   catch(std::exception& serr)
   {
     cerr << "Something threw this generic std::exception:"<<endl;
     cerr << serr.what();
+    ++failures;
   }
+  return failures;
 }
