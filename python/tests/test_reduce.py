@@ -25,6 +25,7 @@ sys.path.append("python/tests")
 from helper import (
     get_live_seismogram,
     get_live_timeseries,
+    get_live_timeseries_list,
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
     get_live_seismogram_list,
@@ -84,14 +85,15 @@ def test_reduce_stack():
     for i in range(3):
         assert np.isclose(seis1.data[i], res[i]).all()  # fixme
 
-    ts1 = get_live_timeseries()
-    ts2 = get_live_timeseries()
+    start_time = 1234567890.0
+    ts1 = get_live_timeseries(start_time=start_time)
+    ts2 = get_live_timeseries(start_time=start_time)
     ts1_cp = np.array(ts1.data)
     stack(ts1, ts2)
     assert np.isclose(ts1.data, (np.array(ts1_cp) + np.array(ts2.data))).all()
 
-    tse1 = get_live_timeseries_ensemble(2)
-    tse2 = get_live_timeseries_ensemble(2)
+    tse1 = get_live_timeseries_ensemble(2, start_time=start_time)
+    tse2 = get_live_timeseries_ensemble(2, start_time=start_time)
     tse1_cp = TimeSeriesEnsemble(tse1)
     stack(tse1, tse2)
     for i in range(2):
@@ -110,6 +112,23 @@ def test_reduce_stack():
         )
         for j in range(3):
             assert np.isclose(seis_e1.member[i].data[j], res[j]).all()  # fixme
+
+
+def test_timeseries_helpers_share_explicit_start_time():
+    start_time = 0.0
+    timeseries_list = get_live_timeseries_list(3, start_time=start_time)
+    timeseries_ensemble = get_live_timeseries_ensemble(3, start_time=start_time)
+
+    assert [datum.t0 for datum in timeseries_list] == [start_time] * 3
+    assert [datum.t0 for datum in timeseries_ensemble.member] == [start_time] * 3
+    list_other_values = [datum.data[0] for datum in timeseries_list[1:]]
+    ensemble_other_values = [datum.data[0] for datum in timeseries_ensemble.member[1:]]
+    timeseries_list[0].data[0] = 1.0
+    timeseries_ensemble.member[0].data[0] = 1.0
+    assert [datum.data[0] for datum in timeseries_list[1:]] == list_other_values
+    assert [
+        datum.data[0] for datum in timeseries_ensemble.member[1:]
+    ] == ensemble_other_values
 
 
 def test_reduce_stack_exception():
@@ -144,7 +163,7 @@ def spark_reduce(input, sc):
 
 
 def test_reduce_dask_spark(spark_context):
-    l = [get_live_timeseries() for i in range(5)]
+    l = get_live_timeseries_list(5)
     res = np.zeros(255)
     for i in range(5):
         for j in range(255):

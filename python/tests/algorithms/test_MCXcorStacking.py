@@ -24,6 +24,7 @@ from mspasspy.ccore.seismic import (
 )
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.amplitudes import MADAmplitude
+from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.algorithms.window import scale
@@ -273,6 +274,10 @@ def test_align_and_stack():
         robust_stack_window=rwin,
         correlation_window=xcorwin,
     )
+    for datum in eo.member:
+        if datum.live:
+            grid_offset = (datum.t0 - beam.t0) / beam.dt
+            assert abs(grid_offset - round(grid_offset)) <= 1.0e-6
     # test if this is right
     validate_lags(eo, lag_in_samples)
     # Repeat with one signal replaced by random noise
@@ -389,6 +394,81 @@ def test_align_and_stack():
     assert eo.member[deadguy].dead()
     print_elog(eo)
     validate_lags(eo, lag_in_samples)
+
+
+def test_align_and_stack_preserves_limited_offsets_and_strict_arithmetic():
+    """A clipped lag remains visible while stacking uses explicit grid indices."""
+    [_, ensemble, _] = load_test_data()
+    for datum in ensemble.member:
+        datum.ator(1000.0)
+    noisy_member = 5
+    ensemble.member[noisy_member].data = DoubleVector(
+        np.random.default_rng(20260813).normal(size=ensemble.member[noisy_member].npts)
+    )
+    samples_before = [np.array(datum.data, copy=True) for datum in ensemble.member]
+
+    output, beam = align_and_stack(
+        ensemble,
+        ensemble.member[0],
+        window_beam=True,
+        robust_stack_window=TimeWindow(-1.0, 3.0),
+        correlation_window=TimeWindow(-2.0, 10.0),
+        time_shift_limit=0.03,
+    )
+
+    assert output.live
+    assert beam.live
+    for before, datum in zip(samples_before, output.member):
+        np.testing.assert_array_equal(datum.data, before)
+
+    grid_residuals = [
+        abs((datum.t0 - beam.t0) / beam.dt - round((datum.t0 - beam.t0) / beam.dt))
+        for datum in output.member
+        if datum.live
+    ]
+    assert max(grid_residuals) > 1.0e-3
+
+    misaligned_member = next(
+        datum
+        for datum in output.member
+        if datum.live
+        and abs((datum.t0 - beam.t0) / beam.dt - round((datum.t0 - beam.t0) / beam.dt))
+        > 1.0e-6
+    )
+    arithmetic_lhs = TimeSeries(beam)
+    lhs_before = {
+        "t0": arithmetic_lhs.t0,
+        "dt": arithmetic_lhs.dt,
+        "npts": arithmetic_lhs.npts,
+        "live": arithmetic_lhs.live,
+        "elog_size": arithmetic_lhs.elog.size(),
+        "data": np.array(arithmetic_lhs.data, copy=True),
+    }
+    with pytest.raises(MsPASSError) as exc_info:
+        arithmetic_lhs += misaligned_member
+    assert exc_info.value.severity == ErrorSeverity.Invalid
+    assert arithmetic_lhs.t0 == lhs_before["t0"]
+    assert arithmetic_lhs.dt == lhs_before["dt"]
+    assert arithmetic_lhs.npts == lhs_before["npts"]
+    assert arithmetic_lhs.live == lhs_before["live"]
+    assert arithmetic_lhs.elog.size() == lhs_before["elog_size"]
+    np.testing.assert_array_equal(arithmetic_lhs.data, lhs_before["data"])
+
+    expected_stack = np.zeros(beam.npts)
+    weight_sum = 0.0
+    for datum in output.member:
+        if datum.live and datum["robust_stack_weight"] > 0.0:
+            weight = datum["robust_stack_weight"]
+            offset = beam.sample_number(datum.t0)
+            beam_begin = max(0, offset)
+            datum_begin = max(0, -offset)
+            count = min(beam.npts - beam_begin, datum.npts - datum_begin)
+            expected_stack[beam_begin : beam_begin + count] += (
+                weight * np.asarray(datum.data)[datum_begin : datum_begin + count]
+            )
+            weight_sum += weight
+    expected_stack /= weight_sum
+    np.testing.assert_allclose(beam.data, expected_stack, rtol=0.0, atol=1.0e-15)
 
 
 def test_align_and_stack_error_handlers():

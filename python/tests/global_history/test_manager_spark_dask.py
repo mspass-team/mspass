@@ -29,6 +29,7 @@ from mspasspy.db.database import Database
 from helper import (
     get_live_seismogram,
     get_live_timeseries,
+    get_live_timeseries_list,
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
 )
@@ -161,7 +162,7 @@ class TestManager:
             assert test_map_res[i].data == t[i].data + t[i].data
 
     def test_normal_reduce(self):
-        t = [get_live_timeseries() for i in range(5)]
+        t = get_live_timeseries_list(5)
         s = t[0]
         for i in range(1, 5):
             s += t[i]
@@ -501,7 +502,7 @@ class TestManager:
         manager_db = Database(self.client, "test_manager")
         manager_db["history_global"].delete_many({})
 
-        l = [get_live_timeseries() for i in range(5)]
+        l = get_live_timeseries_list(5)
         # test mspass_reduce for spark
         spark_res = spark_reduce(l, self.manager, spark_context)
         assert (
