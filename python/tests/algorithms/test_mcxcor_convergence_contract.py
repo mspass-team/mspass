@@ -1,4 +1,6 @@
 import os
+import subprocess
+from importlib.metadata import distribution, version
 from pathlib import Path
 
 import numpy as np
@@ -9,9 +11,26 @@ from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.seismic import DoubleVector, TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.utility import ErrorSeverity
 
-SOURCE_PYTHON_ROOT = Path(
-    os.environ.get("MSPASS_TEST_SOURCE_ROOT", Path(__file__).resolve().parents[2])
-)
+
+def _assert_module_from_selected_build(module, relative_path):
+    source_root = os.environ.get("MSPASS_TEST_SOURCE_ROOT")
+    if source_root:
+        expected_module = Path(source_root) / relative_path
+    else:
+        expected_module = distribution("mspasspy").locate_file(relative_path)
+        installed_version = version("mspasspy")
+        installed_commit = installed_version.partition("+g")[2].partition(".")[0]
+        assert installed_commit, "installed mspasspy version lacks a source commit"
+        repository_root = next(
+            parent
+            for parent in Path(__file__).resolve().parents
+            if (parent / ".git").exists()
+        )
+        checkout_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=repository_root, text=True
+        ).strip()
+        assert checkout_commit.startswith(installed_commit)
+    assert Path(module.__file__).resolve() == Path(expected_module).resolve()
 
 
 def make_timeseries(values, t0=0.0, dt=1.0):
@@ -33,9 +52,10 @@ def make_ensemble(*members):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_mcxcor_module_loaded_from_selected_worktree():
-    expected = SOURCE_PYTHON_ROOT / "mspasspy/algorithms/MCXcorStacking.py"
-    assert Path(mcxcor.__file__).resolve() == expected.resolve()
+def assert_mcxcor_module_loaded_from_selected_build():
+    _assert_module_from_selected_build(
+        mcxcor, Path("mspasspy/algorithms/MCXcorStacking.py")
+    )
 
 
 def test_relative_stack_change_is_padding_invariant_and_handles_zero_denominator():
