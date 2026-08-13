@@ -159,6 +159,7 @@ def spark_context():
             context = SparkContext.getOrCreate(conf)
         except PySparkRuntimeError as error:
             pytest.skip(f"Local Spark runtime is unavailable: {error}")
+        context.addPyFile(str(Path(__file__).resolve()))
         owns_context = active_context is None
         yield context
     finally:
