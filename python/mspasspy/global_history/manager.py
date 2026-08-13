@@ -171,6 +171,18 @@ def mspass_reduce(
     )
 
 
+def _resolve_alg_id(global_history, alg_id, alg_name, parameters_json, object_history):
+    """Select and, when requested, log one ID for a wrapper invocation."""
+    selected_id = alg_id
+    if selected_id is None and global_history is not None:
+        selected_id = global_history.get_alg_id(alg_name, parameters_json)
+    if selected_id is None and (global_history is not None or object_history):
+        selected_id = ObjectId()
+    if global_history is not None:
+        global_history.logging(selected_id, alg_name, parameters_json)
+    return selected_id
+
+
 def mspass_spark_map(
     self,
     func,
@@ -217,23 +229,15 @@ def mspass_spark_map(
     if not alg_name:
         alg_name = func.__name__
 
-    # get the alg_id if exists, else create a new one
-    if not alg_id:
-        # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters_json)
-        # else create a new one
-        if not alg_id:
-            alg_id = ObjectId()
-
-    # save the global history
-    if global_history:
-        global_history.logging(alg_id, alg_name, parameters_json)
+    alg_id = _resolve_alg_id(
+        global_history, alg_id, alg_name, parameters_json, object_history
+    )
 
     # read_data method
     if alg_name.rfind("read_data") != -1 and alg_name.rfind("read_data") + 9 == len(
         alg_name
     ):
-        if global_history:
+        if global_history is not None or object_history:
             return self.map(
                 lambda wf: func(
                     wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs
@@ -247,7 +251,7 @@ def mspass_spark_map(
         alg_name
     ):
         # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
-        if global_history:
+        if global_history is not None or object_history:
             return self.map(
                 lambda wf: (
                     func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs),
@@ -320,23 +324,15 @@ def mspass_dask_map(
     if not alg_name:
         alg_name = func.__name__
 
-    # get the alg_id if exists, else create a new one
-    if not alg_id:
-        # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters_json)
-        # else create a new one
-        if not alg_id:
-            alg_id = ObjectId()
-
-    # save the global history
-    if global_history:
-        global_history.logging(alg_id, alg_name, parameters_json)
+    alg_id = _resolve_alg_id(
+        global_history, alg_id, alg_name, parameters_json, object_history
+    )
 
     # read_data method
     if alg_name.rfind("read_data") != -1 and alg_name.rfind("read_data") + 9 == len(
         alg_name
     ):
-        if global_history:
+        if global_history is not None or object_history:
             return self.map(
                 lambda wf: func(
                     wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs
@@ -350,7 +346,7 @@ def mspass_dask_map(
         alg_name
     ):
         # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
-        if global_history:
+        if global_history is not None or object_history:
             return self.map(
                 lambda wf: (
                     func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs),
@@ -420,17 +416,9 @@ def mspass_spark_reduce(
     if not alg_name:
         alg_name = func.__name__
 
-    # get the alg_id if exists, else create a new one
-    if not alg_id:
-        # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters_json)
-        # else create a new one
-        if not alg_id:
-            alg_id = ObjectId()
-
-    # save the global history
-    if global_history:
-        global_history.logging(alg_id, alg_name, parameters_json)
+    alg_id = _resolve_alg_id(
+        global_history, alg_id, alg_name, parameters_json, object_history
+    )
 
     # save the object history
     if object_history:
@@ -497,17 +485,9 @@ def mspass_dask_fold(
     if not alg_name:
         alg_name = func.__name__
 
-    # get the alg_id if exists, else create a new one
-    if not alg_id:
-        # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters_json)
-        # else create a new one
-        if not alg_id:
-            alg_id = ObjectId()
-
-    # save the global history
-    if global_history:
-        global_history.logging(alg_id, alg_name, parameters_json)
+    alg_id = _resolve_alg_id(
+        global_history, alg_id, alg_name, parameters_json, object_history
+    )
 
     # save the object history
     if object_history:
