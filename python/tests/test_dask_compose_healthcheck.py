@@ -62,7 +62,14 @@ def _assert_scheduler_contract(compose):
 
 def test_all_dask_compose_topologies_are_covered():
     discovered = set()
-    paths = (*REPOSITORY_ROOT.rglob("*.yaml"), *REPOSITORY_ROOT.rglob("*.yml"))
+    tracked = subprocess.run(
+        ["git", "ls-files", "--", "*.yaml", "*.yml"],
+        cwd=REPOSITORY_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    paths = (REPOSITORY_ROOT / relative for relative in tracked.stdout.splitlines())
     for path in paths:
         source = path.read_text()
         if "MSPASS_SCHEDULER: dask" not in source:
