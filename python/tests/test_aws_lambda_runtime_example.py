@@ -110,6 +110,9 @@ def test_bundle_is_python_313_native_and_fully_locked():
     with zipfile.ZipFile(ARCHIVE_PATH) as archive:
         members = archive.infolist()
         names = [member.filename for member in members]
+        records = [
+            archive.read(name) for name in names if name.endswith(".dist-info/RECORD")
+        ]
         metadata = {}
         for name in names:
             if name.count("/") == 1 and name.endswith(".dist-info/METADATA"):
@@ -129,6 +132,8 @@ def test_bundle_is_python_313_native_and_fully_locked():
     assert tagged_extensions
     assert all(".cpython-313-" in name for name in tagged_extensions)
     assert metadata == locked_versions
+    assert records
+    assert all(b"../../bin/" not in record for record in records)
     assert {"process.py", "aws_lambda_func_def.py"}.issubset(names)
     for package in ("numpy", "obspy", "scipy"):
         assert any(

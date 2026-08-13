@@ -64,6 +64,11 @@ def prune_asset(asset_root):
     for path in asset_root.rglob("*"):
         if path.is_file() and path.suffix in {".a", ".c", ".cpp", ".h", ".pyi"}:
             path.unlink()
+    for record in asset_root.glob("*.dist-info/RECORD"):
+        rows = record.read_bytes().splitlines(keepends=True)
+        record.write_bytes(
+            b"".join(row for row in rows if not row.startswith(b"../../bin/"))
+        )
 
 
 def verify_imports(asset_root):
