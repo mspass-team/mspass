@@ -252,6 +252,10 @@ public:
   \param jid - set as jobid
   */
   ProcessingHistory(const std::string jobnm, const std::string jid);
+  /*! Restore all state from a field-level persistence representation. */
+  ProcessingHistory(const std::string jobnm, const std::string jid,
+                    const std::multimap<std::string, NodeData> &nodesin,
+                    const NodeData &current, const ErrorLogger &elogin);
   /*! Standard copy constructor. */
   ProcessingHistory(const ProcessingHistory &parent);
   /*! Return true if the processing chain is empty.

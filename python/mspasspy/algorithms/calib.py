@@ -1,9 +1,9 @@
-import pickle
 import numpy as np
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.util.decorators import mspass_method_wrapper
 from mspasspy.util.db_utils import fetch_dbhandle
+from mspasspy.db.serialization import decode_response
 from obspy import UTCDateTime
 
 
@@ -28,12 +28,11 @@ class ApplyCalibEngine:
     Obspy converts that archain data to what they call an Inventory
     object.  In MsPASS we disaggregate the complicated Inventory object
     into a set of MongoDB documents with one entry for each
-    seed time period fr each channel of data.   Inside that document is a
-    an attibute with the tag "serialized_channel_data" that contains
-    the detailed response data serialized with pickle.   The
-    constructor for this object runs pickle.loads on that data to yield
-    an obspy Response object.  We only extract the "sensitivity" value from
-    Response.   A major complication is unit restrictions and invalid
+    SEED time period for each channel of data.   Inside that document is an
+    attribute with the tag "serialized_channel_data" that contains
+    the detailed response data in a versioned StationXML document.  We only
+    extract the "sensitivity" value from the restored ObsPy Response object.
+    A major complication is unit restrictions and invalid
     Response objects.  These are handled by the constructor as described
     below.   The current implementation can only handle Response objects
     with "input units" of meters per second and "output units" of counts.
@@ -109,13 +108,12 @@ class ApplyCalibEngine:
         try:
             for doc in cursor:
                 if response_data_key in doc:
-                    chandata = pickle.loads(doc[response_data_key])
-                    resp = chandata.response
+                    resp = decode_response(doc[response_data_key])
                     sens = resp.instrument_sensitivity
                     if sens is None and verbose:
                         stastr = self._parse_stadata(doc)
                         print(stastr, " invalid instrument response")
-                        print("pickle.loads returned this:  ", str(resp))
+                        print("response decoder returned this:  ", str(resp))
                     elif sens:
                         if verbose:
                             message = self._parse_stadata(doc) + ":  "
@@ -152,7 +150,7 @@ class ApplyCalibEngine:
                     stastr = self._parse_stadata(doc)
                     print(
                         stastr,
-                        " does not contain pickled response data - key=",
+                        " does not contain response data - key=",
                         response_data_key,
                     )
         finally:

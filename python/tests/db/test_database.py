@@ -54,6 +54,7 @@ from mspasspy.db.database import (
     _managed_collection_cursor,
     geoJSON_doc,
 )
+from mspasspy.db.serialization import encode_inventory
 from mspasspy.db.client import DBClient
 from mspasspy.db.collection import Collection
 
@@ -225,7 +226,7 @@ class TestDatabase:
             {
                 "net": "CURSOR_TEST",
                 "sta": "CURSOR_TEST",
-                "serialized_inventory": pickle.dumps(source_inventory.networks[0]),
+                "serialized_inventory": encode_inventory(source_inventory),
             }
         ).inserted_id
         try:

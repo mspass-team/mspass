@@ -60,6 +60,17 @@ from mspasspy.ccore.utility import (
 )
 from mspasspy.db.collection import Collection
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
+from mspasspy.db.serialization import (
+    decode_inventory,
+    decode_processing_history,
+    decode_response,
+    encode_inventory,
+    encode_processing_history,
+    encode_response,
+    inventory_subset,
+    merge_inventories,
+    trusted_legacy_pickle,
+)
 from mspasspy.util.converter import Textfile2Dataframe
 
 _CURSOR_SESSION_REFRESH_INTERVAL_SECONDS = 300.0
@@ -4340,7 +4351,9 @@ class Database(pymongo.database.Database):
             res = self[collection].find_one({"_id": history_object_id})
             if res:
                 if "processing_history" in res:
-                    mspass_object.load_history(pickle.loads(res["processing_history"]))
+                    mspass_object.load_history(
+                        decode_processing_history(res["processing_history"])
+                    )
                     mspass_object.new_map(
                         alg_name, alg_id, atomic_type, ProcessingStatus.ORIGIN
                     )
@@ -5375,8 +5388,8 @@ class Database(pymongo.database.Database):
 
         The channel collection can contain full response data
         that can be obtained by extracting the data with the key
-        "serialized_channel_data" and running pickle loads on the returned
-        string.
+        ``serialized_channel_data`` and decoding either its current versioned
+        StationXML document or a legacy pickle payload.
 
         Channels are grouped by location code.  Each site document spans the
         union of its channels' validity intervals.  When all channels in a
@@ -5452,8 +5465,6 @@ class Database(pymongo.database.Database):
                 locdata = self._extract_locdata(chans)
                 # Assume loc code of 0 is same as rest
                 # loc=_extract_loc_code(chanlist[0])
-                # TODO Delete when sure we don't need to keep the full thing
-                # picklestr = pickle.dumps(x)
                 for loc, loc_channels in locdata.items():
                     # If multiple loc codes are present on the second pass
                     # rec will contain the ObjectId of the document inserted
@@ -5502,6 +5513,9 @@ class Database(pymongo.database.Database):
                         rec["edepth"] = next(iter(location_depths))
                     rec["starttime"] = loc_stime.timestamp
                     rec["endtime"] = loc_etime.timestamp
+                    rec["serialized_inventory"] = encode_inventory(
+                        inventory_subset(inv, x, station, loc_channels)
+                    )
                     if self._site_is_not_in_db(rec):
                         result = dbcol.insert_one(rec)
                         # Note this sets site_id to an ObjectId for the insertion
@@ -5547,6 +5561,7 @@ class Database(pymongo.database.Database):
                     for chan in loc_channels:
                         chanrec = copy.deepcopy(rec)
                         chanrec.pop("_id", None)
+                        chanrec.pop("serialized_inventory", None)
                         chanrec["chan"] = chan.code
                         # the Dip attribute in a stationxml file
                         # is like strike-dip and relative to horizontal
@@ -5575,8 +5590,9 @@ class Database(pymongo.database.Database):
                         chanrec["endtime"] = et.timestamp
                         n_chan_processed += 1
                         if self._channel_is_not_in_db(chanrec):
-                            picklestr = pickle.dumps(chan)
-                            chanrec["serialized_channel_data"] = picklestr
+                            chanrec["serialized_channel_data"] = encode_response(
+                                chan, chanrec
+                            )
                             result = dbchannel.insert_one(chanrec)
                             idobj = result.inserted_id
                             dbchannel.update_one(
@@ -5671,22 +5687,18 @@ class Database(pymongo.database.Database):
             query["starttime"] = {"$lt": time}
             query["endtime"] = {"$gt": time}
         matchsize = dbsite.count_documents(query)
-        result = Inventory()
         if matchsize == 0:
             return None
         else:
+            inventory_records = []
             with _managed_collection_cursor(
                 dbsite, query, no_cursor_timeout
             ) as stations:
                 for s in stations:
-                    serialized = s["serialized_inventory"]
-                    netw = pickle.loads(serialized)
-                    # It might be more efficient to build a list of
-                    # Network objects but here we add them one
-                    # station at a time.  Note the extend method
-                    # if poorly documented in obspy
-                    result.extend([netw])
-        return result
+                    inventory_records.append(
+                        decode_inventory(s["serialized_inventory"])
+                    )
+        return merge_inventories(inventory_records)
 
     def get_seed_site(self, net, sta, loc="NONE", time=-1.0, verbose=False):
         """
@@ -5985,9 +5997,7 @@ class Database(pymongo.database.Database):
             )
             print("There should be just one - returning the first one found")
         doc = self.channel.find_one(query)
-        s = doc["serialized_channel_data"]
-        chan = pickle.loads(s)
-        return chan.response
+        return decode_response(doc["serialized_channel_data"])
 
     def save_catalog(self, cat, verbose=False):
         """
@@ -8401,8 +8411,7 @@ def history2doc(
     This function can be thought of as a formatter for the ProcessingHistory
     container in a MsPASS data object.  It returns a python dictionary
     that, if retrieved, can be used to reconstruct the ProcessingHistory
-    container.  We do that a fairly easy way here by using pickle.dumps
-    of the container that is saved with the key "processing_history".
+    container.  The history is stored as a versioned BSON-native document.
 
     :param proc_history:   history container to be reformatted
     :type proc_history:  Must be an instance of a
@@ -8449,11 +8458,10 @@ def history2doc(
     if alg_name is None:
         alg_name = current_nodedata.algorithm
 
-    history_binary = pickle.dumps(proc_history)
     doc = {
         "save_uuid": current_uuid,
         "save_stage": current_stage,
-        "processing_history": history_binary,
+        "processing_history": encode_processing_history(proc_history),
         "alg_id": alg_id,
         "alg_name": alg_name,
     }
