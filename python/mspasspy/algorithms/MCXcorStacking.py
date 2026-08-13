@@ -23,7 +23,7 @@ from obspy.geodetics.base import gps2dist_azimuth, kilometers2degrees
 from obspy.taup import TauPyModel
 
 
-from mspasspy.ccore.utility import ErrorLogger, ErrorSeverity, Metadata
+from mspasspy.ccore.utility import ErrorLogger, ErrorSeverity, Metadata, MsPASSError
 from mspasspy.ccore.seismic import (
     TimeSeries,
     TimeSeriesEnsemble,
@@ -977,6 +977,16 @@ def robust_stack(
         )
 
 
+def _relative_stack_change(new_stack, previous_stack) -> float:
+    """Return the relative L2 change between two stack estimates."""
+    delta = new_stack - previous_stack
+    delta_norm = np.linalg.norm(delta.data)
+    previous_norm = np.linalg.norm(previous_stack.data)
+    if previous_norm == 0.0:
+        return 0.0 if delta_norm == 0.0 else np.inf
+    return delta_norm / previous_norm
+
+
 def _dbxcor_stacker(
     ensemble,
     stack0,
@@ -1005,13 +1015,15 @@ def _dbxcor_stacker(
     :type residual_norm_floor:   float (default 0.1)
     """
     stack = TimeSeries(stack0)
+    previous_stack = TimeSeries(stack0)
     # useful shorthands
     N = stack0.npts
     M = len(ensemble.member)
     wts = None  # needed to keep this symbol from going out of scope before return
     for i in range(maxiterations):
-        # this requires stack0 not be altered in this function
-        wts = dbxcor_weights(ensemble, stack0, residual_norm_floor=residual_norm_floor)
+        wts = dbxcor_weights(
+            ensemble, previous_stack, residual_norm_floor=residual_norm_floor
+        )
         # newstack = np.zeros(N)
         # this is just a fast way to initalize to 0s
         stack.set_npts(N)
@@ -1030,19 +1042,12 @@ def _dbxcor_stacker(
             stack.kill()
             return [stack, wts]
         # newstack /= sumwts
-        # order may matter here.  In this case delta becomes a numpy
-        # array which is cleaner in this context
-        # delta = newstack - stack.data
-        delta = stack - stack0
-        relative_delta = np.linalg.norm(delta.data) / np.linalg.norm(stack0.data)
-        # normalize by sample size or there is a window length dependency
-        relative_delta /= N
-        # update stack here so if we break loop we don't have to repeat
-        # this copying.  Force one iteration to make this a do-while loop
-        # newstack is a numpy vector so this cast is necesary
-        stack0 = stack
+        # Compare against the same immutable estimate used for the weights.
+        relative_delta = _relative_stack_change(stack, previous_stack)
+        # Force one iteration to make this a do-while loop.
         if i > 0 and relative_delta < eps:
             break
+        previous_stack = TimeSeries(stack)
     return [stack, wts]
 
 
@@ -1219,15 +1224,14 @@ def align_and_stack(
             stack that is defined.   Note recent experience has shown
             that with large, consistent ensembles the dbxcor robust
             estimate tends to focus on the signal closest to the median
-            stack.  The reason is that the median stack
-            is always used as the initial estimator.   Hence, it can
-            be thought of as a median stack that uses the full data
-            set more completely.
+            stack.  By default the median stack is used as the initial
+            estimator; ``use_median_initial_stack=False`` instead uses the
+            supplied beam.
         3.  dbxcor required the user to pick a seed signal to use as
-            the initial beam estimate.  That approach is NOT used here
-            but idea is to have some estimate passed to the algorithm
-            via the beam (arg1) argument.  In MsPASS the working model
-            is to apply the  broadband_snr_QC function to the data before
+            the initial beam estimate.  This function receives that estimate
+            through the beam (arg1) argument and uses it as the robust-stack
+            seed when ``use_median_initial_stack=False``.  In MsPASS the
+            working model is to apply the broadband_snr_QC function before
             running this function and select the initial seed (beam) from
             one or more of the computed snr metrics.   In addition,
             with this approach I envision a two-stage computation where
@@ -1336,9 +1340,9 @@ def align_and_stack(
         computing the robust stack.  Currently accepted value are:
         "dbxcor" (default) and "median".
     :type robust_stack_method:  string  - must be one of options listed above.
-    :param use_median_initial_stack: currently has no effect.  The implementation
-        always uses a median stack as the initial estimate, including when this
-        value is False.
+    :param use_median_initial_stack: when True, initialize robust stacking with
+        the member median.  When False, use the supplied beam as the initial
+        stack estimate.
     :type use_median_initial_stack: boolean (default True)
     :param time_shift_key:  the time shift applied relative to the starting
         point is posted to each live member with this key.  It is
@@ -1356,14 +1360,11 @@ def align_and_stack(
         this value will be truncated to this value with the sign
         of the shift preserved.
     :type time_shift_limit:  float
-    :param abort_irregular_sampling: currently has no effect.  This function uses
-        a generous test for sample rate mismatch.  A mismatch is
-        detected only if the computed time skew over the time span of
-        the input beam signal is more than half of the beam sample interval
-        (``beam.dt``).  Offending ensemble members are always killed and a
-        message is posted; setting this value to True does not currently raise
-        ``ValueError``.  The input ensemble can therefore return with fewer
-        live members.
+    :param abort_irregular_sampling: passed to ``regularize_sampling`` as
+        ``abort_on_error``.  When True, any irregular live member causes that
+        helper to abort; when False, offending members are killed and
+        processing continues if live members remain.  Exceptions use this
+        function's standard decorator error handling.
     :type abort_irregular_sampling: boolean (default False)
     :param residual_norm_floor: floor on residuals used to compute dbxcor weight
         function.  See docstring for `dbxcor_weights` for details.
@@ -1388,8 +1389,7 @@ def align_and_stack(
     # xcorens has function scope
     it0_key = "_initial_t0_value_"
     ensemble_index_key = "_ensemble_i0_"
-    # maximum iterations.  could be passed as an argument but I have
-    # never seen this algorithm not converge in 20 interation
+    # maximum iterations before the stack is returned dead
     MAXITERATION = 20
     # Enformce types of ensemble and beam
     if not isinstance(ensemble, TimeSeriesEnsemble):
@@ -1409,7 +1409,12 @@ def align_and_stack(
         ensemble.elog.log_error(alg, message, ErrorSeverity.Invalid)
         ensemble.kill()
         return [ensemble, beam]
-    ensemble = regularize_sampling(ensemble, beam.dt, Nsamp=beam.npts)
+    ensemble = regularize_sampling(
+        ensemble,
+        beam.dt,
+        Nsamp=beam.npts,
+        abort_on_error=abort_irregular_sampling,
+    )
     if ensemble.dead():
         return [ensemble, beam]
     # we need to make sure this is part of a valid set of algorithms
@@ -1588,7 +1593,7 @@ def align_and_stack(
 
     # above guarantees this cannot return a dead datum
     rbeam0 = WindowData(beam, rwin.start, rwin.end)
-    nrm_rbeam = np.linalg.norm(rbeam0.data)
+    converged = False
     for i in range(MAXITERATION):
         ensemble = beam_align(
             ensemble, beam, xcorwin, time_shift_limit=time_shift_limit
@@ -1601,16 +1606,14 @@ def align_and_stack(
         rbeam, wts = robust_stack(
             rens,
             method=robust_stack_method,
+            stack0=None if use_median_initial_stack else rbeam0,
             residual_norm_floor=residual_norm_floor,
             timespan_method="ensemble_median",
             stack_md=Metadata(rbeam0),
         )
-        delta_rbeam = rbeam - rbeam0
-        nrm_delta = np.linalg.norm(delta_rbeam.data)
-        if nrm_rbeam == 0.0:
-            if nrm_delta == 0.0:
-                break
-        elif nrm_delta / nrm_rbeam < convergence:
+        relative_change = _relative_stack_change(rbeam, rbeam0)
+        if relative_change < convergence:
+            converged = True
             break
         # this updates the always longer beam signal for correlation
         # use rbeam is used for convergence testing
@@ -1621,11 +1624,13 @@ def align_and_stack(
             beam.elog.log_error(alg, message, ErrorSeverity.Invalid)
             return [ensemble, beam]
         rbeam0 = rbeam
-        nrm_rbeam = np.linalg.norm(rbeam0.data)
-    if i >= MAXITERATION:
+    if not converged:
         beam.kill()
-        message = "robust_stack iterative loop did not converge"
-        beam.elog.log_error(alg, message, ErrorSeverity.Invalid)
+        message = (
+            "align_and_stack: robust_stack iterative loop did not converge "
+            "after 20 iterations"
+        )
+        beam.elog.log_error(MsPASSError(message, ErrorSeverity.Invalid))
         return [ensemble, beam]
 
     # apply time shifts to original ensemble that we will return
@@ -1643,8 +1648,6 @@ def align_and_stack(
                 tshift = ensemble.member[i].t0 - initial_starttime
                 allshifts.append(tshift)
         tshift_mean = np.average(allshifts)
-        # debug
-        print("Applying average time shift of ", tshift_mean)
         for i in range(len(ensemble.member)):
             if ensemble.member[i].live:
                 # this method alters the t0 values of the ensemble members
