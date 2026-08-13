@@ -8,6 +8,7 @@ REPOSITORY_ROOT = Path(
 )
 WORKFLOW_PATH = REPOSITORY_ROOT / ".github" / "workflows" / "publish-pypi.yml"
 README_PATH = REPOSITORY_ROOT / "README.md"
+CMAKE_PATH = REPOSITORY_ROOT / "cxx" / "CMakeLists.txt"
 
 
 def _load_workflow():
@@ -71,6 +72,13 @@ def test_every_wheel_is_repaired_inspected_checked_and_clean_tested():
         "name": "pypi-wheels-linux-x86_64",
         "path": "wheelhouse/*.whl",
     }
+
+
+def test_static_python_link_keeps_findpython_system_dependencies():
+    cmake = CMAKE_PATH.read_text(encoding="utf-8")
+
+    assert "if (TARGET Python::Python)" in cmake
+    assert "set (Python_LIBRARIES Python::Python)" in cmake
 
 
 def test_only_release_tags_trusted_publish_all_five_artifacts():
