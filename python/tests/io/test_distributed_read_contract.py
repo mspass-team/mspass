@@ -1,7 +1,6 @@
 import datetime
 import os
 import subprocess
-import sys
 from importlib.metadata import distribution, version
 from pathlib import Path
 
@@ -208,52 +207,13 @@ def test_dask_compute_failure_never_deletes_caller_scratch(monkeypatch, tmp_path
 
 
 @pytest.fixture(scope="module")
-def spark_context():
-    pyspark = pytest.importorskip("pyspark")
-    active_context = pyspark.SparkContext._active_spark_context
-    os.environ.setdefault("SPARK_LOCAL_IP", "127.0.0.1")
-    previous_worker_python = os.environ.get("PYSPARK_PYTHON")
-    previous_driver_python = os.environ.get("PYSPARK_DRIVER_PYTHON")
-    previous_pythonpath = os.environ.get("PYTHONPATH")
-    os.environ["PYSPARK_PYTHON"] = sys.executable
-    os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
-    test_module_directory = str(Path(__file__).parent)
-    os.environ["PYTHONPATH"] = (
-        test_module_directory
-        if previous_pythonpath is None
-        else test_module_directory + os.pathsep + previous_pythonpath
-    )
-    configuration = (
-        pyspark.SparkConf()
-        .setMaster("local[1]")
-        .setAppName("mspass-distributed-read-contract")
-        .set("spark.ui.enabled", "false")
-        .set("spark.driver.bindAddress", "127.0.0.1")
-    )
-    context = pyspark.SparkContext.getOrCreate(configuration)
-    context.addPyFile(str(Path(__file__).resolve()))
-    context.setLogLevel("ERROR")
-    try:
-        yield context
-    finally:
-        if active_context is None:
-            context.stop()
-        if previous_worker_python is None:
-            os.environ.pop("PYSPARK_PYTHON", None)
-        else:
-            os.environ["PYSPARK_PYTHON"] = previous_worker_python
-        if previous_driver_python is None:
-            os.environ.pop("PYSPARK_DRIVER_PYTHON", None)
-        else:
-            os.environ["PYSPARK_DRIVER_PYTHON"] = previous_driver_python
-        if previous_pythonpath is None:
-            os.environ.pop("PYTHONPATH", None)
-        else:
-            os.environ["PYTHONPATH"] = previous_pythonpath
+def distributed_spark_context(spark_context):
+    spark_context.addPyFile(str(Path(__file__).resolve()))
+    return spark_context
 
 
 def test_spark_scratch_returns_repeatable_rdd_and_remains_caller_owned(
-    monkeypatch, tmp_path, spark_context
+    monkeypatch, tmp_path, distributed_spark_context
 ):
     documents = make_documents()
     database = FakeDatabase(documents)
@@ -264,7 +224,7 @@ def test_spark_scratch_returns_repeatable_rdd_and_remains_caller_owned(
         database,
         scratchfile=str(scratch),
         scheduler="spark",
-        spark_context=spark_context,
+        spark_context=distributed_spark_context,
         npartitions=1,
     )
 
