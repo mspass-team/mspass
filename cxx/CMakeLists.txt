@@ -107,7 +107,14 @@ elseif (NOT LAPACK_FOUND)
   set (LAPACK_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.a)
 endif ()
 
+# The mixed-language probe links with the Fortran driver, so C-only sanitizer
+# runtime flags must not leak into it.
+set (_mspass_c_flags "${CMAKE_C_FLAGS}")
+set (CMAKE_C_FLAGS "")
 include (FortranCInterface)
+if (NOT FortranCInterface_GLOBAL_FOUND)
+  message (FATAL_ERROR "Unable to detect the Fortran/C symbol interface")
+endif ()
 list (APPEND FORTRAN_FUNCTIONS ddot dscal daxpy dcopy dnrm2)
 list (APPEND FORTRAN_FUNCTIONS dgetrf dgetri)
 list (APPEND FORTRAN_FUNCTIONS dlamch dstebz dstein)
@@ -115,6 +122,8 @@ FortranCInterface_HEADER (include/FC.h
   MACRO_NAMESPACE "FC_"
   SYMBOLS ${FORTRAN_FUNCTIONS}
   )
+set (CMAKE_C_FLAGS "${_mspass_c_flags}")
+unset (_mspass_c_flags)
 
 message (STATUS "Building mseed")
 include (cmake/mseed.cmake)
