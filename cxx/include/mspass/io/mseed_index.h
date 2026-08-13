@@ -92,16 +92,18 @@ of interest only if something breaks.
   in consecutive packets that aren't an actual time tear in this sense.
   e.g. event data concenated so all channels are back to back would require
   using this parameter true.
+  Sample-rate changes beyond a 1e-12 relative tolerance always start a new
+  segment, independent of this parameter.
 \param Verbose is a boolean largely controlling how time tears are or are not
-  logged.  That is, at present if this parameter is true any time the logic
-  detects a time tear it is logged in the returned error log as an informational
-  log message.   If false only reading errors for things like garbled miniseed
-  packets are logged.
+  logged.  When true, each detected time tear writes one diagnostic line to
+  standard error.  When false, time tears produce no diagnostic output.
 \return std::pair whose first element contains a vector of objects
   called mseed_index that contain the basic information defining an index for
   inputfile.  See class description of mseed_index for more details. "second"
-  contains an ErrorLogger objects.  Caller should test that the contents are
-  empty and if not save the error log or print it.
+  contains an ErrorLogger object.  Caller should test that the contents are
+  empty and if not save the error log or print it.  A valid empty file returns
+  an empty vector.  A libmseed parse error throws MsPASSError with Invalid
+  severity instead of returning a partial index.
 */
 std::pair<std::vector<mseed_index>, mspass::utility::ErrorLogger>
 mseed_file_indexer(const std::string inputfile, const bool segment_timetears,

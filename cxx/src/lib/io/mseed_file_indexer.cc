@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <errno.h>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <math.h>
@@ -13,6 +15,7 @@
 #include "libmseed.h"
 #include "mspass/io/mseed_index.h"
 #include "mspass/utility/ErrorLogger.h"
+#include "mspass/utility/MsPASSError.h"
 
 using namespace std;
 namespace mspass::io {
@@ -110,12 +113,12 @@ typedef std::pair<std::vector<mseed_index>, mspass::utility::ErrorLogger>
     MSDINDEX_returntype;
 thread_local std::string buffer;
 /*! Internal function translates miniseed reader function return codes
-  to readable messages posted in mseed_file_indexer to ErrorLogger.
+  to readable messages used by mseed_file_indexer exceptions.
   */
 std::string MS_code_to_message(int retcode) {
   string message(
       "Read error detected by libmseed reader function ms3_readmsr_r\n");
-  message += "File index will be empty or truncated\n";
+  message += "No file index was returned\n";
   switch (retcode) {
   case MS_GENERROR:
     message += "MS_GENERROR(-1) return - generic unspecified error";
@@ -159,17 +162,16 @@ std::string MS_code_to_message(int retcode) {
  * 1.  miniseed files are often produced by concatenation of data form multiple
  *     channel.  Any change in station id returned by the function triggers a
  *     new index entry.
- * 2.  Packet errors will force a new segment.
- * 3.  Time tears defined by either a jump or accumulated time mismatch of
- *     more than 1/2 sample will trigger a new segments.
- * 4.  Changes in sample interval trigger a new segments.   That is
- *     actually implicit in point 1 with the "sid" because of the
- *     seed channel code naming convention.
+ * 2.  Packet errors abort indexing so a damaged file cannot produce a partial
+ *     index.
+ * 3.  A time mismatch between consecutive packets of more than 1/2 the
+ *     previous sample interval triggers a new segment.
+ * 4.  A sample-rate change beyond the relative tolerance triggers a new
+ *     segment even when the source identifier and time are continuous.
  * \return std::pair   first is a vector of index data.  second is
- *   an ErrorLogger object.  Caller should test for empty vector
- *   that is a signal for a open failure or a file that probably isn't
- *   miniseed.   The content of elog should always be tested as any
- *   errors there should be inspected/handled.
+ *   an ErrorLogger object.  The content of elog should always be tested as
+ *   any errors there should be inspected/handled.  A valid empty file
+ *   produces an empty vector; a parse failure throws MsPASSError.
  * */
 MSDINDEX_returntype mseed_file_indexer(const string inputfile,
                                        const bool segment_timetears,
@@ -183,46 +185,45 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
   struct.  The weird cleanup call at the end of the read loop
   calls the equivalent of a destructor.*/
   MS3FileParam *msfp = NULL;
-  uint32_t flags = MSF_SKIPNOTDATA;
+  uint32_t flags = MSF_VALIDATECRC;
   // int8_t ppackets = 0;
   int8_t verbose = 0;
   int retcode;
   // char last_sid[128],current_sid[128];
   MSEED_sid last_sid, current_sid;
-  /* This is used to define a time tear (gap).  When the computed endtime of
-  the previous packet read mismatches the starttime of the current packet we
-  create  a segment by defining a new index entry terminated at the time
-  tear */
-  const double time_tear_tolerance(0.5);
-
   vector<mseed_index> indexdata;
 
   mspass::utility::ErrorLogger elog;
 
+  /* libmseed reports an empty file as MS_NOTSEED.  Empty input is a valid
+     index with no segments, while an unreadable or nonempty damaged file is
+     left to the reader so it can report the appropriate parse error. */
+  {
+    std::ifstream empty_test(inputfile, std::ios::binary | std::ios::ate);
+    if (empty_test.is_open() && empty_test.tellg() == 0)
+      return MSDINDEX_returntype(indexdata, elog);
+  }
+
   /* Loop over the input file record by record */
   int64_t fpos = 0;
-  uint64_t start_foff, nbytes;
-  mseed_index ind;
+  uint64_t start_foff(0), nbytes(0);
   /* These values have a different time standard structure than
    * epoch times.  These can only be compared with epoch times by
    * calling the function MS_NSTIME2EPOCH
    */
   nstime_t stime;
-  int64_t npts(0), current_npts, record_length(4096);
+  int64_t npts(0), last_packet_npts(0), record_length(0);
   uint64_t number_packets_read(0), number_valid_packets(0);
-  double last_packet_samprate, last_packet_endtime, expected_starttime, last_dt;
-  /* These are used to handle long time series where the accumulated time
-   * from the start of a segment (many packets) gets inconsistent with
-   * the next packet's starttime.*/
-  double segment_starttime, computed_segment_starttime;
+  double last_packet_samprate(0.0), expected_starttime(0.0), last_dt(0.0);
+  double segment_starttime(0.0), segment_samprate(0.0);
   /* mseed stores time in an int (I think) this holds float
    * conversions for current and last packet read.*/
-  double current_epoch_stime, last_epoch_stime;
+  double current_epoch_stime(0.0), last_epoch_stime(0.0);
+  nstime_t last_packet_stime(0);
   /* loop break boolean */
-  bool data_available;
-  /* It is not clear what verbose means in this function so we currently always
-  turn it off.   Note Verbose and verbose are different - a bit dangerous but
-  that is what is for now.
+  bool data_available(true);
+  /* Keep libmseed's verbosity off.  The public Verbose argument controls the
+  single-line time-tear diagnostics emitted below.
   Also changed dec 2021:  changed to thread safe version.  Requires adding
   msfp struct initialized as NULL.
 
@@ -236,169 +237,140 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
   /* Although we don't use it this log initialization seems necessary as
      libmseed functions will dogmatically use the facility */
   ms_rloginit(NULL, NULL, NULL, NULL, 10);
-  do {
-    bool timetear_detected(false), sid_change_detected(false);
-    retcode = ms3_readmsr_r(&msfp, &msr, inputfile.c_str(), &fpos, NULL, flags,
-                            verbose);
-    switch (retcode) {
-    case MS_NOERROR:
-      try {
-        current_sid = MSEED_sid(msr->sid);
-      } catch (...) {
-        stringstream ss;
-        ss << "source id string=" << current_sid << " in packet number "
-           << number_packets_read << " of file " << inputfile
-           << " could not be decoded but reader did not flag an error" << endl
-           << "Segment break at this point is likely" << endl;
-        elog.log_error(function_name, ss.str(), ErrorSeverity::Complaint);
-        continue;
-      }
-      /* Land here for normal reads with no error return*/
-      if (number_valid_packets == 0) {
-        /* Initializations needed for first packet in the file */
-        last_sid = current_sid;
-        stime = msr->starttime;
-        current_epoch_stime = MS_NSTIME2EPOCH(static_cast<double>(stime));
-        last_epoch_stime = current_epoch_stime;
-        last_packet_samprate = msr->samprate;
-        last_dt = 1.0 / last_packet_samprate;
-        npts = msr->samplecnt;
-        last_packet_endtime =
-            current_epoch_stime + static_cast<double>(npts - 1) * last_dt;
-        segment_starttime = last_epoch_stime;
-        start_foff = 0;
-        /* Set this for the first packet and assume it is constant for the
-           whole file.  I don't think seed technically requires this but
-           in practice it is alway the case. */
-        record_length = msr->reclen;
-      } else {
-        stime = msr->starttime;
-        current_epoch_stime = MS_NSTIME2EPOCH(static_cast<double>(stime));
-        expected_starttime = last_packet_endtime + last_dt;
-        computed_segment_starttime =
-            segment_starttime + last_dt * static_cast<double>(npts);
-        if (current_sid != last_sid)
-          sid_change_detected = true;
-        if (segment_timetears) {
-          if ((fabs(current_epoch_stime - expected_starttime) >
-               time_tear_tolerance) ||
-              (fabs(current_epoch_stime - computed_segment_starttime) >
-               time_tear_tolerance))
-            timetear_detected = true;
-          else
-            /* This explicit setting isn't essential but makes the logic
-             * clearer.*/
-            timetear_detected = false;
-        }
+  auto append_segment = [&]() {
+    mseed_index ind;
+    ind.net = last_sid.net;
+    ind.sta = last_sid.sta;
+    ind.chan = last_sid.chan;
+    ind.loc = last_sid.loc;
+    ind.foff = start_foff;
+    ind.nbytes = nbytes;
+    ind.starttime = segment_starttime;
+    ind.last_packet_time = last_epoch_stime;
+    ind.samprate = segment_samprate;
+    ind.npts = npts;
+    ind.endtime =
+        ind.starttime + (static_cast<double>(npts - 1)) / ind.samprate;
+    indexdata.push_back(ind);
+  };
+  auto cleanup_reader = [&]() {
+    ms3_readmsr_r(&msfp, &msr, NULL, NULL, NULL, 0, 0);
+    buffer.clear();
+    ms_rlog_emit(NULL, 0, verbose);
+  };
 
-        if (sid_change_detected || timetear_detected) {
-          nbytes = fpos - start_foff;
-          ind.net = last_sid.net;
-          ind.sta = last_sid.sta;
-          ind.chan = last_sid.chan;
-          ind.loc = last_sid.loc;
-          ind.foff = start_foff;
-          ind.nbytes = nbytes;
-          ind.starttime = segment_starttime;
-          ind.last_packet_time = last_epoch_stime;
-          ind.samprate = last_packet_samprate;
-          ind.npts = npts;
-          ind.endtime =
-              ind.starttime + (static_cast<double>(npts - 1)) / ind.samprate;
-          indexdata.push_back(ind);
-          /* Initate a new segment.  Note the only difference if there was a
-           * decoding error is the index entry will be dropped. */
+  try {
+    do {
+      bool timetear_detected(false), sid_change_detected(false),
+          samprate_change_detected(false);
+      retcode = ms3_readmsr_r(&msfp, &msr, inputfile.c_str(), &fpos, NULL,
+                              flags, verbose);
+      switch (retcode) {
+      case MS_NOERROR:
+        try {
+          current_sid = MSEED_sid(msr->sid);
+        } catch (...) {
+          stringstream ss;
+          ss << "source id string=" << msr->sid << " in packet number "
+             << number_packets_read + 1 << " of file " << inputfile
+             << " could not be decoded but reader did not flag an error";
+          throw mspass::utility::MsPASSError(ss.str(), ErrorSeverity::Invalid);
+        }
+        /* Land here for normal reads with no error return. */
+        stime = msr->starttime;
+        current_epoch_stime = MS_NSTIME2EPOCH(static_cast<double>(stime));
+        record_length = msr->reclen;
+        if (number_valid_packets == 0) {
+          /* Initializations needed for first packet in the file. */
           last_sid = current_sid;
           last_epoch_stime = current_epoch_stime;
+          last_packet_stime = stime;
           last_packet_samprate = msr->samprate;
+          segment_samprate = msr->samprate;
           last_dt = 1.0 / last_packet_samprate;
+          last_packet_npts = msr->samplecnt;
           npts = msr->samplecnt;
-          last_packet_endtime =
-              current_epoch_stime + static_cast<double>(npts - 1) * last_dt;
-          segment_starttime = current_epoch_stime;
-          start_foff = fpos;
+          segment_starttime = last_epoch_stime;
+          start_foff = static_cast<uint64_t>(fpos);
         } else {
-          /* Packets without a break land here */
+          if (current_sid != last_sid)
+            sid_change_detected = true;
+
+          const long double current_samprate = msr->samprate;
+          const long double previous_samprate = last_packet_samprate;
+          const long double samprate_tolerance =
+              1.0e-12L * std::max(std::fabs(current_samprate),
+                                  std::fabs(previous_samprate));
+          samprate_change_detected =
+              std::fabs(current_samprate - previous_samprate) >
+              samprate_tolerance;
+
+          expected_starttime = last_epoch_stime +
+                               static_cast<double>(last_packet_npts) * last_dt;
+          if (segment_timetears && !sid_change_detected &&
+              !samprate_change_detected) {
+            const long double timing_error =
+                std::fabs(static_cast<long double>(stime - last_packet_stime) *
+                              previous_samprate -
+                          static_cast<long double>(last_packet_npts) *
+                              static_cast<long double>(NSTMODULUS));
+            timetear_detected =
+                timing_error > 0.5L * static_cast<long double>(NSTMODULUS);
+          }
+
+          if (timetear_detected && Verbose) {
+            stringstream diagnostic;
+            diagnostic << function_name << ": time tear at packet "
+                       << number_packets_read + 1 << " SID " << msr->sid
+                       << " previous expected time " << setprecision(17)
+                       << expected_starttime << " actual start "
+                       << current_epoch_stime;
+            cerr << diagnostic.str() << '\n';
+          }
+
+          if (sid_change_detected || samprate_change_detected ||
+              timetear_detected) {
+            nbytes = static_cast<uint64_t>(fpos) - start_foff;
+            append_segment();
+            npts = msr->samplecnt;
+            segment_starttime = current_epoch_stime;
+            segment_samprate = msr->samprate;
+            start_foff = static_cast<uint64_t>(fpos);
+          } else {
+            /* Packets without a break land here. */
+            npts += msr->samplecnt;
+          }
+
           last_sid = current_sid;
-          stime = msr->starttime;
-          last_epoch_stime = MS_NSTIME2EPOCH(static_cast<double>(stime));
+          last_epoch_stime = current_epoch_stime;
+          last_packet_stime = stime;
           last_packet_samprate = msr->samprate;
           last_dt = 1.0 / last_packet_samprate;
-          current_npts = msr->samplecnt;
-          npts += current_npts;
-          last_packet_endtime = current_epoch_stime +
-                                static_cast<double>(current_npts - 1) * last_dt;
+          last_packet_npts = msr->samplecnt;
         }
-      }
-      ++number_valid_packets;
-      data_available = true;
-      break;
-    case MS_ENDOFFILE:
-      if (number_valid_packets > 0) {
-        /* VERY IMPORTANT:   reader handles data per packet.   fpos is updated
-           by the reader but on EOF it is NOT updated. As a result we have to
-           add the record length or we drop the last packet from
-           the index. A too classic problem of use of a pointer to a pointer
-           in plain C.  Furthermore had to save the record length earlier
-           as msr is a NULL pointer when EOF is returned */
-        nbytes = fpos - start_foff + record_length;
-        ind.net = last_sid.net;
-        ind.sta = last_sid.sta;
-        ind.chan = last_sid.chan;
-        ind.loc = last_sid.loc;
-        ind.foff = start_foff;
-        ind.nbytes = nbytes;
-        ind.starttime = segment_starttime;
-        ind.last_packet_time = last_epoch_stime;
-        ind.samprate = last_packet_samprate;
-        ind.npts = npts;
-        ind.endtime =
-            ind.starttime + (static_cast<double>(npts - 1)) / ind.samprate;
-        indexdata.push_back(ind);
+        ++number_valid_packets;
+        data_available = true;
+        break;
+      case MS_ENDOFFILE:
+        if (number_valid_packets > 0) {
+          /* fpos is the offset of the last record when EOF is returned. */
+          nbytes = static_cast<uint64_t>(fpos) - start_foff + record_length;
+          append_segment();
+        }
         data_available = false;
-      } else {
-        elog.log_error(function_name,
-                       string("Hit end of file before reading any valid "
-                              "packets\nEmpty index"),
-                       ErrorSeverity::Invalid);
-      }
-      break;
-    default:
-      /* All other error conditions end here.  Function MS_code_to_message
-         translates to a rational error message return */
-      string message = MS_code_to_message(retcode);
-      elog.log_error(function_name, message, ErrorSeverity::Complaint);
-      data_available = false;
-      /* If we land here we need to add a final index entry to salvage what
-         we can from this file.   This is almost identical to the eof section
-         except here we intentionally drop the last packet assuming it
-         is the problem. */
-      if (number_valid_packets > 0) {
-        // NOTE not the same as EOF section
-        nbytes = fpos - start_foff;
-        ind.net = last_sid.net;
-        ind.sta = last_sid.sta;
-        ind.chan = last_sid.chan;
-        ind.loc = last_sid.loc;
-        ind.foff = start_foff;
-        ind.nbytes = nbytes;
-        ind.starttime = segment_starttime;
-        ind.last_packet_time = last_epoch_stime;
-        ind.samprate = last_packet_samprate;
-        ind.npts = npts;
-        ind.endtime =
-            ind.starttime + (static_cast<double>(npts - 1)) / ind.samprate;
-        indexdata.push_back(ind);
-        data_available = false;
-      }
-    };
-    ++number_packets_read;
-  } while (data_available);
-  /* Make sure everything is cleaned up.  Documentation says this is needed
-  to invoke the plain C equivalent of a destructor.*/
-  ms3_readmsr_r(&msfp, &msr, NULL, NULL, NULL, 0, 0);
-  buffer.clear();
-  ms_rlog_emit(NULL, 0, verbose);
+        break;
+      default:
+        /* A damaged input cannot produce a trustworthy partial index. */
+        throw mspass::utility::MsPASSError(MS_code_to_message(retcode),
+                                           ErrorSeverity::Invalid);
+      };
+      ++number_packets_read;
+    } while (data_available);
+  } catch (...) {
+    cleanup_reader();
+    throw;
+  }
+  cleanup_reader();
   return MSDINDEX_returntype(indexdata, elog);
 }
 } // End namespace mspass::io
