@@ -1,6 +1,8 @@
 import copy
 import os
+import subprocess
 import uuid
+from importlib.metadata import distribution, version
 from pathlib import Path
 
 import pytest
@@ -12,10 +14,26 @@ from mspasspy.ccore.utility import ErrorSeverity
 from mspasspy.db import matcher as matcher_module
 from mspasspy.db.matcher import origin_time_source_matcher
 
-SOURCE_PYTHON_ROOT = Path(
-    os.environ.get("MSPASS_TEST_SOURCE_ROOT", Path(__file__).resolve().parents[2])
-)
-EXPECTED_MATCHER_MODULE = SOURCE_PYTHON_ROOT / "mspasspy/db/matcher.py"
+
+def _assert_module_from_selected_build(module, relative_path):
+    source_root = os.environ.get("MSPASS_TEST_SOURCE_ROOT")
+    if source_root:
+        expected_module = Path(source_root) / relative_path
+    else:
+        expected_module = distribution("mspasspy").locate_file(relative_path)
+        installed_version = version("mspasspy")
+        installed_commit = installed_version.partition("+g")[2].partition(".")[0]
+        assert installed_commit, "installed mspasspy version lacks a source commit"
+        repository_root = next(
+            parent
+            for parent in Path(__file__).resolve().parents
+            if (parent / ".git").exists()
+        )
+        checkout_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=repository_root, text=True
+        ).strip()
+        assert checkout_commit.startswith(installed_commit)
+    assert Path(module.__file__).resolve() == Path(expected_module).resolve()
 
 
 class RecordingCollection:
@@ -62,8 +80,8 @@ def error_log(datum):
     return list(datum.elog.get_error_log())
 
 
-def test_contract_suite_loads_matcher_from_this_worktree():
-    assert Path(matcher_module.__file__).resolve() == EXPECTED_MATCHER_MODULE
+def test_contract_suite_loads_matcher_from_selected_build():
+    _assert_module_from_selected_build(matcher_module, Path("mspasspy/db/matcher.py"))
 
 
 def test_query_uses_exact_inclusive_mongo_operators_and_offsets():
