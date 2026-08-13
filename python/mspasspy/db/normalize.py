@@ -1022,7 +1022,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                                 mdkey = self.collection + "_" + key
                         else:
                             mdkey = key
-                        md[mdkey] = row[key]
+                        md[mdkey] = row[k]
                     else:
                         if elog is None:
                             elog = PyErrorLogger()
@@ -1047,7 +1047,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                                 mdkey = self.collection + "_" + key
                         else:
                             mdkey = key
-                        md[mdkey] = row[key]
+                        md[mdkey] = row[k]
                 mdlist.append(md)
             return [mdlist, None]
 
@@ -2162,6 +2162,10 @@ class EqualityMatcher(DataFrameCacheMatcher):
         prepend_collection_name=False,
         custom_null_values=None,
     ):
+        if not isinstance(match_keys, dict):
+            raise TypeError(
+                "EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary"
+            )
         super().__init__(
             db_or_df,
             collection,
@@ -2171,41 +2175,37 @@ class EqualityMatcher(DataFrameCacheMatcher):
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
             custom_null_values=custom_null_values,
+            cache_columns=list(match_keys.values()),
         )
-        if isinstance(match_keys, dict):
-            self.match_keys = match_keys
-            for key in match_keys:
-                testkey = match_keys[key]
-                # this means no aliasing for key
-                if testkey == key:
-                    continue
-                if testkey in self.aliases:
-                    backtestkey = self.aliases[testkey]
-                    if backtestkey != key:
-                        error_message = (
-                            "EqualityMatcher constructor:  "
-                            + "match_keys and aliases are inconsistent.\n"
-                            + "match_keys="
-                            + str(match_keys)
-                            + "  aliases="
-                            + str(self.aliases)
-                        )
-                        raise MsPASSError(error_message, ErrorSeverity.Fatal)
-                else:
+        self.match_keys = match_keys
+        for key in match_keys:
+            testkey = match_keys[key]
+            # this means no aliasing for key
+            if testkey == key:
+                continue
+            if testkey in self.aliases:
+                backtestkey = self.aliases[testkey]
+                if backtestkey != key:
                     error_message = (
                         "EqualityMatcher constructor:  "
                         + "match_keys and aliases are inconsistent.\n"
-                        + "match_key defines key="
-                        + key
-                        + " to have alias name="
-                        + testkey
-                        + " but alias name is not defined by aliases parameter"
+                        + "match_keys="
+                        + str(match_keys)
+                        + "  aliases="
+                        + str(self.aliases)
                     )
                     raise MsPASSError(error_message, ErrorSeverity.Fatal)
-        else:
-            raise TypeError(
-                "EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary"
-            )
+            else:
+                error_message = (
+                    "EqualityMatcher constructor:  "
+                    + "match_keys and aliases are inconsistent.\n"
+                    + "match_key defines key="
+                    + key
+                    + " to have alias name="
+                    + testkey
+                    + " but alias name is not defined by aliases parameter"
+                )
+                raise MsPASSError(error_message, ErrorSeverity.Fatal)
 
     def subset(self, mspass_object) -> pd.DataFrame:
         """
@@ -2944,7 +2944,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
                             mdkey = self.collection + "_" + key
                     else:
                         mdkey = key
-                    doc_out[mdkey] = row[key]
+                    doc_out[mdkey] = row[k]
                 else:
                     # land here if a required attribute is missing
                     # from the dataframe cache.  find logs
@@ -2968,7 +2968,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
                             mdkey = self.collection + "_" + key
                     else:
                         mdkey = key
-                    doc_out[mdkey] = row[key]
+                    doc_out[mdkey] = row[k]
             return doc_out
         else:
             return None
@@ -3794,7 +3794,7 @@ def _extractData2Metadata(
                     mdkey = collection + "_" + key
             else:
                 mdkey = key
-            md[mdkey] = doc[key]
+            md[mdkey] = doc[k]
         else:
             message = "Required attribute {key} was not found".format(
                 key=k,
@@ -3816,5 +3816,5 @@ def _extractData2Metadata(
                     mdkey = collection + "_" + key
             else:
                 mdkey = key
-            md[mdkey] = doc[key]
+            md[mdkey] = doc[k]
     return md
