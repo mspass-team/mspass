@@ -14,6 +14,9 @@ from mspasspy.db.client import DBClient
 import gridfs
 import numpy as np
 import obspy
+import os
+from pathlib import Path
+import subprocess
 import sys
 import re
 
@@ -34,10 +37,11 @@ with mock.patch.dict(
     sys.modules, {"pyspark": None, "dask.distributed": None, "dask": None}
 ):
     from mspasspy.client import Client
+    import mspasspy.client as client_module
 
     class TestMsPASSClient:
         def setup_class(self):
-            self.client = Client()
+            self.client = Client(scheduler="none")
 
         def test_init(self):
             with pytest.raises(
@@ -116,7 +120,7 @@ with mock.patch.dict(
 
             monkeypatch.setenv("MONGODB_PORT", "12345")
             monkeypatch.setenv("MSPASS_DB_ADDRESS", "168.0.0.1")
-            client = Client(database_host="localhost:27017")
+            client = Client(database_host="localhost:27017", scheduler="none")
             host, port = client._db_client.address
             assert host == "localhost"
             assert port == 27017
@@ -140,8 +144,42 @@ with mock.patch.dict(
             assert isinstance(manager, GlobalHistoryManager)
 
         def test_get_scheduler(self):
-            client = Client()
-            assert client.get_scheduler() == None
+            assert self.client.get_scheduler() is None
+            assert not hasattr(self.client, "_dask_client")
+            env = os.environ.copy()
+            env["MSPASS_CLIENT_MODULE"] = str(Path(client_module.__file__).resolve())
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    """
+import importlib.util
+import os
+import sys
+
+for name in ("pyspark", "dask", "dask.distributed"):
+    sys.modules[name] = None
+
+client_source = os.environ["MSPASS_CLIENT_MODULE"]
+spec = importlib.util.spec_from_file_location("mspasspy.client", client_source)
+client_module = importlib.util.module_from_spec(spec)
+sys.modules["mspasspy.client"] = client_module
+spec.loader.exec_module(client_module)
+assert client_module.__file__ == client_source
+
+client_module.DBClient.server_info = lambda self: {}
+client_module.GlobalHistoryManager.__init__ = lambda self, *args, **kwargs: None
+client = client_module.Client()
+assert client._scheduler is None
+assert client.get_scheduler() is None
+""",
+                ],
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            assert result.returncode == 0, result.stderr
 
         def test_set_database_client(self, monkeypatch):
             self.client.set_database_client("localhost", database_port="27017")

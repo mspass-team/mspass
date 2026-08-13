@@ -50,9 +50,10 @@ class FakeSparkContext:
 
 
 class FakeSparkBuilder:
-    def __init__(self, returned_master=None, failure=None):
+    def __init__(self, returned_master=None, failure=None, existing_context=None):
         self.returned_master = returned_master
         self.failure = failure
+        self.existing_context = existing_context
         self.requested_master = None
         self.get_or_create_calls = 0
         self.context = None
@@ -68,8 +69,11 @@ class FakeSparkBuilder:
         self.get_or_create_calls += 1
         if self.failure is not None:
             raise self.failure
-        master = self.returned_master or self.requested_master
-        self.context = FakeSparkContext(master)
+        if self.existing_context is not None:
+            self.context = self.existing_context
+        else:
+            master = self.returned_master or self.requested_master
+            self.context = FakeSparkContext(master)
         return SimpleNamespace(sparkContext=self.context)
 
 
@@ -84,6 +88,11 @@ def fake_schedulers(monkeypatch):
         client_module, "MongoDBWorker", lambda *args, **kwargs: object()
     )
     monkeypatch.setattr(client_module, "_mspasspy_has_pyspark", True)
+    monkeypatch.setattr(
+        client_module,
+        "SparkContext",
+        SimpleNamespace(_active_spark_context=None),
+    )
 
 
 def _new_client_without_scheduler():
@@ -217,6 +226,49 @@ def test_constructor_records_active_spark_master(monkeypatch, fake_schedulers):
     assert client._spark_master_url == "spark://[2001:db8::5]:7077"
     assert client._spark_context is builder.context
     assert client._spark_context_owned is True
+
+
+def test_constructor_reuses_existing_implicit_local_spark(monkeypatch, fake_schedulers):
+    _patch_client_startup(monkeypatch)
+    existing_context = FakeSparkContext("local[*]")
+    builder = FakeSparkBuilder(existing_context=existing_context)
+    client_module.SparkContext._active_spark_context = existing_context
+    monkeypatch.setattr(client_module, "SparkSession", SimpleNamespace(builder=builder))
+
+    client = Client(scheduler="spark")
+
+    assert builder.requested_master == "local"
+    assert client._spark_context is existing_context
+    assert client._spark_master_url == "local[*]"
+    assert client._spark_context_owned is False
+
+
+def test_constructor_rejects_nonlocal_existing_context(monkeypatch, fake_schedulers):
+    _patch_client_startup(monkeypatch)
+    existing_context = FakeSparkContext("spark://existing:7077")
+    builder = FakeSparkBuilder(existing_context=existing_context)
+    client_module.SparkContext._active_spark_context = existing_context
+    monkeypatch.setattr(client_module, "SparkSession", SimpleNamespace(builder=builder))
+
+    with pytest.raises(MsPASSError, match="cannot create a spark configuration"):
+        Client(scheduler="spark")
+
+    assert existing_context.stop_calls == 0
+
+
+def test_explicit_local_master_remains_strict_and_atomic(monkeypatch, fake_schedulers):
+    client, old_dask = _new_dask_client_state(owned=True)
+    builder = FakeSparkBuilder(returned_master="local[*]")
+    monkeypatch.setattr(client_module, "SparkSession", SimpleNamespace(builder=builder))
+    before = vars(client).copy()
+
+    with pytest.raises(MsPASSError, match="cannot create a spark configuration"):
+        client.set_scheduler("spark", "local")
+
+    assert vars(client) == before
+    assert client._dask_client is old_dask
+    assert old_dask.close_calls == 0
+    assert builder.context.stop_calls == 1
 
 
 @pytest.mark.parametrize(
