@@ -34,7 +34,7 @@ def ensemble_error_post(d, alg, message, severity):
     This is a small helper function useful for error handlers in except
     blocks for ensemble objects.  If a function is called on an ensemble
     object that throws an exception this function will post the message
-    posted to all ensemble members.  It silently does nothing if the
+    to all live ensemble members.  It silently does nothing if the
     ensemble is empty.
 
     :param d: is the ensemble data to be handled.  It print and error message
@@ -49,7 +49,8 @@ def ensemble_error_post(d, alg, message, severity):
         if n <= 0:
             return
         for i in range(n):
-            d.member[i].elog.log_error(alg, str(message), severity)
+            if d.member[i].live:
+                d.member[i].elog.log_error(alg, str(message), severity)
     else:
         print(
             "Coding error - ensemble_error_post was passed an unexpected data type of",
@@ -64,11 +65,11 @@ def _post_amplitude(d, method, amp):
     computed amplitudes to metadata with a different key for each method
     used to compute amplitude.
     """
-    if method == "rms" or method == "RMS":
+    if method == ScalingMethod.RMS:
         d["rms_amplitude"] = amp
-    elif method == "perc":
+    elif method == ScalingMethod.ClipPerc:
         d["perc_amplitude"] = amp
-    elif method == "MAD" or method == "mad":
+    elif method == ScalingMethod.MAD:
         d["mad_amplitude"] = amp
     else:
         d["amplitude"] = amp
@@ -206,7 +207,7 @@ def scale(
                 ensemble_error_post(d, alg_name, message, ErrorSeverity.Complaint)
             else:
                 d.elog.log_error(alg_name, message, ErrorSeverity.Complaint)
-                level = 1.0
+            level = 1.0
     else:
         if level <= 0.0:
             message = "{meth} scaling method given illegal value={slevel}\nDefaulted to 1.0".format(
@@ -240,7 +241,7 @@ def scale(
     if method == "rms" or method == "RMS":
         method_to_use = ScalingMethod.RMS
     elif method == "perc":
-        method_to_use = ScalingMethod.perc
+        method_to_use = ScalingMethod.ClipPerc
     elif method == "MAD" or method == "mad":
         method_to_use = ScalingMethod.MAD
     try:
@@ -279,20 +280,26 @@ def scale(
         # if we add any other supported data objects we could have a
         # problem here.  This assumes what lands here is an ensemble
         else:
-            ensemble_error_post(d, alg_name, err)
+            ensemble_error_post(d, alg_name, err, ErrorSeverity.Invalid)
             for x in d.member:
-                x.kill()
+                if x.live:
+                    x.kill()
         return d
     # this is needed to handle an oddity recommended on this
     # web site:  http://effbot.org/zone/stupid-exceptions-keyboardinterrupt.htm
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, SystemExit):
         raise
-    except:
+    except Exception:
         message = "Something threw an unexpected exception\nThat is a bug that needs to be fixed - contact authors"
         if isinstance(d, Seismogram) or isinstance(d, TimeSeries):
             d.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
+            d.kill()
         else:
             ensemble_error_post(d, alg_name, message, ErrorSeverity.Invalid)
+            for x in d.member:
+                if x.live:
+                    x.kill()
+        return d
 
 
 # not decorated for reasons given in docstring below
