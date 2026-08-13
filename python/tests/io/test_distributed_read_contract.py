@@ -210,6 +210,7 @@ def test_dask_compute_failure_never_deletes_caller_scratch(monkeypatch, tmp_path
 @pytest.fixture(scope="module")
 def spark_context():
     pyspark = pytest.importorskip("pyspark")
+    active_context = pyspark.SparkContext._active_spark_context
     os.environ.setdefault("SPARK_LOCAL_IP", "127.0.0.1")
     previous_worker_python = os.environ.get("PYSPARK_PYTHON")
     previous_driver_python = os.environ.get("PYSPARK_DRIVER_PYTHON")
@@ -235,7 +236,8 @@ def spark_context():
     try:
         yield context
     finally:
-        context.stop()
+        if active_context is None:
+            context.stop()
         if previous_worker_python is None:
             os.environ.pop("PYSPARK_PYTHON", None)
         else:
