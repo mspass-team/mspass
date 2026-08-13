@@ -32,7 +32,49 @@ env:
   SPARK_SHA512: 5d5d2e6e111182ee1210d4a46a17ae27107c7ccc70433da0ded3d8197e027f949b00445bb5678ed0c1d5c59f12993d9b9ed12e43686d5aad89a9ec570e93a083
 
 jobs:
+  mongodb-migration:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install migration-test dependencies
+        run: python -m pip install pytest pyyaml
+
+      - name: Run MongoDB migration contract
+        run: python -m pytest python/tests/test_mongodb_upgrade_contract.py -q
+
+      - name: Run staged MongoDB migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          for forced_stage in 6.0 7.0 ''; do
+            migration_root="${RUNNER_TEMP}/mongodb-migration-${forced_stage:-complete}"
+            set +e
+            MSPASS_MONGO_UPGRADE_ROOT="$migration_root" \
+              MSPASS_MONGO_UPGRADE_FAIL_AFTER="$forced_stage" \
+              scripts/mongodb_upgrade_6_to_8.sh
+            status=$?
+            set -e
+            if [[ -n "$forced_stage" ]]; then
+              test "$status" -eq 70
+              test "$(cat "$migration_root/last_completed_stage")" = "$forced_stage"
+            else
+              test "$status" -eq 0
+              test "$(cat "$migration_root/last_completed_stage")" = 8.0
+            fi
+          done
+
   download-spark:
+    needs: mongodb-migration
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -161,11 +203,20 @@ jobs:
           target: runtime
           platforms: linux/amd64
           push: false
-          tags: ${{ steps.meta.outputs.tags }}
+          load: true
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            mspass/mspass:mongodb-contract
           labels: ${{ steps.meta.outputs.labels }}
           build-contexts: |
             spark-build-assets=.docker-build-assets
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE }}:buildcache-runtime-amd64
+
+      - name: Test standalone and sharded MongoDB 8.0.29
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          MSPASS_MONGODB_TEST_IMAGE: mspass/mspass:mongodb-contract
+        run: scripts/test_mongodb_8029_containers.sh
 
       - name: Build and push Docker image (amd64)
         uses: docker/build-push-action@v7
