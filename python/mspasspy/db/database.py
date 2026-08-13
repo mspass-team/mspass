@@ -5496,8 +5496,8 @@ class Database(pymongo.database.Database):
                     rec = geoJSON_doc(loc_lat, loc_lon, doc=rec, key="location")
                     rec["elev"] = loc_elev
                     rec["edepth"] = loc_edepth
-                    rec["starttime"] = starttime.timestamp
-                    rec["endtime"] = endtime.timestamp
+                    rec["starttime"] = loc_stime.timestamp
+                    rec["endtime"] = loc_etime.timestamp
                     if (
                         latitude != loc_lat
                         or longitude != loc_lon
@@ -5566,11 +5566,11 @@ class Database(pymongo.database.Database):
                     # done with site now handle channel
                     # Because many features are shared we can copy rec
                     # note this has to be a deep copy
-                    chanrec = copy.deepcopy(rec)
-                    # We don't want this baggage in the channel documents
-                    # keep them only in the site collection
-                    # del chanrec['serialized_inventory']
                     for chan in chans:
+                        if chan.location_code != loc:
+                            continue
+                        chanrec = copy.deepcopy(rec)
+                        chanrec.pop("_id", None)
                         chanrec["chan"] = chan.code
                         # the Dip attribute in a stationxml file
                         # is like strike-dip and relative to horizontal
@@ -5592,19 +5592,10 @@ class Database(pymongo.database.Database):
                             picklestr = pickle.dumps(chan)
                             chanrec["serialized_channel_data"] = picklestr
                             result = dbchannel.insert_one(chanrec)
-                            # insert_one has an obnoxious behavior in that it
-                            # inserts the ObjectId in chanrec.  In this loop
-                            # we reuse chanrec so we have to delete the id field
-                            # howeveer, we first want to update the record to
-                            # have chan_id provide an  alternate key to that id
-                            # object_id - that makes this consistent with site
-                            # we actually use the return instead of pulling from
-                            # chanrec
                             idobj = result.inserted_id
                             dbchannel.update_one(
                                 {"_id": idobj}, {"$set": {"chan_id": idobj}}
                             )
-                            del chanrec["_id"]
                             n_chan_saved += 1
                             if verbose:
                                 print(
@@ -5832,6 +5823,20 @@ class Database(pymongo.database.Database):
             return dbchannel.find_one(query)
         else:
             # Note we only land here when the above yields multiple matches
+            if loc is not None:
+                raise MsPASSError(
+                    "get_seed_channel: explicit location query returned "
+                    + str(matchsize)
+                    + " matches for "
+                    + net
+                    + ":"
+                    + sta
+                    + ":"
+                    + loc
+                    + ":"
+                    + chan,
+                    ErrorSeverity.Invalid,
+                )
             if loc == None:
                 # We could get here one of two ways.  There could
                 # be multiple loc codes and the user didn't specify
