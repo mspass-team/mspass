@@ -1,6 +1,8 @@
 import copy
 import os
+import subprocess
 import uuid
+from importlib.metadata import distribution, version
 from pathlib import Path
 
 import pymongo
@@ -43,9 +45,29 @@ class MemoryDatabase:
         self.history = MemoryHistoryCollection()
 
 
-def test_history_module_is_loaded_from_this_worktree():
-    expected = Path(__file__).resolve().parents[1] / "mspasspy" / "history.py"
-    assert Path(history_module.__file__).resolve() == expected
+def _assert_module_from_selected_build(module, relative_path):
+    source_root = os.environ.get("MSPASS_TEST_SOURCE_ROOT")
+    if source_root:
+        expected_module = Path(source_root) / relative_path
+    else:
+        expected_module = distribution("mspasspy").locate_file(relative_path)
+        installed_version = version("mspasspy")
+        installed_commit = installed_version.partition("+g")[2].partition(".")[0]
+        assert installed_commit, "installed mspasspy version lacks a source commit"
+        repository_root = next(
+            parent
+            for parent in Path(__file__).resolve().parents
+            if (parent / ".git").exists()
+        )
+        checkout_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=repository_root, text=True
+        ).strip()
+        assert checkout_commit.startswith(installed_commit)
+    assert Path(module.__file__).resolve() == Path(expected_module).resolve()
+
+
+def test_history_module_is_loaded_from_selected_build():
+    _assert_module_from_selected_build(history_module, "mspasspy/history.py")
 
 
 def _step_values(logger):
