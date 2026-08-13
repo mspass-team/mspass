@@ -513,110 +513,140 @@ def load_hypocenter_data_by_time(
     kill_null=True,
 ):
     """
-    Loads hypocenter data (space time coordinates) into an ensemble using
-    an arrival time matching algorithm.  This is a generalization of earlier
-    prototypes with the objective of a single interface to a common concept -
-    that is, matching arrival documents to ensemble data using timing
-    based on travel times.
+    Load the best matching source into the live members of ``ens``.
 
-    We frequently guide processing by the time of one or more seismic phases.
-    Those times can be either measured times done by a human or an automated
-    system or theoretical times from an earth model.   This function should
-    work with either approach provided some earlier function created an
-    arrival document that can be used for matching.  The matching algorithm uses
-    three keys:  an exact match for net, an exact match for sta, and a time
-    range travel time association.
+    ``origin_time`` compares member start times with source origin times.
+    ``phase_time`` first requires an exact event, network, station, and phase
+    match in the arrival collection.  In either mode a residual whose absolute
+    value exceeds ``dt`` is not a match.  The source with the lowest RMS of its
+    finite residuals is selected; equal RMS values are ordered by the string
+    form of ``event_id_key``.
 
-    The algorithm is not a general associator.  It assumes we have access to
-    an arrival collection that has been previously associated.  For those
-    familiar with CSS3.0 the type example is the join of event->origin->assoc->arrival
-    grouped by evid or orid.  We use a staged match to the ensemble to
-    reduce compute time.  That is, we first run a db find on arrival to select
-    only arrival documents within the time span of the ensemble with the
-    defined arrival name key.  From each matching arrival we compute a theoretical
-    origin time using obspy's taup calculator and a specified model and
-    hypocenter coordinates in the arrival document that we assume was loaded
-    previously from a css3.0 database (i.e. the event->origin->assoc->arrival
-    view).   We then select and load source coordinates for the closest
-    origin time match in the source collection.   This is much simpler than
-    the general phase association (determine source coordinates from a random
-    bad of arrival times) but still has one complication - if multiple
-    events have arrivals within the time span of the ensemble the simple match
-    described above is ambiguous.   We resolve that with a switch defined by
-    the argument t0_definition.   Currently there are two options defining
-    the only two options I know of for time selection of downloaded segments.
-    (1) if set to 'origin_time' we assume member t0 values are near the origin
-    time of the event.  (2) if set to 'phase_time' we assume the member t0
-    values are relative to the phase used as a reference.  In both cases an
-    optional t0_offset can be specified to offset each start time by a constant.
-    The sign of the shift is to compare the data start time to the computed
-    time MINUS the specified offset.  (e.g. if the reference is a P phase time
-    and we expect the data to have been windowed with a start time 100 s before
-    the theoretical P time, the offset would be 100.0)   Note if arrival windowing
-    is selected the source information in arrival will not be referenced but
-    that data is required if using origin time matching.  In any case when
-    multiple sources are found to match the ensemble the one with the smallest
-    rms misfit for the windowing is chosen.  A warning message is always
-    posted in that situation.
-
-    By default any ensemble members without a match in arrival will be
-    killed. Note we use the kill method which only marks the data dead but
-    does not clear the contents. Hence, on exit most ensembles will have
-    at least some members marked dead.  The function returns the number of
-    members set.  The caller should test and complain if there are no matches.
+    The source coordinates, origin time, and MongoDB ``_id`` are written as
+    ``source_lat``, ``source_lon``, ``source_depth``, ``source_time``, and
+    ``source_id``.  Members without a match to the selected source are killed
+    only when ``kill_null`` is true.  ``mdtime_key`` and ``model`` remain in the
+    signature for compatibility with the prototype API.
     """
-    base_error_message = "load_hypocenter_data_by_time:  "
-    if db == None:
-        raise MsPASSError(
-            base_error_message + "Missing required argument db=MongoDB Database handle",
-            ErrorSeverity.Fatal,
-        )
-    elif ens == None:
-        raise MsPASSError(
-            base_error_message + "Missing required argument ens=mspass Ensemble data",
-            ErrorSeverity.Fatal,
-        )
-    # First we need to query the arrival table to find all arrivals within
-    # the time range of this ensemble
+    base_error_message = "load_hypocenter_data_by_time: "
     try:
-        dbarrival = db.arrival
-        stime = ens["startttime"]
-        etime = ens["endtime"]
-        query = {{dbtime_key: {"$gte": stime, "$lte": etime}}}
-        narr = dbarrival.count_documents(query)
-        if narr == 0:
-            print(base_error_message, "No arrivals found in data time range:")
-            print(UTCDateTime(stime), " to ", UTCDateTime(etime))
-            if kill_null:
-                for d in ens.member:
-                    d.kill()
+        if db is None:
+            raise ValueError("db is required")
+        if ens is None:
+            raise ValueError("ens is required")
+        if t0_definition not in ("origin_time", "phase_time"):
+            raise ValueError(
+                "t0_definition must be either 'origin_time' or 'phase_time'"
+            )
+
+        tolerance = float(dt)
+        offset = float(t0_offset)
+        if not np.isfinite(tolerance) or tolerance < 0.0:
+            raise ValueError("dt must be a finite, nonnegative number")
+        if not np.isfinite(offset):
+            raise ValueError("t0_offset must be finite")
+
+        members = list(ens.member)
+        live_indices = [index for index, datum in enumerate(members) if datum.live]
+        if not live_indices:
             return 0
+
+        sources = list(db.source.find({}))
+        if t0_definition == "phase_time" and sources:
+            arrivals = list(db.arrival.find({"phase": phase}))
         else:
-            # This else block isn't essential, but makes the logic clearer
-            # first scan the data for unique events.  For now use an evid
-            # test.  This could be generalized to coordinates
-            arrivals = dbarrival.find(query)
-            evids = dict()
-            for doc in arrivals:
-                evnow = doc[event_id_key]
-                lat = doc["source.lat"]
-                lon = doc["source.lon"]
-                depth = doc["source.depth"]
-                otime = doc["source.time"]
-                evids[evnow] = [lat, lon, depth, otime]
-            if len(evids) > 1:
-                # land if picks from multiple events are inside the data window
-                # INCOMPLETE - will probably drop this function
-                for k in evids.keys():
-                    print(k)
-            # Above block always sets lat,lon,depth, and otime to the
-            # selected hypocenter data.  IMPORTANT is for the unambiguous
-            # case where len(evids) is one we depend on the python property
-            # that lat,lon,depth, and otime are set because they have not
-            # gone out of scope
-    except MsPASSError as err:
-        print(err)
-        raise err
+            arrivals = []
+
+        candidates = []
+        for source in sources:
+            source_id = source["_id"]
+            event_id = source[event_id_key]
+
+            matches = {}
+            if t0_definition == "origin_time":
+                source_time = float(source["time"])
+                for index in live_indices:
+                    residual = members[index].t0 - (source_time - offset)
+                    if np.isfinite(residual) and abs(residual) <= tolerance:
+                        matches[index] = residual
+            else:
+                for index in live_indices:
+                    datum = members[index]
+                    if "net" not in datum or "sta" not in datum:
+                        continue
+                    residuals = []
+                    for arrival in arrivals:
+                        if (
+                            event_id_key not in arrival
+                            or "net" not in arrival
+                            or "sta" not in arrival
+                            or "phase" not in arrival
+                            or arrival[event_id_key] != event_id
+                            or arrival["net"] != datum["net"]
+                            or arrival["sta"] != datum["sta"]
+                            or arrival["phase"] != phase
+                        ):
+                            continue
+                        arrival_time = float(arrival[dbtime_key])
+                        residual = datum.t0 - (arrival_time - offset)
+                        if np.isfinite(residual) and abs(residual) <= tolerance:
+                            residuals.append(residual)
+                    if residuals:
+                        matches[index] = min(
+                            residuals, key=lambda value: (abs(value), value)
+                        )
+
+            if matches:
+                residual_values = list(matches.values())
+                scale = max(abs(value) for value in residual_values)
+                if scale == 0.0:
+                    rms = 0.0
+                else:
+                    rms = scale * np.sqrt(
+                        sum((value / scale) ** 2 for value in residual_values)
+                        / len(residual_values)
+                    )
+                candidates.append((rms, str(event_id), str(source_id), source, matches))
+
+        if not candidates:
+            if kill_null:
+                for index in live_indices:
+                    members[index].kill()
+            return 0
+
+        _, _, _, selected_source, selected_matches = min(
+            candidates, key=lambda candidate: candidate[:3]
+        )
+        source_values = {}
+        for source_key, metadata_key in (
+            ("lat", "source_lat"),
+            ("lon", "source_lon"),
+            ("depth", "source_depth"),
+            ("time", "source_time"),
+        ):
+            value = selected_source[source_key]
+            if not np.isfinite(float(value)):
+                raise ValueError(
+                    f"selected source has nonfinite required field '{source_key}'"
+                )
+            source_values[metadata_key] = value
+        source_values["source_id"] = selected_source["_id"]
+
+        _assignment_preflight = Metadata()
+        for key, value in source_values.items():
+            _assignment_preflight[key] = value
+
+        for index in live_indices:
+            datum = members[index]
+            if index in selected_matches:
+                for key, value in source_values.items():
+                    datum[key] = value
+            elif kill_null:
+                datum.kill()
+        return len(selected_matches)
+    except Exception as err:
+        message = str(err).strip() or err.__class__.__name__
+        raise MsPASSError(base_error_message + message, ErrorSeverity.Invalid) from err
 
 
 def load_site_data(db, ens):
