@@ -1,4 +1,5 @@
 from unittest import mock
+import mspasspy
 from mspasspy.ccore.seismic import (
     Seismogram,
     TimeSeries,
@@ -9,6 +10,7 @@ from mspasspy.ccore.seismic import (
 from mspasspy.ccore.utility import MsPASSError
 from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.util import logging_helper
+import mspasspy.util.db_utils as _db_utils  # preload before masking optional Dask
 from mspasspy.db.client import DBClient
 
 import gridfs
@@ -33,9 +35,13 @@ def mock_excpt(*args, **kwargs):
     raise Exception("mocked exception")
 
 
+_client_attribute_was_present = hasattr(mspasspy, "client")
+_original_client_attribute = getattr(mspasspy, "client", None)
 with mock.patch.dict(
     sys.modules, {"pyspark": None, "dask.distributed": None, "dask": None}
 ):
+    # Re-evaluate optional scheduler availability inside the isolated module map.
+    sys.modules.pop("mspasspy.client", None)
     from mspasspy.client import Client
     import mspasspy.client as client_module
 
@@ -227,3 +233,9 @@ assert client.get_scheduler() is None
             assert self.client._global_history_manager.job_name == "test_job"
             assert self.client._global_history_manager.collection == "test_history"
             assert self.client._global_history_manager.history_db.name == "test"
+
+
+if _client_attribute_was_present:
+    mspasspy.client = _original_client_attribute
+else:
+    delattr(mspasspy, "client")

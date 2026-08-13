@@ -197,6 +197,22 @@ def test_successful_database_switch_commits_client_database_and_history_together
     assert new_db_client.close_calls == 0
 
 
+def test_database_switch_preserves_scheduler_state(fake_client_dependencies):
+    client = _new_fake_client()
+    scheduler = object()
+    client._scheduler = "dask"
+    client._scheduler_disabled = False
+    client._dask_client = scheduler
+    client._dask_client_address = "tcp://existing:8786"
+
+    client.set_database_client("replacement")
+
+    assert client._scheduler == "dask"
+    assert client._scheduler_disabled is False
+    assert client.get_scheduler() is scheduler
+    assert client._dask_client_address == "tcp://existing:8786"
+
+
 @pytest.mark.parametrize("failure_stage", ["client", "database", "history"])
 def test_failed_database_switch_preserves_all_old_state(
     fake_client_dependencies, failure_stage
