@@ -230,6 +230,7 @@ def spark_context():
         .set("spark.driver.bindAddress", "127.0.0.1")
     )
     context = pyspark.SparkContext.getOrCreate(configuration)
+    context.addPyFile(str(Path(__file__).resolve()))
     context.setLogLevel("ERROR")
     try:
         yield context
