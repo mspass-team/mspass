@@ -35,14 +35,11 @@ def test_wheel_job_has_exactly_four_linux_x86_64_cpython_targets():
         "cp313-manylinux_x86_64",
     ]
     assert environment["CIBW_MANYLINUX_X86_64_IMAGE"] == "manylinux_2_28"
-    assert environment["CIBW_BEFORE_ALL_LINUX"].split() == [
-        "dnf",
-        "install",
-        "-y",
-        "gcc-gfortran",
-        "gsl-devel",
-        "lapack-devel",
-    ]
+    assert environment["CIBW_BEFORE_ALL_LINUX"] == (
+        "dnf install -y gcc-gfortran gsl-devel lapack-devel && "
+        "tar -xJf /opt/_internal/static-libs-for-embedding-only.tar.xz "
+        "-C /opt/_internal"
+    )
     assert environment["CIBW_ENVIRONMENT"] == "MSPASS_CMAKE_BUILD_TYPE=Release"
     serialized = str(wheel_job).lower()
     for unsupported in ("macos", "windows", "aarch64", "arm64", "musllinux"):
