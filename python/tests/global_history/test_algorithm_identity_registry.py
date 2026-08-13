@@ -141,6 +141,29 @@ def test_get_alg_id_uses_one_atomic_upsert_with_the_exact_string():
     }
 
 
+def test_default_registry_initializes_without_optional_dask(monkeypatch):
+    class RecordingSchema:
+        def default_name(self, schema_name):
+            assert schema_name == "history_global"
+            return "configured_history"
+
+    database = RecordingDatabase()
+    database.database_schema = RecordingSchema()
+    monkeypatch.delattr(manager_module, "daskbag", raising=False)
+
+    manager = GlobalHistoryManager(database, "default-collection-job")
+
+    assert manager.collection == "configured_history"
+    assert manager.algorithm_collection == "configured_history_algorithms"
+    registry = database.collections[manager.algorithm_collection]
+    assert registry.index_calls == [
+        (
+            [("alg_name", pymongo.ASCENDING), ("parameters", pymongo.ASCENDING)],
+            {"unique": True},
+        )
+    ]
+
+
 def test_concurrent_first_use_from_multiple_clients_returns_one_id(mongo_database):
     database_name = mongo_database.name
     mongo_database[HISTORY_COLLECTION + "_algorithms"].drop()
