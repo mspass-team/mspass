@@ -375,7 +375,7 @@ def test_event_index_not_found_returns_without_cache_or_documents(
 def test_public_event_index_then_read_dispatches_and_recaches(
     database, monkeypatch, tmp_path
 ):
-    source_path = SOURCE_PYTHON_ROOT / "tests" / "data" / "37780584.ms"
+    source_path = Path(__file__).resolve().parents[2] / "tests" / "data" / "37780584.ms"
     payload = source_path.read_bytes()
     client = FakeS3Client(payload=payload)
     cache_path = tmp_path / "event.ms"
