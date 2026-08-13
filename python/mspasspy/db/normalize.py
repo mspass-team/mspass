@@ -3556,14 +3556,8 @@ def bulk_normalize(
                     # not this silently ignores failures
                     # may want this to count failures for each matcher
                     continue
-                for key in matcher.attributes_to_load:
-                    new_key = key
-                    if matcher.prepend_collection_name:
-                        if key == "_id":
-                            new_key = matcher.collection + key
-                        else:
-                            new_key = matcher.collection + "_" + key
-                    update_doc[new_key] = norm_doc[new_key]
+                for key in norm_doc:
+                    update_doc[key] = norm_doc[key]
 
                 cnt_list[ind] += 1
                 need_update = True
