@@ -275,9 +275,6 @@ def load_one_ensemble(
     :param verbose:  write informational messages while processing
     """
     try:
-        ensemblemd = Metadata()
-        if create_history:
-            his = ProcessingHistory(jobname, jobid)
         form = doc["format"]
         mover = doc["mover"]
         if form != "mseed":
@@ -298,6 +295,50 @@ def load_one_ensemble(
         # Note this algorithm actually should work with any format
         # supported by obspy's read function - should generalize it for release
         dseis = read(fname, format="mseed", apply_calib=apply_calib)
+        nseis = len(dseis)
+        seed_ids = None
+        if create_history:
+            try:
+                members = doc["members"]
+            except (KeyError, TypeError):
+                raise MsPASSError(
+                    "load_one_ensemble:  create_history=True requires "
+                    "doc['members']",
+                    ErrorSeverity.Invalid,
+                )
+            try:
+                member_count = len(members)
+            except TypeError:
+                raise MsPASSError(
+                    "load_one_ensemble:  doc['members'] must be a sequence "
+                    "with one entry per input Trace",
+                    ErrorSeverity.Invalid,
+                )
+            if member_count != nseis:
+                raise MsPASSError(
+                    "load_one_ensemble:  input member count mismatch; "
+                    f"len(doc['members'])={member_count} but len(stream)={nseis}",
+                    ErrorSeverity.Invalid,
+                )
+            seed_ids = []
+            for i in range(nseis):
+                try:
+                    seed_id = members[i]["seed_file_id"]
+                except (IndexError, KeyError, TypeError):
+                    raise MsPASSError(
+                        "load_one_ensemble:  input member "
+                        f"{i} is missing seed_file_id",
+                        ErrorSeverity.Invalid,
+                    )
+                if not isinstance(seed_id, str) or not seed_id:
+                    raise MsPASSError(
+                        "load_one_ensemble:  input member "
+                        f"{i} has an invalid seed_file_id; expected a nonempty string",
+                        ErrorSeverity.Invalid,
+                    )
+                seed_ids.append(seed_id)
+            his = ProcessingHistory(jobname, jobid)
+        ensemblemd = Metadata()
         if len(ensemble_mdkeys) > 0:
             ensemblemd = _load_md(doc, ensemble_mdkeys)
         else:
@@ -310,27 +351,29 @@ def load_one_ensemble(
         # There is a Stream2TimeSeriesEnsemble function
         # but we don't use it here because we need some functionality
         # not found in that simple function
-        nseis = len(dseis)
         result = TimeSeriesEnsemble(ensemblemd, nseis)
         # Secondary files get handled almost the same except for
         # a warning.   The warning message (hopefully) explains the
         # problem but our documentation must warn about his if this
         # prototype algorithm becomes the release version
-        count = 0
-        for d in dseis:
+        for count, d in enumerate(dseis):
             # print('debug - working on data object number',count)
-            count += 1
             dts = Trace2TimeSeries(d)
             if create_history:
                 # This should just define jobname and jobid
                 dts.load_history(his)
-                seedid = d["seed_file_id"]
                 dts.set_as_origin(
-                    "load_ensemble", algid, seedid, AtomicType.TIMESERIES, True
+                    "load_ensemble",
+                    algid,
+                    seed_ids[count],
+                    AtomicType.TIMESERIES,
+                    True,
                 )
             result.member.append(dts)
         return result
-    except:
+    except MsPASSError:
+        raise
+    except Exception:
         print("something threw an exception - needs more complete error handlers")
 
 
