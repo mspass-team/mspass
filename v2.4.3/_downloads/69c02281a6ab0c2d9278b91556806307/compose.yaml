@@ -1,0 +1,64 @@
+services:
+
+  mspass-db:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}/:/home"
+    ports:
+      - 27017:27017
+    environment:
+      MSPASS_ROLE: db
+      MONGODB_PORT: 27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet 
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 5s
+  
+  mspass-scheduler:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}/:/home"
+    ports:
+      - 8786:8786
+      - 8787:8787
+    environment:
+      MSPASS_ROLE: scheduler
+      MSPASS_SCHEDULER: dask
+      DASK_SCHEDULER_PORT: 8786
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8786
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 5s
+  
+  mspass-worker:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}/:/home"
+    depends_on:
+      - mspass-scheduler
+    environment:
+      MSPASS_ROLE: worker
+      MSPASS_SCHEDULER: dask
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+      MSPASS_WORKER_ARG: --nworkers=4 --nthreads=1
+  
+  mspass-frontend:
+    image: mspass/mspass
+    volumes:
+      - "${PWD}/:/home"
+    ports:
+      - 8888:8888
+    depends_on:
+      - mspass-db
+      - mspass-scheduler
+    environment:
+      MSPASS_ROLE: frontend
+      MSPASS_SCHEDULER: dask
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+      MSPASS_DB_ADDRESS: mspass-db
+      MSPASS_JUPYTER_PWD: mspass
+      JUPYTER_PORT: 8888

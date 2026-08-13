@@ -1,0 +1,339 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classmspass_1_1algorithms_1_1_segment_vector_properties" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::SegmentVectorProperties</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab2541bbec22bf326e62ccd5ce218218a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::SegmentVectorProperties::dt_constant</definition>
+        <argsstring></argsstring>
+        <name>dt_constant</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::dt_constant</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>True when all live segments have the same sample interval. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="47" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1a991e4f3870196d6120b832786853cbf4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::SegmentVectorProperties::has_dead_components</definition>
+        <argsstring></argsstring>
+        <name>has_dead_components</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::has_dead_components</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>True when at least one input segment is marked dead. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="49" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1affb1d954686717fd246d0a5e67f5d76d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::SegmentVectorProperties::is_sorted</definition>
+        <argsstring></argsstring>
+        <name>is_sorted</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::is_sorted</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>True when live input segments are ordered by increasing start time. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="51" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1a180e3eff3e8d5b85dbefa73a8ea12eb2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::SegmentVectorProperties::has_overlaps</definition>
+        <argsstring></argsstring>
+        <name>has_overlaps</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::has_overlaps</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>True when adjacent live segments overlap beyond the time-tear tolerance. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="53" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1a743814df75873144d91110052625e9b1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::SegmentVectorProperties::has_gaps</definition>
+        <argsstring></argsstring>
+        <name>has_gaps</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::has_gaps</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>True when adjacent live segments have a gap beyond the time-tear tolerance. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="55" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1aa090679005192b1d0ac6479eb4c9e5f1" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::SegmentVectorProperties::number_live</definition>
+        <argsstring></argsstring>
+        <name>number_live</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::number_live</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of live segments found in the input vector. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="57" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab6a08a067593409fc701a307b6a978df" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::SegmentVectorProperties::first_live</definition>
+        <argsstring></argsstring>
+        <name>first_live</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::first_live</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Index of the first live segment, or -1 when none are live. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="59" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2fa190c700e90a501cf2f31814269a46" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::SegmentVectorProperties::t0</definition>
+        <argsstring></argsstring>
+        <name>t0</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::t0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Earliest start time of the live segments. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="61" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1af4e8c8f8ec47c4e63f45df256b246530" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::SegmentVectorProperties::endtime</definition>
+        <argsstring></argsstring>
+        <name>endtime</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::endtime</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Latest end time of the live segments. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="63" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2b0312aadcb6326acc13d4388025be1b" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::SegmentVectorProperties::dt</definition>
+        <argsstring></argsstring>
+        <name>dt</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::dt</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Sample interval used for the spliced output when dt is constant. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="65" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1a0397981ece5e2617a4fa923e2a0cc8c5" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t mspass::algorithms::SegmentVectorProperties::spliced_nsamp</definition>
+        <argsstring></argsstring>
+        <name>spliced_nsamp</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::spliced_nsamp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of samples needed to hold the spliced output. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="67" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1ae84e80d9ae19c01605198feed3e4baa9" prot="public" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref></type>
+        <definition>ErrorLogger mspass::algorithms::SegmentVectorProperties::elog</definition>
+        <argsstring></argsstring>
+        <name>elog</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::elog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Messages formed while scanning input segments for downstream logging. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="69" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="69" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1a6b3f53aecc3c06d1ccdf4ef9f9661030" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::SegmentVectorProperties::SegmentVectorProperties</definition>
+        <argsstring>()</argsstring>
+        <name>SegmentVectorProperties</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::SegmentVectorProperties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct an empty property set with conservative defaults. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="71" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="81" bodyend="93"/>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2b0312aadcb6326acc13d4388025be1b" compoundref="splicing_8cc" startline="65">dt</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab2541bbec22bf326e62ccd5ce218218a" compoundref="splicing_8cc" startline="47">dt_constant</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1af4e8c8f8ec47c4e63f45df256b246530" compoundref="splicing_8cc" startline="63">endtime</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab6a08a067593409fc701a307b6a978df" compoundref="splicing_8cc" startline="59">first_live</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a991e4f3870196d6120b832786853cbf4" compoundref="splicing_8cc" startline="49">has_dead_components</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a743814df75873144d91110052625e9b1" compoundref="splicing_8cc" startline="55">has_gaps</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a180e3eff3e8d5b85dbefa73a8ea12eb2" compoundref="splicing_8cc" startline="53">has_overlaps</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1affb1d954686717fd246d0a5e67f5d76d" compoundref="splicing_8cc" startline="51">is_sorted</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1aa090679005192b1d0ac6479eb4c9e5f1" compoundref="splicing_8cc" startline="57">number_live</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a0397981ece5e2617a4fa923e2a0cc8c5" compoundref="splicing_8cc" startline="67">spliced_nsamp</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2fa190c700e90a501cf2f31814269a46" compoundref="splicing_8cc" startline="61">t0</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1ac375821d246ee015b58170f005dd8abe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::SegmentVectorProperties::SegmentVectorProperties</definition>
+        <argsstring>(const std::vector&lt; TimeSeries &gt; &amp;segments)</argsstring>
+        <name>SegmentVectorProperties</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::SegmentVectorProperties</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt; &amp;</type>
+          <declname>segments</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Scan a vector of segments and summarize ordering, gaps, overlaps, and size. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>segments</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input segments to inspect before splicing. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="75" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="109" bodyend="201"/>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2b0312aadcb6326acc13d4388025be1b" compoundref="splicing_8cc" startline="65">dt</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab2541bbec22bf326e62ccd5ce218218a" compoundref="splicing_8cc" startline="47">dt_constant</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1af4e8c8f8ec47c4e63f45df256b246530" compoundref="splicing_8cc" startline="63">endtime</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab6a08a067593409fc701a307b6a978df" compoundref="splicing_8cc" startline="59">first_live</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a991e4f3870196d6120b832786853cbf4" compoundref="splicing_8cc" startline="49">has_dead_components</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a743814df75873144d91110052625e9b1" compoundref="splicing_8cc" startline="55">has_gaps</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a180e3eff3e8d5b85dbefa73a8ea12eb2" compoundref="splicing_8cc" startline="53">has_overlaps</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1affb1d954686717fd246d0a5e67f5d76d" compoundref="splicing_8cc" startline="51">is_sorted</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1aa090679005192b1d0ac6479eb4c9e5f1" compoundref="splicing_8cc" startline="57">number_live</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a0397981ece5e2617a4fa923e2a0cc8c5" compoundref="splicing_8cc" startline="67">spliced_nsamp</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2fa190c700e90a501cf2f31814269a46" compoundref="splicing_8cc" startline="61">t0</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab0f2b4e03ef418a5158f12a442d74082" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::SegmentVectorProperties::SegmentVectorProperties</definition>
+        <argsstring>(const SegmentVectorProperties &amp;parent)</argsstring>
+        <name>SegmentVectorProperties</name>
+        <qualifiedname>mspass::algorithms::SegmentVectorProperties::SegmentVectorProperties</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_segment_vector_properties" kindref="compound">SegmentVectorProperties</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard copy constructor. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>property set to copy. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="79" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="94" bodyend="108"/>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2b0312aadcb6326acc13d4388025be1b" compoundref="splicing_8cc" startline="65">dt</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab2541bbec22bf326e62ccd5ce218218a" compoundref="splicing_8cc" startline="47">dt_constant</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1af4e8c8f8ec47c4e63f45df256b246530" compoundref="splicing_8cc" startline="63">endtime</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab6a08a067593409fc701a307b6a978df" compoundref="splicing_8cc" startline="59">first_live</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a991e4f3870196d6120b832786853cbf4" compoundref="splicing_8cc" startline="49">has_dead_components</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a743814df75873144d91110052625e9b1" compoundref="splicing_8cc" startline="55">has_gaps</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a180e3eff3e8d5b85dbefa73a8ea12eb2" compoundref="splicing_8cc" startline="53">has_overlaps</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1affb1d954686717fd246d0a5e67f5d76d" compoundref="splicing_8cc" startline="51">is_sorted</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1aa090679005192b1d0ac6479eb4c9e5f1" compoundref="splicing_8cc" startline="57">number_live</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a0397981ece5e2617a4fa923e2a0cc8c5" compoundref="splicing_8cc" startline="67">spliced_nsamp</references>
+        <references refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2fa190c700e90a501cf2f31814269a46" compoundref="splicing_8cc" startline="61">t0</references>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>File scope class to enscapsulate set of possible data problems.</para>
+<para>Merging multiple data segments to a single time series, which is a common need with continous data, is prone to a number of practical problems. Clock issues and the design of modern digitizers can cause a mismatch in time computed by dt*nsamp and data time tags with formats like miniseed. This can create apparent gaps or overlaps. This class is intended to be used to scan a vector of time-sorted segment to flag issues that need to be handled downstream in algorithms later in this file. Issues it addresses at present are:<orderedlist>
+<listitem><para>irregular dt</para>
+</listitem><listitem><para>segments marked dead</para>
+</listitem><listitem><para>overlaps</para>
+</listitem><listitem><para>gaps</para>
+</listitem><listitem><para>Computes the length of the data being merged. Callers should test that that number is not absurd and could cause a memory alloc fault.</para>
+</listitem></orderedlist>
+</para>
+<para>All attributes of this class are intentionally public as it should be thought of as a struct with convenient constructors. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>mspass::algorithms::SegmentVectorProperties</label>
+        <link refid="classmspass_1_1algorithms_1_1_segment_vector_properties"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elog</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::utility::ErrorLogger</label>
+        <link refid="classmspass_1_1utility_1_1_error_logger"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="44" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="44" bodyend="80"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2b0312aadcb6326acc13d4388025be1b" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>dt</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab2541bbec22bf326e62ccd5ce218218a" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>dt_constant</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ae84e80d9ae19c01605198feed3e4baa9" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>elog</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1af4e8c8f8ec47c4e63f45df256b246530" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>endtime</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab6a08a067593409fc701a307b6a978df" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>first_live</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a991e4f3870196d6120b832786853cbf4" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>has_dead_components</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a743814df75873144d91110052625e9b1" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>has_gaps</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a180e3eff3e8d5b85dbefa73a8ea12eb2" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>has_overlaps</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1affb1d954686717fd246d0a5e67f5d76d" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>is_sorted</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1aa090679005192b1d0ac6479eb4c9e5f1" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>number_live</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a6b3f53aecc3c06d1ccdf4ef9f9661030" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>SegmentVectorProperties</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ac375821d246ee015b58170f005dd8abe" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>SegmentVectorProperties</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1ab0f2b4e03ef418a5158f12a442d74082" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>SegmentVectorProperties</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a0397981ece5e2617a4fa923e2a0cc8c5" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>spliced_nsamp</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_segment_vector_properties_1a2fa190c700e90a501cf2f31814269a46" prot="public" virt="non-virtual"><scope>mspass::algorithms::SegmentVectorProperties</scope><name>t0</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

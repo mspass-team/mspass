@@ -1,0 +1,799 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Run MsPASS with Docker &#8212; MsPASS 2.4.3 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=7a6bd5fc"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/run_mspass_with_docker';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Running MsPASS on a Desktop Computer" href="mspass_desktop.html" />
+    <link rel="prev" title="Getting Started in a Nutshell" href="quick_start.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.3" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced setup considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">MsPASS Database CRUD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmake_dependency_maintenance.html">CMake dependency maintenance</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Run MsPASS with Docker</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="run-mspass-with-docker">
+<span id="id1"></span><h1>Run MsPASS with Docker<a class="headerlink" href="#run-mspass-with-docker" title="Link to this heading">#</a></h1>
+<p>This page expands the <a class="reference internal" href="quick_start.html#quick-start"><span class="std std-ref">desktop quick start</span></a> for users who
+want to run MsPASS from a terminal.  The standard image starts JupyterLab,
+MongoDB, a Dask scheduler, and a Dask worker together in one container.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<p>Install Docker Desktop on Windows or macOS, or Docker Desktop or Docker Engine
+on Linux.  The <a class="reference external" href="https://docs.docker.com/get-started/get-docker/">Docker installation guide</a> has instructions for each
+platform.  Start Docker before running the commands below.</p>
+</section>
+<section id="download-the-mspass-image">
+<h2>Download the MsPASS image<a class="headerlink" href="#download-the-mspass-image" title="Link to this heading">#</a></h2>
+<p>The MsPASS image is hosted on <a class="reference external" href="https://hub.docker.com/r/mspass/mspass">Docker Hub</a>.  Download it with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>mspass/mspass
+</pre></div>
+</div>
+<p>The first download can take a few minutes.  Docker stores the image in its own
+data area, so no files appear in the directory where you run this command.
+The download therefore consumes space in Docker’s image store rather than in
+your project directory.  Use Docker Desktop’s image view or <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">image</span>
+<span class="pre">ls</span></code> to inspect downloaded images and their sizes.
+The image is also available from the <a class="reference external" href="https://github.com/mspass-team/mspass/pkgs/container/mspass">GitHub Container Registry</a>.</p>
+</section>
+<section id="run-mspass">
+<h2>Run MsPASS<a class="headerlink" href="#run-mspass" title="Link to this heading">#</a></h2>
+<p>Create a project directory, change to that directory in a Linux or macOS
+terminal, and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
+</pre></div>
+</div>
+<p>The host computer and the container have separate filesystem namespaces.  A
+path on the host does not automatically exist at the same path inside the
+container.  The mount option explicitly connects the host project directory
+to the container’s <code class="docutils literal notranslate"><span class="pre">/home</span></code> directory.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A symbolic link inside a bind-mounted directory works only when its target
+is also visible at the corresponding path inside the container.  A link to
+an unmounted host directory appears broken to MsPASS.  Bind-mount every
+external waveform directory explicitly and use the container-side path in
+waveform metadata.</p>
+</div>
+<p>The two important options are:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">8888:8888</span></code></dt><dd><p>Makes the JupyterLab server available on port <code class="docutils literal notranslate"><span class="pre">8888</span></code> of your computer.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--mount</span> <span class="pre">src=`pwd`,target=/home,type=bind</span></code></dt><dd><p>Maps the current project directory to <code class="docutils literal notranslate"><span class="pre">/home</span></code> in the container.  Files
+written under <code class="docutils literal notranslate"><span class="pre">/home</span></code> remain in the project directory after the container
+stops.</p>
+</dd>
+</dl>
+<p>Keep the terminal open while using MsPASS.  Startup messages appear there as
+MongoDB, Dask, and JupyterLab become ready.</p>
+</section>
+<section id="connect-to-jupyterlab">
+<h2>Connect to JupyterLab<a class="headerlink" href="#connect-to-jupyterlab" title="Link to this heading">#</a></h2>
+<p>Near the end of the startup output, JupyterLab prints a URL containing an
+access token.  Copy the URL beginning with <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8888/</span></code> into a
+browser on the same computer.  Do not share the token-bearing URL.</p>
+<p>The exact messages and token change from run to run, but the useful portion
+looks similar to this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Jupyter Server is running at:
+http://127.0.0.1:8888/lab?token=ced2d40475df...
+Use Control-C to stop this server and shut down all kernels.
+</pre></div>
+</div>
+<p>Wait for this message before trying to connect.  The earlier MongoDB and Dask
+messages show that startup is progressing, but do not mean the web interface
+is ready.</p>
+<p>JupyterLab’s file browser shows the contents of <code class="docutils literal notranslate"><span class="pre">/home</span></code>, which is the project
+directory you mounted.  You can open an existing notebook or create a new
+notebook, console, or terminal.  See the <a class="reference external" href="https://jupyterlab.readthedocs.io/en/stable/user/interface.html">JupyterLab interface guide</a> if the
+interface is unfamiliar.</p>
+<p>The first run creates three service directories in the project directory:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">db/</span></code></dt><dd><p>MongoDB database files.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">logs/</span></code></dt><dd><p>Logs from MongoDB, the scheduler, and the worker.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">work/</span></code></dt><dd><p>Temporary space used by Dask or Spark workers.</p>
+</dd>
+</dl>
+<p>Do not omit the mount option for normal work.  Without it, notebooks, database
+files, and other results remain only inside the container and can be lost when
+the container is removed.</p>
+</section>
+<section id="use-a-terminal-inside-jupyterlab">
+<h2>Use a terminal inside JupyterLab<a class="headerlink" href="#use-a-terminal-inside-jupyterlab" title="Link to this heading">#</a></h2>
+<p>The JupyterLab launcher includes a <code class="docutils literal notranslate"><span class="pre">Terminal</span></code> option as well as notebook and
+console options.  It opens a shell inside the MsPASS container with <code class="docutils literal notranslate"><span class="pre">/home</span></code>
+as the project area.  This can be useful for running a Python script, examining
+files, or monitoring CPU and memory with tools such as <code class="docutils literal notranslate"><span class="pre">top</span></code>.  Type <code class="docutils literal notranslate"><span class="pre">bash</span></code>
+if the initial shell lacks familiar line editing or other interactive features.</p>
+<p>The shell normally runs as <code class="docutils literal notranslate"><span class="pre">root</span></code> <em>inside the container</em>.  That is not the
+same as being root on the host, but the shell can still modify or delete host
+files through the read-write <code class="docutils literal notranslate"><span class="pre">/home</span></code> bind mount.  Use administrative and
+file-removal commands carefully.  Software installed or files created outside
+the mounted directory are container-local and may be lost when the container
+is removed.</p>
+</section>
+<section id="stop-mspass">
+<h2>Stop MsPASS<a class="headerlink" href="#stop-mspass" title="Link to this heading">#</a></h2>
+<p>Save and close active notebooks, then press <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> in the terminal that is
+running the container.  Allow the shutdown messages to finish so MongoDB and
+the worker processes can stop cleanly.  Files in the mounted project directory
+remain available for the next run.  Jupyter may ask you to press <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> a
+second time to confirm shutdown.</p>
+</section>
+<section id="other-host-shells">
+<h2>Other host shells<a class="headerlink" href="#other-host-shells" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">pwd</span></code> form above is for Linux and macOS shells.  In Windows PowerShell,
+run the following command from the project directory:</p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="n">-p</span> <span class="n">8888</span><span class="p">:</span><span class="n">8888</span> <span class="p">-</span><span class="n">-mount</span> <span class="s2">&quot;src=</span><span class="p">$(</span><span class="nv">$PWD</span><span class="p">.</span><span class="n">Path</span><span class="p">)</span><span class="s2">,target=/home,type=bind&quot;</span> <span class="n">mspass</span><span class="p">/</span><span class="n">mspass</span>
+</pre></div>
+</div>
+<p>For any shell, you can replace the current-directory expression with the
+absolute path to an existing project directory.  Quote the full mount value
+when the path contains spaces.  For example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--mount &quot;src=/absolute/path/to/project,target=/home,type=bind&quot;
+</pre></div>
+</div>
+</section>
+<section id="optional-settings">
+<h2>Optional settings<a class="headerlink" href="#optional-settings" title="Link to this heading">#</a></h2>
+<section id="use-another-host-port">
+<h3>Use another host port<a class="headerlink" href="#use-another-host-port" title="Link to this heading">#</a></h3>
+<p>If port <code class="docutils literal notranslate"><span class="pre">8888</span></code> is already in use, change the first port number.  For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">9999</span>:8888<span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
+</pre></div>
+</div>
+<p>In this case, replace port <code class="docutils literal notranslate"><span class="pre">8888</span></code> with <code class="docutils literal notranslate"><span class="pre">9999</span></code> in the JupyterLab URL.</p>
+</section>
+<section id="tune-dask-workers">
+<h3>Tune Dask workers<a class="headerlink" href="#tune-dask-workers" title="Link to this heading">#</a></h3>
+<p>Python-heavy processing can benefit from multiple single-threaded Dask worker
+processes because Python threads are limited by the Global Interpreter Lock.
+To request four workers with one thread each, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>-e<span class="w"> </span><span class="nv">MSPASS_WORKER_ARG</span><span class="o">=</span><span class="s2">&quot;--nworkers 4 --nthreads 1&quot;</span><span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
+</pre></div>
+</div>
+<p>Choose a worker count that fits the CPUs and memory available to Docker, while
+leaving resources for MongoDB, JupyterLab, and the operating system.  More
+workers are not always faster.</p>
+</section>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<section id="docker-cannot-connect">
+<h3>Docker cannot connect<a class="headerlink" href="#docker-cannot-connect" title="Link to this heading">#</a></h3>
+<p>Start Docker Desktop, or start the Docker Engine service on Linux.  Running
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">version</span></code> should display both <code class="docutils literal notranslate"><span class="pre">Client</span></code> and <code class="docutils literal notranslate"><span class="pre">Server</span></code> sections.  A
+permission error on Linux usually means the account has not been configured to
+use the Docker service.</p>
+</section>
+<section id="the-project-directory-is-missing">
+<h3>The project directory is missing<a class="headerlink" href="#the-project-directory-is-missing" title="Link to this heading">#</a></h3>
+<p>Make sure the mount source is an existing directory and that your account can
+read and write it.  Docker Desktop may also ask for permission to share a host
+directory or drive.</p>
+</section>
+<section id="jupyterlab-does-not-appear">
+<h3>JupyterLab does not appear<a class="headerlink" href="#jupyterlab-does-not-appear" title="Link to this heading">#</a></h3>
+<p>Read the startup messages in the terminal first.  Common causes are a port
+conflict, a missing mount directory, insufficient memory, or Docker not
+running.  Wait for the token-bearing JupyterLab URL before opening the browser.</p>
+</section>
+<section id="the-machine-becomes-slow">
+<h3>The machine becomes slow<a class="headerlink" href="#the-machine-becomes-slow" title="Link to this heading">#</a></h3>
+<p>Reduce the Dask worker count, stop other memory-intensive applications, or
+increase the CPU and memory assigned to Docker Desktop when the computer has
+capacity.  Worker and scheduler details are recorded under <code class="docutils literal notranslate"><span class="pre">logs/</span></code>.</p>
+</section>
+</section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Work through the <a class="reference external" href="https://github.com/mspass-team/mspass_tutorial">MsPASS tutorial notebooks</a>.</p></li>
+<li><p>Use the <a class="reference internal" href="mspass_desktop.html#mspass-desktop"><span class="std std-ref">MsPASS Desktop guide</span></a> if you prefer a
+graphical launcher.</p></li>
+<li><p>Use the <a class="reference internal" href="deploy_mspass_with_docker_compose.html#deploy-mspass-with-docker-compose"><span class="std std-ref">Docker Compose deployment guide</span></a> when you want the database, scheduler,
+workers, and JupyterLab in separate containers.</p></li>
+<li><p>Read the <a class="reference internal" href="deploy_mspass_on_HPC.html#deploy-mspass-on-hpc"><span class="std std-ref">HPC deployment guide</span></a> before moving to
+a batch-scheduled cluster.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="quick_start.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Getting Started in a Nutshell</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mspass_desktop.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Running MsPASS on a Desktop Computer</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-mspass-image">Download the MsPASS image</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-mspass">Run MsPASS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connect-to-jupyterlab">Connect to JupyterLab</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-a-terminal-inside-jupyterlab">Use a terminal inside JupyterLab</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stop-mspass">Stop MsPASS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-host-shells">Other host shells</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-settings">Optional settings</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-another-host-port">Use another host port</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tune-dask-workers">Tune Dask workers</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#docker-cannot-connect">Docker cannot connect</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-project-directory-is-missing">The project directory is missing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jupyterlab-does-not-appear">JupyterLab does not appear</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-machine-becomes-slow">The machine becomes slow</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/getting_started/run_mspass_with_docker.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/getting_started/run_mspass_with_docker.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

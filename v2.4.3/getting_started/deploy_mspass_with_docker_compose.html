@@ -1,0 +1,911 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Deploy MsPASS with Docker Compose &#8212; MsPASS 2.4.3 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/mspass.css?v=8dfc223a" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=7a6bd5fc"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/deploy_mspass_with_docker_compose';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://www.mspass.org/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.4.3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Deploy MsPASS with Conda" href="deploy_mspass_with_conda.html" />
+    <link rel="prev" title="Command Line Docker Desktop Operation" href="command_line_desktop.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="2.4.3" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search MsPASS docs..."
+         aria-label="Search MsPASS docs..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mspass-symbol-light.png" class="logo__image only-light" alt="MsPASS documentation"/>
+    <img src="../_static/mspass-symbol-dark.png" class="logo__image only-dark pst-js-only" alt="MsPASS documentation"/>
+  
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<ul class="bd-navbar-elements navbar-nav">
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="quick_start.html">Get Started</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="getting_started_overview.html">Cluster</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/introduction.html">User Manual</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link nav-internal" href="../user_manual/FAQ.html">FAQ</a>
+  </li>
+  <li class="nav-item dropdown">
+    <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Reference
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="nav-link dropdown-item nav-internal" href="../python_api/index.html">Python API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../cxx_api/index.html">C++ API</a></li>
+      <li><a class="nav-link dropdown-item nav-internal" href="../mspass_schema/mspass_schema.html">Schema</a></li>
+    </ul>
+  </li>
+</ul></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mspass-team/mspass" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links" aria-label="Site Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Documentation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Concepts and Architecture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/components.html">MsPASS Components</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Start on a Desktop</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Fast path: desktop quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run_mspass_with_docker.html">Single-container Docker guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Graphical launcher: MsPASS Desktop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Advanced Docker CLI and Compose overview</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Multi-container Docker Compose deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Conda installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced setup considerations</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Clusters and Hosted Environments</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">Virtual-cluster concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">HPC deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HPCClusterLauncher_configuration.html">HPC launcher configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Conda and Coiled deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_geolab.html">EarthScope GeoLab</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Seismic Data Foundations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using NumPy and SciPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database and Data Ingestion</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">MongoDB and PyMongo primer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">MsPASS Database CRUD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Processing Workflows</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Scaling and Performance</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Help and Workflow Development</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmake_dependency_maintenance.html">CMake dependency maintenance</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API and Schema Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../python_api/index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.seismic.html">mspasspy.seismic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_api/mspasspy.workflow.html">mspasspy.workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cxx_api/index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.html">MsPASS C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cxx_api/mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS schema</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Deploy MsPASS with Docker Compose</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="deploy-mspass-with-docker-compose">
+<span id="id1"></span><h1>Deploy MsPASS with Docker Compose<a class="headerlink" href="#deploy-mspass-with-docker-compose" title="Link to this heading">#</a></h1>
+<p>Docker Compose runs the MsPASS database, scheduler, worker, and JupyterLab
+frontend in separate containers on one computer.  This is useful when you
+want to inspect or restart each service independently.  For the simplest
+desktop setup, use <a class="reference internal" href="run_mspass_with_docker.html#run-mspass-with-docker"><span class="std std-ref">Run MsPASS with Docker</span></a>
+instead.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<p>Install Docker Desktop or Docker Engine with the Docker Compose plugin.  The
+commands below use the current <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> command (with a space).
+Check the installation with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>version
+docker<span class="w"> </span>compose<span class="w"> </span>version
+</pre></div>
+</div>
+<p>Choose a writable project directory and run all commands from that directory.
+The shipped configurations mount the current directory at <code class="docutils literal notranslate"><span class="pre">/home</span></code> in every
+container, so notebooks, database files, logs, and results remain on the host.</p>
+</section>
+<section id="how-the-containers-work-together">
+<h2>How the containers work together<a class="headerlink" href="#how-the-containers-work-together" title="Link to this heading">#</a></h2>
+<p>An MsPASS deployment is made from containers with different roles.  Docker
+Compose gives the containers a shared network and starts them with the
+addresses and settings they need to communicate.  Understanding these roles
+is helpful when you read a Compose file or diagnose a service that did not
+start:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">frontend</span></code> runs JupyterLab and connects the user’s notebook to the
+database and the parallel scheduler.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scheduler</span></code> runs either a Dask scheduler or a Spark master.  It assigns
+parallel work to the workers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">worker</span></code> runs a Dask worker or Spark worker that performs the computation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">db</span></code> runs one standalone MongoDB server.  This is the database role used
+by the standard Dask and Spark examples on this page.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dbmanager</span></code> runs the MongoDB configuration and routing services for a
+sharded database.  It is used with one or more <code class="docutils literal notranslate"><span class="pre">shard</span></code> containers, not
+with the standalone <code class="docutils literal notranslate"><span class="pre">db</span></code> container.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shard</span></code> stores part of a sharded MongoDB database.  Multiple shards can
+distribute a large database across storage devices or hosts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> combines the frontend, scheduler, worker, and standalone database
+in one container.  It is the default role used by the simpler
+<a class="reference internal" href="run_mspass_with_docker.html#run-mspass-with-docker"><span class="std std-ref">single-container instructions</span></a>.</p></li>
+</ul>
+<p>The image selects a role with the <code class="docutils literal notranslate"><span class="pre">MSPASS_ROLE</span></code> environment variable.  The
+other important variables describe the scheduler and connect the services:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_SCHEDULER</span></code> selects <code class="docutils literal notranslate"><span class="pre">dask</span></code> or <code class="docutils literal notranslate"><span class="pre">spark</span></code>.  The default is
+<code class="docutils literal notranslate"><span class="pre">dask</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_SCHEDULER_ADDRESS</span></code> gives workers and the frontend the hostname of
+the scheduler service.  In the supplied files that hostname is
+<code class="docutils literal notranslate"><span class="pre">mspass-scheduler</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_DB_ADDRESS</span></code> gives the frontend the hostname of its database
+service.  It is <code class="docutils literal notranslate"><span class="pre">mspass-db</span></code> for a standalone database and
+<code class="docutils literal notranslate"><span class="pre">mspass-dbmanager</span></code> only for the sharded configuration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_SHARD_LIST</span></code> tells a database manager which shard services belong
+to the cluster.  Each entry has the form <code class="docutils literal notranslate"><span class="pre">name/host:port</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_SHARD_ID</span></code> gives each shard a unique identity and keeps its data
+separate when shards share a mounted filesystem.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_JUPYTER_PWD</span></code> optionally sets the Jupyter password.  If it is
+unset, Jupyter generates a login token and prints it in the frontend log.
+An empty value permits access without a password and should be used only in
+an appropriately protected environment.</p></li>
+</ul>
+<p>Several port variables are also available: <code class="docutils literal notranslate"><span class="pre">JUPYTER_PORT</span></code> defaults to
+<code class="docutils literal notranslate"><span class="pre">8888</span></code>, <code class="docutils literal notranslate"><span class="pre">DASK_SCHEDULER_PORT</span></code> to <code class="docutils literal notranslate"><span class="pre">8786</span></code>, <code class="docutils literal notranslate"><span class="pre">SPARK_MASTER_PORT</span></code> to
+<code class="docutils literal notranslate"><span class="pre">7077</span></code>, and <code class="docutils literal notranslate"><span class="pre">MONGODB_PORT</span></code> to <code class="docutils literal notranslate"><span class="pre">27017</span></code>.  Most users should keep these
+container-side defaults.  If one of those ports is already occupied on the
+host, change the host side of its Compose <code class="docutils literal notranslate"><span class="pre">ports</span></code> mapping instead.  Service
+addresses and health checks must agree with any container-side port changes.</p>
+</section>
+<section id="run-the-dask-configuration">
+<h2>Run the Dask configuration<a class="headerlink" href="#run-the-dask-configuration" title="Link to this heading">#</a></h2>
+<p>The standard configuration is
+<a class="reference download internal" download="" href="../_downloads/69c02281a6ab0c2d9278b91556806307/compose.yaml"><code class="xref download docutils literal notranslate"><span class="pre">compose.yaml</span></code></a>:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-number">Listing 2 </span><span class="caption-text">Standard Docker Compose configuration using Dask</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">services</span><span class="p">:</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="nt">mspass-db</span><span class="p">:</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos"> 6</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos"> 8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017:27017</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
+<span class="linenos">11</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo &#39;db.runCommand(&quot;ping&quot;).ok&#39; | mongosh localhost:27017/test --quiet</span><span class="w"> </span>
+<span class="linenos">14</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">15</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos">16</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos">17</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="linenos">18</span><span class="w">  </span>
+<span class="linenos">19</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">20</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">21</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">22</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">24</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786:8786</span>
+<span class="linenos">25</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8787:8787</span>
+<span class="linenos">26</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">27</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span>
+<span class="linenos">28</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos">29</span><span class="w">      </span><span class="nt">DASK_SCHEDULER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786</span>
+<span class="linenos">30</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos">31</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wget --no-verbose --tries=1 --spider http://localhost:8786</span>
+<span class="linenos">32</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">33</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos">34</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos">35</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="linenos">36</span><span class="w">  </span>
+<span class="linenos">37</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span>
+<span class="linenos">38</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">39</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">40</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="linenos">41</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">42</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">43</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">44</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
+<span class="linenos">45</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos">46</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">47</span><span class="w">      </span><span class="nt">MSPASS_WORKER_ARG</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--nworkers=4 --nthreads=1</span>
+<span class="linenos">48</span><span class="w">  </span>
+<span class="linenos">49</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span>
+<span class="linenos">50</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">51</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">52</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="linenos">53</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">54</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888:8888</span>
+<span class="linenos">55</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">56</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-db</span>
+<span class="linenos">57</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">58</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">59</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="linenos">60</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos">61</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">62</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-db</span>
+<span class="linenos">63</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
+<span class="linenos">64</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
+</pre></div>
+</div>
+</div>
+<p>Save the file as <code class="docutils literal notranslate"><span class="pre">compose.yaml</span></code> in your project directory, then start it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</pre></div>
+</div>
+<p>Docker downloads the image automatically if it is not already installed.
+The configuration starts four services:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mspass-db</span></code> runs a standalone MongoDB server.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mspass-scheduler</span></code> runs the Dask scheduler.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mspass-worker</span></code> starts four single-threaded Dask worker processes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mspass-frontend</span></code> runs JupyterLab.</p></li>
+</ul>
+<p>Check that the services are running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>ps
+</pre></div>
+</div>
+<p>Initial startup can take a minute.  If the frontend is not ready, view its
+log with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>mspass-frontend
+</pre></div>
+</div>
+<p>Open <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8888/</span></code> in a browser and enter the password
+<code class="docutils literal notranslate"><span class="pre">mspass</span></code>.  The Dask dashboard is available at
+<code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8787/status</span></code>.</p>
+<p>When finished, stop and remove the containers with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>down
+</pre></div>
+</div>
+<p>Files in the project directory are not removed.  In particular, the startup
+scripts create <code class="docutils literal notranslate"><span class="pre">db/</span></code> for MongoDB data, <code class="docutils literal notranslate"><span class="pre">logs/</span></code> for service logs, and
+<code class="docutils literal notranslate"><span class="pre">work/</span></code> for worker scratch files.</p>
+</section>
+<section id="common-adjustments">
+<h2>Common adjustments<a class="headerlink" href="#common-adjustments" title="Link to this heading">#</a></h2>
+<p>The supplied file is intended for local use.  It publishes service ports on
+all host interfaces, uses the known Jupyter password <code class="docutils literal notranslate"><span class="pre">mspass</span></code>, and does not
+enable MongoDB authentication.  On an untrusted network, choose a private
+Jupyter password and bind published ports to loopback; for example, change
+<code class="docutils literal notranslate"><span class="pre">8888:8888</span></code> to <code class="docutils literal notranslate"><span class="pre">127.0.0.1:8888:8888</span></code>.</p>
+<p>Other common changes are:</p>
+<ul class="simple">
+<li><p>Change the host side of a port mapping if a port is already in use.  For
+example, <code class="docutils literal notranslate"><span class="pre">9999:8888</span></code> makes JupyterLab available on host port <code class="docutils literal notranslate"><span class="pre">9999</span></code>.</p></li>
+<li><p>Adjust <code class="docutils literal notranslate"><span class="pre">MSPASS_WORKER_ARG</span></code> to change the number of Dask worker processes.
+Do not request more CPU or memory than Docker has available.</p></li>
+<li><p>Add the same bind mount to every service that needs access to waveform data
+stored outside the project directory.  Paths used by notebooks and workers
+must refer to the common path inside the containers.  This includes targets
+of symbolic links: a link into an unmounted host directory is broken inside
+the containers.</p></li>
+</ul>
+<p>After editing the file, check its resolved configuration before restarting:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>config
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</pre></div>
+</div>
+</section>
+<section id="run-the-spark-configuration">
+<h2>Run the Spark configuration<a class="headerlink" href="#run-the-spark-configuration" title="Link to this heading">#</a></h2>
+<p>MsPASS also provides
+<a class="reference download internal" download="" href="../_downloads/432d28f8dcddf17c5540de23204e5281/docker-compose_spark.yaml"><code class="xref download docutils literal notranslate"><span class="pre">docker-compose_spark.yaml</span></code></a>:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-number">Listing 3 </span><span class="caption-text">Docker Compose configuration using Spark</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">services</span><span class="p">:</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="nt">mspass-db</span><span class="p">:</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos"> 6</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos"> 8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017:27017</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
+<span class="linenos">11</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo &#39;db.runCommand(&quot;ping&quot;).ok&#39; | mongosh localhost:27017/test --quiet</span><span class="w"> </span>
+<span class="linenos">14</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">15</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos">16</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos">17</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">20</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">21</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">22</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">24</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7077:7077</span>
+<span class="linenos">25</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">26</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span>
+<span class="linenos">27</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
+<span class="linenos">28</span><span class="w">      </span><span class="nt">SPARK_MASTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7077</span>
+<span class="linenos">29</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos">30</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wget --no-verbose --tries=1 --spider http://localhost:8080</span>
+<span class="linenos">31</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">32</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">33</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="linenos">34</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">35</span><span class="w">  </span>
+<span class="linenos">36</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span>
+<span class="linenos">37</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">38</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">39</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos">40</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">41</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">42</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos">43</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">44</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
+<span class="linenos">45</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
+<span class="linenos">46</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">47</span><span class="w">  </span>
+<span class="linenos">48</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span>
+<span class="linenos">49</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">50</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">51</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}:/home&quot;</span>
+<span class="linenos">52</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">53</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888:8888</span>
+<span class="linenos">54</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">55</span><span class="w">      </span><span class="nt">mspass-db</span><span class="p">:</span>
+<span class="linenos">56</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos">57</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">58</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos">59</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">60</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="linenos">61</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
+<span class="linenos">62</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">63</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-db</span>
+<span class="linenos">64</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
+<span class="linenos">65</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
+</pre></div>
+</div>
+</div>
+<p>Save the file in the project directory and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose_spark.yaml<span class="w"> </span>up<span class="w"> </span>-d
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose_spark.yaml<span class="w"> </span>ps
+</pre></div>
+</div>
+<p>This configuration replaces the Dask scheduler and worker with a Spark master
+and worker.  It still uses the standalone <code class="docutils literal notranslate"><span class="pre">mspass-db</span></code> service, and the
+frontend’s <code class="docutils literal notranslate"><span class="pre">MSPASS_DB_ADDRESS</span></code> must therefore be <code class="docutils literal notranslate"><span class="pre">mspass-db</span></code>.  The Spark
+scheduler and database health checks delay dependent services until they are
+ready.</p>
+<p>Stop the Spark services with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose_spark.yaml<span class="w"> </span>down
+</pre></div>
+</div>
+<p>Do not run the Dask and Spark configurations together in the same project;
+they reuse service names and host ports.</p>
+</section>
+<section id="sharded-mongodb-is-a-separate-example">
+<h2>Sharded MongoDB is a separate example<a class="headerlink" href="#sharded-mongodb-is-a-separate-example" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">mspass-dbmanager</span></code> name is valid only in
+<code class="docutils literal notranslate"><span class="pre">data/yaml/docker-compose_sharding.yaml</span></code>.  That file defines a
+<code class="docutils literal notranslate"><span class="pre">mspass-dbmanager</span></code> service with the <code class="docutils literal notranslate"><span class="pre">dbmanager</span></code> role and two MongoDB shard
+services.  The standard Dask and Spark files use a standalone database named
+<code class="docutils literal notranslate"><span class="pre">mspass-db</span></code> and must not point their frontend to <code class="docutils literal notranslate"><span class="pre">mspass-dbmanager</span></code>.</p>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">ps</span> <span class="pre">-a</span></code> to find services that exited and <code class="docutils literal notranslate"><span class="pre">docker</span>
+<span class="pre">compose</span> <span class="pre">logs</span> <span class="pre">SERVICE</span></code> to read a service’s startup output.  The most common
+causes are a port already in use, an unwritable bind-mounted directory, or
+too little memory assigned to Docker.  If a configuration was edited, run
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">config</span></code> to catch YAML and variable-substitution errors.</p>
+<p>For larger or multi-node deployments, continue with the
+<a class="reference internal" href="getting_started_overview.html#getting-started-overview"><span class="std std-ref">virtual-cluster overview</span></a> and
+<a class="reference internal" href="deploy_mspass_on_HPC.html#deploy-mspass-on-hpc"><span class="std std-ref">HPC deployment guide</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="command_line_desktop.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Command Line Docker Desktop Operation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="deploy_mspass_with_conda.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Deploy MsPASS with Conda</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-containers-work-together">How the containers work together</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-dask-configuration">Run the Dask configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-adjustments">Common adjustments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-spark-configuration">Run the Spark configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sharded-mongodb-is-a-separate-example">Sharded MongoDB is a separate example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/mspass-team/mspass/edit/master/docs/source/getting_started/deploy_mspass_with_docker_compose.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/getting_started/deploy_mspass_with_docker_compose.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, MsPASS Team.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

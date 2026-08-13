@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="mseed__index_8cc" kind="file" language="C++">
+    <compoundname>mseed_index.cc</compoundname>
+    <includes refid="mseed__index_8h" local="yes">mspass/io/mseed_index.h</includes>
+    <includes local="no">iomanip</includes>
+    <includes local="no">sstream</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>mspass/io/mseed_index.h</label>
+        <link refid="mseed__index_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc</label>
+        <link refid="mseed__index_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="8">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="9">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="10">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="11">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="5">
+        <label>exception</label>
+      </node>
+      <node id="16">
+        <label>iomanip</label>
+      </node>
+      <node id="6">
+        <label>iostream</label>
+      </node>
+      <node id="12">
+        <label>list</label>
+      </node>
+      <node id="17">
+        <label>sstream</label>
+      </node>
+      <node id="14">
+        <label>string</label>
+      </node>
+      <node id="13">
+        <label>unistd.h</label>
+      </node>
+      <node id="15">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
+    <innernamespace refid="namespacemspass_1_1io">mspass::io</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;mspass/io/mseed_index.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iomanip&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sstream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::io<sp/>{</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::io;</highlight></codeline>
+<codeline lineno="6" refid="classmspass_1_1io_1_1mseed__index_1a23274f67eb264f6219a663efe53aab57" refkind="member"><highlight class="normal">std::ostringstream<sp/>&amp;operator&lt;&lt;(std::ostringstream<sp/>&amp;ss,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref><sp/>&amp;ind)<sp/>{</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"><sp/><sp/>ss<sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1aeae52fb8509292312937fd60b12cb6d2" kindref="member">net</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1a645d459857a3b3c9afa1f6a5cf252a66" kindref="member">sta</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ind.<ref refid="classmspass_1_1io_1_1mseed__index_1ad78f6f2dccb8fa652f7b0030055acbd4" kindref="member">loc</ref>.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1ad78f6f2dccb8fa652f7b0030055acbd4" kindref="member">loc</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;NULL<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/>ss<sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1a056427385ac5dfbdd271d6cacbfbabb7" kindref="member">chan</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1a7ddc690e23ab045a1b21def90209fa1a" kindref="member">foff</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1a039994bbea83dc923a6e59ed2ea675fd" kindref="member">nbytes</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>std::setprecision(20)<sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1a9dc0248ef24184cb4b0cf7b40aaa2ec8" kindref="member">starttime</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1a7476ff41f76820f284911be7f0a130c0" kindref="member">last_packet_time</ref></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1a0b33fceb0d51997d0b1b06736ee07b95" kindref="member">endtime</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1a2f34fc7dca12e7af7f9bf459462af9b4" kindref="member">samprate</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ind.<ref refid="classmspass_1_1io_1_1mseed__index_1a1e0b11b2170b54e3245aa36df0bb19f8" kindref="member">npts</ref>;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ss;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="17"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::io</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc"/>
+  </compounddef>
+</doxygen>
