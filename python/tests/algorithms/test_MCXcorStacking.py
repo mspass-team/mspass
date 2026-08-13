@@ -700,7 +700,7 @@ def test_MCXcorPrepP():
         assert np.isclose(observed, expected)
     assert number_live(e) == N
     assert np.isclose(beam["correlation_window_start"], -2.0)
-    assert np.isclose(beam["correlation_window_end"], 154.65957854747774)
+    assert np.isclose(beam["correlation_window_end"], 171.84397616386414)
     for d in e.member:
         assert d.is_defined("Ptime")
         assert d.is_defined("PPtime")

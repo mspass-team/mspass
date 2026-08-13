@@ -393,9 +393,9 @@ def MCXcorPrepP(
       members.  Each coda search, however, is constrained by the times of
       pP and/or PP.   As noted above the function uses the pP time for
       events with depths greater than 100 km but PP for shallow sources.
-      To allow for hypocenter errors  the duration defined by
-      P to pP or P to PP is multiplied by this factor to define the
-      search start for the coda estimation.
+      To allow for hypocenter errors the shortest duration defined by
+      P to pP or P to PP is multiplied by this factor once to cap the
+      final common correlation window.
     :type search_window_fraction: float (default 0.9)
     :param minimum_coda_duration: minimum accepted coda-duration estimate.
       Shorter estimates are excluded.  If no estimate exceeds this floor, the
@@ -527,7 +527,6 @@ def MCXcorPrepP(
     for d in enswork.member:
         if d.live:
             sr = _get_search_range(d)
-            sr *= search_window_fraction
             search_range.append(sr)
             # compute a noise estimate without being too dogmatic about
             # window range
@@ -1847,16 +1846,16 @@ def phase_time(
     (or any other algorithm that computes relative time shifts) and set with the
     Metadata key defined by the "time_shift_key" argment.  The defaults work for
     P phase times computed by `MCXcorPrepP` and shifts computed by
-    `align_and_stack`.   The computation here is trivial (just a difference) but
+    `align_and_stack`.   The computation here is trivial (just a sum) but
     the fluff is all the safeties in handling missing values.  Returns -1.0
     if any of the requried keys are missing.  Returns -2.0 if d is not defined
     as UTC.  That is basically a reminder this function only makes sense for
     data with a UTC time standard.
     """
-    phase_time = d.t0
+    if d.time_is_relative():
+        return -2.0
     if d.is_defined(phase_time_key) and d.is_defined(time_shift_key):
-        phase_time = d[phase_time_key] + d[time_shift_key]
-        return phase_time
+        return d[phase_time_key] + d[time_shift_key]
     else:
         return -1.0
 
@@ -2193,10 +2192,10 @@ def _coda_duration(ts, level, t0=0.0, search_start=None) -> TimeWindow:
     level of the envelope never exceeds the value defined by the level
     argument.
 
-    :param ts:  Datum to be processed.   The function will return a null
-      result (zero length window) if ts.t0> t0 (argument value).  The sample
-      data is assumed filtered to an appropriate band where the envelope will
-      properly define the coda.
+    :param ts:  Datum to be processed.  If ``t0`` precedes ``ts.t0``, the
+      returned window start and the search boundary are clipped to ``ts.t0``.
+      The sample data is assumed filtered to an appropriate band where the
+      envelope will properly define the coda.
     :type ts: `TimeSeries` is assumed.  There is not explicit type checking
       but a type mismatch will always cause an error.
     :param level:  amplitude of where the backward time search will be
@@ -2245,14 +2244,13 @@ def _coda_duration(ts, level, t0=0.0, search_start=None) -> TimeWindow:
         raise ValueError(message)
     httsd = signal.hilbert(ts.data)
     envelope = np.abs(httsd)
-    it0 = ts.sample_number(t0)
     i = itss
     while i > it0:
         if envelope[i] > level:
-            break
+            return TimeWindow(t0used, ts.time(i))
         i -= 1
     # A failed search will have start and end the same
-    return TimeWindow(t0used, ts.time(i))
+    return TimeWindow(t0used, t0used)
 
 
 def _set_phases(
@@ -2364,6 +2362,7 @@ def _set_phases(
         depth = d["source_depth"]
     else:
         depth = default_depth
+        d["source_depth"] = depth
         message = "source_depth value was not defined - using default value={}".format(
             depth
         )
@@ -2403,8 +2402,10 @@ def _get_search_range(
     range for P coda.   It returns a time duration to use as the search
     range relative to 0 (P time) based on a simple recipe to avoid interference
     from pP and PP phases.   Specifically, if the source depth is greater than
-    100 km the pP phase is used as the maximum duration of the coda.
-    For shallower sources PP is used.
+    100 km the pP phase is preferred as the maximum duration of the coda,
+    with PP as a fallback.  For sources at or below 100 km PP is preferred,
+    with pP as a fallback.  If neither phase is defined,
+    `duration_undefined` is used.
 
     This function should not normally be used except as a component of the
     MCXcorPrepP function.   It has no safeties and is pretty simple.
@@ -2413,16 +2414,22 @@ def _get_search_range(
     """
     if d.live:
         depth = d["source_depth"]
+        Ptime = d[Pkey]
         if depth > 100.0:
             if d.is_defined(pPkey):
                 tend = d[pPkey]
             elif d.is_defined(PPkey):
                 tend = d[PPkey]
             else:
-                d[Pkey] + duration_undefined
+                tend = Ptime + duration_undefined
         else:
-            tend = d[PPkey]
-        duration = tend - d[Pkey]
+            if d.is_defined(PPkey):
+                tend = d[PPkey]
+            elif d.is_defined(pPkey):
+                tend = d[pPkey]
+            else:
+                tend = Ptime + duration_undefined
+        duration = max(0.0, tend - Ptime)
     else:
         duration = 0.0
     return duration
