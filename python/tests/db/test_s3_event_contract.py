@@ -18,7 +18,6 @@ from mspasspy.ccore.utility import ErrorSeverity
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
 
-
 SOURCE_PYTHON_ROOT = Path(
     os.environ.get("MSPASS_TEST_SOURCE_ROOT", Path(__file__).resolve().parents[2])
 )
@@ -137,7 +136,9 @@ def database():
 
 @pytest.fixture(scope="session", autouse=True)
 def assert_database_module_loaded_from_selected_worktree():
-    assert Path(database_module.__file__).resolve() == EXPECTED_DATABASE_MODULE.resolve()
+    assert (
+        Path(database_module.__file__).resolve() == EXPECTED_DATABASE_MODULE.resolve()
+    )
 
 
 @pytest.mark.parametrize(
@@ -387,9 +388,7 @@ def test_public_event_index_then_read_dispatches_and_recaches(
         assert result["is_abortion"] is False
         expected = obspy.read(
             io.BytesIO(
-                payload[
-                    document["foff"] : document["foff"] + document["nbytes"]
-                ]
+                payload[document["foff"] : document["foff"] + document["nbytes"]]
             ),
             format="MSEED",
         )
