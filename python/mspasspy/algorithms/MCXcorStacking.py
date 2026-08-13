@@ -705,40 +705,61 @@ def regularize_ensemble(
     """
     Secondary function to regularize an ensemble for input to robust
     stacking algorithm.  ASsumes all data have the same sample rate.
-    Uses WindowData to assumre all data are inside the common
-    range startime:endtime.  Silently drops dead data.
+    Uses WindowData to assure all data are inside the common
+    range starttime:endtime.  Dead data are dropped with one summary
+    posted to the output ensemble.  Errors created while windowing a
+    dropped live member are copied back to that input member.
     """
     ensout = TimeSeriesEnsemble(Metadata(ensemble), len(ensemble.member))
     if ensemble.elog.size() > 0:
         ensout.elog = ensemble.elog
+    dropped_indices = []
     for i in range(len(ensemble.member)):
-        d = ensemble.member[i]
-        if d.live:
+        member = ensemble.member[i]
+        if member.live:
             if (
-                np.fabs((d.t0 - starttime)) > d.dt
-                or np.fabs(d.endtime() - endtime) > d.dt
+                np.fabs((member.t0 - starttime)) > member.dt
+                or np.fabs(member.endtime() - endtime) > member.dt
             ):
                 d = WindowData_autopad(
-                    d,
+                    member,
                     starttime,
                     endtime,
                     pad_fraction_cutoff=pad_fraction_cutoff,
                 )
                 if d.live:
-                    message = "Dropped member number {} because undefined data range exceeded limit of {}\n".format(
-                        i, pad_fraction_cutoff
-                    )
                     ensout.member.append(d)
+                else:
+                    if d is not member:
+                        member_error_count = member.elog.size()
+                        for error in d.elog.get_error_log()[member_error_count:]:
+                            member.elog.log_error(
+                                error.algorithm, error.message, error.badness
+                            )
+                    member.kill()
+                    dropped_indices.append(i)
             else:
-                ensout.member.append(d)
+                ensout.member.append(member)
         else:
-            message = "Dropped member number {} that was marked dead on input".format(i)
-            ensout.elog.log_error(
-                "regularize_ensemble", message, ErrorSeverity.Complaint
-            )
+            dropped_indices.append(i)
+    if dropped_indices:
+        message = "regularize_ensemble: dropped {} member(s) at indices {}".format(
+            len(dropped_indices), ", ".join(str(i) for i in dropped_indices)
+        )
+        ensout.elog.log_error(MsPASSError(message, ErrorSeverity.Invalid))
     if len(ensout.member) > 0:
         ensout.set_live()
+    else:
+        ensout.kill()
     return ensout
+
+
+def _logged_dead_timeseries(message) -> TimeSeries:
+    """Return an empty dead TimeSeries with one Invalid diagnostic."""
+    result = TimeSeries()
+    result.elog.log_error(MsPASSError(message, ErrorSeverity.Invalid))
+    result.kill()
+    return result
 
 
 def robust_stack(
@@ -855,7 +876,9 @@ def robust_stack(
         from the (optional) stack_md argument.   Component 1 is defined only
         for the dbxcor method in which case it is a numpy array containing the
         robust weights returned by the dbxcor algorithm.  If the method is
-        set to "median" component 1 will be returned as a None type.
+        set to "median" component 1 will be returned as a None type.  With no
+        live ensemble members, component 0 is a logged dead `TimeSeries`,
+        component 1 is `None`, and the input ensemble is marked dead and logged.
     """
     alg = "robust_stack"
     # if other values for method are added they need to be added here
@@ -863,14 +886,14 @@ def robust_stack(
         message = alg + ":  Illegal value for argument method={}\n".format(method)
         message += "Currently must be either median or dbxcor"
         raise ValueError(message)
-    # don't test type - if we get illegal type let it thro0w an exception
-    if ensemble.dead():
-        d_bad = TimeSeries()
-        message = "Received an input ensemble marked dead - cannot compute a stack"
-        d_bad.elog.log_error(alg, message, ErrorSeverity.Invalid)
-        # this isn't currently required by better to be explicit
-        d_bad.kill()
-        return [d_bad, None]
+    # don't test type - if we get illegal type let it throw an exception
+    M = number_live(ensemble)
+    if M == 0:
+        message = "robust_stack: input ensemble contains no live members"
+        ensemble.kill()
+        ensemble.elog.log_error(MsPASSError(message, ErrorSeverity.Invalid))
+        return [_logged_dead_timeseries(message), None]
+    live_member = next(d for d in ensemble.member if d.live)
     if timespan_method == "stack0":
         if stack0:
             # intentionally don't test type of stack0
@@ -895,9 +918,8 @@ def robust_stack(
         )
         raise ValueError(message)
 
-    # below we clone common stuff form member[0] if ensemble
-    # that is safe only because this function guarantees member 0 is not dead
-    # or irregular
+    # A live member supplies the common sampling attributes.  It need not be
+    # member 0 because dead members are allowed in the input.
     # TODO:   removing this for a test - I don't think this is needed with a
     # change in the algorithm.  If that proves true remove this function
     # from this module and remove this comment and the call to regularize_ensemble
@@ -905,11 +927,10 @@ def robust_stack(
     #    ensemble, timespan.start, timespan.end, pad_fraction_cutoff
     # )
     # the above can remove some members
-    M = number_live(ensemble)
     M_e = len(ensemble.member)
     # can now assume they are all the same length and don't need to worry about empty ensembles
     # N = ensemble.member[0].npts
-    dt = ensemble.member[0].dt
+    dt = live_member.dt
     N = int((timespan.end - timespan.start) / dt) + 1
 
     if stack0 and method == "dbxcor":
@@ -941,9 +962,9 @@ def robust_stack(
             stack = TimeSeries(stack, stack_md)
         stack.t0 = timespan.start
         # this works because we can assume ensemble is not empty and clean
-        stack.dt = ensemble.member[0].dt
+        stack.dt = live_member.dt
         # Make sure the stack has the same time base as the input
-        stack.tref = ensemble.member[0].tref
+        stack.tref = live_member.tref
         # Always compute the median stack as a starting point
         # that was the algorithm of dbxcor and there are good reasons for it
         data_matrix = np.zeros(shape=[M, N])
@@ -1381,7 +1402,8 @@ def align_and_stack(
         with positive final weight also have ``robust_weight_key``; members
         killed by sampling or windowing failures are marked dead.  Component 1
         is the computed stack windowed to the range defined by
-        ``output_stack_window``.
+        ``output_stack_window``.  Empty and all-dead inputs return the same
+        ensemble identity marked dead and a separately logged dead `TimeSeries`.
     """
     alg = "align_and_stack"
     # xcor ensemble has the initial start time posted to each
@@ -1402,8 +1424,11 @@ def align_and_stack(
         message = alg + ":  illegal type for arg1 (beam) = {}\n".format(str(type(beam)))
         message += "Must be a TimeSeries"
         raise TypeError(message)
-    if ensemble.dead():
-        return [ensemble, beam]
+    if number_live(ensemble) == 0:
+        message = "align_and_stack: input ensemble contains no live members"
+        ensemble.kill()
+        ensemble.elog.log_error(MsPASSError(message, ErrorSeverity.Invalid))
+        return [ensemble, _logged_dead_timeseries(message)]
     if beam.dead():
         message = "ensemble was marked live but beam input was marked dead - cannot process this ensemble"
         ensemble.elog.log_error(alg, message, ErrorSeverity.Invalid)
@@ -1416,7 +1441,8 @@ def align_and_stack(
         abort_on_error=abort_irregular_sampling,
     )
     if ensemble.dead():
-        return [ensemble, beam]
+        message = "align_and_stack: sampling regularization removed all live members"
+        return [ensemble, _logged_dead_timeseries(message)]
     # we need to make sure this is part of a valid set of algorithms
     if robust_stack_method not in ["dbxcor", "median"]:
         message = "Invalid value for robust_stack_method={}.  See docstring".format(
@@ -2557,6 +2583,11 @@ def _update_xcor_beam(xcorens, beam0, robust_stack_method, wts) -> TimeSeries:
     # A tricky but fast way to initialize the data vector to all zeros
     # warning this depends upon a special property of the C++ implementation
     beam.set_npts(beam0.npts)
+    if number_live(xcorens) == 0:
+        message = "_update_xcor_beam: input ensemble contains no live members"
+        beam.elog.log_error(MsPASSError(message, ErrorSeverity.Invalid))
+        beam.kill()
+        return beam
     # Cautioniously copy these to beam.   Maybe should log an error if they
     # aren't defined but for now do this silently.   Possible
     # maintenace issue if these keys ever change in MCXcorPPrep.
