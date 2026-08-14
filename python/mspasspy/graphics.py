@@ -16,12 +16,12 @@ from mspasspy.algorithms.basic import ExtractComponent
 # not sure that is necessary but this makes context clearer
 from mspasspy.algorithms.window import scale as mspass_scale_function
 
-_MAX_PLOT_ARRAY_BYTES = 536870912
+_MAX_ENSEMBLE_MATRIX_ROWS = 10000000
 
 
 def _validate_plot_grid(npts, dt):
     if npts <= 0:
-        raise ValueError("plot input is empty")
+        raise IndexError("plot input is empty")
     if not numpy.isfinite(dt) or dt <= 0.0:
         raise ValueError("plot sample interval must be finite and positive")
 
@@ -36,9 +36,16 @@ def _checked_plot_allocation(rows, columns, itemsize):
     if elements and itemsize > max_index // elements:
         raise MemoryError("plot array byte size overflows the platform index size")
     byte_count = elements * itemsize
-    if byte_count > _MAX_PLOT_ARRAY_BYTES:
-        raise MemoryError("plot array exceeds the 512 MiB allocation limit")
     return byte_count
+
+
+def _validate_ensemble_matrix_rows(rows):
+    """Preserve the established absolute-time-span sanity limit."""
+    if rows > _MAX_ENSEMBLE_MATRIX_ROWS:
+        raise RuntimeError(
+            "tse2dmatix:  irrational computed time range - you are probably "
+            "incorrectly using data with large range of absolute times"
+        )
 
 
 def _allocate_plot_matrix(rows, columns, dtype=numpy.float64):
@@ -104,7 +111,7 @@ def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False
     """
     npts, ntraces = section.shape  # time/traces
     if ntraces < 1:
-        raise ValueError("plot input is empty")
+        raise IndexError("Nothing to plot")
     t = _sample_coordinates(t0, dt, npts)
     amp = 1.0  # normalization factor
     gmin = 0.0  # global minimum
@@ -178,7 +185,7 @@ def image_raw(
     """
     npts, maxtraces = section.shape  # time/traces
     if maxtraces < 1:
-        raise ValueError("plot input is empty")
+        raise IndexError("Nothing to plot")
     t = _sample_coordinates(t0, dt, npts)
     data = section
     if ranges is None:
@@ -218,13 +225,17 @@ def tse2nparray(ens):
     :return: three-element list ``[t0, dt, data]`` containing the earliest
         start time, sample interval, and 2-D NumPy array.
     :rtype: list
-    :raises ValueError: if the ensemble is empty or a sample grid is invalid.
+    :raises IndexError: if the ensemble or one of its members is empty.
+    :raises ValueError: if a sample interval is invalid.
     :raises RuntimeError: if ensemble members have inconsistent sample rates.
-    :raises MemoryError: if the output matrix exceeds the allocation limit.
+        A ``RuntimeError`` is also raised when the sampled time span would
+        exceed the established ten-million-row sanity limit, which normally
+        indicates that unrelated absolute-time segments were mixed.
+    :raises MemoryError: if matrix dimensions overflow the platform index size.
     """
     nseis = len(ens.member)
     if nseis == 0:
-        raise ValueError("cannot convert an empty ensemble")
+        raise IndexError("cannot convert an empty ensemble")
     tmax = 0.0
     tmin = 0.0
     dt = 0.0
@@ -250,8 +261,9 @@ def tse2nparray(ens):
     n = nseis
     sample_span = (tmax - tmin) / dt
     if not numpy.isfinite(sample_span):
-        raise MemoryError("ensemble time span overflows the plot sample grid")
+        raise RuntimeError("ensemble time span is not finite")
     m = int(sample_span + 1)
+    _validate_ensemble_matrix_rows(m)
     work = _allocate_plot_matrix(m, n)
     # The algorithm used here is horribly inefficient if there are large
     # differences in start and end times but this approach is safer
@@ -278,8 +290,8 @@ def seis2nparray(d):
     """
     tmin = d.t0
     dt = d.dt
-    _validate_plot_grid(d.npts, dt)
-    _checked_plot_allocation(3, d.npts, numpy.dtype(numpy.float64).itemsize)
+    if d.npts > 0:
+        _validate_plot_grid(d.npts, dt)
     work = numpy.array(d.data)
     return [tmin, dt, work]
 
@@ -296,8 +308,8 @@ def ts2nparray(d):
     """
     tmin = d.t0
     dt = d.dt
-    _validate_plot_grid(d.npts, dt)
-    _checked_plot_allocation(1, d.npts, numpy.dtype(numpy.float64).itemsize)
+    if d.npts > 0:
+        _validate_plot_grid(d.npts, dt)
     work = numpy.array(d.data)
     return [tmin, dt, work]
 
