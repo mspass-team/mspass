@@ -86,7 +86,7 @@ def test_constant_normalization_produces_only_finite_zero_offsets():
 @pytest.mark.parametrize("function", (graphics.wtva_raw, graphics.image_raw))
 @pytest.mark.parametrize("shape", ((0, 2), (2, 0)))
 def test_raw_plotters_reject_empty_input(function, shape):
-    with pytest.raises(ValueError, match="empty"):
+    with pytest.raises(IndexError, match="Nothing to plot|empty"):
         function(np.empty(shape), 1.0, 0.5)
 
 
@@ -101,9 +101,12 @@ def test_raw_plotters_reject_invalid_sample_intervals(function, dt):
     "converter,datum_type",
     ((graphics.ts2nparray, TimeSeries), (graphics.seis2nparray, Seismogram)),
 )
-def test_atomic_converters_reject_empty_input(converter, datum_type):
-    with pytest.raises(ValueError, match="empty"):
-        converter(datum_type())
+def test_atomic_converters_preserve_empty_array_result(converter, datum_type):
+    t0, dt, data = converter(datum_type())
+
+    assert np.asarray(data).size == 0
+    assert isinstance(t0, float)
+    assert isinstance(dt, float)
 
 
 @pytest.mark.parametrize(
@@ -120,7 +123,7 @@ def test_atomic_converters_reject_invalid_sample_intervals(converter, datum_type
 
 
 def test_ensemble_converter_rejects_empty_input():
-    with pytest.raises(ValueError, match="empty ensemble"):
+    with pytest.raises(IndexError, match="empty ensemble"):
         graphics.tse2nparray(TimeSeriesEnsemble())
 
 
@@ -138,7 +141,7 @@ def test_ensemble_converter_rejects_invalid_sample_intervals(dt):
 def test_plotter_atomic_paths_reject_empty_and_invalid_grids():
     plotter = graphics.SeismicPlotter()
 
-    with pytest.raises(ValueError, match="empty"):
+    with pytest.raises(IndexError, match="empty"):
         plotter._wtva(TimeSeries(), False)
     invalid = TimeSeries(2)
     invalid.dt = 0.0
@@ -146,21 +149,19 @@ def test_plotter_atomic_paths_reject_empty_and_invalid_grids():
         plotter._imageplot(invalid)
 
 
-def test_checked_allocation_allows_exact_limit_and_rejects_one_byte_more(
-    monkeypatch,
-):
+def test_checked_allocation_does_not_invent_a_512_mib_policy_limit(monkeypatch):
     zeros = Mock(return_value=object())
     monkeypatch.setattr(graphics.numpy, "zeros", zeros)
-    limit = graphics._MAX_PLOT_ARRAY_BYTES
+    one_byte_over_old_issue_limit = 536870913
 
-    result = graphics._allocate_plot_matrix(limit, 1, dtype=np.uint8)
+    result = graphics._allocate_plot_matrix(
+        one_byte_over_old_issue_limit, 1, dtype=np.uint8
+    )
 
     assert result is zeros.return_value
-    zeros.assert_called_once_with(shape=(limit, 1), dtype=np.dtype(np.uint8))
-    zeros.reset_mock()
-    with pytest.raises(MemoryError, match="512 MiB"):
-        graphics._allocate_plot_matrix(limit + 1, 1, dtype=np.uint8)
-    zeros.assert_not_called()
+    zeros.assert_called_once_with(
+        shape=(one_byte_over_old_issue_limit, 1), dtype=np.dtype(np.uint8)
+    )
 
 
 @pytest.mark.parametrize(
@@ -182,12 +183,14 @@ def test_checked_allocation_rejects_integer_multiplication_overflow(
     zeros.assert_not_called()
 
 
-def test_ensemble_conversion_rejects_oversized_matrix_before_allocation(
-    monkeypatch,
-):
+def test_ensemble_conversion_preserves_ten_million_row_sanity_limit(monkeypatch):
+    assert (
+        graphics._validate_ensemble_matrix_rows(graphics._MAX_ENSEMBLE_MATRIX_ROWS)
+        is None
+    )
     zeros = Mock()
     monkeypatch.setattr(graphics.numpy, "zeros", zeros)
-    rows = graphics._MAX_PLOT_ARRAY_BYTES // np.dtype(np.float64).itemsize + 1
+    rows = graphics._MAX_ENSEMBLE_MATRIX_ROWS + 1
     member = SimpleNamespace(
         npts=2,
         dt=1.0,
@@ -196,58 +199,47 @@ def test_ensemble_conversion_rejects_oversized_matrix_before_allocation(
     )
     ensemble = SimpleNamespace(member=[member])
 
-    with pytest.raises(MemoryError, match="512 MiB"):
+    with pytest.raises(RuntimeError, match="irrational computed time range"):
         graphics.tse2nparray(ensemble)
 
     zeros.assert_not_called()
 
 
-@pytest.mark.parametrize(
-    "converter,item_count",
-    (
-        (graphics.ts2nparray, 1),
-        (graphics.seis2nparray, 3),
-    ),
-)
-def test_atomic_conversion_rejects_oversized_array_before_allocation(
-    monkeypatch, converter, item_count
-):
-    array = Mock()
+@pytest.mark.parametrize("converter", (graphics.ts2nparray, graphics.seis2nparray))
+def test_atomic_conversion_has_no_new_policy_size_limit(monkeypatch, converter):
+    array = Mock(return_value=object())
     monkeypatch.setattr(graphics.numpy, "array", array)
-    npts = (
-        graphics._MAX_PLOT_ARRAY_BYTES // (item_count * np.dtype(np.float64).itemsize)
-        + 1
-    )
+    npts = 536870913
     datum = SimpleNamespace(t0=0.0, dt=1.0, npts=npts, data=object())
 
-    with pytest.raises(MemoryError, match="512 MiB"):
-        converter(datum)
+    _, _, result = converter(datum)
 
-    array.assert_not_called()
+    assert result is array.return_value
+    array.assert_called_once_with(datum.data)
 
 
-def test_atomic_image_rejects_oversized_matrix_before_allocation(monkeypatch):
+def test_atomic_image_rejects_platform_size_overflow_before_allocation(monkeypatch):
     zeros = Mock()
     monkeypatch.setattr(graphics.numpy, "zeros", zeros)
-    npts = graphics._MAX_PLOT_ARRAY_BYTES // np.dtype(np.float64).itemsize + 1
+    npts = np.iinfo(np.intp).max // np.dtype(np.float64).itemsize + 1
     datum = SimpleNamespace(t0=0.0, dt=1.0, npts=npts, data=object())
 
-    with pytest.raises(MemoryError, match="512 MiB"):
+    with pytest.raises(MemoryError, match="overflow"):
         graphics.SeismicPlotter()._imageplot_TimeSeries(datum)
 
     zeros.assert_not_called()
 
 
-def test_ensemble_image_rejects_oversized_matrix_before_allocation(monkeypatch):
+def test_ensemble_image_rejects_platform_size_overflow_before_allocation(monkeypatch):
     zeros = Mock()
     monkeypatch.setattr(graphics.numpy, "zeros", zeros)
-    columns = graphics._MAX_PLOT_ARRAY_BYTES // (2 * np.dtype(np.float64).itemsize) + 1
+    columns = np.iinfo(np.intp).max // (2 * np.dtype(np.float64).itemsize) + 1
     member = SimpleNamespace(dt=1.0 / (columns - 1))
     ensemble = SimpleNamespace(member=[member, member])
     plotter = graphics.SeismicPlotter()
     monkeypatch.setattr(plotter, "_get_ensemble_size", lambda _: (2, 0.0, 1.0))
 
-    with pytest.raises(MemoryError, match="512 MiB"):
+    with pytest.raises(MemoryError, match="overflow"):
         plotter._imageplot_TimeSeriesEnsemble(ensemble)
 
     zeros.assert_not_called()
