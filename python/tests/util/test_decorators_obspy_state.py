@@ -157,12 +157,9 @@ def _assert_core_state_is_coherent(data):
 
 @pytest.mark.parametrize("factory", [_make_timeseries, _make_seismogram])
 @pytest.mark.parametrize("relative", [False, True])
-@pytest.mark.parametrize("live", [False, True])
 @pytest.mark.parametrize("operation", ["detrend", "filter", "interpolate", "resample"])
-def test_atomic_obspy_copyback_preserves_time_and_life(
-    factory, relative, live, operation
-):
-    data = factory(relative=relative, live=live)
+def test_atomic_obspy_copyback_preserves_time_and_life(factory, relative, operation):
+    data = factory(relative=relative)
     original_state = _time_state(data)
     original_samples = np.array(data.data)
 
@@ -257,6 +254,45 @@ def _assert_ensemble_unchanged(ensemble, snapshot):
     assert len(ensemble.member) == len(snapshot["members"])
     for member, member_snapshot in zip(ensemble.member, snapshot["members"]):
         _assert_atomic_unchanged(member, member_snapshot)
+
+
+@pytest.mark.parametrize(
+    "wrapper,factory,is_ensemble",
+    [
+        (timeseries_as_trace, _make_timeseries, False),
+        (seismogram_as_stream, _make_seismogram, False),
+        (timeseries_ensemble_as_stream, _make_timeseries_ensemble, True),
+        (seismogram_ensemble_as_stream, _make_seismogram_ensemble, True),
+    ],
+)
+@pytest.mark.parametrize("as_keyword", [False, True], ids=["positional", "keyword"])
+def test_dead_atomic_and_all_dead_ensemble_short_circuit_without_calling_obspy(
+    wrapper, factory, is_ensemble, as_keyword
+):
+    if is_ensemble:
+        data = factory()
+        for member in data.member:
+            member.kill()
+        data.set_live()
+        snapshot = _ensemble_snapshot(data)
+    else:
+        data = factory(live=False)
+        snapshot = _atomic_snapshot(data)
+    calls = []
+
+    @wrapper
+    def operation(data):
+        calls.append(data)
+        raise AssertionError("dead input must not reach the wrapped callable")
+
+    result = operation(data=data) if as_keyword else operation(data)
+
+    assert result is None
+    assert calls == []
+    if is_ensemble:
+        _assert_ensemble_unchanged(data, snapshot)
+    else:
+        _assert_atomic_unchanged(data, snapshot)
 
 
 @timeseries_ensemble_as_stream

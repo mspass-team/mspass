@@ -892,6 +892,9 @@ def timeseries_as_trace(func, *args, **kwargs):
     :param kwargs: extra kv arguments
     :return: the output of func
     """
+
+    if is_input_dead(*args, **kwargs):
+        return
     converted_args = []
     converted_args_ids = []
     time_states = {}
@@ -1034,6 +1037,8 @@ def seismogram_as_stream(func, *args, **kwargs):
     :param kwargs: extra kv arguments
     :return: the output of func
     """
+    if is_input_dead(*args, **kwargs):
+        return
     converted_args = []
     converted_kwargs = {}
     converted_args_ids = []
@@ -1091,6 +1096,8 @@ def timeseries_ensemble_as_stream(func, *args, **kwargs):
     :param kwargs: extra kv arguments
     :return: the output of func
     """
+    if is_input_dead(*args, **kwargs):
+        return
     converted_args = []
     converted_kwargs = {}
     converted_args_ids = []
@@ -1151,6 +1158,8 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
     :param kwargs: extra kv arguments
     :return: the output of func
     """
+    if is_input_dead(*args, **kwargs):
+        return
     converted_args = []
     converted_kwargs = {}
     converted_args_ids = []
