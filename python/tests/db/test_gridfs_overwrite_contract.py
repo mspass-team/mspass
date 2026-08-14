@@ -10,8 +10,10 @@ import pytest
 from mspasspy.ccore.seismic import (
     DoubleVector,
     Seismogram,
+    SeismogramEnsemble,
     TimeReferenceType,
     TimeSeries,
+    TimeSeriesEnsemble,
 )
 from mspasspy.ccore.utility import AtomicType, ErrorSeverity, MsPASSError, dmatrix
 from mspasspy.db.client import DBClient
@@ -87,20 +89,37 @@ CASES = [
 ]
 
 
+def replace_samples(database, datum, entrypoint):
+    if entrypoint == "update_data":
+        return database.update_data(datum, mode="promiscuous")
+    return database.save_data(
+        datum,
+        mode="promiscuous",
+        storage_mode="gridfs",
+        overwrite=True,
+        save_history=False,
+        return_data=True,
+    )
+
+
 @pytest.mark.parametrize("factory,collection", CASES)
+@pytest.mark.parametrize("entrypoint", ["update_data", "save_data"])
 def test_successful_overwrite_commits_new_reference_before_removing_old_blob(
-    database, factory, collection
+    database, factory, collection, entrypoint
 ):
     datum = save_original(database, factory)
     old_gridfs_id = datum["gridfs_id"]
     replacement = factory([5.0, 6.0, 7.0, 8.0])
     datum.data = replacement.data
 
-    result = database.update_data(datum, mode="promiscuous")
+    result = replace_samples(database, datum, entrypoint)
 
     document = database[collection].find_one({"_id": datum["_id"]})
     new_gridfs_id = document["gridfs_id"]
     assert result is datum
+    assert database[collection].count_documents({}) == 1
+    if entrypoint == "save_data":
+        assert database["history_object"].count_documents({}) == 0
     assert new_gridfs_id == datum["gridfs_id"]
     assert new_gridfs_id != old_gridfs_id
     storage = gridfs.GridFS(database)
@@ -112,8 +131,9 @@ def test_successful_overwrite_commits_new_reference_before_removing_old_blob(
 
 
 @pytest.mark.parametrize("factory,collection", CASES)
+@pytest.mark.parametrize("entrypoint", ["update_data", "save_data"])
 def test_new_put_failure_preserves_old_reference_and_blob(
-    database, factory, collection
+    database, factory, collection, entrypoint
 ):
     datum = save_original(database, factory)
     old_gridfs_id = datum["gridfs_id"]
@@ -129,7 +149,7 @@ def test_new_put_failure_preserves_old_reference_and_blob(
 
     with patch.object(gridfs.GridFS, "put", put_then_fail):
         with pytest.raises(RuntimeError) as error:
-            database.update_data(datum, mode="promiscuous")
+            replace_samples(database, datum, entrypoint)
 
     assert error.value is failure
     assert datum["gridfs_id"] == old_gridfs_id
@@ -143,8 +163,9 @@ def test_new_put_failure_preserves_old_reference_and_blob(
 
 
 @pytest.mark.parametrize("factory,collection", CASES)
+@pytest.mark.parametrize("entrypoint", ["update_data", "save_data"])
 def test_reference_update_failure_removes_new_blob_and_rethrows_original_error(
-    database, factory, collection
+    database, factory, collection, entrypoint
 ):
     datum = save_original(database, factory)
     old_gridfs_id = datum["gridfs_id"]
@@ -162,7 +183,7 @@ def test_reference_update_failure_removes_new_blob_and_rethrows_original_error(
 
     with patch.object(Collection, "update_one", fail_reference_update):
         with pytest.raises(RuntimeError) as error:
-            database.update_data(datum, mode="promiscuous")
+            replace_samples(database, datum, entrypoint)
 
     assert error.value is failure
     assert datum["gridfs_id"] == old_gridfs_id
@@ -176,8 +197,9 @@ def test_reference_update_failure_removes_new_blob_and_rethrows_original_error(
 
 
 @pytest.mark.parametrize("factory,collection", CASES)
+@pytest.mark.parametrize("entrypoint", ["update_data", "save_data"])
 def test_reference_compare_miss_removes_new_blob_without_overwriting_current_reference(
-    database, factory, collection
+    database, factory, collection, entrypoint
 ):
     datum = save_original(database, factory)
     waveform_id = datum["_id"]
@@ -196,7 +218,7 @@ def test_reference_compare_miss_removes_new_blob_without_overwriting_current_ref
 
     with patch.object(Collection, "update_one", miss_reference_update):
         with pytest.raises(MsPASSError) as error:
-            database.update_data(datum, mode="promiscuous")
+            replace_samples(database, datum, entrypoint)
 
     assert error.value.severity == ErrorSeverity.Invalid
     assert final_queries == [{"_id": waveform_id, "gridfs_id": old_gridfs_id}]
@@ -208,8 +230,9 @@ def test_reference_compare_miss_removes_new_blob_without_overwriting_current_ref
 
 
 @pytest.mark.parametrize("factory,collection", CASES)
+@pytest.mark.parametrize("entrypoint", ["update_data", "save_data"])
 def test_old_delete_failure_keeps_committed_new_data_and_logs_one_complaint(
-    database, factory, collection
+    database, factory, collection, entrypoint
 ):
     datum = save_original(database, factory)
     old_gridfs_id = datum["gridfs_id"]
@@ -225,7 +248,7 @@ def test_old_delete_failure_keeps_committed_new_data_and_logs_one_complaint(
         return original_delete(self, gridfs_id, *args, **kwargs)
 
     with patch.object(gridfs.GridFS, "delete", fail_old_delete):
-        result = database.update_data(datum, mode="promiscuous")
+        result = replace_samples(database, datum, entrypoint)
 
     document = database[collection].find_one({"_id": datum["_id"]})
     new_gridfs_id = document["gridfs_id"]
@@ -244,3 +267,53 @@ def test_old_delete_failure_keeps_committed_new_data_and_logs_one_complaint(
     reread = database.read_data(document, collection=collection)
     assert reread.live
     np.testing.assert_allclose(samples(reread), samples(replacement))
+
+
+@pytest.mark.parametrize(
+    "factory,ensemble_type,collection",
+    [
+        (make_timeseries, TimeSeriesEnsemble, "wf_TimeSeries"),
+        (make_seismogram, SeismogramEnsemble, "wf_Seismogram"),
+    ],
+)
+def test_save_data_overwrite_updates_existing_ensemble_member_references(
+    database, factory, ensemble_type, collection
+):
+    ensemble = ensemble_type()
+    ensemble.member.append(factory([1.0, 2.0, 3.0, 4.0]))
+    ensemble.member.append(factory([11.0, 12.0, 13.0, 14.0]))
+    ensemble.set_live()
+    ensemble = database.save_data(
+        ensemble,
+        storage_mode="gridfs",
+        save_history=False,
+        return_data=True,
+    )
+    waveform_ids = [d["_id"] for d in ensemble.member]
+    old_gridfs_ids = [d["gridfs_id"] for d in ensemble.member]
+    replacements = [
+        factory([5.0, 6.0, 7.0, 8.0]),
+        factory([15.0, 16.0, 17.0, 18.0]),
+    ]
+    for datum, replacement in zip(ensemble.member, replacements):
+        datum.data = replacement.data
+
+    result = database.save_data(
+        ensemble,
+        mode="promiscuous",
+        storage_mode="gridfs",
+        overwrite=True,
+        save_history=False,
+        return_data=True,
+    )
+
+    ensemble = result
+    assert database[collection].count_documents({}) == 2
+    storage = gridfs.GridFS(database)
+    for index, datum in enumerate(ensemble.member):
+        assert datum["_id"] == waveform_ids[index]
+        assert datum["gridfs_id"] != old_gridfs_ids[index]
+        assert not storage.exists(old_gridfs_ids[index])
+        assert storage.exists(datum["gridfs_id"])
+        reread = database.read_data(waveform_ids[index], collection=collection)
+        np.testing.assert_allclose(samples(reread), samples(replacements[index]))
