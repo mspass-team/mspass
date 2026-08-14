@@ -1800,8 +1800,12 @@ def beam_coherence(d, beam, window=None) -> float:
     Compute time-domain coherence of a datum relative to the stack.
 
     Time domain coherence is a measure of misfit between a signal and a
-    a reference signal (normally a stack).   The formula is
-    1.0 - norm(residual)/norm(beam) where residual=d-beam.
+    reference signal (normally a stack).  On the physical overlap, let
+    ``bhat = beam / norm(beam)``, ``a = d dot bhat``, and
+    ``residual = d - a*bhat``.  This implementation returns
+    ``max(0, 1 - norm(residual)/norm(d))``.  Thus the measure compares the
+    residual after the best scalar projection on the beam with the energy in
+    the datum; it is not the unscaled ``d - beam`` residual.
 
     This function has an optional window parameter that computes the
     coherence with a specified time window.  By default the entire
@@ -1844,12 +1848,12 @@ def amplitude_relative_to_beam(d, beam, normalize_beam=True, window=None):
     Compute and return amplitude relative to the stack (beam).
 
     dbxcor computed a useful metric of amplitude relative to the beam
-    (stack) as `(d dot beam)/N` where "dot" means vector dot product with
-    between the sample vectbeam_coherence(d,beam,window=None,filter=True)ors of b and beam and N is vector size.   The formula
-    requires the beam to be normalized so its L2 norm is 1.  By default it assumes
-    that but that can be overriden with the normalize_beam argument.
-    Default assumes d and beam cover the same time span.  If they aren't
-    the minimum overlap of the two signals is used.
+    (stack) as ``(d dot beam)/N``, where ``dot`` is the vector dot product
+    over the physical sample overlap and ``N`` is the number of samples in
+    that overlap.  Relative-amplitude use normally requires a unit-L2 beam,
+    so by default this function normalizes the overlapping beam vector first.
+    That normalization can be disabled with ``normalize_beam=False`` when the
+    caller has already prepared the desired beam scaling.
 
     :param d:  datum for which the relative amplitude is to be computed.
     :type d:  `TimeSeries` assumed - will throw an exception if it isn't
@@ -1863,7 +1867,11 @@ def amplitude_relative_to_beam(d, beam, normalize_beam=True, window=None):
        if beam is already normalized.
     :type normalize_beam:  boolean
 
-    :return:  float value of amplitude.  A negative number indicates an error.
+    :return: float amplitude.  ``-1.0`` indicates dead input, no physical
+      overlap, or a zero-norm beam when normalization was requested.  A
+      zero-norm datum has the valid dot-product amplitude ``0.0``.  With
+      ``normalize_beam=False``, a zero-norm beam also yields ``0.0`` because
+      no division by its norm is required.
     """
     if d.dead() or beam.dead():
         return -1.0
@@ -1871,11 +1879,10 @@ def amplitude_relative_to_beam(d, beam, normalize_beam=True, window=None):
     if vectors is None:
         return -1.0
     d_vector, beam_vector = vectors
-    nrm_d = np.linalg.norm(d_vector)
-    nrm_beam = np.linalg.norm(beam_vector)
-    if nrm_d <= 0.0 or nrm_beam <= 0.0:
-        return -1.0
     if normalize_beam:
+        nrm_beam = np.linalg.norm(beam_vector)
+        if nrm_beam <= 0.0:
+            return -1.0
         beam_vector = beam_vector / nrm_beam
     return np.dot(d_vector, beam_vector) / float(len(d_vector))
 

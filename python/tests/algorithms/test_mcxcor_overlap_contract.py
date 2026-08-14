@@ -109,6 +109,22 @@ def test_aligned_metrics_use_the_full_inclusive_interval_without_mutation():
     _assert_unchanged(beam, beam_before)
 
 
+def test_coherence_uses_projected_residual_relative_to_datum_norm():
+    datum = _timeseries([1.0, 1.0])
+    beam = _timeseries([1.0, 0.0])
+
+    assert beam_coherence(datum, beam) == pytest.approx(1.0 - 1.0 / np.sqrt(2.0))
+
+
+def test_unnormalized_relative_amplitude_is_the_documented_dot_product():
+    datum = _timeseries([1.0, 2.0])
+    beam = _timeseries([3.0, 4.0])
+
+    assert amplitude_relative_to_beam(
+        datum, beam, normalize_beam=False
+    ) == pytest.approx(11.0 / 2.0)
+
+
 def test_integer_shifted_partial_overlap_uses_independent_indices_and_endpoints():
     datum = _timeseries([100.0, 1.0, 2.0, 3.0], t0=0.0)
     beam = _timeseries([1.0, 2.0, 3.0, 100.0], t0=1.0)
@@ -219,11 +235,14 @@ def test_no_overlap_returns_sentinels_and_incident_removal_identity():
 
 
 @pytest.mark.parametrize(
-    "datum_values,beam_values",
-    [([0.0, 0.0, 0.0], [1.0, 2.0, 3.0]), ([1.0, 2.0, 3.0], [0.0, 0.0, 0.0])],
+    "datum_values,beam_values,expected_amplitude",
+    [
+        ([0.0, 0.0, 0.0], [1.0, 2.0, 3.0], 0.0),
+        ([1.0, 2.0, 3.0], [0.0, 0.0, 0.0], -1.0),
+    ],
 )
-def test_zero_norm_overlap_returns_sentinels_and_does_not_mutate(
-    datum_values, beam_values
+def test_zero_norm_overlap_preserves_metric_semantics_and_does_not_mutate(
+    datum_values, beam_values, expected_amplitude
 ):
     datum = _timeseries(datum_values)
     beam = _timeseries(beam_values)
@@ -232,8 +251,29 @@ def test_zero_norm_overlap_returns_sentinels_and_does_not_mutate(
 
     assert beam_correlation(datum, beam) == 0.0
     assert beam_coherence(datum, beam) == 0.0
-    assert amplitude_relative_to_beam(datum, beam) == -1.0
+    assert amplitude_relative_to_beam(datum, beam) == expected_amplitude
     assert remove_incident_wavefield(datum, beam) is datum
+
+    _assert_unchanged(datum, datum_before)
+    _assert_unchanged(beam, beam_before)
+
+
+@pytest.mark.parametrize(
+    "datum_values,beam_values",
+    [
+        ([0.0, 0.0, 0.0], [1.0, 2.0, 3.0]),
+        ([1.0, 2.0, 3.0], [0.0, 0.0, 0.0]),
+    ],
+)
+def test_unnormalized_relative_amplitude_does_not_require_nonzero_norm(
+    datum_values, beam_values
+):
+    datum = _timeseries(datum_values)
+    beam = _timeseries(beam_values)
+    datum_before = _snapshot(datum)
+    beam_before = _snapshot(beam)
+
+    assert amplitude_relative_to_beam(datum, beam, normalize_beam=False) == 0.0
 
     _assert_unchanged(datum, datum_before)
     _assert_unchanged(beam, beam_before)
