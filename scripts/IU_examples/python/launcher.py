@@ -16,9 +16,6 @@ from distributed import Client
 from pymongo import MongoClient
 import yaml
 
-from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
-
-
 class BasicMsPASSLauncher(ABC):
     """
     Base class constructor loads common attribute from a yaml file.
@@ -341,13 +338,10 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
     def _startup_settings():
         try:
             timeout = float(os.environ.get("MSPASS_STARTUP_TIMEOUT_SECONDS", "120"))
-            poll_interval = float(
-                os.environ.get("MSPASS_STARTUP_POLL_SECONDS", "2")
-            )
+            poll_interval = float(os.environ.get("MSPASS_STARTUP_POLL_SECONDS", "2"))
         except ValueError as error:
-            raise MsPASSError(
-                "HPCClusterLauncher startup timeout and poll values must be numbers",
-                ErrorSeverity.Invalid,
+            raise ValueError(
+                "HPCClusterLauncher startup timeout and poll values must be numbers"
             ) from error
         if (
             not math.isfinite(timeout)
@@ -355,9 +349,8 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
             or not math.isfinite(poll_interval)
             or poll_interval <= 0.0
         ):
-            raise MsPASSError(
-                "HPCClusterLauncher startup timeout and poll values must be finite and positive",
-                ErrorSeverity.Invalid,
+            raise ValueError(
+                "HPCClusterLauncher startup timeout and poll values must be finite and positive"
             )
         return timeout, poll_interval
 
@@ -398,7 +391,7 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
             except Exception as error:
                 if first_error is None:
                     first_error = error
-            finally:
+            else:
                 setattr(self, attribute, None)
         if first_error is not None:
             raise first_error
@@ -408,7 +401,7 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
             self._cleanup_owned_processes()
         except Exception as cleanup_error:
             message += "; cleanup failed: {}".format(cleanup_error)
-        raise MsPASSError(message, ErrorSeverity.Invalid)
+        raise RuntimeError(message)
 
     def _require_running(self, name, process):
         if process is None:
@@ -487,7 +480,15 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         object as self attibutes called "self.scheduler_process",
         "self.dbserver_process", and "self.remote_worker_process".  
         If workers are run on theh primary there will also be a defined 
-        valued for "self.primary_worker_process".  
+        valued for "self.primary_worker_process".
+
+        :raises ValueError: if the startup timeout or polling configuration is
+          not a finite positive number.  Validation happens before any child
+          is started.
+        :raises RuntimeError: if an owned child exits early, services do not
+          become ready before the deadline, or failure cleanup itself fails.
+          An underlying process-creation exception is re-raised unchanged
+          after already-started owned children have been cleaned up.
         """
         # Validate these settings before starting any process.  Otherwise an
         # invalid value would leave the scheduler and database children alive.
@@ -536,17 +537,26 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
                 self._require_running("primary worker", self.primary_worker_process)
             if verbose:
                 print("Successfully launched MongoDB, scheduler, and workers")
-        except MsPASSError:
+        except RuntimeError:
             raise
         except Exception as error:
-            message = "HPCClusterLauncher launch failed: {}".format(error)
             try:
                 self._cleanup_owned_processes()
             except Exception as cleanup_error:
-                message += "; cleanup failed: {}".format(cleanup_error)
-            raise MsPASSError(message, ErrorSeverity.Invalid) from error
+                raise RuntimeError(
+                    "HPCClusterLauncher launch failed: {}; cleanup failed: {}".format(
+                        error, cleanup_error
+                    )
+                ) from error
+            raise
 
     def shutdown(self):
+        """Stop every owned child.
+
+        A process handle is cleared only after that process is stopped.  If a
+        stop fails, cleanup continues for the other children, the first error
+        is re-raised, and the failed handle remains available for a retry.
+        """
         self._cleanup_owned_processes()
 
     def run(self, pyscript):
