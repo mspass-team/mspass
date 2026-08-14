@@ -90,11 +90,28 @@ def regularize_ensemble(ens, regularizer=None):
     The purpose of this function is to set all member data to have the same start
     time.
     By default, the regularization is carried out by simply applying a time window
-    on each member.
+    on each live member.  The default window is the inclusive physical
+    intersection of the live member time ranges.  Consequently, an intersection
+    with equal start and end times contains one sample when all members share that
+    sample.  Dead members are not used to define the intersection and are returned
+    unchanged.
+
+    The windowed members must resolve to the same sampled time axis.  This is
+    checked after building all windowed copies and before replacing any ensemble
+    member, so a disjoint interval or incompatible sample grids leave the input
+    ensemble unchanged.  A user-supplied ``regularizer`` retains control of member
+    selection and replacement and is called with every member as in the original
+    API.
+
+    :param ens: input TimeSeriesEnsemble or SeismogramEnsemble.  The object is
+      modified in place and returned.
     :param regularizer: A function object defined by user that regularize all data
     members in the ensemble, it should take only one argument (a timeseries/seismogram)
     and return the regularized object.
     :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]
+    :raises TypeError: if ``ens`` is not an MsPASS ensemble object.
+    :raises ValueError: when live members have no common physical sample or the
+      common window resolves to incompatible sample grids.
     """
     if not isOldEnsembleObject(ens):
         raise TypeError("Can't resample the object, not an old ensemble object")
@@ -104,12 +121,26 @@ def regularize_ensemble(ens, regularizer=None):
         for i in range(nmembers):
             ens.member[i] = regularizer(ens.member[i])
     else:
-        starttime = max(ens.member[i].t0 for i in range(nmembers))
-        endtime = min(ens.member[i].endtime() for i in range(nmembers))
-        if endtime <= starttime:
+        live_indexes = [i for i in range(nmembers) if ens.member[i].live]
+        if not live_indexes:
+            return ens
+        starttime = max(ens.member[i].t0 for i in live_indexes)
+        endtime = min(ens.member[i].endtime() for i in live_indexes)
+        if endtime < starttime:
             raise ValueError("ensemble members do not have a common time interval")
-        for i in range(nmembers):
-            ens.member[i] = WindowData(ens.member[i], starttime, endtime)
+        regularized_members = [
+            WindowData(ens.member[i], starttime, endtime) for i in live_indexes
+        ]
+        reference = regularized_members[0]
+        if any(
+            member.t0 != reference.t0
+            or member.dt != reference.dt
+            or member.npts != reference.npts
+            for member in regularized_members[1:]
+        ):
+            raise ValueError("ensemble members do not share a common sample grid")
+        for i, member in zip(live_indexes, regularized_members):
+            ens.member[i] = member
     return ens
 
 

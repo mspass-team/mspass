@@ -128,21 +128,78 @@ def test_regularize_ensemble_uses_the_inclusive_common_intersection():
     np.testing.assert_array_equal(result.member[1].data, [100.0, 101.0, 102.0, 103.0])
 
 
-@pytest.mark.parametrize(
-    "specifications",
-    [
-        [(0.0, 3, 1.0, 0.0), (3.0, 3, 1.0, 100.0)],
-        [(0.0, 3, 1.0, 0.0), (2.0, 3, 1.0, 100.0)],
-    ],
-    ids=["disjoint", "touching"],
-)
-def test_regularize_ensemble_rejects_empty_intersection_before_mutation(
-    specifications,
-):
-    ensemble = _ensemble(specifications)
+def test_regularize_ensemble_rejects_disjoint_intersection_before_mutation():
+    ensemble = _ensemble([(0.0, 3, 1.0, 0.0), (3.0, 3, 1.0, 100.0)])
     before = _ensemble_snapshot(ensemble)
 
     with pytest.raises(ValueError, match="common time interval"):
+        regularize_ensemble(ensemble)
+
+    _assert_ensemble_matches_snapshot(ensemble, before)
+
+
+def test_regularize_ensemble_preserves_a_shared_endpoint_sample():
+    ensemble = _ensemble([(0.0, 3, 1.0, 0.0), (2.0, 3, 1.0, 100.0)])
+
+    result = regularize_ensemble(ensemble)
+
+    assert result is ensemble
+    assert [(member.t0, member.endtime(), member.npts) for member in result.member] == [
+        (2.0, 2.0, 1),
+        (2.0, 2.0, 1),
+    ]
+    np.testing.assert_array_equal(result.member[0].data, [2.0])
+    np.testing.assert_array_equal(result.member[1].data, [100.0])
+
+
+def test_regularize_ensemble_ignores_and_preserves_dead_member_spans():
+    ensemble = _ensemble(
+        [
+            (0.0, 6, 1.0, 0.0),
+            (2.0, 6, 1.0, 100.0),
+            (1000.0, 1, 10.0, 999.0),
+        ]
+    )
+    ensemble.member[2].kill()
+    dead_before = _ensemble_snapshot(ensemble)["members"][2]
+
+    result = regularize_ensemble(ensemble)
+
+    assert [
+        (member.t0, member.endtime(), member.npts) for member in result.member[:2]
+    ] == [
+        (2.0, 5.0, 4),
+        (2.0, 5.0, 4),
+    ]
+    dead = result.member[2]
+    assert dict(dead) == dead_before["metadata"]
+    assert dead.live == dead_before["live"]
+    assert dead.t0 == dead_before["t0"]
+    assert dead.dt == dead_before["dt"]
+    assert dead.npts == dead_before["npts"]
+    np.testing.assert_array_equal(dead.data, dead_before["data"])
+    assert [
+        (error.algorithm, error.message, error.badness)
+        for error in dead.elog.get_error_log()
+    ] == dead_before["elog"]
+
+
+def test_regularize_ensemble_with_no_live_members_is_an_exact_noop():
+    ensemble = _ensemble([(0.0, 3, 1.0, 0.0), (10.0, 2, 2.0, 100.0)])
+    for member in ensemble.member:
+        member.kill()
+    before = _ensemble_snapshot(ensemble)
+
+    assert regularize_ensemble(ensemble) is ensemble
+
+    _assert_ensemble_matches_snapshot(ensemble, before)
+
+
+def test_regularize_ensemble_rejects_incompatible_sample_grids_atomically():
+    ensemble = _ensemble([(0.0, 6, 1.0, 0.0), (0.25, 6, 1.0, 100.0)])
+    before = _ensemble_snapshot(ensemble)
+
+    with pytest.raises(ValueError, match="common sample grid"):
         regularize_ensemble(ensemble)
 
     _assert_ensemble_matches_snapshot(ensemble, before)
