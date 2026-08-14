@@ -106,8 +106,8 @@ def regularize_ensemble(ens, regularizer=None):
     :param ens: input TimeSeriesEnsemble or SeismogramEnsemble.  The object is
       modified in place and returned.
     :param regularizer: A function object defined by user that regularize all data
-    members in the ensemble, it should take only one argument (a timeseries/seismogram)
-    and return the regularized object.
+      members in the ensemble, it should take only one argument (a
+      timeseries/seismogram) and return the regularized object.
     :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]
     :raises TypeError: if ``ens`` is not an MsPASS ensemble object.
     :raises ValueError: when live members have no common physical sample or the
