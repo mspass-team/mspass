@@ -5780,13 +5780,21 @@ class Database(pymongo.database.Database):
         search though the list of docs returned for a match to
         loc being conscious of the null string oddity.
 
-        The (optional) time arg is used for a range match to find
-        period between the site startime and endtime.  If not used
-        the first occurence will be returned (usually ill adivsed)
+        The (optional) time arg is used for a range match to find the
+        period between the channel start time and end time.  If it is
+        omitted, the first occurrence may be returned (usually ill advised).
         Returns None if there is no match.  Although the time argument
-        is technically option it usually a bad idea to not include
-        a time stamp because most stations saved as seed data have
-        time variable channel metadata.
+        is technically optional, it is usually a bad idea to omit it because
+        most stations saved as SEED data have time-variable channel metadata.
+
+        An explicit ``loc`` makes the four SEED codes an exact selector.  If
+        more than one document still matches that selector, the channel
+        collection contains ambiguous duplicate metadata and this method
+        raises :class:`MsPASSError` with ``Invalid`` severity.  When ``loc``
+        is omitted, the legacy null/empty-location recovery described above
+        remains in effect; depending on whether ``time`` was supplied, that
+        path either returns the first documented recovery match or reports
+        the existing ambiguity error.
 
         Note this method may be DEPRICATED in the future as it has been
         largely superceded by BasicMatcher implementations in the
@@ -5802,8 +5810,12 @@ class Database(pymongo.database.Database):
            print warning message when the match is ambiguous - multiple
            docs match the specified keys.  The default is False.
 
-        :return: handle to query return
-        :rtype:  MondoDB Cursor object of query result.
+        :return: matching MongoDB channel document, or ``None`` when there is
+          no match.
+        :rtype: dict or None
+        :raises MsPASSError: if an explicit location query has multiple
+          matches, or if the legacy null-location recovery cannot select a
+          unique document without a time constraint.
         """
         dbchannel = self.channel
         query = {}
