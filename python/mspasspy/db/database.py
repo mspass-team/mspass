@@ -3204,9 +3204,11 @@ class Database(pymongo.database.Database):
                 if "storage_mode" in mspass_object
                 else None
             )
-            file_to_gridfs_transition = (
-                original_storage_mode == "file" and "gridfs_id" not in mspass_object
+            original_has_gridfs_id = "gridfs_id" in mspass_object
+            original_gridfs_id = (
+                mspass_object["gridfs_id"] if original_has_gridfs_id else None
             )
+            file_to_gridfs_transition = original_storage_mode == "file"
             if "storage_mode" in mspass_object:
                 storage_mode = mspass_object["storage_mode"]
                 if not storage_mode == "gridfs":
@@ -3228,10 +3230,16 @@ class Database(pymongo.database.Database):
                 )
                 mspass_object["storage_mode"] = "gridfs"
                 update_record["storage_mode"] = "gridfs"
-            # This logic overwrites the content if the magic key
-            # "gridfs_id" exists in the input. In both cases gridfs_id is set
-            # in returned
-            if "gridfs_id" in mspass_object:
+            # A file-backed datum always stages a new GridFS object.  This is
+            # also required when an earlier failed migration left a stale
+            # gridfs_id beside the authoritative storage_mode="file" value.
+            # Data already stored in GridFS retain the existing overwrite
+            # behavior.  In all cases the returned object has a gridfs_id.
+            if file_to_gridfs_transition:
+                mspass_object = self._save_sample_data_to_gridfs(
+                    mspass_object, overwrite=False
+                )
+            elif "gridfs_id" in mspass_object:
                 mspass_object = self._save_sample_data_to_gridfs(
                     mspass_object,
                     overwrite=True,
@@ -3302,7 +3310,10 @@ class Database(pymongo.database.Database):
                         if gfsh.exists(new_gridfs_id):
                             gfsh.delete(new_gridfs_id)
                     finally:
-                        mspass_object.erase("gridfs_id")
+                        if original_has_gridfs_id:
+                            mspass_object["gridfs_id"] = original_gridfs_id
+                        else:
+                            mspass_object.erase("gridfs_id")
                         mspass_object["storage_mode"] = original_storage_mode
                 raise
             # we may probably set the elog_id field in the mspass_object
