@@ -5836,16 +5836,16 @@ class Database(pymongo.database.Database):
         function is controlled by the input parameter
         segment_time_tears.  When true a new index entry is created
         any time the start time of a packet differs from that computed
-        from the endtime of the last packet by more than one sample
+        from the endtime of the last packet by more than one-half of the
+        previous sample interval
         AND net:sta:chan:loc are constant.  The default for this
-        parameter is false because data with many dropped packets from
-        telemetry are common and can create overwhelming numbers of
-        index entries quickly.  When false the scan only creates a new
-        index record when net, sta, chan, or loc change between successive
-        packets.  Our reader has gap handling functions to handle
-        time tears.  Set segment_time_tears true only when you are
-        confident the data set does not contain a large number of dropped
-        packets.
+        parameter is true.  When false, time-tag discontinuities alone are
+        ignored, but the scan still creates a new index record when net,
+        sta, chan, loc, or sampling rate changes, or when libmseed skips
+        non-record bytes between independently readable packets.  The reader
+        can handle ordinary time gaps when the caller chooses not to segment
+        them; skipped non-record bytes are never included in either adjacent
+        segment's byte range.
 
         Note to parallelize this function put a list of files in a Spark
         RDD or a Dask bag and parallelize the call the this function.

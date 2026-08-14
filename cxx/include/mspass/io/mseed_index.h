@@ -97,6 +97,9 @@ of interest only if something breaks.
   detects a time tear it is logged in the returned error log as an informational
   log message.   If false only reading errors for things like garbled miniseed
   packets are logged.
+  Non-record bytes skipped by libmseed always terminate the preceding index
+  segment and are logged as a Complaint; independently readable records after
+  the skipped bytes remain available as a new segment.
 \return std::pair whose first element contains a vector of objects
   called mseed_index that contain the basic information defining an index for
   inputfile.  See class description of mseed_index for more details. "second"
