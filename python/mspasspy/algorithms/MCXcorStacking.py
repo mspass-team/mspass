@@ -1010,14 +1010,14 @@ def _dbxcor_stacker(
     for i in range(maxiterations):
         # this requires stack0 not be altered in this function
         wts = dbxcor_weights(ensemble, stack0, residual_norm_floor=residual_norm_floor)
-        # this is just a fast way to initialize to zeros
+        # newstack = np.zeros(N)
+        # this is just a fast way to initalize to 0s
         stack.set_npts(N)
         sumwts = 0.0
         for j in range(M):
             if ensemble.member[j].live and wts[j] > 0.0:
                 d = TimeSeries(ensemble.member[j])
                 d *= wts[j]
-                _snap_start_time_to_grid(d, stack)
                 stack += d
                 sumwts += wts[j]
         if sumwts > 0.0:
@@ -1031,9 +1031,7 @@ def _dbxcor_stacker(
         # order may matter here.  In this case delta becomes a numpy
         # array which is cleaner in this context
         # delta = newstack - stack.data
-        aligned_stack0 = TimeSeries(stack0)
-        _snap_start_time_to_grid(aligned_stack0, stack)
-        delta = stack - aligned_stack0
+        delta = stack - stack0
         relative_delta = np.linalg.norm(delta.data) / np.linalg.norm(stack0.data)
         # normalize by sample size or there is a window length dependency
         relative_delta /= N
@@ -1119,20 +1117,15 @@ def beam_align(ensemble, beam, window=None, time_shift_limit=10.0):
             timelag = _xcor_shift(d, beam)
             # apply a ceiling/floor to allowed time shift via
             # the time_shift_limit arg
-            lag_was_limited = False
             if timelag > time_shift_limit:
                 timelag = time_shift_limit
-                lag_was_limited = True
             elif timelag < (-time_shift_limit):
                 timelag = -time_shift_limit
-                lag_was_limited = True
             # We MUST use this method instead of dithering t0 to keep
             # absolute time right.  This will fail if the inputs were
             # not shifted from UTC times
             # also note a +lag requires a - shift
             ensemble.member[i].shift(timelag)
-            if not lag_was_limited:
-                _snap_start_time_to_grid(ensemble.member[i], beam)
     return ensemble
 
 
@@ -1607,9 +1600,7 @@ def align_and_stack(
             timespan_method="ensemble_median",
             stack_md=Metadata(rbeam0),
         )
-        aligned_rbeam0 = TimeSeries(rbeam0)
-        _snap_start_time_to_grid(aligned_rbeam0, rbeam)
-        delta_rbeam = rbeam - aligned_rbeam0
+        delta_rbeam = rbeam - rbeam0
         nrm_delta = np.linalg.norm(delta_rbeam.data)
         if nrm_rbeam == 0.0:
             if nrm_delta == 0.0:
@@ -1654,10 +1645,6 @@ def align_and_stack(
                 # this method alters the t0 values of the ensemble members
                 # when used plots will tend to be aligned with 0 relative time
                 ensemble.member[i].shift(tshift_mean)
-    output_reference = next(d for d in ensemble.member if d.live)
-    for datum in ensemble.member:
-        if datum.live:
-            _snap_start_time_to_grid(datum, output_reference, tolerance=1.0e-6)
     for i in range(len(ensemble.member)):
         if ensemble.member[i].live:
             # in this context it0_key should always be defined
@@ -1667,14 +1654,24 @@ def align_and_stack(
             tshift = ensemble.member[i].t0 - initial_starttime
             ensemble.member[i].put_double(time_shift_key, tshift)
     if output_stack_window:
-        requested_output_window = TimeWindow(output_stack_window)
+        # this will clone the beam trace metadata automatically
+        # using pad option assures t0 will be output_stack_window.start
+        # and npts is consistent with window requested
+        output_stack = WindowData(
+            beam,
+            output_stack_window.start,
+            output_stack_window.end,
+            short_segment_handling="pad",
+        )
+        # this is an obscure but fast way to initialize the data vector to all 0s
+        output_stack.set_npts(output_stack.npts)
     else:
-        requested_output_window = ensemble_time_range(ensemble, metric="median")
-    output_start_index = output_reference.sample_number(requested_output_window.start)
-    output_end_index = output_reference.sample_number(requested_output_window.end)
-    output_stack = TimeSeries(beam)
-    output_stack.set_t0(output_reference.time(output_start_index))
-    output_stack.set_npts(output_end_index - output_start_index + 1)
+        # also clones beam metadata but in this case we get the size from the ensemble time span
+        output_stack = TimeSeries(beam)
+        output_stack_window = TimeWindow(ensemble_timespan)
+        output_stack.set_t0(output_stack_window.start)
+        npts = int((output_stack_window.end - output_stack_window.start) / beam.dt) + 1
+        output_stack.set_npts(npts)
     if robust_stack_method == "dbxcor":
         # We need to post the final weights to all live members
         wts = dbxcor_weights(rens, rbeam, residual_norm_floor=residual_norm_floor)
@@ -2455,20 +2452,6 @@ def _xcor_shift(ts, beam):
     return lagtime
 
 
-def _snap_start_time_to_grid(datum, reference, tolerance=None):
-    """Snap ``datum.t0`` to ``reference`` without changing any samples.
-
-    With ``tolerance`` omitted this applies the explicit nearest-sample
-    indexing used by the stacking operations.  A tolerance limits the snap to
-    floating-point residue on an already common grid, so a deliberately
-    clipped cross-correlation shift remains visible to later iterations.
-    """
-    sample_number = reference.sample_number(datum.t0)
-    grid_time = reference.time(sample_number)
-    if tolerance is None or abs((datum.t0 - grid_time) / reference.dt) <= tolerance:
-        datum.t0 = grid_time
-
-
 def _update_xcor_beam(xcorens, beam0, robust_stack_method, wts) -> TimeSeries:
     """
     Internal method used to update the beam signal used for cross correlation
@@ -2520,11 +2503,13 @@ def _update_xcor_beam(xcorens, beam0, robust_stack_method, wts) -> TimeSeries:
                     xcorens.member[i], stime, etime, short_segment_handling="pad"
                 )
                 d *= wt
-                _snap_start_time_to_grid(d, beam)
+                # TimeSeries::operator+= handles time correctly so indexing is not needed here
                 beam += d
                 sumwt += wt
         if sumwt > 0.0:
-            beam *= 1.0 / sumwt
+            # TimeSeries does not have operator /= defined but it does have *= defined
+            scale = 1.0 / sumwt
+            beam *= scale
         else:
             beam.elog.log_error(
                 "_update_xcor_beam",
