@@ -590,7 +590,25 @@ class Client:
 
     def set_scheduler(self, scheduler, scheduler_host, scheduler_port=None):
         """
-        Set a scheduler by scheduler type, scheduler_host(and scheduler_port)
+        Replace the scheduler used by this client.
+
+        The replacement scheduler is constructed and validated before any
+        scheduler state in this object is changed.  Consequently, a failure to
+        construct or validate the replacement leaves the current scheduler and
+        its ownership unchanged.  After a successful commit, a displaced Dask
+        client or Spark context is closed only when it was created by this
+        :class:`Client`; a Dask client supplied by the caller is never closed.
+
+        Cleanup of an owned, displaced scheduler happens after the replacement
+        is committed.  If its ``close`` or ``stop`` method raises, that exception
+        is propagated and the replacement remains the active scheduler.  This
+        distinction lets callers determine the active state with
+        :meth:`get_scheduler` without mistaking a cleanup failure for a failed
+        connection.
+
+        Requesting the currently active Spark master is an idempotent no-op.
+        Switching an active Spark context to another master is rejected because
+        ``SparkSession.getOrCreate`` cannot guarantee that transition.
 
         :param scheduler: the scheduler type, should be either dask or spark
         :type scheduler: :class:`str`
@@ -598,6 +616,13 @@ class Client:
         :type scheduler_host: :class:`str`
         :param scheduler_port: the port of scheduler
         :type scheduler_port: :class:`str`
+
+        :raises MsPASSError: if arguments are invalid, an optional scheduler
+            dependency is unavailable, the replacement cannot be constructed or
+            validated, or an active Spark master switch is requested.
+        :raises Exception: propagates an exception raised while closing or
+            stopping a displaced Client-owned scheduler after the replacement
+            has been committed.
         """
         if scheduler != "dask" and scheduler != "spark":
             raise MsPASSError(

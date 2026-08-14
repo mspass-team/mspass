@@ -409,6 +409,52 @@ def test_spark_to_dask_commits_before_owned_cleanup(
         assert state_seen_during_stop == []
 
 
+def test_dask_cleanup_failure_propagates_after_replacement_is_committed(
+    fake_schedulers,
+):
+    client, old_dask = _new_dask_client_state(owned=True)
+    cleanup_error = RuntimeError("old dask cleanup failed")
+
+    def fail_close():
+        raise cleanup_error
+
+    old_dask.on_close = fail_close
+
+    with pytest.raises(RuntimeError) as caught:
+        client.set_scheduler("dask", "tcp://new-dask:9000")
+
+    assert caught.value is cleanup_error
+    assert client._scheduler == "dask"
+    assert client._dask_client is not old_dask
+    assert client._dask_client.address == "tcp://new-dask:9000"
+    assert client._dask_client_address == "tcp://new-dask:9000"
+    assert client._dask_client_owned is True
+    assert old_dask.close_calls == 1
+
+
+def test_spark_cleanup_failure_propagates_after_replacement_is_committed(
+    fake_schedulers,
+):
+    client, old_spark = _new_spark_client_state(owned=True)
+    cleanup_error = RuntimeError("old spark cleanup failed")
+
+    def fail_stop():
+        raise cleanup_error
+
+    old_spark.on_stop = fail_stop
+
+    with pytest.raises(RuntimeError) as caught:
+        client.set_scheduler("dask", "tcp://new-dask:9000")
+
+    assert caught.value is cleanup_error
+    assert client._scheduler == "dask"
+    assert client._dask_client.address == "tcp://new-dask:9000"
+    assert client._dask_client_address == "tcp://new-dask:9000"
+    assert client._dask_client_owned is True
+    assert not hasattr(client, "_spark_context")
+    assert old_spark.stop_calls == 1
+
+
 def test_same_spark_master_is_no_op(monkeypatch, fake_schedulers):
     client, old_spark = _new_spark_client_state()
     builder = FakeSparkBuilder(failure=AssertionError("builder must not be called"))
