@@ -1401,8 +1401,10 @@ class LargeEnsemblePlotter(SeismicPlotter):
         :type ens:  Must be either a TimeSeriesEnsemble of SeismogramEnsemle
            or the method will throw a TypeError exception.
         :param skip_the_dead:  Boolean controllng how dead data are
-           handled.  Retained for call compatibility; dead members are always
-           excluded from frame membership.
+           handed.  When True (default) dead data will be silently skippped.
+           When False dead members retain an empty plot cell in their original
+           ensemble position.  Dead members are never used to select the time
+           span or sample interval.
 
         """
         alg = "LargeEnsemblePlotter.plot"
@@ -1422,6 +1424,7 @@ class LargeEnsemblePlotter(SeismicPlotter):
         if not live_members:
             print(alg + " ensemble has no live members - nothing to plot")
             return None
+        members_to_plot = live_members if skip_the_dead else ens.member
 
         ensemble_type = (
             TimeSeriesEnsemble
@@ -1430,7 +1433,7 @@ class LargeEnsemblePlotter(SeismicPlotter):
         )
         e2plot = ensemble_type()
         frame_number = 0
-        for member in live_members:
+        for member in members_to_plot:
             e2plot.member.append(member)
             if len(e2plot.member) == self.members_per_frame:
                 e2plot.set_live()

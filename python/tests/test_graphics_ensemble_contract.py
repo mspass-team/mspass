@@ -53,6 +53,7 @@ def _ensemble(member_type, members, *, live=True):
 
 
 @pytest.mark.parametrize("member_type", (TimeSeries, Seismogram))
+@pytest.mark.parametrize("skip_the_dead", (True, False), ids=("skip", "keep-cells"))
 @pytest.mark.parametrize(
     "count,members_per_frame,expected_sizes",
     (
@@ -64,15 +65,20 @@ def _ensemble(member_type, members, *, live=True):
     ),
 )
 def test_large_ensemble_frames_every_live_member_once(
-    monkeypatch, member_type, count, members_per_frame, expected_sizes
+    monkeypatch,
+    member_type,
+    skip_the_dead,
+    count,
+    members_per_frame,
+    expected_sizes,
 ):
     members = []
-    expected_ids = []
+    live_ids = []
     for value in range(count):
         members.append(
             _timeseries(value) if member_type is TimeSeries else _seismogram(value)
         )
-        expected_ids.append(value)
+        live_ids.append(value)
         if value % 2 == 0:
             members.append(
                 _timeseries(100 + value, dt=np.nan, live=False)
@@ -95,8 +101,16 @@ def test_large_ensemble_frames_every_live_member_once(
     monkeypatch.setattr(graphics.plt, "show", show)
     monkeypatch.setattr(plotter, "_clear_figure_canvases", clear)
 
-    assert plotter.plot(ensemble, skip_the_dead=False) is None
+    assert plotter.plot(ensemble, skip_the_dead=skip_the_dead) is None
 
+    expected_ids = (
+        live_ids if skip_the_dead else [member["member_id"] for member in members]
+    )
+    if not skip_the_dead:
+        expected_sizes = tuple(
+            min(members_per_frame, len(expected_ids) - offset)
+            for offset in range(0, len(expected_ids), members_per_frame)
+        )
     assert tuple(map(len, plotted)) == expected_sizes
     assert [member_id for frame in plotted for member_id in frame] == expected_ids
     assert show.call_count == len(expected_sizes)
