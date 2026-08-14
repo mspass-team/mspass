@@ -7,8 +7,8 @@ import mspasspy.graphics as graphics
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 
 EXPECTED_STYLES = ("wt", "wtva", "img", "wtvaimg")
-INVALID_STYLES = (None, 1, ["wt"], np.array(["wt", "img"]), "unknown")
-INVALID_STYLE_IDS = ("none", "integer", "list", "ndarray", "unknown")
+NON_STRING_STYLES = (None, 1, ["wt"], np.array(["wt", "img"]))
+NON_STRING_STYLE_IDS = ("none", "integer", "list", "ndarray")
 
 
 def _timeseries():
@@ -106,7 +106,9 @@ def test_ensemble_color_limits_are_defined_and_forwarded(
     assert np.asarray(call.args[0]).shape == (1, 2)
 
 
-@pytest.mark.parametrize("style", INVALID_STYLES, ids=INVALID_STYLE_IDS)
+@pytest.mark.parametrize(
+    "style", (*NON_STRING_STYLES, "unknown"), ids=(*NON_STRING_STYLE_IDS, "unknown")
+)
 def test_seismicplotter_constructor_rejects_every_invalid_style(style):
     with pytest.raises(TypeError) as error:
         graphics.SeismicPlotter(style=style)
@@ -118,12 +120,29 @@ def test_seismicplotter_constructor_rejects_every_invalid_style(style):
 @pytest.mark.parametrize(
     "plotter_type", (graphics.SectionPlotter, graphics.SeismicPlotter)
 )
-@pytest.mark.parametrize("style", INVALID_STYLES, ids=INVALID_STYLE_IDS)
-def test_change_style_rejects_every_invalid_style(plotter_type, style):
+@pytest.mark.parametrize("style", NON_STRING_STYLES, ids=NON_STRING_STYLE_IDS)
+def test_change_style_rejects_non_string_style(plotter_type, style):
     plotter = plotter_type()
+    original_style = plotter.style
 
     with pytest.raises(TypeError) as error:
         plotter.change_style(style)
 
     for accepted in EXPECTED_STYLES:
         assert accepted in str(error.value)
+    assert plotter.style == original_style
+
+
+@pytest.mark.parametrize(
+    "plotter_type", (graphics.SectionPlotter, graphics.SeismicPlotter)
+)
+def test_change_style_preserves_unknown_string_runtime_error(plotter_type):
+    plotter = plotter_type()
+    original_style = plotter.style
+
+    with pytest.raises(RuntimeError) as error:
+        plotter.change_style("unknown")
+
+    for accepted in EXPECTED_STYLES:
+        assert accepted in str(error.value)
+    assert plotter.style == original_style

@@ -19,12 +19,13 @@ from mspasspy.algorithms.window import scale as mspass_scale_function
 _VALID_PLOT_STYLES = ("wt", "wtva", "img", "wtvaimg")
 
 
-def _validate_plot_style(caller, style):
-    if not isinstance(style, str) or style not in _VALID_PLOT_STYLES:
-        accepted = ", ".join(_VALID_PLOT_STYLES)
-        raise TypeError(
-            f"{caller}: style {style!r} is invalid; expected one of {accepted}"
-        )
+def _validate_plot_style(caller, style, invalid_string_error=TypeError):
+    accepted = ", ".join(_VALID_PLOT_STYLES)
+    message = f"{caller}: style {style!r} is invalid; expected one of {accepted}"
+    if not isinstance(style, str):
+        raise TypeError(message)
+    if style not in _VALID_PLOT_STYLES:
+        raise invalid_string_error(message)
 
 
 def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False):
@@ -524,8 +525,15 @@ class SectionPlotter:
             black line (that feature is currently frozen).   color_map and
             fill_color are ignored for this style so no exceptions should
             occur when the method is called with this value of newstyle.
+
+        A non-string value for ``newstyle`` raises ``TypeError``.  An unknown
+        string raises ``RuntimeError``, preserving the established
+        ``change_style`` error contract.  Both messages list the four valid
+        style names.
         """
-        _validate_plot_style("SectionPlotter.change_style", newstyle)
+        _validate_plot_style(
+            "SectionPlotter.change_style", newstyle, invalid_string_error=RuntimeError
+        )
         if newstyle == "wtva":
             if fill_color == None:
                 raise RuntimeError(
@@ -839,8 +847,15 @@ class SeismicPlotter(BasicSeismicPlotter):
             black line (that feature is currently frozen).   color_map and
             fill_color are ignored for this style so no exceptions should
             occur when the method is called with this value of newstyle.
+
+        A non-string value for ``newstyle`` raises ``TypeError``.  An unknown
+        string raises ``RuntimeError``, preserving the established
+        ``change_style`` error contract.  Both messages list the four valid
+        style names.
         """
-        _validate_plot_style("SeismicPlotter.change_style", newstyle)
+        _validate_plot_style(
+            "SeismicPlotter.change_style", newstyle, invalid_string_error=RuntimeError
+        )
         if newstyle == "wtva":
             if fill_color == None:
                 raise RuntimeError(
