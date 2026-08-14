@@ -397,6 +397,59 @@ def test_default_startup_timeout_is_120_seconds(tmp_path):
     _assert_children_reaped(events)
 
 
+@pytest.mark.parametrize(
+    "variable,value,diagnostic",
+    (
+        (
+            "MSPASS_STARTUP_TIMEOUT_SECONDS",
+            "0",
+            "must be a positive integer",
+        ),
+        (
+            "MSPASS_STARTUP_TIMEOUT_SECONDS",
+            "1.5",
+            "must be a positive integer",
+        ),
+        (
+            "MSPASS_STARTUP_TIMEOUT_SECONDS",
+            "invalid",
+            "must be a positive integer",
+        ),
+        (
+            "MSPASS_STARTUP_POLL_SECONDS",
+            "0",
+            "must be a positive number",
+        ),
+        (
+            "MSPASS_STARTUP_POLL_SECONDS",
+            "-0.5",
+            "must be a positive number",
+        ),
+        (
+            "MSPASS_STARTUP_POLL_SECONDS",
+            "invalid",
+            "must be a positive number",
+        ),
+        (
+            "MSPASS_ENABLE_LOCAL_DASK",
+            "sometimes",
+            "must be a boolean value",
+        ),
+    ),
+)
+def test_invalid_startup_configuration_fails_before_starting_children(
+    tmp_path, variable, value, diagnostic
+):
+    environment = _make_bootstrap_environment(tmp_path)
+    environment[variable] = value
+
+    result = _run_bootstrap(environment)
+
+    assert result.returncode == 2
+    assert diagnostic in result.stderr
+    assert _events(environment) == []
+
+
 def test_readiness_returning_after_deadline_starts_nothing_later(tmp_path):
     environment = _make_bootstrap_environment(tmp_path)
     environment.update(

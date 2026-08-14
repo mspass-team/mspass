@@ -31,6 +31,29 @@ export MSPASS_DASK_WORKER_COUNT="${MSPASS_DASK_WORKER_COUNT:-4}"
 export MSPASS_DASK_WORKER_THREADS="${MSPASS_DASK_WORKER_THREADS:-1}"
 export MSPASS_DASK_WORKER_MEMORY_LIMIT="${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0}"
 
+case "$MSPASS_STARTUP_TIMEOUT_SECONDS" in
+    *[!0-9]*|"")
+        echo "Fatal: MSPASS_STARTUP_TIMEOUT_SECONDS must be a positive integer." >&2
+        exit 2
+        ;;
+esac
+if [ "$MSPASS_STARTUP_TIMEOUT_SECONDS" -le 0 ]; then
+    echo "Fatal: MSPASS_STARTUP_TIMEOUT_SECONDS must be a positive integer." >&2
+    exit 2
+fi
+
+if ! awk -v value="$MSPASS_STARTUP_POLL_SECONDS" '
+    BEGIN {
+        if (value ~ /^[0-9]+([.][0-9]+)?$/ && value > 0) {
+            exit 0
+        }
+        exit 1
+    }
+' </dev/null; then
+    echo "Fatal: MSPASS_STARTUP_POLL_SECONDS must be a positive number." >&2
+    exit 2
+fi
+
 LOCAL_DASK_ENABLED=false
 case "${MSPASS_ENABLE_LOCAL_DASK}" in
     true|TRUE|True|1|yes|YES|Yes)
@@ -41,6 +64,10 @@ case "${MSPASS_ENABLE_LOCAL_DASK}" in
             [ "${MSPASS_SCHEDULER_ADDRESS}" = "127.0.0.1" ]; then
             export MSPASS_SCHEDULER=none
         fi
+        ;;
+    *)
+        echo "Fatal: MSPASS_ENABLE_LOCAL_DASK must be a boolean value." >&2
+        exit 2
         ;;
 esac
 
