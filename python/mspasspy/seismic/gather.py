@@ -557,7 +557,9 @@ class BasicGather(ABC):
 
         :param npts:  length in samples of all members.  This parameter
           is required and there is no default due to the expected use only
-          by subclasses
+          by subclasses.  When ``input_obj`` is supplied, the value is derived
+          after any requested resampling or regularization.  A supplied
+          nonzero value must match that post-transformation length.
         :type npts:  integer
 
         :param dt:  sample interval of all data in ensemble.  Default is
@@ -587,6 +589,17 @@ class BasicGather(ABC):
         :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]
 
         """
+
+        # Resampling and regularization can change the number of samples.
+        # Apply those transformations before deriving or validating dimensions so
+        # ``npts`` always describes the array that will actually be stored.
+        if input_obj is not None:
+            if resample:
+                input_obj = resample_ensemble(input_obj, dt)
+            if regularize:
+                input_obj = regularize_ensemble(input_obj, regularizer)
+            resample = False
+            regularize = False
 
         derived_dimensions = None
         if input_obj is not None and len(input_obj.member) > 0:
@@ -895,8 +908,15 @@ class BasicGather(ABC):
 
     def set_metadata(self, j, md):
         """
-        Setter for metadata of member j.   md is the new continer that would
-        replace current conent.  Most useful for constructors.
+        Replace the metadata of member ``j`` with the content of ``md``.
+
+        Member metadata are stored in a rectangular DataFrame.  Consequently,
+        columns used by other members remain in the table, but keys omitted
+        from ``md`` become missing values in row ``j``.  Values are copied so
+        later edits to mutable objects held by the caller do not alter the
+        gather.  This full-row replacement is most useful for constructors;
+        use :meth:`edit_metadata` for a partial update.
+
         :param j: index of member
         :type j: int
         :param md: the metadata to set, dict or metadata
@@ -904,16 +924,28 @@ class BasicGather(ABC):
         """
         if not isinstance(md, (dict, Metadata)):
             raise TypeError("The metadata should be a dict-like object")
-        for key, val in dict(md).items():
+        replacement = deepcopy(dict(md))
+        for key in replacement:
             if key not in self.member_metadata.columns:
                 self.member_metadata[key] = None
-            self.member_metadata.at[j, key] = deepcopy(val)
+        missing_keys = [
+            key for key in self.member_metadata.columns if key not in replacement
+        ]
+        if missing_keys:
+            self.member_metadata[missing_keys] = self.member_metadata[
+                missing_keys
+            ].astype(object)
+        self.member_metadata.loc[j] = pd.Series(replacement, dtype=object)
 
     def edit_metadata(self, j, md):
         """
-        Differs from set_metadata in that the contents of md are added to
-        the current and do not fully repalce them.   Needed for updating
-        metadata after costruction
+        Add the contents of ``md`` to the current metadata for member ``j``.
+
+        Unlike :meth:`set_metadata`, this method leaves every omitted key
+        unchanged.  It only accepts keys already represented by the member
+        metadata table and copies mutable values from the caller.  This is
+        intended for updating metadata after construction.
+
         :param j: index of member
         :type j: int
         :param md: the metadata to edit, dict or metadata

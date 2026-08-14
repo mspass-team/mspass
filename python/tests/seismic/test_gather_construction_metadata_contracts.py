@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+import mspasspy.seismic.gather as gather_module
 from mspasspy.ccore.seismic import (
     Seismogram,
     SeismogramEnsemble,
@@ -153,6 +154,54 @@ def test_input_dimension_conflicts_raise_before_assigning_fields(
     assert vars(uninitialized) == {}
 
 
+@pytest.mark.parametrize(
+    "gather_class,component_count",
+    [(Gather, 1), (SeismogramGather, 3)],
+)
+def test_ensemble_dimensions_are_derived_after_resampling(
+    gather_class, component_count, monkeypatch
+):
+    calls = []
+
+    def resample_to_fifty_samples(ensemble, requested_dt):
+        calls.append((id(ensemble), requested_dt))
+        for datum in ensemble.member:
+            datum.set_npts(50)
+            datum.dt = requested_dt
+        return ensemble
+
+    monkeypatch.setattr(gather_module, "resample_ensemble", resample_to_fifty_samples)
+    source = _ensemble(gather_class, size=2, npts=100)
+
+    result = gather_class(
+        input_obj=source,
+        dt=0.5,
+        resample=True,
+        array_type="numpy",
+        npartitions=1,
+    )
+
+    assert result.npts == 50
+    assert result.member_data.shape == (2, component_count, 50)
+    assert result.member_metadata["npts"].tolist() == [50, 50]
+
+    conflicting = _ensemble(gather_class, size=2, npts=100)
+    uninitialized = gather_class.__new__(gather_class)
+    with pytest.raises(ValueError, match="npts=100 conflicts with the value 50"):
+        gather_class.__init__(
+            uninitialized,
+            input_obj=conflicting,
+            npts=100,
+            dt=0.5,
+            resample=True,
+            array_type="numpy",
+            npartitions=1,
+        )
+
+    assert vars(uninitialized) == {}
+    assert calls == [(id(source), 0.5), (id(conflicting), 0.5)]
+
+
 def _scalar_gather(ensemble_metadata=None, starttimes=None):
     return Gather(
         input_data=np.zeros((2, 1, 4)),
@@ -211,6 +260,10 @@ def test_member_metadata_dict_and_metadata_edits_are_row_local_and_copied():
     assert gather.get_metadata(1)["x"] == 21
     assert gather.get_metadata(1)["station_code"] == "DICT"
     assert gather.get_metadata(1)["payload"] == {"tags": ["dict"]}
+    assert pd.isna(gather.get_metadata(1)["delta"])
+    assert pd.isna(gather.get_metadata(1)["starttime"])
+    assert pd.isna(gather.get_metadata(1)["npts"])
+    assert pd.isna(gather.get_metadata(1)["is_live"])
 
     edit = Metadata(
         {
@@ -219,16 +272,20 @@ def test_member_metadata_dict_and_metadata_edits_are_row_local_and_copied():
             "payload": {"tags": ["metadata"]},
         }
     )
-    row_one_before = gather.get_metadata(1)
+    row_one_before = gather.member_metadata.loc[1].copy(deep=True)
     gather.edit_metadata(0, edit)
     edit["x"] = 888
     edit["station_code"] = "MUTATED"
     edit["payload"]["tags"].append("caller mutation")
 
-    assert gather.get_metadata(1) == row_one_before
+    pd.testing.assert_series_equal(gather.member_metadata.loc[1], row_one_before)
     assert gather.get_metadata(0)["x"] == 31
     assert gather.get_metadata(0)["station_code"] == "METADATA"
     assert gather.get_metadata(0)["payload"] == {"tags": ["metadata"]}
+    assert gather.get_metadata(0)["delta"] == row_zero_before["delta"]
+    assert gather.get_metadata(0)["starttime"] == row_zero_before["starttime"]
+    assert gather.get_metadata(0)["npts"] == row_zero_before["npts"]
+    assert gather.get_metadata(0)["is_live"] == row_zero_before["is_live"]
 
 
 def test_column_values_method_is_callable_and_copies_input():
