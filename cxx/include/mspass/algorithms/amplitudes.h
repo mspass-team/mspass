@@ -50,9 +50,10 @@ units.
  a number n with 0<n<=1.0
 \param win defines a time window to use for computing the amplitude.
  If the window exceeds the data range it is clipped to the physical
- intersection.  A reversed window selects the full data range.  A disjoint
- or zero-width intersection raises MsPASSError with Invalid severity before
- the datum is changed.
+ intersection.  A reversed window selects the full data range.  Window
+ endpoints are inclusive, so an intersection whose start equals its end
+ measures one sample.  A disjoint intersection raises MsPASSError with
+ Invalid severity before the datum is changed.
 \return computed amplitude
 */
 
@@ -82,10 +83,10 @@ double scale(Tdata &d, const ScalingMethod method, const double level,
     } else {
       ampwindow.start = std::max(win.start, d.t0());
       ampwindow.end = std::min(win.end, d.endtime());
-      if (ampwindow.start >= ampwindow.end) {
+      if (ampwindow.start > ampwindow.end) {
         std::stringstream ss;
         ss << "scale:  amplitude measurement window [" << win.start << ", "
-           << win.end << "] has no positive-width intersection with data "
+           << win.end << "] has no intersection with data "
            << "range [" << d.t0() << ", " << d.endtime() << "]";
         throw mspass::utility::MsPASSError(
             ss.str(), mspass::utility::ErrorSeverity::Invalid);

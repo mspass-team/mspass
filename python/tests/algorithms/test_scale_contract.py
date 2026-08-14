@@ -122,27 +122,42 @@ def test_atomic_scale_measures_only_the_window_intersection(atomic_type):
     (
         TimeWindow(-4.0, -2.0),
         TimeWindow(10.0, 12.0),
-        TimeWindow(2.0, 2.0),
-        TimeWindow(-2.0, 0.0),
-        TimeWindow(3.0, 5.0),
     ),
     ids=(
         "disjoint-left",
         "disjoint-right",
-        "zero-width-input",
-        "zero-width-left-intersection",
-        "zero-width-right-intersection",
     ),
 )
 def test_invalid_atomic_scale_window_raises_before_mutation(atomic_type, window):
     datum = _make_datum(atomic_type, [1.0, 2.0, 3.0, 4.0])
     before = _snapshot(datum)
 
-    with pytest.raises(MsPASSError, match="no positive-width intersection") as error:
+    with pytest.raises(MsPASSError, match="has no intersection") as error:
         _scale(datum, ScalingMethod.Peak, 1.0, window)
 
     assert error.value.severity == ErrorSeverity.Invalid
     _assert_snapshot(datum, before)
+
+
+@pytest.mark.parametrize("atomic_type", (TimeSeries, Seismogram))
+@pytest.mark.parametrize(
+    "window, expected_amplitude",
+    (
+        (TimeWindow(2.0, 2.0), 3.0),
+        (TimeWindow(-2.0, 0.0), 1.0),
+        (TimeWindow(3.0, 5.0), 4.0),
+    ),
+    ids=("equal-request-endpoints", "touches-left", "touches-right"),
+)
+def test_atomic_scale_includes_a_single_endpoint_sample(
+    atomic_type, window, expected_amplitude
+):
+    datum = _make_datum(atomic_type, [1.0, 2.0, 3.0, 4.0])
+
+    returned = _scale(datum, ScalingMethod.Peak, 1.0, window)
+
+    assert returned == pytest.approx(expected_amplitude)
+    assert _first_sample(datum) == pytest.approx(1.0 / expected_amplitude)
 
 
 @pytest.mark.parametrize("atomic_type", (TimeSeries, Seismogram))

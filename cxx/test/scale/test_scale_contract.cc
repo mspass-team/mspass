@@ -167,11 +167,15 @@ void test_atomic_windows() {
   expect_invalid_unchanged(disjoint_ts, TimeWindow(10.0, 12.0),
                            "TimeSeries disjoint window");
   TimeSeries zero_width_ts(make_timeseries({1.0, 2.0, 3.0, 4.0}));
-  expect_invalid_unchanged(zero_width_ts, TimeWindow(2.0, 2.0),
-                           "TimeSeries zero-width window");
+  check(same_number(scale(zero_width_ts, ScalingMethod::Peak, 1.0,
+                          TimeWindow(2.0, 2.0)),
+                    3.0),
+        "TimeSeries one-sample window is wrong");
   TimeSeries boundary_touch_ts(make_timeseries({1.0, 2.0, 3.0, 4.0}));
-  expect_invalid_unchanged(boundary_touch_ts, TimeWindow(-2.0, 0.0),
-                           "TimeSeries zero-width clipped intersection");
+  check(same_number(scale(boundary_touch_ts, ScalingMethod::Peak, 1.0,
+                          TimeWindow(-2.0, 0.0)),
+                    1.0),
+        "TimeSeries one-sample clipped intersection is wrong");
 
   Seismogram interior_seis(make_seismogram({100.0, 1.0, 2.0, 4.0, 3.0, 1.0}));
   check(same_number(scale(interior_seis, ScalingMethod::Peak, 2.0,
@@ -186,11 +190,15 @@ void test_atomic_windows() {
   expect_invalid_unchanged(disjoint_seis, TimeWindow(-4.0, -2.0),
                            "Seismogram disjoint window");
   Seismogram zero_width_seis(make_seismogram({1.0, 2.0, 3.0, 4.0}));
-  expect_invalid_unchanged(zero_width_seis, TimeWindow(1.0, 1.0),
-                           "Seismogram zero-width window");
+  check(same_number(scale(zero_width_seis, ScalingMethod::Peak, 1.0,
+                          TimeWindow(1.0, 1.0)),
+                    2.0),
+        "Seismogram one-sample window is wrong");
   Seismogram boundary_touch_seis(make_seismogram({1.0, 2.0, 3.0, 4.0}));
-  expect_invalid_unchanged(boundary_touch_seis, TimeWindow(3.0, 5.0),
-                           "Seismogram zero-width clipped intersection");
+  check(same_number(scale(boundary_touch_seis, ScalingMethod::Peak, 1.0,
+                          TimeWindow(3.0, 5.0)),
+                    4.0),
+        "Seismogram one-sample clipped intersection is wrong");
 }
 
 template <typename Tdata>
