@@ -15,12 +15,29 @@ from mspasspy.db import matcher as matcher_module
 from mspasspy.db.matcher import css30_arrival_interval_matcher
 
 
+class RecordingCursor:
+    def __init__(self, documents, error=None):
+        self.documents = documents
+        self.error = error
+        self.closed = False
+
+    def __iter__(self):
+        if self.error is not None:
+            raise self.error
+        return iter(self.documents)
+
+    def close(self):
+        self.closed = True
+
+
 class RecordingCollection:
-    def __init__(self, documents=()):
+    def __init__(self, documents=(), cursor_error=None):
         self.documents = copy.deepcopy(list(documents))
+        self.cursor_error = cursor_error
         self.count_queries = []
         self.find_one_queries = []
         self.find_queries = []
+        self.cursors = []
 
     @staticmethod
     def _matches(document, query):
@@ -46,11 +63,16 @@ class RecordingCollection:
 
     def find(self, query):
         self.find_queries.append(copy.deepcopy(query))
-        return [
-            copy.deepcopy(document)
-            for document in self.documents
-            if self._matches(document, query)
-        ]
+        cursor = RecordingCursor(
+            [
+                copy.deepcopy(document)
+                for document in self.documents
+                if self._matches(document, query)
+            ],
+            self.cursor_error,
+        )
+        self.cursors.append(cursor)
+        return cursor
 
 
 class RecordingDatabase:
@@ -141,6 +163,30 @@ def test_multiple_matches_select_nearest_to_start_plus_offset():
     assert len(database.collection.count_queries) == 1
     assert database.collection.find_one_queries == []
     assert len(database.collection.find_queries) == 1
+    assert len(database.collection.cursors) == 1
+    assert database.collection.cursors[0].closed
+
+
+def test_multiple_match_cursor_is_closed_when_iteration_raises():
+    expected_error = RuntimeError("cursor iteration failed")
+    documents = [
+        {"phase": "P", "time": 101.0},
+        {"phase": "P", "time": 104.0},
+    ]
+    database = RecordingDatabase(documents)
+    database.collection.cursor_error = expected_error
+    matcher = css30_arrival_interval_matcher(
+        database,
+        attributes_to_load=[],
+        load_if_defined=[],
+    )
+
+    with pytest.raises(RuntimeError) as error:
+        matcher.get_document(make_datum())
+
+    assert error.value is expected_error
+    assert len(database.collection.cursors) == 1
+    assert database.collection.cursors[0].closed
 
 
 @pytest.mark.parametrize("kill_on_failure", [False, True])

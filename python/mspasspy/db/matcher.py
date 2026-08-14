@@ -720,6 +720,7 @@ class css30_arrival_interval_matcher(NMF):
         :return: matching MongoDB document, or ``None`` when no match is found.
         :rtype: dict or None
         """
+
         stime = d.t0
         etime = d.endtime()
         query = {self.phasename_key: self.phasename}
@@ -731,39 +732,42 @@ class css30_arrival_interval_matcher(NMF):
             return self.dbhandle.find_one(query)
         else:
             cursor = self.dbhandle.find(query)
-            matchlist = []
-            # the key here perhaps should be set in constructor
-            # for now it is frozen as this constant
-            for doc in cursor:
-                # ignore any docs with the time attribute not set
-                if "time" in doc:
-                    dt = doc["time"] - (d.t0 + self.startime_offset)
-                    matchlist.append([abs(dt), doc])
-            # handle these special cases
-            n_to_test = len(matchlist)
-            if n_to_test == 0:
-                raise MsPASSError(
-                    "css30_arrival_interval_matcher.get_document:  no arrival docs found with phasename set as"
-                    + self.phasename
-                    + " with a time attribute defined.  This should not happen and indicates a serious database inconsistence.  Aborting",
-                    ErrorSeverity.Fatal,
-                )
-            elif n_to_test == 1:
-                # weird syntax but this returns to doc of the one and only
-                # tuple getting through the above loop.  Execution of this
-                # block should be very very rare
-                return matchlist[0][1]
-            else:
-                dtmin = matchlist[0][0]
-                imin = 0
-                for i in range(len(matchlist) - 1):
-                    ii = i + 1
-                    dt = matchlist[ii][0]
-                    # not dt values are stored as abs differences
-                    if dt < dtmin:
-                        imin = ii
-                        dtmin = dt
-                return matchlist[imin][1]
+            try:
+                matchlist = []
+                # the key here perhaps should be set in constructor
+                # for now it is frozen as this constant
+                for doc in cursor:
+                    # ignore any docs with the time attribute not set
+                    if "time" in doc:
+                        dt = doc["time"] - (d.t0 + self.startime_offset)
+                        matchlist.append([abs(dt), doc])
+                # handle these special cases
+                n_to_test = len(matchlist)
+                if n_to_test == 0:
+                    raise MsPASSError(
+                        "css30_arrival_interval_matcher.get_document:  no arrival docs found with phasename set as"
+                        + self.phasename
+                        + " with a time attribute defined.  This should not happen and indicates a serious database inconsistence.  Aborting",
+                        ErrorSeverity.Fatal,
+                    )
+                elif n_to_test == 1:
+                    # weird syntax but this returns to doc of the one and only
+                    # tuple getting through the above loop.  Execution of this
+                    # block should be very very rare
+                    return matchlist[0][1]
+                else:
+                    dtmin = matchlist[0][0]
+                    imin = 0
+                    for i in range(len(matchlist) - 1):
+                        ii = i + 1
+                        dt = matchlist[ii][0]
+                        # not dt values are stored as abs differences
+                        if dt < dtmin:
+                            imin = ii
+                            dtmin = dt
+                    return matchlist[imin][1]
+            finally:
+                cursor.close()
 
     def normalize(self, d):
         """
