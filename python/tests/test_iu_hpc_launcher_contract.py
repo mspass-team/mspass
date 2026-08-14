@@ -297,14 +297,35 @@ def test_popen_executes_the_argv_list_without_a_shell(launcher_module, monkeypat
     assert calls == [
         (
             (argv,),
-            {
-                "stdin": launcher_module.subprocess.PIPE,
-                "stdout": launcher_module.subprocess.PIPE,
-                "stderr": launcher_module.subprocess.PIPE,
-                "close_fds": True,
-            },
+            {"close_fds": True},
         )
     ]
+
+
+def test_auto_scheduler_host_uses_complete_default_endpoint(
+    launcher_module, monkeypatch, tmp_path
+):
+    monkeypatch.setattr(
+        launcher_module.subprocess,
+        "run",
+        lambda args, **kwargs: SimpleNamespace(stdout="node1 node2"),
+    )
+    launcher = _launcher(
+        launcher_module,
+        tmp_path,
+        primary_host="auto",
+        database_host="auto",
+        scheduler_host="auto",
+        worker_hosts="auto",
+    )
+
+    assert launcher.scheduler_host == "node1"
+    assert launcher._scheduler_endpoint(launcher.scheduler_host) == "tcp://node1:8786"
+    monkeypatch.setenv("DASK_SCHEDULER_PORT", "9876")
+    assert launcher._scheduler_endpoint(launcher.scheduler_host) == "tcp://node1:9876"
+    assert (
+        launcher._scheduler_endpoint("tcp://scheduler:8786") == "tcp://scheduler:8786"
+    )
 
 
 def test_status_uses_none_as_only_running_value_and_skips_absent_handles(
@@ -503,10 +524,9 @@ def test_timeout_starts_no_workers_and_reaps_all_owned_children(
     )
     monkeypatch.setattr(launcher_module.time, "monotonic", lambda: next(monotonic))
 
-    with pytest.raises(launcher_module.MsPASSError) as error:
+    with pytest.raises(RuntimeError):
         launcher.launch()
 
-    assert error.value.severity == launcher_module.ErrorSeverity.Invalid
     assert len(started) == 2
     assert all(process.terminate_count == 1 for process in started)
     assert all(process.wait_calls == [10] for process in started)
@@ -524,10 +544,9 @@ def test_owned_child_early_exit_reaps_every_started_process(
         launcher, "_popen", lambda args: started.append(scheduler) or scheduler
     )
 
-    with pytest.raises(launcher_module.MsPASSError, match="scheduler.*17") as error:
+    with pytest.raises(RuntimeError, match="scheduler.*17"):
         launcher.launch()
 
-    assert error.value.severity == launcher_module.ErrorSeverity.Invalid
     assert started == [scheduler]
     assert scheduler.wait_calls == [10]
     assert scheduler.terminate_count == 0
@@ -560,10 +579,9 @@ def test_each_other_owned_child_early_exit_reaps_every_started_process(
     monkeypatch.setattr(launcher, "_popen", popen)
     monkeypatch.setattr(launcher, "_wait_for_services", lambda: None)
 
-    with pytest.raises(launcher_module.MsPASSError, match="23") as error:
+    with pytest.raises(RuntimeError, match="23"):
         launcher.launch()
 
-    assert error.value.severity == launcher_module.ErrorSeverity.Invalid
     expected_roles = {
         "database": ["scheduler", "database"],
         "remote": ["scheduler", "database", "remote"],
@@ -575,6 +593,58 @@ def test_each_other_owned_child_early_exit_reaps_every_started_process(
         process.terminate_count == (0 if role == failed_role else 1)
         for role, process in started
     )
+
+
+def test_launch_preserves_system_exception_identity_after_cleanup(
+    launcher_module, monkeypatch, tmp_path
+):
+    launcher = _launcher(launcher_module, tmp_path)
+    scheduler = Process(None)
+    failure = OSError("container runtime unavailable")
+    calls = 0
+
+    def popen(args):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return scheduler
+        raise failure
+
+    monkeypatch.setattr(launcher, "_popen", popen)
+
+    with pytest.raises(OSError) as error:
+        launcher.launch()
+
+    assert error.value is failure
+    assert scheduler.terminate_count == 1
+    assert scheduler.wait_calls == [10]
+    assert launcher.scheduler_process is None
+
+
+def test_cleanup_failure_retains_process_handle_for_retry(
+    launcher_module, monkeypatch, tmp_path
+):
+    launcher = _launcher(launcher_module, tmp_path)
+    scheduler = Process(None)
+    database = Process(None)
+    launcher.scheduler_process = scheduler
+    launcher.dbserver_process = database
+    original_stop = launcher._stop_process
+
+    def stop(process):
+        if process is scheduler:
+            raise OSError("terminate failed")
+        original_stop(process)
+
+    monkeypatch.setattr(launcher, "_stop_process", stop)
+
+    with pytest.raises(OSError, match="terminate failed"):
+        launcher._cleanup_owned_processes()
+
+    assert launcher.scheduler_process is scheduler
+    assert launcher.dbserver_process is None
+    assert database.terminate_count == 1
+    assert database.wait_calls == [10]
 
 
 def test_batch_and_interactive_frontends_include_both_endpoints_without_shell(
@@ -640,10 +710,9 @@ def test_interactive_early_exit_reaps_all_owned_processes(
     monkeypatch.setattr(launcher, "_wait_for_services", lambda: None)
     monkeypatch.setattr(launcher, "_popen", lambda args: frontend)
 
-    with pytest.raises(launcher_module.MsPASSError, match="frontend.*31") as error:
+    with pytest.raises(RuntimeError, match="frontend.*31"):
         launcher.interactive_session()
 
-    assert error.value.severity == launcher_module.ErrorSeverity.Invalid
     assert frontend.terminate_count == 0
     assert frontend.wait_calls == [10]
     assert all(process.terminate_count == 1 for process in services)
@@ -667,9 +736,8 @@ def test_startup_settings_have_fixed_defaults_and_reject_invalid_values(
     monkeypatch.delenv("MSPASS_STARTUP_POLL_SECONDS", raising=False)
     assert launcher_module.HPCClusterLauncher._startup_settings() == (120.0, 2.0)
     monkeypatch.setenv(name, value)
-    with pytest.raises(launcher_module.MsPASSError) as error:
+    with pytest.raises(ValueError):
         launcher_module.HPCClusterLauncher._startup_settings()
-    assert error.value.severity == launcher_module.ErrorSeverity.Invalid
 
 
 def test_startup_settings_accept_valid_overrides(launcher_module, monkeypatch):
@@ -686,8 +754,7 @@ def test_invalid_startup_settings_start_no_children(
     monkeypatch.setenv("MSPASS_STARTUP_TIMEOUT_SECONDS", "invalid")
     monkeypatch.setattr(launcher, "_popen", lambda args: started.append(args))
 
-    with pytest.raises(launcher_module.MsPASSError) as error:
+    with pytest.raises(ValueError):
         launcher.launch()
 
-    assert error.value.severity == launcher_module.ErrorSeverity.Invalid
     assert started == []
