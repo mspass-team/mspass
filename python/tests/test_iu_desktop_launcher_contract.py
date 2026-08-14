@@ -6,12 +6,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
-
 REPOSITORY_ROOT = Path(
     os.environ.get("MSPASS_TEST_REPOSITORY_ROOT", Path(__file__).resolve().parents[2])
 )
 LAUNCHER_PATH = REPOSITORY_ROOT / "scripts" / "IU_examples" / "python" / "launcher.py"
+COMPOSE_SERVICES = (
+    "mspass-db\n" "mspass-scheduler\n" "mspass-worker\n" "mspass-frontend\n"
+)
 
 
 @pytest.fixture
@@ -38,9 +39,13 @@ class BrowserProcess:
         self.terminate_count += 1
         self.status = 0
 
-    def wait(self):
+    def wait(self, timeout=None):
         self.wait_count += 1
         return self.status
+
+    def kill(self):
+        self.terminate_count += 1
+        self.status = -9
 
 
 class PollFailureBrowser(BrowserProcess):
@@ -129,12 +134,15 @@ def test_launch_uses_exact_compose_browser_and_timing_contract(
         monkeypatch,
         launcher_module,
         [
+            completed(COMPOSE_SERVICES),
             completed(),
             completed(),
             completed("starting\n"),
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed("Jupyter: https://127.0.0.1:8888/lab?token=abc\n"),
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed(),
         ],
     )
@@ -155,33 +163,15 @@ def test_launch_uses_exact_compose_browser_and_timing_contract(
     assert launcher.launch() == expected_url
     assert script.run_calls == [
         (
-            compose(
-                configuration,
-                "ps",
-                "--status",
-                "running",
-                "--services",
-                "mspass-frontend",
-            ),
+            compose(configuration, "config", "--services"),
             {"capture_output": True, "text": True},
         ),
         (
-            compose(configuration, "up", "-d", "mspass-frontend"),
+            compose(configuration, "ps", "--status", "running", "--services"),
             {"capture_output": True, "text": True},
         ),
         (
-            compose(configuration, "logs", "mspass-frontend"),
-            {"capture_output": True, "text": True},
-        ),
-        (
-            compose(
-                configuration,
-                "ps",
-                "--status",
-                "running",
-                "--services",
-                "mspass-frontend",
-            ),
+            compose(configuration, "up", "-d"),
             {"capture_output": True, "text": True},
         ),
         (
@@ -189,14 +179,23 @@ def test_launch_uses_exact_compose_browser_and_timing_contract(
             {"capture_output": True, "text": True},
         ),
         (
-            compose(
-                configuration,
-                "ps",
-                "--status",
-                "running",
-                "--services",
-                "mspass-frontend",
-            ),
+            compose(configuration, "config", "--services"),
+            {"capture_output": True, "text": True},
+        ),
+        (
+            compose(configuration, "ps", "--status", "running", "--services"),
+            {"capture_output": True, "text": True},
+        ),
+        (
+            compose(configuration, "logs", "mspass-frontend"),
+            {"capture_output": True, "text": True},
+        ),
+        (
+            compose(configuration, "config", "--services"),
+            {"capture_output": True, "text": True},
+        ),
+        (
+            compose(configuration, "ps", "--status", "running", "--services"),
             {"capture_output": True, "text": True},
         ),
     ]
@@ -221,9 +220,11 @@ def test_default_os_comes_from_platform_system(launcher_module, monkeypatch):
         monkeypatch,
         launcher_module,
         [
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed("http://localhost:8888/lab?token=abc"),
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
         ],
     )
     launcher = launcher_module.DesktopLauncher(browser="browser", verbose=False)
@@ -250,15 +251,13 @@ def test_unsupported_os_and_bad_timing_fail_before_compose(
         lambda *args, **kwargs: popen_calls.append((args, kwargs)),
     )
 
-    with pytest.raises(MsPASSError) as error:
+    with pytest.raises(ValueError):
         launcher_module.DesktopLauncher(host_os="Plan9", verbose=False)
-    assert error.value.severity == ErrorSeverity.Invalid
 
     for value in ("0", "-1", "nan", "inf", "not-a-number"):
         monkeypatch.setenv("MSPASS_STARTUP_TIMEOUT_SECONDS", value)
-        with pytest.raises(MsPASSError) as error:
+        with pytest.raises(ValueError):
             launcher_module.DesktopLauncher(host_os="Linux", verbose=False)
-        assert error.value.severity == ErrorSeverity.Invalid
     assert run_calls == []
     assert popen_calls == []
 
@@ -270,9 +269,11 @@ def test_caller_owned_stack_is_preserved_and_launch_is_idempotent(
         monkeypatch,
         launcher_module,
         [
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed("http://localhost:8888/lab?token=caller"),
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
         ],
     )
     launcher = launcher_module.DesktopLauncher(
@@ -295,16 +296,17 @@ def test_early_exit_and_timeout_clean_only_owned_stack(launcher_module, monkeypa
         monkeypatch,
         launcher_module,
         [
+            completed(COMPOSE_SERVICES),
             completed(),
             completed(),
             completed("starting"),
+            completed(COMPOSE_SERVICES),
             completed(),
             completed(),
         ],
     )
-    with pytest.raises(MsPASSError, match="exited") as error:
+    with pytest.raises(RuntimeError, match="exited"):
         launcher_module.DesktopLauncher(host_os="Linux", verbose=False)
-    assert error.value.severity == ErrorSeverity.Invalid
     assert early.run_calls[-1][0] == compose("data/yaml/compose.yaml", "down")
     assert early.popen_calls == []
 
@@ -312,12 +314,15 @@ def test_early_exit_and_timeout_clean_only_owned_stack(launcher_module, monkeypa
         monkeypatch,
         launcher_module,
         [
+            completed(COMPOSE_SERVICES),
             completed(),
             completed(),
             completed("still starting"),
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed("still starting"),
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed(),
         ],
     )
@@ -327,9 +332,8 @@ def test_early_exit_and_timeout_clean_only_owned_stack(launcher_module, monkeypa
     sleeps = []
     monkeypatch.setattr(launcher_module.time, "monotonic", lambda: next(monotonic))
     monkeypatch.setattr(launcher_module.time, "sleep", sleeps.append)
-    with pytest.raises(MsPASSError, match="timed out") as error:
+    with pytest.raises(RuntimeError, match="timed out"):
         launcher_module.DesktopLauncher(host_os="Linux", verbose=False)
-    assert error.value.severity == ErrorSeverity.Invalid
     assert timeout.run_calls[-1][0] == compose("data/yaml/compose.yaml", "down")
     assert timeout.popen_calls == []
     assert sleeps == [0.25]
@@ -340,78 +344,90 @@ def test_failed_attach_preserves_caller_owned_stack(launcher_module, monkeypatch
         monkeypatch,
         launcher_module,
         [
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed("still starting"),
+            completed(COMPOSE_SERVICES),
             completed(),
         ],
     )
-    with pytest.raises(MsPASSError, match="exited"):
+    with pytest.raises(RuntimeError, match="exited"):
         launcher_module.DesktopLauncher(host_os="Linux", verbose=False)
     assert all(call[0][-1] != "down" for call in script.run_calls)
     assert script.popen_calls == []
 
 
 @pytest.mark.parametrize("failure", [OSError("missing"), RuntimeError("broken")])
-def test_browser_failure_is_invalid_and_cleans_owned_stack(
+def test_browser_failure_raises_runtime_error_and_cleans_owned_stack(
     launcher_module, monkeypatch, failure
 ):
     script = install_subprocess_script(
         monkeypatch,
         launcher_module,
         [
+            completed(COMPOSE_SERVICES),
             completed(),
             completed(),
             completed("http://localhost:8888/lab?token=abc"),
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed(),
         ],
     )
     script.popen_error = failure
-    with pytest.raises(MsPASSError, match="browser") as error:
+    with pytest.raises(RuntimeError, match="browser"):
         launcher_module.DesktopLauncher(host_os="Linux", verbose=False)
-    assert error.value.severity == ErrorSeverity.Invalid
     assert script.run_calls[-1][0] == compose("data/yaml/compose.yaml", "down")
 
 
-@pytest.mark.parametrize("operation", ["ps", "up", "logs"])
-def test_compose_startup_failures_are_invalid(launcher_module, monkeypatch, operation):
+@pytest.mark.parametrize("operation", ["config", "ps", "up", "logs"])
+def test_compose_startup_failures_raise_runtime_error(
+    launcher_module, monkeypatch, operation
+):
     failure = completed(stderr="compose failed", returncode=7)
-    if operation == "ps":
+    if operation == "config":
         results = [failure]
+    elif operation == "ps":
+        results = [completed(COMPOSE_SERVICES), failure]
     elif operation == "up":
-        results = [completed(), failure]
+        results = [completed(COMPOSE_SERVICES), completed(), failure]
     else:
-        results = [completed(), completed(), failure, completed()]
+        results = [
+            completed(COMPOSE_SERVICES),
+            completed(),
+            completed(),
+            failure,
+            completed(),
+        ]
     script = install_subprocess_script(monkeypatch, launcher_module, results)
 
-    with pytest.raises(MsPASSError, match="command failed") as error:
+    with pytest.raises(RuntimeError, match="command failed"):
         launcher_module.DesktopLauncher(host_os="Linux", verbose=False)
-    assert error.value.severity == ErrorSeverity.Invalid
     if operation == "logs":
         assert script.run_calls[-1][0] == compose("data/yaml/compose.yaml", "down")
     else:
         assert all(call[0][-1] != "down" for call in script.run_calls)
 
 
-def test_post_up_status_failure_is_invalid_and_cleans_owned_stack(
+def test_post_up_status_failure_raises_runtime_error_and_cleans_owned_stack(
     launcher_module, monkeypatch
 ):
     script = install_subprocess_script(
         monkeypatch,
         launcher_module,
         [
+            completed(COMPOSE_SERVICES),
             completed(),
             completed(),
             completed("still starting"),
+            completed(COMPOSE_SERVICES),
             completed(stderr="ps failed", returncode=7),
             completed(),
         ],
     )
 
-    with pytest.raises(MsPASSError, match="command failed") as error:
+    with pytest.raises(RuntimeError, match="command failed"):
         launcher_module.DesktopLauncher(host_os="Linux", verbose=False)
-
-    assert error.value.severity == ErrorSeverity.Invalid
     assert script.run_calls[-1][0] == compose("data/yaml/compose.yaml", "down")
 
 
@@ -425,7 +441,9 @@ def test_status_run_and_shutdown_have_exact_result_contracts(
         monkeypatch,
         launcher_module,
         [
-            completed("mspass-frontend\nother\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES + "other\n"),
+            completed(COMPOSE_SERVICES),
             completed("other\n"),
             completed(stdout="ran"),
             completed(),
@@ -439,25 +457,19 @@ def test_status_run_and_shutdown_have_exact_result_contracts(
     launcher.shutdown()
     assert script.run_calls == [
         (
-            compose(
-                "custom.yaml",
-                "ps",
-                "--status",
-                "running",
-                "--services",
-                "mspass-frontend",
-            ),
+            compose("custom.yaml", "config", "--services"),
             {"capture_output": True, "text": True},
         ),
         (
-            compose(
-                "custom.yaml",
-                "ps",
-                "--status",
-                "running",
-                "--services",
-                "mspass-frontend",
-            ),
+            compose("custom.yaml", "ps", "--status", "running", "--services"),
+            {"capture_output": True, "text": True},
+        ),
+        (
+            compose("custom.yaml", "config", "--services"),
+            {"capture_output": True, "text": True},
+        ),
+        (
+            compose("custom.yaml", "ps", "--status", "running", "--services"),
             {"capture_output": True, "text": True},
         ),
         (
@@ -481,22 +493,45 @@ def test_status_run_and_shutdown_have_exact_result_contracts(
     assert launcher._owns_stack is False
 
 
+def test_status_requires_frontend_and_every_configured_service(
+    launcher_module, monkeypatch
+):
+    launcher = bare_launcher(launcher_module)
+    script = install_subprocess_script(
+        monkeypatch,
+        launcher_module,
+        [completed("mspass-db\nmspass-worker\n")],
+    )
+    with pytest.raises(RuntimeError, match="no mspass-frontend"):
+        launcher.status()
+    assert len(script.run_calls) == 1
+
+    script.results.extend(
+        [
+            completed(COMPOSE_SERVICES),
+            completed("mspass-db\nmspass-frontend\n"),
+        ]
+    )
+    assert launcher.status() == 0
+
+
 @pytest.mark.parametrize("operation", ["status", "run", "shutdown"])
-def test_public_compose_failures_are_invalid(launcher_module, monkeypatch, operation):
+def test_public_compose_failures_raise_runtime_error(
+    launcher_module, monkeypatch, operation
+):
     launcher = bare_launcher(launcher_module, owned=operation == "shutdown")
     install_subprocess_script(
         monkeypatch,
         launcher_module,
         [completed(stderr=f"{operation} failed", returncode=9)],
     )
-    with pytest.raises(MsPASSError) as error:
+    with pytest.raises(RuntimeError):
         if operation == "status":
             launcher.status()
         elif operation == "run":
             launcher.run("analysis.py")
         else:
             launcher.shutdown()
-    assert error.value.severity == ErrorSeverity.Invalid
     if operation == "shutdown":
         assert launcher._owns_stack is False
 
@@ -508,15 +543,17 @@ def test_browser_nonzero_exit_is_waited_and_stack_is_cleaned(
         monkeypatch,
         launcher_module,
         [
+            completed(COMPOSE_SERVICES),
             completed(),
             completed(),
             completed("http://localhost:8888/lab?token=abc"),
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed(),
         ],
     )
     script.browser.status = 3
-    with pytest.raises(MsPASSError, match="browser"):
+    with pytest.raises(RuntimeError, match="browser"):
         launcher_module.DesktopLauncher(host_os="Linux", verbose=False)
     assert script.browser.terminate_count == 0
     assert script.browser.wait_count == 1
@@ -530,19 +567,19 @@ def test_browser_poll_failure_terminates_waits_and_cleans_owned_stack(
         monkeypatch,
         launcher_module,
         [
+            completed(COMPOSE_SERVICES),
             completed(),
             completed(),
             completed("http://localhost:8888/lab?token=abc"),
-            completed("mspass-frontend\n"),
+            completed(COMPOSE_SERVICES),
+            completed(COMPOSE_SERVICES),
             completed(),
         ],
     )
     script.browser = PollFailureBrowser()
 
-    with pytest.raises(MsPASSError, match="browser poll failed") as error:
+    with pytest.raises(RuntimeError, match="browser poll failed"):
         launcher_module.DesktopLauncher(host_os="Linux", verbose=False)
-
-    assert error.value.severity == ErrorSeverity.Invalid
     assert script.browser.terminate_count == 1
     assert script.browser.wait_count == 1
     assert script.run_calls[-1][0] == compose("data/yaml/compose.yaml", "down")
