@@ -16,7 +16,7 @@ import pytest
 
 import mspasspy.db.database as database_module
 from mspasspy.ccore.seismic import TimeSeries
-from mspasspy.ccore.utility import ErrorSeverity
+from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
 
@@ -54,6 +54,7 @@ class FakeBody:
         self.error = error
         self.barrier = barrier
         self.delay = delay
+        self.closed = False
 
     def read(self):
         if self.barrier is not None:
@@ -63,6 +64,9 @@ class FakeBody:
         if self.error is not None:
             raise self.error
         return self.payload
+
+    def close(self):
+        self.closed = True
 
 
 class FakeS3Client:
@@ -80,19 +84,20 @@ class FakeS3Client:
         self.barrier = barrier
         self.delay = delay
         self.calls = []
+        self.bodies = []
 
     def get_object(self, **kwargs):
         self.calls.append(kwargs)
         if self.error is not None:
             raise self.error
-        return {
-            "Body": FakeBody(
-                self.payload,
-                error=self.read_error,
-                barrier=self.barrier,
-                delay=self.delay,
-            )
-        }
+        body = FakeBody(
+            self.payload,
+            error=self.read_error,
+            barrier=self.barrier,
+            delay=self.delay,
+        )
+        self.bodies.append(body)
+        return {"Body": body}
 
 
 def make_event_timeseries(live=True):
@@ -219,7 +224,7 @@ def test_event_reader_not_found_returns_one_invalid_dead_datum(
     ],
 )
 @pytest.mark.parametrize("initially_live", [True, False])
-def test_event_reader_rethrows_original_error_without_mutation_or_cache_damage(
+def test_event_reader_wraps_non_not_found_error_without_mutation_or_cache_damage(
     monkeypatch,
     tmp_path,
     error_location,
@@ -253,7 +258,7 @@ def test_event_reader_rethrows_original_error_without_mutation_or_cache_damage(
         lambda path: False if os.fspath(path) == str(cache_path) else real_exists(path),
     )
 
-    with pytest.raises(type(error)) as raised:
+    with pytest.raises(MsPASSError, match="Error while read data from s3") as raised:
         Database._read_data_from_s3_event(
             Database,
             datum,
@@ -264,11 +269,15 @@ def test_event_reader_rethrows_original_error_without_mutation_or_cache_damage(
             format="mseed",
         )
 
-    assert raised.value is error
+    assert raised.value.severity == ErrorSeverity.Fatal
+    assert raised.value.__cause__ is error
     assert datum.live is initially_live
     assert datum.elog.size() == 0
     assert cache_path.read_bytes() == original_cache
     assert temporary_cache_files(cache_path) == []
+    if error_location == "body":
+        assert len(client.bodies) == 1
+        assert client.bodies[0].closed
 
 
 @pytest.mark.parametrize(
@@ -291,7 +300,7 @@ def test_event_reader_rethrows_original_error_without_mutation_or_cache_damage(
         ),
     ],
 )
-def test_event_index_rethrows_original_error_and_preserves_existing_cache(
+def test_event_index_wraps_non_not_found_error_and_preserves_existing_cache(
     database, tmp_path, error_location, error_factory
 ):
     error = error_factory()
@@ -303,7 +312,9 @@ def test_event_index_rethrows_original_error_and_preserves_existing_cache(
     else:
         client = FakeS3Client(read_error=error)
 
-    with pytest.raises(type(error)) as raised:
+    with pytest.raises(
+        MsPASSError, match="Error while index mseed file from s3"
+    ) as raised:
         database.index_mseed_s3_event(
             client,
             2017,
@@ -314,10 +325,14 @@ def test_event_index_rethrows_original_error_and_preserves_existing_cache(
             collection="wf_miniseed",
         )
 
-    assert raised.value is error
+    assert raised.value.severity == ErrorSeverity.Fatal
+    assert raised.value.__cause__ is error
     assert cache_path.read_bytes() == original_cache
     assert temporary_cache_files(cache_path) == []
     assert database["wf_miniseed"].count_documents({}) == 0
+    if error_location == "body":
+        assert len(client.bodies) == 1
+        assert client.bodies[0].closed
 
 
 def test_cache_download_fsyncs_same_directory_temp_before_publish(
@@ -333,13 +348,14 @@ def test_cache_download_fsyncs_same_directory_temp_before_publish(
         return real_fsync(descriptor)
 
     monkeypatch.setattr(database_module.os, "fsync", recording_fsync)
+    client = FakeS3Client(payload=payload)
 
-    Database._cache_s3_object(
-        FakeS3Client(payload=payload), "bucket", "key", str(cache_path)
-    )
+    Database._cache_s3_object(client, "bucket", "key", str(cache_path))
 
     assert cache_path.read_bytes() == payload
     assert len(fsync_calls) == 1
+    assert len(client.bodies) == 1
+    assert client.bodies[0].closed
     assert temporary_cache_files(cache_path) == []
 
 

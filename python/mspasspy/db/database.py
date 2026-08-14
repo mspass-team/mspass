@@ -4767,7 +4767,12 @@ class Database(pymongo.database.Database):
             with os.fdopen(descriptor, "wb") as output:
                 descriptor = None
                 obj = s3_client.get_object(Bucket=bucket, Key=key)
-                output.write(obj["Body"].read())
+                body = obj["Body"]
+                try:
+                    payload = body.read()
+                finally:
+                    body.close()
+                output.write(payload)
                 output.flush()
                 os.fsync(output.fileno())
             if replace_existing:
@@ -4841,7 +4846,7 @@ class Database(pymongo.database.Database):
                     aws_secret_access_key=aws_secret_access_key,
                 )
                 self._cache_s3_object(s3_client, BUCKET_NAME, KEY, fname)
-            except (botocore.exceptions.ClientError, urllib.error.HTTPError) as error:
+            except Exception as error:
                 if self._is_s3_not_found(error):
                     message = (
                         f"Could not find the object by the KEY: {KEY} "
@@ -4854,7 +4859,9 @@ class Database(pymongo.database.Database):
                     )
                     mspass_object.kill()
                     return mspass_object
-                raise
+                raise MsPASSError(
+                    "Error while read data from s3.", ErrorSeverity.Fatal
+                ) from error
 
         with open(fname, mode="rb") as fh:
             fh.seek(foff)
@@ -7107,8 +7114,9 @@ class Database(pymongo.database.Database):
             index data to.  The default is 'wf_miniseed'.  It should be rare
             to use anything but the default.
         :exception: This function returns without indexing if the S3 object does
-            not exist.  Other S3 and network exceptions are rethrown unchanged;
-            local indexing failures raise a fatal MsPASSError.
+            not exist.  Other S3, network, and local indexing failures raise a
+            fatal :class:`MsPASSError`; the original exception is retained as
+            its cause.
         """
 
         dbh = self[collection]
@@ -7146,14 +7154,16 @@ class Database(pymongo.database.Database):
                 fname,
                 replace_existing=True,
             )
-        except (botocore.exceptions.ClientError, urllib.error.HTTPError) as error:
+        except Exception as error:
             if self._is_s3_not_found(error):
                 print(
                     f"Could not find the object by the KEY: {KEY} "
                     f"from the BUCKET: {BUCKET_NAME} in s3"
                 )
                 return None
-            raise
+            raise MsPASSError(
+                "Error while index mseed file from s3.", ErrorSeverity.Fatal
+            ) from error
 
         try:
             # immediately read data from the file
