@@ -81,6 +81,15 @@ def storage_reference(document):
     return {key: document[key] for key in keys if key in document}
 
 
+def add_stale_gridfs_reference(database, collection, datum):
+    stale_gridfs_id = gridfs.GridFS(database).put(b"unreachable sample data")
+    database[collection].update_one(
+        {"_id": datum["_id"]}, {"$set": {"gridfs_id": stale_gridfs_id}}
+    )
+    datum["gridfs_id"] = stale_gridfs_id
+    return stale_gridfs_id
+
+
 @pytest.mark.parametrize(
     "factory,collection",
     [
@@ -88,8 +97,9 @@ def storage_reference(document):
         (make_seismogram, "wf_Seismogram"),
     ],
 )
+@pytest.mark.parametrize("stale_gridfs_reference", [False, True])
 def test_file_to_gridfs_update_round_trips_new_samples(
-    database, tmp_path, factory, collection
+    database, tmp_path, factory, collection, stale_gridfs_reference
 ):
     original = factory([1.0, 2.0, 3.0, 4.0])
     datum = database.save_data(
@@ -101,6 +111,9 @@ def test_file_to_gridfs_update_round_trips_new_samples(
         save_history=False,
         return_data=True,
     )
+    stale_gridfs_id = None
+    if stale_gridfs_reference:
+        stale_gridfs_id = add_stale_gridfs_reference(database, collection, datum)
     replacement = factory([5.0, 6.0, 7.0, 8.0])
     datum.data = replacement.data
 
@@ -109,6 +122,8 @@ def test_file_to_gridfs_update_round_trips_new_samples(
     document = database[collection].find_one({"_id": result["_id"]})
     assert document["storage_mode"] == "gridfs"
     assert document["gridfs_id"] == result["gridfs_id"]
+    if stale_gridfs_reference:
+        assert document["gridfs_id"] != stale_gridfs_id
     assert gridfs.GridFS(database).exists(document["gridfs_id"])
     reread = database.read_data(result["_id"], collection=collection)
     assert reread.live
@@ -123,8 +138,14 @@ def test_file_to_gridfs_update_round_trips_new_samples(
     ],
 )
 @pytest.mark.parametrize("failure_mode", ["exception", "unmatched"])
+@pytest.mark.parametrize("stale_gridfs_reference", [False, True])
 def test_failed_waveform_update_keeps_file_readable_and_removes_new_gridfs_data(
-    database, tmp_path, factory, collection, failure_mode
+    database,
+    tmp_path,
+    factory,
+    collection,
+    failure_mode,
+    stale_gridfs_reference,
 ):
     original = factory([1.0, 2.0, 3.0, 4.0])
     original_samples = sample_array(original).copy()
@@ -137,12 +158,15 @@ def test_failed_waveform_update_keeps_file_readable_and_removes_new_gridfs_data(
         save_history=False,
         return_data=True,
     )
+    stale_gridfs_id = None
+    if stale_gridfs_reference:
+        stale_gridfs_id = add_stale_gridfs_reference(database, collection, datum)
     replacement = factory([5.0, 6.0, 7.0, 8.0])
     datum.data = replacement.data
     original_document = database[collection].find_one({"_id": datum["_id"]})
     original_reference = storage_reference(original_document)
-    assert database["fs.files"].count_documents({}) == 0
-    assert database["fs.chunks"].count_documents({}) == 0
+    original_gridfs_files = list(database["fs.files"].find({}))
+    original_gridfs_chunks = list(database["fs.chunks"].find({}))
     original_update_one = Collection.update_one
     injected_error = RuntimeError("injected waveform update failure")
 
@@ -164,11 +188,14 @@ def test_failed_waveform_update_keeps_file_readable_and_removes_new_gridfs_data(
             assert error.value.severity == ErrorSeverity.Invalid
 
     assert datum["storage_mode"] == "file"
-    assert "gridfs_id" not in datum
+    if stale_gridfs_reference:
+        assert datum["gridfs_id"] == stale_gridfs_id
+    else:
+        assert "gridfs_id" not in datum
     document = database[collection].find_one({"_id": datum["_id"]})
     assert storage_reference(document) == original_reference
-    assert database["fs.files"].count_documents({}) == 0
-    assert database["fs.chunks"].count_documents({}) == 0
+    assert list(database["fs.files"].find({})) == original_gridfs_files
+    assert list(database["fs.chunks"].find({})) == original_gridfs_chunks
     reread = database.read_data(datum["_id"], collection=collection)
     assert reread.live
     np.testing.assert_array_equal(sample_array(reread), original_samples)
