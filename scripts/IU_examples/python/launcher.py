@@ -764,12 +764,22 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
 
 class DesktopLauncher(BasicMsPASSLauncher):
     """
-    Launcher for running MsPASS on a desktop in the all-in-one mode.
-    it differs from the cluster versions in multiple ways.  First assumes
-    docker rather than apptainer.  Second, it sets the scheduler
-    as a kwarg option in the constructor rather than defining a different
-    class for different scheulers.  That is appropriate because a single
-    container makes a lot of cluster baggage unnecessary.
+    Launch a complete Docker Compose MsPASS stack on a desktop.
+
+    This launcher manages the database, scheduler, worker, and frontend
+    services defined by the selected Compose file.  It differs from the HPC
+    launchers by using Docker Compose instead of Apptainer and by opening the
+    Jupyter frontend in a local browser.  Construction launches or attaches to
+    the stack, waits until every configured service is running and the
+    frontend publishes a real HTTP(S) URL, and then opens that URL.
+
+    The launcher records whether it started the Compose project.  ``shutdown``
+    brings down only a project started by this object; a project that was
+    already fully or partially running is treated as caller-owned.  Missing
+    services in a partial project are started without transferring ownership.
+    Browser processes started by this object are always reaped.  Compose
+    execution failures are reported as ``RuntimeError``; invalid constructor
+    arguments are reported as ``ValueError``.
     """
 
     _FRONTEND_SERVICE = "mspass-frontend"
@@ -784,14 +794,22 @@ class DesktopLauncher(BasicMsPASSLauncher):
         """
         Constructor for DesktopLauncher.
 
-        This implementation uses docker compose.  The constructor does little
-        more than run the docker ocmpose comand using the input configuration
-        file.
+        This implementation uses ``docker compose`` and immediately calls
+        :meth:`launch`.  Startup timeout and polling interval are controlled by
+        the positive finite environment values
+        ``MSPASS_STARTUP_TIMEOUT_SECONDS`` (default 120) and
+        ``MSPASS_STARTUP_POLL_SECONDS`` (default 2).
 
         :param configuration:  yaml file defining the docker compose
           configuration to launch containers.  See User Manual section
           title "Deply MsPASS with docker compose".
         :type configuration: string  (must be a file name ending in ".yaml" or ".yml")
+        :param host_os: canonical operating-system name used to construct the
+          browser command.  ``None`` selects ``platform.system()``.  Supported
+          values are ``Linux``, ``Darwin``, and ``Windows``.
+        :type host_os: string or None
+        :param browser: browser executable or macOS application name.
+        :type browser: string
         :param verbose:  boolean controling if the constructor print launch output.
           When False runs silently unless there is an exception.  When True the
           output of docker compose is captured and echoed to stdout of the
@@ -811,15 +829,11 @@ class DesktopLauncher(BasicMsPASSLauncher):
             "MSPASS_STARTUP_POLL_SECONDS", 2.0
         )
         if self.host_os not in ("Linux", "Darwin", "Windows"):
-            self._raise_invalid(
+            raise ValueError(
                 "DesktopLauncher does not support host operating system "
                 + repr(self.host_os)
             )
         self.launch()
-
-    @staticmethod
-    def _raise_invalid(message):
-        raise MsPASSError(message, ErrorSeverity.Invalid)
 
     @classmethod
     def _positive_environment_value(cls, name, default):
@@ -827,9 +841,9 @@ class DesktopLauncher(BasicMsPASSLauncher):
         try:
             value = float(value_string)
         except (TypeError, ValueError):
-            cls._raise_invalid(f"{name} must be a finite positive number")
+            raise ValueError(f"{name} must be a finite positive number")
         if not math.isfinite(value) or value <= 0.0:
-            cls._raise_invalid(f"{name} must be a finite positive number")
+            raise ValueError(f"{name} must be a finite positive number")
         return value
 
     def _compose_argv(self, *arguments):
@@ -846,9 +860,9 @@ class DesktopLauncher(BasicMsPASSLauncher):
         try:
             result = subprocess.run(argv, capture_output=True, text=True)
         except Exception as error:
-            self._raise_invalid(
+            raise RuntimeError(
                 "DesktopLauncher failed to execute " + " ".join(argv) + f": {error}"
-            )
+            ) from error
         if self.verbose:
             if result.stdout:
                 print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
@@ -856,7 +870,7 @@ class DesktopLauncher(BasicMsPASSLauncher):
                 print(result.stderr, end="" if result.stderr.endswith("\n") else "\n")
         if result.returncode != 0:
             message = result.stderr.strip() or result.stdout.strip()
-            self._raise_invalid(
+            raise RuntimeError(
                 "DesktopLauncher command failed: "
                 + " ".join(argv)
                 + (f": {message}" if message else "")
@@ -872,18 +886,20 @@ class DesktopLauncher(BasicMsPASSLauncher):
 
     def _stop_browser(self):
         process = self.browser_process
-        self.browser_process = None
         if process is None:
             return
         try:
             browser_running = process.poll() is None
         except Exception:
             browser_running = True
+        if browser_running:
+            process.terminate()
         try:
-            if browser_running:
-                process.terminate()
-        finally:
-            process.wait()
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=10)
+        self.browser_process = None
 
     def _cleanup_after_failed_launch(self):
         errors = []
@@ -896,7 +912,7 @@ class DesktopLauncher(BasicMsPASSLauncher):
                 self._run_compose("down")
             except BaseException as error:
                 errors.append(str(error))
-            finally:
+            else:
                 self._owns_stack = False
         self._url = None
         return errors
@@ -907,65 +923,138 @@ class DesktopLauncher(BasicMsPASSLauncher):
             logs = self._run_compose("logs", self._FRONTEND_SERVICE)
             url = extract_jupyter_url(logs.stdout)
             if self.status() != 1:
-                self._raise_invalid(
-                    f"DesktopLauncher detected that {self._FRONTEND_SERVICE} exited "
-                    "before publishing a Jupyter URL"
+                raise RuntimeError(
+                    "DesktopLauncher detected that one or more Compose services "
+                    "exited before the frontend published a Jupyter URL"
                 )
             if url is not None:
                 return url
             if time.monotonic() >= deadline:
-                self._raise_invalid(
+                raise RuntimeError(
                     "DesktopLauncher timed out waiting for a Jupyter HTTP(S) URL"
                 )
             time.sleep(self._startup_poll)
 
     def url(self):
-        """Return the Jupyter URL discovered by :meth:`launch`."""
+        """
+        Return the Jupyter URL discovered by :meth:`launch`.
+
+        The value is ``None`` before a successful launch and after shutdown.
+        No tokenless fallback URL is fabricated.
+        """
         return self._url
 
     def launch(self):
-        """Start or attach to the desktop stack and open its Jupyter URL."""
+        """
+        Start or attach to the desktop stack and open its Jupyter URL.
+
+        The method is idempotent after a successful launch.  A newly started
+        project is marked as owned and is brought down if readiness or browser
+        startup fails.  A fully or partially running project discovered on
+        entry is caller-owned: missing services are started, but the project
+        is never brought down by this object.
+
+        :return: the HTTP(S) Jupyter URL extracted from frontend logs.
+        :rtype: string
+        :raises RuntimeError: if Compose execution, service readiness, URL
+          discovery, or browser startup fails.
+        """
         if self._url is not None:
             return self._url
         try:
-            if self.status() == 0:
-                self._run_compose("up", "-d", self._FRONTEND_SERVICE)
-                self._owns_stack = True
+            expected_services, running_services = self._service_state()
+            if not expected_services.issubset(running_services):
+                # Start the complete configuration.  The worker is not a
+                # dependency of the frontend in the standard Compose file, so
+                # targeting only the frontend would create a scheduler with no
+                # worker capable of running user tasks.
+                self._owns_stack = not bool(expected_services & running_services)
+                self._run_compose("up", "-d")
             url = self._wait_for_url()
             try:
                 self.browser_process = subprocess.Popen(self._browser_argv(url))
                 browser_status = self.browser_process.poll()
             except Exception as error:
-                self._raise_invalid(
+                raise RuntimeError(
                     f"DesktopLauncher failed to launch browser: {error}"
-                )
+                ) from error
             if browser_status not in (None, 0):
-                self._raise_invalid(
+                raise RuntimeError(
                     "DesktopLauncher browser process exited with an error"
                 )
             self._url = url
             return url
         except BaseException as error:
             cleanup_errors = self._cleanup_after_failed_launch()
-            if cleanup_errors:
-                self._raise_invalid(
-                    f"{error}; cleanup failed: " + "; ".join(cleanup_errors)
+            if cleanup_errors and hasattr(error, "add_note"):
+                error.add_note(
+                    "DesktopLauncher cleanup failed: " + "; ".join(cleanup_errors)
                 )
             raise
 
+    def _service_state(self):
+        """Return the configured and running service-name sets."""
+        configured = self._run_compose("config", "--services")
+        expected_services = {
+            line.strip() for line in configured.stdout.splitlines() if line.strip()
+        }
+        if self._FRONTEND_SERVICE not in expected_services:
+            raise RuntimeError(
+                f"DesktopLauncher configuration has no {self._FRONTEND_SERVICE} service"
+            )
+        running = self._run_compose("ps", "--status", "running", "--services")
+        running_services = {
+            line.strip() for line in running.stdout.splitlines() if line.strip()
+        }
+        return expected_services, running_services
+
     def status(self):
-        result = self._run_compose(
-            "ps", "--status", "running", "--services", self._FRONTEND_SERVICE
-        )
-        services = {line.strip() for line in result.stdout.splitlines()}
-        return int(self._FRONTEND_SERVICE in services)
+        """
+        Test readiness of the complete configured Compose project.
+
+        Service names are read from ``docker compose config --services`` and
+        compared with ``docker compose ps --status running --services``.  This
+        prevents a running frontend from hiding a missing scheduler, worker,
+        or database.
+
+        :return: 1 when every configured service is running; otherwise 0.
+        :rtype: int
+        :raises RuntimeError: if Compose fails or the configuration has no
+          ``mspass-frontend`` service.
+        """
+        expected_services, running_services = self._service_state()
+        return int(expected_services.issubset(running_services))
 
     def run(self, python_file):
+        """
+        Run a Python script in the active frontend service.
+
+        The command is executed as ``docker compose exec -T
+        mspass-frontend python python_file`` and blocks until it exits.
+
+        :param python_file: path to a Python script visible in the frontend.
+        :type python_file: string
+        :return: the successful ``subprocess.CompletedProcess``.
+        :raises RuntimeError: if Compose cannot execute the command or the
+          command exits nonzero.
+        """
         return self._run_compose(
             "exec", "-T", self._FRONTEND_SERVICE, "python", python_file
         )
 
     def shutdown(self, verbose=False):
+        """
+        Reap the owned browser and stop an owned Compose project.
+
+        Calling this method repeatedly is safe.  A caller-owned Compose project
+        is never brought down.  Cleanup attempts continue after an individual
+        failure so that all owned resources have a chance to terminate.
+
+        :param verbose: print cleanup errors before raising them.
+        :type verbose: bool
+        :raises RuntimeError: after cleanup if one or more owned resources
+          could not be stopped.
+        """
         errors = []
         try:
             self._stop_browser()
@@ -976,13 +1065,13 @@ class DesktopLauncher(BasicMsPASSLauncher):
                 self._run_compose("down")
             except BaseException as error:
                 errors.append(str(error))
-            finally:
+            else:
                 self._owns_stack = False
         self._url = None
         if verbose and errors:
             print("DesktopLauncher shutdown errors: " + "; ".join(errors))
         if errors:
-            self._raise_invalid("DesktopLauncher shutdown failed: " + "; ".join(errors))
+            raise RuntimeError("DesktopLauncher shutdown failed: " + "; ".join(errors))
 
     def __del__(self):
         """
@@ -1012,7 +1101,11 @@ def extract_jupyter_url(outstr):
     """
     if not isinstance(outstr, str):
         return None
-    match = re.search(r"https?://[^\s\"']+", outstr)
-    if match is None:
+    matches = re.findall(r"https?://[^\s\"']+", outstr)
+    if not matches:
         return None
-    return match.group(0).rstrip(".,;)")
+    urls = [match.rstrip(".,;)") for match in matches]
+    for url in urls:
+        if urlsplit(url).hostname in ("127.0.0.1", "localhost", "::1"):
+            return url
+    return urls[0]
