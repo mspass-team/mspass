@@ -708,7 +708,10 @@ def regularize_ensemble(
     Uses WindowData to assure all data are inside the common
     range starttime:endtime.  Dead data are dropped with one summary
     posted to the output ensemble.  Errors created while windowing a
-    dropped live member are copied back to that input member.
+    dropped live member are copied back to that input member, but this
+    helper does not change the member's pre-call live/dead state.  Dropping
+    some members is a nonfatal Complaint; the summary is Invalid only when
+    no member survives and the returned ensemble is dead.
     """
     ensout = TimeSeriesEnsemble(Metadata(ensemble), len(ensemble.member))
     if ensemble.elog.size() > 0:
@@ -736,7 +739,6 @@ def regularize_ensemble(
                             member.elog.log_error(
                                 error.algorithm, error.message, error.badness
                             )
-                    member.kill()
                     dropped_indices.append(i)
             else:
                 ensout.member.append(member)
@@ -746,7 +748,12 @@ def regularize_ensemble(
         message = "regularize_ensemble: dropped {} member(s) at indices {}".format(
             len(dropped_indices), ", ".join(str(i) for i in dropped_indices)
         )
-        ensout.elog.log_error(MsPASSError(message, ErrorSeverity.Invalid))
+        if ensout.member:
+            ensout.elog.log_error(
+                "regularize_ensemble", message, ErrorSeverity.Complaint
+            )
+        else:
+            ensout.elog.log_error(MsPASSError(message, ErrorSeverity.Invalid))
     if len(ensout.member) > 0:
         ensout.set_live()
     else:

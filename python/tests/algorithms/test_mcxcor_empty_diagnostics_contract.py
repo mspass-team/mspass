@@ -346,7 +346,7 @@ def test_regularize_ensemble_transfers_drop_diagnostics_once(capsys):
     assert output.live
     assert len(output.member) == 1
     assert np.array_equal(np.array(output.member[0].data), np.array([4.0] * 11))
-    assert ensemble.member[0].dead()
+    assert ensemble.member[0].live
     failed_errors = ensemble.member[0].elog.get_error_log()
     assert [entry.algorithm for entry in failed_errors] == [
         "prior",
@@ -365,7 +365,26 @@ def test_regularize_ensemble_transfers_drop_diagnostics_once(capsys):
         ("prior", "preexisting dead message", ErrorSeverity.Invalid)
     ]
     summary = "regularize_ensemble: dropped 2 member(s) at indices 0, 1"
-    _assert_single_invalid(output, summary)
+    assert _error_snapshot(output) == [
+        ("regularize_ensemble", summary, ErrorSeverity.Complaint)
+    ]
+    assert capsys.readouterr().out == ""
+
+
+def test_regularize_ensemble_all_dropped_is_invalid_without_killing_input(capsys):
+    ensemble = TimeSeriesEnsemble()
+    member = _live_timeseries([1.0, 2.0])
+    ensemble.member.append(member)
+    ensemble.set_live()
+
+    output = mcx.regularize_ensemble(ensemble, 0.0, 10.0, pad_fraction_cutoff=0.05)
+
+    assert output.dead()
+    assert len(output.member) == 0
+    assert member.live
+    _assert_single_invalid(
+        output, "regularize_ensemble: dropped 1 member(s) at indices 0"
+    )
     assert capsys.readouterr().out == ""
 
 
