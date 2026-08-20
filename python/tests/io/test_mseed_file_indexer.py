@@ -1,8 +1,10 @@
 import numpy as np
 from obspy import Stream, Trace, UTCDateTime, read
 
+from mspasspy.ccore.seismic import TimeSeries
 from mspasspy.ccore.utility import ErrorLogger  # noqa: F401
 from mspasspy.ccore.io import _mseed_file_indexer
+from mspasspy.db.database import Database
 
 
 def test_gap_index_matches_merged_reader_grid(tmp_path):
@@ -18,11 +20,11 @@ def test_gap_index_matches_merged_reader_grid(tmp_path):
         "sampling_rate": sample_rate,
     }
     first = Trace(
-        data=np.arange(samples_per_record, dtype=np.int32),
+        data=np.arange(1, samples_per_record + 1, dtype=np.int32),
         header={**header, "starttime": starttime},
     )
     second = Trace(
-        data=np.arange(samples_per_record, dtype=np.int32),
+        data=np.arange(8, 8 + samples_per_record, dtype=np.int32),
         header={
             **header,
             "starttime": starttime
@@ -47,3 +49,54 @@ def test_gap_index_matches_merged_reader_grid(tmp_path):
 
     segmented, _ = _mseed_file_indexer(str(mseed_file), True)
     assert [entry.npts for entry in segmented] == [samples_per_record] * 2
+
+    datum = TimeSeries(index[0].npts)
+    datum.t0 = index[0].starttime
+    datum.dt = 1.0 / index[0].samprate
+    Database._read_data_from_dfile(
+        datum,
+        str(tmp_path),
+        mseed_file.name,
+        index[0].foff,
+        index[0].nbytes,
+        format="mseed",
+    )
+    assert datum.live
+    assert list(datum.data) == [1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 8.0, 9.0, 10.0, 11.0]
+    assert datum["has_gap"]
+    assert len(datum["gaps"]) == 1
+    assert np.isclose(
+        datum["gaps"][0]["starttime"], starttime.timestamp + 4 / sample_rate
+    )
+    assert np.isclose(
+        datum["gaps"][0]["endtime"], starttime.timestamp + 6 / sample_rate
+    )
+
+    interpolated = TimeSeries(index[0].npts)
+    interpolated.t0 = index[0].starttime
+    interpolated.dt = 1.0 / index[0].samprate
+    Database._read_data_from_dfile(
+        interpolated,
+        str(tmp_path),
+        mseed_file.name,
+        index[0].foff,
+        index[0].nbytes,
+        format="mseed",
+        merge_fill_value="interpolate",
+    )
+    assert interpolated.live
+    assert list(interpolated.data) == [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        6.0,
+        7.0,
+        8.0,
+        9.0,
+        10.0,
+        11.0,
+    ]
+    assert interpolated["has_gap"]
+    assert interpolated["gaps"] == datum["gaps"]

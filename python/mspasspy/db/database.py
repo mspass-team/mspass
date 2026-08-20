@@ -452,7 +452,7 @@ class Database(pymongo.database.Database):
         alg_id="0",
         define_as_raw=False,
         merge_method=0,
-        merge_fill_value=None,
+        merge_fill_value=0,
         merge_interpolation_samples=0,
         aws_access_key_id=None,
         aws_secret_access_key=None,
@@ -772,10 +772,17 @@ class Database(pymongo.database.Database):
 
         :param merge_fill_value: Fill value for gap processing when obspy's merge
           method is invoked.  (see description for "merge_method" above).
-          The value given here is passed used as the "fill" argument to
-          the obspy merge method.  As with merge_method this argument is
-          relevant only when reading miniseed data.
-        :type merge_fill_value: :class:`int`, :class:`float` or None (default)
+          The value given here is passed as the ``fill_value`` argument to
+          the obspy merge method.  The default is 0.  Use ``"interpolate"``
+          to linearly interpolate between the samples bordering each gap.
+          Explicitly passing None represents missing samples as NaN because
+          an MsPASS TimeSeries cannot retain obspy's NumPy mask.  As with
+          merge_method this argument is relevant only when reading miniseed
+          data.  Any detected gaps are recorded in the returned datum with
+          ``has_gap=True`` and a ``gaps`` list defining the missing-sample
+          time intervals.
+        :type merge_fill_value: :class:`int`, :class:`float`, :class:`str`,
+          or None
 
         :param merge_interpolation_samples: when merge_method is set to
           -1 the obspy merge function requires a value for an
@@ -4271,7 +4278,7 @@ class Database(pymongo.database.Database):
         nbytes=0,
         format=None,
         merge_method=0,
-        merge_fill_value=None,
+        merge_fill_value=0,
         merge_interpolation_samples=0,
     ):
         """
@@ -4300,8 +4307,12 @@ class Database(pymongo.database.Database):
         :param nbytes: number of bytes to be read from the offset. This is only used when ``format`` is given.
         :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats>`__ of ObsPy writer. By default (``None``), the format will be the binary waveform.
         :type format: :class:`str`
-        :param fill_value: Fill value for gaps. Defaults to None. Traces will be converted to NumPy masked arrays if no value is given and gaps are present.
-        :type fill_value: :class:`int`, :class:`float` or None
+        :param merge_fill_value: Fill value for gaps.  Defaults to 0.  The
+          string ``"interpolate"`` requests linear interpolation.  Explicit
+          None values are converted to NaN when the obspy trace is copied to
+          the MsPASS sample vector because that vector cannot retain a mask.
+        :type merge_fill_value: :class:`int`, :class:`float`, :class:`str`,
+          or None
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -4382,7 +4393,23 @@ class Database(pymongo.database.Database):
                         # st is a "stream" but it may contains multiple Trace objects gaps
                         # but here we want only one TimeSeries, we merge these Trace objects and fill values for gaps
                         # we post a complaint elog entry to the mspass_object if there are gaps in the stream
+                        gap_metadata = []
                         if len(st) > 1:
+                            for gap in st.get_gaps():
+                                missing_samples = int(gap[7])
+                                if missing_samples <= 0:
+                                    continue
+                                previous_endtime = gap[4].timestamp
+                                next_starttime = gap[5].timestamp
+                                sample_interval = (
+                                    next_starttime - previous_endtime
+                                ) / (missing_samples + 1)
+                                gap_metadata.append(
+                                    {
+                                        "starttime": previous_endtime + sample_interval,
+                                        "endtime": next_starttime - sample_interval,
+                                    }
+                                )
                             message = "WARNING:  gaps detected while reading file {} with format {} using obspy\n".format(
                                 fname, format
                             )
@@ -4466,8 +4493,13 @@ class Database(pymongo.database.Database):
                         tr_data = tr.data.astype(
                             "float64"
                         )  #   Convert the nparray type to double, to match the DoubleVector
+                        if np.ma.isMaskedArray(tr_data):
+                            tr_data = tr_data.filled(np.nan)
                         mspass_object.npts = len(tr_data)
                         mspass_object.data = DoubleVector(tr_data)
+                        if gap_metadata:
+                            mspass_object["has_gap"] = True
+                            mspass_object["gaps"] = gap_metadata
                         # We can't use Trace2TimeSeries because we loose
                         # all but miniseed metadata if we do that.
                         # We do, however, need to compare post errors
@@ -5844,10 +5876,12 @@ class Database(pymongo.database.Database):
         telemetry are common and can create overwhelming numbers of index
         entries quickly.  When false, time-tag discontinuities alone are
         ignored and ``npts`` records the full regular time-grid span, including
-        sample positions in gaps.  The reader can then use its gap-handling
-        functions to create a TimeSeries on the same grid.  The scan still
-        creates a new index record when net, sta, chan, loc, or sampling rate
-        changes beyond ``sample_rate_tolerance``.
+        sample positions in gaps.  By default :meth:`read_data` fills those
+        positions with zeros and records the missing-sample intervals in the
+        returned datum's ``has_gap`` and ``gaps`` Metadata.  Callers can instead
+        request linear interpolation with ``merge_fill_value="interpolate"``.
+        The scan still creates a new index record when net, sta, chan, loc, or
+        sampling rate changes beyond ``sample_rate_tolerance``.
 
         Note to parallelize this function put a list of files in a Spark
         RDD or a Dask bag and parallelize the call the this function.
