@@ -455,6 +455,62 @@ def test_spark_cleanup_failure_propagates_after_replacement_is_committed(
     assert old_spark.stop_calls == 1
 
 
+@pytest.mark.parametrize("scheduler", ["dask", "spark"])
+@pytest.mark.parametrize("owned", [True, False], ids=["owned", "caller-owned"])
+def test_close_scheduler_is_idempotent_and_respects_ownership(scheduler, owned):
+    if scheduler == "dask":
+        client, resource = _new_dask_client_state(owned)
+    else:
+        client, resource = _new_spark_client_state(owned)
+
+    assert client.close_scheduler() is None
+    assert client.get_scheduler() is None
+    assert client._scheduler is None
+    assert client._scheduler_disabled is True
+    assert not hasattr(client, "_dask_client")
+    assert not hasattr(client, "_spark_context")
+    call_count = resource.close_calls if scheduler == "dask" else resource.stop_calls
+    assert call_count == int(owned)
+
+    assert client.close_scheduler() is None
+    call_count = resource.close_calls if scheduler == "dask" else resource.stop_calls
+    assert call_count == int(owned)
+
+
+@pytest.mark.parametrize("scheduler", ["dask", "spark"])
+def test_close_scheduler_propagates_cleanup_failure_after_detaching(scheduler):
+    if scheduler == "dask":
+        client, resource = _new_dask_client_state(owned=True)
+        cleanup_error = RuntimeError("dask shutdown failed")
+
+        def fail_cleanup():
+            raise cleanup_error
+
+        resource.on_close = fail_cleanup
+    else:
+        client, resource = _new_spark_client_state(owned=True)
+        cleanup_error = RuntimeError("spark shutdown failed")
+
+        def fail_cleanup():
+            raise cleanup_error
+
+        resource.on_stop = fail_cleanup
+
+    with pytest.raises(RuntimeError) as caught:
+        client.close_scheduler()
+
+    assert caught.value is cleanup_error
+    assert client.get_scheduler() is None
+    assert client._scheduler is None
+    assert client._scheduler_disabled is True
+    assert not hasattr(client, "_dask_client")
+    assert not hasattr(client, "_spark_context")
+
+    assert client.close_scheduler() is None
+    call_count = resource.close_calls if scheduler == "dask" else resource.stop_calls
+    assert call_count == 1
+
+
 def test_same_spark_master_is_no_op(monkeypatch, fake_schedulers):
     client, old_spark = _new_spark_client_state()
     builder = FakeSparkBuilder(failure=AssertionError("builder must not be called"))

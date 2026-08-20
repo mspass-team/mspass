@@ -525,6 +525,42 @@ class Client:
             )
             return None
 
+    def close_scheduler(self):
+        """Detach the active scheduler and release it when owned by this client.
+
+        A local Dask client or Spark context created by this :class:`Client` is
+        closed or stopped exactly once.  A Dask client supplied by the caller
+        and a Spark context reused from the caller are detached but remain
+        running.  Repeated calls are no-ops.
+
+        Scheduler state is cleared before an owned resource is released.  If
+        ``close`` or ``stop`` raises, that exception is propagated and this
+        client remains detached from the scheduler.
+        """
+        scheduler = getattr(self, "_scheduler", None)
+        dask_client = getattr(self, "_dask_client", None)
+        dask_owned = getattr(self, "_dask_client_owned", False)
+        spark_context = getattr(self, "_spark_context", None)
+        spark_owned = getattr(self, "_spark_context_owned", False)
+
+        self._scheduler = None
+        self._scheduler_disabled = True
+        for attribute in (
+            "_dask_client",
+            "_dask_client_address",
+            "_dask_client_owned",
+            "_spark_context",
+            "_spark_master_url",
+            "_spark_context_owned",
+        ):
+            if hasattr(self, attribute):
+                delattr(self, attribute)
+
+        if scheduler == "dask" and dask_client is not None and dask_owned:
+            dask_client.close()
+        elif scheduler == "spark" and spark_context is not None and spark_owned:
+            spark_context.stop()
+
     def set_database_client(self, database_host, database_port=None):
         """
         Set a database client by database_host(and database_port)
