@@ -571,12 +571,27 @@ class Client:
 
     def set_database_client(self, database_host, database_port=None):
         """
-        Set a database client by database_host(and database_port)
+        Replace the database client and its global-history database together.
+
+        The replacement database client is connected and validated first.  A
+        new history database and :class:`GlobalHistoryManager` are then built
+        with the current history database name, schema objects, job name, and
+        collection.  Only after all of those steps succeed are the database and
+        history references committed to this client.  A failure therefore
+        leaves the current database client, history manager, and scheduler
+        unchanged.
+
+        An explicit port is appended only when ``database_host`` does not
+        already contain one.  This applies to bare hosts, MongoDB URIs, and
+        bracketed IPv6 addresses.
 
         :param database_host: the host address of database client
         :type database_host: :class:`str`
         :param database_port: the port of database client
         :type database_port: :class:`str`
+
+        :raises MsPASSError: if the replacement database client, history
+            database, or history manager cannot be constructed and validated.
         """
         database_address = _build_database_address(database_host, database_port)
         replacement_db_client = None
