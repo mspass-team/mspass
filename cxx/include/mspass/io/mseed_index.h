@@ -99,9 +99,9 @@ of interest only if something breaks.
   packets are logged.
 \param sample_rate_tolerance is the relative tolerance used to decide whether
   packet sample rates belong to the same index entry.  The default, 0.0001,
-  is the tolerance used by libmseed's MS_ISRATETOLERABLE macro.  Rates outside
-  this tolerance always start a new index entry because one entry can store
-  only one sample rate.
+  is the tolerance used by libmseed's MS_ISRATETOLERABLE macro.  Rates that
+  are not strictly within this tolerance always start a new index entry
+  because one entry can store only one sample rate.
 \return std::pair whose first element contains a vector of objects
   called mseed_index that contain the basic information defining an index for
   inputfile.  See class description of mseed_index for more details. "second"

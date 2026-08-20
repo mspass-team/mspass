@@ -5972,12 +5972,13 @@ class Database(pymongo.database.Database):
         :param sample_rate_tolerance: nonnegative relative tolerance used to
           decide whether packet sample rates belong to the same index entry.
           The default, ``1.0e-4``, matches libmseed's sample-rate tolerance.
-          Rates outside the tolerance start a new index entry even when
-          ``segment_time_tears`` is False.
+          Rates that are not strictly within the tolerance start a new index
+          entry even when ``segment_time_tears`` is False.
         :exception: This function can throw a range of error types for
           a long list of possible io issues.   Callers should use a
           generic handler to avoid aborts in a large job.
         """
+
         dbh = self[collection]
         if dfile is None:
             dfile = self._get_dfile_uuid("mseed")
