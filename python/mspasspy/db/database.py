@@ -5798,11 +5798,12 @@ class Database(pymongo.database.Database):
         dfile,
         dir=None,
         collection="wf_miniseed",
-        segment_time_tears=True,
+        segment_time_tears=False,
         elog_collection="elog",
         return_ids=False,
         normalize_channel=False,
         verbose=False,
+        sample_rate_tolerance=1.0e-4,
     ):
         """
         This is the first stage import function for handling the import of
@@ -5839,13 +5840,14 @@ class Database(pymongo.database.Database):
         from the endtime of the last packet by more than one-half of the
         previous sample interval
         AND net:sta:chan:loc are constant.  The default for this
-        parameter is true.  When false, time-tag discontinuities alone are
-        ignored, but the scan still creates a new index record when net,
-        sta, chan, loc, or sampling rate changes, or when libmseed skips
-        non-record bytes between independently readable packets.  The reader
-        can handle ordinary time gaps when the caller chooses not to segment
-        them; skipped non-record bytes are never included in either adjacent
-        segment's byte range.
+        parameter is false because data with many dropped packets from
+        telemetry are common and can create overwhelming numbers of index
+        entries quickly.  When false, time-tag discontinuities alone are
+        ignored and ``npts`` records the full regular time-grid span, including
+        sample positions in gaps.  The reader can then use its gap-handling
+        functions to create a TimeSeries on the same grid.  The scan still
+        creates a new index record when net, sta, chan, loc, or sampling rate
+        changes beyond ``sample_rate_tolerance``.
 
         Note to parallelize this function put a list of files in a Spark
         RDD or a Dask bag and parallelize the call the this function.
@@ -5875,7 +5877,7 @@ class Database(pymongo.database.Database):
         :param segment_time_tears: boolean controlling handling of data gaps
           defined by constant net, sta, chan, and loc but a discontinuity
           in time tags for successive packets.  See above for a more extensive
-          discussion of how to use this parameter.  Default is True.
+          discussion of how to use this parameter.  Default is False.
         :param elog_collection:  name to write any error logs messages
           from the miniseed reader.  Default is "elog", which is the
           same as for TimeSeries and Seismogram data, but the cross reference
@@ -5910,6 +5912,11 @@ class Database(pymongo.database.Database):
           False.  Set this True if you are using inline normalization
           (normalize_channel set True) and you aren't certain your
           channel collection has no serious inconsistencies.
+        :param sample_rate_tolerance: nonnegative relative tolerance used to
+          decide whether packet sample rates belong to the same index entry.
+          The default, ``1.0e-4``, matches libmseed's sample-rate tolerance.
+          Rates outside the tolerance start a new index entry even when
+          ``segment_time_tears`` is False.
         :exception: This function can throw a range of error types for
           a long list of possible io issues.   Callers should use a
           generic handler to avoid aborts in a large job.
@@ -5927,7 +5934,9 @@ class Database(pymongo.database.Database):
         odir = str(file_path.parent)
         dfile = file_path.name
         fname = str(file_path)
-        ind, elog = _mseed_file_indexer(fname, segment_time_tears)
+        ind, elog = _mseed_file_indexer(
+            fname, segment_time_tears, False, sample_rate_tolerance
+        )
         if len(elog.get_error_log()) > 0 and "No such file or directory" in str(
             elog.get_error_log()
         ):

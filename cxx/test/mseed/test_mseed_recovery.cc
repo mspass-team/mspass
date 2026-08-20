@@ -110,7 +110,7 @@ void TestHalfSampleBoundary(TempFiles &files) {
 
   const auto result = mseed_file_indexer(path, true, true);
   CHECK(result.first.size() == 2);
-  CHECK(result.first[0].npts == 2 * npts);
+  CHECK(result.first[0].npts == 2 * npts + 1);
   CHECK(result.first[0].foff == 0);
   CHECK(result.first[0].nbytes == records[0].size() + records[1].size());
   CHECK(result.first[1].foff == result.first[0].nbytes);
@@ -119,47 +119,59 @@ void TestHalfSampleBoundary(TempFiles &files) {
 
   const auto unsplit = mseed_file_indexer(path, false, false);
   CHECK(unsplit.first.size() == 1);
-  CHECK(unsplit.first[0].npts == 3 * npts);
+  CHECK(unsplit.first[0].npts == 3 * npts + 1);
 }
 
-void TestSkippedBytesPreserveRecords(TempFiles &files) {
-  const string sid("XFDSN:XX_SKIP_00_B_H_Z");
+void TestGapUsesFullTimeGrid(TempFiles &files) {
+  const string sid("XFDSN:XX_GAP_00_B_H_Z");
   const nstime_t base(1610000000000000000LL);
   const int64_t npts(4);
   const double rate(20.0);
+  const int64_t missing_samples(3);
   const auto first = PackRecord(sid, base, rate, npts);
-  const auto second =
-      PackRecord(sid, base + npts * NSTMODULUS / 20, rate, npts);
-  const vector<char> nonrecord(64, static_cast<char>(0x7f));
-  const auto path =
-      WriteParts(files, "skipped_bytes", {first, nonrecord, second});
+  const nstime_t second_start =
+      base + (npts + missing_samples) * NSTMODULUS / 20;
+  const auto second = PackRecord(sid, second_start, rate, npts);
+  const auto path = WriteParts(files, "gap", {first, second});
 
-  const auto result = mseed_file_indexer(path, false, false);
-  CHECK(result.first.size() == 2);
-  CHECK(result.first[0].foff == 0);
-  CHECK(result.first[0].nbytes == first.size());
-  CHECK(result.first[0].npts == npts);
-  CHECK(result.first[1].foff == first.size() + nonrecord.size());
-  CHECK(result.first[1].nbytes == second.size());
-  CHECK(result.first[1].npts == npts);
-  CHECK(result.second.size() == 1);
+  const auto combined = mseed_file_indexer(path, false, false);
+  CHECK(combined.first.size() == 1);
+  const auto &index = combined.first.front();
+  CHECK(index.npts == 2 * npts + missing_samples);
+  CHECK(index.nbytes == first.size() + second.size());
+  CHECK(std::fabs(index.endtime -
+                  (index.starttime + static_cast<double>(index.npts - 1) /
+                                         index.samprate)) < 1.0e-12);
+  const double data_end = MS_NSTIME2EPOCH(
+      static_cast<double>(second_start + (npts - 1) * NSTMODULUS / 20));
+  CHECK(std::fabs(index.endtime - data_end) < 1.0e-6);
+
+  const auto segmented = mseed_file_indexer(path, true, false);
+  CHECK(segmented.first.size() == 2);
+  CHECK(segmented.first[0].npts == npts);
+  CHECK(segmented.first[1].npts == npts);
 }
 
-void TestSampleRateChangeStartsSegment(TempFiles &files) {
-  const string sid("XFDSN:XX_RATE_00_B_H_Z");
+void TestSampleRateTolerance(TempFiles &files) {
+  const string sid("XFDSN:XX_DRIFT_00_B_H_Z");
   const nstime_t base(1620000000000000000LL);
-  const int64_t npts(4);
-  const auto first = PackRecord(sid, base, 20.0, npts);
+  const int64_t npts(10);
+  const double nominal_rate(100.0);
+  const double drifted_rate(100.005);
+  const auto first = PackRecord(sid, base, nominal_rate, npts);
   const auto second =
-      PackRecord(sid, base + npts * NSTMODULUS / 20, 40.0, npts);
-  const auto path = WriteParts(files, "rate_change", {first, second});
+      PackRecord(sid, base + npts * NSTMODULUS / 100, drifted_rate, npts);
+  const auto path = WriteParts(files, "rate_drift", {first, second});
 
-  const auto result = mseed_file_indexer(path, false, false);
-  CHECK(result.first.size() == 2);
-  CHECK(result.first[0].samprate == 20.0);
-  CHECK(result.first[1].samprate == 40.0);
-  CHECK(result.first[0].nbytes == first.size());
-  CHECK(result.first[1].nbytes == second.size());
+  const auto default_tolerance = mseed_file_indexer(path, false, false);
+  CHECK(default_tolerance.first.size() == 1);
+  CHECK(default_tolerance.first[0].samprate == nominal_rate);
+  CHECK(default_tolerance.first[0].npts == 2 * npts);
+
+  const auto strict_tolerance = mseed_file_indexer(path, false, false, 1.0e-6);
+  CHECK(strict_tolerance.first.size() == 2);
+  CHECK(strict_tolerance.first[0].samprate == nominal_rate);
+  CHECK(strict_tolerance.first[1].samprate == drifted_rate);
 }
 } // namespace
 
@@ -167,8 +179,8 @@ int main() {
   try {
     TempFiles files;
     TestHalfSampleBoundary(files);
-    TestSkippedBytesPreserveRecords(files);
-    TestSampleRateChangeStartsSegment(files);
+    TestGapUsesFullTimeGrid(files);
+    TestSampleRateTolerance(files);
     return 0;
   } catch (const std::exception &error) {
     std::fprintf(stderr, "%s\n", error.what());

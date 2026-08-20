@@ -1,8 +1,10 @@
+#include <cmath>
 #include <errno.h>
 #include <iomanip>
 #include <iostream>
 #include <math.h>
 #include <sstream>
+#include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -159,12 +161,15 @@ std::string MS_code_to_message(int retcode) {
  * 1.  miniseed files are often produced by concatenation of data form multiple
  *     channel.  Any change in station id returned by the function triggers a
  *     new index entry.
- * 2.  Packet errors will force a new segment.
+ * 2.  A libmseed packet parsing error stops the scan after the preceding
+ *     valid records have been indexed.  Missing telemetry samples appear as
+ *     time tears, not packet parsing errors.
  * 3.  Time tears defined by either a jump or accumulated time mismatch of
- *     more than 1/2 sample will trigger a new segments.
- * 4.  Changes in sample interval trigger a new segments.   That is
- *     actually implicit in point 1 with the "sid" because of the
- *     seed channel code naming convention.
+ *     more than 1/2 sample will trigger a new segment when requested.
+ * 4.  Changes in sample interval beyond the configured relative tolerance
+ *     trigger a new segment.  This is not implicit in point 1 because real
+ *     instruments can report small sample-rate drift without changing the
+ *     SEED channel code.
  * \return std::pair   first is a vector of index data.  second is
  *   an ErrorLogger object.  Caller should test for empty vector
  *   that is a signal for a open failure or a file that probably isn't
@@ -173,9 +178,14 @@ std::string MS_code_to_message(int retcode) {
  * */
 MSDINDEX_returntype mseed_file_indexer(const string inputfile,
                                        const bool segment_timetears,
-                                       const bool Verbose) {
+                                       const bool Verbose,
+                                       const double sample_rate_tolerance) {
 
   const string function_name("mseed_file_indexer");
+  if (!std::isfinite(sample_rate_tolerance) || sample_rate_tolerance < 0.0)
+    throw std::invalid_argument(
+        "mseed_file_indexer: sample_rate_tolerance must be finite and "
+        "nonnegative");
   MS3Record *msr = 0;
   /* This thing is used for the thread safe reader.   It uses the common
   plain C implicit signal to alloc the struct it contains when the
@@ -201,11 +211,12 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
    * epoch times.  These can only be compared with epoch times by
    * calling the function MS_NSTIME2EPOCH
    */
-  nstime_t stime, last_packet_stime(0), segment_stime(0);
+  nstime_t stime, last_packet_stime(0), segment_stime(0),
+      last_record_endtime(0);
   int64_t npts(0), current_npts(0), last_packet_npts(0);
   uint64_t number_packets_read(0), number_valid_packets(0);
-  double last_packet_samprate(0.0), last_packet_endtime(0.0),
-      expected_starttime(0.0), last_dt(0.0);
+  double segment_samprate(0.0), last_packet_samprate(0.0),
+      last_packet_endtime(0.0), expected_starttime(0.0), last_dt(0.0);
   /* These are used to handle long time series where the accumulated time
    * from the start of a segment (many packets) gets inconsistent with
    * the next packet's starttime.*/
@@ -213,6 +224,26 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
   /* mseed stores time in an int (I think) this holds float
    * conversions for current and last packet read.*/
   double current_epoch_stime(0.0), last_epoch_stime(0.0);
+  auto append_segment = [&]() {
+    nbytes = last_record_end_foff - start_foff;
+    ind.net = last_sid.net;
+    ind.sta = last_sid.sta;
+    ind.chan = last_sid.chan;
+    ind.loc = last_sid.loc;
+    ind.foff = start_foff;
+    ind.nbytes = nbytes;
+    ind.starttime = segment_starttime;
+    ind.last_packet_time = last_epoch_stime;
+    ind.samprate = segment_samprate;
+    const long double sample_intervals =
+        static_cast<long double>(last_record_endtime - segment_stime) *
+        static_cast<long double>(segment_samprate) /
+        static_cast<long double>(NSTMODULUS);
+    ind.npts = static_cast<size_t>(std::llround(sample_intervals) + 1);
+    ind.endtime =
+        ind.starttime + static_cast<double>(ind.npts - 1) / ind.samprate;
+    indexdata.push_back(ind);
+  };
   /* loop break boolean */
   bool data_available;
   /* It is not clear what verbose means in this function so we currently always
@@ -233,7 +264,7 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
   ms_rloginit(NULL, NULL, NULL, NULL, 10);
   do {
     bool timetear_detected(false), sid_change_detected(false),
-        samprate_change_detected(false), packet_gap_detected(false);
+        samprate_change_detected(false);
     retcode = ms3_readmsr_r(&msfp, &msr, inputfile.c_str(), &fpos, NULL, flags,
                             verbose);
     switch (retcode) {
@@ -258,32 +289,30 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
         last_epoch_stime = current_epoch_stime;
         last_packet_stime = stime;
         segment_stime = stime;
+        segment_samprate = msr->samprate;
         last_packet_samprate = msr->samprate;
         last_dt = 1.0 / last_packet_samprate;
         last_packet_npts = msr->samplecnt;
         npts = msr->samplecnt;
+        last_record_endtime = msr3_endtime(msr);
         last_packet_endtime =
-            current_epoch_stime + static_cast<double>(npts - 1) * last_dt;
+            MS_NSTIME2EPOCH(static_cast<double>(last_record_endtime));
         segment_starttime = last_epoch_stime;
-        start_foff = static_cast<uint64_t>(fpos);
+        /* Preserve the established reader contract for leading bytes:
+           libmseed scans from byte zero with MSF_SKIPNOTDATA. */
+        start_foff = 0;
         last_record_end_foff =
             static_cast<uint64_t>(fpos) + static_cast<uint64_t>(msr->reclen);
-        if (start_foff > 0) {
-          stringstream ss;
-          ss << "Skipped " << start_foff
-             << " non-record byte(s) before the first miniSEED packet in file "
-             << inputfile;
-          elog.log_error(function_name, ss.str(), ErrorSeverity::Complaint);
-        }
       } else {
         stime = msr->starttime;
         current_epoch_stime = MS_NSTIME2EPOCH(static_cast<double>(stime));
         expected_starttime = last_packet_endtime + last_dt;
         if (current_sid != last_sid)
           sid_change_detected = true;
-        samprate_change_detected = msr->samprate != last_packet_samprate;
-        packet_gap_detected =
-            static_cast<uint64_t>(fpos) != last_record_end_foff;
+        samprate_change_detected =
+            msr->samprate != segment_samprate &&
+            std::fabs(1.0 - msr->samprate / segment_samprate) >=
+                sample_rate_tolerance;
         if (segment_timetears && !sid_change_detected &&
             !samprate_change_detected) {
           /* Compare libmseed's integer nanosecond clock on the previous
@@ -296,7 +325,7 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
                         static_cast<long double>(NSTMODULUS));
           const long double segment_error =
               fabsl(static_cast<long double>(stime - segment_stime) *
-                        static_cast<long double>(last_packet_samprate) -
+                        static_cast<long double>(segment_samprate) -
                     static_cast<long double>(npts) *
                         static_cast<long double>(NSTMODULUS));
           timetear_detected =
@@ -304,13 +333,6 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
               segment_error > 0.5L * static_cast<long double>(NSTMODULUS);
         }
 
-        if (packet_gap_detected) {
-          stringstream ss;
-          ss << "Noncontiguous miniSEED packet offset before packet "
-             << number_packets_read << " in file " << inputfile
-             << "; starting a new segment";
-          elog.log_error(function_name, ss.str(), ErrorSeverity::Complaint);
-        }
         if (timetear_detected && Verbose) {
           stringstream ss;
           ss << "Time tear before packet " << number_packets_read << " in file "
@@ -320,33 +342,22 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
         }
 
         if (sid_change_detected || samprate_change_detected ||
-            packet_gap_detected || timetear_detected) {
-          nbytes = last_record_end_foff - start_foff;
-          ind.net = last_sid.net;
-          ind.sta = last_sid.sta;
-          ind.chan = last_sid.chan;
-          ind.loc = last_sid.loc;
-          ind.foff = start_foff;
-          ind.nbytes = nbytes;
-          ind.starttime = segment_starttime;
-          ind.last_packet_time = last_epoch_stime;
-          ind.samprate = last_packet_samprate;
-          ind.npts = npts;
-          ind.endtime =
-              ind.starttime + (static_cast<double>(npts - 1)) / ind.samprate;
-          indexdata.push_back(ind);
+            timetear_detected) {
+          append_segment();
           /* Initate a new segment.  Note the only difference if there was a
            * decoding error is the index entry will be dropped. */
           last_sid = current_sid;
           last_epoch_stime = current_epoch_stime;
           last_packet_stime = stime;
           segment_stime = stime;
+          segment_samprate = msr->samprate;
           last_packet_samprate = msr->samprate;
           last_dt = 1.0 / last_packet_samprate;
           last_packet_npts = msr->samplecnt;
           npts = msr->samplecnt;
+          last_record_endtime = msr3_endtime(msr);
           last_packet_endtime =
-              current_epoch_stime + static_cast<double>(npts - 1) * last_dt;
+              MS_NSTIME2EPOCH(static_cast<double>(last_record_endtime));
           segment_starttime = current_epoch_stime;
           start_foff = static_cast<uint64_t>(fpos);
         } else {
@@ -360,8 +371,9 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
           current_npts = msr->samplecnt;
           npts += current_npts;
           last_packet_npts = current_npts;
-          last_packet_endtime = current_epoch_stime +
-                                static_cast<double>(current_npts - 1) * last_dt;
+          last_record_endtime = msr3_endtime(msr);
+          last_packet_endtime =
+              MS_NSTIME2EPOCH(static_cast<double>(last_record_endtime));
         }
         last_record_end_foff =
             static_cast<uint64_t>(fpos) + static_cast<uint64_t>(msr->reclen);
@@ -374,20 +386,7 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
         /* fpos is not advanced on EOF.  last_record_end_foff records the
            actual end of the last valid packet and also handles variable
            record lengths and skipped non-record bytes. */
-        nbytes = last_record_end_foff - start_foff;
-        ind.net = last_sid.net;
-        ind.sta = last_sid.sta;
-        ind.chan = last_sid.chan;
-        ind.loc = last_sid.loc;
-        ind.foff = start_foff;
-        ind.nbytes = nbytes;
-        ind.starttime = segment_starttime;
-        ind.last_packet_time = last_epoch_stime;
-        ind.samprate = last_packet_samprate;
-        ind.npts = npts;
-        ind.endtime =
-            ind.starttime + (static_cast<double>(npts - 1)) / ind.samprate;
-        indexdata.push_back(ind);
+        append_segment();
         data_available = false;
       } else {
         elog.log_error(function_name,
@@ -408,20 +407,7 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
          is the problem. */
       if (number_valid_packets > 0) {
         // NOTE not the same as EOF section
-        nbytes = last_record_end_foff - start_foff;
-        ind.net = last_sid.net;
-        ind.sta = last_sid.sta;
-        ind.chan = last_sid.chan;
-        ind.loc = last_sid.loc;
-        ind.foff = start_foff;
-        ind.nbytes = nbytes;
-        ind.starttime = segment_starttime;
-        ind.last_packet_time = last_epoch_stime;
-        ind.samprate = last_packet_samprate;
-        ind.npts = npts;
-        ind.endtime =
-            ind.starttime + (static_cast<double>(npts - 1)) / ind.samprate;
-        indexdata.push_back(ind);
+        append_segment();
         data_available = false;
       }
     };
