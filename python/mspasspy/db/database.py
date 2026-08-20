@@ -3,7 +3,9 @@ import io
 import copy
 import pathlib
 import pickle
+import tempfile
 import time
+import urllib.error
 import urllib.request
 from array import array
 from contextlib import contextmanager
@@ -4740,6 +4742,56 @@ class Database(pymongo.database.Database):
         except Exception as e:
             raise MsPASSError("Error while read data from s3_lambda.", "Fatal") from e
 
+    @staticmethod
+    def _is_s3_not_found(error):
+        if isinstance(error, urllib.error.HTTPError):
+            return error.code == 404
+        if isinstance(error, botocore.exceptions.ClientError):
+            response = error.response
+            code = str(response.get("Error", {}).get("Code", ""))
+            status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            return code in {"404", "NoSuchKey"} or status == 404
+        return False
+
+    @staticmethod
+    def _cache_s3_object(s3_client, bucket, key, fname, replace_existing=False):
+        """Publish one complete S3 object to a local cache path atomically."""
+        parent = os.path.dirname(fname) or "."
+        os.makedirs(parent, exist_ok=True)
+        descriptor, temporary_name = tempfile.mkstemp(
+            dir=parent,
+            prefix=f".{os.path.basename(fname)}.",
+            suffix=".tmp",
+        )
+        try:
+            with os.fdopen(descriptor, "wb") as output:
+                descriptor = None
+                obj = s3_client.get_object(Bucket=bucket, Key=key)
+                body = obj["Body"]
+                try:
+                    payload = body.read()
+                finally:
+                    body.close()
+                output.write(payload)
+                output.flush()
+                os.fsync(output.fileno())
+            if replace_existing:
+                os.replace(temporary_name, fname)
+                temporary_name = None
+            else:
+                try:
+                    os.link(temporary_name, fname)
+                except FileExistsError:
+                    pass
+        finally:
+            if descriptor is not None:
+                os.close(descriptor)
+            if temporary_name is not None:
+                try:
+                    os.unlink(temporary_name)
+                except FileNotFoundError:
+                    pass
+
     def _read_data_from_s3_event(
         self,
         mspass_object,
@@ -4769,14 +4821,9 @@ class Database(pymongo.database.Database):
             raise TypeError("only TimeSeries and Seismogram are supported")
         fname = os.path.join(dir, dfile)
 
-        # check if fname exists
+        # Cache publication is atomic.  Concurrent readers either see no file
+        # or one complete download, never a partially written final path.
         if not os.path.exists(fname):
-            # fname might now exist, but could download from s3
-            s3_client = boto3.client(
-                "s3",
-                aws_access_key_id=aws_access_key_id,
-                aws_secret_access_key=aws_secret_access_key,
-            )
             BUCKET_NAME = "scedc-pds"
             year = mspass_object["year"]
             day_of_year = mspass_object["day_of_year"]
@@ -4792,25 +4839,29 @@ class Database(pymongo.database.Database):
                 + filename
                 + ".ms"
             )
-            # try to download the mseed file from s3 and save it locally
             try:
-                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
-                mseed_content = obj["Body"].read()
-                # temporarily write data into a file
-                with open(fname, "wb") as f:
-                    f.write(mseed_content)
-
-            except botocore.exceptions.ClientError as e:
-                if e.response["Error"]["Code"] == "404":
-                    # the object does not exist
-                    print(
-                        "Could not find the object by the KEY: {} from the BUCKET: {} in s3"
-                    ).format(KEY, BUCKET_NAME)
-                else:
-                    raise
-
-            except Exception as e:
-                raise MsPASSError("Error while read data from s3.", "Fatal") from e
+                s3_client = boto3.client(
+                    "s3",
+                    aws_access_key_id=aws_access_key_id,
+                    aws_secret_access_key=aws_secret_access_key,
+                )
+                self._cache_s3_object(s3_client, BUCKET_NAME, KEY, fname)
+            except Exception as error:
+                if self._is_s3_not_found(error):
+                    message = (
+                        f"Could not find the object by the KEY: {KEY} "
+                        f"from the BUCKET: {BUCKET_NAME} in s3"
+                    )
+                    mspass_object.elog.log_error(
+                        "Database._read_data_from_s3_event",
+                        message,
+                        ErrorSeverity.Invalid,
+                    )
+                    mspass_object.kill()
+                    return mspass_object
+                raise MsPASSError(
+                    "Error while read data from s3.", ErrorSeverity.Fatal
+                ) from error
 
         with open(fname, mode="rb") as fh:
             fh.seek(foff)
@@ -4834,6 +4885,7 @@ class Database(pymongo.database.Database):
                 mspass_object.set_live()
             else:
                 mspass_object.kill()
+        return mspass_object
 
     @staticmethod
     def _read_data_from_fdsn(mspass_object):
@@ -7061,8 +7113,10 @@ class Database(pymongo.database.Database):
         :param collection:  is the mongodb collection name to write the
             index data to.  The default is 'wf_miniseed'.  It should be rare
             to use anything but the default.
-        :exception: This function will do nothing if the obejct does not exist. For other
-            exceptions, it would raise a MsPASSError.
+        :exception: This function returns without indexing if the S3 object does
+            not exist.  Other S3, network, and local indexing failures raise a
+            fatal :class:`MsPASSError`; the original exception is retained as
+            its cause.
         """
 
         dbh = self[collection]
@@ -7084,20 +7138,34 @@ class Database(pymongo.database.Database):
             + ".ms"
         )
 
+        if dir is None:
+            odir = os.getcwd()
+        else:
+            odir = os.path.abspath(dir)
+        if dfile is None:
+            dfile = self._get_dfile_uuid("mseed")
+        fname = os.path.join(odir, dfile)
+
         try:
-            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
-            mseed_content = obj["Body"].read()
-            # specify the file path
-            if dir is None:
-                odir = os.getcwd()
-            else:
-                odir = os.path.abspath(dir)
-            if dfile is None:
-                dfile = self._get_dfile_uuid("mseed")
-            fname = os.path.join(odir, dfile)
-            # temporarily write data into a file
-            with open(fname, "wb") as f:
-                f.write(mseed_content)
+            self._cache_s3_object(
+                s3_client,
+                BUCKET_NAME,
+                KEY,
+                fname,
+                replace_existing=True,
+            )
+        except Exception as error:
+            if self._is_s3_not_found(error):
+                print(
+                    f"Could not find the object by the KEY: {KEY} "
+                    f"from the BUCKET: {BUCKET_NAME} in s3"
+                )
+                return None
+            raise MsPASSError(
+                "Error while index mseed file from s3.", ErrorSeverity.Fatal
+            ) from error
+
+        try:
             # immediately read data from the file
             ind, elog = _mseed_file_indexer(fname)
             for i in ind:
@@ -7110,24 +7178,10 @@ class Database(pymongo.database.Database):
                 doc["day_of_year"] = day_of_year
                 doc["filename"] = filename
                 dbh.insert_one(doc)
-
-        except botocore.exceptions.ClientError as e:
-            if e.response["Error"]["Code"] == "404":
-                # the object does not exist
-                print(
-                    "Could not find the object by the KEY: {} from the BUCKET: {} in s3"
-                ).format(KEY, BUCKET_NAME)
-            else:
-                print(
-                    "An ClientError occur when tyring to get the object by the KEY("
-                    + KEY
-                    + ")"
-                    + " with error: ",
-                    e,
-                )
-
-        except Exception as e:
-            raise MsPASSError("Error while index mseed file from s3.", "Fatal") from e
+        except Exception as error:
+            raise MsPASSError(
+                "Error while index mseed file from s3.", "Fatal"
+            ) from error
 
     def index_mseed_FDSN(
         self,
@@ -7301,6 +7355,17 @@ class Database(pymongo.database.Database):
         elif storage_mode == "s3_continuous":
             self._read_data_from_s3_continuous(
                 mspass_object, aws_access_key_id, aws_secret_access_key
+            )
+        elif storage_mode == "s3_event":
+            self._read_data_from_s3_event(
+                mspass_object,
+                md["dir"],
+                md["dfile"],
+                md["foff"],
+                nbytes=md["nbytes"],
+                format=None if "format" not in md else md["format"],
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key,
             )
         elif storage_mode == "s3_lambda":
             self._read_data_from_s3_lambda(
