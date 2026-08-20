@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev5+g905e21d6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
+    <script src="../_static/documentation_options.js?v=ca680272"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev5" />
   </head>
   
   
@@ -1058,7 +1058,7 @@ docs match the specified keys.  The default is False.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.index_mseed_file">
-<span class="sig-name descname"><span class="pre">index_mseed_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_miniseed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_time_tears</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elog_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'elog'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">index_mseed_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_miniseed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_time_tears</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elog_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'elog'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Link to this definition">#</a></dt>
 <dd><p>This is the first stage import function for handling the import of
 miniseed data.  This function scans a data file defined by a directory
 (dir arg) and dfile (file name) argument.  I builds an index
@@ -1088,16 +1088,19 @@ other standard and the rock is restored.  The behavior is this
 function is controlled by the input parameter
 segment_time_tears.  When true a new index entry is created
 any time the start time of a packet differs from that computed
-from the endtime of the last packet by more than one sample
+from the endtime of the last packet by more than one-half of the
+previous sample interval
 AND net:sta:chan:loc are constant.  The default for this
 parameter is false because data with many dropped packets from
-telemetry are common and can create overwhelming numbers of
-index entries quickly.  When false the scan only creates a new
-index record when net, sta, chan, or loc change between successive
-packets.  Our reader has gap handling functions to handle
-time tears.  Set segment_time_tears true only when you are
-confident the data set does not contain a large number of dropped
-packets.</p>
+telemetry are common and can create overwhelming numbers of index
+entries quickly.  When false, time-tag discontinuities alone are
+ignored and <code class="docutils literal notranslate"><span class="pre">npts</span></code> records the full regular time-grid span, including
+sample positions in gaps.  By default <a class="reference internal" href="#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data()</span></code></a> fills those
+positions with zeros and records the missing-sample intervals in the
+returned datum’s <code class="docutils literal notranslate"><span class="pre">has_gap</span></code> and <code class="docutils literal notranslate"><span class="pre">gaps</span></code> Metadata.  Callers can instead
+request linear interpolation with <code class="docutils literal notranslate"><span class="pre">merge_fill_value=&quot;interpolate&quot;</span></code>.
+The scan still creates a new index record when net, sta, chan, loc, or
+sampling rate changes beyond <code class="docutils literal notranslate"><span class="pre">sample_rate_tolerance</span></code>.</p>
 <p>Note to parallelize this function put a list of files in a Spark
 RDD or a Dask bag and parallelize the call the this function.
 That can work because MongoDB is designed for parallel operations
@@ -1127,7 +1130,7 @@ to use anything but the default.</p></li>
 <li><p><strong>segment_time_tears</strong> – boolean controlling handling of data gaps
 defined by constant net, sta, chan, and loc but a discontinuity
 in time tags for successive packets.  See above for a more extensive
-discussion of how to use this parameter.  Default is True.</p></li>
+discussion of how to use this parameter.  Default is False.</p></li>
 <li><p><strong>elog_collection</strong> – name to write any error logs messages
 from the miniseed reader.  Default is “elog”, which is the
 same as for TimeSeries and Seismogram data, but the cross reference
@@ -1162,6 +1165,11 @@ Those are usually harmless so the default for this parameter is
 False.  Set this True if you are using inline normalization
 (normalize_channel set True) and you aren’t certain your
 channel collection has no serious inconsistencies.</p></li>
+<li><p><strong>sample_rate_tolerance</strong> – nonnegative relative tolerance used to
+decide whether packet sample rates belong to the same index entry.
+The default, <code class="docutils literal notranslate"><span class="pre">1.0e-4</span></code>, matches libmseed’s sample-rate tolerance.
+Rates that are not strictly within the tolerance start a new index
+entry even when <code class="docutils literal notranslate"><span class="pre">segment_time_tears</span></code> is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Exception<span class="colon">:</span></dt>
@@ -1225,8 +1233,10 @@ to use anything but the default.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Exception<span class="colon">:</span></dt>
-<dd class="field-even"><p>This function will do nothing if the obejct does not exist. For other
-exceptions, it would raise a MsPASSError.</p>
+<dd class="field-even"><p>This function returns without indexing if the S3 object does
+not exist.  Other S3, network, and local indexing failures raise a
+fatal <code class="xref py py-class docutils literal notranslate"><span class="pre">MsPASSError</span></code>; the original exception is retained as
+its cause.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1338,7 +1348,7 @@ Default are attributes not normally need that are loaded from QuakeML.  Ignored 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.read_data">
-<span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_doc_or_cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">define_as_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_interpolation_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_doc_or_cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">define_as_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_interpolation_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Link to this definition">#</a></dt>
 <dd><p>Top-level MsPASS reader for seismic waveform data objects.</p>
 <p>Most MsPASS processing scripts use this method directly
 or indirectly via the parallel version called
@@ -1627,11 +1637,18 @@ for details on methods 0 and 1,
 See <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream._cleanup.html#obspy.core.stream.Stream._cleanup">Stream._cleanup</a>
 for details on method -1.  Note this argument is ignored unless
 the reader is trying to read miniseed data.</p></li>
-<li><p><strong>merge_fill_value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> or None (default)) – Fill value for gap processing when obspy’s merge
+<li><p><strong>merge_fill_value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>,
+or None) – Fill value for gap processing when obspy’s merge
 method is invoked.  (see description for “merge_method” above).
-The value given here is passed used as the “fill” argument to
-the obspy merge method.  As with merge_method this argument is
-relevant only when reading miniseed data.</p></li>
+The value given here is passed as the <code class="docutils literal notranslate"><span class="pre">fill_value</span></code> argument to
+the obspy merge method.  The default is 0.  Use <code class="docutils literal notranslate"><span class="pre">&quot;interpolate&quot;</span></code>
+to linearly interpolate between the samples bordering each gap.
+Explicitly passing None represents missing samples as NaN because
+an MsPASS TimeSeries cannot retain obspy’s NumPy mask.  As with
+merge_method this argument is relevant only when reading miniseed
+data.  Any detected gaps are recorded in the returned datum with
+<code class="docutils literal notranslate"><span class="pre">has_gap=True</span></code> and a <code class="docutils literal notranslate"><span class="pre">gaps</span></code> list defining the missing-sample
+time intervals.</p></li>
 <li><p><strong>merge_interpolation_samples</strong> – when merge_method is set to
 -1 the obspy merge function requires a value for an
 argument they call “interpolate_samples”.  See their documentation

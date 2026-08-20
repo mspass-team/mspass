@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev5+g905e21d6 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
+    <script src="../../../_static/documentation_options.js?v=ca680272"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev5" />
   </head>
   
   
@@ -478,7 +478,9 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.error</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">array</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
@@ -946,7 +948,7 @@
         <span class="n">alg_id</span><span class="o">=</span><span class="s2">"0"</span><span class="p">,</span>
         <span class="n">define_as_raw</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">merge_method</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">merge_fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">merge_fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">merge_interpolation_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1266,10 +1268,17 @@
 
 <span class="sd">        :param merge_fill_value: Fill value for gap processing when obspy's merge</span>
 <span class="sd">          method is invoked.  (see description for "merge_method" above).</span>
-<span class="sd">          The value given here is passed used as the "fill" argument to</span>
-<span class="sd">          the obspy merge method.  As with merge_method this argument is</span>
-<span class="sd">          relevant only when reading miniseed data.</span>
-<span class="sd">        :type merge_fill_value: :class:`int`, :class:`float` or None (default)</span>
+<span class="sd">          The value given here is passed as the ``fill_value`` argument to</span>
+<span class="sd">          the obspy merge method.  The default is 0.  Use ``"interpolate"``</span>
+<span class="sd">          to linearly interpolate between the samples bordering each gap.</span>
+<span class="sd">          Explicitly passing None represents missing samples as NaN because</span>
+<span class="sd">          an MsPASS TimeSeries cannot retain obspy's NumPy mask.  As with</span>
+<span class="sd">          merge_method this argument is relevant only when reading miniseed</span>
+<span class="sd">          data.  Any detected gaps are recorded in the returned datum with</span>
+<span class="sd">          ``has_gap=True`` and a ``gaps`` list defining the missing-sample</span>
+<span class="sd">          time intervals.</span>
+<span class="sd">        :type merge_fill_value: :class:`int`, :class:`float`, :class:`str`,</span>
+<span class="sd">          or None</span>
 
 <span class="sd">        :param merge_interpolation_samples: when merge_method is set to</span>
 <span class="sd">          -1 the obspy merge function requires a value for an</span>
@@ -4811,8 +4820,9 @@
         <span class="n">nbytes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">merge_method</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">merge_fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">merge_fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">merge_interpolation_samples</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">sample_rate_tolerance</span><span class="o">=</span><span class="mf">1.0e-4</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Private method to provide generic reader of atomic data from a standard</span>
@@ -4840,8 +4850,18 @@
 <span class="sd">        :param nbytes: number of bytes to be read from the offset. This is only used when ``format`` is given.</span>
 <span class="sd">        :param format: the format of the file. This can be one of the `supported formats &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats&gt;`__ of ObsPy writer. By default (``None``), the format will be the binary waveform.</span>
 <span class="sd">        :type format: :class:`str`</span>
-<span class="sd">        :param fill_value: Fill value for gaps. Defaults to None. Traces will be converted to NumPy masked arrays if no value is given and gaps are present.</span>
-<span class="sd">        :type fill_value: :class:`int`, :class:`float` or None</span>
+<span class="sd">        :param merge_fill_value: Fill value for gaps.  Defaults to 0.  The</span>
+<span class="sd">          string ``"interpolate"`` requests linear interpolation.  Explicit</span>
+<span class="sd">          None values are converted to NaN when the obspy trace is copied to</span>
+<span class="sd">          the MsPASS sample vector because that vector cannot retain a mask.</span>
+<span class="sd">        :type merge_fill_value: :class:`int`, :class:`float`, :class:`str`,</span>
+<span class="sd">          or None</span>
+<span class="sd">        :param sample_rate_tolerance: Relative tolerance used to treat small</span>
+<span class="sd">          miniSEED record-header sample-rate differences as one regular grid.</span>
+<span class="sd">          The default matches libmseed.  Samples are never resampled: only</span>
+<span class="sd">          rates within this tolerance are assigned the index grid rate before</span>
+<span class="sd">          ObsPy merges gaps.</span>
+<span class="sd">        :type sample_rate_tolerance: :class:`float`</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"only TimeSeries and Seismogram are supported"</span><span class="p">)</span>
@@ -4922,7 +4942,38 @@
                         <span class="c1"># st is a "stream" but it may contains multiple Trace objects gaps</span>
                         <span class="c1"># but here we want only one TimeSeries, we merge these Trace objects and fill values for gaps</span>
                         <span class="c1"># we post a complaint elog entry to the mspass_object if there are gaps in the stream</span>
+                        <span class="n">gap_metadata</span> <span class="o">=</span> <span class="p">[]</span>
                         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">sample_rate_tolerance</span><span class="p">)</span>
+                                <span class="ow">or</span> <span class="n">sample_rate_tolerance</span> <span class="o">&lt;</span> <span class="mf">0.0</span>
+                            <span class="p">):</span>
+                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                    <span class="s2">"sample_rate_tolerance must be finite and nonnegative"</span>
+                                <span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"mseed"</span><span class="p">,</span> <span class="s2">"miniseed"</span><span class="p">):</span>
+                                <span class="n">grid_rate</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span>
+                                <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">st</span><span class="p">:</span>
+                                    <span class="n">trace_rate</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">sampling_rate</span>
+                                    <span class="k">if</span> <span class="n">trace_rate</span> <span class="o">==</span> <span class="n">grid_rate</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span>
+                                        <span class="n">trace_rate</span> <span class="o">-</span> <span class="n">grid_rate</span>
+                                    <span class="p">)</span> <span class="o">&lt;</span> <span class="n">sample_rate_tolerance</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">trace_rate</span><span class="p">):</span>
+                                        <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">grid_rate</span>
+                            <span class="k">for</span> <span class="n">gap</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">get_gaps</span><span class="p">():</span>
+                                <span class="n">missing_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gap</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
+                                <span class="k">if</span> <span class="n">missing_samples</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="k">continue</span>
+                                <span class="n">previous_endtime</span> <span class="o">=</span> <span class="n">gap</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span>
+                                <span class="n">next_starttime</span> <span class="o">=</span> <span class="n">gap</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span>
+                                <span class="n">sample_interval</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">next_starttime</span> <span class="o">-</span> <span class="n">previous_endtime</span>
+                                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">missing_samples</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                                <span class="n">gap_metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                    <span class="p">{</span>
+                                        <span class="s2">"starttime"</span><span class="p">:</span> <span class="n">previous_endtime</span> <span class="o">+</span> <span class="n">sample_interval</span><span class="p">,</span>
+                                        <span class="s2">"endtime"</span><span class="p">:</span> <span class="n">next_starttime</span> <span class="o">-</span> <span class="n">sample_interval</span><span class="p">,</span>
+                                    <span class="p">}</span>
+                                <span class="p">)</span>
                             <span class="n">message</span> <span class="o">=</span> <span class="s2">"WARNING:  gaps detected while reading file </span><span class="si">{}</span><span class="s2"> with format </span><span class="si">{}</span><span class="s2"> using obspy</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                                 <span class="n">fname</span><span class="p">,</span> <span class="nb">format</span>
                             <span class="p">)</span>
@@ -5006,8 +5057,13 @@
                         <span class="n">tr_data</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
                             <span class="s2">"float64"</span>
                         <span class="p">)</span>  <span class="c1">#   Convert the nparray type to double, to match the DoubleVector</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">tr_data</span><span class="p">):</span>
+                            <span class="n">tr_data</span> <span class="o">=</span> <span class="n">tr_data</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
                         <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
                         <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">tr_data</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">gap_metadata</span><span class="p">:</span>
+                            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"has_gap"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gaps"</span><span class="p">]</span> <span class="o">=</span> <span class="n">gap_metadata</span>
                         <span class="c1"># We can't use Trace2TimeSeries because we loose</span>
                         <span class="c1"># all but miniseed metadata if we do that.</span>
                         <span class="c1"># We do, however, need to compare post errors</span>
@@ -5280,6 +5336,56 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">"Error while read data from s3_lambda."</span><span class="p">,</span> <span class="s2">"Fatal"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_s3_not_found</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">error</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">404</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span><span class="p">):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">response</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Error"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Code"</span><span class="p">,</span> <span class="s2">""</span><span class="p">))</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ResponseMetadata"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"HTTPStatusCode"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">code</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"404"</span><span class="p">,</span> <span class="s2">"NoSuchKey"</span><span class="p">}</span> <span class="ow">or</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">404</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cache_s3_object</span><span class="p">(</span><span class="n">s3_client</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">replace_existing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Publish one complete S3 object to a local cache path atomically."""</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"."</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">descriptor</span><span class="p">,</span> <span class="n">temporary_name</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span>
+            <span class="nb">dir</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span>
+            <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">".</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="s2">".tmp"</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">descriptor</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
+                <span class="n">descriptor</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">body</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">payload</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="n">body</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">fsync</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">replace_existing</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">temporary_name</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+                <span class="n">temporary_name</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">link</span><span class="p">(</span><span class="n">temporary_name</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">descriptor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">descriptor</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">temporary_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">temporary_name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_read_data_from_s3_event</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mspass_object</span><span class="p">,</span>
@@ -5309,14 +5415,9 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"only TimeSeries and Seismogram are supported"</span><span class="p">)</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
 
-        <span class="c1"># check if fname exists</span>
+        <span class="c1"># Cache publication is atomic.  Concurrent readers either see no file</span>
+        <span class="c1"># or one complete download, never a partially written final path.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-            <span class="c1"># fname might now exist, but could download from s3</span>
-            <span class="n">s3_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
-                <span class="s2">"s3"</span><span class="p">,</span>
-                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
-                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
-            <span class="p">)</span>
             <span class="n">BUCKET_NAME</span> <span class="o">=</span> <span class="s2">"scedc-pds"</span>
             <span class="n">year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"year"</span><span class="p">]</span>
             <span class="n">day_of_year</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"day_of_year"</span><span class="p">]</span>
@@ -5332,25 +5433,29 @@
                 <span class="o">+</span> <span class="n">filename</span>
                 <span class="o">+</span> <span class="s2">".ms"</span>
             <span class="p">)</span>
-            <span class="c1"># try to download the mseed file from s3 and save it locally</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">KEY</span><span class="p">)</span>
-                <span class="n">mseed_content</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-                <span class="c1"># temporarily write data into a file</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mseed_content</span><span class="p">)</span>
-
-            <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">"Error"</span><span class="p">][</span><span class="s2">"Code"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"404"</span><span class="p">:</span>
-                    <span class="c1"># the object does not exist</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="s2">"Could not find the object by the KEY: </span><span class="si">{}</span><span class="s2"> from the BUCKET: </span><span class="si">{}</span><span class="s2"> in s3"</span>
-                    <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">BUCKET_NAME</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span>
-
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">"Error while read data from s3."</span><span class="p">,</span> <span class="s2">"Fatal"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+                <span class="n">s3_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+                    <span class="s2">"s3"</span><span class="p">,</span>
+                    <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+                    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cache_s3_object</span><span class="p">(</span><span class="n">s3_client</span><span class="p">,</span> <span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">KEY</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_s3_not_found</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"Could not find the object by the KEY: </span><span class="si">{</span><span class="n">KEY</span><span class="si">}</span><span class="s2"> "</span>
+                        <span class="sa">f</span><span class="s2">"from the BUCKET: </span><span class="si">{</span><span class="n">BUCKET_NAME</span><span class="si">}</span><span class="s2"> in s3"</span>
+                    <span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="s2">"Database._read_data_from_s3_event"</span><span class="p">,</span>
+                        <span class="n">message</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">mspass_object</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">"Error while read data from s3."</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
             <span class="n">fh</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">foff</span><span class="p">)</span>
@@ -5374,6 +5479,7 @@
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">mspass_object</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_read_data_from_fdsn</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
@@ -6328,7 +6434,7 @@
 
     <span class="c1">#  Methods for handling miniseed data</span>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_mseed_index</span><span class="p">(</span><span class="n">index_record</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_mseed_index</span><span class="p">(</span><span class="n">index_record</span><span class="p">,</span> <span class="n">sample_rate_tolerance</span><span class="o">=</span><span class="mf">1.0e-4</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Helper used to convert C++ struct/class mseed_index to a dict</span>
 <span class="sd">        to use for saving to mongod.  Note loc is only set if it is not</span>
@@ -6352,6 +6458,7 @@
         <span class="n">o</span><span class="p">[</span><span class="s2">"nbytes"</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_record</span><span class="o">.</span><span class="n">nbytes</span>
         <span class="n">o</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_record</span><span class="o">.</span><span class="n">npts</span>
         <span class="n">o</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_record</span><span class="o">.</span><span class="n">endtime</span>
+        <span class="n">o</span><span class="p">[</span><span class="s2">"sample_rate_tolerance"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_rate_tolerance</span>
         <span class="k">return</span> <span class="n">o</span>
 
 <div class="viewcode-block" id="Database.index_mseed_file">
@@ -6361,11 +6468,12 @@
         <span class="n">dfile</span><span class="p">,</span>
         <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">,</span>
-        <span class="n">segment_time_tears</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">segment_time_tears</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">elog_collection</span><span class="o">=</span><span class="s2">"elog"</span><span class="p">,</span>
         <span class="n">return_ids</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">normalize_channel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">sample_rate_tolerance</span><span class="o">=</span><span class="mf">1.0e-4</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This is the first stage import function for handling the import of</span>
@@ -6399,16 +6507,19 @@
 <span class="sd">        function is controlled by the input parameter</span>
 <span class="sd">        segment_time_tears.  When true a new index entry is created</span>
 <span class="sd">        any time the start time of a packet differs from that computed</span>
-<span class="sd">        from the endtime of the last packet by more than one sample</span>
+<span class="sd">        from the endtime of the last packet by more than one-half of the</span>
+<span class="sd">        previous sample interval</span>
 <span class="sd">        AND net:sta:chan:loc are constant.  The default for this</span>
 <span class="sd">        parameter is false because data with many dropped packets from</span>
-<span class="sd">        telemetry are common and can create overwhelming numbers of</span>
-<span class="sd">        index entries quickly.  When false the scan only creates a new</span>
-<span class="sd">        index record when net, sta, chan, or loc change between successive</span>
-<span class="sd">        packets.  Our reader has gap handling functions to handle</span>
-<span class="sd">        time tears.  Set segment_time_tears true only when you are</span>
-<span class="sd">        confident the data set does not contain a large number of dropped</span>
-<span class="sd">        packets.</span>
+<span class="sd">        telemetry are common and can create overwhelming numbers of index</span>
+<span class="sd">        entries quickly.  When false, time-tag discontinuities alone are</span>
+<span class="sd">        ignored and ``npts`` records the full regular time-grid span, including</span>
+<span class="sd">        sample positions in gaps.  By default :meth:`read_data` fills those</span>
+<span class="sd">        positions with zeros and records the missing-sample intervals in the</span>
+<span class="sd">        returned datum's ``has_gap`` and ``gaps`` Metadata.  Callers can instead</span>
+<span class="sd">        request linear interpolation with ``merge_fill_value="interpolate"``.</span>
+<span class="sd">        The scan still creates a new index record when net, sta, chan, loc, or</span>
+<span class="sd">        sampling rate changes beyond ``sample_rate_tolerance``.</span>
 
 <span class="sd">        Note to parallelize this function put a list of files in a Spark</span>
 <span class="sd">        RDD or a Dask bag and parallelize the call the this function.</span>
@@ -6438,7 +6549,7 @@
 <span class="sd">        :param segment_time_tears: boolean controlling handling of data gaps</span>
 <span class="sd">          defined by constant net, sta, chan, and loc but a discontinuity</span>
 <span class="sd">          in time tags for successive packets.  See above for a more extensive</span>
-<span class="sd">          discussion of how to use this parameter.  Default is True.</span>
+<span class="sd">          discussion of how to use this parameter.  Default is False.</span>
 <span class="sd">        :param elog_collection:  name to write any error logs messages</span>
 <span class="sd">          from the miniseed reader.  Default is "elog", which is the</span>
 <span class="sd">          same as for TimeSeries and Seismogram data, but the cross reference</span>
@@ -6473,10 +6584,16 @@
 <span class="sd">          False.  Set this True if you are using inline normalization</span>
 <span class="sd">          (normalize_channel set True) and you aren't certain your</span>
 <span class="sd">          channel collection has no serious inconsistencies.</span>
+<span class="sd">        :param sample_rate_tolerance: nonnegative relative tolerance used to</span>
+<span class="sd">          decide whether packet sample rates belong to the same index entry.</span>
+<span class="sd">          The default, ``1.0e-4``, matches libmseed's sample-rate tolerance.</span>
+<span class="sd">          Rates that are not strictly within the tolerance start a new index</span>
+<span class="sd">          entry even when ``segment_time_tears`` is False.</span>
 <span class="sd">        :exception: This function can throw a range of error types for</span>
 <span class="sd">          a long list of possible io issues.   Callers should use a</span>
 <span class="sd">          generic handler to avoid aborts in a large job.</span>
 <span class="sd">        """</span>
+
         <span class="n">dbh</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">dfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dfile_uuid</span><span class="p">(</span><span class="s2">"mseed"</span><span class="p">)</span>
@@ -6490,14 +6607,16 @@
         <span class="n">odir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
         <span class="n">dfile</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">name</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-        <span class="n">ind</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">segment_time_tears</span><span class="p">)</span>
+        <span class="n">ind</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span>
+            <span class="n">fname</span><span class="p">,</span> <span class="n">segment_time_tears</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sample_rate_tolerance</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="s2">"No such file or directory"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span>
             <span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()))</span>
         <span class="n">ids_affected</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">:</span>
-            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_mseed_index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_mseed_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sample_rate_tolerance</span><span class="p">)</span>
             <span class="n">doc</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"file"</span>
             <span class="n">doc</span><span class="p">[</span><span class="s2">"format"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mseed"</span>
             <span class="n">doc</span><span class="p">[</span><span class="s2">"dir"</span><span class="p">]</span> <span class="o">=</span> <span class="n">odir</span>
@@ -7636,8 +7755,10 @@
 <span class="sd">        :param collection:  is the mongodb collection name to write the</span>
 <span class="sd">            index data to.  The default is 'wf_miniseed'.  It should be rare</span>
 <span class="sd">            to use anything but the default.</span>
-<span class="sd">        :exception: This function will do nothing if the obejct does not exist. For other</span>
-<span class="sd">            exceptions, it would raise a MsPASSError.</span>
+<span class="sd">        :exception: This function returns without indexing if the S3 object does</span>
+<span class="sd">            not exist.  Other S3, network, and local indexing failures raise a</span>
+<span class="sd">            fatal :class:`MsPASSError`; the original exception is retained as</span>
+<span class="sd">            its cause.</span>
 <span class="sd">        """</span>
 
         <span class="n">dbh</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
@@ -7659,20 +7780,34 @@
             <span class="o">+</span> <span class="s2">".ms"</span>
         <span class="p">)</span>
 
+        <span class="k">if</span> <span class="nb">dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dfile_uuid</span><span class="p">(</span><span class="s2">"mseed"</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">KEY</span><span class="p">)</span>
-            <span class="n">mseed_content</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="c1"># specify the file path</span>
-            <span class="k">if</span> <span class="nb">dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">odir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">dfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">dfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dfile_uuid</span><span class="p">(</span><span class="s2">"mseed"</span><span class="p">)</span>
-            <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
-            <span class="c1"># temporarily write data into a file</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mseed_content</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache_s3_object</span><span class="p">(</span>
+                <span class="n">s3_client</span><span class="p">,</span>
+                <span class="n">BUCKET_NAME</span><span class="p">,</span>
+                <span class="n">KEY</span><span class="p">,</span>
+                <span class="n">fname</span><span class="p">,</span>
+                <span class="n">replace_existing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_s3_not_found</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Could not find the object by the KEY: </span><span class="si">{</span><span class="n">KEY</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="sa">f</span><span class="s2">"from the BUCKET: </span><span class="si">{</span><span class="n">BUCKET_NAME</span><span class="si">}</span><span class="s2"> in s3"</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">"Error while index mseed file from s3."</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+
+        <span class="k">try</span><span class="p">:</span>
             <span class="c1"># immediately read data from the file</span>
             <span class="n">ind</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">:</span>
@@ -7685,24 +7820,10 @@
                 <span class="n">doc</span><span class="p">[</span><span class="s2">"day_of_year"</span><span class="p">]</span> <span class="o">=</span> <span class="n">day_of_year</span>
                 <span class="n">doc</span><span class="p">[</span><span class="s2">"filename"</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
                 <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-
-        <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">"Error"</span><span class="p">][</span><span class="s2">"Code"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"404"</span><span class="p">:</span>
-                <span class="c1"># the object does not exist</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">"Could not find the object by the KEY: </span><span class="si">{}</span><span class="s2"> from the BUCKET: </span><span class="si">{}</span><span class="s2"> in s3"</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">BUCKET_NAME</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">"An ClientError occur when tyring to get the object by the KEY("</span>
-                    <span class="o">+</span> <span class="n">KEY</span>
-                    <span class="o">+</span> <span class="s2">")"</span>
-                    <span class="o">+</span> <span class="s2">" with error: "</span><span class="p">,</span>
-                    <span class="n">e</span><span class="p">,</span>
-                <span class="p">)</span>
-
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">"Error while index mseed file from s3."</span><span class="p">,</span> <span class="s2">"Fatal"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">"Error while index mseed file from s3."</span><span class="p">,</span> <span class="s2">"Fatal"</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span></div>
 
 
 <div class="viewcode-block" id="Database.index_mseed_FDSN">
@@ -7853,6 +7974,11 @@
                             <span class="n">merge_method</span><span class="o">=</span><span class="n">merge_method</span><span class="p">,</span>
                             <span class="n">merge_fill_value</span><span class="o">=</span><span class="n">merge_fill_value</span><span class="p">,</span>
                             <span class="n">merge_interpolation_samples</span><span class="o">=</span><span class="n">merge_interpolation_samples</span><span class="p">,</span>
+                            <span class="n">sample_rate_tolerance</span><span class="o">=</span><span class="p">(</span>
+                                <span class="n">md</span><span class="p">[</span><span class="s2">"sample_rate_tolerance"</span><span class="p">]</span>
+                                <span class="k">if</span> <span class="n">md</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"sample_rate_tolerance"</span><span class="p">)</span>
+                                <span class="k">else</span> <span class="mf">1.0e-4</span>
+                            <span class="p">),</span>
                         <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">message</span> <span class="o">=</span> <span class="s2">"Missing required argument nbytes for formatted read"</span>
@@ -7868,6 +7994,11 @@
                     <span class="n">merge_method</span><span class="o">=</span><span class="n">merge_method</span><span class="p">,</span>
                     <span class="n">merge_fill_value</span><span class="o">=</span><span class="n">merge_fill_value</span><span class="p">,</span>
                     <span class="n">merge_interpolation_samples</span><span class="o">=</span><span class="n">merge_interpolation_samples</span><span class="p">,</span>
+                    <span class="n">sample_rate_tolerance</span><span class="o">=</span><span class="p">(</span>
+                        <span class="n">md</span><span class="p">[</span><span class="s2">"sample_rate_tolerance"</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">md</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"sample_rate_tolerance"</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="mf">1.0e-4</span>
+                    <span class="p">),</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"gridfs"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_read_data_from_gridfs</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">md</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">])</span>
@@ -7880,6 +8011,17 @@
         <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"s3_continuous"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_read_data_from_s3_continuous</span><span class="p">(</span>
                 <span class="n">mspass_object</span><span class="p">,</span> <span class="n">aws_access_key_id</span><span class="p">,</span> <span class="n">aws_secret_access_key</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"s3_event"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_read_data_from_s3_event</span><span class="p">(</span>
+                <span class="n">mspass_object</span><span class="p">,</span>
+                <span class="n">md</span><span class="p">[</span><span class="s2">"dir"</span><span class="p">],</span>
+                <span class="n">md</span><span class="p">[</span><span class="s2">"dfile"</span><span class="p">],</span>
+                <span class="n">md</span><span class="p">[</span><span class="s2">"foff"</span><span class="p">],</span>
+                <span class="n">nbytes</span><span class="o">=</span><span class="n">md</span><span class="p">[</span><span class="s2">"nbytes"</span><span class="p">],</span>
+                <span class="nb">format</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="s2">"format"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">md</span> <span class="k">else</span> <span class="n">md</span><span class="p">[</span><span class="s2">"format"</span><span class="p">],</span>
+                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"s3_lambda"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_read_data_from_s3_lambda</span><span class="p">(</span>

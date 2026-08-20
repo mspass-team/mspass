@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="110" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="110" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="112" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="112" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="var">
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="111" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="111" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="113" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="113" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -613,10 +613,10 @@ Write sample data for an Ensemble of Seismogram objects to a single file.</para>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="301" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="301" bodyend="362" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="271" declcolumn="8"/>
       </memberdef>
-      <memberdef kind="function" id="mseed__index_8h_1a07ef379bb63d712a15b356cfc57c8622" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="mseed__index_8h_1a916684f9170797a2fb057fe6db117699" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::pair&lt; std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;, <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &gt;</type>
         <definition>std::pair&lt; std::vector&lt; mseed_index &gt;, mspass::utility::ErrorLogger &gt; mspass::io::mseed_file_indexer</definition>
-        <argsstring>(const std::string inputfile, const bool segment_timetears, const bool Verbose)</argsstring>
+        <argsstring>(const std::string inputfile, const bool segment_timetears, const bool Verbose, const double sample_rate_tolerance=0.0001)</argsstring>
         <name>mseed_file_indexer</name>
         <qualifiedname>mspass::io::mseed_file_indexer</qualifiedname>
         <param>
@@ -630,6 +630,11 @@ Write sample data for an Ensemble of Seismogram objects to a single file.</para>
         <param>
           <type>const bool</type>
           <declname>Verbose</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>sample_rate_tolerance</declname>
+          <defval>0.0001</defval>
         </param>
         <briefdescription>
 <para>Construct an index for a miniseed file. </para>
@@ -660,6 +665,14 @@ Write sample data for an Ensemble of Seismogram objects to a single file.</para>
 <para>is a boolean largely controlling how time tears are or are not logged. That is, at present if this parameter is true any time the logic detects a time tear it is logged in the returned error log as an informational log message. If false only reading errors for things like garbled miniseed packets are logged. </para>
 </parameterdescription>
 </parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sample_rate_tolerance</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the relative tolerance used to decide whether packet sample rates belong to the same index entry. The default, 0.0001, is the tolerance used by libmseed&apos;s MS_ISRATETOLERABLE macro. Rates that are not strictly within this tolerance always start a new index entry because one entry can store only one sample rate. </para>
+</parameterdescription>
+</parameteritem>
 </parameterlist>
 <simplesect kind="return"><para>std::pair whose first element contains a vector of objects called <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> that contain the basic information defining an index for inputfile. See class description of <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> for more details. &quot;second&quot; contains an ErrorLogger objects. Caller should test that the contents are empty and if not save the error log or print it. </para>
 </simplesect>
@@ -667,7 +680,7 @@ Write sample data for an Ensemble of Seismogram objects to a single file.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="107" column="1" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="107" declcolumn="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="112" column="1" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="112" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1a01039e857800708323e459f372d38d19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>long int</type>
@@ -865,12 +878,12 @@ Write sample data for an Ensemble of Seismogram objects to a single file.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="115" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="115" bodyend="149"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="117" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="117" bodyend="151"/>
       </memberdef>
-      <memberdef kind="function" id="mseed__file__indexer_8cc_1afe2800b7fa24249de92f7ff6ec6db65b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="mseed__file__indexer_8cc_1a9eed045a1e794b0ee7ad382bbacc6bf7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>MSDINDEX_returntype</type>
         <definition>MSDINDEX_returntype mspass::io::mseed_file_indexer</definition>
-        <argsstring>(const string inputfile, const bool segment_timetears, const bool Verbose)</argsstring>
+        <argsstring>(const string inputfile, const bool segment_timetears, const bool Verbose, const double sample_rate_tolerance)</argsstring>
         <name>mseed_file_indexer</name>
         <qualifiedname>mspass::io::mseed_file_indexer</qualifiedname>
         <param>
@@ -885,6 +898,10 @@ Write sample data for an Ensemble of Seismogram objects to a single file.</para>
           <type>const bool</type>
           <declname>Verbose</declname>
         </param>
+        <param>
+          <type>const double</type>
+          <declname>sample_rate_tolerance</declname>
+        </param>
         <briefdescription>
 <para>Indexing function using libmseed low level function ms3_readmsr_r. </para>
         </briefdescription>
@@ -892,9 +909,9 @@ Write sample data for an Ensemble of Seismogram objects to a single file.</para>
 <para>This function uses what has become the standard reader for miniseed from IRIS DMC called libmseed. It uses the low level C function ms3_readmsr_r to read an input file one packet at a time. It uses the version that is claimed to be thread safe.</para>
 <para>The complexities of seed can cause a number of problems. This version tries to deal these complexities:<orderedlist>
 <listitem><para>miniseed files are often produced by concatenation of data form multiple channel. Any change in station id returned by the function triggers a new index entry.</para>
-</listitem><listitem><para>Packet errors will force a new segment.</para>
-</listitem><listitem><para>Time tears defined by either a jump or accumulated time mismatch of more than 1/2 sample will trigger a new segments.</para>
-</listitem><listitem><para>Changes in sample interval trigger a new segments. That is actually implicit in point 1 with the &quot;sid&quot; because of the seed channel code naming convention. <simplesect kind="return"><para>std::pair first is a vector of index data. second is an ErrorLogger object. Caller should test for empty vector that is a signal for a open failure or a file that probably isn&apos;t miniseed. The content of elog should always be tested as any errors there should be inspected/handled. </para>
+</listitem><listitem><para>A libmseed packet parsing error stops the scan after the preceding valid records have been indexed. Missing telemetry samples appear as time tears, not packet parsing errors.</para>
+</listitem><listitem><para>Time tears defined by either a jump or accumulated time mismatch of more than 1/2 sample will trigger a new segment when requested.</para>
+</listitem><listitem><para>Changes in sample interval beyond the configured relative tolerance trigger a new segment. This is not implicit in point 1 because real instruments can report small sample-rate drift without changing the SEED channel code. <simplesect kind="return"><para>std::pair first is a vector of index data. second is an ErrorLogger object. Caller should test for empty vector that is a signal for a open failure or a file that probably isn&apos;t miniseed. The content of elog should always be tested as any errors there should be inspected/handled. </para>
 </simplesect>
 </para>
 </listitem></orderedlist>
@@ -902,7 +919,7 @@ Write sample data for an Ensemble of Seismogram objects to a single file.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="174" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="174" bodyend="403"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="179" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="179" bodyend="422"/>
       </memberdef>
       <memberdef kind="function" id="mseed__index_8cc_1a60a85760a0207ee75e54b84f6db82954" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostringstream &amp;</type>

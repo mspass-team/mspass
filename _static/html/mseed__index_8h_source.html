@@ -74,7 +74,7 @@ MathJax.Hub.Config({
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MsPASS C++ API
-   &#160;<span id="projectnumber">2.4.4.dev1+gf4a0e6ea</span>
+   &#160;<span id="projectnumber">2.4.4.dev5+g905e21d6</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -207,13 +207,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                        <span class="keyword">const</span> <a class="code hl_class" href="classmspass_1_1io_1_1mseed__index.html">mseed_index</a> &amp;ind);</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
 </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>std::pair&lt;std::vector&lt;mseed_index&gt;, <a class="code hl_class" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>&gt;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>mseed_file_indexer(<span class="keyword">const</span> std::string inputfile, <span class="keyword">const</span> <span class="keywordtype">bool</span> segment_timetears,</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                   <span class="keyword">const</span> <span class="keywordtype">bool</span> Verbose);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>} <span class="comment">// namespace mspass::io</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassmspass_1_1io_1_1mseed__index_html"><div class="ttname"><a href="classmspass_1_1io_1_1mseed__index.html">mspass::io::mseed_index</a></div><div class="ttdoc">Index entry describing one contiguous MiniSEED data segment.</div><div class="ttdef"><b>Definition</b> mseed_index.h:9</div></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>std::pair&lt;std::vector&lt;mseed_index&gt;, <a class="code hl_class" href="classmspass_1_1utility_1_1_error_logger.html">mspass::utility::ErrorLogger</a>&gt;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>mseed_file_indexer(<span class="keyword">const</span> std::string inputfile, <span class="keyword">const</span> <span class="keywordtype">bool</span> segment_timetears,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                   <span class="keyword">const</span> <span class="keywordtype">bool</span> Verbose,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                   <span class="keyword">const</span> <span class="keywordtype">double</span> sample_rate_tolerance = 0.0001);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>} <span class="comment">// namespace mspass::io</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassmspass_1_1io_1_1mseed__index_html"><div class="ttname"><a href="classmspass_1_1io_1_1mseed__index.html">mspass::io::mseed_index</a></div><div class="ttdoc">Index entry describing one MiniSEED data segment.</div><div class="ttdef"><b>Definition</b> mseed_index.h:9</div></div>
 <div class="ttc" id="aclassmspass_1_1io_1_1mseed__index_html_a039994bbea83dc923a6e59ed2ea675fd"><div class="ttname"><a href="classmspass_1_1io_1_1mseed__index.html#a039994bbea83dc923a6e59ed2ea675fd">mspass::io::mseed_index::nbytes</a></div><div class="ttdeci">size_t nbytes</div><div class="ttdef"><b>Definition</b> mseed_index.h:16</div></div>
 <div class="ttc" id="aclassmspass_1_1io_1_1mseed__index_html_a056427385ac5dfbdd271d6cacbfbabb7"><div class="ttname"><a href="classmspass_1_1io_1_1mseed__index.html#a056427385ac5dfbdd271d6cacbfbabb7">mspass::io::mseed_index::chan</a></div><div class="ttdeci">std::string chan</div><div class="ttdef"><b>Definition</b> mseed_index.h:14</div></div>
 <div class="ttc" id="aclassmspass_1_1io_1_1mseed__index_html_a0b33fceb0d51997d0b1b06736ee07b95"><div class="ttname"><a href="classmspass_1_1io_1_1mseed__index.html#a0b33fceb0d51997d0b1b06736ee07b95">mspass::io::mseed_index::endtime</a></div><div class="ttdeci">double endtime</div><div class="ttdef"><b>Definition</b> mseed_index.h:20</div></div>

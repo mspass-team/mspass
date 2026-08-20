@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.matcher &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
+    <title>mspasspy.db.matcher &#8212; MsPASS 2.4.4.dev5+g905e21d6 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
+    <script src="../../../_static/documentation_options.js?v=ca680272"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev5" />
   </head>
   
   
@@ -755,79 +755,39 @@
         <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="s2">"channel"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">]</span>
         <span class="c1"># assume type errors will be thrown if attributes_to_load is not array like</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">=</span> <span class="n">readonly_tag</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
 
-<div class="viewcode-block" id="mseed_channel_matcher.get_document">
-<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_channel_matcher.get_document">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Fetch the channel/site document matching net, station, location, and time.</span>
-
-<span class="sd">        :param d: atomic MsPASS data object used to build the match query.</span>
-<span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
-<span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
-<span class="sd">        :rtype: dict or None</span>
-<span class="sd">        """</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">"mseed_channel_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"</span>
             <span class="p">)</span>
-        <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"net"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"net"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"net"</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="n">missing_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"net"</span><span class="p">,</span> <span class="s2">"sta"</span><span class="p">,</span> <span class="s2">"chan"</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="n">query</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="n">key</span><span class="p">):</span>
+                <span class="n">query</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="n">key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">missing_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">missing_keys</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
                 <span class="s2">"mseed_channel_matcher"</span><span class="p">,</span>
-                <span class="s2">"Required match key=net or "</span>
-                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">"net are not defined for this datum"</span><span class="p">,</span>
+                <span class="s2">"Required match key(s)="</span>
+                <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">" are not defined for this datum"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="c1"># We repeat the above logic for sta and chan for debugging but it</span>
-        <span class="c1"># could cause bloated elog messages if a user makes a dumb error</span>
-        <span class="c1"># with a large data set.  that seems preferable to mysterious behavior</span>
-        <span class="c1"># could make it a verbose option but for now we will always blunder on</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"sta"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"sta"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"sta"</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                <span class="n">d</span><span class="p">,</span>
-                <span class="s2">"mseed_channel_matcher"</span><span class="p">,</span>
-                <span class="s2">"Required match key=sta or "</span>
-                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">"sta are not defined for this datum"</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
-                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"chan"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"chan"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"chan"</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                <span class="n">d</span><span class="p">,</span>
-                <span class="s2">"mseed_channel_matcher"</span><span class="p">,</span>
-                <span class="s2">"Required match key=chan or "</span>
-                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">"chan are not defined for this datum"</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
-                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span>
 
         <span class="c1"># loc has to be handled differently because it is often not defined</span>
         <span class="c1"># We just don't add loc to the query if it isn't defined</span>
@@ -835,10 +795,6 @@
             <span class="n">query</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"loc"</span><span class="p">):</span>
             <span class="n">query</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"loc"</span><span class="p">]</span>
-
-        <span class="c1"># return now if this datum has been marked dead</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_is_ok</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># default to data start time if time is not explicitly passed</span>
         <span class="k">if</span> <span class="n">time</span><span class="p">:</span>
@@ -851,7 +807,7 @@
 
         <span class="n">matchsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
@@ -860,7 +816,20 @@
                 <span class="kc">False</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="mseed_channel_matcher.get_document">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_channel_matcher.get_document">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fetch the channel/site document matching net, station, location, and time.</span>
+
+<span class="sd">        :param d: atomic MsPASS data object used to build the match query.</span>
+<span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
+<span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
+<span class="sd">        :rtype: dict or None</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="mseed_channel_matcher.normalize">
@@ -876,7 +845,9 @@
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+            <span class="n">doc</span><span class="p">,</span> <span class="n">query_is_valid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">query_is_valid</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">d</span>
             <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="s2">"No matching document was found in channel collection for this datum"</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
@@ -899,7 +870,7 @@
                         <span class="c1"># but it could create bloated elog collections</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="s2">"No data for key="</span>
-                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                            <span class="o">+</span> <span class="n">key</span>
                             <span class="o">+</span> <span class="s2">" in document returned from collection="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
                         <span class="p">)</span>
@@ -951,63 +922,39 @@
         <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"site"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="s2">"site"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">]</span>
         <span class="c1"># assume type errors will be thrown if attributes_to_load is not array like</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">=</span> <span class="n">readonly_tag</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
 
-<div class="viewcode-block" id="mseed_site_matcher.get_document">
-<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_site_matcher.get_document">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Fetch the channel/site document matching net, station, location, and time.</span>
-
-<span class="sd">        :param d: atomic MsPASS data object used to build the match query.</span>
-<span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
-<span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
-<span class="sd">        :rtype: dict or None</span>
-<span class="sd">        """</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">"mseed_site_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"</span>
             <span class="p">)</span>
-        <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"net"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"net"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"net"</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="n">missing_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"net"</span><span class="p">,</span> <span class="s2">"sta"</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="n">query</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="n">key</span><span class="p">):</span>
+                <span class="n">query</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="n">key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">missing_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">missing_keys</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
                 <span class="s2">"mseed_site_matcher"</span><span class="p">,</span>
-                <span class="s2">"Required match key=net or "</span>
-                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">"net are not defined for this datum"</span><span class="p">,</span>
+                <span class="s2">"Required match key(s)="</span>
+                <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">" are not defined for this datum"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="c1"># We repeat the above logic for sta and chan for debugging but it</span>
-        <span class="c1"># could cause bloated elog messages if a user makes a dumb error</span>
-        <span class="c1"># with a large data set.  that seems preferable to mysterious behavior</span>
-        <span class="c1"># could make it a verbose option but for now we will always blunder on</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"sta"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"sta"</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"sta"</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                <span class="n">d</span><span class="p">,</span>
-                <span class="s2">"mseed_site_matcher"</span><span class="p">,</span>
-                <span class="s2">"Required match key=sta or "</span>
-                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">"sta are not defined for this datum"</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
-                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span>
 
         <span class="c1"># loc has to be handled differently because it is often not defined</span>
         <span class="c1"># We just don't add loc to the query if it isn't defined</span>
@@ -1015,10 +962,6 @@
             <span class="n">query</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"loc"</span><span class="p">):</span>
             <span class="n">query</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"loc"</span><span class="p">]</span>
-
-        <span class="c1"># return now if this datum has been marked dead</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">query_is_ok</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># default to data start time if time is not explicitly passed</span>
         <span class="k">if</span> <span class="n">time</span><span class="p">:</span>
@@ -1031,7 +974,7 @@
 
         <span class="n">matchsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
@@ -1040,7 +983,20 @@
                 <span class="kc">False</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="mseed_site_matcher.get_document">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_site_matcher.get_document">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fetch the channel/site document matching net, station, location, and time.</span>
+
+<span class="sd">        :param d: atomic MsPASS data object used to build the match query.</span>
+<span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
+<span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
+<span class="sd">        :rtype: dict or None</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="mseed_site_matcher.normalize">
@@ -1056,7 +1012,9 @@
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+            <span class="n">doc</span><span class="p">,</span> <span class="n">query_is_valid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">query_is_valid</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">d</span>
             <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s2">"No matching document was found in site collection for this datum"</span>
@@ -1081,7 +1039,7 @@
                         <span class="c1"># but it could create bloated elog collections</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="s2">"No data for key="</span>
-                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                            <span class="o">+</span> <span class="n">key</span>
                             <span class="o">+</span> <span class="s2">" in document returned from collection="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
                         <span class="p">)</span>
