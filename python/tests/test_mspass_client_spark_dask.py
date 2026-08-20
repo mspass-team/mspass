@@ -1,5 +1,6 @@
 import copy
 import os
+from unittest import mock
 
 import dask.bag as daskbag
 from pyspark import SparkConf, SparkContext
@@ -22,6 +23,7 @@ from datetime import datetime
 sys.path.append("python/tests")
 
 from mspasspy.util import logging_helper
+import mspasspy.client as client_module
 from mspasspy.client import Client
 from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.ccore.utility import MsPASSError
@@ -243,15 +245,20 @@ def test_dask_client_requires_distributed_client(monkeypatch):
 
 
 class TestMsPASSClient:
-    @staticmethod
-    def _close_dask_scheduler(client):
-        client.close_scheduler()
-
     def setup_class(self):
-        self.client = Client()
+        local_dask_client = DaskClient(
+            processes=False,
+            n_workers=2,
+            threads_per_worker=1,
+            dashboard_address=None,
+        )
+        with mock.patch.object(
+            client_module, "DaskClient", return_value=local_dask_client
+        ):
+            self.client = Client()
 
     def teardown_class(self):
-        self._close_dask_scheduler(self.client)
+        self.client.close_scheduler()
 
     def test_init(self):
         with pytest.raises(
