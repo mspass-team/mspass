@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import argparse
 import sys
+from bson import json_util
+from bson.errors import BSONError
 from mspasspy.db.database import Database
 from mspasspy.db.client import DBClient
 from mspasspy.db.normalize import normalize_mseed
@@ -68,6 +70,16 @@ def main(args=None):
     )
 
     args = parser.parse_args(args)
+    if args.wfquery:
+        try:
+            query = json_util.loads(args.wfquery)
+        except (ValueError, BSONError):
+            parser.error("--wfquery must be valid BSON Extended JSON")
+        if not isinstance(query, dict):
+            parser.error("--wfquery must decode to a JSON object")
+    else:
+        query = {}
+
     dbname = args.dbname
     print("Normalizing database with name=", dbname)
 
@@ -79,10 +91,6 @@ def main(args=None):
     else:
         print("Will normalize all matching wf_miniseed documents with channel_id")
     blocksize = args.blocksize
-    if len(args.wfquery) > 0:
-        query = eval(args.query)
-    else:
-        query = {}
 
     dbclient = DBClient()
     db = Database(dbclient, dbname)
@@ -91,8 +99,8 @@ def main(args=None):
         db, wfquery=query, blocksize=blocksize, normalize_site=normalize_site
     )
     print("Normalization completed for wf_miniseed collection of database = ", dbname)
-    if len(args.wfquery) > 0:
-        print("Applied with this query to wf_miniseed:  ", args.query)
+    if args.wfquery:
+        print("Applied with this query to wf_miniseed:  ", args.wfquery)
     print("Number of documents processed=", ret_tuple[0])
     print("Number of channel_ids set=", ret_tuple[1])
     print("Number of site_ids set=", ret_tuple[2])
