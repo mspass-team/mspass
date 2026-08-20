@@ -30,7 +30,7 @@ Created on Mon Jan 11 05:34:10 2021
 """
 
 from mspasspy.ccore.algorithms.basic import _bundle_seed_data, _BundleSEEDGroup
-from mspasspy.ccore.seismic import TimeSeriesEnsemble
+from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 
 
@@ -163,5 +163,27 @@ def BundleSEEDGroup(d, i0=0, iend=2):
         d[i0] to d[iend].  Default is 2 for a single Seismogram without
         duplicates.
     """
-    d3c = _BundleSEEDGroup(d.member, i0, iend)
-    return d3c
+    if isinstance(d, TimeSeriesEnsemble):
+        sequence = d.member
+    elif isinstance(d, (list, tuple)):
+        sequence = list(d)
+    else:
+        raise TypeError(
+            "BundleSEEDGroup: d must be a TimeSeriesEnsemble, list, or tuple"
+        )
+
+    if not all(isinstance(datum, TimeSeries) for datum in sequence):
+        raise TypeError("BundleSEEDGroup: every input element must be a TimeSeries")
+    if (
+        isinstance(i0, bool)
+        or not isinstance(i0, int)
+        or isinstance(iend, bool)
+        or not isinstance(iend, int)
+    ):
+        raise ValueError("BundleSEEDGroup: i0 and iend must be integer indices")
+    if not 0 <= i0 <= iend < len(sequence):
+        raise ValueError(
+            "BundleSEEDGroup: indices must satisfy 0 <= i0 <= iend < len(d)"
+        )
+
+    return _BundleSEEDGroup(sequence, i0, iend)
