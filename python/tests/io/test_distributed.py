@@ -57,14 +57,16 @@ def dask_test_client():
         processes=False,
         n_workers=2,
         threads_per_worker=1,
-        dashboard_address=":0",
+        dashboard_address=None,
     )
     plugin = MongoDBWorker(
         _MongoPluginMsPASSClientStub(DBClient("mongodb://localhost:27017/"))
     )
     dask_client.register_plugin(plugin)
-    yield dask_client
-    dask_client.close()
+    try:
+        yield dask_client
+    finally:
+        dask_client.close()
 
 
 def _collect_parallel_data(container, scheduler, dask_client=None):
