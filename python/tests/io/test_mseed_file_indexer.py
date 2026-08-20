@@ -1,5 +1,5 @@
 import numpy as np
-from obspy import Stream, Trace, UTCDateTime, read
+from obspy import Stream, Trace, UTCDateTime
 
 from mspasspy.ccore.seismic import TimeSeries
 from mspasspy.ccore.utility import ErrorLogger  # noqa: F401
@@ -27,6 +27,7 @@ def test_gap_index_matches_merged_reader_grid(tmp_path):
         data=np.arange(8, 8 + samples_per_record, dtype=np.int32),
         header={
             **header,
+            "sampling_rate": sample_rate * (1.0 + 5.0e-5),
             "starttime": starttime
             + (samples_per_record + missing_samples) / sample_rate,
         },
@@ -42,11 +43,6 @@ def test_gap_index_matches_merged_reader_grid(tmp_path):
         index[0].endtime == index[0].starttime + (index[0].npts - 1) / index[0].samprate
     )
 
-    merged = read(str(mseed_file)).merge(method=0, fill_value=0)
-    assert len(merged) == 1
-    assert merged[0].stats.npts == index[0].npts
-    assert abs(merged[0].stats.endtime.timestamp - index[0].endtime) < 1.0e-6
-
     segmented, _ = _mseed_file_indexer(str(mseed_file), True)
     assert [entry.npts for entry in segmented] == [samples_per_record] * 2
 
@@ -60,8 +56,11 @@ def test_gap_index_matches_merged_reader_grid(tmp_path):
         index[0].foff,
         index[0].nbytes,
         format="mseed",
+        sample_rate_tolerance=1.0e-4,
     )
     assert datum.live
+    assert datum.npts == index[0].npts
+    assert abs(datum.endtime() - index[0].endtime) < 1.0e-6
     assert list(datum.data) == [1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 8.0, 9.0, 10.0, 11.0]
     assert datum["has_gap"]
     assert len(datum["gaps"]) == 1
@@ -83,6 +82,7 @@ def test_gap_index_matches_merged_reader_grid(tmp_path):
         index[0].nbytes,
         format="mseed",
         merge_fill_value="interpolate",
+        sample_rate_tolerance=1.0e-4,
     )
     assert interpolated.live
     assert list(interpolated.data) == [

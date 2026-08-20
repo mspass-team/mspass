@@ -311,8 +311,8 @@ MSDINDEX_returntype mseed_file_indexer(const string inputfile,
           sid_change_detected = true;
         samprate_change_detected =
             msr->samprate != segment_samprate &&
-            std::fabs(1.0 - msr->samprate / segment_samprate) >=
-                sample_rate_tolerance;
+            std::fabs(msr->samprate - segment_samprate) >=
+                sample_rate_tolerance * std::fabs(msr->samprate);
         if (segment_timetears && !sid_change_detected &&
             !samprate_change_detected) {
           /* Compare libmseed's integer nanosecond clock on the previous

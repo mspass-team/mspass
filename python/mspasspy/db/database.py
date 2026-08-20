@@ -4280,6 +4280,7 @@ class Database(pymongo.database.Database):
         merge_method=0,
         merge_fill_value=0,
         merge_interpolation_samples=0,
+        sample_rate_tolerance=1.0e-4,
     ):
         """
         Private method to provide generic reader of atomic data from a standard
@@ -4313,6 +4314,12 @@ class Database(pymongo.database.Database):
           the MsPASS sample vector because that vector cannot retain a mask.
         :type merge_fill_value: :class:`int`, :class:`float`, :class:`str`,
           or None
+        :param sample_rate_tolerance: Relative tolerance used to treat small
+          miniSEED record-header sample-rate differences as one regular grid.
+          The default matches libmseed.  Samples are never resampled: only
+          rates within this tolerance are assigned the index grid rate before
+          ObsPy merges gaps.
+        :type sample_rate_tolerance: :class:`float`
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -4395,6 +4402,21 @@ class Database(pymongo.database.Database):
                         # we post a complaint elog entry to the mspass_object if there are gaps in the stream
                         gap_metadata = []
                         if len(st) > 1:
+                            if (
+                                not np.isfinite(sample_rate_tolerance)
+                                or sample_rate_tolerance < 0.0
+                            ):
+                                raise ValueError(
+                                    "sample_rate_tolerance must be finite and nonnegative"
+                                )
+                            if format.lower() in ("mseed", "miniseed"):
+                                grid_rate = 1.0 / mspass_object.dt
+                                for trace in st:
+                                    trace_rate = trace.stats.sampling_rate
+                                    if trace_rate == grid_rate or abs(
+                                        trace_rate - grid_rate
+                                    ) < sample_rate_tolerance * abs(trace_rate):
+                                        trace.stats.sampling_rate = grid_rate
                             for gap in st.get_gaps():
                                 missing_samples = int(gap[7])
                                 if missing_samples <= 0:
@@ -5799,7 +5821,7 @@ class Database(pymongo.database.Database):
 
     #  Methods for handling miniseed data
     @staticmethod
-    def _convert_mseed_index(index_record):
+    def _convert_mseed_index(index_record, sample_rate_tolerance=1.0e-4):
         """
         Helper used to convert C++ struct/class mseed_index to a dict
         to use for saving to mongod.  Note loc is only set if it is not
@@ -5823,6 +5845,7 @@ class Database(pymongo.database.Database):
         o["nbytes"] = index_record.nbytes
         o["npts"] = index_record.npts
         o["endtime"] = index_record.endtime
+        o["sample_rate_tolerance"] = sample_rate_tolerance
         return o
 
     def index_mseed_file(
@@ -5977,7 +6000,7 @@ class Database(pymongo.database.Database):
             raise FileNotFoundError(str(elog.get_error_log()))
         ids_affected = []
         for i in ind:
-            doc = self._convert_mseed_index(i)
+            doc = self._convert_mseed_index(i, sample_rate_tolerance)
             doc["storage_mode"] = "file"
             doc["format"] = "mseed"
             doc["dir"] = odir
@@ -7317,6 +7340,11 @@ class Database(pymongo.database.Database):
                             merge_method=merge_method,
                             merge_fill_value=merge_fill_value,
                             merge_interpolation_samples=merge_interpolation_samples,
+                            sample_rate_tolerance=(
+                                md["sample_rate_tolerance"]
+                                if md.is_defined("sample_rate_tolerance")
+                                else 1.0e-4
+                            ),
                         )
                 else:
                     message = "Missing required argument nbytes for formatted read"
@@ -7332,6 +7360,11 @@ class Database(pymongo.database.Database):
                     merge_method=merge_method,
                     merge_fill_value=merge_fill_value,
                     merge_interpolation_samples=merge_interpolation_samples,
+                    sample_rate_tolerance=(
+                        md["sample_rate_tolerance"]
+                        if md.is_defined("sample_rate_tolerance")
+                        else 1.0e-4
+                    ),
                 )
         elif storage_mode == "gridfs":
             self._read_data_from_gridfs(mspass_object, md["gridfs_id"])
