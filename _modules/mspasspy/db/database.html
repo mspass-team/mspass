@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev5+g905e21d6 documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev7+gb89a038d documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ca680272"></script>
+    <script src="../../../_static/documentation_options.js?v=572aa329"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev5" />
+  <meta name="docsearch:version" content="2.4.4.dev7" />
   </head>
   
   
@@ -6569,21 +6569,19 @@
 <span class="sd">          MongoDB document id with each elog entry)</span>
 <span class="sd">        :param normalize_channel:  boolean controlling normalization with</span>
 <span class="sd">          the channel collection.   When set True (default is false) the</span>
-<span class="sd">          method will call the Database.get_seed_channel method, extract</span>
-<span class="sd">          the id from the result, and set the result as "channel_id" before</span>
-<span class="sd">          writing the wf_miniseed document.  Set this argument true if</span>
-<span class="sd">          you have a relatively complete channel collection assembled</span>
-<span class="sd">          before running a workflow to index a set of miniseed files</span>
-<span class="sd">          (a common raw data starting point).</span>
-<span class="sd">        :param verbose:  boolean passed to get_seed_channel.  This</span>
-<span class="sd">          argument has no effect unless normalize_channel is set True.</span>
-<span class="sd">          It is necessary because the get_seed_channel function has no</span>
-<span class="sd">          way to log errors except calling print.  A very common metadata</span>
-<span class="sd">          error is duplicate and/or time overlaps in channel metadata.</span>
-<span class="sd">          Those are usually harmless so the default for this parameter is</span>
-<span class="sd">          False.  Set this True if you are using inline normalization</span>
-<span class="sd">          (normalize_channel set True) and you aren't certain your</span>
-<span class="sd">          channel collection has no serious inconsistencies.</span>
+<span class="sd">          method queries the channel collection with each segment's net,</span>
+<span class="sd">          sta, chan, optional loc, and start time.  It stores the matching</span>
+<span class="sd">          channel document id only when that query returns exactly one</span>
+<span class="sd">          document.  Set this argument true if you have a relatively complete</span>
+<span class="sd">          channel collection assembled before running a workflow to index a</span>
+<span class="sd">          set of miniseed files (a common raw data starting point).</span>
+<span class="sd">        :param verbose:  when True, print the query for any channel</span>
+<span class="sd">          normalization attempt that returns multiple documents.  This</span>
+<span class="sd">          argument has no effect unless normalize_channel is True.  Duplicate</span>
+<span class="sd">          or overlapping channel metadata are common and may be harmless, but</span>
+<span class="sd">          this method cannot choose one safely: it leaves ``channel_id`` unset</span>
+<span class="sd">          when the query is ambiguous.  Enable verbose output to identify and</span>
+<span class="sd">          clean those channel records before relying on inline normalization.</span>
 <span class="sd">        :param sample_rate_tolerance: nonnegative relative tolerance used to</span>
 <span class="sd">          decide whether packet sample rates belong to the same index entry.</span>
 <span class="sd">          The default, ``1.0e-4``, matches libmseed's sample-rate tolerance.</span>
@@ -6614,6 +6612,10 @@
             <span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">return_ids</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[[],</span> <span class="p">[]]</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="n">ids_affected</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">:</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_mseed_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sample_rate_tolerance</span><span class="p">)</span>
@@ -6623,26 +6625,28 @@
             <span class="n">doc</span><span class="p">[</span><span class="s2">"dfile"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
             <span class="c1"># mseed is dogmatically UTC so we always set it this way</span>
             <span class="n">doc</span><span class="p">[</span><span class="s2">"time_standard"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"UTC"</span>
+            <span class="k">if</span> <span class="n">normalize_channel</span><span class="p">:</span>
+                <span class="n">channel_query</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">"net"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">],</span>
+                    <span class="s2">"sta"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">],</span>
+                    <span class="s2">"chan"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">],</span>
+                    <span class="s2">"starttime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]},</span>
+                    <span class="s2">"endtime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]},</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="s2">"loc"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                    <span class="n">channel_query</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span>
+                <span class="n">match_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">channel_query</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">"channel_id"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">channel_query</span><span class="p">)[</span><span class="s2">"_id"</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">match_count</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">"index_mseed_file: channel normalization query returned"</span><span class="p">,</span>
+                        <span class="n">match_count</span><span class="p">,</span>
+                        <span class="s2">"documents; channel_id was not set for query"</span><span class="p">,</span>
+                        <span class="n">channel_query</span><span class="p">,</span>
+                    <span class="p">)</span>
             <span class="n">thisid</span> <span class="o">=</span> <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
             <span class="n">ids_affected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thisid</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">normalize_channel</span><span class="p">:</span>
-            <span class="c1"># these quantities are always defined unless there was a read error</span>
-            <span class="c1"># and I don't think we can get here if we had a read error.</span>
-            <span class="n">net</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
-            <span class="n">sta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
-            <span class="n">chan</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span>
-            <span class="n">stime</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">"loc"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                <span class="n">loc</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span>
-                <span class="n">chandoc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_seed_channel</span><span class="p">(</span>
-                    <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">stime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">chandoc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_seed_channel</span><span class="p">(</span>
-                    <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">stime</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
-                <span class="p">)</span>
-            <span class="k">if</span> <span class="n">chandoc</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">doc</span><span class="p">[</span><span class="s2">"channel_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chandoc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
 
         <span class="c1"># log_ids is created here so it is defined but empty in</span>
         <span class="c1"># the tuple returned when return_ids is true</span>
@@ -6663,13 +6667,12 @@
                         <span class="s2">"process_id"</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">p_id</span><span class="p">,</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
-            <span class="n">docentry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"logdata"</span><span class="p">:</span> <span class="n">logdata</span><span class="p">}</span>
             <span class="c1"># To mesh with the standard elog collection we add a copy of the</span>
             <span class="c1"># error messages with a tag for each id in the ids_affected list.</span>
             <span class="c1"># That should make elog connection to wf_miniseed records exactly</span>
             <span class="c1"># like wf_TimeSeries records but with a different collection link</span>
             <span class="k">for</span> <span class="n">wfid</span> <span class="ow">in</span> <span class="n">ids_affected</span><span class="p">:</span>
-                <span class="n">docentry</span><span class="p">[</span><span class="s2">"wf_miniseed_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">wfid</span>
+                <span class="n">docentry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"logdata"</span><span class="p">:</span> <span class="n">logdata</span><span class="p">,</span> <span class="s2">"wf_miniseed_id"</span><span class="p">:</span> <span class="n">wfid</span><span class="p">}</span>
                 <span class="n">elogid</span> <span class="o">=</span> <span class="n">elog_col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">docentry</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
                 <span class="n">log_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elogid</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">return_ids</span><span class="p">:</span>

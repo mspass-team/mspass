@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.preprocessing &#8212; MsPASS 2.4.4.dev5+g905e21d6 documentation</title>
+    <title>mspasspy.preprocessing &#8212; MsPASS 2.4.4.dev7+gb89a038d documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ca680272"></script>
+    <script src="../_static/documentation_options.js?v=572aa329"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.io" href="mspasspy.io.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev5" />
+  <meta name="docsearch:version" content="2.4.4.dev7" />
   </head>
   
   
@@ -1635,9 +1635,10 @@ members set.  The caller should test and complain if there are no matches.</p>
 <span class="sig-prename descclassname"><span class="pre">mspasspy.preprocessing.seed.ensembles.</span></span><span class="sig-name descname"><span class="pre">load_one_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Default</span> <span class="pre">job'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'99999'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'99999'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_mdkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_calib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/preprocessing/seed/ensembles.html#load_one_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.seed.ensembles.load_one_ensemble" title="Link to this definition">#</a></dt>
 <dd><p>This function can be used to load a full ensemble indexed in the
 collection import_miniseed_ensemble.  It uses a large memory model
-that eat up the entire file using obspy’s miniseed reader.   It contains
-some relics of early ideas of potentially having the function
-utilize the history mechanism.  Those may not work, but were retained.</p>
+that reads the entire file using obspy’s miniseed reader.  When history
+creation is enabled, each output member is linked by position to the
+corresponding <code class="docutils literal notranslate"><span class="pre">doc['members'][i]['seed_file_id']</span></code> entry.  The complete
+mapping is validated before any output ensemble is constructed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

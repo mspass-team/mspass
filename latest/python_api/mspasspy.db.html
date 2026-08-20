@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev5+g905e21d6 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev7+gb89a038d documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ca680272"></script>
+    <script src="../_static/documentation_options.js?v=572aa329"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev5" />
+  <meta name="docsearch:version" content="2.4.4.dev7" />
   </head>
   
   
@@ -1150,21 +1150,19 @@ a particular waveform index entry. (we store the saved index
 MongoDB document id with each elog entry)</p></li>
 <li><p><strong>normalize_channel</strong> – boolean controlling normalization with
 the channel collection.   When set True (default is false) the
-method will call the Database.get_seed_channel method, extract
-the id from the result, and set the result as “channel_id” before
-writing the wf_miniseed document.  Set this argument true if
-you have a relatively complete channel collection assembled
-before running a workflow to index a set of miniseed files
-(a common raw data starting point).</p></li>
-<li><p><strong>verbose</strong> – boolean passed to get_seed_channel.  This
-argument has no effect unless normalize_channel is set True.
-It is necessary because the get_seed_channel function has no
-way to log errors except calling print.  A very common metadata
-error is duplicate and/or time overlaps in channel metadata.
-Those are usually harmless so the default for this parameter is
-False.  Set this True if you are using inline normalization
-(normalize_channel set True) and you aren’t certain your
-channel collection has no serious inconsistencies.</p></li>
+method queries the channel collection with each segment’s net,
+sta, chan, optional loc, and start time.  It stores the matching
+channel document id only when that query returns exactly one
+document.  Set this argument true if you have a relatively complete
+channel collection assembled before running a workflow to index a
+set of miniseed files (a common raw data starting point).</p></li>
+<li><p><strong>verbose</strong> – when True, print the query for any channel
+normalization attempt that returns multiple documents.  This
+argument has no effect unless normalize_channel is True.  Duplicate
+or overlapping channel metadata are common and may be harmless, but
+this method cannot choose one safely: it leaves <code class="docutils literal notranslate"><span class="pre">channel_id</span></code> unset
+when the query is ambiguous.  Enable verbose output to identify and
+clean those channel records before relying on inline normalization.</p></li>
 <li><p><strong>sample_rate_tolerance</strong> – nonnegative relative tolerance used to
 decide whether packet sample rates belong to the same index entry.
 The default, <code class="docutils literal notranslate"><span class="pre">1.0e-4</span></code>, matches libmseed’s sample-rate tolerance.
