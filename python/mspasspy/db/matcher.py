@@ -257,77 +257,39 @@ class mseed_channel_matcher(NMF):
         verbose=True,
     ):
         super().__init__(kill_on_failure, verbose)
-        self.dbhandle = db["channel"]
+        self.collection = "channel"
+        self.dbhandle = db[self.collection]
         # assume type errors will be thrown if attributes_to_load is not array like
         for x in attributes_to_load:
             self.attributes_to_load.append(x)
         self.readonly_tag = readonly_tag
         self.prepend_collection_name = prepend_collection_name
 
-    def get_document(self, d, time=None):
-        """
-        Fetch the channel/site document matching net, station, location, and time.
-
-        :param d: atomic MsPASS data object used to build the match query.
-        :param time: optional match time; defaults to ``d.t0``.
-        :return: matching MongoDB document, or ``None`` when no match is found.
-        :rtype: dict or None
-        """
+    def _find_document(self, d, time=None):
         if not _input_is_atomic(d):
             raise TypeError(
                 "mseed_channel_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"
             )
-        query_is_ok = True
         query = {}
-        if d.is_defined("net"):
-            query["net"] = d["net"]
-        elif d.is_defined(self.readonly_tag + "net"):
-            query["net"] = d[self.readonly_tag + "net"]
-        else:
+        missing_keys = []
+        for key in ("net", "sta", "chan"):
+            if d.is_defined(key):
+                query[key] = d[key]
+            elif d.is_defined(self.readonly_tag + key):
+                query[key] = d[self.readonly_tag + key]
+            else:
+                missing_keys.append(key)
+        if missing_keys:
             self.log_error(
                 d,
                 "mseed_channel_matcher",
-                "Required match key=net or "
-                + self.readonly_tag
-                + "net are not defined for this datum",
+                "Required match key(s)="
+                + ", ".join(missing_keys)
+                + " are not defined for this datum",
                 self.kill_on_failure,
                 ErrorSeverity.Invalid,
             )
-        # We repeat the above logic for sta and chan for debugging but it
-        # could cause bloated elog messages if a user makes a dumb error
-        # with a large data set.  that seems preferable to mysterious behavior
-        # could make it a verbose option but for now we will always blunder on
-        if d.is_defined("sta"):
-            query["sta"] = d["sta"]
-        elif d.is_defined(self.readonly_tag + "sta"):
-            query["sta"] = d[self.readonly_tag + "sta"]
-        else:
-            query_is_ok = False
-            self.log_error(
-                d,
-                "mseed_channel_matcher",
-                "Required match key=sta or "
-                + self.readonly_tag
-                + "sta are not defined for this datum",
-                self.kill_on_failure,
-                ErrorSeverity.Invalid,
-            )
-
-        if d.is_defined("chan"):
-            query["chan"] = d["chan"]
-        elif d.is_defined(self.readonly_tag + "chan"):
-            query["chan"] = d[self.readonly_tag + "chan"]
-        else:
-            query_is_ok = False
-            self.log_error(
-                d,
-                "mseed_channel_matcher",
-                "Required match key=chan or "
-                + self.readonly_tag
-                + "chan are not defined for this datum",
-                self.kill_on_failure,
-                ErrorSeverity.Invalid,
-            )
+            return None, False
 
         # loc has to be handled differently because it is often not defined
         # We just don't add loc to the query if it isn't defined
@@ -335,10 +297,6 @@ class mseed_channel_matcher(NMF):
             query["loc"] = d["loc"]
         elif d.is_defined(self.readonly_tag + "loc"):
             query["loc"] = d[self.readonly_tag + "loc"]
-
-        # return now if this datum has been marked dead
-        if not query_is_ok:
-            return None
 
         # default to data start time if time is not explicitly passed
         if time:
@@ -351,7 +309,7 @@ class mseed_channel_matcher(NMF):
 
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
-            return None
+            return None, True
         if matchsize > 1 and self.verbose:
             self.log_error(
                 d,
@@ -360,7 +318,18 @@ class mseed_channel_matcher(NMF):
                 False,
                 ErrorSeverity.Complaint,
             )
-        return self.dbhandle.find_one(query)
+        return self.dbhandle.find_one(query), True
+
+    def get_document(self, d, time=None):
+        """
+        Fetch the channel/site document matching net, station, location, and time.
+
+        :param d: atomic MsPASS data object used to build the match query.
+        :param time: optional match time; defaults to ``d.t0``.
+        :return: matching MongoDB document, or ``None`` when no match is found.
+        :rtype: dict or None
+        """
+        return self._find_document(d, time)[0]
 
     def normalize(self, d, time=None):
         """
@@ -373,7 +342,9 @@ class mseed_channel_matcher(NMF):
         if d.dead():
             return d
         if _input_is_atomic(d):
-            doc = self.get_document(d, time)
+            doc, query_is_valid = self._find_document(d, time)
+            if not query_is_valid:
+                return d
             if doc == None:
                 message = "No matching document was found in channel collection for this datum"
                 self.log_error(
@@ -396,7 +367,7 @@ class mseed_channel_matcher(NMF):
                         # but it could create bloated elog collections
                         message = (
                             "No data for key="
-                            + self.mdkey
+                            + key
                             + " in document returned from collection="
                             + self.collection
                         )
@@ -444,61 +415,39 @@ class mseed_site_matcher(NMF):
         verbose=True,
     ):
         super().__init__(kill_on_failure, verbose)
-        self.dbhandle = db["site"]
+        self.collection = "site"
+        self.dbhandle = db[self.collection]
         # assume type errors will be thrown if attributes_to_load is not array like
         for x in attributes_to_load:
             self.attributes_to_load.append(x)
         self.readonly_tag = readonly_tag
         self.prepend_collection_name = prepend_collection_name
 
-    def get_document(self, d, time=None):
-        """
-        Fetch the channel/site document matching net, station, location, and time.
-
-        :param d: atomic MsPASS data object used to build the match query.
-        :param time: optional match time; defaults to ``d.t0``.
-        :return: matching MongoDB document, or ``None`` when no match is found.
-        :rtype: dict or None
-        """
+    def _find_document(self, d, time=None):
         if not _input_is_atomic(d):
             raise TypeError(
                 "mseed_site_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"
             )
-        query_is_ok = True
         query = {}
-        if d.is_defined("net"):
-            query["net"] = d["net"]
-        elif d.is_defined(self.readonly_tag + "net"):
-            query["net"] = d[self.readonly_tag + "net"]
-        else:
+        missing_keys = []
+        for key in ("net", "sta"):
+            if d.is_defined(key):
+                query[key] = d[key]
+            elif d.is_defined(self.readonly_tag + key):
+                query[key] = d[self.readonly_tag + key]
+            else:
+                missing_keys.append(key)
+        if missing_keys:
             self.log_error(
                 d,
                 "mseed_site_matcher",
-                "Required match key=net or "
-                + self.readonly_tag
-                + "net are not defined for this datum",
+                "Required match key(s)="
+                + ", ".join(missing_keys)
+                + " are not defined for this datum",
                 self.kill_on_failure,
                 ErrorSeverity.Invalid,
             )
-        # We repeat the above logic for sta and chan for debugging but it
-        # could cause bloated elog messages if a user makes a dumb error
-        # with a large data set.  that seems preferable to mysterious behavior
-        # could make it a verbose option but for now we will always blunder on
-        if d.is_defined("sta"):
-            query["sta"] = d["sta"]
-        elif d.is_defined(self.readonly_tag + "sta"):
-            query["sta"] = d[self.readonly_tag + "sta"]
-        else:
-            query_is_ok = False
-            self.log_error(
-                d,
-                "mseed_site_matcher",
-                "Required match key=sta or "
-                + self.readonly_tag
-                + "sta are not defined for this datum",
-                self.kill_on_failure,
-                ErrorSeverity.Invalid,
-            )
+            return None, False
 
         # loc has to be handled differently because it is often not defined
         # We just don't add loc to the query if it isn't defined
@@ -506,10 +455,6 @@ class mseed_site_matcher(NMF):
             query["loc"] = d["loc"]
         elif d.is_defined(self.readonly_tag + "loc"):
             query["loc"] = d[self.readonly_tag + "loc"]
-
-        # return now if this datum has been marked dead
-        if not query_is_ok:
-            return None
 
         # default to data start time if time is not explicitly passed
         if time:
@@ -522,7 +467,7 @@ class mseed_site_matcher(NMF):
 
         matchsize = self.dbhandle.count_documents(query)
         if matchsize == 0:
-            return None
+            return None, True
         if matchsize > 1 and self.verbose:
             self.log_error(
                 d,
@@ -531,7 +476,18 @@ class mseed_site_matcher(NMF):
                 False,
                 ErrorSeverity.Complaint,
             )
-        return self.dbhandle.find_one(query)
+        return self.dbhandle.find_one(query), True
+
+    def get_document(self, d, time=None):
+        """
+        Fetch the channel/site document matching net, station, location, and time.
+
+        :param d: atomic MsPASS data object used to build the match query.
+        :param time: optional match time; defaults to ``d.t0``.
+        :return: matching MongoDB document, or ``None`` when no match is found.
+        :rtype: dict or None
+        """
+        return self._find_document(d, time)[0]
 
     def normalize(self, d, time=None):
         """
@@ -544,7 +500,9 @@ class mseed_site_matcher(NMF):
         if d.dead():
             return d
         if _input_is_atomic(d):
-            doc = self.get_document(d, time)
+            doc, query_is_valid = self._find_document(d, time)
+            if not query_is_valid:
+                return d
             if doc == None:
                 message = (
                     "No matching document was found in site collection for this datum"
@@ -569,7 +527,7 @@ class mseed_site_matcher(NMF):
                         # but it could create bloated elog collections
                         message = (
                             "No data for key="
-                            + self.mdkey
+                            + key
                             + " in document returned from collection="
                             + self.collection
                         )
