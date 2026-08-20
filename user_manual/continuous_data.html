@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Continuous Data Handling with MsPASS &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Continuous Data Handling with MsPASS &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Processing History Concepts" href="processing_history_concepts.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -674,27 +674,27 @@ existing MsPASS database handle.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">merge</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="s2">&quot;II&quot;</span>
-<span class="n">sta</span> <span class="o">=</span> <span class="s2">&quot;AAK&quot;</span>
-<span class="n">chan</span> <span class="o">=</span> <span class="s2">&quot;BHZ&quot;</span>
-<span class="n">loc</span> <span class="o">=</span> <span class="s2">&quot;00&quot;</span>  <span class="c1"># STS-1 sensor at AAK</span>
-<span class="n">output_starttime</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s2">&quot;2010-01-01T00:00:00&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span>
+<span class="n">net</span> <span class="o">=</span> <span class="s2">"II"</span>
+<span class="n">sta</span> <span class="o">=</span> <span class="s2">"AAK"</span>
+<span class="n">chan</span> <span class="o">=</span> <span class="s2">"BHZ"</span>
+<span class="n">loc</span> <span class="o">=</span> <span class="s2">"00"</span>  <span class="c1"># STS-1 sensor at AAK</span>
+<span class="n">output_starttime</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s2">"2010-01-01T00:00:00"</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span>
 <span class="n">output_endtime</span> <span class="o">=</span> <span class="n">output_starttime</span> <span class="o">+</span> <span class="mf">3600.0</span>
 
 <span class="c1"># Retrieve every segment that intersects the requested interval.</span>
 <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">,</span>
-    <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span>
-    <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="n">chan</span><span class="p">,</span>
-    <span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="n">loc</span><span class="p">,</span>
-    <span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">output_endtime</span><span class="p">},</span>
-    <span class="s2">&quot;endtime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">output_starttime</span><span class="p">},</span>
+    <span class="s2">"sta"</span><span class="p">:</span> <span class="n">sta</span><span class="p">,</span>
+    <span class="s2">"net"</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span>
+    <span class="s2">"chan"</span><span class="p">:</span> <span class="n">chan</span><span class="p">,</span>
+    <span class="s2">"loc"</span><span class="p">:</span> <span class="n">loc</span><span class="p">,</span>
+    <span class="s2">"starttime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lte"</span><span class="p">:</span> <span class="n">output_endtime</span><span class="p">},</span>
+    <span class="s2">"endtime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gte"</span><span class="p">:</span> <span class="n">output_starttime</span><span class="p">},</span>
 <span class="p">}</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">([(</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="n">ASCENDING</span><span class="p">)])</span>
-<span class="n">segments</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">([(</span><span class="s2">"starttime"</span><span class="p">,</span> <span class="n">ASCENDING</span><span class="p">)])</span>
+<span class="n">segments</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">segments</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The following query yielded no usable data:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"The following query yielded no usable data:"</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
@@ -704,12 +704,12 @@ existing MsPASS database handle.</p>
             <span class="n">endtime</span><span class="o">=</span><span class="n">output_endtime</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Merge rejected the input segments:&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Merge rejected the input segments:"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">merged_data</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Output is live and has&quot;</span><span class="p">,</span> <span class="n">merged_data</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Output is live and has"</span><span class="p">,</span> <span class="n">merged_data</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="s2">"samples"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A gap or overlap caused the merged datum to be killed&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"A gap or overlap caused the merged datum to be killed"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><em>Example 2: Parallel read from a continuous archive.</em></p>
@@ -732,33 +732,33 @@ and is also copied into the Metadata of the corresponding ensemble through
 
 <span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
-<span class="n">continuous_db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;TA2010&quot;</span><span class="p">)</span>
-<span class="n">output_db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;Pdata2010&quot;</span><span class="p">)</span>
+<span class="n">continuous_db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"TA2010"</span><span class="p">)</span>
+<span class="n">output_db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"Pdata2010"</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">window_start</span><span class="p">,</span> <span class="n">window_end</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a query for segments intersecting one arrival window.&quot;&quot;&quot;</span>
-    <span class="n">arrival_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;arrival_time&quot;</span><span class="p">])</span>
+<span class="w">    </span><span class="sd">"""Build a query for segments intersecting one arrival window."""</span>
+    <span class="n">arrival_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">"arrival_time"</span><span class="p">])</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">window_end</span><span class="p">},</span>
-        <span class="s2">&quot;endtime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">window_start</span><span class="p">},</span>
+        <span class="s2">"net"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">],</span>
+        <span class="s2">"sta"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">],</span>
+        <span class="s2">"starttime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lte"</span><span class="p">:</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">window_end</span><span class="p">},</span>
+        <span class="s2">"endtime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gte"</span><span class="p">:</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">window_start</span><span class="p">},</span>
     <span class="p">}</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">make_segments</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">window_start</span><span class="p">,</span> <span class="n">window_end</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge each channel/location group around one arrival.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Merge each channel/location group around one arrival."""</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">Metadata</span><span class="p">(</span><span class="n">ensemble</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">output</span>
 
-    <span class="n">arrival_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ensemble</span><span class="p">[</span><span class="s2">&quot;arrival_time&quot;</span><span class="p">])</span>
+    <span class="n">arrival_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ensemble</span><span class="p">[</span><span class="s2">"arrival_time"</span><span class="p">])</span>
     <span class="n">starttime</span> <span class="o">=</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">window_start</span>
     <span class="n">endtime</span> <span class="o">=</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">window_end</span>
 
     <span class="n">groups</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-        <span class="n">loc</span> <span class="o">=</span> <span class="n">datum</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">groups</span><span class="o">.</span><span class="n">setdefault</span><span class="p">((</span><span class="n">datum</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">],</span> <span class="n">loc</span><span class="p">),</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="n">datum</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"loc"</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">groups</span><span class="o">.</span><span class="n">setdefault</span><span class="p">((</span><span class="n">datum</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">],</span> <span class="n">loc</span><span class="p">),</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">segments</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="n">segments</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">datum</span><span class="p">:</span> <span class="n">datum</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
@@ -780,7 +780,7 @@ and is also copied into the Metadata of the corresponding ensemble through
 <span class="c1"># Application-specific: return dictionaries with net, sta, arrival_time.</span>
 <span class="n">arrival_list</span> <span class="o">=</span> <span class="n">arrival2list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">arrival_list</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;arrival2list returned no arrivals&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"arrival2list returned no arrivals"</span><span class="p">)</span>
 
 <span class="n">window_start</span> <span class="o">=</span> <span class="o">-</span><span class="mf">100.0</span>
 <span class="n">window_end</span> <span class="o">=</span> <span class="mf">300.0</span>
@@ -795,8 +795,8 @@ and is also copied into the Metadata of the corresponding ensemble through
 <span class="n">waveform_bag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">query_list</span><span class="p">,</span>
     <span class="n">db</span><span class="o">=</span><span class="n">continuous_db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
-    <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">"dask"</span><span class="p">,</span>
     <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">,</span>
     <span class="n">container_to_merge</span><span class="o">=</span><span class="n">arrival_bag</span><span class="p">,</span>
 <span class="p">)</span>
@@ -808,9 +808,9 @@ and is also copied into the Metadata of the corresponding ensemble through
     <span class="n">segment_bag</span><span class="p">,</span>
     <span class="n">output_db</span><span class="p">,</span>
     <span class="n">data_are_atomic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
-    <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
-    <span class="n">data_tag</span><span class="o">=</span><span class="s2">&quot;TA2010_P_windows&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">"dask"</span><span class="p">,</span>
+    <span class="n">data_tag</span><span class="o">=</span><span class="s2">"TA2010_P_windows"</span><span class="p">,</span>
     <span class="n">dask_client</span><span class="o">=</span><span class="n">dask_client</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -844,11 +844,11 @@ workflow.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.ensembles</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeIntervalReader</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;my_continuous_dataset&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"my_continuous_dataset"</span><span class="p">)</span>
 <span class="n">window_start</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="n">window_end</span> <span class="o">=</span> <span class="mf">50.0</span>  <span class="c1"># cut 50 s listen windows</span>
 
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;shottimes.txt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"shottimes.txt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stream</span><span class="p">:</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
@@ -862,7 +862,7 @@ workflow.</p>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">ensemble</span> <span class="ow">in</span> <span class="n">ensemble_list</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-                <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

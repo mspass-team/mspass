@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Parallel Processing &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Parallel Processing &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Adapting an Existing Algorithm to MsPASS" href="adapting_algorithms.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -549,7 +549,7 @@ data is easily defined by a variant of the following code section:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
-<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="s2">&quot;exampledb&quot;</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">)</span>
+<span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="s2">"exampledb"</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s2">"dask"</span><span class="p">)</span>
 <span class="n">dbhandle</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">()</span>
 <span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
 <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>            <span class="c1"># An empty query selects the full collection</span>
@@ -557,8 +557,8 @@ data is easily defined by a variant of the following code section:</p>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">dbhandle</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
-    <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">"dask"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -613,9 +613,9 @@ and input and emits a SeismogramEnsemble).   A concrete example for
 the application of a simple filter in dask is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume dbhandle is set as a Database class as above.</span>
 <span class="n">d_in</span><span class="o">=</span><span class="n">read_distributed_data</span><span class="p">(</span>
-    <span class="n">dbhandle</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="p">{},</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span>
+    <span class="n">dbhandle</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="p">{},</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s2">"dask"</span>
 <span class="p">)</span>
-<span class="n">d_out</span><span class="o">=</span><span class="n">d_in</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+<span class="n">d_out</span><span class="o">=</span><span class="n">d_in</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">"bandpass"</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">'0'</span><span class="p">)</span>
 <span class="n">d_compute</span><span class="o">=</span><span class="n">d_out</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -643,11 +643,11 @@ example is the translation of the above to Spark:</p>
 <span class="n">d_in</span><span class="o">=</span><span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">dbhandle</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="p">{},</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
-    <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;spark&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">"spark"</span><span class="p">,</span>
     <span class="n">spark_context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">d_out</span><span class="o">=</span><span class="n">d_in</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">))</span>
+<span class="n">d_out</span><span class="o">=</span><span class="n">d_in</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="s2">"bandpass"</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">'0'</span><span class="p">))</span>
 <span class="n">d_compute</span><span class="o">=</span><span class="n">d_out</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -786,11 +786,11 @@ sequence might be:</p></li>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_process_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Example function to run process read, A, B, and C with Futures.</span>
-<span class="sd">  Arg0 (x) is a value of one of the contents of &quot;input_list_defining_data&quot;</span>
+<span class="sd">  Arg0 (x) is a value of one of the contents of "input_list_defining_data"</span>
 <span class="sd">  in version using map operations above.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="n">d</span> <span class="o">=</span> <span class="n">read_function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
   <span class="n">d</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
   <span class="n">d</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -961,10 +961,10 @@ materializes the results.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># read -&gt; detrend -&gt; filter -&gt; window</span>
 <span class="c1"># example uses dask scheduler</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
-    <span class="n">db</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="p">{},</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="p">{},</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_Seismogram"</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s2">"dask"</span>
 <span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;demean&#39;</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">'demean'</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">"bandpass"</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 <span class="c1"># windowing is relative to start time.  300 s window starting at d.t0+200</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">500.0</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
 <span class="n">data_out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
@@ -972,22 +972,22 @@ materializes the results.</p>
 </div>
 <p>That same workflow using <cite>sliding_window_pipeline</cite> is this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">atomic_example</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">dbname</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Example function merging atomic processing example functions</span>
 <span class="sd">    into a single function for dask client submit in</span>
 <span class="sd">    sliding_window_pipeline.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>   <span class="c1"># parallel method to fetch from worker memory</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;demean&quot;</span><span class="p">)</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">"demean"</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="s2">"bandpass"</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">500.0</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">d</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msc</span>
 <span class="n">mspass_client</span> <span class="o">=</span> <span class="n">msc</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
 <span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="n">doclist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
 <span class="n">data_out</span> <span class="o">=</span> <span class="n">sliding_window_pipeline</span><span class="p">(</span><span class="n">doclist</span><span class="p">,</span>
@@ -1009,15 +1009,15 @@ to create one is different.   In particular, this example uses
 queries as inputs.  The ensemble groups are the results of each
 query.  In this case, that is common source gathers defined by
 source_id values found in input.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">"source_id"</span><span class="p">)</span>
 <span class="n">querylist</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcidlist</span><span class="p">:</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">}</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"source_id"</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">}</span>
     <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 
-<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;demean&#39;</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">"wf_Seismogram"</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">'demean'</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span><span class="s2">"bandpass"</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 <span class="c1"># windowing is relative to start time.  300 s window starting at d.t0+200</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mf">200.0</span><span class="p">,</span><span class="mf">500.0</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">))</span>
 <span class="n">data_out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
@@ -1025,15 +1025,15 @@ source_id values found in input.</p>
 </div>
 <p>The comparable code using <cite>sliding_window_pipeline</cite> is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_ensemble</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">dbname</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Processing function for submit with ensemble example.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>
   <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
   <span class="c1"># more robust code would handle a null cursor here - omitted for simplicity</span>
-  <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
-  <span class="n">ens</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;demean&quot;</span><span class="p">)</span>
-  <span class="n">ens</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">"wf_Seismogram"</span><span class="p">)</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">"demean"</span><span class="p">)</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="s2">"bandpass"</span><span class="p">,</span><span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
   <span class="c1"># ator and rtoa do not work on ensembles</span>
   <span class="c1"># the concept applies only to atomic data</span>
   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
@@ -1047,11 +1047,11 @@ source_id values found in input.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msc</span>
 <span class="n">mspass_client</span> <span class="o">=</span> <span class="n">msc</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
 <span class="n">dask_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_scheduler</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
-<span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
+<span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">"source_id"</span><span class="p">)</span>
 <span class="n">querylist</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcidlist</span><span class="p">:</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">}</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"source_id"</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">}</span>
     <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="n">data_out</span> <span class="o">=</span> <span class="n">sliding_window_pipeline</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span>
                         <span class="n">process_ensemble</span><span class="p">,</span>

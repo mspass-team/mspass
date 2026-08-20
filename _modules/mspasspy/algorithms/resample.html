@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.resample &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.algorithms.resample &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -499,7 +499,7 @@
 <div class="viewcode-block" id="BasicResampler">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BasicResampler</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for family of resampling operators.   All this class really does is</span>
 <span class="sd">    define the interface and standardize the target of the operator.</span>
 <span class="sd">    A key concept of this family of operator is they are intended to</span>
@@ -526,7 +526,7 @@
 
 <span class="sd">    resamp_op = ScipyResampler(10.0)   # target sample rate of 10 sps</span>
 <span class="sd">    cursor = db.TimeSeries.find({})</span>
-<span class="sd">    bag = read_distributed_data(cursor,collection=&quot;wf_TimeSeries&quot;)</span>
+<span class="sd">    bag = read_distributed_data(cursor,collection="wf_TimeSeries")</span>
 <span class="sd">    bag = bag.map(resamp_op.resample)</span>
 <span class="sd">    bag.map(db.save_data())</span>
 <span class="sd">    bag.compute()</span>
@@ -539,12 +539,12 @@
 <span class="sd">    follow the MsPASS rule for parallel algorithms to kill data that</span>
 <span class="sd">    cannot be handled and not throw exceptions unless the whole usage is</span>
 <span class="sd">    wrong.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">dt</span> <span class="ow">and</span> <span class="n">sampling_rate</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;BasicResample:  usage error.  Specify either dt or sampling_rate.  You defined both&quot;</span><span class="p">,</span>
+                <span class="s2">"BasicResample:  usage error.  Specify either dt or sampling_rate.  You defined both"</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">dt</span><span class="p">:</span>
@@ -557,29 +557,29 @@
 <div class="viewcode-block" id="BasicResampler.target_samprate">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.target_samprate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">target_samprate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the target sampling rate in samples per second.</span>
 
 <span class="sd">        :rtype: float</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span></div>
 
 
 <div class="viewcode-block" id="BasicResampler.target_dt">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.target_dt">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">target_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the target sample interval in seconds.</span>
 
 <span class="sd">        :rtype: float</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span></div>
 
 
 <div class="viewcode-block" id="BasicResampler.dec_factor">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.dec_factor">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">dec_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        All implementations of decimation algorithms should use this</span>
 <span class="sd">        method to test if resampling by decimation is feasible.</span>
 <span class="sd">        A decimation operator only works for downsampling with</span>
@@ -587,7 +587,7 @@
 <span class="sd">        multiple of the input sample interval.</span>
 
 <span class="sd">        The function returns a decimation factor to use for atomic data d</span>
-<span class="sd">        being tested.  The algorithm uses the numpy &quot;isclose&quot;</span>
+<span class="sd">        being tested.  The algorithm uses the numpy "isclose"</span>
 <span class="sd">        function to establish if the sample interval is feasible.</span>
 <span class="sd">        If so it returns the decimation factor as an integer that should be</span>
 <span class="sd">        used on d.  Not implementations should handle a return of 1</span>
@@ -602,12 +602,12 @@
 
 
 <span class="sd">        :param d:   input mspass data object to be tested.   All that is</span>
-<span class="sd">          actually required is d have a &quot;dt&quot; attribute (i.e. d.dt is defined)</span>
+<span class="sd">          actually required is d have a "dt" attribute (i.e. d.dt is defined)</span>
 <span class="sd">          that is the sample interval for that datum.</span>
 <span class="sd">        :type d:   assumed to be a MsPASS atomic data object for which the</span>
 <span class="sd">          dt attribute is defined.  This method has no safeties to test</span>
 <span class="sd">          input type.  It will throw an exception if d.dt does not resolve.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># internal use guarantees this can only be TimeSeries or Seismogram</span>
         <span class="c1"># so this resolves</span>
         <span class="n">d_dt</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span>
@@ -626,12 +626,12 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.resample">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Main operator a concrete class must implement.  It should accept</span>
 <span class="sd">        any mspass data object and return a clone that has been resampled</span>
 <span class="sd">        to the sample interface defined by this base class.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 </div>
 
@@ -640,9 +640,9 @@
 <div class="viewcode-block" id="ScipyResampler">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyResampler">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ScipyResampler</span><span class="p">(</span><span class="n">BasicResampler</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class is a wrapper for the scipy resample algorithm.  Obspy users</span>
-<span class="sd">    should note that the Trace and Stream method called &quot;resample&quot;</span>
+<span class="sd">    should note that the Trace and Stream method called "resample"</span>
 <span class="sd">    is only a light wrapper to apply the scipy resample function.</span>
 
 <span class="sd">    The algorithm and its limitations are described in the scipy</span>
@@ -681,10 +681,10 @@
 <span class="sd">    The primary method of this class is a concrete implementation of the</span>
 <span class="sd">    resample method.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">"hann"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sampling_rate</span><span class="o">=</span><span class="n">sampling_rate</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">window</span>
 
@@ -692,7 +692,7 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyResampler.resample">[docs]</a>
     <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Applies the scipy.signal.resample function to all data held in</span>
 <span class="sd">        a mspass container passed through arg0 (mspass_object).</span>
 <span class="sd">        This method will accept all supported MsPASS datat objects:</span>
@@ -709,7 +709,7 @@
 
 <span class="sd">        If the input is marked dead it will be returned immediately with</span>
 <span class="sd">        no change.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># We do this test at the top to avoid having returns testing for</span>
         <span class="c1"># a dead datum in each of the if conditional blocks below</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
@@ -719,7 +719,7 @@
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">mspass_object</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;ScipyResampler.resample: received unsupported data type=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"ScipyResampler.resample: received unsupported data type="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
                 <span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
@@ -734,9 +734,9 @@
             <span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">n_resampled</span><span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"sampling_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
             <span class="c1"># We have to go through this conversion to avoid TypeError exceptions</span>
-            <span class="c1"># i.e we can&#39;t just copy the entire vector rsdata to the data vector</span>
+            <span class="c1"># i.e we can't just copy the entire vector rsdata to the data vector</span>
             <span class="n">dv</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">rsdata</span><span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dv</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
@@ -749,9 +749,9 @@
             <span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">n_resampled</span><span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"sampling_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
             <span class="c1"># We have to go through this conversion to avoid TypeError exceptions</span>
-            <span class="c1"># i.e we can&#39;t just copy the entire vector rsdata to the data vector</span>
+            <span class="c1"># i.e we can't just copy the entire vector rsdata to the data vector</span>
             <span class="n">dm</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">rsdata</span><span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dm</span>
         <span class="k">else</span><span class="p">:</span>
@@ -769,7 +769,7 @@
 <div class="viewcode-block" id="ScipyDecimator">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyDecimator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ScipyDecimator</span><span class="p">(</span><span class="n">BasicResampler</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class defines a generic operator where a decimator can be used</span>
 <span class="sd">    to downsample any input data to a common sample rate.  A decimator</span>
 <span class="sd">    requires the ratio of the input to output sample rate to be an</span>
@@ -807,28 +807,28 @@
 <span class="sd">    argument.  It needs to be defined internally.</span>
 <span class="sd">    For scalar data we pass 0 while for three component data we sent it 1 which is</span>
 <span class="sd">    means the decimator is applied per channel.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s2">&quot;iir&quot;</span><span class="p">,</span> <span class="n">zero_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s2">"iir"</span><span class="p">,</span> <span class="n">zero_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sampling_rate</span><span class="o">=</span><span class="n">sampling_rate</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ftype</span> <span class="o">=</span> <span class="n">ftype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zero_phase</span> <span class="o">=</span> <span class="n">zero_phase</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">n</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_illegal_decimator_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_code</span><span class="p">,</span> <span class="n">data_dt</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Private method to format a common message if the data&#39;s sample</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Private method to format a common message if the data's sample</span>
 <span class="sd">        interval, data_dt, is not feasible to produce by decimation.</span>
 <span class="sd">        The error message is the return</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">error_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Data sample interval=</span><span class="si">{ddt}</span><span class="s2"> is smaller than target dt=</span><span class="si">{sdt}</span><span class="s2">.  This operator can only downsample&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Data sample interval=</span><span class="si">{ddt}</span><span class="s2"> is smaller than target dt=</span><span class="si">{sdt}</span><span class="s2">.  This operator can only downsample"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">ddt</span><span class="o">=</span><span class="n">data_dt</span><span class="p">,</span> <span class="n">sdt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;Data sample interval=</span><span class="si">{ddt}</span><span class="s2"> is not an integer multiple of </span><span class="si">{sdt}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">"Data sample interval=</span><span class="si">{ddt}</span><span class="s2"> is not an integer multiple of </span><span class="si">{sdt}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">ddt</span><span class="o">=</span><span class="n">data_dt</span><span class="p">,</span> <span class="n">sdt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -838,7 +838,7 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyDecimator.resample">[docs]</a>
     <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Implementation of required abstract method for this operator.</span>
 <span class="sd">        The only argument is mspass_object.   The operator will downsample</span>
 <span class="sd">        the contents of the sample data container for any valid input.</span>
@@ -856,7 +856,7 @@
 
 <span class="sd">        Returns an edited clone of the input with revised sample data but</span>
 <span class="sd">        no changes to any Metadata.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># We do this test at the top to avoid having returns testing for</span>
         <span class="c1"># a dead datum in each of the if conditional blocks below</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
@@ -866,7 +866,7 @@
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">mspass_object</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;ScipyDecimator.resample: received unsupported data type=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"ScipyDecimator.resample: received unsupported data type="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
                 <span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
@@ -877,7 +877,7 @@
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_illegal_decimator_message</span><span class="p">(</span><span class="n">decfac</span><span class="p">,</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                    <span class="s2">&quot;ScipyDecimator.resample&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+                    <span class="s2">"ScipyDecimator.resample"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">dsdata</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">decimate</span><span class="p">(</span>
@@ -890,9 +890,9 @@
                 <span class="n">dsdata_npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dsdata</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">dsdata_npts</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"sampling_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
                 <span class="c1"># We have to go through this conversion to avoid TypeError exceptions</span>
-                <span class="c1"># i.e we can&#39;t just copy the entire vector rsdata to the data vector</span>
+                <span class="c1"># i.e we can't just copy the entire vector rsdata to the data vector</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">dsdata</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
@@ -901,7 +901,7 @@
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_illegal_decimator_message</span><span class="p">(</span><span class="n">decfac</span><span class="p">,</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                    <span class="s2">&quot;ScipyDecimator.resample&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+                    <span class="s2">"ScipyDecimator.resample"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># note axis=1 means apply the decimator along the column</span>
@@ -920,9 +920,9 @@
                 <span class="n">dsdata_npts</span> <span class="o">=</span> <span class="n">msize</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">dsdata_npts</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"sampling_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
                 <span class="c1"># We have to go through this conversion to avoid TypeError exceptions</span>
-                <span class="c1"># i.e we can&#39;t just copy the entire vector rsdata to the data vector</span>
+                <span class="c1"># i.e we can't just copy the entire vector rsdata to the data vector</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">dsdata</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
@@ -952,7 +952,7 @@
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">verify_operators</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;resample&quot;</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">"resample"</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -962,7 +962,7 @@
     <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Resample any valid data object to a common sample rate (sample interval).</span>
 
 <span class="sd">    This function is a wrapper that automates handling of resampling.</span>
@@ -977,8 +977,8 @@
 <span class="sd">    possible, but there are some common exceptions.  For example,</span>
 <span class="sd">    10 sps cannot be created from 25 sps by decimation.   The algorithm</span>
 <span class="sd">    tests the data sample rate and if decimation is possible it</span>
-<span class="sd">    applies a decimation operator passed as the argument &quot;decimator&quot;.</span>
-<span class="sd">    If not, it calls the operator &quot;resampler&quot; that is assumed to be</span>
+<span class="sd">    applies a decimation operator passed as the argument "decimator".</span>
+<span class="sd">    If not, it calls the operator "resampler" that is assumed to be</span>
 <span class="sd">    capable of handling any sample rate change.   The two operators</span>
 <span class="sd">    must have been constructed with the same output target sampling</span>
 <span class="sd">    frequency (interval).  Both must also be a subclass of BasicResampler</span>
@@ -1008,19 +1008,19 @@
 <span class="sd">      defined in a parallel workflow they should be invariant for the</span>
 <span class="sd">      entire application in a map operator.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">verify_operators</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">decimator</span><span class="p">,</span> <span class="n">BasicResampler</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;resample:  decimator operator (arg1) must be subclass of BasicResampler&quot;</span>
+                <span class="s2">"resample:  decimator operator (arg1) must be subclass of BasicResampler"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resampler</span><span class="p">,</span> <span class="n">BasicResampler</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;resample:  resampler operator (arg2) must be subclass of BasicResampler&quot;</span>
+                <span class="s2">"resample:  resampler operator (arg2) must be subclass of BasicResampler"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">decimator</span><span class="o">.</span><span class="n">target_dt</span><span class="p">(),</span> <span class="n">resampler</span><span class="o">.</span><span class="n">target_dt</span><span class="p">()):</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;resample:  decimator and resampler must have the same target sampling rate&quot;</span><span class="p">,</span>
+                <span class="s2">"resample:  decimator and resampler must have the same target sampling rate"</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
             <span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
@@ -1039,7 +1039,7 @@
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">mspass_object</span>
         <span class="c1"># I tried to do this loop with recursion but spyder kept</span>
-        <span class="c1"># flagging it as an error - I&#39;m not sure it would be.</span>
+        <span class="c1"># flagging it as an error - I'm not sure it would be.</span>
         <span class="c1"># The logic for atomic data is simple anyway and this</span>
         <span class="c1"># might actually be faster avoiding the function calls</span>
         <span class="n">nmembers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
@@ -1058,7 +1058,7 @@
         <span class="k">return</span> <span class="n">mspass_object</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1">#  It should be an exception if we get anything else</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;resample:   arg0 must be a MsPASS data object&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"resample:   arg0 must be a MsPASS data object"</span><span class="p">)</span></div>
 
 </pre></div>
 

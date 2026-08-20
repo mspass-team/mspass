@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Importing Tabular Data &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Importing Tabular Data &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Importing Data" href="importing_data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -560,14 +560,14 @@ creates called “arrival”:</p>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 
-<span class="n">db</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;myproject&quot;</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./data/picks.csv&quot;</span><span class="p">)</span>
-<span class="n">doclist</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"myproject"</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"./data/picks.csv"</span><span class="p">)</span>
+<span class="n">doclist</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">doclist</span><span class="p">:</span>
-    <span class="n">station_id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;station_id&quot;</span><span class="p">]</span>
-    <span class="n">fields</span> <span class="o">=</span> <span class="n">station_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">station_id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"station_id"</span><span class="p">]</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="n">station_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+    <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">doc</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
 <span class="n">insert_many_output</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">arrival</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>
 </pre></div>
@@ -631,7 +631,7 @@ is the “arrival” table in a database someone chose to call “usarray”.</p
 can be created with a variant of the following code fragment:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.preprocessing.css30.datascope</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatascopeDatabase</span>
 
-<span class="n">dsdb</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="s2">&quot;usarray&quot;</span><span class="p">)</span>
+<span class="n">dsdb</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="s2">"usarray"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">usarray</span></code> is the database name (and file-name prefix).  The constructor
@@ -650,7 +650,7 @@ handle for each database prefix.  For example, to access <code class="docutils l
 in <code class="docutils literal notranslate"><span class="pre">~/dbmaster</span></code>, use:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="n">dsdbm</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/dbmaster/usarray&quot;</span><span class="p">))</span>
+<span class="n">dsdbm</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">"~/dbmaster/usarray"</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Once an instance of
@@ -673,8 +673,8 @@ are often or nearly always null.</p>
 method.  This example retrieves the coordinate data from
 the <code class="docutils literal notranslate"><span class="pre">usarray.site</span></code> table using the <code class="docutils literal notranslate"><span class="pre">dsdbm</span></code> handle created with
 the code line above:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordlist</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">,</span> <span class="s2">&quot;ondate&quot;</span><span class="p">,</span> <span class="s2">&quot;offdate&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">]</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">dsdbm</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;site&quot;</span><span class="p">,</span> <span class="n">attributes_to_use</span><span class="o">=</span><span class="n">coordlist</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordlist</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"sta"</span><span class="p">,</span> <span class="s2">"ondate"</span><span class="p">,</span> <span class="s2">"offdate"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">dsdbm</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">"site"</span><span class="p">,</span> <span class="n">attributes_to_use</span><span class="o">=</span><span class="n">coordlist</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The result could be used for normalization to load coordinates by
@@ -695,8 +695,8 @@ the table’s column order.  For example, the following writes
 already exists:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">df_written</span> <span class="o">=</span> <span class="n">dsdbm</span><span class="o">.</span><span class="n">df2table</span><span class="p">(</span>
     <span class="n">df</span><span class="p">,</span>
-    <span class="n">db</span><span class="o">=</span><span class="s2">&quot;site_subset&quot;</span><span class="p">,</span>
-    <span class="n">table</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">,</span>
+    <span class="n">db</span><span class="o">=</span><span class="s2">"site_subset"</span><span class="p">,</span>
+    <span class="n">table</span><span class="o">=</span><span class="s2">"site"</span><span class="p">,</span>
     <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -735,8 +735,8 @@ immediately writing the output to the standard MsPASS collection
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.preprocessing.css30.datascope</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatascopeDatabase</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;myproject&quot;</span><span class="p">)</span>
-<span class="n">dsdb</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="s2">&quot;usarray&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"myproject"</span><span class="p">)</span>
+<span class="n">dsdb</span> <span class="o">=</span> <span class="n">DatascopeDatabase</span><span class="p">(</span><span class="s2">"usarray"</span><span class="p">)</span>
 <span class="n">doclist</span> <span class="o">=</span> <span class="n">dsdb</span><span class="o">.</span><span class="n">wfdisc2doclist</span><span class="p">()</span>
 <span class="k">if</span> <span class="n">doclist</span><span class="p">:</span>
     <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>

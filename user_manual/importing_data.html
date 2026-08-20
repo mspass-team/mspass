@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Importing Data &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Importing Data &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Normalization" href="normalization.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -598,14 +598,14 @@ byte count, channel codes, and time span needed to read the original file.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
 
-<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">DBClient</span><span class="p">(),</span> <span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
-<span class="n">data_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/absolute/path/to/mseed&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">DBClient</span><span class="p">(),</span> <span class="s2">"mydatabase"</span><span class="p">)</span>
+<span class="n">data_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"/absolute/path/to/mseed"</span><span class="p">)</span>
 
-<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data_directory</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.mseed&quot;</span><span class="p">)):</span>
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data_directory</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"*.mseed"</span><span class="p">)):</span>
     <span class="n">db</span><span class="o">.</span><span class="n">index_mseed_file</span><span class="p">(</span>
         <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="nb">dir</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data_directory</span><span class="p">),</span>
-        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -617,11 +617,11 @@ worker that reads it.</p>
 <p>An index document can be read as a MsPASS <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> without first
 rewriting the compressed samples:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Replace with a MongoDB query to select a subset.</span>
-<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
-    <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">[</span><span class="s2">"wf_miniseed"</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+    <span class="n">datum</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
         <span class="c1"># Process datum here, or persist a native MsPASS copy:</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data</span></code></a> uses the stored
@@ -696,11 +696,11 @@ following code framgment extracted from our tutorials:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 <span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">()</span>
-<span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">&#39;getting_started&#39;</span><span class="p">)</span>
-<span class="n">inv</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">get_stations</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="s1">&#39;TA&#39;</span><span class="p">,</span><span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span><span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">,</span>
-                    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">,</span><span class="n">channel</span><span class="o">=</span><span class="s1">&#39;BH?&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;response&#39;</span><span class="p">)</span>
+<span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">'getting_started'</span><span class="p">)</span>
+<span class="n">inv</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">get_stations</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="s1">'TA'</span><span class="p">,</span><span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span><span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">,</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="s1">'xml'</span><span class="p">,</span><span class="n">channel</span><span class="o">=</span><span class="s1">'BH?'</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">'response'</span><span class="p">)</span>
 <span class="n">ret</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">save_inventory</span><span class="p">(</span><span class="n">inv</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;save_inventory returned values=&#39;</span><span class="p">,</span><span class="n">ret</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'save_inventory returned values='</span><span class="p">,</span><span class="n">ret</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>As noted above an <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object
@@ -805,9 +805,9 @@ using the <code class="code docutils literal notranslate"><span class="pre">Data
 The following is a complete example using a local QuakeML file.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_events</span>
 
-<span class="n">catalog</span> <span class="o">=</span> <span class="n">read_events</span><span class="p">(</span><span class="s2">&quot;events.xml&quot;</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;QUAKEML&quot;</span><span class="p">)</span>
+<span class="n">catalog</span> <span class="o">=</span> <span class="n">read_events</span><span class="p">(</span><span class="s2">"events.xml"</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">"QUAKEML"</span><span class="p">)</span>
 <span class="n">number_saved</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save_catalog</span><span class="p">(</span><span class="n">catalog</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;source documents saved=&quot;</span><span class="p">,</span><span class="n">number_saved</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"source documents saved="</span><span class="p">,</span><span class="n">number_saved</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Be aware that <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> inserts every event without checking for
@@ -838,10 +838,10 @@ to be processed:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream2TimeSeriesEnsemble</span>
 <span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">()</span>
-<span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">&#39;mydatabasename&#39;</span><span class="p">)</span>
+<span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">'mydatabasename'</span><span class="p">)</span>
    <span class="o">...</span>
 <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
-  <span class="n">st</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;SOMEFORMAT&quot;</span><span class="p">)</span>
+  <span class="n">st</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">"SOMEFORMAT"</span><span class="p">)</span>
   <span class="n">d</span> <span class="o">=</span> <span class="n">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
   <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 </pre></div>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Memory Management &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Memory Management &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Parallel Processing" href="parallel_processing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -552,15 +552,15 @@ imports and initializations:</p>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">,</span>
     <span class="n">npartitions</span><span class="o">=</span><span class="n">Npartitions</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">detrend</span><span class="p">)</span>
-<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">filter</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">filter</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"bandpass"</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">WindowData</span><span class="p">,</span> <span class="o">-</span><span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">)</span>
 <span class="c1"># assume nwin and swin defined initialization</span>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">arrival_snr</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">=</span><span class="n">nwin</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">=</span><span class="n">swin</span><span class="p">)</span>
-<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="s2">&quot;step1&quot;</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="s2">"step1"</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">mybag</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -958,35 +958,35 @@ aligned by a P wave arrival time defined in each object’s Metadata
 container with the key “Ptime”.  The data are grouped for the
 reduce(fold) operation by the Metadata key <cite>source_id</cite>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ator_by_Ptime</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Smaller helper function needed for alignment by Ptime key.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="c1"># A more robust version should test for validity - here assume data</span>
   <span class="c1"># was preprocessed to be clean</span>
-  <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Ptime&quot;</span><span class="p">]</span>
+  <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"Ptime"</span><span class="p">]</span>
   <span class="n">d</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
   <span class="k">return</span> <span class="n">d</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">key_func</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Used in foldby to define group operation - here with source_id</span>
-<span class="sd">  &quot;&quot;&quot;</span>
-  <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;source_id&quot;</span><span class="p">]</span>
+<span class="sd">  """</span>
+  <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="s2">"source_id"</span><span class="p">]</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">fold_result_data</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;Extract the stacked datum from Dask&#39;s (key, value) result.&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""Extract the stacked datum from Dask's (key, value) result."""</span>
   <span class="k">return</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.reduce</span><span class="w"> </span><span class="kn">import</span> <span class="n">stack</span>
 <span class="c1"># Assumes data was preprocessed to be clean and saved with this tag</span>
-<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data_tag&quot;</span><span class="p">:</span> <span class="s2">&quot;read_to_stack_data&quot;</span><span class="p">}</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"data_tag"</span><span class="p">:</span> <span class="s2">"read_to_stack_data"</span><span class="p">}</span>
 <span class="c1"># assumes npartitions is set earlier in the code - see text for discussion</span>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
     <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ator_by_Ptime</span><span class="p">)</span>
@@ -996,7 +996,7 @@ reduce(fold) operation by the Metadata key <cite>source_id</cite>:</p>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">fold_result_data</span><span class="p">)</span>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
     <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span>
-    <span class="n">data_tag</span><span class="o">=</span><span class="s2">&quot;stacked_data&quot;</span><span class="p">,</span>
+    <span class="n">data_tag</span><span class="o">=</span><span class="s2">"stacked_data"</span><span class="p">,</span>
     <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
@@ -1134,19 +1134,19 @@ data logically organized as by source:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">make_source_id_queries</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Demonstrates how to generate a list of queries to use as</span>
 <span class="sd">  input for read_distributed_data to build a bag of ensembles.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
-  <span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
-  <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}</span> <span class="k">for</span> <span class="n">source_id</span> <span class="ow">in</span> <span class="n">srcidlist</span><span class="p">]</span>
+<span class="sd">  """</span>
+  <span class="n">srcidlist</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">"source_id"</span><span class="p">)</span>
+  <span class="k">return</span> <span class="p">[{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}</span> <span class="k">for</span> <span class="n">source_id</span> <span class="ow">in</span> <span class="n">srcidlist</span><span class="p">]</span>
 
 <span class="c1"># Initialization code for database handle (db) would normally be here</span>
 <span class="n">matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">,</span>
     <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="s2">&quot;endtime&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">,</span> <span class="s2">&quot;hang&quot;</span><span class="p">,</span> <span class="s2">&quot;vang&quot;</span>
+        <span class="s2">"_id"</span><span class="p">,</span> <span class="s2">"starttime"</span><span class="p">,</span> <span class="s2">"endtime"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span><span class="p">,</span> <span class="s2">"hang"</span><span class="p">,</span> <span class="s2">"vang"</span>
     <span class="p">],</span>
 <span class="p">)</span>
 <span class="n">querylist</span> <span class="o">=</span> <span class="n">make_source_id_queries</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>  <span class="c1"># defined above</span>
@@ -1154,7 +1154,7 @@ data logically organized as by source:</p>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">querylist</span><span class="p">,</span>
     <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="n">matcher</span><span class="p">],</span>
     <span class="n">npartitions</span><span class="o">=</span><span class="n">number_partitions</span><span class="p">,</span>
 <span class="p">)</span>

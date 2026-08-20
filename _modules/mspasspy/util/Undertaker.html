@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.Undertaker &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.util.Undertaker &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -490,34 +490,34 @@
     <span class="n">Metadata</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">This is a class for handling data marked dead.   The method names are a</span>
 <span class="sd">programming joke, but are remarkably useful mnemonics for the functionality</span>
 <span class="sd">they provide.</span>
 
 <span class="sd">Concepts of this class are:</span>
 
-<span class="sd">1.  Data marked as &quot;dead&quot; in MsPASS are always considered invalid and</span>
+<span class="sd">1.  Data marked as "dead" in MsPASS are always considered invalid and</span>
 <span class="sd">    should not be used as part of a final product that is the goal of a workflow.</span>
 <span class="sd">2.  What made the data invalid cannot be known without additional information.</span>
 <span class="sd">    In MsPASS the way we always handle adding the additional information is</span>
 <span class="sd">    with the ErrorLogger component of all data objects.  Hence, the error</span>
 <span class="sd">    log is the way to sort out problems.</span>
 <span class="sd">3.  There are two forms of dead data that need to be handled fundamentally</span>
-<span class="sd">    differently.   (1) Most dead data are expected to be &quot;killed&quot; by</span>
+<span class="sd">    differently.   (1) Most dead data are expected to be "killed" by</span>
 <span class="sd">    some edit function or a processing algorithm that finds something</span>
-<span class="sd">    wrong that won&#39;t allow it to do it&#39;s task.   (e.g. Seismogram objects</span>
+<span class="sd">    wrong that won't allow it to do it's task.   (e.g. Seismogram objects</span>
 <span class="sd">    cannot be created from TimeSeries objects without the orientation</span>
 <span class="sd">    angles being defined in the Metadata.)  (2)  Errors created during</span>
 <span class="sd">    construction of a data object that cause the construction to fail.</span>
 <span class="sd">    The definitive example is constructing seismogram/timeseries objects</span>
 <span class="sd">    from the MongoDB representation or while reading from a file can fail</span>
 <span class="sd">    for a long list of reasons.  We give the later that colorful name</span>
-<span class="sd">    &quot;abortions&quot; since they die before birth.</span>
+<span class="sd">    "abortions" since they die before birth.</span>
 <span class="sd">4.  Ensembles have more complexity than atomic objects because they are</span>
 <span class="sd">    by definition a collection of atomic objects with additional components</span>
 <span class="sd">    common to the ensemble.   As a result some methods in this class,</span>
-<span class="sd">    notably &quot;bring_out_your_dead&quot; only make sense for ensembles.  There is</span>
+<span class="sd">    notably "bring_out_your_dead" only make sense for ensembles.  There is</span>
 <span class="sd">    also the distinction of an ensemble marked dead versus one or more</span>
 <span class="sd">    members.  An ensemble marked dead is always treated as having all</span>
 <span class="sd">    dead members.</span>
@@ -525,16 +525,16 @@
 <span class="sd">An additional set of concepts relate to how the undertaker should handle</span>
 <span class="sd">the dead bodies.  These are:</span>
 <span class="sd">1.  To `bury` a dead datum means to save the elog data and a copy of any</span>
-<span class="sd">    Metadata attributes to MongoDB.  These are stored in special &quot;cemetery&quot;</span>
+<span class="sd">    Metadata attributes to MongoDB.  These are stored in special "cemetery"</span>
 <span class="sd">    collection that has no schema constraints.   Every dead datum the</span>
-<span class="sd">    undertaker is told to &quot;bury&quot; will produce a document in one of two</span>
-<span class="sd">    location:  (1) if it is a normal datum the body will be saved in &quot;cemetery&quot;</span>
-<span class="sd">    (2) if is an &quot;abortion&quot; the body will be saved in &quot;abortions&quot;.</span>
+<span class="sd">    undertaker is told to "bury" will produce a document in one of two</span>
+<span class="sd">    location:  (1) if it is a normal datum the body will be saved in "cemetery"</span>
+<span class="sd">    (2) if is an "abortion" the body will be saved in "abortions".</span>
 <span class="sd">2.  To `mummify` a dead datum means to not save anything but return only</span>
 <span class="sd">    a shell of the original with a minimal memory footprint.  For atomic</span>
 <span class="sd">    data that means to set the sample array to zero length.  For ensembles</span>
 <span class="sd">    it means to mummify all dead members but leave the mummies in the container.</span>
-<span class="sd">    An ensemble marked dead passed through mummify will have all it&#39;s members</span>
+<span class="sd">    An ensemble marked dead passed through mummify will have all it's members</span>
 <span class="sd">    mummified.</span>
 <span class="sd">3.  To `cremate` a dead datum means to make it disappear with little to no</span>
 <span class="sd">    trace.   When an atomic datum is cremated we return a default constructed</span>
@@ -545,82 +545,82 @@
 <span class="sd">    simpler.  When an ensemble is cremated all dead members are vaporized</span>
 <span class="sd">    with no trace and the member vector will contain only live members.</span>
 
-<span class="sd">A datum that is defined as an &quot;abortion&quot; is handled a bit differently</span>
+<span class="sd">A datum that is defined as an "abortion" is handled a bit differently</span>
 <span class="sd">by design.   We take a pro life stance in MsPaSS and view abortions as</span>
 <span class="sd">always a bad thing that need to be minimized and monitored.  For that</span>
-<span class="sd">reason they cannot be &quot;cremated&quot; - that makes no sense anyway since</span>
+<span class="sd">reason they cannot be "cremated" - that makes no sense anyway since</span>
 <span class="sd">in most cases the sample data in an aborted object are invalid anyway.</span>
-<span class="sd">Data found to be &quot;aborted&quot; (regularized throught private method `is_abortion`)</span>
+<span class="sd">Data found to be "aborted" (regularized throught private method `is_abortion`)</span>
 <span class="sd">are always treated differently an buried in a separate area with the</span>
-<span class="sd">name &quot;abortions&quot;.  The document contents also differ slightly.   Note</span>
+<span class="sd">name "abortions".  The document contents also differ slightly.   Note</span>
 <span class="sd">there is no such thing, currently, as an aborted ensemble.   Only atomic</span>
 <span class="sd">data can satisfy that concept.  It is easy to generate an ensemble of</span>
-<span class="sd">all aborted data, most notable when reading with &#39;mode=&quot;pedantic&quot;&#39;,</span>
+<span class="sd">all aborted data, most notable when reading with 'mode="pedantic"',</span>
 <span class="sd">but the undertaker treats such ensembles as a collection of atomic objects</span>
 <span class="sd">and automatically buries all abortions it finds.</span>
 
 <span class="sd">Documents that are the remnants of dead object saved in two collection.</span>
-<span class="sd">by default normal killed data create records in the &quot;cemetery&quot; collection</span>
-<span class="sd">while aborted data objects produce documents in the &quot;abortions&quot;</span>
-<span class="sd">collection.  All contain an optional &quot;data_tag&quot; defined by the</span>
-<span class="sd">Undertaker on construction.  Use a unique &quot;data_tag&quot; for any job</span>
+<span class="sd">by default normal killed data create records in the "cemetery" collection</span>
+<span class="sd">while aborted data objects produce documents in the "abortions"</span>
+<span class="sd">collection.  All contain an optional "data_tag" defined by the</span>
+<span class="sd">Undertaker on construction.  Use a unique "data_tag" for any job</span>
 <span class="sd">to make the source of the document unambiguous.  A common example is</span>
 <span class="sd">that an Undertaker is defined in Database and the data_tag is passed</span>
 <span class="sd">used by writers.</span>
 
 <span class="sd">:author: Prof. Gary L. Pavlis, Dept. Earth and Atmos. Sci., Indiana University</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 
 <div class="viewcode-block" id="Undertaker">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Undertaker</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class to handle dead data. Results are stored to two spcial</span>
-<span class="sd">    collections defined by default as &quot;cemetery&quot;, for regular dead bodies,</span>
-<span class="sd">    and &quot;abortions&quot; for those defined as abortions.</span>
+<span class="sd">    collections defined by default as "cemetery", for regular dead bodies,</span>
+<span class="sd">    and "abortions" for those defined as abortions.</span>
 
 <span class="sd">    :param dbin:   Should be an instance of  mspasspy.db.Database that is</span>
 <span class="sd">      used to save the remains of any bodies.</span>
 
 <span class="sd">    :type dbin:  the constructor for this class only tests for that the</span>
-<span class="sd">      handle is an instance of pymongo&#39;s Database class.  The MsPASS</span>
+<span class="sd">      handle is an instance of pymongo's Database class.  The MsPASS</span>
 <span class="sd">      version of Database extends the pymongo version.  Thsi particular</span>
 <span class="sd">      class references only two methods of Database: (1) the private</span>
 <span class="sd">      method `_save_elog` and (2) the private method `_save_history`.</span>
-<span class="sd">      Technically an alternative extension of pymongo&#39;s Database</span>
+<span class="sd">      Technically an alternative extension of pymongo's Database</span>
 <span class="sd">      class that implements those two methods would be plug compatible.</span>
-<span class="sd">      User&#39;s who might want to pull MsPASS apart and use this class</span>
+<span class="sd">      User's who might want to pull MsPASS apart and use this class</span>
 <span class="sd">      separately could do so with an alternative Database extension than</span>
 <span class="sd">      MsPaSs.</span>
 
 <span class="sd">    :param regular_data_collection:  collection where we bury regular</span>
-<span class="sd">      dead bodies.  Default &quot;cemetery&quot;</span>
+<span class="sd">      dead bodies.  Default "cemetery"</span>
 <span class="sd">    :type regular_data_collection:  string</span>
 
 <span class="sd">    :param aborted_data_collection:  collection where aborted data documents</span>
-<span class="sd">      are buried.   Default &quot;abortions&quot;</span>
+<span class="sd">      are buried.   Default "abortions"</span>
 <span class="sd">    :type aborted_data_collection:  string</span>
 
 <span class="sd">    :param data_tag:   tag to attach to each document.  Normally would</span>
 <span class="sd">      be the same as the data_tag used for a particular save operation</span>
 <span class="sd">      for data not marked dead.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dbin</span><span class="p">,</span>
-        <span class="n">regular_data_collection</span><span class="o">=</span><span class="s2">&quot;cemetery&quot;</span><span class="p">,</span>
-        <span class="n">aborted_data_collection</span><span class="o">=</span><span class="s2">&quot;abortions&quot;</span><span class="p">,</span>
+        <span class="n">regular_data_collection</span><span class="o">=</span><span class="s2">"cemetery"</span><span class="p">,</span>
+        <span class="n">aborted_data_collection</span><span class="o">=</span><span class="s2">"abortions"</span><span class="p">,</span>
         <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Constructor takes only one argument.  Expected to be a</span>
 <span class="sd">        mspasspy.db.Database object (the mspass database handle)</span>
 <span class="sd">        or it will throw an exception.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># shared by all error handlers as initialization</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Undertaker constructor:  &quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"Undertaker constructor:  "</span>
         <span class="c1"># pymongo.database.Database is the base class for</span>
         <span class="c1"># Database (here meaning mspasspy.db.database.Database) but this</span>
         <span class="c1"># seems necessary for some contexts.   If given a base class</span>
@@ -630,8 +630,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">dbin</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dbh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">elog</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;arg0 must be a MsPASS Database class (mspasspy.db.Database)</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Type of content passed to constructor=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"arg0 must be a MsPASS Database class (mspasspy.db.Database)</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Type of content passed to constructor=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dbin</span><span class="p">))</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
@@ -643,7 +643,7 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">data_tag</span> <span class="o">=</span> <span class="n">data_tag</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type=</span><span class="si">{}</span><span class="s2"> for data tag.  Must be str&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal type=</span><span class="si">{}</span><span class="s2"> for data tag.  Must be str"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data_tag</span><span class="p">))</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -658,10 +658,10 @@
         <span class="n">save_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">mummify_atomic_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Handles dead data by saving a subset of content to database.</span>
 
-<span class="sd">        MsPASS makes extensive use of the idea of &quot;killing&quot; data as a</span>
+<span class="sd">        MsPASS makes extensive use of the idea of "killing" data as a</span>
 <span class="sd">        way to say it is bad and should not be considered further in</span>
 <span class="sd">        any analysis.   There is a need to record what data was killed</span>
 <span class="sd">        and it is preferable to do so without saving the entire</span>
@@ -669,12 +669,12 @@
 <span class="sd">        where data marked dead are normally carried through until</span>
 <span class="sd">        removed through a process like a stack.)  This method</span>
 <span class="sd">        standardizes the method of how to do that and what is saved</span>
-<span class="sd">        as the shell of a dead datum.  That &quot;shell&quot; is always a minimum</span>
+<span class="sd">        as the shell of a dead datum.  That "shell" is always a minimum</span>
 <span class="sd">        of two things:</span>
 
 <span class="sd">            1.  All elog entries - essential to understand why datum was killed</span>
 <span class="sd">            2.  The content of the Metadata container saved under a</span>
-<span class="sd">                subdocument called &quot;tombstone&quot;.</span>
+<span class="sd">                subdocument called "tombstone".</span>
 
 <span class="sd">        If save_history is set True and the datum has history records</span>
 <span class="sd">        they will also be saved.</span>
@@ -687,7 +687,7 @@
 <span class="sd">            generate a document saved to the specified collection and</span>
 <span class="sd">            an (optional) history document.   If the mummify_atomic_data</span>
 <span class="sd">            parameter is set True (the default) the returned copy of the</span>
-<span class="sd">            data will be processed with the &quot;mummify&quot; method of this class.</span>
+<span class="sd">            data will be processed with the "mummify" method of this class.</span>
 <span class="sd">            (That means the sample data are discarded and the array is set</span>
 <span class="sd">            to zero length).</span>
 <span class="sd">        2.  Ensembles have to handle two different situations.   If the</span>
@@ -715,7 +715,7 @@
 <span class="sd">        :param mummify_atomic_data:  When True (default) atomic data</span>
 <span class="sd">          marked dead will be passed through self.mummify to reduce</span>
 <span class="sd">          memory use of the remains.   This parameter is ignored for ensembles.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># set as symbol to mesh with Database api.  It would make no sense</span>
         <span class="c1"># to ever set this False.  Done this way to make that clear</span>
         <span class="n">save_elog</span> <span class="o">=</span> <span class="kc">True</span>
@@ -736,9 +736,9 @@
                             <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">regular_data_collection</span><span class="p">,</span>
                             <span class="n">data_tag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_tag</span><span class="p">,</span>
                         <span class="p">)</span>
-                        <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">regular_data_collection</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cemeteryid</span>
+                        <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">regular_data_collection</span> <span class="o">+</span> <span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cemeteryid</span>
                     <span class="k">if</span> <span class="n">save_history</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;Undertaker.bury&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s2">"Undertaker.bury"</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">mummify_atomic_data</span><span class="p">:</span>
                         <span class="c1"># these are not defaults.  If we saved the elog and history</span>
                         <span class="c1"># to the database there is no reason to keep it so we clear</span>
@@ -765,8 +765,8 @@
                 <span class="n">newens</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">ensmd</span><span class="p">,</span> <span class="n">nlive</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">&quot;Undertaker.bury&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;Coding error - newens constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code was incorrectly changed&quot;</span><span class="p">,</span>
+                    <span class="s2">"Undertaker.bury"</span><span class="p">,</span>
+                    <span class="s2">"Coding error - newens constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code was incorrectly changed"</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
@@ -778,8 +778,8 @@
                 <span class="n">newens</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">newens</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Undertaker.bury:  Datum received is not a MsPASS data object</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Type of arg0 received =</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)))</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Undertaker.bury:  Datum received is not a MsPASS data object</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Type of arg0 received =</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)))</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 
@@ -791,23 +791,23 @@
         <span class="n">save_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">mummify_atomic_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Depricated method exactly equivalent to new, and shorter name of</span>
 <span class="sd">        simply `bury`.   With context as a member of Undertaker the</span>
 <span class="sd">        long name was redundnant.  Note the call sequence is exactly</span>
 <span class="sd">        the same as bury.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;Undertaker.bury_the_dead:  depricated method.  Use shorter, equivalent bury method instead&quot;</span>
+            <span class="s2">"Undertaker.bury_the_dead:  depricated method.  Use shorter, equivalent bury method instead"</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING:  may disappear in future releases&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"WARNING:  may disappear in future releases"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">save_history</span><span class="p">,</span> <span class="n">mummify_atomic_data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Undertaker.cremate">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cremate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Like bury but nothing is preserved of the dead.</span>
 
 <span class="sd">        Fpr atomic data it returns a default constructed (empty)</span>
@@ -822,7 +822,7 @@
 
 <span class="sd">        :param mspass_object:  Seismic data object.   If not a MsPASS</span>
 <span class="sd">          seismic data object a TypeError will be thrown.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">mspass_object</span>
@@ -852,8 +852,8 @@
                 <span class="n">newens</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">ensmd</span><span class="p">,</span> <span class="n">nlive</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">&quot;Undertaker.cremate:  &quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;Coding error - newens constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code was incorrectly changed&quot;</span><span class="p">,</span>
+                    <span class="s2">"Undertaker.cremate:  "</span><span class="p">,</span>
+                    <span class="s2">"Coding error - newens constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code was incorrectly changed"</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
@@ -870,9 +870,9 @@
             <span class="k">return</span> <span class="n">newens</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;Undertaker.cremate:  Datum received is not a MsPASS data object</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">"Undertaker.cremate:  Datum received is not a MsPASS data object</span><span class="se">\n</span><span class="s2">"</span>
             <span class="p">)</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Type of arg0 received =</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)))</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Type of arg0 received =</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)))</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 
@@ -885,13 +885,13 @@
         <span class="n">save_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">mummify_atomic_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Seperate an ensemble into live and dead members.  Result is</span>
 <span class="sd">        returned as a pair (tuple) of two ensembles.   First (0 component)</span>
 <span class="sd">        is a copy of the input with the dead bodies removed.  The second</span>
 <span class="sd">        (component 1) has the same ensemble Metadata as the input but only</span>
 <span class="sd">        contains dead members - like the name implies stolen from a great line in</span>
-<span class="sd">        the Monty Python movie &quot;Search for the Holy Grail&quot;.</span>
+<span class="sd">        the Monty Python movie "Search for the Holy Grail".</span>
 
 <span class="sd">        :param d:  must be either a TimeSeriesEnsemble or SeismogramEnsemble of</span>
 <span class="sd">           data to be processed.</span>
@@ -901,16 +901,16 @@
 <span class="sd">           history data via this method.  If you need to save history</span>
 <span class="sd">           run this with bury=False and then run bury with save_history</span>
 <span class="sd">           true on the dead ensemble.   There is also no way to specify</span>
-<span class="sd">           an alternative to the default collection name of &quot;cemetery&quot;</span>
+<span class="sd">           an alternative to the default collection name of "cemetery"</span>
 <span class="sd">        :return: python list with two elements. 0 is ensemble with live data</span>
 <span class="sd">           and 1 is ensemble with dead data.</span>
 <span class="sd">        :rtype:  python list with two components</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Undertaker.bring_out_your_dead:  &quot;</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type passed for arg0</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type of arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be TimeSeriesEnsemble or SeismgoramEnsemble</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Undertaker.bring_out_your_dead:  "</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal type passed for arg0</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Actual type of arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be TimeSeriesEnsemble or SeismgoramEnsemble</span><span class="se">\n</span><span class="s2">"</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="c1"># make sure all members are dead if the ensemble is marked dead</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -931,8 +931,8 @@
             <span class="n">bodies</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">ensmd</span><span class="p">,</span> <span class="n">ndead</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;Undertaker.bring_out_your_dead&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Coding error - newens constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code was incorrectly changed&quot;</span><span class="p">,</span>
+                <span class="s2">"Undertaker.bring_out_your_dead"</span><span class="p">,</span>
+                <span class="s2">"Coding error - newens constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code was incorrectly changed"</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
@@ -940,7 +940,7 @@
                 <span class="n">newens</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">bodies</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-                <span class="c1"># Note we don&#39;t support save_history through this</span>
+                <span class="c1"># Note we don't support save_history through this</span>
                 <span class="c1"># mechanism.</span>
                 <span class="k">if</span> <span class="n">bury</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -952,7 +952,7 @@
 <div class="viewcode-block" id="Undertaker.mummify">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.mummify">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mummify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">post_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">post_history</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reduce memory use associated with dead data.</span>
 
 <span class="sd">        For atomic data objects if they are marked dead</span>
@@ -966,29 +966,29 @@
 <span class="sd">        Handling of</span>
 
 <span class="sd">        :param mspass_object:  datum to be processed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="n">mspass_object</span><span class="p">,</span>
             <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">),</span>
         <span class="p">):</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Undertaker.mumify:  arg0 must be a mspass seismic data object.  Actual type received = &quot;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Undertaker.mumify:  arg0 must be a mspass seismic data object.  Actual type received = "</span>
             <span class="n">message</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">))</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="c1"># Note:  this method currently does nothing special for abortions</span>
         <span class="c1"># That should be ok because all ways we create abortions have</span>
-        <span class="c1"># objects constructed far enough that the algorithm below shouldn&#39;t</span>
+        <span class="c1"># objects constructed far enough that the algorithm below shouldn't</span>
         <span class="c1"># fail.   Adding ways to abort could invaldate that assumption</span>
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">post_elog</span><span class="p">:</span>
                 <span class="n">elog_doc</span> <span class="o">=</span> <span class="n">elog2doc</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="p">)</span>
-                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;error_log&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_doc</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"error_log"</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_doc</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
                 <span class="c1"># Note history only makes sense for atomic data so this</span>
                 <span class="c1"># section needs to be here</span>
                 <span class="k">if</span> <span class="n">post_history</span><span class="p">:</span>
                     <span class="n">hisdoc</span> <span class="o">=</span> <span class="n">history2doc</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
-                    <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;processing_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hisdoc</span>
+                    <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"processing_history"</span><span class="p">]</span> <span class="o">=</span> <span class="n">hisdoc</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">clear_history</span><span class="p">()</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
@@ -1011,23 +1011,23 @@
 <div class="viewcode-block" id="Undertaker.handle_abortion">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.handle_abortion">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_abortion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_or_datum</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Standardized method to handle what we call abortions (see class overview).</span>
 
 <span class="sd">        This method standardizes handling of abortions.  They are always</span>
 <span class="sd">        saved as a document in a collection set by the constructor</span>
-<span class="sd">        (self.aborted_data_collection) that defaults to &quot;abortions&quot;.</span>
+<span class="sd">        (self.aborted_data_collection) that defaults to "abortions".</span>
 <span class="sd">        The documents saved have up to 4 key-value pairs:</span>
 
-<span class="sd">        - &quot;tombstone&quot; - contents are a subdocument (dict) of the</span>
+<span class="sd">        - "tombstone" - contents are a subdocument (dict) of the</span>
 <span class="sd">          wf document that was aborted during construction.</span>
-<span class="sd">        - &quot;logdata&quot; - any error log records left by the reeader that failed.</span>
-<span class="sd">        - &quot;type&quot; -  string describing the expected type of data object</span>
+<span class="sd">        - "logdata" - any error log records left by the reeader that failed.</span>
+<span class="sd">        - "type" -  string describing the expected type of data object</span>
 <span class="sd">          that a reader was attempting to construct.   In rare</span>
-<span class="sd">          situations it could be set to &quot;unknown&quot; if</span>
+<span class="sd">          situations it could be set to "unknown" if</span>
 <span class="sd">          Undertaker._handle_abortion is called on a raw document</span>
 <span class="sd">          and type is not set (see parameters below)</span>
-<span class="sd">        - &quot;data_tag&quot; - optional processing stage or job tag set on this</span>
+<span class="sd">        - "data_tag" - optional processing stage or job tag set on this</span>
 <span class="sd">          Undertaker instance.</span>
 
 <span class="sd">        :param doc_or_datum:  container defining the aborted fetus.</span>
@@ -1042,37 +1042,37 @@
 <span class="sd">          and it is not referenced at all for normal input of TimeSeries</span>
 <span class="sd">          and Seismogram objects.  It is ONLY referenced if arg0 is a</span>
 <span class="sd">          dict. If type is None and the input is a dict the value assigned to</span>
-<span class="sd">          the &quot;type&quot; key in the abortions document is &quot;unknown&quot;.   The</span>
-<span class="sd">          escape for &quot;unknown&quot; makes the method bombproof but may make the</span>
+<span class="sd">          the "type" key in the abortions document is "unknown".   The</span>
+<span class="sd">          escape for "unknown" makes the method bombproof but may make the</span>
 <span class="sd">          saved documents ambiguous.</span>
 
 <span class="sd">        :exception:  throws a TypeError if arg0 does not obey type</span>
 <span class="sd">          list described above.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">insertion_doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_tag</span><span class="p">:</span>
-            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;data_tag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_tag</span>
+            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">"data_tag"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_tag</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
-            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;tombstone&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">)</span>
+            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">"tombstone"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">doc_or_datum</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">insertion_doc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">elog2doc</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="o">.</span><span class="n">elog</span><span class="p">))</span>
-            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">)):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
                 <span class="n">remains</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">remains</span> <span class="o">=</span> <span class="n">doc_or_datum</span>
-            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;tombstone&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">remains</span>
+            <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">"tombstone"</span><span class="p">]</span> <span class="o">=</span> <span class="n">remains</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
-                <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span>
+                <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># this should not be entered but is safer to include it</span>
-                <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
+                <span class="n">insertion_doc</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"unknown"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Undertaker.handle_abortion:   Illegal type for arg0=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Undertaker.handle_abortion:   Illegal type for arg0=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">doc_or_datum</span><span class="p">))</span>
             <span class="p">)</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a TimeSeries, Seismogram, or a dict&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be a TimeSeries, Seismogram, or a dict"</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">insertion_doc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1083,10 +1083,10 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_abortion</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Internal method used to standardize test for whether a datum is</span>
-<span class="sd">        wha we call an &quot;abortion&quot;.   The test is trivial in this case</span>
-<span class="sd">        because of the use of the &quot;is_abortion&quot; Metadata attribute in</span>
+<span class="sd">        wha we call an "abortion".   The test is trivial in this case</span>
+<span class="sd">        because of the use of the "is_abortion" Metadata attribute in</span>
 <span class="sd">        our readers.   Could be more complex so this design assures</span>
 <span class="sd">        separation of the concept from the implementation.</span>
 
@@ -1097,23 +1097,23 @@
 <span class="sd">          make the package more robust.</span>
 
 <span class="sd">        :return: boolean True if datum is an abortion, False othewise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;is_abortion&quot;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;is_abortion&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"is_abortion"</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s2">"is_abortion"</span><span class="p">]:</span>
                     <span class="k">return</span> <span class="kc">True</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">False</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Warning:  dead datum has is_abortion attribute undefined - assumed False</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;MsPASS readers should always set this attribute&quot;</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">"Warning:  dead datum has is_abortion attribute undefined - assumed False</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"MsPASS readers should always set this attribute"</span>
                 <span class="n">err</span> <span class="o">=</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">&quot;Undertaker._is_abortion&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+                    <span class="s2">"Undertaker._is_abortion"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
                 <span class="p">)</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Undertaker._is_abortion:  received an input that is an invalid type - must be either a TimeSeries or Seismogram object&quot;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Undertaker._is_abortion:  received an input that is an invalid type - must be either a TimeSeries or Seismogram object"</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 </pre></div>

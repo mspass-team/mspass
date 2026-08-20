@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.preprocessing.css30.dbarrival &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.preprocessing.css30.dbarrival &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -475,11 +475,11 @@
   <h1>Source code for mspasspy.preprocessing.css30.dbarrival</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Created on Sat Oct 24 06:31:28 2020</span>
 
 <span class="sd">@author: Gary Pavlis, Dept. of Earth and Atmos Sci, Indiana University</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -492,25 +492,25 @@
     <span class="n">db</span><span class="p">,</span>
     <span class="n">filename</span><span class="p">,</span>
     <span class="n">attribute_names</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;evid&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;source_lat&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;source_lon&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;source_depth&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;source_time&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;mb&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ms&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;sta&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;phase&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;iphase&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;delta&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;seaz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;esaz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;residual&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;time&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;deltim&quot;</span><span class="p">,</span>
+        <span class="s2">"evid"</span><span class="p">,</span>
+        <span class="s2">"source_lat"</span><span class="p">,</span>
+        <span class="s2">"source_lon"</span><span class="p">,</span>
+        <span class="s2">"source_depth"</span><span class="p">,</span>
+        <span class="s2">"source_time"</span><span class="p">,</span>
+        <span class="s2">"mb"</span><span class="p">,</span>
+        <span class="s2">"ms"</span><span class="p">,</span>
+        <span class="s2">"sta"</span><span class="p">,</span>
+        <span class="s2">"phase"</span><span class="p">,</span>
+        <span class="s2">"iphase"</span><span class="p">,</span>
+        <span class="s2">"delta"</span><span class="p">,</span>
+        <span class="s2">"seaz"</span><span class="p">,</span>
+        <span class="s2">"esaz"</span><span class="p">,</span>
+        <span class="s2">"residual"</span><span class="p">,</span>
+        <span class="s2">"time"</span><span class="p">,</span>
+        <span class="s2">"deltim"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Loads an ascii table of arrival time data extracted from an</span>
 <span class="sd">    antelope (css3.0) database.   The default format of the table</span>
 <span class="sd">    is that produced by a shell script linked to this function that</span>
@@ -525,7 +525,7 @@
 <span class="sd">    attribute_name is a defaulted parameter.</span>
 
 <span class="sd">    :param db: is a MongoDB database handle.  It can be as basic as</span>
-<span class="sd">      the return of client(&#39;dbname&#39;) but it can also be an instance</span>
+<span class="sd">      the return of client('dbname') but it can also be an instance</span>
 <span class="sd">      of the mspass Database class.  There is no default</span>
 <span class="sd">    :param filename:  is the string defining a file containing the expected</span>
 <span class="sd">      text file with columns in the order defined by attribute_names.</span>
@@ -535,7 +535,7 @@
 <span class="sd">    :return:  MongoDB InsertManyResult object.  This can be used, for</span>
 <span class="sd">      example, to get the number of rows inserted in arrival from</span>
 <span class="sd">      len(r.insertedIds) where r is the symbol given the return.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># I can find no documentation saying anything about what exceptions</span>
     <span class="c1"># this function will throw.  For now assume it will be run interactively</span>
     <span class="c1"># and errors will be handled by user when the error is automatically</span>
@@ -545,13 +545,13 @@
     <span class="c1"># panda reader used is for clean white space delimited text.  That works</span>
     <span class="c1"># for these attributes ONLY because all never nave spaces.  Note this</span>
     <span class="c1"># reader would be dangerous if using an attribute like a comment attribute</span>
-    <span class="c1"># that has spaces in the string associated with it&#39;s value.  It is always</span>
+    <span class="c1"># that has spaces in the string associated with it's value.  It is always</span>
     <span class="c1"># safe here because sta,phase, and iphase never have spaces</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span>
         <span class="n">filename</span><span class="p">,</span> <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">attribute_names</span>
     <span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">data_dict</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+    <span class="n">data_dict</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">)</span>
     <span class="n">col</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">arrival</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
     <span class="c1"># ret is an special object returned by mongodb - basically a list of</span>
@@ -565,10 +565,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">load_css30_sources</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">srcdict</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
-    <span class="n">attribute_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evid&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"source"</span><span class="p">,</span>
+    <span class="n">attribute_names</span><span class="o">=</span><span class="p">[</span><span class="s2">"evid"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">],</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Companion to extract_unique_css30_sources to load output of that</span>
 <span class="sd">    function into a MongoDB database.   The algorithm is cautious and</span>
 <span class="sd">    first scans the existing source collection for any matching evids.</span>
@@ -581,26 +581,26 @@
 <span class="sd">    :param collection:  optional alternative collection to save (default</span>
 <span class="sd">      is source)</span>
 <span class="sd">    :param attribute_names: list of keys to copy from srcdict to database.</span>
-<span class="sd">      Note currently no aliases are allowed and we don&#39;t test that these</span>
+<span class="sd">      Note currently no aliases are allowed and we don't test that these</span>
 <span class="sd">      are found.  We assume the list is consistent with what is</span>
 <span class="sd">      posted by extract_unique_css30_events</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dbh</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
     <span class="c1"># first scan for matches in any of the evids</span>
     <span class="n">need_to_fix</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">evid</span> <span class="ow">in</span> <span class="n">srcdict</span><span class="p">:</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;evid&quot;</span><span class="p">:</span> <span class="n">evid</span><span class="p">}</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"evid"</span><span class="p">:</span> <span class="n">evid</span><span class="p">}</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">dbh</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="n">dbh</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="n">need_to_fix</span><span class="p">[</span><span class="n">evid</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">need_to_fix</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;The following records in collection &quot;</span><span class="p">,</span>
+            <span class="s2">"The following records in collection "</span><span class="p">,</span>
             <span class="n">collection</span><span class="p">,</span>
-            <span class="s2">&quot; have matching data for one or more evids&quot;</span><span class="p">,</span>
+            <span class="s2">" have matching data for one or more evids"</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You must fix the mismatch problem before you can load these data&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"You must fix the mismatch problem before you can load these data"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">need_to_fix</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">need_to_fix</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -612,7 +612,7 @@
         <span class="n">srcoid</span> <span class="o">=</span> <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
         <span class="c1"># get object id from retval and update this record to set source_id to</span>
         <span class="c1"># the object_id of this record</span>
-        <span class="n">dbh</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">srcoid</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">srcoid</span><span class="p">)}})</span>
+        <span class="n">dbh</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">srcoid</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">srcoid</span><span class="p">)}})</span>
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">count</span></div>
 
@@ -621,9 +621,9 @@
 <div class="viewcode-block" id="set_source_id_from_evid">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.set_source_id_from_evid">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_source_id_from_evid</span><span class="p">(</span>
-    <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">,</span> <span class="n">use_immortal_cursor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_all</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"arrival"</span><span class="p">,</span> <span class="n">use_immortal_cursor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_all</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Sets source_id in arrivals by matching evid attributes in the</span>
 <span class="sd">    source collection.   The concept here is that source_id is the</span>
 <span class="sd">    unique key in MsPASS but evid is a foreign key defined when</span>
@@ -639,7 +639,7 @@
 <span class="sd">      simply tries to match evid and updates documents it finds with</span>
 <span class="sd">      the object id of the source record it matches.</span>
 <span class="sd">    :param use_immortal_cursor:  If true the cursor in the update is made</span>
-<span class="sd">      &quot;immortal&quot; meaning it won&#39;t time out.  This may be necessary if the</span>
+<span class="sd">      "immortal" meaning it won't time out.  This may be necessary if the</span>
 <span class="sd">      arrival collection is large.</span>
 <span class="sd">    :param update_all:  if true the function will force cross referencing and</span>
 <span class="sd">      setting every document in arrival.  The default (False) updates only</span>
@@ -654,13 +654,13 @@
 <span class="sd">      with the count of the number of documents encountered but which</span>
 <span class="sd">      for which evid did not match any document in source.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dbarr</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
-    <span class="n">dbsrc</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span>
+    <span class="n">dbsrc</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"source"</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">update_all</span><span class="p">:</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">use_immortal_cursor</span><span class="p">:</span>
         <span class="n">alldocs</span> <span class="o">=</span> <span class="n">dbarr</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -670,9 +670,9 @@
     <span class="n">evid_set</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="n">not_set</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">alldocs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;evid&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-            <span class="n">evid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;evid&quot;</span><span class="p">]</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;evid&quot;</span><span class="p">:</span> <span class="n">evid</span><span class="p">}</span>
+        <span class="k">if</span> <span class="s2">"evid"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">evid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"evid"</span><span class="p">]</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"evid"</span><span class="p">:</span> <span class="n">evid</span><span class="p">}</span>
             <span class="n">n</span> <span class="o">=</span> <span class="n">dbsrc</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">evid</span> <span class="ow">in</span> <span class="n">not_set</span><span class="p">:</span>
@@ -683,9 +683,9 @@
                     <span class="n">not_set</span><span class="p">[</span><span class="n">evid</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">srcrec</span> <span class="o">=</span> <span class="n">dbsrc</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-                <span class="n">source_id</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">&quot;source_id&quot;</span><span class="p">]</span>
-                <span class="n">arroid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-                <span class="n">dbarr</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">arroid</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}})</span>
+                <span class="n">source_id</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">"source_id"</span><span class="p">]</span>
+                <span class="n">arroid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+                <span class="n">dbarr</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">arroid</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}})</span>
                 <span class="n">number_set</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">if</span> <span class="n">evid</span> <span class="ow">in</span> <span class="n">evid_set</span><span class="p">:</span>
                     <span class="n">nset</span> <span class="o">=</span> <span class="n">evid_set</span><span class="p">[</span><span class="n">evid</span><span class="p">]</span>
@@ -703,25 +703,25 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">extract_unique_css30_sources</span><span class="p">(</span>
     <span class="n">filename</span><span class="p">,</span>
     <span class="n">attribute_names</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;evid&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;source_lat&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;source_lon&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;source_depth&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;source_time&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;mb&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ms&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;sta&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;phase&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;iphase&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;delta&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;seaz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;esaz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;residual&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;time&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;deltim&quot;</span><span class="p">,</span>
+        <span class="s2">"evid"</span><span class="p">,</span>
+        <span class="s2">"source_lat"</span><span class="p">,</span>
+        <span class="s2">"source_lon"</span><span class="p">,</span>
+        <span class="s2">"source_depth"</span><span class="p">,</span>
+        <span class="s2">"source_time"</span><span class="p">,</span>
+        <span class="s2">"mb"</span><span class="p">,</span>
+        <span class="s2">"ms"</span><span class="p">,</span>
+        <span class="s2">"sta"</span><span class="p">,</span>
+        <span class="s2">"phase"</span><span class="p">,</span>
+        <span class="s2">"iphase"</span><span class="p">,</span>
+        <span class="s2">"delta"</span><span class="p">,</span>
+        <span class="s2">"seaz"</span><span class="p">,</span>
+        <span class="s2">"esaz"</span><span class="p">,</span>
+        <span class="s2">"residual"</span><span class="p">,</span>
+        <span class="s2">"time"</span><span class="p">,</span>
+        <span class="s2">"deltim"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Utility function to scan the same table used by load_css30_arrivals to</span>
 <span class="sd">    create a dict of unique sources keyed by the parent css30 database</span>
 <span class="sd">    key evid.   This will only work if evid is set correctly for</span>
@@ -732,7 +732,7 @@
 <span class="sd">    the new data silently replaces the old data.   This is a clean way to</span>
 <span class="sd">    create a unique set of data keyed by evid, BUT as noted it will create</span>
 <span class="sd">    extraneous results if evid value are not consistent with the arrivals</span>
-<span class="sd">    (That shouldn&#39;t happen if the parent css3.0 database was properly formed).</span>
+<span class="sd">    (That shouldn't happen if the parent css3.0 database was properly formed).</span>
 
 <span class="sd">    :param filename: text file to scan created form datascope shell command ending</span>
 <span class="sd">      with dbselect to produce attributes in the order listedfor attribute_names</span>
@@ -743,27 +743,27 @@
 <span class="sd">      listed.   If the dbselect line changes this attribute will need to be</span>
 <span class="sd">      changed too.</span>
 <span class="sd">    :return:  dict keyed by evid of source coordinate data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span>
         <span class="n">filename</span><span class="p">,</span> <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">attribute_names</span>
     <span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">recs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+    <span class="n">recs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">)</span>
     <span class="n">sources</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">recs</span><span class="p">:</span>
-        <span class="n">evid</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;evid&quot;</span><span class="p">]</span>
-        <span class="n">lat</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;source_lat&quot;</span><span class="p">]</span>
-        <span class="n">lon</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;source_lon&quot;</span><span class="p">]</span>
-        <span class="n">depth</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;source_depth&quot;</span><span class="p">]</span>
-        <span class="n">time</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;source_time&quot;</span><span class="p">]</span>
+        <span class="n">evid</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"evid"</span><span class="p">]</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"source_lat"</span><span class="p">]</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"source_lon"</span><span class="p">]</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"source_depth"</span><span class="p">]</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"source_time"</span><span class="p">]</span>
         <span class="c1"># this depends upon container replacing content when keys match</span>
         <span class="c1"># inefficient but should work</span>
         <span class="n">sources</span><span class="p">[</span><span class="n">evid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;evid&quot;</span><span class="p">:</span> <span class="n">evid</span><span class="p">,</span>
-            <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="n">lat</span><span class="p">,</span>
-            <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="n">lon</span><span class="p">,</span>
-            <span class="s2">&quot;depth&quot;</span><span class="p">:</span> <span class="n">depth</span><span class="p">,</span>
-            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
+            <span class="s2">"evid"</span><span class="p">:</span> <span class="n">evid</span><span class="p">,</span>
+            <span class="s2">"lat"</span><span class="p">:</span> <span class="n">lat</span><span class="p">,</span>
+            <span class="s2">"lon"</span><span class="p">:</span> <span class="n">lon</span><span class="p">,</span>
+            <span class="s2">"depth"</span><span class="p">:</span> <span class="n">depth</span><span class="p">,</span>
+            <span class="s2">"time"</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="k">return</span> <span class="n">sources</span></div>
 
@@ -772,29 +772,29 @@
 <div class="viewcode-block" id="parse_snetsta">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.parse_snetsta">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_snetsta</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parses the raw text file in an antelope db.snetsta file.  It returns a dict with their sta attribute</span>
 <span class="sd">    as the key (their sta is not necessarily the seed sta).  Each entry points to a dict with keys net and fsta.</span>
 <span class="sd">    We use fsta as that is the field BRTT defines for the seed sta field in snetsta.</span>
 
 <span class="sd">    :param fname: is the snetsta file to be parsed.</span>
 <span class="sd">    :param verbose: if True the function will print all stations for which fsta does not match sta</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
         <span class="n">staindex</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">lines</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>  <span class="c1"># depend that default is whitespace</span>
             <span class="n">net</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">fsta</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">sta</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">staindex</span><span class="p">[</span><span class="n">sta</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fsta&quot;</span><span class="p">:</span> <span class="n">fsta</span><span class="p">,</span> <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">}</span>
+            <span class="n">staindex</span><span class="p">[</span><span class="n">sta</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"fsta"</span><span class="p">:</span> <span class="n">fsta</span><span class="p">,</span> <span class="s2">"net"</span><span class="p">:</span> <span class="n">net</span><span class="p">}</span>
             <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">fsta</span> <span class="o">!=</span> <span class="n">sta</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">&quot;Warning:  station in net=&quot;</span><span class="p">,</span>
+                    <span class="s2">"Warning:  station in net="</span><span class="p">,</span>
                     <span class="n">net</span><span class="p">,</span>
-                    <span class="s2">&quot; uses altered sta code=&quot;</span><span class="p">,</span>
+                    <span class="s2">" uses altered sta code="</span><span class="p">,</span>
                     <span class="n">sta</span><span class="p">,</span>
-                    <span class="s2">&quot; for sta=&quot;</span><span class="p">,</span>
+                    <span class="s2">" for sta="</span><span class="p">,</span>
                     <span class="n">fsta</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">staindex</span></div>
@@ -804,14 +804,14 @@
 <div class="viewcode-block" id="make_css30_composite_sta">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.make_css30_composite_sta">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">make_css30_composite_sta</span><span class="p">(</span><span class="n">sta</span><span class="p">,</span> <span class="n">net</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Small helper for below but of potential general use.  Creates a</span>
 <span class="sd">    composite station code using antelope rules for mixing sta and net</span>
 <span class="sd">    passed as args.  Returns the composite name. (eg. AAK_II or XYZTXX)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sta</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">sta</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">net</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">sta</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">net</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Note sta can sometimes be more than 4 characters and the</span>
         <span class="c1"># result of this would make an invalid station code for datascope.</span>
@@ -824,8 +824,8 @@
 
 <div class="viewcode-block" id="set_netcode_snetsta">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.set_netcode_snetsta">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">set_netcode_snetsta</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">staindex</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">,</span> <span class="n">use_immortal_cursor</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_netcode_snetsta</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">staindex</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"arrival"</span><span class="p">,</span> <span class="n">use_immortal_cursor</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Takes the dict staindex that defines how snetsta defines seed codes for</span>
 <span class="sd">    antelope tables and updates a specified collection to add net code and,</span>
 <span class="sd">    when necessary, repair station name used by antelope to deal with</span>
@@ -836,7 +836,7 @@
 <span class="sd">    the need for handling the quantity of data seen today assembled from</span>
 <span class="sd">    multiple sources.  As a result the schema has a fundamental flaw</span>
 <span class="sd">    wherein a channel is defined in css3.0 by two codes we refer to in</span>
-<span class="sd">    mspass as &quot;sta&quot; and &quot;chan&quot; (these happen to be the same as those used by</span>
+<span class="sd">    mspass as "sta" and "chan" (these happen to be the same as those used by</span>
 <span class="sd">    antelope).   When the SEED standard was defined the committee drafting the</span>
 <span class="sd">    standard had the wisdom to realize sta and chan were not sufficient to</span>
 <span class="sd">    describe data assembled from multiple sources when station codes were</span>
@@ -864,19 +864,19 @@
 <span class="sd">    function is aimed at fixing snetsta problems.</span>
 
 <span class="sd">    The function works off an index passed as staindex created by a</span>
-<span class="sd">    companions function called &quot;parse_snetsta&quot;.   This function scans</span>
+<span class="sd">    companions function called "parse_snetsta".   This function scans</span>
 <span class="sd">    the collection it is pointed at (default is arrival, but any collection</span>
-<span class="sd">    containing &quot;sta&quot; as an attribute can be handled) and looks for matching</span>
-<span class="sd">    entries for the &quot;fsta&quot; field in snetsta.  When it finds a match it</span>
+<span class="sd">    containing "sta" as an attribute can be handled) and looks for matching</span>
+<span class="sd">    entries for the "fsta" field in snetsta.  When it finds a match it</span>
 <span class="sd">    adds the net code it finds in the index, corrects the sta code</span>
-<span class="sd">    (expanded in a moment), and sets a new attribute &quot;css30_sta&quot;.</span>
+<span class="sd">    (expanded in a moment), and sets a new attribute "css30_sta".</span>
 <span class="sd">    The function handles composite names defined for sta by a simple algorithm</span>
 <span class="sd">    that duplicates the way antelope handles duplicate station codes.</span>
 <span class="sd">    If the station code is 3 characters or less the name is created in the</span>
-<span class="sd">    form sta_net (e.g. sta=&#39;AAK&#39; and net=&#39;II&#39; will yield AAK_II).  If</span>
+<span class="sd">    form sta_net (e.g. sta='AAK' and net='II' will yield AAK_II).  If</span>
 <span class="sd">    the sta code is 4 characters long the css30_sta is of the simple</span>
-<span class="sd">    concatenation ofthe two strings (e.g. sta=&#39;HELL&#39; and net=&#39;XX&#39; yields</span>
-<span class="sd">    &#39;HELLXX&#39;).   If the code found is longer than 4 characters it is</span>
+<span class="sd">    concatenation ofthe two strings (e.g. sta='HELL' and net='XX' yields</span>
+<span class="sd">    'HELLXX').   If the code found is longer than 4 characters it is</span>
 <span class="sd">    assumed to be already a composite created with the same rules.  In that</span>
 <span class="sd">    case the name is split to pieces and compared to the index fsta and net</span>
 <span class="sd">    values.  If they match the composite is used unaltered for the css30_sta name and</span>
@@ -891,13 +891,13 @@
 <span class="sd">    then using this to set css30_sta as an alias for sta for some operations.</span>
 
 <span class="sd">    :param db: is a mongodb database handle.  It can either be the plain result</span>
-<span class="sd">      of a client(&#39;dbname&#39;) definition or a mspass.Database class instance.</span>
+<span class="sd">      of a client('dbname') definition or a mspass.Database class instance.</span>
 <span class="sd">    :param staindex:  is a dict returned by parse_snetsta.  The key of this index is a sta name it function</span>
 <span class="sd">      expects to find in an arrivals document.  the dict value is a dict with two keys: fsta and net.</span>
 <span class="sd">      net is the seed network code and fsta is the expected seed station code.  Updates replace the sta</span>
 <span class="sd">      field in arrivals with the fsta values and put the original sta value in arrival_sta.</span>
 <span class="sd">    :param use_immortal_cursor:  If true the cursor in the update is made</span>
-<span class="sd">      &quot;immortal&quot; meaning it won&#39;t time out.  This may be necessary if the</span>
+<span class="sd">      "immortal" meaning it won't time out.  This may be necessary if the</span>
 <span class="sd">      arrival collection is large.</span>
 <span class="sd">    :param collection:  MongoDB collection to scan to apply snetsta correction.</span>
 <span class="sd">      (default is arrival)</span>
@@ -912,7 +912,7 @@
 <span class="sd">    2. set of stations names with no match in the snetsta index.</span>
 <span class="sd">       (these will often need additonal attention through another</span>
 <span class="sd">       mechanism)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({}))</span>
     <span class="n">updaterec</span> <span class="o">=</span> <span class="p">{}</span>
@@ -928,39 +928,39 @@
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">dbcursor</span><span class="p">:</span>
         <span class="n">doc_needs_update</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">nprocessed</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-        <span class="n">dbsta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+        <span class="n">dbsta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">dbsta</span> <span class="ow">in</span> <span class="n">staindex</span><span class="p">:</span>
             <span class="n">updaterec</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="n">xref</span> <span class="o">=</span> <span class="n">staindex</span><span class="p">[</span><span class="n">dbsta</span><span class="p">]</span>
-            <span class="n">net</span> <span class="o">=</span> <span class="n">xref</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-            <span class="n">sta</span> <span class="o">=</span> <span class="n">xref</span><span class="p">[</span><span class="s2">&quot;fsta&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;net&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;css30_sta&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">xref</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">xref</span><span class="p">[</span><span class="s2">"fsta"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"net"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">"css30_sta"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                     <span class="c1"># We use this case to detect previously processed data</span>
                     <span class="c1"># so we simply skip them</span>
                     <span class="n">doc_needs_update</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Assume if we land here something else set net and</span>
                     <span class="c1"># we just need to set css30_sta</span>
-                    <span class="n">sta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
-                    <span class="n">net</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+                    <span class="n">sta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
+                    <span class="n">net</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
                     <span class="n">css30sta</span> <span class="o">=</span> <span class="n">make_css30_composite_sta</span><span class="p">(</span><span class="n">sta</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
-                    <span class="n">updaterec</span><span class="p">[</span><span class="s2">&quot;css30_sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">css30sta</span>
+                    <span class="n">updaterec</span><span class="p">[</span><span class="s2">"css30_sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">css30sta</span>
                     <span class="n">doc_needs_update</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dbsta</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="n">updaterec</span><span class="p">[</span><span class="s2">&quot;css30_sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbsta</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">net</span>
+                    <span class="n">updaterec</span><span class="p">[</span><span class="s2">"css30_sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbsta</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">net</span>
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dbsta</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-                    <span class="n">updaterec</span><span class="p">[</span><span class="s2">&quot;css30_sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbsta</span> <span class="o">+</span> <span class="n">net</span>
+                    <span class="n">updaterec</span><span class="p">[</span><span class="s2">"css30_sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbsta</span> <span class="o">+</span> <span class="n">net</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># We use this name directly in this case.   We don&#39;t</span>
+                    <span class="c1"># We use this name directly in this case.   We don't</span>
                     <span class="c1"># force the antelope method to allow flexibility</span>
                     <span class="c1"># it is possible a user creates an snetsta entry by hand</span>
                     <span class="c1"># and this will handle that correctly.</span>
-                    <span class="n">updaterec</span><span class="p">[</span><span class="s2">&quot;css30_sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbsta</span>
-                <span class="n">updaterec</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
-                <span class="n">updaterec</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
+                    <span class="n">updaterec</span><span class="p">[</span><span class="s2">"css30_sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbsta</span>
+                <span class="n">updaterec</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
+                <span class="n">updaterec</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
                 <span class="n">doc_needs_update</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sta_not_found</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dbsta</span><span class="p">)</span>
@@ -968,7 +968,7 @@
         <span class="k">if</span> <span class="n">doc_needs_update</span><span class="p">:</span>
             <span class="c1"># for testing just print these</span>
             <span class="c1"># print(updaterec)</span>
-            <span class="n">col</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">updaterec</span><span class="p">})</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">updaterec</span><span class="p">})</span>
             <span class="n">nset</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">nprocessed</span><span class="p">,</span> <span class="n">nset</span><span class="p">,</span> <span class="n">sta_not_found</span><span class="p">])</span></div>
 
@@ -978,20 +978,20 @@
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.set_netcode_from_site">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_netcode_from_site</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"arrival"</span><span class="p">,</span>
     <span class="n">time_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">use_immortal_cursor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">stations_to_ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function scans a MongoDB collection that is assumed to contain</span>
-<span class="sd">    a &quot;sta&quot; for station code to be cross referenced with metadata stored in</span>
+<span class="sd">    a "sta" for station code to be cross referenced with metadata stored in</span>
 <span class="sd">    the site collection.   (The default collection is arrival, but this could</span>
 <span class="sd">    be used for any table for which sta needs to be regularized to a seed</span>
 <span class="sd">    net:sta pair.)  The entire objective of the function is to add missing</span>
 <span class="sd">    seed net codes.   The algorithm used here is the most basic possible and</span>
 <span class="sd">    looks only for a match of sta and and option time matched with</span>
-<span class="sd">    a site&#39;s operation interval defined by a starttime to endtime time interval.</span>
+<span class="sd">    a site's operation interval defined by a starttime to endtime time interval.</span>
 <span class="sd">    It returns two lists of problem children that have to be handled</span>
 <span class="sd">    separately:  (1) a set container of station names that have no matching</span>
 <span class="sd">    value in the current site collection, and (2) a set container with</span>
@@ -999,7 +999,7 @@
 <span class="sd">    that are ambiguous.  They are defined as ambiguous if a common sta</span>
 <span class="sd">    code appears in two or more networks.   Both cases need to be handled</span>
 <span class="sd">    by subsequent processing. The first, requires scrounging for the</span>
-<span class="sd">    station metadata.  A good foundation for that is obspy&#39;s get_stations</span>
+<span class="sd">    station metadata.  A good foundation for that is obspy's get_stations</span>
 <span class="sd">    function.  The ambiguous station code problem requires rules and special</span>
 <span class="sd">    handling.   That will be deal with in tools planned for the near future</span>
 <span class="sd">    but which do not exist at the time this function was finalized.</span>
@@ -1008,17 +1008,17 @@
 <span class="sd">    building a clean database to initiate processing.</span>
 
 <span class="sd">    :param db: is a MongoDB database handle.  It can be as basic as</span>
-<span class="sd">      the return of client(&#39;dbname&#39;) but it can also be an instance</span>
+<span class="sd">      the return of client('dbname') but it can also be an instance</span>
 <span class="sd">      of the mspass Database class.  There is no default.</span>
 <span class="sd">    :param collection:  MongoDB collection to be updated.  Processing</span>
-<span class="sd">      keys on the data with key=&quot;sta&quot; and (optional) value of time_key arg.</span>
+<span class="sd">      keys on the data with key="sta" and (optional) value of time_key arg.</span>
 <span class="sd">      (Default is arrival)</span>
 <span class="sd">    :param time_key: is a document key in collection containing a time</span>
-<span class="sd">      used to match any site&#39;s operational starttime to endtime time window.</span>
+<span class="sd">      used to match any site's operational starttime to endtime time window.</span>
 <span class="sd">      Default is None which turns off that selection.  Ambiguous keys may</span>
 <span class="sd">      be reduce in large datasets by using a time key.</span>
 <span class="sd">    :param use_immortal_cursor:  If true the cursor in the update is made</span>
-<span class="sd">      &quot;immortal&quot; meaning it won&#39;t time out.  This may be necessary if the</span>
+<span class="sd">      "immortal" meaning it won't time out.  This may be necessary if the</span>
 <span class="sd">      arrival collection is large.</span>
 <span class="sd">    :param stations_to_ignore: is expected to be a set container listing</span>
 <span class="sd">      any station codes to be ignored in processing.   This can be used to</span>
@@ -1037,10 +1037,10 @@
 <span class="sd">       set container to easily sort out the unique combinations.</span>
 <span class="sd">    3. set container of station codes that found in collection that</span>
 <span class="sd">       had no matching entry in the site collection.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dbh</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
-    <span class="n">dbsite</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;site&quot;</span><span class="p">]</span>
+    <span class="n">dbsite</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"site"</span><span class="p">]</span>
     <span class="n">ambiguous_sta</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="n">not_found_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="c1"># This is kind of an ugly way to handle null ignore list but is functional</span>
@@ -1056,49 +1056,49 @@
         <span class="n">dbcursor</span> <span class="o">=</span> <span class="n">dbh</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">dbcursor</span><span class="p">:</span>
         <span class="n">nprocessed</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">&quot;sta&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">):</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">"sta"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;set_netcode_from_site (WARNING):  document with id=&quot;</span><span class="p">,</span>
+                <span class="s2">"set_netcode_from_site (WARNING):  document with id="</span><span class="p">,</span>
                 <span class="nb">id</span><span class="p">,</span>
-                <span class="s2">&quot; has no sta attribute -skipped&quot;</span><span class="p">,</span>
+                <span class="s2">" has no sta attribute -skipped"</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">continue</span>
-        <span class="n">sta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="n">sta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">sta</span> <span class="ow">in</span> <span class="n">stations_to_ignore</span><span class="p">:</span>
             <span class="k">continue</span>
-        <span class="k">if</span> <span class="s2">&quot;net&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"net"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
             <span class="c1"># silently skip records for which net is already defined for efficiency</span>
             <span class="k">continue</span>
         <span class="n">query</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$eq&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$eq"</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">time_key</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">time_key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                 <span class="n">time</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span>
                 <span class="c1"># site has starttime and endtime defined so no need to test for</span>
                 <span class="c1"># their presence.</span>
-                <span class="n">query</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
-                <span class="n">query</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
+                <span class="n">query</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
+                <span class="n">query</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># for now just log this as an error</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time key=&quot;</span><span class="p">,</span> <span class="n">time_key</span><span class="p">,</span> <span class="s2">&quot; not found in document for sta=&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"Time key="</span><span class="p">,</span> <span class="n">time_key</span><span class="p">,</span> <span class="s2">" not found in document for sta="</span><span class="p">,</span> <span class="n">sta</span><span class="p">)</span>
         <span class="n">found</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="n">nfound</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nfound</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">found</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
             <span class="n">updaterec</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="n">net</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-            <span class="n">updaterec</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
-            <span class="n">dbh</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">updaterec</span><span class="p">})</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+            <span class="n">updaterec</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
+            <span class="n">dbh</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">updaterec</span><span class="p">})</span>
             <span class="n">nupdates</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">elif</span> <span class="n">nfound</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># this dependence on set uniqueness approach may be</span>
             <span class="c1"># a bit inefficient for large collections.  Perhaps should</span>
             <span class="c1"># test before add</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">found</span><span class="p">:</span>
-                <span class="n">net</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-                <span class="n">st</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
-                <span class="n">et</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
+                <span class="n">net</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span>
+                <span class="n">et</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">et</span><span class="p">])</span>
                 <span class="n">ambiguous_sta</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1113,18 +1113,18 @@
     <span class="n">db</span><span class="p">,</span>
     <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"arrival"</span><span class="p">,</span>
     <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">endtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">time_filter_key</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">time_filter_key</span><span class="o">=</span><span class="s2">"time"</span><span class="p">,</span>
     <span class="n">use_immortal_cursor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Forces setting net code for data with a given station code within a</span>
 <span class="sd">    specified time interval.</span>
 
 <span class="sd">    Arrivals measured with Antelope using Datascope to manage the catalog</span>
-<span class="sd">    data has a disconnect with seed&#39;s required net:sta to specify a unique</span>
+<span class="sd">    data has a disconnect with seed's required net:sta to specify a unique</span>
 <span class="sd">    seismic observatory (what we call site). The css3.0 schema does not</span>
 <span class="sd">    include the net attribute.  This collides with modern stationxml</span>
 <span class="sd">    files used to deliver instrument metadata because they are always</span>
@@ -1151,47 +1151,47 @@
 <span class="sd">    :param time_filter_key:  key used to access document entry to use</span>
 <span class="sd">      for time range test (startime&lt;=time&lt;=endtime).</span>
 <span class="sd">    :param use_immortal_cursor:  If true the cursor in the update is made</span>
-<span class="sd">      &quot;immortal&quot; meaning it won&#39;t time out.  This may be necessary if the</span>
+<span class="sd">      "immortal" meaning it won't time out.  This may be necessary if the</span>
 <span class="sd">      arrival collection is large.</span>
 
 <span class="sd">    :return: number of documents updated.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">basemessage</span> <span class="o">=</span> <span class="s2">&quot;set_netcode_time_interval:  &quot;</span>
+    <span class="n">basemessage</span> <span class="o">=</span> <span class="s2">"set_netcode_time_interval:  "</span>
     <span class="k">if</span> <span class="n">sta</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">net</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">basemessage</span> <span class="o">+</span> <span class="s2">&quot;you must specify sta and net as required parameters&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">basemessage</span> <span class="o">+</span> <span class="s2">"you must specify sta and net as required parameters"</span><span class="p">)</span>
     <span class="n">dbarr</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"sta"</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">starttime</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">endtime</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">starttime</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                 <span class="n">basemessage</span>
-                <span class="o">+</span> <span class="s2">&quot;usage error - starttime defined but endtime was left null&quot;</span>
+                <span class="o">+</span> <span class="s2">"usage error - starttime defined but endtime was left null"</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">endtime</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                 <span class="n">basemessage</span>
-                <span class="o">+</span> <span class="s2">&quot;usage error - endtime defined but starttime was left null&quot;</span>
+                <span class="o">+</span> <span class="s2">"usage error - endtime defined but starttime was left null"</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">starttime</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                 <span class="n">basemessage</span>
-                <span class="o">+</span> <span class="s2">&quot;usage error - starttime must be specified as an obspy UTCDateTime object&quot;</span>
+                <span class="o">+</span> <span class="s2">"usage error - starttime must be specified as an obspy UTCDateTime object"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">endtime</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                 <span class="n">basemessage</span>
-                <span class="o">+</span> <span class="s2">&quot;usage error - endtime must be specified as an obspy UTCDateTime object&quot;</span>
+                <span class="o">+</span> <span class="s2">"usage error - endtime must be specified as an obspy UTCDateTime object"</span>
             <span class="p">)</span>
         <span class="n">tse</span> <span class="o">=</span> <span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span>
         <span class="n">tee</span> <span class="o">=</span> <span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span>
-        <span class="n">query</span><span class="p">[</span><span class="n">time_filter_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">tse</span><span class="p">,</span> <span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">tee</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="n">time_filter_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$gte"</span><span class="p">:</span> <span class="n">tse</span><span class="p">,</span> <span class="s2">"$lte"</span><span class="p">:</span> <span class="n">tee</span><span class="p">}</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">dbarr</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
             <span class="n">basemessage</span>
-            <span class="o">+</span> <span class="s2">&quot;the following query returned no documents in collection&quot;</span>
+            <span class="o">+</span> <span class="s2">"the following query returned no documents in collection"</span>
             <span class="o">+</span> <span class="n">collection</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
@@ -1202,18 +1202,18 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">curs</span> <span class="o">=</span> <span class="n">dbarr</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">curs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;net&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"net"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
-                    <span class="n">basemessage</span> <span class="o">+</span> <span class="s2">&quot;WARNING found document with net code set to &quot;</span><span class="p">,</span>
-                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">],</span>
+                    <span class="n">basemessage</span> <span class="o">+</span> <span class="s2">"WARNING found document with net code set to "</span><span class="p">,</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="c1"># this check is required for robustness when time filter is off</span>
                 <span class="k">if</span> <span class="n">time_filter_key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Problem document time=&quot;</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">time_filter_key</span><span class="p">]))</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting net in this document to requested net code=&quot;</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
-            <span class="n">oid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-            <span class="n">updaterec</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">}</span>
-            <span class="n">dbarr</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">oid</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">updaterec</span><span class="p">})</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"Problem document time="</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">time_filter_key</span><span class="p">]))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"Setting net in this document to requested net code="</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+            <span class="n">updaterec</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"net"</span><span class="p">:</span> <span class="n">net</span><span class="p">}</span>
+            <span class="n">dbarr</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">oid</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">updaterec</span><span class="p">})</span>
             <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">count</span></div>
 
@@ -1221,17 +1221,17 @@
 
 <div class="viewcode-block" id="find_null_net_stations">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.find_null_net_stations">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_null_net_stations</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_null_net_stations</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"arrival"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return a set container of sta fields for documents with a null net</span>
 <span class="sd">    code (key=net).  Scans collection defined by collection argument.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
     <span class="n">net_not_defined</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="n">curs</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">curs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;net&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-            <span class="n">sta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s2">"net"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
             <span class="n">net_not_defined</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sta</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">net_not_defined</span></div>
 
@@ -1239,8 +1239,8 @@
 
 <div class="viewcode-block" id="find_duplicate_sta">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.find_duplicate_sta">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_duplicate_sta</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_duplicate_sta</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"site"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Scans collection requested (site is default be can be run on channel)</span>
 <span class="sd">    for combinations of net:sta where the sta is not unique.   This can</span>
 <span class="sd">    cause problem in associating data from css3.0 databases that do not</span>
@@ -1261,14 +1261,14 @@
 <span class="sd">    :return: dict of stations with nonunique sta codes as the key.  The</span>
 <span class="sd">      value returned in each field is a set container with net codes that use that</span>
 <span class="sd">      sta code.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
     <span class="n">allsta</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">curs</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>  <span class="c1"># we do a brute force scan through the collection</span>
     <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">curs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;net&quot;</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">:</span>
-            <span class="n">net</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-            <span class="n">sta</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"net"</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">:</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">sta</span> <span class="ow">in</span> <span class="n">allsta</span><span class="p">:</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">allsta</span><span class="p">[</span><span class="n">sta</span><span class="p">]</span>
                 <span class="c1"># note this works only because the set container behaves</span>
@@ -1280,14 +1280,14 @@
                 <span class="n">stmp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
                 <span class="n">allsta</span><span class="p">[</span><span class="n">sta</span><span class="p">]</span> <span class="o">=</span> <span class="n">stmp</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">sta</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;find_duplicate_sta (WARNING):  &quot;</span><span class="p">,</span>
+                <span class="s2">"find_duplicate_sta (WARNING):  "</span><span class="p">,</span>
                 <span class="n">collection</span><span class="p">,</span>
-                <span class="s2">&quot; collection has an undefined net code for station&quot;</span><span class="p">,</span>
+                <span class="s2">" collection has an undefined net code for station"</span><span class="p">,</span>
                 <span class="n">sta</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is the full document from this collection&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"This is the full document from this collection"</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
     <span class="c1"># Now we have allsta with all unique station names.  We just look</span>
     <span class="c1"># for ones where the size of the set is not 1</span>
@@ -1302,8 +1302,8 @@
 
 <div class="viewcode-block" id="find_unique_sta">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.find_unique_sta">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_unique_sta</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_unique_sta</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"site"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function is the complement to find_duplicate_sta.  It returns</span>
 <span class="sd">    a list of stations with one and only one matching net code.</span>
 <span class="sd">    Stations in that list can normally be forced in arrival assuming</span>
@@ -1315,14 +1315,14 @@
 <span class="sd">    :param collection:  string defining the collection name to scan</span>
 <span class="sd">      (default is site)</span>
 <span class="sd">    :return: dict with sta as keys an net as unique net code</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
     <span class="n">allsta</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">curs</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>  <span class="c1"># we do a brute force scan through the collection</span>
     <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">curs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;net&quot;</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">:</span>
-            <span class="n">net</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-            <span class="n">sta</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"net"</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">:</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">sta</span> <span class="ow">in</span> <span class="n">allsta</span><span class="p">:</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">allsta</span><span class="p">[</span><span class="n">sta</span><span class="p">]</span>
                 <span class="c1"># note this works only because the set container behaves</span>
@@ -1334,14 +1334,14 @@
                 <span class="n">stmp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
                 <span class="n">allsta</span><span class="p">[</span><span class="n">sta</span><span class="p">]</span> <span class="o">=</span> <span class="n">stmp</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">sta</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;find_duplicate_sta (WARNING):  &quot;</span><span class="p">,</span>
+                <span class="s2">"find_duplicate_sta (WARNING):  "</span><span class="p">,</span>
                 <span class="n">collection</span><span class="p">,</span>
-                <span class="s2">&quot; collection has an undefined net code for station&quot;</span><span class="p">,</span>
+                <span class="s2">" collection has an undefined net code for station"</span><span class="p">,</span>
                 <span class="n">sta</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is the full document from this collection&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"This is the full document from this collection"</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
     <span class="c1"># Now we have allsta with all unique station names.  We just look</span>
     <span class="c1"># for ones where the size of the set is exactly 1</span>
@@ -1361,9 +1361,9 @@
 <div class="viewcode-block" id="check_for_ambiguous_sta">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.check_for_ambiguous_sta">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_for_ambiguous_sta</span><span class="p">(</span>
-    <span class="n">db</span><span class="p">,</span> <span class="n">stalist</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose_attributes</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">stalist</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"arrival"</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose_attributes</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Scans db.collection for any station in the list of station codes</span>
 <span class="sd">    defined by the list container stalist.  By default it reports only</span>
 <span class="sd">    the count of the number of hits for each sta.   If verbose is set it</span>
@@ -1380,11 +1380,11 @@
 <span class="sd">      enable and this list is not defined.   The current version blindly</span>
 <span class="sd">      assumes every document found will contain these attributes.   It will</span>
 <span class="sd">      abort if an attribute is not defined.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="p">(</span><span class="n">verbose_attributes</span> <span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;check_for_ambiguous_sta:  usage error&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"check_for_ambiguous_sta:  usage error"</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;if verbose mode is turned on you need to supply python list of db attributes to print&quot;</span>
+            <span class="s2">"if verbose mode is turned on you need to supply python list of db attributes to print"</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
@@ -1393,11 +1393,11 @@
             <span class="n">to_print</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">to_print</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;station count&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"station count"</span><span class="p">)</span>
     <span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
     <span class="n">need_checking</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">sta</span> <span class="ow">in</span> <span class="n">stalist</span><span class="p">:</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"sta"</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
         <span class="n">nsta</span> <span class="o">=</span> <span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">nsta</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">curs</span> <span class="o">=</span> <span class="n">dbhandle</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
@@ -1419,7 +1419,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">set_arrival_by_time_interval</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allowed_overlap</span><span class="o">=</span><span class="mf">86401.0</span><span class="p">,</span> <span class="n">use_immortal_cursor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Sets the net code in an arrival collection for occurrences of a specified</span>
 <span class="sd">    station code using the net code for a given time interval defined in the</span>
 <span class="sd">    site collection.   This function only works reliably if the time intervals</span>
@@ -1445,73 +1445,73 @@
 <span class="sd">      that cause bogus one day overlap.  This defaults to 1 day but</span>
 <span class="sd">      it can be set larger or smaller.</span>
 <span class="sd">    :param use_immortal_cursor:  If true the cursor in the update is made</span>
-<span class="sd">      &quot;immortal&quot; meaning it won&#39;t time out.  This may be necessary if the</span>
+<span class="sd">      "immortal" meaning it won't time out.  This may be necessary if the</span>
 <span class="sd">      arrival collection is large.</span>
 <span class="sd">    :param verbose:  if true prints a bunch a few messages. Silent (default) otherwise</span>
 <span class="sd">    :return: count of number of documents updated.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">sta</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="s2">&quot;Missing required parameter sta=station code to repair&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span>
+            <span class="s2">"Missing required parameter sta=station code to repair"</span><span class="p">,</span> <span class="s2">"Fatal"</span>
         <span class="p">)</span>
     <span class="n">dbarr</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">arrival</span>
     <span class="n">dbsite</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"sta"</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">use_immortal_cursor</span><span class="p">:</span>
-        <span class="n">curs</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">curs</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">"starttime"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">curs</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="c1"># First make sure we don&#39;t have any overlapping time periods</span>
+        <span class="n">curs</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">"starttime"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># First make sure we don't have any overlapping time periods</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">curs</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">lastend</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
-            <span class="n">lastnet</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+            <span class="n">lastend</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span>
+            <span class="n">lastnet</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">stime</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
+            <span class="n">stime</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">stime</span> <span class="o">+</span> <span class="n">allowed_overlap</span> <span class="o">&lt;</span> <span class="n">lastend</span><span class="p">:</span>
-                <span class="n">net</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Overlapping time intervals found in site. </span><span class="se">\n</span><span class="s2"> &quot;</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Record 1 has net=</span><span class="si">{lnet}</span><span class="s2"> and endtime </span><span class="si">{etime}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Record 2 has net=</span><span class="si">{net}</span><span class="s2"> and starttime </span><span class="si">{stime}</span><span class="s2">&quot;</span>
+                <span class="n">net</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">"Overlapping time intervals found in site. </span><span class="se">\n</span><span class="s2"> "</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Record 1 has net=</span><span class="si">{lnet}</span><span class="s2"> and endtime </span><span class="si">{etime}</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Record 2 has net=</span><span class="si">{net}</span><span class="s2"> and starttime </span><span class="si">{stime}</span><span class="s2">"</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">lnet</span><span class="o">=</span><span class="n">lastnet</span><span class="p">,</span>
                     <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span>
                     <span class="n">etime</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">lastend</span><span class="p">)),</span>
                     <span class="n">stime</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">stime</span><span class="p">)),</span>
                 <span class="p">)</span>
-                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span>
-            <span class="n">lastend</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
-            <span class="n">lastnet</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s2">"Fatal"</span><span class="p">)</span>
+            <span class="n">lastend</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span>
+            <span class="n">lastnet</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
         <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">curs</span><span class="o">.</span><span class="n">rewind</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">curs</span><span class="p">:</span>
-        <span class="n">net</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
         <span class="n">arquerry</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">arquerry</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
-        <span class="n">arquerry</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">],</span> <span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]}</span>
+        <span class="n">arquerry</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
+        <span class="n">arquerry</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$gte"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">],</span> <span class="s2">"$lte"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]}</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;Setting net=&quot;</span><span class="p">,</span>
+                <span class="s2">"Setting net="</span><span class="p">,</span>
                 <span class="n">net</span><span class="p">,</span>
-                <span class="s2">&quot; for time interval=&quot;</span><span class="p">,</span>
-                <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]),</span>
-                <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]),</span>
+                <span class="s2">" for time interval="</span><span class="p">,</span>
+                <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]),</span>
+                <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]),</span>
             <span class="p">)</span>
             <span class="n">nset</span> <span class="o">=</span> <span class="n">dbarr</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">arquerry</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting net code to &quot;</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="s2">&quot; in &quot;</span><span class="p">,</span> <span class="n">nset</span><span class="p">,</span> <span class="s2">&quot; documents&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Setting net code to "</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="s2">" in "</span><span class="p">,</span> <span class="n">nset</span><span class="p">,</span> <span class="s2">" documents"</span><span class="p">)</span>
         <span class="n">arcursor</span> <span class="o">=</span> <span class="n">dbarr</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ardoc</span> <span class="ow">in</span> <span class="n">arcursor</span><span class="p">:</span>
-            <span class="c1"># print(ardoc[&#39;sta&#39;],UTCDateTime(ardoc[&#39;time&#39;]))</span>
-            <span class="nb">id</span> <span class="o">=</span> <span class="n">ardoc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-            <span class="n">dbarr</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">}})</span></div>
+            <span class="c1"># print(ardoc['sta'],UTCDateTime(ardoc['time']))</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="n">ardoc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+            <span class="n">dbarr</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"net"</span><span class="p">:</span> <span class="n">net</span><span class="p">}})</span></div>
 
 
 
 <div class="viewcode-block" id="force_net">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.force_net">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">force_net</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Forces all entries in arrival collection matching input station code</span>
 <span class="sd">    sta to input value of parameter net.  This is the most brute force</span>
 <span class="sd">    solution to set a net code, but is often the right tool.  Kind of</span>
@@ -1523,18 +1523,18 @@
 
 <span class="sd">    :return:  number or documents set.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">sta</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">net</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="s2">&quot;force_net (usage error):  missing required sta and net argument&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span>
+            <span class="s2">"force_net (usage error):  missing required sta and net argument"</span><span class="p">,</span> <span class="s2">"Fatal"</span>
         <span class="p">)</span>
     <span class="n">dbarr</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">arrival</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"sta"</span><span class="p">:</span> <span class="n">sta</span><span class="p">}</span>
     <span class="n">curs</span> <span class="o">=</span> <span class="n">dbarr</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">curs</span><span class="p">:</span>
-        <span class="n">oid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-        <span class="n">dbarr</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">oid</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">}})</span>
+        <span class="n">oid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+        <span class="n">dbarr</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">oid</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"net"</span><span class="p">:</span> <span class="n">net</span><span class="p">}})</span>
         <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">n</span></div>
 

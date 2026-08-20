@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.seispp &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.util.seispp &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -486,8 +486,8 @@
 
 <div class="viewcode-block" id="index_data">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seispp.index_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">index_data</span><span class="p">(</span><span class="n">filebase</span><span class="p">,</span> <span class="n">dbname_or_handle</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;d3C&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index_data</span><span class="p">(</span><span class="n">filebase</span><span class="p">,</span> <span class="n">dbname_or_handle</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">"d3C"</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Import function for data from antelope export_to_mspass.</span>
 
 <span class="sd">    This function is an import function for Seismogram objects created</span>
@@ -507,43 +507,43 @@
 <span class="sd">        filebase.ext (Arg 3 defaulting to d3C).</span>
 <span class="sd">    :param dbname_or_handle: Either a string (database name) or a Database instance.</span>
 <span class="sd">        In parallel mode, pass the database name (string) to avoid serializing Database objects.</span>
-<span class="sd">    :param ext: is the file extension for the sample data (default is &#39;d3C&#39;).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    :param ext: is the file extension for the sample data (default is 'd3C').</span>
+<span class="sd">    """</span>
 
     <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
 
     <span class="c1"># This loads default mspass schema</span>
     <span class="n">mdef</span> <span class="o">=</span> <span class="n">MetadataDefinitions</span><span class="p">()</span>
-    <span class="n">yamlfile</span> <span class="o">=</span> <span class="n">filebase</span> <span class="o">+</span> <span class="s2">&quot;.yaml&quot;</span>
+    <span class="n">yamlfile</span> <span class="o">=</span> <span class="n">filebase</span> <span class="o">+</span> <span class="s2">".yaml"</span>
     <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">)</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Read data for &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">),</span> <span class="s2">&quot; objects&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Read data for "</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">),</span> <span class="s2">" objects"</span><span class="p">)</span>
     <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="c1"># Set up to add to wf collection</span>
     <span class="c1"># This is not general, but works of this test with mongo running under docker</span>
     <span class="n">collection</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf</span>
-    <span class="n">dfile</span> <span class="o">=</span> <span class="n">filebase</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">ext</span>
+    <span class="n">dfile</span> <span class="o">=</span> <span class="n">filebase</span> <span class="o">+</span> <span class="s2">"."</span> <span class="o">+</span> <span class="n">ext</span>
     <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">dfile</span><span class="p">)</span>
     <span class="c1"># This is needed by the numpy reader</span>
-    <span class="n">dtyp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;f8&quot;</span><span class="p">)</span>
+    <span class="n">dtyp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">"f8"</span><span class="p">)</span>
     <span class="nb">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dfile</span><span class="p">))</span>
     <span class="n">dfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dfile</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting dir =&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="s2">&quot; and dfile=&quot;</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="s2">&quot; for all input&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Make sure this file exists before trying to read these data&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This program only builds the wf collection in the database&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Setting dir ="</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="s2">" and dfile="</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="s2">" for all input"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Make sure this file exists before trying to read these data"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"This program only builds the wf collection in the database"</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;Readers of the raw data will access the sample data from the dir+dfile path&quot;</span>
+            <span class="s2">"Readers of the raw data will access the sample data from the dir+dfile path"</span>
         <span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)):</span>
         <span class="n">pyd</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># this is essentially a required python declaration</span>
         <span class="c1"># Since the source is assumed an antelope css3.0 database we</span>
         <span class="c1"># assume these will be defined.   Relating them back to the original</span>
-        <span class="c1"># source would be impossible without these in css3.0 so shouldn&#39;t be</span>
+        <span class="c1"># source would be impossible without these in css3.0 so shouldn't be</span>
         <span class="c1"># an issue</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Working on sta=&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;sta&quot;</span><span class="p">],</span> <span class="s2">&quot; and evid=&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;evid&quot;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Working on sta="</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">"sta"</span><span class="p">],</span> <span class="s2">" and evid="</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">"evid"</span><span class="p">])</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -559,26 +559,26 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># These are not optional - always print these if</span>
                     <span class="c1"># this happens to warn user</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning(index_data):  undefined type for key=&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;attribute will not be copied to database&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"Warning(index_data):  undefined type for key="</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"attribute will not be copied to database"</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">MsPASSError</span><span class="p">:</span>
                 <span class="c1"># as above always print this as a warning</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning(index_data): key =&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot; is undefined - skipped&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"Warning(index_data): key ="</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="s2">" is undefined - skipped"</span><span class="p">)</span>
 
-        <span class="n">pyd</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
-        <span class="n">pyd</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
-        <span class="n">ns</span> <span class="o">=</span> <span class="n">pyd</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span>
+        <span class="n">pyd</span><span class="p">[</span><span class="s2">"dir"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
+        <span class="n">pyd</span><span class="p">[</span><span class="s2">"dfile"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
+        <span class="n">ns</span> <span class="o">=</span> <span class="n">pyd</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">]</span>
         <span class="n">ns3c</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">ns</span>
         <span class="n">foff</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
-        <span class="n">pyd</span><span class="p">[</span><span class="s2">&quot;foff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">foff</span>
+        <span class="n">pyd</span><span class="p">[</span><span class="s2">"foff"</span><span class="p">]</span> <span class="o">=</span> <span class="n">foff</span>
         <span class="n">wfid</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">pyd</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
         <span class="n">junk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtyp</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">ns3c</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Finished with file=&quot;</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Finished with file="</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;Size of wf collection is now &quot;</span><span class="p">,</span>
+            <span class="s2">"Size of wf collection is now "</span><span class="p">,</span>
             <span class="n">collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({}),</span>
-            <span class="s2">&quot; documents&quot;</span><span class="p">,</span>
+            <span class="s2">" documents"</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 </pre></div>

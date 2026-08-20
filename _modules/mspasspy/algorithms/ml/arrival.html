@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.ml.arrival &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.algorithms.ml.arrival &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -491,10 +491,10 @@
     <span class="n">timeseries</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
     <span class="n">time_window</span><span class="p">:</span> <span class="n">TimeWindow</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">model</span><span class="p">:</span> <span class="s2">&quot;WaveformModel&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="s2">"WaveformModel"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">model_args</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Predict the arrival time of the P wave using the provided seisbench WaveformModel.</span>
 <span class="sd">    The arrival time will be saved as a dictionary in the input TimeSeries object and can be accessed using</span>
 <span class="sd">    the key ``p_wave_picks``. In the dictionary, the key is the arrival time in the UTC timestamp format,</span>
@@ -513,20 +513,20 @@
 <span class="sd">    :param model_args: optional dictionary used when ``model`` is not</span>
 <span class="sd">        provided.  Its ``name`` value selects the pretrained PhaseNet model;</span>
 <span class="sd">        other keys are currently ignored.  The default model name is</span>
-<span class="sd">        ``&quot;stead&quot;``.</span>
+<span class="sd">        ``"stead"``.</span>
 <span class="sd">    :type timeseries: mspasspy.ccore.seismic.TimeSeries</span>
 <span class="sd">    :type threshold: float</span>
 <span class="sd">    :type time_window: mspasspy.ccore.algorithms.basic.TimeWindow defined as absolute time in UTC</span>
 <span class="sd">    :type model: seisbench.models.base.WaveformModel</span>
 <span class="sd">    :type model_args: dict</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">default_threshold</span> <span class="o">=</span> <span class="mf">0.2</span>
 
     <span class="c1"># Check the input arguments</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;Threshold should be in the range of [0, 1]. Using default threshold </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">"Threshold should be in the range of [0, 1]. Using default threshold </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">default_threshold</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -539,13 +539,13 @@
     <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">seisbench.models</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sbm</span>
 
-        <span class="c1"># &#39;stead&#39; model was trained on STEAD for 100 epochs with a learning rate of 0.01.</span>
+        <span class="c1"># 'stead' model was trained on STEAD for 100 epochs with a learning rate of 0.01.</span>
         <span class="c1"># use sbm.PhaseNet.list_pretrained(details=True) to list out other supported models</span>
         <span class="c1"># when using this model, please reference the SeisBench publications listed at https://github.com/seisbench/seisbench</span>
         <span class="n">pretrained_model</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;stead&quot;</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">model_args</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_args</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">model_args</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="s2">"stead"</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">model_args</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">"name"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_args</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">model_args</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">sbm</span><span class="o">.</span><span class="n">PhaseNet</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model</span><span class="p">)</span>
 
@@ -563,7 +563,7 @@
             <span class="n">time_window</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start_time_utc</span>
             <span class="n">time_window</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end_time_utc</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Time window is out of the time range of the time series. Adjusting the time window to the time range of the time series.&quot;</span>
+                <span class="s2">"Time window is out of the time range of the time series. Adjusting the time window to the time range of the time series."</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">time_window</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="n">end_time_utc</span><span class="p">:</span>
             <span class="n">time_window</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end_time_utc</span>
@@ -582,12 +582,12 @@
     <span class="c1"># Step 1: Access the probability data</span>
     <span class="n">trace</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">pred_st</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">channel</span> <span class="o">==</span> <span class="s2">&quot;PhaseNet_P&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">channel</span> <span class="o">==</span> <span class="s2">"PhaseNet_P"</span><span class="p">:</span>
             <span class="n">trace</span> <span class="o">=</span> <span class="n">tr</span>
             <span class="k">break</span>
     <span class="k">if</span> <span class="n">trace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">timeseries</span><span class="p">[</span><span class="s2">&quot;p_wave_picks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Model annotation output does not contain a PhaseNet_P trace.&quot;</span><span class="p">)</span>
+        <span class="n">timeseries</span><span class="p">[</span><span class="s2">"p_wave_picks"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Model annotation output does not contain a PhaseNet_P trace."</span><span class="p">)</span>
         <span class="k">return</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">data</span>
 
@@ -595,7 +595,7 @@
     <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># Step 3: Calculate the corresponding time in utc timestamp</span>
-    <span class="n">timestamps</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">times</span><span class="p">(</span><span class="s2">&quot;timestamp&quot;</span><span class="p">)[</span><span class="n">indices</span><span class="p">]</span>
+    <span class="n">timestamps</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">times</span><span class="p">(</span><span class="s2">"timestamp"</span><span class="p">)[</span><span class="n">indices</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">time_window</span><span class="p">:</span>
         <span class="n">in_window</span> <span class="o">=</span> <span class="p">(</span><span class="n">timestamps</span> <span class="o">&gt;=</span> <span class="n">time_window</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">timestamps</span> <span class="o">&lt;=</span> <span class="n">time_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
         <span class="n">timestamps</span> <span class="o">=</span> <span class="n">timestamps</span><span class="p">[</span><span class="n">in_window</span><span class="p">]</span>
@@ -605,7 +605,7 @@
     <span class="n">p_wave_picks</span> <span class="o">=</span> <span class="p">{</span><span class="n">ts</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">ts</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">indices</span><span class="p">)}</span>
 
     <span class="c1"># Step 5: Save the arrival time dictionary in absolute time</span>
-    <span class="n">timeseries</span><span class="p">[</span><span class="s2">&quot;p_wave_picks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_wave_picks</span></div>
+    <span class="n">timeseries</span><span class="p">[</span><span class="s2">"p_wave_picks"</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_wave_picks</span></div>
 
 </pre></div>
 

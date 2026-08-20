@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Deconvolution Operators &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Deconvolution Operators &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Arrival Time Measurement Techniques in MsPASS" href="arrival_time_measurement.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -708,11 +708,11 @@ standalone reference operators are
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.RFdeconProcessor</span><span class="w"> </span><span class="kn">import</span> <span class="n">RFdeconProcessor</span>
 
-<span class="n">default</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span><span class="n">alg</span><span class="o">=</span><span class="s2">&quot;WaterLevel&quot;</span><span class="p">)</span>
+<span class="n">default</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span><span class="n">alg</span><span class="o">=</span><span class="s2">"WaterLevel"</span><span class="p">)</span>
 <span class="n">highres</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span>
-    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span> <span class="n">preset</span><span class="o">=</span><span class="s2">&quot;mtz_plane_wave_highres&quot;</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">"LeastSquares"</span><span class="p">,</span> <span class="n">preset</span><span class="o">=</span><span class="s2">"mtz_plane_wave_highres"</span>
 <span class="p">)</span>
-<span class="n">historical</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span><span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">)</span>
+<span class="n">historical</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span><span class="n">alg</span><span class="o">=</span><span class="s2">"LeastSquares"</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="s2">"RFdeconProcessor.pf"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Each preset writes <code class="docutils literal notranslate"><span class="pre">rf_preset</span></code> into the RF QC metadata.  The historical
@@ -836,29 +836,29 @@ normal parameter-file lookup, meaning <code class="docutils literal notranslate"
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.RFdeconProcessor</span><span class="w"> </span><span class="kn">import</span> <span class="n">RFdecon</span>
 
 <span class="c1"># Current shipped default: noise-stable GID plus adaptive-memory lag weights.</span>
-<span class="n">rf_default</span> <span class="o">=</span> <span class="n">RFdecon</span><span class="p">(</span><span class="n">seis</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">)</span>
+<span class="n">rf_default</span> <span class="o">=</span> <span class="n">RFdecon</span><span class="p">(</span><span class="n">seis</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s2">"TimeDomainGID"</span><span class="p">)</span>
 
 <span class="c1"># Explicit legacy comparison.  Keep this as a diagnostic, not the default.</span>
 <span class="n">rf_legacy</span> <span class="o">=</span> <span class="n">RFdecon</span><span class="p">(</span>
     <span class="n">seis</span><span class="p">,</span>
-    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
-    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">&quot;least_square&quot;</span><span class="p">,</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">"TimeDomainGID"</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">"least_square"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Group-sparse GID: one regularized solve with shared lag support.</span>
 <span class="n">rf_group_sparse</span> <span class="o">=</span> <span class="n">RFdecon</span><span class="p">(</span>
     <span class="n">seis</span><span class="p">,</span>
-    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
-    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">&quot;group_sparse&quot;</span><span class="p">,</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">"TimeDomainGID"</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">"group_sparse"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Make the greedy lag-weight penalty stronger or weaker.</span>
 <span class="n">rf_weaker_penalty</span> <span class="o">=</span> <span class="n">RFdecon</span><span class="p">(</span>
     <span class="n">seis</span><span class="p">,</span>
-    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
-    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">&quot;ns_gid&quot;</span><span class="p">,</span>
-    <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="s2">&quot;adaptive_memory&quot;</span><span class="p">,</span>
-    <span class="n">gid_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lag_weight_penalty_scale_factor&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">"TimeDomainGID"</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">"ns_gid"</span><span class="p">,</span>
+    <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="s2">"adaptive_memory"</span><span class="p">,</span>
+    <span class="n">gid_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">"lag_weight_penalty_scale_factor"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -866,12 +866,12 @@ normal parameter-file lookup, meaning <code class="docutils literal notranslate"
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.RFdeconProcessor</span><span class="w"> </span><span class="kn">import</span> <span class="n">RFdecon</span><span class="p">,</span> <span class="n">RFdeconProcessor</span>
 
 <span class="n">processor</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span>
-    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
-    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">&quot;group_sparse&quot;</span><span class="p">,</span>
-    <span class="n">gid_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;group_sparse_active_threshold&quot;</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">},</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">"TimeDomainGID"</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">"group_sparse"</span><span class="p">,</span>
+    <span class="n">gid_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">"group_sparse_active_threshold"</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">},</span>
 <span class="p">)</span>
 
-<span class="n">rf</span> <span class="o">=</span> <span class="n">RFdecon</span><span class="p">(</span><span class="n">seis</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="n">processor</span><span class="p">)</span>
+<span class="n">rf</span> <span class="o">=</span> <span class="n">RFdecon</span><span class="p">(</span><span class="n">seis</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s2">"TimeDomainGID"</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="n">processor</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For lower-level workflows that use the GID engines directly, use
@@ -883,19 +883,19 @@ normal parameter-file lookup, meaning <code class="docutils literal notranslate"
 <span class="p">)</span>
 
 <span class="n">engine</span> <span class="o">=</span> <span class="n">make_gid_engine</span><span class="p">(</span>
-    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;FrequencyDomainGID&quot;</span><span class="p">,</span>
-    <span class="n">gid_mode</span><span class="o">=</span><span class="s2">&quot;ns_gid&quot;</span><span class="p">,</span>
-    <span class="n">gid_penalty_function</span><span class="o">=</span><span class="s2">&quot;adaptive_memory&quot;</span><span class="p">,</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">"FrequencyDomainGID"</span><span class="p">,</span>
+    <span class="n">gid_mode</span><span class="o">=</span><span class="s2">"ns_gid"</span><span class="p">,</span>
+    <span class="n">gid_penalty_function</span><span class="o">=</span><span class="s2">"adaptive_memory"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">pf</span> <span class="o">=</span> <span class="n">make_gid_pf</span><span class="p">(</span>
-    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
-    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">&quot;group_sparse&quot;</span><span class="p">,</span>
-    <span class="n">gid_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;group_sparse_active_threshold&quot;</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">},</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">"TimeDomainGID"</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">"group_sparse"</span><span class="p">,</span>
+    <span class="n">gid_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">"group_sparse_active_threshold"</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">},</span>
 <span class="p">)</span>
 <span class="n">pf_text</span> <span class="o">=</span> <span class="n">make_gid_pf_text</span><span class="p">(</span>
-    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
-    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">&quot;least_square&quot;</span><span class="p">,</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">"TimeDomainGID"</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="s2">"least_square"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>

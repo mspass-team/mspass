@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -631,7 +631,7 @@ requirements and/or provide aliasing.</p></li>
 </ol>
 <p>The class currently has only one constructor normally called with
 a variant of the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">&#39;mydatabase&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">'mydatabase'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where dbclient is either a MongoDB database client instance or
@@ -4438,7 +4438,7 @@ station name keys using that recipe.</p>
 with net, sta, chan, and (optional) loc defined.
 The time for the time interval test is translation to
 MongoDB syntax of:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span> <span class="o">&lt;=</span> <span class="n">channel</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channel</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span> <span class="o">&lt;=</span> <span class="n">channel</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>This algorithm will abort if the statement mspass_object.t0
@@ -5130,10 +5130,10 @@ via the <cite>data_time_key</cite> argument.  If you then load the
 appropriate reference time in the ensemble’s Metadata container
 you can normalize a common source gather’s ensemble container
 with a workflow.   Here is a code fragment illustrating the idea:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source_matcher</span> <span class="o">=</span> <span class="n">OriginTimeMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">data_time_key</span><span class="o">=</span><span class="s2">&quot;origin_time&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source_matcher</span> <span class="o">=</span> <span class="n">OriginTimeMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">data_time_key</span><span class="o">=</span><span class="s2">"origin_time"</span><span class="p">)</span>
 <span class="n">e</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="o">...</span> <span class="n">read</span> <span class="n">args</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># read ensemble e</span>
 <span class="c1"># assume we got this time (otime) some other way above</span>
-<span class="n">e</span><span class="p">[</span><span class="s2">&quot;origin_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">otime</span>
+<span class="n">e</span><span class="p">[</span><span class="s2">"origin_time"</span><span class="p">]</span> <span class="o">=</span> <span class="n">otime</span>
 <span class="n">e</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">source_matcher</span><span class="p">)</span>
 </pre></div>
 </div>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Database Concepts &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Database Concepts &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Continuous Data Handling with MsPASS" href="continuous_data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -556,7 +556,7 @@ version of the following stock incantation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 <span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydb&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydb"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where the above sets the symbol <cite>dbclient</cite> to reference a handle to
@@ -623,9 +623,9 @@ a key.  What that means, in practice, is that MsPASS data objects
 can act like python dictionaries.   e.g. the following is a sample
 code block to access SEED net codes from a seismic data object
 defined with a generic symbol “d”:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-<span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
-<span class="n">chan</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+<span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
+<span class="n">chan</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>This design has two important consequences:</p>
@@ -753,7 +753,7 @@ a set of miniseed files into the MsPASS system:</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dask.bag</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dbg</span>
 
 <span class="n">current_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-<span class="n">data_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_directory</span><span class="p">,</span> <span class="s2">&quot;wf&quot;</span><span class="p">)</span>
+<span class="n">data_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_directory</span><span class="p">,</span> <span class="s2">"wf"</span><span class="p">)</span>
 <span class="n">dfilelist</span><span class="o">=</span><span class="p">[]</span>
 <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="n">data_directory</span><span class="p">)</span> <span class="k">as</span> <span class="n">entries</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
@@ -775,29 +775,29 @@ construct a single TimeSeries object.   The following example
 should make that clearer.  It is an example of the content of a
 document created with index_miniseed in json format:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
- <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="s2">&quot;S06&quot;</span><span class="p">,</span>
- <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="s2">&quot;XX&quot;</span><span class="p">,</span>
- <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="s2">&quot;LHZ&quot;</span><span class="p">,</span>
- <span class="s2">&quot;sampling_rate&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
- <span class="s2">&quot;delta&quot;</span><span class="p">:</span> <span class="mf">0.002</span><span class="p">,</span>
- <span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="mf">1765652830.0</span><span class="p">,</span>
- <span class="s2">&quot;last_packet_time&quot;</span><span class="p">:</span> <span class="mf">1765749357.864</span><span class="p">,</span>
- <span class="s2">&quot;foff&quot;</span><span class="p">:</span> <span class="mi">862246686</span><span class="p">,</span>
- <span class="s2">&quot;nbytes&quot;</span><span class="p">:</span> <span class="mi">114463232</span><span class="p">,</span>
- <span class="s2">&quot;npts&quot;</span><span class="p">:</span> <span class="mi">48264000</span><span class="p">,</span>
- <span class="s2">&quot;endtime&quot;</span><span class="p">:</span> <span class="mf">1765749357.998</span><span class="p">,</span>
- <span class="s2">&quot;storage_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
- <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;mseed&quot;</span><span class="p">,</span>
- <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/N/project/MtCarmel/MtCarmel_rawdata/453041443/20251214215554&quot;</span><span class="p">,</span>
- <span class="s2">&quot;dfile&quot;</span><span class="p">:</span> <span class="s2">&quot;seis009Z.MiniSeed&quot;</span><span class="p">,</span>
- <span class="s2">&quot;time_standard&quot;</span><span class="p">:</span> <span class="s2">&quot;UTC&quot;</span><span class="p">,</span>
+ <span class="s2">"sta"</span><span class="p">:</span> <span class="s2">"S06"</span><span class="p">,</span>
+ <span class="s2">"net"</span><span class="p">:</span> <span class="s2">"XX"</span><span class="p">,</span>
+ <span class="s2">"chan"</span><span class="p">:</span> <span class="s2">"LHZ"</span><span class="p">,</span>
+ <span class="s2">"sampling_rate"</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+ <span class="s2">"delta"</span><span class="p">:</span> <span class="mf">0.002</span><span class="p">,</span>
+ <span class="s2">"starttime"</span><span class="p">:</span> <span class="mf">1765652830.0</span><span class="p">,</span>
+ <span class="s2">"last_packet_time"</span><span class="p">:</span> <span class="mf">1765749357.864</span><span class="p">,</span>
+ <span class="s2">"foff"</span><span class="p">:</span> <span class="mi">862246686</span><span class="p">,</span>
+ <span class="s2">"nbytes"</span><span class="p">:</span> <span class="mi">114463232</span><span class="p">,</span>
+ <span class="s2">"npts"</span><span class="p">:</span> <span class="mi">48264000</span><span class="p">,</span>
+ <span class="s2">"endtime"</span><span class="p">:</span> <span class="mf">1765749357.998</span><span class="p">,</span>
+ <span class="s2">"storage_mode"</span><span class="p">:</span> <span class="s2">"file"</span><span class="p">,</span>
+ <span class="s2">"format"</span><span class="p">:</span> <span class="s2">"mseed"</span><span class="p">,</span>
+ <span class="s2">"dir"</span><span class="p">:</span> <span class="s2">"/N/project/MtCarmel/MtCarmel_rawdata/453041443/20251214215554"</span><span class="p">,</span>
+ <span class="s2">"dfile"</span><span class="p">:</span> <span class="s2">"seis009Z.MiniSeed"</span><span class="p">,</span>
+ <span class="s2">"time_standard"</span><span class="p">:</span> <span class="s2">"UTC"</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>If the above document were loaded into a python script
 which we referenced with the symbol <cite>doc</cite>, the datum it references
 could be read with the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>When that line completes <cite>d</cite> would contain a <cite>TimeSeries</cite> object
@@ -1763,16 +1763,16 @@ them into MsPASS:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trace2TimeSeries</span>
 
 <span class="n">mspass_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;myproject&quot;</span><span class="p">)</span>
-<span class="n">data_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;wf_SAC&quot;</span>
-<span class="n">save_directory</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"myproject"</span><span class="p">)</span>
+<span class="n">data_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"wf_SAC"</span>
+<span class="n">save_directory</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"wf_TimeSeries"</span><span class="p">)</span>
 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">save_directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">outfile</span> <span class="o">=</span> <span class="s2">&quot;SACfileimages_raw.dat&quot;</span>
+<span class="n">outfile</span> <span class="o">=</span> <span class="s2">"SACfileimages_raw.dat"</span>
 <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="n">data_directory</span><span class="p">)</span> <span class="k">as</span> <span class="n">entries</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">entry</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">continue</span>
-        <span class="n">stream</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;SAC&quot;</span><span class="p">)</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"SAC"</span><span class="p">)</span>
         <span class="c1"># obspy.read always returns a Stream object</span>
         <span class="c1"># SAC files always have only one datum per file</span>
         <span class="c1"># use stream[0] to extract the Trace this converter requires</span>
@@ -1780,8 +1780,8 @@ them into MsPASS:</p>
         <span class="c1"># This project-specific function must be supplied by the user.</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">change_sac_metadata_keys</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span>
-                     <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
-                     <span class="n">storage_mode</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">,</span>
+                     <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
+                     <span class="n">storage_mode</span><span class="o">=</span><span class="s2">"file"</span><span class="p">,</span>
                      <span class="nb">dir</span><span class="o">=</span><span class="n">save_directory</span><span class="p">,</span>
                      <span class="n">dfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
 </pre></div>

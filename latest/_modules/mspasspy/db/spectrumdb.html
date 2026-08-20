@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.spectrumdb &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.db.spectrumdb &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -487,7 +487,7 @@
 <div class="viewcode-block" id="BasicObjectDatabase">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BasicObjectDatabase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract base class for database handle to save a single object type.</span>
 
 <span class="sd">    This is a base class for an alternative interface to the MsPASS</span>
@@ -508,7 +508,7 @@
 <span class="sd">    for different objects that are specialized to one user or group</span>
 <span class="sd">    may find this class a useful base to build upon.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -519,7 +519,7 @@
         <span class="n">md_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Base class constructor.   Most subclasses should normally</span>
 <span class="sd">        calls this constructor as part of the __init__ method of the</span>
 <span class="sd">        subclass.</span>
@@ -553,26 +553,26 @@
 <span class="sd">        externally in the database.  It sets the class variable</span>
 <span class="sd">        self.database_schema.  Note a schema is considered optional and</span>
 <span class="sd">        can be turned off by setting this argument to the magic string</span>
-<span class="sd">        &quot;DO_NOT_LOAD&quot;.</span>
+<span class="sd">        "DO_NOT_LOAD".</span>
 <span class="sd">        :type db_schema:  Can be one of three type:</span>
 <span class="sd">            1.  mspasspy.db.schema.DatabaseSchema - in this case the class</span>
 <span class="sd">                content is copied to self.database_schema.</span>
 <span class="sd">            2.  A string defining a specific schema by a keyword name.</span>
 <span class="sd">                That name is assume to match a yaml file name in the</span>
 <span class="sd">                mspass data/yaml directory.  e.g. the default mspass</span>
-<span class="sd">                schema is &quot;mspass&quot; defined with the file data/yaml/mspass.yaml.</span>
-<span class="sd">                A special case is the magic name &quot;DO_NOT_LOAD&quot;.  If</span>
+<span class="sd">                schema is "mspass" defined with the file data/yaml/mspass.yaml.</span>
+<span class="sd">                A special case is the magic name "DO_NOT_LOAD".  If</span>
 <span class="sd">                that name appears no schema is loaded and self.database_schema is</span>
 <span class="sd">                set to None.</span>
 <span class="sd">            3.  None - this is the default and used to load the default</span>
-<span class="sd">                schema file (&quot;mspass&quot;)/</span>
+<span class="sd">                schema file ("mspass")/</span>
 <span class="sd">        :param md_schema:  A concrete instance of this class may want to</span>
 <span class="sd">        impose a schema on attributes loaded as Metadata to a MsPASS</span>
 <span class="sd">        data object.   Most useful for type enforcement.   It defines</span>
 <span class="sd">        the contents of the class attribute self.metadata_schema.</span>
 <span class="sd">        Note a schema is considered optional and</span>
 <span class="sd">        can be turned off by setting this argument to the magic string</span>
-<span class="sd">        &quot;DO_NOT_LOAD&quot;.</span>
+<span class="sd">        "DO_NOT_LOAD".</span>
 <span class="sd">        :type md_schema:  Can be one of three type:</span>
 
 <span class="sd">            1.  mspasspy.db.schema.MetadataSchema - in this case the class</span>
@@ -580,15 +580,15 @@
 <span class="sd">            2.  A string defining a specific schema by a keyword name.</span>
 <span class="sd">                That name is assume to match a yaml file name in the</span>
 <span class="sd">                mspass data/yaml directory.  e.g. the default mspass</span>
-<span class="sd">                schema is &quot;mspass&quot; defined with the file data/yaml/mspass.yaml.</span>
-<span class="sd">                A special case is the magic name &quot;DO_NOT_LOAD&quot;.  If</span>
+<span class="sd">                schema is "mspass" defined with the file data/yaml/mspass.yaml.</span>
+<span class="sd">                A special case is the magic name "DO_NOT_LOAD".  If</span>
 <span class="sd">                that name appears no schema is loaded and self.metadata_schema is</span>
 <span class="sd">                set to None.</span>
 <span class="sd">            3.  None - this is the default and used to load the default</span>
-<span class="sd">                schema file (&quot;mspass&quot;)/</span>
+<span class="sd">                schema file ("mspass")/</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">do_not_load_keyword</span> <span class="o">=</span> <span class="s2">&quot;DO_NOT_LOAD&quot;</span>
+<span class="sd">        """</span>
+        <span class="n">do_not_load_keyword</span> <span class="o">=</span> <span class="s2">"DO_NOT_LOAD"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -616,12 +616,12 @@
 <div class="viewcode-block" id="BasicObjectDatabase.data_valid">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase.data_valid">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">data_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Tests if input datum d has a type supported by this handle.</span>
 <span class="sd">        Returns a True if the answer is yes and false if the answer is no.</span>
 <span class="sd">        Callers should handle the condition of false that would almost alway</span>
 <span class="sd">        be an error.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_list</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">typ</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">True</span>
@@ -632,7 +632,7 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase.read_data">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Read one datum.</span>
 
 <span class="sd">        Concrete implementation must implement this method.  It would</span>
@@ -640,7 +640,7 @@
 <span class="sd">        only one entry from the database.   It would then return run an</span>
 <span class="sd">        algorithm to construct and return the atomic data with wich this</span>
 <span class="sd">        class is associated.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
@@ -648,12 +648,12 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase.save_data">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Save one datum.</span>
 
 <span class="sd">        Concrete implementations must implement this method.  It will save</span>
 <span class="sd">        datum d by whatever scheme is used for the implementation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
@@ -661,19 +661,19 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.BasicObjectDatabase.verify">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Verify the validity of the data with which this handle is associated.</span>
 
-<span class="sd">        Any real database needs a way to verify the contents are &quot;clean&quot; as</span>
+<span class="sd">        Any real database needs a way to verify the contents are "clean" as</span>
 <span class="sd">        defined by the needs of the system.   This method should implement</span>
 <span class="sd">        whatever algorithm is appropriate to verify the contents are valid</span>
 <span class="sd">        in the sense that read_data operations will not fail or some more</span>
 <span class="sd">        elaborate requirement is satisified.   Most implementations will</span>
 <span class="sd">        want to use a list of verify tests that implement different</span>
-<span class="sd">        algorithms that define what &quot;clean&quot; means.</span>
+<span class="sd">        algorithms that define what "clean" means.</span>
 
 <span class="sd">        Concrete implementations must implement this method.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 </div>
 
@@ -682,7 +682,7 @@
 <div class="viewcode-block" id="SpectrumDatabase">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.SpectrumDatabase">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectrumDatabase</span><span class="p">(</span><span class="n">BasicObjectDatabase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Specialized database handle to manage PowerSpectrum data.</span>
 
 <span class="sd">    Use this handle to read and write PowerSpectrum objects to a</span>
@@ -690,42 +690,42 @@
 <span class="sd">    standard MsPASS database.  The class has only a basic reader and writer</span>
 <span class="sd">    and a simple verify method required by the abstract base class from</span>
 <span class="sd">    which it is derived.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;PowerSpectrum&quot;</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">"PowerSpectrum"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Constructor for this database handle.   Note because this class</span>
 <span class="sd">        inherits pymongo.database.Database.   You can pass arguments</span>
 <span class="sd">        to this constructor recognized by the base class constructor</span>
-<span class="sd">        for pymongo&#39;s handle like  &quot;read_concern&quot; or &quot;write_concern&quot; and</span>
+<span class="sd">        for pymongo's handle like  "read_concern" or "write_concern" and</span>
 <span class="sd">        they will be passed to the pymongo constructor by the standard</span>
 <span class="sd">        python mechanism of *args and **kwargs.</span>
 
 <span class="sd">        :param name:  MongoDB database name to use.</span>
 <span class="sd">        :type name:  string</span>
 <span class="sd">        :param collection:  optional alternative collection name to</span>
-<span class="sd">        use for reads and writes (default is &quot;PowerSpectrum&quot;)</span>
+<span class="sd">        use for reads and writes (default is "PowerSpectrum")</span>
 <span class="sd">        :type collection:  string</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">type_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">PowerSpectrum</span><span class="p">]</span>
         <span class="n">BasicObjectDatabase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">name</span><span class="p">,</span> <span class="n">type_list</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="s2">&quot;DO_NOT_LOAD&quot;</span><span class="p">,</span> <span class="n">md_schema</span><span class="o">=</span><span class="s2">&quot;DO_NOT_LOAD&quot;</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">type_list</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="s2">"DO_NOT_LOAD"</span><span class="p">,</span> <span class="n">md_schema</span><span class="o">=</span><span class="s2">"DO_NOT_LOAD"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
 
 <div class="viewcode-block" id="SpectrumDatabase.save_data">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.SpectrumDatabase.save_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata2save</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pickle&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata2save</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"pickle"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Saves a single PowerSpectrum object defined through arg0.   Default</span>
 <span class="sd">        dumps all metadata elements to PowerSpectrum collection document</span>
-<span class="sd">        and saves pickled version of datum with the key &quot;serialized_data&quot;.</span>
+<span class="sd">        and saves pickled version of datum with the key "serialized_data".</span>
 
 <span class="sd">        :param datum:  PowerSpectrum to save.  The method will throw a</span>
 <span class="sd">          MsPASSError if this is not a PowerSpectrum object.   If the datum</span>
@@ -737,13 +737,13 @@
 <span class="sd">          the document created for this object.   If the key is not actually</span>
 <span class="sd">          found in the Metadata area of datum it will be silently ignored.</span>
 <span class="sd">        :param format:  output format of the object.  Currently the only</span>
-<span class="sd">          accepted value is the default of &quot;pickle&quot;.  The default format</span>
+<span class="sd">          accepted value is the default of "pickle".  The default format</span>
 <span class="sd">          pickles the input datum and saves the result with the key</span>
-<span class="sd">          &quot;serialized_data&quot;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s2">&quot;pickle&quot;</span><span class="p">:</span>
+<span class="sd">          "serialized_data".</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s2">"pickle"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;SpectrumDatabase.save_data:  format can currently only be pickle&quot;</span><span class="p">,</span>
+                <span class="s2">"SpectrumDatabase.save_data:  format can currently only be pickle"</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_valid</span><span class="p">():</span>
@@ -763,12 +763,12 @@
                 <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
                         <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;serialized_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">"serialized_data"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
             <span class="n">recid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
             <span class="k">return</span> <span class="n">recid</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;SpectrumDatabase.save_data:  illegal data type for arg0. Found type=</span><span class="si">{typ}</span><span class="s2"> - only support PowerSpectrum&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"SpectrumDatabase.save_data:  illegal data type for arg0. Found type=</span><span class="si">{typ}</span><span class="s2"> - only support PowerSpectrum"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">typ</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span></div>
@@ -782,21 +782,21 @@
         <span class="n">required</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads one PowerSpectrum using an object id either directly or</span>
 <span class="sd">        indirectly via an input MongoDB document.   Because this implementation</span>
 <span class="sd">        uses pickle to restore the PowerSpectrum object from a serialized</span>
 <span class="sd">        form it may be useful to verify the content of the restored datum</span>
 <span class="sd">        created by pickle has attributes that are the same as the database.</span>
 <span class="sd">        The can be necessary if the database was edited after a datum of</span>
-<span class="sd">        interest was saved.  The &quot;required&quot; and &quot;override&quot; optional arguments</span>
+<span class="sd">        interest was saved.  The "required" and "override" optional arguments</span>
 <span class="sd">        are used for that purpose.</span>
 
 <span class="sd">        :param id_or_doc:  as the name implies this required argument must</span>
 <span class="sd">          be either a MongoDB ObjectId class or something that at least acts</span>
 <span class="sd">          like a MongoDB document. An id is used directly to generate a query.</span>
 <span class="sd">          If the argument is not an ObjectId the method attempts to fetch</span>
-<span class="sd">          an attribute with the stock key &quot;_id&quot;.   If that key is not found</span>
+<span class="sd">          an attribute with the stock key "_id".   If that key is not found</span>
 <span class="sd">          this method will throw an exception.</span>
 
 <span class="sd">        :param required:  list of keys (strings) that will always be fetched</span>
@@ -808,17 +808,17 @@
 <span class="sd">        :param overide:  list of keys (strings) that should be fetched</span>
 <span class="sd">          from the document retrieved in the query and pushed to the</span>
 <span class="sd">          constructed object.   Use this feature to fix attributes repaired</span>
-<span class="sd">          or added after a datum was saved.  It differs from &quot;required&quot; as</span>
-<span class="sd">          the attribute is treated as optional.  i.e. it a value isn&#39;t found</span>
+<span class="sd">          or added after a datum was saved.  It differs from "required" as</span>
+<span class="sd">          the attribute is treated as optional.  i.e. it a value isn't found</span>
 <span class="sd">          for a particular key it is simply not posted.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">id_or_doc</span><span class="p">,</span> <span class="n">ObjectId</span><span class="p">):</span>
             <span class="n">oid</span> <span class="o">=</span> <span class="n">id_or_doc</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">oid</span> <span class="o">=</span> <span class="n">id_or_doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">id_or_doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">doc</span><span class="p">:</span>
-            <span class="n">datakey</span> <span class="o">=</span> <span class="s2">&quot;serialized_data&quot;</span>
+            <span class="n">datakey</span> <span class="o">=</span> <span class="s2">"serialized_data"</span>
             <span class="k">if</span> <span class="n">datakey</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                 <span class="n">datum</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">datakey</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
@@ -829,11 +829,11 @@
                         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                             <span class="n">datum</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;SpectrumDatabase.read_data:  missing required key=serialized_data - expected to contain datum serialized with pickle&quot;</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">"SpectrumDatabase.read_data:  missing required key=serialized_data - expected to contain datum serialized with pickle"</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">datum</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;SpectrumDatabase.read_data: no document with ObjectId=</span><span class="si">{oid}</span><span class="s2"> was found in PowerSpectrum collection&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"SpectrumDatabase.read_data: no document with ObjectId=</span><span class="si">{oid}</span><span class="s2"> was found in PowerSpectrum collection"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">oid</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">oid</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span></div>
@@ -842,12 +842,12 @@
 <div class="viewcode-block" id="SpectrumDatabase.verify">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.SpectrumDatabase.verify">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Scans PowerSpectrum collection to verify the contents.  An optional</span>
 <span class="sd">        MongoDB query can be passed to scan a limited subset.  You can also</span>
 <span class="sd">        pass a list of required keys that must be present in each document</span>
 <span class="sd">        processed.  The method always tests for the existence of the special</span>
-<span class="sd">        key &quot;serialized_data&quot; that is used to store a pickled copy of the</span>
+<span class="sd">        key "serialized_data" that is used to store a pickled copy of the</span>
 <span class="sd">        datum.</span>
 
 <span class="sd">        :param query:  optional pymongo query (python dict) to apply the</span>
@@ -859,14 +859,14 @@
 <span class="sd">        :return:  tuple with two integers.  Component 0 will contain the</span>
 <span class="sd">          number of documents scanned and component 1 will contain the number</span>
 <span class="sd">          the method considers valid.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">[{}]</span>
         <span class="n">nprocessed</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">nvalid</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">testkey</span> <span class="o">=</span> <span class="s2">&quot;serialized_data&quot;</span>
+        <span class="n">testkey</span> <span class="o">=</span> <span class="s2">"serialized_data"</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">testkey</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                 <span class="n">aok</span> <span class="o">=</span> <span class="kc">True</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Deploying MsPASS on an HPC cluster &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Deploying MsPASS on an HPC cluster &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="MsPASS Virtual Cluster Concepts" href="getting_started_overview.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -619,8 +619,8 @@ node-local temporary storage are usually poor choices.  Customize the first
 line below for your site.  Run the build on a workstation or in a scheduled
 compute allocation if it is too intensive for the center’s login-node policy.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">MSPASS_IMAGE_DIR</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">shared</span><span class="o">/</span><span class="n">mspass</span><span class="o">/</span><span class="n">containers</span>
-<span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="s2">&quot;$MSPASS_IMAGE_DIR&quot;</span>
-<span class="n">cd</span> <span class="s2">&quot;$MSPASS_IMAGE_DIR&quot;</span>
+<span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="s2">"$MSPASS_IMAGE_DIR"</span>
+<span class="n">cd</span> <span class="s2">"$MSPASS_IMAGE_DIR"</span>
 <span class="n">apptainer</span> <span class="n">build</span> <span class="n">mspass_latest</span><span class="o">.</span><span class="n">sif</span> <span class="n">docker</span><span class="p">:</span><span class="o">//</span><span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
 </pre></div>
 </div>
@@ -695,7 +695,7 @@ since by definition an HPC job runs in “batch” mode.</p>
 <span class="n">python</span> <span class="o">&lt;&lt;</span> <span class="n">EOI</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspass_launcher.hpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">HPCClusterLauncher</span>
 <span class="n">launcher</span> <span class="o">=</span> <span class="n">HPCClusterLauncher</span><span class="p">()</span>
-<span class="n">launcher</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;myscript.py&quot;</span><span class="p">)</span>
+<span class="n">launcher</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">"myscript.py"</span><span class="p">)</span>
 <span class="n">EOI</span>
 </pre></div>
 </div>
@@ -713,7 +713,7 @@ can specify an alternative configuration file by giving a path to that
 file as arg0 or via the kwarg with key “configuration_file”.
 For example, pass the absolute path to an alternate file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">launcher</span> <span class="o">=</span> <span class="n">HPCClusterLauncher</span><span class="p">(</span>
-    <span class="n">configuration_file</span><span class="o">=</span><span class="s2">&quot;/home/myusername/configurations/quartz_4_node.yaml&quot;</span>
+    <span class="n">configuration_file</span><span class="o">=</span><span class="s2">"/home/myusername/configurations/quartz_4_node.yaml"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -879,7 +879,7 @@ order of appearance of parameters in the template version of <cite>mspass_setup.
 show here:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /bin/bash</span>
 
-<span class="c1"># See User&#39;s Manual for more guidance on setting these variables</span>
+<span class="c1"># See User's Manual for more guidance on setting these variables</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_HOME</span><span class="o">=</span>~/mspass
 <span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_CONTAINER</span><span class="o">=</span><span class="si">${</span><span class="nv">MSPASS_HOME</span><span class="si">}</span>/containers/mspass_latest.sif
 <span class="c1"># the container boots.  Usually an explicit path is best to avoid</span>
@@ -891,7 +891,7 @@ show here:</p>
 <span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_WORKER_DIR</span><span class="o">=</span>/N/scratch/pavlis/usarray/work
 
 
-<span class="nb">export</span><span class="w"> </span><span class="nv">HOSTNAME_BASE</span><span class="o">=</span><span class="s2">&quot;carbonate.uits.iu.edu&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HOSTNAME_BASE</span><span class="o">=</span><span class="s2">"carbonate.uits.iu.edu"</span>
 
 <span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="nv">$MSPASS_RUNSCRIPT</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
 <span class="w">  </span><span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_RUNSCRIPT</span><span class="o">=</span>/N/slate/pavlis/test_scripts/run_mspass.sh
@@ -1032,7 +1032,7 @@ Currently Loaded Modulefiles:
 7) cmake/gnu/3.18.4              14) openmpi/intel/4.0.1(default)
 /N/slate/pavlis/usarray
 Thu Jan 26 10:43:56 EST 2023
-{&quot;t&quot;:{&quot;$date&quot;:&quot;2023-01-26T15:44:10.476Z&quot;},&quot;s&quot;:&quot;I&quot;,  &quot;c&quot;:&quot;CONTROL&quot;,  &quot;id&quot;:20697,   &quot;ctx&quot;:&quot;main&quot;,&quot;msg&quot;:&quot;Renamed existing log file&quot;,&quot;attr&quot;:{&quot;oldLogPath&quot;:&quot;/N/slate/pavlis/usarray/logs/mongo_log&quot;,&quot;newLogPath&quot;:&quot;/N/slate/pavlis/usarray/logs/mongo_log.2023-01-26T15-44-10&quot;}}
+{"t":{"$date":"2023-01-26T15:44:10.476Z"},"s":"I",  "c":"CONTROL",  "id":20697,   "ctx":"main","msg":"Renamed existing log file","attr":{"oldLogPath":"/N/slate/pavlis/usarray/logs/mongo_log","newLogPath":"/N/slate/pavlis/usarray/logs/mongo_log.2023-01-26T15-44-10"}}
 [I 10:44:16.973 NotebookApp] Serving notebooks from local directory: /N/slate/pavlis/usarray
 [I 10:44:16.974 NotebookApp] Jupyter Notebook 6.2.0 is running at:
 [I 10:44:16.974 NotebookApp] http://c4:8888/?token=e7464f3b156b27efcaf2c9e52197b40068c5eefd8231a955
@@ -1100,7 +1100,7 @@ address).
 For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MSPASS_DB_ADDRESS&quot;</span><span class="p">))</span>
+<span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"MSPASS_DB_ADDRESS"</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>The standard launch scripts set both service addresses for the frontend; they
@@ -1160,7 +1160,7 @@ as the job script is executed illustrated here as “node 1”</span><a class="h
 <p>Notice from <a class="reference internal" href="#hpc-config-figure1"><span class="std std-numref">Fig. 12</span></a> that all 4 roles are
 launched as separate instances of the container.   In the script
 they are all launched with variations of this following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SING_COM=&quot;apptainer run $MSPASS_CONTAINER&quot;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SING_COM="apptainer run $MSPASS_CONTAINER"
 APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
      APPTAINERENV_MSPASS_ROLE=scheduler $SING_COM &amp;
 </pre></div>
@@ -1217,8 +1217,8 @@ we know of so short hostnames are the norm.</p>
 in run_mspass.sh:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>NODE_HOSTNAME=`hostname -s`
 WORKER_LIST=`scontrol show hostname ${SLURM_NODELIST} | \
-           awk -vORS=, -v hostvar=&quot;$NODE_HOSTNAME&quot; &#39;{ if ($0!=hostvar) print $0 }&#39; | \
-           sed &#39;s/,$/\n/&#39;`
+           awk -vORS=, -v hostvar="$NODE_HOSTNAME" '{ if ($0!=hostvar) print $0 }' | \
+           sed 's/,$/\n/'`
 </pre></div>
 </div>
 <p>The first line returns the human readable name of the node on which the
@@ -1300,9 +1300,9 @@ that may expose services on a shared host.  Current TACC users should prefer the
 <a class="reference external" href="https://docs.tacc.utexas.edu/tutorials/TAP/">TACC Analysis Portal</a>.</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>NODE_HOSTNAME=`hostname -s`
-LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne &#39;print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;&#39;`
-STATUS_PORT=`echo &quot;$LOGIN_PORT + 1&quot; | bc -l`
-echo &quot;got login node port $LOGIN_PORT&quot;
+LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne 'print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;'`
+STATUS_PORT=`echo "$LOGIN_PORT + 1" | bc -l`
+echo "got login node port $LOGIN_PORT"
 
 NUMBER_LOGIN_NODES=4
 LOGIN_NODE_BASENAME=login

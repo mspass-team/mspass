@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.collection &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.db.collection &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -479,33 +479,33 @@
 <div class="viewcode-block" id="Collection">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.collection.Collection">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Collection</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Collection</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A modified Mongo collection class.</span>
 
 <span class="sd">    The native collection class of Mongo does not have __setstate__ and</span>
 <span class="sd">    __getstate__ defined, which prevents it from being serialized. We add</span>
 <span class="sd">    the two methods here as an addition so that the collection can be passed</span>
 <span class="sd">    around by the scheduler and worker.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Collection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_BaseObject__codec_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">codec_options</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+        <span class="n">ret</span><span class="p">[</span><span class="s2">"_BaseObject__codec_options"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">codec_options</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
 
         <span class="c1"># Store database connection info separately to recreate Database handle</span>
-        <span class="c1"># Use public attribute &#39;database&#39; instead of private &#39;_Collection__database&#39;</span>
+        <span class="c1"># Use public attribute 'database' instead of private '_Collection__database'</span>
         <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database</span>  <span class="c1"># pymongo 4.x uses public attribute</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">):</span>
-            <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_mspass_db_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">&quot;client&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;_mspass_db_host&quot;</span><span class="p">):</span>
-            <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_mspass_db_host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_mspass_db_host</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">):</span>
+            <span class="n">ret</span><span class="p">[</span><span class="s2">"_mspass_db_name"</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">"client"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="s2">"_mspass_db_host"</span><span class="p">):</span>
+            <span class="n">ret</span><span class="p">[</span><span class="s2">"_mspass_db_host"</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_mspass_db_host</span>
 
-        <span class="c1"># Don&#39;t pickle the Database object itself</span>
-        <span class="k">if</span> <span class="s2">&quot;_Collection__database&quot;</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_Collection__database&quot;</span><span class="p">]</span>
+        <span class="c1"># Don't pickle the Database object itself</span>
+        <span class="k">if</span> <span class="s2">"_Collection__database"</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">ret</span><span class="p">[</span><span class="s2">"_Collection__database"</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">ret</span>
 
@@ -514,12 +514,12 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">bson.binary</span><span class="w"> </span><span class="kn">import</span> <span class="n">UuidRepresentation</span>
 
         <span class="c1"># Extract connection info before updating __dict__</span>
-        <span class="n">db_host</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_mspass_db_host&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">db_name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_mspass_db_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">db_host</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_mspass_db_host"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">db_name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_mspass_db_name"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># Pop ALL codec_options fields (Collection also has _codec_options and _BaseObject__codec_options)</span>
-        <span class="n">codec_options_repr</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_BaseObject__codec_options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">base_codec_options</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_codec_options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">codec_options_repr</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_BaseObject__codec_options"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">base_codec_options</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_codec_options"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># Eval the codec_options repr string</span>
         <span class="k">if</span> <span class="n">codec_options_repr</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">codec_options_repr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -545,7 +545,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">database</span><span class="p">,</span>
-            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span>
+            <span class="s2">"</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span>
             <span class="kc">False</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">codec_options</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_preference</span><span class="p">,</span>

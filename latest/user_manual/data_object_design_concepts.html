@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Data Object Design Concepts &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Data Object Design Concepts &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Using MsPASS on EarthScope GeoLab" href="../getting_started/deploy_mspass_on_geolab.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -779,7 +779,7 @@ keyword and that can contain a range of value types.  For example, a typical
 ObsPy script will contain a line like the following to fetch the station
 name from a Trace object <code class="code docutils literal notranslate"><span class="pre">d</span></code>.</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"station"</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -813,8 +813,8 @@ algorithms that demand an attribute have a particular type that is not,
 in fact, the type Python received from storage in MongoDB.
 Consider this example:</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">}</span>
-<span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">'time'</span><span class="p">:</span><span class="mi">10</span><span class="p">}</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">'time'</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -858,19 +858,19 @@ enforce type throwing a MsPASSError exception if there is a mismatch.</div>
 contrived code segment:</div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume d is a Seismogram or TimeSeries, both of which expose Metadata.</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;t0_shift&quot;</span><span class="p">)</span>  <span class="c1"># floating-point time shift</span>
-<span class="n">n</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_long</span><span class="p">(</span><span class="s2">&quot;evid&quot;</span><span class="p">)</span>        <span class="c1"># integer event identifier</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">)</span>       <span class="c1"># UTF-8 string</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_bool</span><span class="p">(</span><span class="s2">&quot;LPSPOL&quot;</span><span class="p">)</span>      <span class="c1"># SAC positive-polarity flag</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">"t0_shift"</span><span class="p">)</span>  <span class="c1"># floating-point time shift</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_long</span><span class="p">(</span><span class="s2">"evid"</span><span class="p">)</span>        <span class="c1"># integer event identifier</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s2">"sta"</span><span class="p">)</span>       <span class="c1"># UTF-8 string</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get_bool</span><span class="p">(</span><span class="s2">"LPSPOL"</span><span class="p">)</span>      <span class="c1"># SAC positive-polarity flag</span>
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line">There are comparable, strongly typed setters:</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="s2">&quot;t0_shift&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">put_long</span><span class="p">(</span><span class="s2">&quot;evid&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">put_string</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
-<span class="n">d</span><span class="o">.</span><span class="n">put_bool</span><span class="p">(</span><span class="s2">&quot;LPSPOL&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="s2">"t0_shift"</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">put_long</span><span class="p">(</span><span class="s2">"evid"</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">put_string</span><span class="p">(</span><span class="s2">"sta"</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">put_bool</span><span class="p">(</span><span class="s2">"LPSPOL"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -879,17 +879,17 @@ are generic getters and setters that accept Python objects.
 For example, if the variable “name_list” below was a Python list of
 something like seismic station names one can use this construct:</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">,</span> <span class="n">name_list</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"names"</span><span class="p">,</span> <span class="n">name_list</span><span class="p">)</span>
 <span class="c1"># Or use the mapping-style interface.</span>
-<span class="n">d</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name_list</span>
+<span class="n">d</span><span class="p">[</span><span class="s2">"names"</span><span class="p">]</span> <span class="o">=</span> <span class="n">name_list</span>
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line">We can then retrieve that list with the inverse</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"names"</span><span class="p">)</span>
 <span class="c1"># Or use the mapping-style interface.</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"names"</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -1303,10 +1303,10 @@ small Python code segment illustrates this behavior:</div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span>
 
-<span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;rotate_to_standard&quot;</span>
+<span class="n">alg</span> <span class="o">=</span> <span class="s2">"rotate_to_standard"</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">d</span><span class="o">.</span><span class="n">rotate_to_standard</span><span class="p">()</span>
-    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_verbose</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="s2">&quot;rotation completed&quot;</span><span class="p">)</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_verbose</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="s2">"rotation completed"</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
     <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
     <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>

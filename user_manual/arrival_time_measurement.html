@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Arrival Time Measurement Techniques in MsPASS &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Arrival Time Measurement Techniques in MsPASS &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Signal to Noise Ratio Estimation" href="signal_to_noise.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -819,15 +819,15 @@ show the full function signature for <code class="docutils literal notranslate">
   <span class="n">beam</span><span class="p">,</span>
   <span class="o">*</span><span class="n">args</span><span class="p">,</span>
   <span class="n">correlation_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-  <span class="n">correlation_window_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;correlation_window_start&quot;</span><span class="p">,</span> <span class="s2">&quot;correlation_window_end&quot;</span><span class="p">],</span>
+  <span class="n">correlation_window_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">"correlation_window_start"</span><span class="p">,</span> <span class="s2">"correlation_window_end"</span><span class="p">],</span>
   <span class="n">window_beam</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
   <span class="n">robust_stack_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-  <span class="n">robust_stack_window_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;robust_window_start&quot;</span><span class="p">,</span> <span class="s2">&quot;robust_window_end&quot;</span><span class="p">],</span>
-  <span class="n">robust_stack_method</span><span class="o">=</span><span class="s2">&quot;dbxcor&quot;</span><span class="p">,</span>
+  <span class="n">robust_stack_window_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">"robust_window_start"</span><span class="p">,</span> <span class="s2">"robust_window_end"</span><span class="p">],</span>
+  <span class="n">robust_stack_method</span><span class="o">=</span><span class="s2">"dbxcor"</span><span class="p">,</span>
   <span class="n">use_median_initial_stack</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
   <span class="n">output_stack_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-  <span class="n">robust_weight_key</span><span class="o">=</span><span class="s2">&quot;robust_stack_weight&quot;</span><span class="p">,</span>
-  <span class="n">time_shift_key</span><span class="o">=</span><span class="s2">&quot;arrival_time_correction&quot;</span><span class="p">,</span>
+  <span class="n">robust_weight_key</span><span class="o">=</span><span class="s2">"robust_stack_weight"</span><span class="p">,</span>
+  <span class="n">time_shift_key</span><span class="o">=</span><span class="s2">"arrival_time_correction"</span><span class="p">,</span>
   <span class="n">time_shift_limit</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
   <span class="n">abort_irregular_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
   <span class="n">convergence</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
@@ -910,12 +910,12 @@ data with the multichannel correlation algorithm, but is far
 from complete and untested.  The idea is you can use this as a
 starting point to work with your data set:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">prep_ensemble</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Applies required preprocessing to an input SeismogramEnsemble.</span>
 <span class="sd">  This function is specialized to this workflow with</span>
 <span class="sd">  function call arguments fixed.   A more generic function</span>
 <span class="sd">  would use kwargs to change some arguments.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="n">qcnw</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">120.0</span><span class="p">,</span><span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
   <span class="n">qcsw</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span><span class="mf">60.0</span><span class="p">)</span>
   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
@@ -931,42 +931,42 @@ starting point to work with your data set:</p>
       <span class="n">noise_window</span><span class="o">=</span><span class="n">qcnw</span><span class="p">,</span>
       <span class="n">signal_window</span><span class="o">=</span><span class="n">qcsw</span><span class="p">,</span>
       <span class="n">use_measured_arrival_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-      <span class="n">measured_arrival_time_key</span><span class="o">=</span><span class="s2">&quot;Ptime&quot;</span><span class="p">,</span>
+      <span class="n">measured_arrival_time_key</span><span class="o">=</span><span class="s2">"Ptime"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># align the relative time origin to the measured P arrival</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">ator</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;Ptime&quot;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">ator</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">"Ptime"</span><span class="p">)</span>
     <span class="n">e</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">d</span>
   <span class="k">return</span> <span class="n">e</span>
 
 <span class="c1">######################### MAIN ############</span>
 <span class="c1"># assume db is Database handle object</span>
 <span class="n">site_matcher</span><span class="o">=</span><span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
-  <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;site&#39;</span><span class="p">,</span>
-  <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">,</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+  <span class="n">collection</span><span class="o">=</span><span class="s1">'site'</span><span class="p">,</span>
+  <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s1">'lat'</span><span class="p">,</span><span class="s1">'lon'</span><span class="p">,</span><span class="s1">'elev'</span><span class="p">,</span><span class="s1">'_id'</span><span class="p">])</span>
 <span class="n">source_matcher</span><span class="o">=</span><span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
-  <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;source&#39;</span><span class="p">,</span>
-  <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+  <span class="n">collection</span><span class="o">=</span><span class="s1">'source'</span><span class="p">,</span>
+  <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s1">'lat'</span><span class="p">,</span><span class="s1">'lon'</span><span class="p">,</span><span class="s1">'depth'</span><span class="p">,</span><span class="s1">'time'</span><span class="p">,</span><span class="s1">'_id'</span><span class="p">])</span>
 
-<span class="n">srcids</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s1">&#39;source_id&#39;</span><span class="p">)</span>
+<span class="n">srcids</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s1">'source_id'</span><span class="p">)</span>
 <span class="n">nw</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
 <span class="c1"># code above would define a query and run find to generate cursor</span>
 <span class="k">for</span> <span class="n">sid</span> <span class="ow">in</span> <span class="n">srcids</span><span class="p">:</span>
-  <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;source_id&#39;</span> <span class="p">:</span> <span class="n">sid</span><span class="p">})</span>
+  <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">'source_id'</span> <span class="p">:</span> <span class="n">sid</span><span class="p">})</span>
   <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_Seismogram&#39;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_Seismogram'</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="n">site_matcher</span><span class="p">,</span><span class="n">source_matcher</span><span class="p">],</span>
     <span class="p">)</span>
   <span class="n">ens</span> <span class="o">=</span> <span class="n">prep_ensemble</span><span class="p">(</span><span class="n">ens</span><span class="p">)</span>
   <span class="n">ens</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
   <span class="n">ens</span><span class="p">,</span> <span class="n">beam</span> <span class="o">=</span> <span class="n">MCXcorPrepP</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span>
     <span class="n">nw</span><span class="p">,</span>
-    <span class="n">station_collection</span><span class="o">=</span><span class="s1">&#39;site&#39;</span><span class="p">,</span>
+    <span class="n">station_collection</span><span class="o">=</span><span class="s1">'site'</span><span class="p">,</span>
   <span class="p">)</span>
   <span class="k">if</span> <span class="n">beam</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
     <span class="k">continue</span>
   <span class="n">ens</span><span class="p">,</span> <span class="n">beam</span> <span class="o">=</span> <span class="n">align_and_stack</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">beam</span><span class="p">)</span>
-  <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span><span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;MCXcorProcessed&#39;</span><span class="p">)</span>
-  <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span><span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;MCXcorProcessed&#39;</span><span class="p">)</span>
+  <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">,</span><span class="n">data_tag</span><span class="o">=</span><span class="s1">'MCXcorProcessed'</span><span class="p">)</span>
+  <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">,</span><span class="n">data_tag</span><span class="o">=</span><span class="s1">'MCXcorProcessed'</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="local-earthquake-arrival-time-measurement">

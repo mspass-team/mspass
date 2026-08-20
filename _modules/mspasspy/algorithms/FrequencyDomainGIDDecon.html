@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.FrequencyDomainGIDDecon &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.algorithms.FrequencyDomainGIDDecon &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -475,7 +475,7 @@
   <h1>Source code for mspasspy.algorithms.FrequencyDomainGIDDecon</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Python wrappers for the frequency-domain generalized iterative deconvolution</span>
 <span class="sd">engine.</span>
 
@@ -484,7 +484,7 @@
 <span class="sd">frequency domain with padded FFTs.  The returned receiver function is the</span>
 <span class="sd">shaped sparse impulse response for the requested lag window, not a circularly</span>
 <span class="sd">wrapped inverse-filter response.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.deconvolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencyDomainGIDDecon</span>
@@ -503,10 +503,10 @@
     <span class="n">external_wavelet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">wavelet_t0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">external_noise</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">QCdata_key</span><span class="o">=</span><span class="s2">&quot;FrequencyDomainGIDDecon_properties&quot;</span><span class="p">,</span>
+    <span class="n">QCdata_key</span><span class="o">=</span><span class="s2">"FrequencyDomainGIDDecon_properties"</span><span class="p">,</span>
     <span class="n">return_wavelet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;FrequencyDomainGIDRFDecon&quot;</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">"FrequencyDomainGIDRFDecon"</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -516,7 +516,7 @@
     <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Estimate a three-component receiver function with the frequency-domain</span>
 <span class="sd">    generalized iterative deconvolution algorithm.</span>
 
@@ -529,11 +529,11 @@
 <span class="sd">    input is returned dead with an error; convert it first with</span>
 <span class="sd">    ``ator(P-arrival epoch)``.</span>
 
-<span class="sd">    When ``noise_window`` is omitted, the engine&#39;s configured parameter-file</span>
+<span class="sd">    When ``noise_window`` is omitted, the engine's configured parameter-file</span>
 <span class="sd">    noise window is used.  ``signal_window`` must contain the configured</span>
 <span class="sd">    deconvolution window used to build the inverse operator.  Omitted</span>
 <span class="sd">    ``external_wavelet`` or ``external_noise`` arguments leave any external</span>
-<span class="sd">    state already loaded into ``engine`` unchanged; call the engine&#39;s</span>
+<span class="sd">    state already loaded into ``engine`` unchanged; call the engine's</span>
 <span class="sd">    ``clear_external_*`` methods to force internal wavelet/noise selection.</span>
 
 <span class="sd">    :param seis: input `Seismogram` containing signal and noise windows.</span>
@@ -542,10 +542,10 @@
 <span class="sd">        window, convergence limits, and output shaping wavelet.</span>
 <span class="sd">    :param signal_window: optional `TimeWindow` defining the full output and</span>
 <span class="sd">        iterative analysis window.  When omitted the input datum time range is</span>
-<span class="sd">        used.  The window must contain the engine&#39;s configured deconvolution</span>
+<span class="sd">        used.  The window must contain the engine's configured deconvolution</span>
 <span class="sd">        window.</span>
 <span class="sd">    :param noise_window: optional `TimeWindow` defining pre-event noise.  When</span>
-<span class="sd">        omitted the engine&#39;s parameter-file noise window is used.</span>
+<span class="sd">        omitted the engine's parameter-file noise window is used.</span>
 <span class="sd">    :param external_wavelet: optional prepared wavelet passed directly to the</span>
 <span class="sd">        GID engine.  This may be a TimeSeries or a bare numeric</span>
 <span class="sd">        vector.  If omitted, any external wavelet already loaded into</span>
@@ -562,7 +562,7 @@
 <span class="sd">        omitted, any external noise already loaded into ``engine`` is preserved.</span>
 <span class="sd">        Use ``engine.clear_external_noise()`` to force the configured noise</span>
 <span class="sd">        window only.</span>
-<span class="sd">    :param QCdata_key: metadata key used to store the engine&#39;s QC metrics on</span>
+<span class="sd">    :param QCdata_key: metadata key used to store the engine's QC metrics on</span>
 <span class="sd">        the returned receiver function.</span>
 <span class="sd">    :param return_wavelet: when True return</span>
 <span class="sd">        ``[rf, actual_output, output_shaping_wavelet]``, where both diagnostic</span>
@@ -571,7 +571,7 @@
 <span class="sd">        ``return_wavelet`` is True.  Dead inputs and recoverable processing or</span>
 <span class="sd">        diagnostic-access failures return a dead `Seismogram`; with</span>
 <span class="sd">        ``return_wavelet`` True the auxiliary outputs are ``None``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">_run_gid_rf_decon</span><span class="p">(</span>
         <span class="n">seis</span><span class="p">,</span>
         <span class="n">engine</span><span class="p">,</span>

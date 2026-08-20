@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.calib &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.algorithms.calib &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -485,7 +485,7 @@
 <div class="viewcode-block" id="ApplyCalibEngine">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.calib.ApplyCalibEngine">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ApplyCalibEngine</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A special case of response correction is a simple scalar multiply by a</span>
 <span class="sd">    constant used to convert data from raw counts to the (now) standard units</span>
 <span class="sd">    of nm/s.  For many applications using broadband data that correction</span>
@@ -493,7 +493,7 @@
 <span class="sd">    scale.  A basic rule if the passband of the processing is inside the</span>
 <span class="sd">    instrument passband a full response correction is not alway necessary.</span>
 <span class="sd">    A case in point is reeiver function processing where the passband of</span>
-<span class="sd">    actual data is inside the passband of most &quot;broadband sensors&quot;.</span>
+<span class="sd">    actual data is inside the passband of most "broadband sensors".</span>
 
 <span class="sd">    This class can be used to process TimeSeries or TimeSeriesEnsemble</span>
 <span class="sd">    objects to convert data from raw counts to units of nm/s.</span>
@@ -501,36 +501,36 @@
 <span class="sd">    The effort required to extract the conversion factor from the</span>
 <span class="sd">    archain response format of seed and station xml is not trivial.</span>
 <span class="sd">    We rely here on the conversion of downloaded station metadata from</span>
-<span class="sd">    fdsn sources via web services and obspy&#39;s downloading methods.</span>
+<span class="sd">    fdsn sources via web services and obspy's downloading methods.</span>
 <span class="sd">    Obspy converts that archain data to what they call an Inventory</span>
 <span class="sd">    object.  In MsPASS we disaggregate the complicated Inventory object</span>
 <span class="sd">    into a set of MongoDB documents with one entry for each</span>
 <span class="sd">    seed time period fr each channel of data.   Inside that document is a</span>
-<span class="sd">    an attibute with the tag &quot;serialized_channel_data&quot; that contains</span>
+<span class="sd">    an attibute with the tag "serialized_channel_data" that contains</span>
 <span class="sd">    the detailed response data serialized with pickle.   The</span>
 <span class="sd">    constructor for this object runs pickle.loads on that data to yield</span>
-<span class="sd">    an obspy Response object.  We only extract the &quot;sensitivity&quot; value from</span>
+<span class="sd">    an obspy Response object.  We only extract the "sensitivity" value from</span>
 <span class="sd">    Response.   A major complication is unit restrictions and invalid</span>
 <span class="sd">    Response objects.  These are handled by the constructor as described</span>
 <span class="sd">    below.   The current implementation can only handle Response objects</span>
-<span class="sd">    with &quot;input units&quot; of meters per second and &quot;output units&quot; of counts.</span>
+<span class="sd">    with "input units" of meters per second and "output units" of counts.</span>
 <span class="sd">    Note input and output is because the Response object uses</span>
 <span class="sd">    sensitivity = 1/calib.  i.e. sensitivity is the scale to convert</span>
 <span class="sd">    physical units to counts which backward from what this class is</span>
 <span class="sd">    designed for - converting counts to physical units of nm/s.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dbname_or_handle</span><span class="p">,</span>
         <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span>
-        <span class="n">ounits</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;counts&quot;</span><span class="p">,</span> <span class="s2">&quot;COUNTS&quot;</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="s2">&quot;COUNT&quot;</span><span class="p">],</span>
-        <span class="n">iunits</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;m/s&quot;</span><span class="p">,</span> <span class="s2">&quot;M/S&quot;</span><span class="p">],</span>
-        <span class="n">response_data_key</span><span class="o">=</span><span class="s2">&quot;serialized_channel_data&quot;</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">,</span>
+        <span class="n">ounits</span><span class="o">=</span><span class="p">[</span><span class="s2">"counts"</span><span class="p">,</span> <span class="s2">"COUNTS"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">,</span> <span class="s2">"COUNT"</span><span class="p">],</span>
+        <span class="n">iunits</span><span class="o">=</span><span class="p">[</span><span class="s2">"m/s"</span><span class="p">,</span> <span class="s2">"M/S"</span><span class="p">],</span>
+        <span class="n">response_data_key</span><span class="o">=</span><span class="s2">"serialized_channel_data"</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Constructor for this object loads the serialized response data</span>
 <span class="sd">        and builds an internal cache to cross-reference channel_id with</span>
 <span class="sd">        calib values.</span>
@@ -546,20 +546,20 @@
 <span class="sd">           to mean use the entire colleciton without a query.</span>
 <span class="sd">        :param collection:  optional alternative collection name.</span>
 <span class="sd">           Rarely if ever should be changed as the code here has dependence</span>
-<span class="sd">           on MsPASS specific keys and the way we disaggregate obspy&#39;s</span>
+<span class="sd">           on MsPASS specific keys and the way we disaggregate obspy's</span>
 <span class="sd">           Inventory object.</span>
-<span class="sd">        :type collection:  str (default &quot;channel&quot;)</span>
-<span class="sd">        :param ounits:  list of acceptable &quot;output unit&quot; definitions,</span>
-<span class="sd">           The default is various perturbation of&quot;counts&quot; .</span>
+<span class="sd">        :type collection:  str (default "channel")</span>
+<span class="sd">        :param ounits:  list of acceptable "output unit" definitions,</span>
+<span class="sd">           The default is various perturbation of"counts" .</span>
 <span class="sd">        :type ounits:  list of string defining acceptable units.</span>
-<span class="sd">        :param iunits:   list of acceptable names for &quot;input units&quot; in</span>
+<span class="sd">        :param iunits:   list of acceptable names for "input units" in</span>
 <span class="sd">          the Response data structure.   Default is known to work with</span>
 <span class="sd">          most FDSN data for velocity instruments.   You would  likely</span>
 <span class="sd">          change this list only if you wanted to wanted to use</span>
 <span class="sd">          accelerometer data or some other nonstandard unit data.</span>
-<span class="sd">          Note &quot;input units&quot; in FDSN jargon is kind of confusing in this</span>
+<span class="sd">          Note "input units" in FDSN jargon is kind of confusing in this</span>
 <span class="sd">          context as the purpose of this object is to convert raw data to</span>
-<span class="sd">          physical units so this object&#39;s output is actually the units</span>
+<span class="sd">          physical units so this object's output is actually the units</span>
 <span class="sd">          of iunits.</span>
 <span class="sd">        :type inunits:  list of string names that must match xml posted</span>
 <span class="sd">          units.  The default should almost always be sufficient.</span>
@@ -575,7 +575,7 @@
 <span class="sd">          handle acceleration channels as converting acceleration data to</span>
 <span class="sd">          velocity data is true response correction not a simple calib</span>
 <span class="sd">          correction.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
@@ -591,52 +591,52 @@
                     <span class="n">sens</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">instrument_sensitivity</span>
                     <span class="k">if</span> <span class="n">sens</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
                         <span class="n">stastr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="n">stastr</span><span class="p">,</span> <span class="s2">&quot; invalid instrument response&quot;</span><span class="p">)</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pickle.loads returned this:  &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">stastr</span><span class="p">,</span> <span class="s2">" invalid instrument response"</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">"pickle.loads returned this:  "</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
                     <span class="k">elif</span> <span class="n">sens</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:  &quot;</span>
+                            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">":  "</span>
                         <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="ow">and</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="ow">in</span> <span class="n">iunits</span><span class="p">:</span>
                                 <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span> <span class="ow">in</span> <span class="n">ounits</span><span class="p">:</span>
                                     <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                                         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                                            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;units ok but sensitivity value is undefined&quot;</span>
+                                            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"units ok but sensitivity value is undefined"</span>
                                             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                                     <span class="k">elif</span> <span class="n">sens</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
                                         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                                            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;sensitivity value is 0 or negative - treating as undefined&quot;</span>
+                                            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"sensitivity value is 0 or negative - treating as undefined"</span>
                                             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                                     <span class="k">else</span><span class="p">:</span>
-                                        <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-                                        <span class="c1"># inventory saves a &quot;sensitivity&quot; value</span>
+                                        <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+                                        <span class="c1"># inventory saves a "sensitivity" value</span>
                                         <span class="c1"># which is the reciprocal of calib</span>
                                         <span class="bp">self</span><span class="o">.</span><span class="n">calib</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1e9</span> <span class="o">/</span> <span class="n">sens</span><span class="o">.</span><span class="n">value</span>
                                 <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
-                                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal output_unit value=&quot;</span>
-                                    <span class="n">message</span> <span class="o">+=</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal output_unit value="</span>
+                                    <span class="n">message</span> <span class="o">+=</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
                                     <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                             <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
-                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal input_units value=&quot;</span>
-                                <span class="n">message</span> <span class="o">+=</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal input_units value="</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
                                 <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                         <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
                             <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
-                                <span class="s2">&quot;sensitivity data is undefined in this response object&quot;</span>
+                                <span class="s2">"sensitivity data is undefined in this response object"</span>
                             <span class="p">)</span>
                             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
                     <span class="n">stastr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span>
                         <span class="n">stastr</span><span class="p">,</span>
-                        <span class="s2">&quot; does not contain pickled response data - key=&quot;</span><span class="p">,</span>
+                        <span class="s2">" does not contain pickled response data - key="</span><span class="p">,</span>
                         <span class="n">response_data_key</span><span class="p">,</span>
                     <span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calib</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;ApplyCalibEngine constructor:  Database has no valid response data&quot;</span>
+                <span class="s2">"ApplyCalibEngine constructor:  Database has no valid response data"</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
 
@@ -647,14 +647,14 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">d</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-        <span class="n">id_key</span><span class="o">=</span><span class="s2">&quot;channel_id&quot;</span><span class="p">,</span>
+        <span class="n">id_key</span><span class="o">=</span><span class="s2">"channel_id"</span><span class="p">,</span>
         <span class="n">kill_if_undefined</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Use this method to apply a calib value to a TimeSeries or all the</span>
 <span class="sd">        live members of a TimeSeriesEnsemble.</span>
 
@@ -663,7 +663,7 @@
 <span class="sd">        calib values to be cached inside the object.   The input(s) must</span>
 <span class="sd">        contain a MongoDB ObjectId that can be matched with the ids</span>
 <span class="sd">        loaded in the cache by the constructor.   By default the key</span>
-<span class="sd">        used is &quot;channel_id&quot;.  That can be changed with the &quot;id_key&quot;</span>
+<span class="sd">        used is "channel_id".  That can be changed with the "id_key"</span>
 <span class="sd">        argument.  If a match is found all</span>
 <span class="sd">        the sample valued are multiplied by calib AND the calib attribute is</span>
 <span class="sd">        set.   Note a complaint will be issued if calib was found to already</span>
@@ -684,43 +684,43 @@
 <span class="sd">           killed.   Note this operation is atomic so for ensembles only</span>
 <span class="sd">           members that fail the match will be killed.</span>
 <span class="sd">        :return:  copy of input with amplitudes multiplied by calib factor.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
-            <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;ApplyCalibEngine.apply_calib&quot;</span>
+            <span class="n">alg</span> <span class="o">=</span> <span class="s2">"ApplyCalibEngine.apply_calib"</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">id_key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
                     <span class="n">idstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">id_key</span><span class="p">])</span>
                     <span class="k">if</span> <span class="n">idstr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calib</span><span class="p">:</span>
                         <span class="n">this_calib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calib</span><span class="p">[</span><span class="n">idstr</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="s2">&quot;calib&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">):</span>
-                                <span class="n">old_calib</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="s2">"calib"</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">"calib"</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">):</span>
+                                <span class="n">old_calib</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"calib"</span><span class="p">]</span>
                                 <span class="n">new_metadata_calib</span> <span class="o">=</span> <span class="n">old_calib</span> <span class="o">*</span> <span class="n">this_calib</span>
-                                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;calib was already defined in this datum as </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                    <span class="n">d</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">]</span>
+                                <span class="n">message</span> <span class="o">=</span> <span class="s2">"calib was already defined in this datum as </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                    <span class="n">d</span><span class="p">[</span><span class="s2">"calib"</span><span class="p">]</span>
                                 <span class="p">)</span>
-                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Data will be multiplied by calib defined in this object=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Data will be multiplied by calib defined in this object=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                                     <span class="n">this_calib</span>
                                 <span class="p">)</span>
-                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;New calib in header = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"New calib in header = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                                     <span class="n">new_metadata_calib</span>
                                 <span class="p">)</span>
-                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Amplitudes may be wrong with this datum&quot;</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Amplitudes may be wrong with this datum"</span>
                                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
-                                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_metadata_calib</span>
+                                <span class="n">d</span><span class="p">[</span><span class="s2">"calib"</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_metadata_calib</span>
                             <span class="k">else</span><span class="p">:</span>
-                                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_calib</span>
+                                <span class="n">d</span><span class="p">[</span><span class="s2">"calib"</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_calib</span>
                         <span class="n">d</span><span class="o">.</span><span class="n">data</span> <span class="o">*=</span> <span class="n">this_calib</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;calib factor could not be determined</span><span class="se">\n</span><span class="s2">&quot;</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Response data missing or flawed&quot;</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="s2">"calib factor could not be determined</span><span class="se">\n</span><span class="s2">"</span>
+                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Response data missing or flawed"</span>
                         <span class="k">if</span> <span class="n">kill_if_undefined</span><span class="p">:</span>
                             <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
                             <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Missing required channel_id need to get calib factor&quot;</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Missing required channel_id need to get calib factor"</span>
                     <span class="k">if</span> <span class="n">kill_if_undefined</span><span class="p">:</span>
                         <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
                         <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
@@ -730,7 +730,7 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_calib</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Illegal input data type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Illegal input data type=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span></div>
 
@@ -738,37 +738,37 @@
 <div class="viewcode-block" id="ApplyCalibEngine.size">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.calib.ApplyCalibEngine.size">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return size of the cache of calib values stored in the object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calib</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_stadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">null_value</span><span class="o">=</span><span class="s2">&quot;Undefined&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_stadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">null_value</span><span class="o">=</span><span class="s2">"Undefined"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Internal method to cautiously parse document doc to</span>
 <span class="sd">        always a string of the form net:sta:chan:loc.  Any keys</span>
 <span class="sd">        not defined will be replaced with null_value string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">outstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="sd">        """</span>
+        <span class="n">outstr</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">,</span> <span class="s2">&quot;sta&quot;</span><span class="p">,</span> <span class="s2">&quot;chan&quot;</span><span class="p">,</span> <span class="s2">&quot;loc&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"net"</span><span class="p">,</span> <span class="s2">"sta"</span><span class="p">,</span> <span class="s2">"chan"</span><span class="p">,</span> <span class="s2">"loc"</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                 <span class="n">outstr</span> <span class="o">+=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">outstr</span> <span class="o">+=</span> <span class="n">null_value</span>
             <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="n">outstr</span> <span class="o">+=</span> <span class="s2">&quot;:&quot;</span>
+                <span class="n">outstr</span> <span class="o">+=</span> <span class="s2">":"</span>
             <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">outstr</span> <span class="o">+=</span> <span class="s2">&quot; for time range &quot;</span>
+        <span class="n">outstr</span> <span class="o">+=</span> <span class="s2">" for time range "</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="s2">&quot;endtime&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"starttime"</span><span class="p">,</span> <span class="s2">"endtime"</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                 <span class="n">outstr</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">outstr</span> <span class="o">+=</span> <span class="n">null_value</span>
             <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">outstr</span> <span class="o">+=</span> <span class="s2">&quot;-&gt;&quot;</span>
+                <span class="n">outstr</span> <span class="o">+=</span> <span class="s2">"-&gt;"</span>
         <span class="k">return</span> <span class="n">outstr</span></div>
 
 </pre></div>

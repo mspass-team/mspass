@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MongoDB with MsPASS &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Using MongoDB with MsPASS &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="What database schema should I use?" href="schema_choices.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -624,37 +624,37 @@ illustrate this.</p>
 </div>
 <p>Produces:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;$oid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;65f6e45e4f0f9fe8183675eb&quot;</span>
+<span class="w">  </span><span class="nt">"_id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"$oid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"65f6e45e4f0f9fe8183675eb"</span>
 <span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="nt">&quot;sta&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IUGFS&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;net&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2G&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;chan&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BHE&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;sampling_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;delta&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;starttime&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1355020458.049998</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;last_packet_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1355024042.649848</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;foff&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;npts&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">72000</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;storage_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;file&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mseed&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/N/slate/pavlis/usarray/wf/2012&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;dfile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;event70.mseed&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;time_standard&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UTC&quot;</span>
+<span class="w">  </span><span class="nt">"sta"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IUGFS"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"net"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2G"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"chan"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BHE"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"sampling_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"delta"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"starttime"</span><span class="p">:</span><span class="w"> </span><span class="mf">1355020458.049998</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"last_packet_time"</span><span class="p">:</span><span class="w"> </span><span class="mf">1355024042.649848</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"foff"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"npts"</span><span class="p">:</span><span class="w"> </span><span class="mi">72000</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"storage_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"file"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mseed"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/N/slate/pavlis/usarray/wf/2012"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"dfile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"event70.mseed"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"time_standard"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UTC"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Here is the first of several example queries in this section:</p>
 <p><em>Query example:</em></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="s2">&quot;AAK&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="s2">&quot;BHZ&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="s2">&quot;00&quot;</span><span class="p">,</span>
+    <span class="s2">"sta"</span><span class="p">:</span> <span class="s2">"AAK"</span><span class="p">,</span>
+    <span class="s2">"chan"</span><span class="p">:</span> <span class="s2">"BHZ"</span><span class="p">,</span>
+    <span class="s2">"loc"</span><span class="p">:</span> <span class="s2">"00"</span><span class="p">,</span>
 <span class="p">}</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;query content in pretty form&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"query content in pretty form"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;output of query&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"output of query"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -684,23 +684,23 @@ following illustrates an alternative way to create a <cite>site</cite> collectio
 from an Antelope <cite>site</cite> table.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
-<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">,</span><span class="s1">&#39;ondate&#39;</span><span class="p">,</span><span class="s1">&#39;offdate&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">,</span><span class="s1">&#39;staname&#39;</span><span class="p">,</span><span class="s1">&#39;statype&#39;</span><span class="p">,</span><span class="s1">&#39;refsta&#39;</span><span class="p">,</span><span class="s1">&#39;dnorth&#39;</span><span class="p">,</span><span class="s1">&#39;deast&#39;</span><span class="p">,</span><span class="s1">&#39;lddate&#39;</span><span class="p">]</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'sta'</span><span class="p">,</span><span class="s1">'ondate'</span><span class="p">,</span><span class="s1">'offdate'</span><span class="p">,</span><span class="s1">'lat'</span><span class="p">,</span><span class="s1">'lon'</span><span class="p">,</span><span class="s1">'elev'</span><span class="p">,</span><span class="s1">'staname'</span><span class="p">,</span><span class="s1">'statype'</span><span class="p">,</span><span class="s1">'refsta'</span><span class="p">,</span><span class="s1">'dnorth'</span><span class="p">,</span><span class="s1">'deast'</span><span class="p">,</span><span class="s1">'lddate'</span><span class="p">]</span>
 <span class="n">widths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">17</span><span class="p">]</span>  <span class="c1"># need the antelope schema file to get these</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="s1">&#39;demo.site&#39;</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span><span class="n">widths</span><span class="o">=</span><span class="n">widths</span><span class="p">)</span>
-<span class="n">doclist</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;records&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="s1">'demo.site'</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span><span class="n">widths</span><span class="o">=</span><span class="n">widths</span><span class="p">)</span>
+<span class="n">doclist</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">'records'</span><span class="p">)</span>
 <span class="c1"># This loop is needed to convert ondate and offdate to starttime and</span>
 <span class="c1"># endtime used in MsPASS.</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">doclist</span><span class="p">:</span>
   <span class="c1"># In CSS3.0 these are integers for year day.  UTCDateTime</span>
   <span class="c1"># converts correctly ONLY if it is first converted to a string</span>
-  <span class="n">ondate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;ondate&#39;</span><span class="p">])</span>
-  <span class="n">offdate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;offdate&#39;</span><span class="p">])</span>
-  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ondate</span><span class="p">)))</span>
+  <span class="n">ondate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'ondate'</span><span class="p">])</span>
+  <span class="n">offdate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'offdate'</span><span class="p">])</span>
+  <span class="n">doc</span><span class="p">[</span><span class="s1">'starttime'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ondate</span><span class="p">)))</span>
   <span class="c1"># CSS3.0 uses -1 for an open-ended deployment interval.</span>
-  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="n">doc</span><span class="p">[</span><span class="s1">'endtime'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
       <span class="nb">float</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">offdate</span><span class="p">)))</span>
       <span class="k">if</span> <span class="n">offdate</span> <span class="o">&gt;</span> <span class="mi">0</span>
-      <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2599-12-31&#39;</span><span class="p">))</span>
+      <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">'2599-12-31'</span><span class="p">))</span>
   <span class="p">)</span>
 <span class="c1"># this script assumes db is a MongoDB Database handle set earlier</span>
 <span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>
@@ -826,16 +826,16 @@ that can be used to iterate through query that returns many documents.</p></li>
 match a particular query.</p></li>
 </ol>
 <p>Examples of the use of each of the three functions above:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="s1">&#39;AAK&#39;</span><span class="p">}</span>  <span class="c1"># shorthand for {&#39;sta&#39; : {&#39;$eq&#39; : &#39;AAK&#39;}}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">'sta'</span> <span class="p">:</span> <span class="s1">'AAK'</span><span class="p">}</span>  <span class="c1"># shorthand for {'sta' : {'$eq' : 'AAK'}}</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;First matching document in site collection for query=&quot;</span><span class="p">,</span><span class="n">query</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"First matching document in site collection for query="</span><span class="p">,</span><span class="n">query</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All documents in site collection for query=&quot;</span><span class="p">,</span><span class="n">query</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"All documents in site collection for query="</span><span class="p">,</span><span class="n">query</span><span class="p">)</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
   <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 <span class="n">n_matches</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of documents matching query=&quot;</span><span class="p">,</span><span class="n">query</span><span class="p">,</span><span class="s2">&quot; is &quot;</span><span class="p">,</span><span class="n">n_matches</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of documents matching query="</span><span class="p">,</span><span class="n">query</span><span class="p">,</span><span class="s2">" is "</span><span class="p">,</span><span class="n">n_matches</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><cite>find</cite> and <cite>find_one</cite> are the basic document-level fetching methods.
@@ -883,8 +883,8 @@ but it is of use largely for interactive debugging.</p>
 <cite>{key : expression}</cite> where <cite>key</cite> is the attribute that is to be tested
 by the query and <cite>expression</cite> is either: (1) another dictionary or
 (2) a single value.  An example is the same one we used above.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="s1">&#39;AAK&#39;</span><span class="p">}</span>
-<span class="n">query2</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$eq&#39;</span> <span class="p">:</span> <span class="s1">&#39;AAK&#39;</span><span class="p">}}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">'sta'</span> <span class="p">:</span> <span class="s1">'AAK'</span><span class="p">}</span>
+<span class="n">query2</span><span class="o">=</span><span class="p">{</span><span class="s1">'sta'</span> <span class="p">:</span> <span class="p">{</span><span class="s1">'$eq'</span> <span class="p">:</span> <span class="s1">'AAK'</span><span class="p">}}</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">query</span></code> and <code class="docutils literal notranslate"><span class="pre">query2</span></code> are completely equivalent.
@@ -893,9 +893,9 @@ the key “sta” matching a particular, unique name “AAK”.</p>
 <p>A similar inequality test for waveforms having <cite>starttime</cite> values
 after a particular date is the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
-<span class="n">t_cutoff</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2012-07-28T00:00:00.00&#39;</span><span class="p">)</span>
+<span class="n">t_cutoff</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">'2012-07-28T00:00:00.00'</span><span class="p">)</span>
 <span class="c1"># Convert to a Unix epoch time for numerical comparison.</span>
-<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;starttime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gt&#39;</span> <span class="p">:</span> <span class="n">t_cutoff</span><span class="o">.</span><span class="n">timestamp</span><span class="p">}}</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'starttime'</span> <span class="p">:</span> <span class="p">{</span><span class="s1">'$gt'</span> <span class="p">:</span> <span class="n">t_cutoff</span><span class="o">.</span><span class="n">timestamp</span><span class="p">}}</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -910,7 +910,7 @@ a query operation.   Most seismologists are familiar with the regular
 expression syntax from using the unix shell.   The following, for
 example, could be used to select only PASSCAL temporary experiments
 from a site collection:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;net&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$regex&#39;</span> <span class="p">:</span> <span class="s1">&#39;X.&#39;</span><span class="p">}}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">'net'</span> <span class="p">:</span> <span class="p">{</span><span class="s1">'$regex'</span> <span class="p">:</span> <span class="s1">'X.'</span><span class="p">}}</span>
 </pre></div>
 </div>
 <p>Note that works because of an FDSN convention that net codes starting
@@ -928,8 +928,8 @@ the dictionary would be called a “compound query” (see example below).
 For a normal example, the following can be used to find all documents for
 all channels for station with net code “II” and station code “PFO”:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;II&#39;</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;PFO&#39;</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">'net'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'II'</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">'sta'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PFO'</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
   <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
@@ -941,7 +941,7 @@ and the query uses ‘net’ and ‘sta’ attributes.
 Most online sources use the inline form for defining a python
 dictionary.  That is, the following could be used to replace the query definition
 above:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;net&#39;</span> <span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span> <span class="s1">&#39;sta&#39;</span> <span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'net'</span> <span class="p">:</span> <span class="s1">'II'</span><span class="p">,</span> <span class="s1">'sta'</span> <span class="p">:</span> <span class="s1">'PFO'</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>For simple queries the inline form is generally easier.  I  have found,
@@ -974,21 +974,21 @@ channel data for station “PFO” and loads the results into a
 <cite>TimeSeriesEnsemble</cite>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
 <span class="c1"># Example to select the month of June of 2012</span>
-<span class="n">tsutc</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2012-06-01T00:00:00.0&#39;</span><span class="p">)</span>
-<span class="n">teutc</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2012-07-01T00:00:00.0&#39;</span><span class="p">)</span>
+<span class="n">tsutc</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">'2012-06-01T00:00:00.0'</span><span class="p">)</span>
+<span class="n">teutc</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">'2012-07-01T00:00:00.0'</span><span class="p">)</span>
 <span class="n">ts</span> <span class="o">=</span> <span class="n">tsutc</span><span class="o">.</span><span class="n">timestamp</span>
 <span class="n">te</span> <span class="o">=</span> <span class="n">teutc</span><span class="o">.</span><span class="n">timestamp</span>
 <span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;II&#39;</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;PFO&#39;</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;LHZ&#39;</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;00&#39;</span>
-<span class="n">query</span><span class="p">[</span><span class="s1">&#39;$and&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-   <span class="p">{</span><span class="s1">&#39;starttime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span> <span class="p">:</span> <span class="n">te</span><span class="p">}</span> <span class="p">},</span>
-   <span class="p">{</span><span class="s1">&#39;endtime&#39;</span> <span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span> <span class="p">:</span> <span class="n">ts</span><span class="p">}</span> <span class="p">}</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">'net'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'II'</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">'sta'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PFO'</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">'chan'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'LHZ'</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">'loc'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'00'</span>
+<span class="n">query</span><span class="p">[</span><span class="s1">'$and'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="p">{</span><span class="s1">'starttime'</span> <span class="p">:</span> <span class="p">{</span><span class="s1">'$lte'</span> <span class="p">:</span> <span class="n">te</span><span class="p">}</span> <span class="p">},</span>
+   <span class="p">{</span><span class="s1">'endtime'</span> <span class="p">:</span> <span class="p">{</span><span class="s1">'$gte'</span> <span class="p">:</span> <span class="n">ts</span><span class="p">}</span> <span class="p">}</span>
 <span class="p">]</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-<span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_miniseed&#39;</span><span class="p">)</span>
+<span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_miniseed'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>That is a complex query by any definition, but it illustrates several
@@ -1017,12 +1017,12 @@ recorded in the month of June 2012.</p></li>
 language.   That is, the “$and” operator above is not actually required.
 The same query as above could, in fact, have been written as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;net&#39;</span><span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LHZ&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
-  <span class="s1">&#39;endtime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
+  <span class="s1">'net'</span><span class="p">:</span> <span class="s1">'II'</span><span class="p">,</span>
+  <span class="s1">'sta'</span><span class="p">:</span> <span class="s1">'PFO'</span><span class="p">,</span>
+  <span class="s1">'chan'</span><span class="p">:</span> <span class="s1">'LHZ'</span><span class="p">,</span>
+  <span class="s1">'loc'</span><span class="p">:</span> <span class="s1">'00'</span><span class="p">,</span>
+  <span class="s1">'starttime'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$lte'</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
+  <span class="s1">'endtime'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$gte'</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1040,16 +1040,16 @@ obnoxious channel code variation of E,N,Z naming versus 1,2,Z naming.
 It also drops the “loc” matching and would thus ignore the loc code
 and retrieve data from all sensors at PFO.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;net&#39;</span><span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;$or&#39;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LHE&#39;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LHN&#39;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LH1&#39;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LH2&#39;</span><span class="p">},</span>
+  <span class="s1">'net'</span><span class="p">:</span> <span class="s1">'II'</span><span class="p">,</span>
+  <span class="s1">'sta'</span><span class="p">:</span> <span class="s1">'PFO'</span><span class="p">,</span>
+  <span class="s1">'$or'</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">'chan'</span><span class="p">:</span> <span class="s1">'LHE'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'chan'</span><span class="p">:</span> <span class="s1">'LHN'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'chan'</span><span class="p">:</span> <span class="s1">'LH1'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'chan'</span><span class="p">:</span> <span class="s1">'LH2'</span><span class="p">},</span>
   <span class="p">],</span>
-  <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
-  <span class="s1">&#39;endtime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
+  <span class="s1">'starttime'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$lte'</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
+  <span class="s1">'endtime'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$gte'</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1058,11 +1058,11 @@ clearer solution with the <cite>$regex</cite> operator.   Most $or clauses I’v
 encountered are easier to express with a regular expression.
 The above could thus be express equivalently with this one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;net&#39;</span><span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$regex&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^LH[EN12]$&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
-  <span class="s1">&#39;endtime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
+  <span class="s1">'net'</span><span class="p">:</span> <span class="s1">'II'</span><span class="p">,</span>
+  <span class="s1">'sta'</span><span class="p">:</span> <span class="s1">'PFO'</span><span class="p">,</span>
+  <span class="s1">'chan'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$regex'</span><span class="p">:</span> <span class="sa">r</span><span class="s1">'^LH[EN12]$'</span><span class="p">},</span>
+  <span class="s1">'starttime'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$lte'</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
+  <span class="s1">'endtime'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$gte'</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1105,13 +1105,13 @@ are used like ‘$gt’, ‘$eq’, etc., but use different keywords.</p>
 for all stations within 500 km of my home in Bloomington, Indiana.
 It is a minor variant of a similar example in the tutorial linked to
 this page.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;location&quot;</span><span class="p">:{</span>
-      <span class="s1">&#39;$nearSphere&#39;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="s1">&#39;$geometry&#39;</span> <span class="p">:</span> <span class="p">{</span>
-              <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="s1">&#39;Point&#39;</span><span class="p">,</span>
-              <span class="s1">&#39;coordinates&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">86.5264</span><span class="p">,</span> <span class="mf">39.1653</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"location"</span><span class="p">:{</span>
+      <span class="s1">'$nearSphere'</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s1">'$geometry'</span> <span class="p">:</span> <span class="p">{</span>
+              <span class="s1">'type'</span> <span class="p">:</span> <span class="s1">'Point'</span><span class="p">,</span>
+              <span class="s1">'coordinates'</span> <span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">86.5264</span><span class="p">,</span> <span class="mf">39.1653</span><span class="p">]</span>
           <span class="p">},</span>
-          <span class="s1">&#39;$maxDistance&#39;</span> <span class="p">:</span> <span class="mf">500000.0</span><span class="p">,</span>
+          <span class="s1">'$maxDistance'</span> <span class="p">:</span> <span class="mf">500000.0</span><span class="p">,</span>
       <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -1172,10 +1172,10 @@ geospatial queries to MongoDB used a “legacy” format to define
 coordinates.  e.g. a specific lon-lat can be specified in “legacy”
 format like this:<cite>{ “coords” : [-102.7724, 33.969601]}</cite>.   The same
 information defined in geoJSON is:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;coords&quot;</span> <span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">"coords"</span> <span class="p">:</span>
     <span class="p">{</span>
-      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Point&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Point"</span><span class="p">,</span>
+      <span class="s2">"coordinates"</span><span class="p">:</span> <span class="p">[</span>
         <span class="o">-</span><span class="mf">102.7724</span><span class="p">,</span>
         <span class="mf">33.969601</span>
       <span class="p">]</span>
@@ -1215,15 +1215,15 @@ from above) but this time we sort the result by starttime
 (a type example of a sort requirement):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ts and te are epoch times defing the time range as above</span>
 <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;net&#39;</span><span class="p">:</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="s1">&#39;PFO&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="s1">&#39;LHZ&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
-  <span class="s1">&#39;endtime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
+  <span class="s1">'net'</span><span class="p">:</span> <span class="s1">'II'</span><span class="p">,</span>
+  <span class="s1">'sta'</span><span class="p">:</span> <span class="s1">'PFO'</span><span class="p">,</span>
+  <span class="s1">'chan'</span><span class="p">:</span> <span class="s1">'LHZ'</span><span class="p">,</span>
+  <span class="s1">'loc'</span><span class="p">:</span> <span class="s1">'00'</span><span class="p">,</span>
+  <span class="s1">'starttime'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$lte'</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
+  <span class="s1">'endtime'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$gte'</span><span class="p">:</span> <span class="n">ts</span><span class="p">},</span>
 <span class="p">}</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_miniseed&#39;</span><span class="p">)</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">"starttime"</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_miniseed'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>There are two key points this example illustrates:</p>
@@ -1252,20 +1252,20 @@ we could have omitted the second argument.</p></li>
 example will make this clearer. This code segment prints a report for
 the entire contents of the channel collection sorted by seed channel code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sort_clause</span> <span class="o">=</span> <span class="p">[</span>
-  <span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
-  <span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
-  <span class="p">(</span><span class="s2">&quot;chan&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
-  <span class="p">(</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+  <span class="p">(</span><span class="s2">"net"</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">"sta"</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">"chan"</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">"starttime"</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="p">]</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;net sta chan loc starttime&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"net sta chan loc starttime"</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
   <span class="c1"># conditional to handle common case with loc undefined</span>
-  <span class="k">if</span> <span class="s1">&#39;loc&#39;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">],</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]))</span>
+  <span class="k">if</span> <span class="s1">'loc'</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'net'</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">'sta'</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">'chan'</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">'loc'</span><span class="p">],</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'starttime'</span><span class="p">]))</span>
   <span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">],</span><span class="s1">&#39;UNDEFINED&#39;</span><span class="p">,</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'net'</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">'sta'</span><span class="p">],</span><span class="n">doc</span><span class="p">[</span><span class="s1">'chan'</span><span class="p">],</span><span class="s1">'UNDEFINED'</span><span class="p">,</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'starttime'</span><span class="p">]))</span>
 </pre></div>
 </div>
 <p>The main thing to notice is that when using multiple keys for a sort they
@@ -1330,8 +1330,8 @@ range of recording.  It is a variant of a code block in our
 <span class="n">doclist</span><span class="o">=</span><span class="p">[]</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
   <span class="c1"># Not essential, but produces a more readable table with date strings</span>
-  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">])</span>
-  <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">])</span>
+  <span class="n">doc</span><span class="p">[</span><span class="s1">'starttime'</span><span class="p">]</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'starttime'</span><span class="p">])</span>
+  <span class="n">doc</span><span class="p">[</span><span class="s1">'endtime'</span><span class="p">]</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'endtime'</span><span class="p">])</span>
   <span class="n">doclist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
@@ -1382,10 +1382,10 @@ With a large save <cite>insert_many</cite> can be orders of magnitude faster
 than the same number of one-at-a-time transactions.</p>
 <p>Here is a partial example of save from the related tutorial notebook:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">doclist</span> <span class="o">=</span> <span class="n">ndk2docs</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of CMT records in file=&quot;</span><span class="p">,</span><span class="n">fname</span><span class="p">,</span><span class="s1">&#39; is &#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">doclist</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of CMT records in file="</span><span class="p">,</span><span class="n">fname</span><span class="p">,</span><span class="s1">' is '</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">doclist</span><span class="p">))</span>
 <span class="n">r</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">CMT</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">CMT</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of documents in CMT collection is now &quot;</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of documents in CMT collection is now "</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1418,15 +1418,15 @@ set the MsPASS standard cross-reference name <cite>channel_id</cite> in wf_TimeS
 <span class="c1"># This example is for illustration only and is not of direct use</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-  <span class="k">if</span> <span class="s1">&#39;chanid&#39;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-    <span class="n">chandoc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;chanid&#39;</span> <span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;chanid&#39;</span><span class="p">]})</span>
+  <span class="k">if</span> <span class="s1">'chanid'</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+    <span class="n">chandoc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">'chanid'</span> <span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s1">'chanid'</span><span class="p">]})</span>
     <span class="c1"># find_one failures return None so this is a test for a valid return</span>
     <span class="k">if</span> <span class="n">chandoc</span><span class="p">:</span>
-      <span class="n">cid</span> <span class="o">=</span> <span class="n">chandoc</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
-      <span class="n">wfid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+      <span class="n">cid</span> <span class="o">=</span> <span class="n">chandoc</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span>
+      <span class="n">wfid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span>
       <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-          <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">wfid</span><span class="p">},</span>
-          <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;channel_id&#39;</span><span class="p">:</span> <span class="n">cid</span><span class="p">}},</span>
+          <span class="p">{</span><span class="s1">'_id'</span><span class="p">:</span> <span class="n">wfid</span><span class="p">},</span>
+          <span class="p">{</span><span class="s1">'$set'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'channel_id'</span><span class="p">:</span> <span class="n">cid</span><span class="p">}},</span>
       <span class="p">)</span>
 </pre></div>
 </div>
@@ -1443,14 +1443,14 @@ from common source gathers:</p>
 <span class="c1"># loop over all source records to drive this process</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-  <span class="n">otime</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+  <span class="n">otime</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span>
   <span class="n">ts</span> <span class="o">=</span> <span class="n">otime</span> <span class="o">-</span> <span class="n">ot_range</span>
   <span class="n">te</span> <span class="o">=</span> <span class="n">otime</span> <span class="o">+</span> <span class="n">ot_range</span>
   <span class="n">match_query</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;starttime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">,</span> <span class="s1">&#39;$lte&#39;</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
+    <span class="s1">'starttime'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$gte'</span><span class="p">:</span> <span class="n">ts</span><span class="p">,</span> <span class="s1">'$lte'</span><span class="p">:</span> <span class="n">te</span><span class="p">},</span>
   <span class="p">}</span>
-  <span class="n">srcid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>  <span class="c1"># ObjectId of this source document</span>
-  <span class="n">update_doc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;source_id&#39;</span><span class="p">:</span> <span class="n">srcid</span><span class="p">}}</span>
+  <span class="n">srcid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span>  <span class="c1"># ObjectId of this source document</span>
+  <span class="n">update_doc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'$set'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'source_id'</span><span class="p">:</span> <span class="n">srcid</span><span class="p">}}</span>
   <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span><span class="n">match_query</span><span class="p">,</span> <span class="n">update_doc</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1488,13 +1488,13 @@ dataset.   Assume “XYZ” doesn’t require a “net” qualifier to be unique
 this code fragment could be used to delete all entries for “XYZ”.
 It is complicated by a bit by the fact that multiple site entries can
 occur for the same station due to time-dependent metadata:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="s1">&#39;XYZ&#39;</span><span class="p">})</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">'sta'</span><span class="p">:</span> <span class="s1">'XYZ'</span><span class="p">})</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-  <span class="n">sid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
-  <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;site_id&#39;</span> <span class="p">:</span> <span class="n">sid</span><span class="p">}</span>
+  <span class="n">sid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span>
+  <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'site_id'</span> <span class="p">:</span> <span class="n">sid</span><span class="p">}</span>
   <span class="n">n</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of documents to be deleted for station XYZ =&quot;</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
-  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;for time period &quot;</span><span class="p">,</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]),</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"Number of documents to be deleted for station XYZ ="</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"for time period "</span><span class="p">,</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'starttime'</span><span class="p">]),</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'endtime'</span><span class="p">]))</span>
   <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">delete_many</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1525,11 +1525,11 @@ that require at least the four keys used to provide a unique match:</p>
 
 <span class="n">db</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
  <span class="p">[</span>
-  <span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
-  <span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">),</span>
-  <span class="p">(</span><span class="s2">&quot;chan&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
-  <span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
-  <span class="p">(</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">"net"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">"sta"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">"chan"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">"loc"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
+  <span class="p">(</span><span class="s2">"starttime"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
  <span class="p">]</span>
 <span class="p">)</span>
 </pre></div>

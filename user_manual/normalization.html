@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Normalization &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Normalization &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="CRUD Operations in MsPASS" href="CRUD_operations.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -651,11 +651,11 @@ reading and normalizing miniSEED data:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_mseed</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
 <span class="n">retcodes</span> <span class="o">=</span> <span class="n">normalize_mseed</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of wf_miniseed documents processed=&quot;</span><span class="p">,</span> <span class="n">retcodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number with channel_id set=&quot;</span><span class="p">,</span> <span class="n">retcodes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number with site_id set=&quot;</span><span class="p">,</span> <span class="n">retcodes</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of wf_miniseed documents processed="</span><span class="p">,</span> <span class="n">retcodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number with channel_id set="</span><span class="p">,</span> <span class="n">retcodes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number with site_id set="</span><span class="p">,</span> <span class="n">retcodes</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
@@ -667,15 +667,15 @@ from running <code class="code docutils literal notranslate"><span class="pre">n
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectIdMatcher</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
-<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
+<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">)</span>
 <span class="c1"># loop over all wf_miniseed records</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
         <span class="n">doc</span><span class="p">,</span>
         <span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="n">channel_matcher</span><span class="p">],</span>
-        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># processing functions here</span>
     <span class="c1"># normally terminated with a save operation or a graphic display</span>
@@ -691,12 +691,12 @@ The following does the same operation as above in parallel with Dask:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
-<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
+<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="n">channel_matcher</span><span class="p">],</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="c1"># processing steps as map operators follow</span>
 <span class="c1"># normally terminate with a save</span>
@@ -715,22 +715,22 @@ previously.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span> <span class="n">normalize</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
-<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
+<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">)</span>
 <span class="n">source_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
-    <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"source"</span><span class="p">,</span>
+    <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">,</span> <span class="s2">"_id"</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="c1"># this assumes the returned list is not enormous</span>
-<span class="n">sourceid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<span class="n">sourceid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">"source_id"</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">sourceid_list</span><span class="p">:</span>
-    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
     <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
         <span class="n">cursor</span><span class="p">,</span>
         <span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="n">channel_matcher</span><span class="p">],</span>
-        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
-        <span class="n">ensemble_metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">srcid</span><span class="p">},</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">,</span>
+        <span class="n">ensemble_metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">srcid</span><span class="p">},</span>
     <span class="p">)</span>
     <span class="n">ensemble</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">source_matcher</span><span class="p">)</span>
     <span class="c1"># processing functions for ensembles to follow here</span>
@@ -769,12 +769,12 @@ step within the workflow.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span> <span class="n">normalize</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
-<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
+<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">)</span>
 <span class="c1"># loop over all wf_miniseed records</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">)</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">channel_matcher</span><span class="p">)</span>
     <span class="c1"># processing functions here</span>
     <span class="c1"># normally terminated with a save operation or a graphic display</span>
@@ -786,9 +786,9 @@ step within the workflow.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
-<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
+<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span> <span class="n">channel_matcher</span><span class="p">)</span>
 <span class="c1"># processing steps as map operators follow</span>
 <span class="c1"># normally terminate with a save</span>
@@ -800,21 +800,21 @@ step within the workflow.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span> <span class="n">normalize</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
-<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
+<span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">)</span>
 <span class="n">source_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
-    <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;_id&quot;</span><span class="p">],</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"source"</span><span class="p">,</span>
+    <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">,</span> <span class="s2">"_id"</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="c1"># this assumes the returned list is not enormous</span>
-<span class="n">sourceid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<span class="n">sourceid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">"source_id"</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">sourceid_list</span><span class="p">:</span>
-    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
     <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
         <span class="n">cursor</span><span class="p">,</span>
-        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
-        <span class="n">ensemble_metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">srcid</span><span class="p">},</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">,</span>
+        <span class="n">ensemble_metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">srcid</span><span class="p">},</span>
     <span class="p">)</span>
     <span class="n">ensemble</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span>
         <span class="n">ensemble</span><span class="p">,</span>
@@ -1077,17 +1077,17 @@ idea is most clearly seen by a simple example.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
 <span class="c1"># Here limit attributes to be loaded to coordinates</span>
 <span class="c1"># Note these are defined when the matcher class is instantiated</span>
-<span class="n">attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">]</span>
+<span class="n">attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"_id"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span><span class="p">]</span>
 <span class="n">matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"site"</span><span class="p">,</span>
     <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">attribute_list</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="c1"># This says load the entire dataset presumed staged to MongoDB</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span> <span class="n">matcher</span><span class="p">)</span>
 <span class="c1"># additional workflow elements and usually ending with a save would be here</span>
 <span class="n">dataset</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
@@ -1141,26 +1141,26 @@ function in a map operator.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
-<span class="c1"># starttime and endtime are required by MiniseedMatcher&#39;s interval test.</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
+<span class="c1"># starttime and endtime are required by MiniseedMatcher's interval test.</span>
 <span class="n">channel_attribute_list</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="s2">&quot;endtime&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">,</span> <span class="s2">&quot;hang&quot;</span><span class="p">,</span> <span class="s2">&quot;vang&quot;</span>
+    <span class="s2">"_id"</span><span class="p">,</span> <span class="s2">"starttime"</span><span class="p">,</span> <span class="s2">"endtime"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span><span class="p">,</span> <span class="s2">"hang"</span><span class="p">,</span> <span class="s2">"vang"</span>
 <span class="p">]</span>
 <span class="n">site_attribute_list</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="s2">&quot;endtime&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span>
+    <span class="s2">"_id"</span><span class="p">,</span> <span class="s2">"starttime"</span><span class="p">,</span> <span class="s2">"endtime"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span>
 <span class="p">]</span>
 <span class="c1"># These construct the channel and site normalizers.</span>
 <span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">,</span>
     <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">channel_attribute_list</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">site_matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"site"</span><span class="p">,</span>
     <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">site_attribute_list</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span> <span class="n">channel_matcher</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span> <span class="n">site_matcher</span><span class="p">)</span>
 <span class="c1"># additional processing steps normally would be inserted here</span>
@@ -1188,9 +1188,9 @@ missing a datum will, by default, be killed.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
 <span class="c1"># Here limit attributes to be loaded to source coordinates</span>
-<span class="n">attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">]</span>
+<span class="n">attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"_id"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">]</span>
 <span class="c1"># define source normalization instance assuming data start times</span>
 <span class="c1"># were defined as 20 s after the origin time of the event</span>
 <span class="c1"># origin time used to define the data time window</span>
@@ -1198,9 +1198,9 @@ missing a datum will, by default, be killed.</p>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">t0offset</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
     <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">attribute_list</span><span class="p">,</span>
-    <span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;magnitude&quot;</span><span class="p">],</span>
+    <span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">"magnitude"</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_Seismogram"</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span> <span class="n">source_matcher</span><span class="p">)</span>
 <span class="c1"># additional processing steps normally would be inserted here</span>
 <span class="n">dataset</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
@@ -1231,33 +1231,33 @@ id for the source collection <code class="code docutils literal notranslate"><sp
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">srcidlist2querylist</span><span class="p">(</span><span class="n">srcidlist</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Small function used to build query list from a list of source ids.</span>
 <span class="sd">  read_distributed_data accepts a list of Python dictionaries</span>
 <span class="sd">  assumed to be valid MongoDB queries.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
-  <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">srcid</span><span class="p">}</span> <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcidlist</span><span class="p">]</span>
+<span class="sd">  """</span>
+  <span class="k">return</span> <span class="p">[{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">srcid</span><span class="p">}</span> <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcidlist</span><span class="p">]</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
 <span class="c1"># Here limit attributes to be loaded to source coordinates</span>
-<span class="n">attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">]</span>
+<span class="n">attribute_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"_id"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">]</span>
 <span class="n">source_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"source"</span><span class="p">,</span>
     <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">attribute_list</span><span class="p">,</span>
-    <span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;magnitude&quot;</span><span class="p">],</span>
+    <span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">"magnitude"</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="c1"># MongoDB incantation to find all unique source_id values</span>
-<span class="n">sourceid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<span class="n">sourceid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">"source_id"</span><span class="p">)</span>
 <span class="n">querylist</span> <span class="o">=</span> <span class="n">srcidlist2querylist</span><span class="p">(</span><span class="n">sourceid_list</span><span class="p">)</span>
 <span class="n">source_ids</span> <span class="o">=</span> <span class="n">dbag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span>
-    <span class="p">[{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">srcid</span><span class="p">}</span> <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">sourceid_list</span><span class="p">]</span>
+    <span class="p">[{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">srcid</span><span class="p">}</span> <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">sourceid_list</span><span class="p">]</span>
 <span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">querylist</span><span class="p">,</span>
     <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_Seismogram"</span><span class="p">,</span>
     <span class="n">container_to_merge</span><span class="o">=</span><span class="n">source_ids</span><span class="p">,</span>
     <span class="n">normalize_ensemble</span><span class="o">=</span><span class="p">[</span><span class="n">source_matcher</span><span class="p">],</span>
 <span class="p">)</span>
@@ -1331,8 +1331,8 @@ cleanly with the base class <code class="code docutils literal notranslate"><spa
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="c1"># additional required arguments without defaults would be defined here</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">,</span>
-    <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">],</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"site"</span><span class="p">,</span>
+    <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span><span class="p">],</span>
     <span class="n">load_if_defined</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1418,9 +1418,9 @@ workflow.  Here, for example, is a variant of example 1 using <code class="code 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 <span class="c1"># import for MyMatcher would appear here</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydatabase"</span><span class="p">)</span>
 <span class="n">matcher</span> <span class="o">=</span> <span class="n">MyMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_miniseed"</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span> <span class="n">matcher</span><span class="p">)</span>
 <span class="c1"># additional workflow elements and usually ending with a save would be here</span>
 <span class="n">dataset</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>

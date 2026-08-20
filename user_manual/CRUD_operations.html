@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>CRUD Operations in MsPASS &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>CRUD Operations in MsPASS &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -495,7 +495,7 @@ we give the obvious name Database.  Most MsPASS jobs need the following
 incantation at the top of the python job script:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s1">&#39;database_name&#39;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s1">'database_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">'database_name'</span></code> is a name you chose for the dataset you are
@@ -533,8 +533,8 @@ miniseed trace:</p>
 
 <span class="c1"># Example assumes filename contains one channel of data in</span>
 <span class="c1"># miniseed format</span>
-<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;testfile.msd&#39;</span>
-<span class="n">dstrm</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;MSEED&#39;</span><span class="p">)</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">'testfile.msd'</span>
+<span class="n">dstrm</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'MSEED'</span><span class="p">)</span>
 <span class="c1"># A stream is a list of obspy Trace objects - get the first</span>
 <span class="n">dtr</span> <span class="o">=</span> <span class="n">dstrm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="c1"># This mspass function converts a Trace to our native TimeSeries</span>
@@ -558,7 +558,7 @@ single-component data into three-component seismograms before saving:</p>
 
 <span class="c1"># d is a TimeSeriesEnsemble loaded earlier in the workflow.</span>
 <span class="n">d3c</span> <span class="o">=</span> <span class="n">bundle_seed_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-<span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d3c</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d3c</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_Seismogram"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.bundle_seed_data" title="mspasspy.algorithms.bundle.bundle_seed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">bundle_seed_data()</span></code></a> for details
@@ -579,8 +579,8 @@ our <em>getting_started</em> tutorial.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">obspy.clients.fdsn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;IRIS&quot;</span><span class="p">)</span>
-<span class="n">t0</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2011-03-11T05:46:24.0&#39;</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">"IRIS"</span><span class="p">)</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">'2011-03-11T05:46:24.0'</span><span class="p">)</span>
 <span class="n">starttime</span> <span class="o">=</span> <span class="n">t0</span><span class="o">-</span><span class="mf">3600.0</span>
 <span class="n">endtime</span> <span class="o">=</span> <span class="n">t0</span><span class="o">+</span><span class="p">(</span><span class="mf">7.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">24.0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">3600.0</span><span class="p">)</span>
 <span class="n">lat0</span> <span class="o">=</span> <span class="mf">38.3</span>
@@ -626,7 +626,7 @@ a python translation of the data structure defined by the
 standardized format defined for web service requests for station metadata.
 Like <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> an example from the getting started tutorial
 should be instructive:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inv</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_stations</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="s1">&#39;TA&#39;</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inv</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_stations</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="s1">'TA'</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'xml'</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">'*'</span><span class="p">)</span>
 <span class="n">db</span><span class="o">.</span><span class="n">save_inventory</span><span class="p">(</span><span class="n">inv</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -689,10 +689,10 @@ by the cursor and constructs a <code class="code docutils literal notranslate"><
 </ol>
 <p>The most common serial pattern is to iterate over a cursor and pass
 each document to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data_tag&quot;</span><span class="p">:</span> <span class="s2">&quot;raw&quot;</span><span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"data_tag"</span><span class="p">:</span> <span class="s2">"raw"</span><span class="p">}</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Use <code class="code docutils literal notranslate"><span class="pre">collection=&quot;wf_Seismogram&quot;</span></code> when reading three-component
@@ -758,17 +758,17 @@ collection, and has been cross-referenced into <code class="code docutils litera
 Notice we include a size check with the MongoDB function
 <code class="code docutils literal notranslate"><span class="pre">count_documents</span></code> to impose constraints on the query. That is
 always good practice.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}</span>
 <span class="n">MAX_ENSEMBLE_SIZE</span> <span class="o">=</span> <span class="mi">10000</span>
 <span class="n">ndocs</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">ndocs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No data found for source_id = &quot;</span><span class="p">,</span> <span class="n">source_id</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"No data found for source_id = "</span><span class="p">,</span> <span class="n">source_id</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">ndocs</span> <span class="o">&gt;</span> <span class="n">MAX_ENSEMBLE_SIZE</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of documents matching source_id=&quot;</span><span class="p">,</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">&quot; is &quot;</span><span class="p">,</span> <span class="n">ndocs</span><span class="p">,</span>
-          <span class="s2">&quot;Exceeds the workflow limit on the ensemble size=&quot;</span><span class="p">,</span> <span class="n">MAX_ENSEMBLE_SIZE</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Number of documents matching source_id="</span><span class="p">,</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">" is "</span><span class="p">,</span> <span class="n">ndocs</span><span class="p">,</span>
+          <span class="s2">"Exceeds the workflow limit on the ensemble size="</span><span class="p">,</span> <span class="n">MAX_ENSEMBLE_SIZE</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-    <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -795,12 +795,12 @@ a waveform collection, or a list of ensemble-defining queries.  The
 common pattern for reading a subset of a waveform collection is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
-<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data_tag&quot;</span><span class="p">:</span> <span class="s2">&quot;raw&quot;</span><span class="p">}</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"data_tag"</span><span class="p">:</span> <span class="s2">"raw"</span><span class="p">}</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
-    <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">"dask"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1075,13 +1075,13 @@ dead data with a crude tag of seed net, sta, starttime before each
 list of elog messages:</p>
 <blockquote>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This needs to be checked for correctness - done while off the grid</span>
-<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;$def&#39;</span> <span class="p">:</span> <span class="s1">&#39;tombstone&#39;</span><span class="p">}</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'$def'</span> <span class="p">:</span> <span class="s1">'tombstone'</span><span class="p">}</span>
 <span class="n">cursor</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-  <span class="n">wfmd</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;tombstone&#39;</span><span class="p">]</span>
-  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error log contents for this Seismogram marked dead:&#39;</span><span class="p">,</span>
-     <span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">],</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">],</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;startime&#39;</span><span class="p">])</span>
-  <span class="n">err</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;logdata&#39;</span><span class="p">]</span>
+  <span class="n">wfmd</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">'tombstone'</span><span class="p">]</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">'Error log contents for this Seismogram marked dead:'</span><span class="p">,</span>
+     <span class="n">wfmd</span><span class="p">[</span><span class="s1">'net'</span><span class="p">],</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">'sta'</span><span class="p">],</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">'startime'</span><span class="p">])</span>
+  <span class="n">err</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">'logdata'</span><span class="p">]</span>
   <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">err</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 </pre></div>

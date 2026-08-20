@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.logging_helper &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.util.logging_helper &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -491,7 +491,7 @@
 <div class="viewcode-block" id="info">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.info">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This helper function is used to log operations in processing history of mspass object.</span>
 <span class="sd">    Per best practice, every operations happen on the mspass object should be logged.</span>
 
@@ -502,10 +502,10 @@
 <span class="sd">     log on one specific object in the ensemble. If target is not specified, all the objects in the ensemble</span>
 <span class="sd">     will be logged using the same information.</span>
 <span class="sd">    :return: None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">empty_err_message</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;cannot preserve history because container was empty</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;Must at least contain an origin record&quot;</span>
+        <span class="s2">"cannot preserve history because container was empty</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="o">+</span> <span class="s2">"Must at least contain an origin record"</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
@@ -528,7 +528,7 @@
 
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">target</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;logging_helper.info: target index is out of bound&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">"logging_helper.info: target index is out of bound"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">))</span> <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="n">target</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>  <span class="c1"># guarantee group member is not dead</span>
                 <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
@@ -548,17 +548,17 @@
                     <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;Coding error - logging.info was passed an unexpected data type of&quot;</span><span class="p">,</span>
+            <span class="s2">"Coding error - logging.info was passed an unexpected data type of"</span><span class="p">,</span>
             <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Not treated as fatal but a bug fix is needed"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="ensemble_error">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.ensemble_error">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ensemble_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">err_severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This is a small helper function useful for error handlers in except</span>
 <span class="sd">    blocks for ensemble objects.  If a function is called on an ensemble</span>
 <span class="sd">    object that throws an exception this function will post the message</span>
@@ -571,9 +571,9 @@
 <span class="sd">      objects.</span>
 <span class="sd">    :param alg: is the algorithm name posted to elog on each member</span>
 <span class="sd">    :param message: is the string posted to all members</span>
-<span class="sd">      (Note due to a current flaw in the api we don&#39;t have access to the</span>
+<span class="sd">      (Note due to a current flaw in the api we don't have access to the</span>
 <span class="sd">      severity attribute.  For now this always set it Invalid)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -582,17 +582,17 @@
             <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">message</span><span class="p">),</span> <span class="n">err_severity</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;Coding error - ensemble_error was passed an unexpected data type of&quot;</span><span class="p">,</span>
+            <span class="s2">"Coding error - ensemble_error was passed an unexpected data type of"</span><span class="p">,</span>
             <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Not treated as fatal but a bug fix is needed"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="reduce">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.reduce">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function replicates the processing history of data2 onto data1, which is a common use case</span>
 <span class="sd">    in reduce stage. If data1 is dead, it will keep silent, i.e. no history will be replicated. If data2 is dead,</span>
 <span class="sd">    the processing history will still be replicated.</span>
@@ -602,11 +602,11 @@
 <span class="sd">    :param alg_id: The unique id of that user gives to the algorithm.</span>
 <span class="sd">    :param alg_name: The name of the reduce algorithm that uses this helper function.</span>
 <span class="sd">    :return: None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data2</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;logging_helper.reduce: data2 has a different type as data1&quot;</span>
+                <span class="s2">"logging_helper.reduce: data2 has a different type as data1"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">data1</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
             <span class="n">data1</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span>
@@ -623,11 +623,11 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data2</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;logging_helper.reduce: data2 has a different type as data1&quot;</span>
+                <span class="s2">"logging_helper.reduce: data2 has a different type as data1"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data2</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                <span class="s2">&quot;logging_helper.reduce: data1 and data2 have different sizes of member&quot;</span>
+                <span class="s2">"logging_helper.reduce: data1 and data2 have different sizes of member"</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>  <span class="c1"># guarantee group member is not dead</span>
@@ -643,10 +643,10 @@
                 <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;Coding error - logging.reduce was passed an unexpected data type of&quot;</span><span class="p">,</span>
+            <span class="s2">"Coding error - logging.reduce was passed an unexpected data type of"</span><span class="p">,</span>
             <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Not treated as fatal but a bug fix is needed"</span><span class="p">)</span></div>
 
 </pre></div>
 

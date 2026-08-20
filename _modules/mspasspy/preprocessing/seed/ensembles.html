@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.preprocessing.seed.ensembles &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.preprocessing.seed.ensembles &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -492,21 +492,21 @@
 <div class="viewcode-block" id="obspy_mseed_file_indexer">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.obspy_mseed_file_indexer">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">obspy_mseed_file_indexer</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Use obspy&#39;s miniseed reader to eat up a (potentially large) file and</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Use obspy's miniseed reader to eat up a (potentially large) file and</span>
 <span class="sd">    build an index as a table (returned) of data that can be written to</span>
-<span class="sd">    a database.   Obspy&#39;s reader was written to accept the abomination of</span>
+<span class="sd">    a database.   Obspy's reader was written to accept the abomination of</span>
 <span class="sd">    miniseed with random packets scattered through the file (or so it seems,</span>
 <span class="sd">    since they have no foff concept in their reader).  Hence, what this reader</span>
 <span class="sd">    does is make a table entry for each net:sta:chan:loc trace object their</span>
 <span class="sd">    reader returns.   It does this with panda dataframes to build the</span>
 <span class="sd">    table.  One required argument is the file name containing the miniseed data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">pr</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="n">fullpath</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
         <span class="p">[</span><span class="n">dirself</span><span class="p">,</span> <span class="n">dfileself</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
-        <span class="n">dseis</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mseed&quot;</span><span class="p">)</span>
+        <span class="n">dseis</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"mseed"</span><span class="p">)</span>
         <span class="n">net</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">sta</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">chan</span> <span class="o">=</span> <span class="p">[]</span>
@@ -522,24 +522,24 @@
         <span class="n">mover</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">tref</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="nb">format</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">mover_self</span> <span class="o">=</span> <span class="s2">&quot;obspy_read&quot;</span>
-        <span class="n">tref_self</span> <span class="o">=</span> <span class="s2">&quot;UTC&quot;</span>
-        <span class="n">format_self</span> <span class="o">=</span> <span class="s2">&quot;miniseed&quot;</span>
+        <span class="n">mover_self</span> <span class="o">=</span> <span class="s2">"obspy_read"</span>
+        <span class="n">tref_self</span> <span class="o">=</span> <span class="s2">"UTC"</span>
+        <span class="n">format_self</span> <span class="o">=</span> <span class="s2">"miniseed"</span>
         <span class="c1"># Note obspy uses a more verbose name for net:sta:chan:loc</span>
         <span class="c1"># We change to mspass definition below that uses css3.0 names</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dseis</span><span class="p">:</span>
-            <span class="n">net</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;network&quot;</span><span class="p">])</span>
-            <span class="n">sta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">])</span>
-            <span class="n">chan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">])</span>
-            <span class="n">loc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">])</span>
-            <span class="n">sutc</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"network"</span><span class="p">])</span>
+            <span class="n">sta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"station"</span><span class="p">])</span>
+            <span class="n">chan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">])</span>
+            <span class="n">loc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"location"</span><span class="p">])</span>
+            <span class="n">sutc</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span>
             <span class="n">stime</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sutc</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
-            <span class="n">eutc</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
+            <span class="n">eutc</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span>
             <span class="n">etime</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eutc</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
-            <span class="n">samprate</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">])</span>
-            <span class="n">delta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">])</span>
-            <span class="n">npts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">])</span>
-            <span class="n">calib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">])</span>
+            <span class="n">samprate</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"sampling_rate"</span><span class="p">])</span>
+            <span class="n">delta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"delta"</span><span class="p">])</span>
+            <span class="n">npts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">])</span>
+            <span class="n">calib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"calib"</span><span class="p">])</span>
             <span class="n">dfile</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dfileself</span><span class="p">)</span>
             <span class="nb">dir</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dirself</span><span class="p">)</span>
             <span class="n">tref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tref_self</span><span class="p">)</span>
@@ -550,33 +550,33 @@
         <span class="c1"># intermediary dict object, but this should not be a hugely</span>
         <span class="c1"># compute or memory entensive operation even for large files</span>
         <span class="n">ddict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span>
-            <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">,</span>
-            <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="n">chan</span><span class="p">,</span>
-            <span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="n">loc</span><span class="p">,</span>
-            <span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="n">stime</span><span class="p">,</span>
-            <span class="s2">&quot;endtime&quot;</span><span class="p">:</span> <span class="n">etime</span><span class="p">,</span>
-            <span class="s2">&quot;samprate&quot;</span><span class="p">:</span> <span class="n">samprate</span><span class="p">,</span>
-            <span class="s2">&quot;delta&quot;</span><span class="p">:</span> <span class="n">delta</span><span class="p">,</span>
-            <span class="s2">&quot;npts&quot;</span><span class="p">:</span> <span class="n">npts</span><span class="p">,</span>
-            <span class="s2">&quot;calib&quot;</span><span class="p">:</span> <span class="n">calib</span><span class="p">,</span>
-            <span class="s2">&quot;dfile&quot;</span><span class="p">:</span> <span class="n">dfile</span><span class="p">,</span>
-            <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="nb">dir</span><span class="p">,</span>
-            <span class="s2">&quot;treftype&quot;</span><span class="p">:</span> <span class="n">tref</span><span class="p">,</span>
-            <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="nb">format</span><span class="p">,</span>
-            <span class="s2">&quot;mover&quot;</span><span class="p">:</span> <span class="n">mover</span><span class="p">,</span>
+            <span class="s2">"net"</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span>
+            <span class="s2">"sta"</span><span class="p">:</span> <span class="n">sta</span><span class="p">,</span>
+            <span class="s2">"chan"</span><span class="p">:</span> <span class="n">chan</span><span class="p">,</span>
+            <span class="s2">"loc"</span><span class="p">:</span> <span class="n">loc</span><span class="p">,</span>
+            <span class="s2">"starttime"</span><span class="p">:</span> <span class="n">stime</span><span class="p">,</span>
+            <span class="s2">"endtime"</span><span class="p">:</span> <span class="n">etime</span><span class="p">,</span>
+            <span class="s2">"samprate"</span><span class="p">:</span> <span class="n">samprate</span><span class="p">,</span>
+            <span class="s2">"delta"</span><span class="p">:</span> <span class="n">delta</span><span class="p">,</span>
+            <span class="s2">"npts"</span><span class="p">:</span> <span class="n">npts</span><span class="p">,</span>
+            <span class="s2">"calib"</span><span class="p">:</span> <span class="n">calib</span><span class="p">,</span>
+            <span class="s2">"dfile"</span><span class="p">:</span> <span class="n">dfile</span><span class="p">,</span>
+            <span class="s2">"dir"</span><span class="p">:</span> <span class="nb">dir</span><span class="p">,</span>
+            <span class="s2">"treftype"</span><span class="p">:</span> <span class="n">tref</span><span class="p">,</span>
+            <span class="s2">"format"</span><span class="p">:</span> <span class="nb">format</span><span class="p">,</span>
+            <span class="s2">"mover"</span><span class="p">:</span> <span class="n">mover</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ddict</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mseed_file_indexer:  invalid file named received&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"mseed_file_indexer:  invalid file named received"</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="dbsave_raw_index">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.dbsave_raw_index">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">dbsave_raw_index</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">pdframe</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;import_miniseed_ensemble&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dbsave_raw_index</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">pdframe</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"import_miniseed_ensemble"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Database save to db for a panda data frame pdframe.</span>
 <span class="sd">    This crude version collection name is frozen as import_miniseed_ensemble.  db is</span>
 <span class="sd">    assumed to be the client root for mongodb or the mspasspy Client</span>
@@ -585,26 +585,26 @@
 <span class="sd">    :param db:  MongoClient or mspass Client to save data desired</span>
 <span class="sd">    :param pdframe:  panda data frame to be saved</span>
 <span class="sd">    :param collection:  collection to which the data in pdframe is to be</span>
-<span class="sd">      saved.  Default is &#39;import_miniseed_ensemble&#39;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">      saved.  Default is 'import_miniseed_ensemble'</span>
+<span class="sd">    """</span>
     <span class="n">col</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
     <span class="c1"># records is a keyword that makes rows of the dataframe docs for mongo</span>
-    <span class="n">dtmp</span> <span class="o">=</span> <span class="n">pdframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+    <span class="n">dtmp</span> <span class="o">=</span> <span class="n">pdframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">)</span>
     <span class="n">col</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">dtmp</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="dbsave_seed_ensemble_file">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.dbsave_seed_ensemble_file">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">dbsave_seed_ensemble_file</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">gather_type</span><span class="o">=</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dbsave_seed_ensemble_file</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">gather_type</span><span class="o">=</span><span class="s2">"event"</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Indexer for SEED files that are already assembled in a</span>
-<span class="sd">    &quot;gather&quot; meaning the data have some relation through one or more</span>
+<span class="sd">    "gather" meaning the data have some relation through one or more</span>
 <span class="sd">    keys.   The association may be predefined by input though a</span>
 <span class="sd">    keys array or left null for later association.   There is a large</span>
 <span class="sd">    overhead in this function as it has to read the entire seed file</span>
 <span class="sd">    to acquire the metadata it needs.  This version uses a bigger</span>
-<span class="sd">    memory bloat than required because it uses obspy&#39;s seed reader</span>
+<span class="sd">    memory bloat than required because it uses obspy's seed reader</span>
 <span class="sd">    that always eats up the whole file and returns a list of</span>
 <span class="sd">    Trace object.  A less memory intensive approach would be to</span>
 <span class="sd">    scan the seed blockettes to assemble the metadata, but</span>
@@ -627,7 +627,7 @@
 <span class="sd">    equivalent of a shot gather in reflection processing.   The</span>
 <span class="sd">    format of the json(bson) document used for the index, however,</span>
 <span class="sd">    is not limited to that case.  The gather type is defined by a</span>
-<span class="sd">    metadata key (for this prototype the key is &quot;gather_type&quot;).  The</span>
+<span class="sd">    metadata key (for this prototype the key is "gather_type").  The</span>
 <span class="sd">    concept is the gather_type can be used as both a filter to select</span>
 <span class="sd">    data and as a hint to readers on how to handle the data bundle.</span>
 
@@ -646,7 +646,7 @@
 <span class="sd">    unique uuid string using the ProcessingHistory newid method.   Be warned</span>
 <span class="sd">    that that string CANNOT be converted to a MongoDB ObjectId as it is</span>
 <span class="sd">    generated by a completely different algorithm.  The uuid is posted with</span>
-<span class="sd">    the key &quot;seed_file_id&quot; to provide a unique name.  That id is used</span>
+<span class="sd">    the key "seed_file_id" to provide a unique name.  That id is used</span>
 <span class="sd">    by the reader in this module to define a unique origin for a channel of</span>
 <span class="sd">    data.  We note that usage is problematic for finding a particular</span>
 <span class="sd">    waveform linked to a seed_file_id because the index storeds that</span>
@@ -656,70 +656,70 @@
 <span class="sd">      class</span>
 <span class="sd">    :param file:  seed file containing the data to be indexed.</span>
 <span class="sd">    :param gather_type: character string defining a name that defines</span>
-<span class="sd">      a particular ensemble type.  Default is &quot;event&quot;, which is the</span>
+<span class="sd">      a particular ensemble type.  Default is "event", which is the</span>
 <span class="sd">      only currently supported format.  (others keyword will cause an</span>
-<span class="sd">      error to be thrown)  Anticipated alternatives are:  &quot;common_receiver&quot;</span>
-<span class="sd">      or &quot;station&quot;, &quot;image_point&quot;, and &quot;time_window&quot;.</span>
+<span class="sd">      error to be thrown)  Anticipated alternatives are:  "common_receiver"</span>
+<span class="sd">      or "station", "image_point", and "time_window".</span>
 <span class="sd">    :return:  ObjectId of the document inserted that is the index for</span>
 <span class="sd">      the file processed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">his</span> <span class="o">=</span> <span class="n">ProcessingHistory</span><span class="p">()</span>  <span class="c1"># used only to create uuids</span>
-        <span class="n">dbh</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;import_miniseed_ensemble&quot;</span><span class="p">]</span>
+        <span class="n">dbh</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"import_miniseed_ensemble"</span><span class="p">]</span>
         <span class="n">pr</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="n">fullpath</span> <span class="o">=</span> <span class="n">pr</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
         <span class="p">[</span><span class="n">dirself</span><span class="p">,</span> <span class="n">dfileself</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
-        <span class="n">dseis</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mseed&quot;</span><span class="p">)</span>
+        <span class="n">dseis</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"mseed"</span><span class="p">)</span>
         <span class="c1"># This holds the ensemble metatdata</span>
-        <span class="n">ensemblemd</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="n">dirself</span><span class="p">}</span>
-        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfileself</span>
-        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mseed&quot;</span>
+        <span class="n">ensemblemd</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"dir"</span><span class="p">:</span> <span class="n">dirself</span><span class="p">}</span>
+        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">"dfile"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfileself</span>
+        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">"format"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mseed"</span>
         <span class="c1"># this is a placeholder not really necessary for seed data \</span>
         <span class="c1"># as seed data by definition yield TimeSeries type data although</span>
         <span class="c1"># not necessarily seismic data (e.g. MT data are distributed as mseed</span>
-        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">&quot;member_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;TimeSeries&quot;</span>
-        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">&quot;mover&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;obspy_seed_ensemble_reader&quot;</span>
+        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">"member_type"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"TimeSeries"</span>
+        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">"mover"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"obspy_seed_ensemble_reader"</span>
         <span class="n">members</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># this list will contain one dict for each dseis Trace</span>
         <span class="c1"># we want to put time range of the data into enemblemd - we use these for that</span>
         <span class="n">stimes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">etimes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dseis</span><span class="p">:</span>
             <span class="n">mddict</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;network&quot;</span><span class="p">]</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;station&quot;</span><span class="p">]</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
-            <span class="n">st</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
-            <span class="n">et</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">timestamp</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">et</span><span class="o">.</span><span class="n">timestamp</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"network"</span><span class="p">]</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"station"</span><span class="p">]</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"location"</span><span class="p">]</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span>
+            <span class="n">et</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">timestamp</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">et</span><span class="o">.</span><span class="n">timestamp</span>
             <span class="n">stimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
             <span class="n">etimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">et</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;calib&quot;</span><span class="p">]</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"sampling_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"sampling_rate"</span><span class="p">]</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"delta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"delta"</span><span class="p">]</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">]</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"calib"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"calib"</span><span class="p">]</span>
             <span class="c1"># this key name could change</span>
-            <span class="n">mddict</span><span class="p">[</span><span class="s2">&quot;seed_file_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">his</span><span class="o">.</span><span class="n">newid</span><span class="p">()</span>
+            <span class="n">mddict</span><span class="p">[</span><span class="s2">"seed_file_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">his</span><span class="o">.</span><span class="n">newid</span><span class="p">()</span>
             <span class="n">members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mddict</span><span class="p">)</span>
-        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">&quot;members&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">members</span>
+        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">"members"</span><span class="p">]</span> <span class="o">=</span> <span class="n">members</span>
         <span class="n">tmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">stimes</span><span class="p">)</span>
         <span class="n">tmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">etimes</span><span class="p">)</span>
-        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmin</span>
-        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmax</span>
+        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmin</span>
+        <span class="n">ensemblemd</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmax</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">ensemblemd</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;something threw an exception - this needs detailed handlers&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"something threw an exception - this needs detailed handlers"</span><span class="p">)</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_load_md</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Helper for load ensemble.   Extracts metadata defined by keys list and</span>
 <span class="sd">    posts to a Metadata container that is returned.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># do this stupid for now without error handlers</span>
     <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
@@ -733,17 +733,17 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">load_one_ensemble</span><span class="p">(</span>
     <span class="n">doc</span><span class="p">,</span>
     <span class="n">create_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">jobname</span><span class="o">=</span><span class="s2">&quot;Default job&quot;</span><span class="p">,</span>
-    <span class="n">jobid</span><span class="o">=</span><span class="s2">&quot;99999&quot;</span><span class="p">,</span>
-    <span class="n">algid</span><span class="o">=</span><span class="s2">&quot;99999&quot;</span><span class="p">,</span>
+    <span class="n">jobname</span><span class="o">=</span><span class="s2">"Default job"</span><span class="p">,</span>
+    <span class="n">jobid</span><span class="o">=</span><span class="s2">"99999"</span><span class="p">,</span>
+    <span class="n">algid</span><span class="o">=</span><span class="s2">"99999"</span><span class="p">,</span>
     <span class="n">ensemble_mdkeys</span><span class="o">=</span><span class="p">[],</span>  <span class="c1"># default is to load nothing for ensemble</span>
     <span class="n">apply_calib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function can be used to load a full ensemble indexed in the</span>
 <span class="sd">    collection import_miniseed_ensemble.  It uses a large memory model</span>
-<span class="sd">    that eat up the entire file using obspy&#39;s miniseed reader.   It contains</span>
+<span class="sd">    that eat up the entire file using obspy's miniseed reader.   It contains</span>
 <span class="sd">    some relics of early ideas of potentially having the function</span>
 <span class="sd">    utilize the history mechanism.  Those may not work, but were retained.</span>
 
@@ -751,50 +751,50 @@
 <span class="sd">    :param create_history:  if true each member of the ensemble will be</span>
 <span class="sd">      defined in the history chain as an origin and jobname and jobid will be</span>
 <span class="sd">      be used to construct the ProcessingHistory object.</span>
-<span class="sd">    :param jobname: as used in ProcessingHistory (default &quot;Default job&quot;)</span>
+<span class="sd">    :param jobname: as used in ProcessingHistory (default "Default job")</span>
 <span class="sd">    :param jobid: as used in processingHistory</span>
 <span class="sd">    :param algid: as used in processingHistory</span>
 <span class="sd">    :param ensemble_mdkeys:  list of keys to copy from first member to ensemble</span>
 <span class="sd">       Metadata (no type checking is done)</span>
-<span class="sd">    :param apply_calib:  if True tells obspy&#39;s reader to apply the calibration</span>
+<span class="sd">    :param apply_calib:  if True tells obspy's reader to apply the calibration</span>
 <span class="sd">      factor to convert the data to ground motion units.  Default is false.</span>
 <span class="sd">    :param verbose:  write informational messages while processing</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">ensemblemd</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">create_history</span><span class="p">:</span>
             <span class="n">his</span> <span class="o">=</span> <span class="n">ProcessingHistory</span><span class="p">(</span><span class="n">jobname</span><span class="p">,</span> <span class="n">jobid</span><span class="p">)</span>
-        <span class="n">form</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span>
-        <span class="n">mover</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;mover&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">form</span> <span class="o">!=</span> <span class="s2">&quot;mseed&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"format"</span><span class="p">]</span>
+        <span class="n">mover</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"mover"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">form</span> <span class="o">!=</span> <span class="s2">"mseed"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;Cannot handle this ensemble - ensemble format=&quot;</span>
+                <span class="s2">"Cannot handle this ensemble - ensemble format="</span>
                 <span class="o">+</span> <span class="n">form</span>
-                <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Can only be mseed for this reader&quot;</span>
+                <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Can only be mseed for this reader"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">mover</span> <span class="o">!=</span> <span class="s2">&quot;obspy_seed_ensemble_reader&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mover</span> <span class="o">!=</span> <span class="s2">"obspy_seed_ensemble_reader"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;Cannot handle this ensemble - ensemble mover parameter=&quot;</span>
+                <span class="s2">"Cannot handle this ensemble - ensemble mover parameter="</span>
                 <span class="o">+</span> <span class="n">mover</span>
-                <span class="o">+</span> <span class="s2">&quot; which is not supported&quot;</span>
+                <span class="o">+</span> <span class="s2">" which is not supported"</span>
             <span class="p">)</span>
-        <span class="nb">dir</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span>
-        <span class="n">dfile</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;dfile&quot;</span><span class="p">]</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="nb">dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">dfile</span>
+        <span class="nb">dir</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"dir"</span><span class="p">]</span>
+        <span class="n">dfile</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"dfile"</span><span class="p">]</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="nb">dir</span> <span class="o">+</span> <span class="s2">"/"</span> <span class="o">+</span> <span class="n">dfile</span>
         <span class="c1"># Note this algorithm actually should work with any format</span>
-        <span class="c1"># supported by obspy&#39;s read function - should generalize it for release</span>
-        <span class="n">dseis</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mseed&quot;</span><span class="p">,</span> <span class="n">apply_calib</span><span class="o">=</span><span class="n">apply_calib</span><span class="p">)</span>
+        <span class="c1"># supported by obspy's read function - should generalize it for release</span>
+        <span class="n">dseis</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"mseed"</span><span class="p">,</span> <span class="n">apply_calib</span><span class="o">=</span><span class="n">apply_calib</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble_mdkeys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">ensemblemd</span> <span class="o">=</span> <span class="n">_load_md</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">ensemble_mdkeys</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># default is to load everything != members</span>
-            <span class="n">members_key</span> <span class="o">=</span> <span class="s2">&quot;members&quot;</span>
+            <span class="n">members_key</span> <span class="o">=</span> <span class="s2">"members"</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">members_key</span><span class="p">:</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                     <span class="n">ensemblemd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
         <span class="c1"># There is a Stream2TimeSeriesEnsemble function</span>
-        <span class="c1"># but we don&#39;t use it here because we need some functionality</span>
+        <span class="c1"># but we don't use it here because we need some functionality</span>
         <span class="c1"># not found in that simple function</span>
         <span class="n">nseis</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dseis</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">ensemblemd</span><span class="p">,</span> <span class="n">nseis</span><span class="p">)</span>
@@ -804,27 +804,27 @@
         <span class="c1"># prototype algorithm becomes the release version</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dseis</span><span class="p">:</span>
-            <span class="c1"># print(&#39;debug - working on data object number&#39;,count)</span>
+            <span class="c1"># print('debug - working on data object number',count)</span>
             <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">dts</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">create_history</span><span class="p">:</span>
                 <span class="c1"># This should just define jobname and jobid</span>
                 <span class="n">dts</span><span class="o">.</span><span class="n">load_history</span><span class="p">(</span><span class="n">his</span><span class="p">)</span>
-                <span class="n">seedid</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;seed_file_id&quot;</span><span class="p">]</span>
+                <span class="n">seedid</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"seed_file_id"</span><span class="p">]</span>
                 <span class="n">dts</span><span class="o">.</span><span class="n">set_as_origin</span><span class="p">(</span>
-                    <span class="s2">&quot;load_ensemble&quot;</span><span class="p">,</span> <span class="n">algid</span><span class="p">,</span> <span class="n">seedid</span><span class="p">,</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span><span class="p">,</span> <span class="kc">True</span>
+                    <span class="s2">"load_ensemble"</span><span class="p">,</span> <span class="n">algid</span><span class="p">,</span> <span class="n">seedid</span><span class="p">,</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span><span class="p">,</span> <span class="kc">True</span>
                 <span class="p">)</span>
             <span class="n">result</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dts</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;something threw an exception - needs more complete error handlers&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"something threw an exception - needs more complete error handlers"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="link_source_collection">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.link_source_collection">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">link_source_collection</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">prefer_evid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This prototype function uses a not at all generic method to link data</span>
 <span class="sd">    indexed in a import_miniseed_ensemble collection to source data assumed stored</span>
 <span class="sd">    in the source collection.   The algorithm is appropriate ONLY if the</span>
@@ -849,56 +849,56 @@
 <span class="sd">    :param prefer_evid:  As noted above if True select the source doc with</span>
 <span class="sd">      evid set when there are multiple matches.</span>
 <span class="sd">    :param verbose:  when true output will be more verbose.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dbwf</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;import_miniseed_ensemble&quot;</span><span class="p">]</span>
-    <span class="n">dbsource</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">dbwf</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"import_miniseed_ensemble"</span><span class="p">]</span>
+    <span class="n">dbsource</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"source"</span><span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">ensrec</span> <span class="o">=</span> <span class="n">dbwf</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
         <span class="k">for</span> <span class="n">ens</span> <span class="ow">in</span> <span class="n">ensrec</span><span class="p">:</span>
-            <span class="c1"># print(&#39;debug - at top of ensemble loop&#39;)</span>
-            <span class="n">t</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
+            <span class="c1"># print('debug - at top of ensemble loop')</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span>
             <span class="n">tlow</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="n">dt</span>
             <span class="n">thigh</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="n">dt</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">tlow</span><span class="p">,</span> <span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">thigh</span><span class="p">}}</span>
-            <span class="n">matchid</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-            <span class="n">ens_match_arg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">matchid</span><span class="p">}</span>
-            <span class="c1"># print(&#39;debug - query:&#39;,query)</span>
-            <span class="c1"># print(&#39;range between &#39;,UTCDateTime(tlow),&#39;-&gt;&#39;,UTCDateTime(thigh))</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"time"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gte"</span><span class="p">:</span> <span class="n">tlow</span><span class="p">,</span> <span class="s2">"$lte"</span><span class="p">:</span> <span class="n">thigh</span><span class="p">}}</span>
+            <span class="n">matchid</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+            <span class="n">ens_match_arg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">matchid</span><span class="p">}</span>
+            <span class="c1"># print('debug - query:',query)</span>
+            <span class="c1"># print('range between ',UTCDateTime(tlow),'-&gt;',UTCDateTime(thigh))</span>
             <span class="n">n</span> <span class="o">=</span> <span class="n">dbsource</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-            <span class="c1"># print(&#39;debug - found &#39;,n,&#39; documents&#39;)</span>
+            <span class="c1"># print('debug - found ',n,' documents')</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span>
-                        <span class="s2">&quot;link_source_collection:  no match in source for time=&quot;</span><span class="p">,</span>
+                        <span class="s2">"link_source_collection:  no match in source for time="</span><span class="p">,</span>
                         <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">t</span><span class="p">),</span>
                     <span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This enemble cannot be processed&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"This enemble cannot be processed"</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">srcrec</span> <span class="o">=</span> <span class="n">dbsource</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-                <span class="c1"># print(&#39;debug - query returned:&#39;,srcrec)</span>
+                <span class="c1"># print('debug - query returned:',srcrec)</span>
                 <span class="c1"># only in this situation will we update the document</span>
-                <span class="n">source_id</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">&quot;source_id&quot;</span><span class="p">]</span>
-                <span class="c1"># print(&#39;debug - matchid and source_id=&#39;,matchid,source_id)</span>
+                <span class="n">source_id</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">"source_id"</span><span class="p">]</span>
+                <span class="c1"># print('debug - matchid and source_id=',matchid,source_id)</span>
                 <span class="k">if</span> <span class="n">prefer_evid</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="s2">&quot;evid&quot;</span> <span class="ow">in</span> <span class="n">srcrec</span><span class="p">:</span>
-                        <span class="n">evid</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">&quot;evid&quot;</span><span class="p">]</span>
-                        <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">&quot;evid&quot;</span><span class="p">:</span> <span class="n">evid</span><span class="p">}}</span>
+                    <span class="k">if</span> <span class="s2">"evid"</span> <span class="ow">in</span> <span class="n">srcrec</span><span class="p">:</span>
+                        <span class="n">evid</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">"evid"</span><span class="p">]</span>
+                        <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">"evid"</span><span class="p">:</span> <span class="n">evid</span><span class="p">}}</span>
                         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                             <span class="nb">print</span><span class="p">(</span>
-                                <span class="s2">&quot;Found evid=&quot;</span><span class="p">,</span>
+                                <span class="s2">"Found evid="</span><span class="p">,</span>
                                 <span class="n">evid</span><span class="p">,</span>
-                                <span class="s2">&quot; for ensembled with start time=&quot;</span><span class="p">,</span>
+                                <span class="s2">" for ensembled with start time="</span><span class="p">,</span>
                                 <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">t</span><span class="p">),</span>
                             <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span>
-                            <span class="s2">&quot;link_source_collection(WARNING): unique match for source at time=&quot;</span><span class="p">,</span>
+                            <span class="s2">"link_source_collection(WARNING): unique match for source at time="</span><span class="p">,</span>
                             <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">t</span><span class="p">),</span>
-                            <span class="s2">&quot; does not have evid set but function was called with prefer_evid true&quot;</span><span class="p">,</span>
+                            <span class="s2">" does not have evid set but function was called with prefer_evid true"</span><span class="p">,</span>
                         <span class="p">)</span>
-                        <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}}</span>
+                        <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}}</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}}</span>
+                    <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}}</span>
                 <span class="n">dbwf</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">ens_match_arg</span><span class="p">,</span> <span class="n">update_record</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbsource</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
@@ -908,35 +908,35 @@
                     <span class="c1"># will match evid field if there is a match because of the break</span>
                     <span class="c1"># note this logic sets source_id to the last record found</span>
                     <span class="c1"># when prefer_evid is false.  That is inefficient but</span>
-                    <span class="c1"># we don&#39;t expect long match lists</span>
-                    <span class="n">source_id</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">&quot;source_id&quot;</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">prefer_evid</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;evid&quot;</span> <span class="ow">in</span> <span class="n">srcrec</span><span class="p">):</span>
-                        <span class="n">evid</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">&quot;evid&quot;</span><span class="p">]</span>
-                        <span class="n">matchid</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+                    <span class="c1"># we don't expect long match lists</span>
+                    <span class="n">source_id</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">"source_id"</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">prefer_evid</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">"evid"</span> <span class="ow">in</span> <span class="n">srcrec</span><span class="p">):</span>
+                        <span class="n">evid</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">"evid"</span><span class="p">]</span>
+                        <span class="n">matchid</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
                         <span class="k">break</span>
                 <span class="k">if</span> <span class="n">evid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">&quot;evid&quot;</span><span class="p">:</span> <span class="n">evid</span><span class="p">}}</span>
+                    <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">"evid"</span><span class="p">:</span> <span class="n">evid</span><span class="p">}}</span>
                     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span>
-                            <span class="s2">&quot;Found evid=&quot;</span><span class="p">,</span>
+                            <span class="s2">"Found evid="</span><span class="p">,</span>
                             <span class="n">evid</span><span class="p">,</span>
-                            <span class="s2">&quot; for ensembled with start time=&quot;</span><span class="p">,</span>
+                            <span class="s2">" for ensembled with start time="</span><span class="p">,</span>
                             <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">t</span><span class="p">),</span>
                         <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}}</span>
+                    <span class="n">update_record</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}}</span>
                     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span>
-                            <span class="s2">&quot;Found &quot;</span><span class="p">,</span>
+                            <span class="s2">"Found "</span><span class="p">,</span>
                             <span class="n">n</span><span class="p">,</span>
-                            <span class="s2">&quot; matches in source collection for ensemble start time=&quot;</span><span class="p">,</span>
+                            <span class="s2">" matches in source collection for ensemble start time="</span><span class="p">,</span>
                             <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">t</span><span class="p">),</span>
                         <span class="p">)</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Linking to document with source_id=&quot;</span><span class="p">,</span> <span class="n">source_id</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">"Linking to document with source_id="</span><span class="p">,</span> <span class="n">source_id</span><span class="p">)</span>
                 <span class="n">dbwf</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">ens_match_arg</span><span class="p">,</span> <span class="n">update_record</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="s2">&quot;Something threw an unexpected exception&quot;</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+            <span class="s2">"Something threw an unexpected exception"</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span></div>
 
 
@@ -944,51 +944,51 @@
 <div class="viewcode-block" id="load_source_data_by_id">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_source_data_by_id">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_source_data_by_id</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Prototype function to load source data to any MsPASS data object</span>
 <span class="sd">    based on the normalization key.  That keys is frozen in this version</span>
-<span class="sd">    as &quot;source_id&quot; but may be changed to force constraints by the mspasspy</span>
+<span class="sd">    as "source_id" but may be changed to force constraints by the mspasspy</span>
 <span class="sd">    schema classes.</span>
 
 <span class="sd">    Handling of Ensembles and atomic objects are different conceptually but</span>
 <span class="sd">    in fact do exactly the same thing.   That is, in all cases the</span>
-<span class="sd">    algorithm queries the input object for the key &quot;source_id&quot;.  If that</span>
+<span class="sd">    algorithm queries the input object for the key "source_id".  If that</span>
 <span class="sd">    fails it returns an error.  Otherwise, it finds the associated document</span>
 <span class="sd">    in the source collection.   It then posts a frozen set of metadata to</span>
 <span class="sd">    mspass_object.   If that is an ensemble it is posted to the ensemble</span>
-<span class="sd">    metadata area.  If it is an atomic object it gets posted to the atomic object&#39;s</span>
+<span class="sd">    metadata area.  If it is an atomic object it gets posted to the atomic object's</span>
 <span class="sd">    metadata area.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dbsource</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">source</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;source_id&quot;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s2">"source_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;load_source_data_by_id&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;required attribute source_id not in ensemble metadata&quot;</span><span class="p">,</span>
+                <span class="s2">"load_source_data_by_id"</span><span class="p">,</span>
+                <span class="s2">"required attribute source_id not in ensemble metadata"</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="n">source_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;source_id&quot;</span><span class="p">]</span>
+        <span class="n">source_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"source_id"</span><span class="p">]</span>
         <span class="c1"># The way we currently do this source_id eithe rmaches one documentn in</span>
         <span class="c1"># source or none.  Hence, we can jus use a find_one query</span>
-        <span class="n">srcrec</span> <span class="o">=</span> <span class="n">dbsource</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">})</span>
+        <span class="n">srcrec</span> <span class="o">=</span> <span class="n">dbsource</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">})</span>
         <span class="c1"># note find_one returns a None if there is no match.  Point this out</span>
         <span class="c1"># because if we used find we would use test size of return and use</span>
         <span class="c1"># next to get the data. Find_one return is easier but depends upon</span>
         <span class="c1"># the uniqueness assumption</span>
         <span class="k">if</span> <span class="n">srcrec</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;load_source_data&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;no match found in source collection for source_id=&quot;</span> <span class="o">+</span> <span class="n">source_id</span><span class="p">,</span>
+                <span class="s2">"load_source_data"</span><span class="p">,</span>
+                <span class="s2">"no match found in source collection for source_id="</span> <span class="o">+</span> <span class="n">source_id</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;source_lat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span>
-            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;source_lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span>
-            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;source_depth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">]</span>
-            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;source_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"source_lat"</span><span class="p">]</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">]</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"source_lon"</span><span class="p">]</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">"lon"</span><span class="p">]</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"source_depth"</span><span class="p">]</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">"depth"</span><span class="p">]</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"source_time"</span><span class="p">]</span> <span class="o">=</span> <span class="n">srcrec</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">mspass_object</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;something threw an unexpected exception&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"something threw an unexpected exception"</span><span class="p">)</span></div>
 
 
 
@@ -997,17 +997,17 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">load_hypocenter_data_by_time</span><span class="p">(</span>
     <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">ens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">dbtime_key</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
-    <span class="n">mdtime_key</span><span class="o">=</span><span class="s2">&quot;time_P&quot;</span><span class="p">,</span>
-    <span class="n">event_id_key</span><span class="o">=</span><span class="s2">&quot;evid&quot;</span><span class="p">,</span>
-    <span class="n">phase</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
-    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;iasp91&quot;</span><span class="p">,</span>
+    <span class="n">dbtime_key</span><span class="o">=</span><span class="s2">"time"</span><span class="p">,</span>
+    <span class="n">mdtime_key</span><span class="o">=</span><span class="s2">"time_P"</span><span class="p">,</span>
+    <span class="n">event_id_key</span><span class="o">=</span><span class="s2">"evid"</span><span class="p">,</span>
+    <span class="n">phase</span><span class="o">=</span><span class="s2">"P"</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">"iasp91"</span><span class="p">,</span>
     <span class="n">dt</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
-    <span class="n">t0_definition</span><span class="o">=</span><span class="s2">&quot;origin_time&quot;</span><span class="p">,</span>
+    <span class="n">t0_definition</span><span class="o">=</span><span class="s2">"origin_time"</span><span class="p">,</span>
     <span class="n">t0_offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
     <span class="n">kill_null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Loads hypocenter data (space time coordinates) into an ensemble using</span>
 <span class="sd">    an arrival time matching algorithm.  This is a generalization of earlier</span>
 <span class="sd">    prototypes with the objective of a single interface to a common concept -</span>
@@ -1029,7 +1029,7 @@
 <span class="sd">    reduce compute time.  That is, we first run a db find on arrival to select</span>
 <span class="sd">    only arrival documents within the time span of the ensemble with the</span>
 <span class="sd">    defined arrival name key.  From each matching arrival we compute a theoretical</span>
-<span class="sd">    origin time using obspy&#39;s taup calculator and a specified model and</span>
+<span class="sd">    origin time using obspy's taup calculator and a specified model and</span>
 <span class="sd">    hypocenter coordinates in the arrival document that we assume was loaded</span>
 <span class="sd">    previously from a css3.0 database (i.e. the event-&gt;origin-&gt;assoc-&gt;arrival</span>
 <span class="sd">    view).   We then select and load source coordinates for the closest</span>
@@ -1040,8 +1040,8 @@
 <span class="sd">    described above is ambiguous.   We resolve that with a switch defined by</span>
 <span class="sd">    the argument t0_definition.   Currently there are two options defining</span>
 <span class="sd">    the only two options I know of for time selection of downloaded segments.</span>
-<span class="sd">    (1) if set to &#39;origin_time&#39; we assume member t0 values are near the origin</span>
-<span class="sd">    time of the event.  (2) if set to &#39;phase_time&#39; we assume the member t0</span>
+<span class="sd">    (1) if set to 'origin_time' we assume member t0 values are near the origin</span>
+<span class="sd">    time of the event.  (2) if set to 'phase_time' we assume the member t0</span>
 <span class="sd">    values are relative to the phase used as a reference.  In both cases an</span>
 <span class="sd">    optional t0_offset can be specified to offset each start time by a constant.</span>
 <span class="sd">    The sign of the shift is to compare the data start time to the computed</span>
@@ -1059,45 +1059,45 @@
 <span class="sd">    does not clear the contents. Hence, on exit most ensembles will have</span>
 <span class="sd">    at least some members marked dead.  The function returns the number of</span>
 <span class="sd">    members set.  The caller should test and complain if there are no matches.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">base_error_message</span> <span class="o">=</span> <span class="s2">&quot;load_hypocenter_data_by_time:  &quot;</span>
+<span class="sd">    """</span>
+    <span class="n">base_error_message</span> <span class="o">=</span> <span class="s2">"load_hypocenter_data_by_time:  "</span>
     <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="n">base_error_message</span> <span class="o">+</span> <span class="s2">&quot;Missing required argument db=MongoDB Database handle&quot;</span><span class="p">,</span>
+            <span class="n">base_error_message</span> <span class="o">+</span> <span class="s2">"Missing required argument db=MongoDB Database handle"</span><span class="p">,</span>
             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">ens</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="n">base_error_message</span> <span class="o">+</span> <span class="s2">&quot;Missing required argument ens=mspass Ensemble data&quot;</span><span class="p">,</span>
+            <span class="n">base_error_message</span> <span class="o">+</span> <span class="s2">"Missing required argument ens=mspass Ensemble data"</span><span class="p">,</span>
             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="c1"># First we need to query the arrival table to find all arrivals within</span>
     <span class="c1"># the time range of this ensemble</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">dbarrival</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">arrival</span>
-        <span class="n">stime</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">&quot;startttime&quot;</span><span class="p">]</span>
-        <span class="n">etime</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">{{</span><span class="n">dbtime_key</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">stime</span><span class="p">,</span> <span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">etime</span><span class="p">}}}</span>
+        <span class="n">stime</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">"startttime"</span><span class="p">]</span>
+        <span class="n">etime</span> <span class="o">=</span> <span class="n">ens</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{{</span><span class="n">dbtime_key</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gte"</span><span class="p">:</span> <span class="n">stime</span><span class="p">,</span> <span class="s2">"$lte"</span><span class="p">:</span> <span class="n">etime</span><span class="p">}}}</span>
         <span class="n">narr</span> <span class="o">=</span> <span class="n">dbarrival</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">narr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">base_error_message</span><span class="p">,</span> <span class="s2">&quot;No arrivals found in data time range:&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">stime</span><span class="p">),</span> <span class="s2">&quot; to &quot;</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">etime</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">base_error_message</span><span class="p">,</span> <span class="s2">"No arrivals found in data time range:"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">stime</span><span class="p">),</span> <span class="s2">" to "</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">etime</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">kill_null</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># This else block isn&#39;t essential, but makes the logic clearer</span>
+            <span class="c1"># This else block isn't essential, but makes the logic clearer</span>
             <span class="c1"># first scan the data for unique events.  For now use an evid</span>
             <span class="c1"># test.  This could be generalized to coordinates</span>
             <span class="n">arrivals</span> <span class="o">=</span> <span class="n">dbarrival</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="n">evids</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">arrivals</span><span class="p">:</span>
                 <span class="n">evnow</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">event_id_key</span><span class="p">]</span>
-                <span class="n">lat</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;source.lat&quot;</span><span class="p">]</span>
-                <span class="n">lon</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;source.lon&quot;</span><span class="p">]</span>
-                <span class="n">depth</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;source.depth&quot;</span><span class="p">]</span>
-                <span class="n">otime</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;source.time&quot;</span><span class="p">]</span>
+                <span class="n">lat</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"source.lat"</span><span class="p">]</span>
+                <span class="n">lon</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"source.lon"</span><span class="p">]</span>
+                <span class="n">depth</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"source.depth"</span><span class="p">]</span>
+                <span class="n">otime</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"source.time"</span><span class="p">]</span>
                 <span class="n">evids</span><span class="p">[</span><span class="n">evnow</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">otime</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">evids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="c1"># land if picks from multiple events are inside the data window</span>
@@ -1118,52 +1118,52 @@
 <div class="viewcode-block" id="load_site_data">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_site_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_site_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">ens</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Loads site data into ens.  Similar to load_source_data but uses a diffrent</span>
 <span class="sd">    match:  net,sta, time matching startdate-&gt;enddate.   Mark members dead and</span>
 <span class="sd">    post an elog message if the site coordinates are not found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dbsite</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">site</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="k">continue</span>
-            <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
-            <span class="n">net</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-            <span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$eq&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">},</span>
-                <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$eq&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">},</span>
-                <span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">t0</span><span class="p">},</span>
-                <span class="s2">&quot;endtime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">t0</span><span class="p">},</span>
+                <span class="s2">"net"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$eq"</span><span class="p">:</span> <span class="n">net</span><span class="p">},</span>
+                <span class="s2">"sta"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$eq"</span><span class="p">:</span> <span class="n">sta</span><span class="p">},</span>
+                <span class="s2">"starttime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="n">t0</span><span class="p">},</span>
+                <span class="s2">"endtime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="n">t0</span><span class="p">},</span>
             <span class="p">}</span>
             <span class="n">n</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                    <span class="s2">&quot;load_site_data&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;no match found in site collection for net=&quot;</span>
+                    <span class="s2">"load_site_data"</span><span class="p">,</span>
+                    <span class="s2">"no match found in site collection for net="</span>
                     <span class="o">+</span> <span class="n">net</span>
-                    <span class="o">+</span> <span class="s2">&quot; sta=&quot;</span>
+                    <span class="o">+</span> <span class="s2">" sta="</span>
                     <span class="o">+</span> <span class="n">sta</span>
-                    <span class="o">+</span> <span class="s2">&quot; for this event&quot;</span><span class="p">,</span>
+                    <span class="o">+</span> <span class="s2">" for this event"</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">siterec</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;site_lat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">siterec</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;site_lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">siterec</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;site_elev&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">siterec</span><span class="p">[</span><span class="s2">&quot;elev&quot;</span><span class="p">]</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;site_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">siterec</span><span class="p">[</span><span class="s2">&quot;site_id&quot;</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"site_lat"</span><span class="p">]</span> <span class="o">=</span> <span class="n">siterec</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"site_lon"</span><span class="p">]</span> <span class="o">=</span> <span class="n">siterec</span><span class="p">[</span><span class="s2">"lon"</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"site_elev"</span><span class="p">]</span> <span class="o">=</span> <span class="n">siterec</span><span class="p">[</span><span class="s2">"elev"</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"site_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">siterec</span><span class="p">[</span><span class="s2">"site_id"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Multiple (</span><span class="si">{n}</span><span class="s2">) matches found for net=</span><span class="si">{net}</span><span class="s2"> and sta=</span><span class="si">{sta}</span><span class="s2"> with reference time </span><span class="si">{t0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Multiple (</span><span class="si">{n}</span><span class="s2">) matches found for net=</span><span class="si">{net}</span><span class="s2"> and sta=</span><span class="si">{sta}</span><span class="s2"> with reference time </span><span class="si">{t0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="n">sta</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span>
                     <span class="p">)</span>
-                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;load_site_data&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">"load_site_data"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ens</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="s2">&quot;Something threw an unexpected exception&quot;</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+            <span class="s2">"Something threw an unexpected exception"</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span></div>
 
 
@@ -1171,50 +1171,50 @@
 <div class="viewcode-block" id="load_channel_data">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_channel_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_channel_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">ens</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Loads channel data into ens.  Similar to load_source_data but uses a diffrent</span>
 <span class="sd">    match:  net,sta,loc,time matching startdate-&gt;enddate.   Mark members dead and</span>
 <span class="sd">    post an elog message if required metadata are not found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dbchannel</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">channel</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="k">continue</span>
-            <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span>
             <span class="c1"># this is a sanity check to avoid throwing exceptions</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;chan&quot;</span><span class="p">)</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"net"</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"sta"</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"loc"</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"chan"</span><span class="p">)</span>
             <span class="p">):</span>
-                <span class="n">net</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-                <span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
-                <span class="n">chan</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
-                <span class="n">loc</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+                <span class="n">net</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+                <span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
+                <span class="n">chan</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span>
+                <span class="n">loc</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span>
                 <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$eq&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">},</span>
-                    <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$eq&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">},</span>
-                    <span class="s2">&quot;chan&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$eq&quot;</span><span class="p">:</span> <span class="n">chan</span><span class="p">},</span>
-                    <span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$eq&quot;</span><span class="p">:</span> <span class="n">loc</span><span class="p">},</span>
-                    <span class="s2">&quot;starttime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">t0</span><span class="p">},</span>
-                    <span class="s2">&quot;endtime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">t0</span><span class="p">},</span>
+                    <span class="s2">"net"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$eq"</span><span class="p">:</span> <span class="n">net</span><span class="p">},</span>
+                    <span class="s2">"sta"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$eq"</span><span class="p">:</span> <span class="n">sta</span><span class="p">},</span>
+                    <span class="s2">"chan"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$eq"</span><span class="p">:</span> <span class="n">chan</span><span class="p">},</span>
+                    <span class="s2">"loc"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$eq"</span><span class="p">:</span> <span class="n">loc</span><span class="p">},</span>
+                    <span class="s2">"starttime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="n">t0</span><span class="p">},</span>
+                    <span class="s2">"endtime"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="n">t0</span><span class="p">},</span>
                 <span class="p">}</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                        <span class="s2">&quot;load_channel_data&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;no match found in channel collection for net=&quot;</span>
+                        <span class="s2">"load_channel_data"</span><span class="p">,</span>
+                        <span class="s2">"no match found in channel collection for net="</span>
                         <span class="o">+</span> <span class="n">net</span>
-                        <span class="o">+</span> <span class="s2">&quot; sta=&quot;</span>
+                        <span class="o">+</span> <span class="s2">" sta="</span>
                         <span class="o">+</span> <span class="n">sta</span>
-                        <span class="o">+</span> <span class="s2">&quot; chan=&quot;</span>
+                        <span class="o">+</span> <span class="s2">" chan="</span>
                         <span class="o">+</span> <span class="n">chan</span>
-                        <span class="o">+</span> <span class="s2">&quot; loc=&quot;</span>
+                        <span class="o">+</span> <span class="s2">" loc="</span>
                         <span class="o">+</span> <span class="n">loc</span>
-                        <span class="o">+</span> <span class="s2">&quot; for this event&quot;</span><span class="p">,</span>
+                        <span class="o">+</span> <span class="s2">" for this event"</span><span class="p">,</span>
                         <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="k">continue</span>
@@ -1225,21 +1225,21 @@
                     <span class="c1"># that is what find_one returns.  We use the count to make</span>
                     <span class="c1"># the eror message cleaer</span>
                     <span class="n">chanrec</span> <span class="o">=</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Multiple (</span><span class="si">{n}</span><span class="s2">) matches found for net=</span><span class="si">{net}</span><span class="s2"> and sta=</span><span class="si">{sta}</span><span class="s2"> with reference time </span><span class="si">{t0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Multiple (</span><span class="si">{n}</span><span class="s2">) matches found for net=</span><span class="si">{net}</span><span class="s2"> and sta=</span><span class="si">{sta}</span><span class="s2"> with reference time </span><span class="si">{t0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="n">sta</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span>
                     <span class="p">)</span>
-                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;load_site_data&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;site_lat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;site_lon&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;site_elev&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">&quot;elev&quot;</span><span class="p">]</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;vang&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">&quot;vang&quot;</span><span class="p">]</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;hang&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">&quot;hang&quot;</span><span class="p">]</span>
-                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;site_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">"load_site_data"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"site_lat"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"site_lon"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">"lon"</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"site_elev"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">"elev"</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"vang"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">"vang"</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"hang"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">"hang"</span><span class="p">]</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"site_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chanrec</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">ens</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="s2">&quot;Something threw an unexpected exception&quot;</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+            <span class="s2">"Something threw an unexpected exception"</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span></div>
 
 
@@ -1249,12 +1249,12 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">load_arrivals_by_id</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">tsens</span><span class="p">,</span>
-    <span class="n">phase</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
-    <span class="n">required_key_map</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;phase&quot;</span><span class="p">:</span> <span class="s2">&quot;phase&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;arrival_time&quot;</span><span class="p">},</span>
-    <span class="n">optional_key_map</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;iphase&quot;</span><span class="p">:</span> <span class="s2">&quot;iphase&quot;</span><span class="p">,</span> <span class="s2">&quot;deltim&quot;</span><span class="p">:</span> <span class="s2">&quot;deltim&quot;</span><span class="p">},</span>
+    <span class="n">phase</span><span class="o">=</span><span class="s2">"P"</span><span class="p">,</span>
+    <span class="n">required_key_map</span><span class="o">=</span><span class="p">{</span><span class="s2">"phase"</span><span class="p">:</span> <span class="s2">"phase"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">:</span> <span class="s2">"arrival_time"</span><span class="p">},</span>
+    <span class="n">optional_key_map</span><span class="o">=</span><span class="p">{</span><span class="s2">"iphase"</span><span class="p">:</span> <span class="s2">"iphase"</span><span class="p">,</span> <span class="s2">"deltim"</span><span class="p">:</span> <span class="s2">"deltim"</span><span class="p">},</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Special prototype function to load arrival times in arrival collection</span>
 <span class="sd">    to TimeSeries data in a TimeSeriesEnsemble. Match is a fixed query</span>
 <span class="sd">    that uses source_id tht is assumed set for the ensemble AND previously</span>
@@ -1282,38 +1282,38 @@
 <span class="sd">    :param verbose:  print some messages otherwise only posted to elog</span>
 
 <span class="sd">    :return: count of number of live members in the ensemble at completion</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dbarrival</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">arrival</span>
-    <span class="n">algorithm</span> <span class="o">=</span> <span class="s2">&quot;load_arrivals_by_id&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;source_id&quot;</span> <span class="ow">in</span> <span class="n">tsens</span><span class="p">:</span>
-        <span class="n">source_id</span> <span class="o">=</span> <span class="n">tsens</span><span class="p">[</span><span class="s2">&quot;source_id&quot;</span><span class="p">]</span>
+    <span class="n">algorithm</span> <span class="o">=</span> <span class="s2">"load_arrivals_by_id"</span>
+    <span class="k">if</span> <span class="s2">"source_id"</span> <span class="ow">in</span> <span class="n">tsens</span><span class="p">:</span>
+        <span class="n">source_id</span> <span class="o">=</span> <span class="n">tsens</span><span class="p">[</span><span class="s2">"source_id"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tsens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;net&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;sta&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">):</span>
-                <span class="n">net</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-                <span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
-                <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;sta&quot;</span><span class="p">:</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;phase&quot;</span><span class="p">:</span> <span class="n">phase</span><span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">"net"</span> <span class="ow">in</span> <span class="n">d</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">"sta"</span> <span class="ow">in</span> <span class="n">d</span><span class="p">):</span>
+                <span class="n">net</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+                <span class="n">sta</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"source_id"</span><span class="p">:</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">"net"</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span> <span class="s2">"sta"</span><span class="p">:</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">"phase"</span><span class="p">:</span> <span class="n">phase</span><span class="p">}</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="n">dbarrival</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-                <span class="c1"># print(&#39;debug  query=&#39;,query,&#39; yield n=&#39;,n)</span>
+                <span class="c1"># print('debug  query=',query,' yield n=',n)</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                         <span class="n">algorithm</span><span class="p">,</span>
-                        <span class="s2">&quot;No matching arrival for source_id=&quot;</span>
+                        <span class="s2">"No matching arrival for source_id="</span>
                         <span class="o">+</span> <span class="n">source_id</span>
-                        <span class="o">+</span> <span class="s2">&quot; and net:sta =&quot;</span>
+                        <span class="o">+</span> <span class="s2">" and net:sta ="</span>
                         <span class="o">+</span> <span class="n">net</span>
-                        <span class="o">+</span> <span class="s2">&quot;:&quot;</span>
+                        <span class="o">+</span> <span class="s2">":"</span>
                         <span class="o">+</span> <span class="n">sta</span><span class="p">,</span>
                         <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span>
-                            <span class="s2">&quot;No matching arrival for source_id=&quot;</span>
+                            <span class="s2">"No matching arrival for source_id="</span>
                             <span class="o">+</span> <span class="n">source_id</span>
-                            <span class="o">+</span> <span class="s2">&quot; and net:sta =&quot;</span>
+                            <span class="o">+</span> <span class="s2">" and net:sta ="</span>
                             <span class="o">+</span> <span class="n">net</span>
-                            <span class="o">+</span> <span class="s2">&quot;:&quot;</span>
+                            <span class="o">+</span> <span class="s2">":"</span>
                             <span class="o">+</span> <span class="n">sta</span>
                         <span class="p">)</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
@@ -1324,18 +1324,18 @@
                     <span class="k">elif</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                             <span class="n">algorithm</span><span class="p">,</span>
-                            <span class="s2">&quot;Multiple documents match source_id=&quot;</span>
+                            <span class="s2">"Multiple documents match source_id="</span>
                             <span class="o">+</span> <span class="n">source_id</span>
-                            <span class="o">+</span> <span class="s2">&quot; and net:sta =&quot;</span>
+                            <span class="o">+</span> <span class="s2">" and net:sta ="</span>
                             <span class="o">+</span> <span class="n">net</span>
-                            <span class="o">+</span> <span class="s2">&quot;:&quot;</span>
+                            <span class="o">+</span> <span class="s2">":"</span>
                             <span class="o">+</span> <span class="n">sta</span>
-                            <span class="o">+</span> <span class="s2">&quot;  Using first found&quot;</span><span class="p">,</span>
+                            <span class="o">+</span> <span class="s2">"  Using first found"</span><span class="p">,</span>
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                             <span class="nb">print</span><span class="p">(</span>
-                                <span class="s2">&quot;debug:  multiple docs match - printing full documents of all matches.  Will use first&quot;</span>
+                                <span class="s2">"debug:  multiple docs match - printing full documents of all matches.  Will use first"</span>
                             <span class="p">)</span>
                             <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
                                 <span class="nb">print</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
@@ -1349,17 +1349,17 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                                 <span class="n">algorithm</span><span class="p">,</span>
-                                <span class="s2">&quot;Required attribute with key=&quot;</span>
+                                <span class="s2">"Required attribute with key="</span>
                                 <span class="o">+</span> <span class="n">k</span>
-                                <span class="o">+</span> <span class="s2">&quot; not found in matching arrival document - data killed&quot;</span><span class="p">,</span>
+                                <span class="o">+</span> <span class="s2">" not found in matching arrival document - data killed"</span><span class="p">,</span>
                                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                             <span class="p">)</span>
                             <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
                             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                                 <span class="nb">print</span><span class="p">(</span>
-                                    <span class="s2">&quot;Required attribute with key=&quot;</span>
+                                    <span class="s2">"Required attribute with key="</span>
                                     <span class="o">+</span> <span class="n">k</span>
-                                    <span class="o">+</span> <span class="s2">&quot; not found in matching arrival document - data killed&quot;</span>
+                                    <span class="o">+</span> <span class="s2">" not found in matching arrival document - data killed"</span>
                                 <span class="p">)</span>
                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">optional_key_map</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">:</span>
@@ -1369,24 +1369,24 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                                 <span class="n">algorithm</span><span class="p">,</span>
-                                <span class="s2">&quot;Optional attribute with key=&quot;</span>
+                                <span class="s2">"Optional attribute with key="</span>
                                 <span class="o">+</span> <span class="n">k</span>
-                                <span class="o">+</span> <span class="s2">&quot; was not found in matching arrival document and cannot be loaded&quot;</span><span class="p">,</span>
+                                <span class="o">+</span> <span class="s2">" was not found in matching arrival document and cannot be loaded"</span><span class="p">,</span>
                                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
                             <span class="p">)</span>
                             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                                 <span class="nb">print</span><span class="p">(</span>
-                                    <span class="s2">&quot;Optional attribute with key=&quot;</span>
+                                    <span class="s2">"Optional attribute with key="</span>
                                     <span class="o">+</span> <span class="n">k</span>
-                                    <span class="o">+</span> <span class="s2">&quot; was not found in matching arrival document and cannot be loaded&quot;</span>
+                                    <span class="o">+</span> <span class="s2">" was not found in matching arrival document and cannot be loaded"</span>
                                 <span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Enemble metadata does not contain required source_id attribute - killing all data in this ensemble&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"Enemble metadata does not contain required source_id attribute - killing all data in this ensemble"</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tsens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;load_arrivals_by_id&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">"load_arrivals_by_id"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
             <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
     <span class="n">nlive</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tsens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
@@ -1398,18 +1398,18 @@
 
 <div class="viewcode-block" id="erase_seed_metadata">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.erase_seed_metadata">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">erase_seed_metadata</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mseed&quot;</span><span class="p">,</span> <span class="s2">&quot;_format&quot;</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Erase a set of debris obspy&#39;s reader adds to stats array that get copied to data.  We</span>
-<span class="sd">    don&#39;t need that debris once data are converted to MsPASS data objects and stored in</span>
-<span class="sd">    MongoDB.  Use this function when importing seed data with obspy&#39;s reader to</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">erase_seed_metadata</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">"mseed"</span><span class="p">,</span> <span class="s2">"_format"</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Erase a set of debris obspy's reader adds to stats array that get copied to data.  We</span>
+<span class="sd">    don't need that debris once data are converted to MsPASS data objects and stored in</span>
+<span class="sd">    MongoDB.  Use this function when importing seed data with obspy's reader to</span>
 <span class="sd">    reduce junk in the database.</span>
 
 <span class="sd">    :param d: is the data object to be cleaned (assumed only to be a child of Metadata so</span>
 <span class="sd">      erase will work.</span>
 <span class="sd">    :param keys:  list of keys to clear.  Default should be all that is needed for</span>
 <span class="sd">      standard use.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">mem</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="n">mem</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span></div>

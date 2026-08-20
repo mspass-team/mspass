@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.bundle &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.algorithms.bundle &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -475,23 +475,23 @@
   <h1>Source code for mspasspy.algorithms.bundle</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">This is a set of thin wrappers for C++ code to do a process we call</span>
-<span class="sd">&quot;bundling&quot;.   That is, a Seismogram object can be constructed from</span>
+<span class="sd">"bundling".   That is, a Seismogram object can be constructed from</span>
 <span class="sd">3 TimeSeries objects spanning a common time period and having the</span>
 <span class="sd">same sample rate but with orientation pointing in 3 linearly</span>
 <span class="sd">independent directions.   There are a lot of complexities to assembling</span>
 <span class="sd">such data and manipulating the data objects, which is why the</span>
 <span class="sd">process was implemented in C++.   The algorithms here are not completely</span>
 <span class="sd">generic and will likely need additions at some future data for nonstandard</span>
-<span class="sd">data.  &quot;standard&quot; in this context means passive array data archived in</span>
+<span class="sd">data.  "standard" in this context means passive array data archived in</span>
 <span class="sd">the SEED (Standard Earthquake Exchange Data) format (aka miniseed which is</span>
 <span class="sd">a standard subset of seed used for archives).  The algorithms here</span>
 <span class="sd">depend upon seismic channels being uniquely defined by four metadata keys:</span>
 <span class="sd">net, sta, chan, and loc.   Bundles are formed by sorting data in the</span>
 <span class="sd">following key order:  net, sta, loc, chan.   The algorithms here are</span>
 <span class="sd">further limited to applications to ensembles that are the generalization</span>
-<span class="sd">of a reflection seismology &quot;shot gather&quot;.   That means an implict assumption</span>
+<span class="sd">of a reflection seismology "shot gather".   That means an implict assumption</span>
 <span class="sd">is the ensembles contain data assembled from one and only one event so</span>
 <span class="sd">there is a one-to-one relationship between each channel and an event tag.</span>
 <span class="sd">if data from multiple events or something other than a shot gather</span>
@@ -502,7 +502,7 @@
 <span class="sd">Created on Mon Jan 11 05:34:10 2021</span>
 
 <span class="sd">@author: pavlis</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">_bundle_seed_data</span><span class="p">,</span> <span class="n">_BundleSEEDGroup</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesEnsemble</span>
@@ -512,7 +512,7 @@
 <div class="viewcode-block" id="bundle_seed_data">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.bundle_seed_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bundle_seed_data</span><span class="p">(</span><span class="n">ensemble</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function can be used to take an (unordered) input ensemble of</span>
 <span class="sd">    TimeSeries objects generated from miniseed data and produce an output</span>
 <span class="sd">    ensemble of Seismograms produced by bundles linked to the seed name</span>
@@ -546,17 +546,17 @@
 
 <span class="sd">    :exception:  Can throw a MsPASSError for a number of conditions.</span>
 <span class="sd">        Caller should be enclosed in a handler if run on a large data set.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="s2">&quot;bundle_seed_data:  illegal input - must be a TimeSeriesEnsemble&quot;</span><span class="p">,</span>
+            <span class="s2">"bundle_seed_data:  illegal input - must be a TimeSeriesEnsemble"</span><span class="p">,</span>
             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">d3c</span> <span class="o">=</span> <span class="n">_bundle_seed_data</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="s2">&quot;_bundle_seed_data threw an exception - see more messages below&quot;</span><span class="p">,</span>
+            <span class="s2">"_bundle_seed_data threw an exception - see more messages below"</span><span class="p">,</span>
             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
     <span class="k">return</span> <span class="n">d3c</span></div>
@@ -566,7 +566,7 @@
 <div class="viewcode-block" id="BundleSEEDGroup">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.BundleSEEDGroup">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">BundleSEEDGroup</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">i0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">iend</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Combine a grouped set of TimeSeries into one Seismogram.</span>
 
 <span class="sd">    A Seismogram object is a bundle of TimeSeries objects that define a</span>
@@ -597,7 +597,7 @@
 
 <span class="sd">    The output will be marked as dead data with no valid data in one of</span>
 <span class="sd">    two conditions:  (1)  less than 3 unique channel names or (2) more than</span>
-<span class="sd">    three inputs with an inconsistent set of SEED names.   That &quot;inconsistent&quot;</span>
+<span class="sd">    three inputs with an inconsistent set of SEED names.   That "inconsistent"</span>
 <span class="sd">    test is obscure and yet another example that SEED is a four letter word.</span>
 <span class="sd">    Commentary aside, the rules are:</span>
 
@@ -642,7 +642,7 @@
 <span class="sd">        assemble one or more Seismograms from TimeSeries in the range</span>
 <span class="sd">        d[i0] to d[iend].  Default is 2 for a single Seismogram without</span>
 <span class="sd">        duplicates.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">d3c</span> <span class="o">=</span> <span class="n">_BundleSEEDGroup</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">,</span> <span class="n">i0</span><span class="p">,</span> <span class="n">iend</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">d3c</span></div>
 

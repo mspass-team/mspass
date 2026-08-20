@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.matcher &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.db.matcher &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -488,7 +488,7 @@
 <span class="c1"># this is copied from edit.py.  easier to duplicate than load that entire</span>
 <span class="c1"># module with this one</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This internal function standardizes the test to certify the</span>
 <span class="sd">    input datum, d, is or is not a valid MsPASS data object.   Putting it</span>
 <span class="sd">    in one place makes extending the code base for other data types much</span>
@@ -496,7 +496,7 @@
 <span class="sd">    the input is valid data.  It returns True if d is one a valid data</span>
 <span class="sd">    object known to mspass.  Returns false it not.  Caller must decide</span>
 <span class="sd">    what to do if the function returns false.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span>
         <span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)</span>
     <span class="p">)</span>
@@ -510,10 +510,10 @@
 <div class="viewcode-block" id="NMF">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.NMF">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NMF</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract base class for a family of Normalization Match Functions (NMF).</span>
 <span class="sd">    This family of object are used in MsPASS to standize the api for</span>
-<span class="sd">    generic mongodb match operation for &quot;normalizing&quot; a collection.</span>
+<span class="sd">    generic mongodb match operation for "normalizing" a collection.</span>
 <span class="sd">    Normalization is comparable to a relational database join.</span>
 <span class="sd">    With MongoDB normalization is most sensible for the case when the</span>
 <span class="sd">    collection to be normalized is much smaller than collection that is</span>
@@ -526,7 +526,7 @@
 <span class="sd">    class must implement:  (1)  a method to fetch the entire document</span>
 <span class="sd">    defining a match and (2) a method to fetch and copy specified</span>
 <span class="sd">    key-value pairs to a valid MsPASS data object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span> <span class="o">=</span> <span class="n">kill_on_failure</span>
@@ -536,26 +536,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This convenience method allows a concrete instance to be</span>
 <span class="sd">        called with the simpler syntax with the (implied) principle</span>
-<span class="sd">        method &quot;normalize&quot;.   e.g. to normalize d with the</span>
+<span class="sd">        method "normalize".   e.g. to normalize d with the</span>
 <span class="sd">        channel collection using id_matcher you can use</span>
 <span class="sd">        d = id_matcher(d)  instead of d = id_matcher.normalize(d)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NMF.get_document">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.NMF.get_document">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fetch the database document matching the input datum.</span>
 
 <span class="sd">        :param d: MsPASS data object used to build the match query.</span>
 <span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
 <span class="sd">        :rtype: dict or None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
@@ -563,13 +563,13 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.NMF.normalize">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Copy selected fields from the matching database document to a datum.</span>
 
 <span class="sd">        :param d: MsPASS data object to normalize.</span>
 <span class="sd">        :return: normalized input datum.  Failed matches may log errors and</span>
 <span class="sd">            kill the datum depending on matcher configuration.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
@@ -578,7 +578,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">log_error</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">matchername</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">kill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This base class method is used to standardize the error logging</span>
 <span class="sd">        functionality of all NMF objects.   It writes a standardized</span>
 <span class="sd">        message to simplify writing of subclasses - they need only</span>
@@ -594,7 +594,7 @@
 
 <span class="sd">        :param d:  MsPASS data object to which elog message is to be</span>
 <span class="sd">          written.</span>
-<span class="sd">        :param matchername: is the string assigned to the &quot;algorithm&quot; field</span>
+<span class="sd">        :param matchername: is the string assigned to the "algorithm" field</span>
 <span class="sd">          of the message posted to d.elog.</span>
 <span class="sd">        :param message:  specialized message to post - this string is added</span>
 <span class="sd">          to an internal generic message.</span>
@@ -603,16 +603,16 @@
 <span class="sd">          is posted.</span>
 <span class="sd">        :param severity:  ErrorSeverity to assign to elog message</span>
 <span class="sd">          (See ErrorLogger docstring).  Default is Informational</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="n">fullmessage</span> <span class="o">=</span> <span class="n">message</span>
             <span class="k">if</span> <span class="n">kill</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-                <span class="n">fullmessage</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Datum was killed&quot;</span>
+                <span class="n">fullmessage</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Datum was killed"</span>
             <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">matchername</span><span class="p">,</span> <span class="n">fullmessage</span><span class="p">,</span> <span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;NMF.log_error method received invalid data;  arg 0 must be a MsPASS data object&quot;</span><span class="p">,</span>
+                <span class="s2">"NMF.log_error method received invalid data;  arg 0 must be a MsPASS data object"</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
             <span class="p">)</span></div>
 </div>
@@ -622,13 +622,13 @@
 <div class="viewcode-block" id="ID_matcher">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.ID_matcher">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ID_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">attributes_to_load</span><span class="p">,</span> <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span> <span class="o">=</span> <span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span> <span class="o">=</span> <span class="n">collection</span> <span class="o">+</span> <span class="s2">"_id"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
             <span class="c1"># assume type errors will be thrown if attributes_to_load is not array like</span>
             <span class="c1"># this is attributes_to_load is initialized to an empty list in</span>
@@ -638,21 +638,21 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;ID_matcher constructor:  arg0 must be a collection name - received invalid type&quot;</span>
+                <span class="s2">"ID_matcher constructor:  arg0 must be a collection name - received invalid type"</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="ID_matcher.get_document">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.ID_matcher.get_document">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fetch the database document matching the input datum.</span>
 
 <span class="sd">        :param d: MsPASS data object used to build the match query.</span>
 <span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
 <span class="sd">        :rtype: dict or None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span><span class="p">):</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span><span class="p">]}</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span><span class="p">]}</span>
             <span class="c1"># Note this will return None if the query fails - callers should handle that condition</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -660,38 +660,38 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;Normalizing ID with key=&quot;</span>
+                <span class="s2">"Normalizing ID with key="</span>
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
-                <span class="o">+</span> <span class="s2">&quot; is not defined in this object&quot;</span>
+                <span class="o">+</span> <span class="s2">" is not defined in this object"</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;ID_matcher&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">"ID_matcher"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="ID_matcher.normalize">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.ID_matcher.normalize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Copy selected fields from the matching database document to a datum.</span>
 
 <span class="sd">        :param d: MsPASS data object to normalize.</span>
 <span class="sd">        :return: normalized input datum.  Failed matches may log errors and</span>
 <span class="sd">            kill the datum depending on matcher configuration.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">d</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;No matching _id found for &quot;</span>
+                    <span class="s2">"No matching _id found for "</span>
                     <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
-                    <span class="o">+</span> <span class="s2">&quot; in collection=&quot;</span>
+                    <span class="o">+</span> <span class="s2">" in collection="</span>
                     <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                     <span class="n">d</span><span class="p">,</span>
-                    <span class="s2">&quot;ID_matcher&quot;</span><span class="p">,</span>
+                    <span class="s2">"ID_matcher"</span><span class="p">,</span>
                     <span class="n">message</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
@@ -704,14 +704,14 @@
                         <span class="c1"># We accumulate error messages to aid user debugging</span>
                         <span class="c1"># but it could create bloated elog collections</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="s2">"No data for key="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
-                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="s2">" in document returned from collection="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
                         <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                             <span class="n">d</span><span class="p">,</span>
-                            <span class="s2">&quot;ID_matcher&quot;</span><span class="p">,</span>
+                            <span class="s2">"ID_matcher"</span><span class="p">,</span>
                             <span class="n">message</span><span class="p">,</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
@@ -727,7 +727,7 @@
 <div class="viewcode-block" id="mseed_channel_matcher">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_channel_matcher">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">mseed_channel_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class is used to match wf_miniseed to the channel collection using</span>
 <span class="sd">    the mseed standard channel string tags net, sta, chan, and (optionally) loc.</span>
 <span class="sd">    It can also be used to data saved in wf_TimeSeries where the mseed tags</span>
@@ -743,19 +743,19 @@
 <span class="sd">    the method of this object will normally post an elog message warning of the</span>
 <span class="sd">    potential issue.  Those warnings can be silenced by setting verbose</span>
 <span class="sd">    in the constructor to False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db</span><span class="p">,</span>
-        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">,</span> <span class="s2">&quot;hang&quot;</span><span class="p">,</span> <span class="s2">&quot;vang&quot;</span><span class="p">],</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span><span class="p">,</span> <span class="s2">"hang"</span><span class="p">,</span> <span class="s2">"vang"</span><span class="p">],</span>
         <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">readonly_tag</span><span class="o">=</span><span class="s2">&quot;READONLYERROR_&quot;</span><span class="p">,</span>
+        <span class="n">readonly_tag</span><span class="o">=</span><span class="s2">"READONLYERROR_"</span><span class="p">,</span>
         <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">]</span>
         <span class="c1"># assume type errors will be thrown if attributes_to_load is not array like</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -765,31 +765,31 @@
 <div class="viewcode-block" id="mseed_channel_matcher.get_document">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_channel_matcher.get_document">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fetch the channel/site document matching net, station, location, and time.</span>
 
 <span class="sd">        :param d: atomic MsPASS data object used to build the match query.</span>
 <span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
 <span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
 <span class="sd">        :rtype: dict or None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;mseed_channel_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object&quot;</span>
+                <span class="s2">"mseed_channel_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"</span>
             <span class="p">)</span>
         <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;net&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"net"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"net"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"net"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
-                <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Required match key=net or &quot;</span>
+                <span class="s2">"mseed_channel_matcher"</span><span class="p">,</span>
+                <span class="s2">"Required match key=net or "</span>
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">&quot;net are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="o">+</span> <span class="s2">"net are not defined for this datum"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
@@ -797,44 +797,44 @@
         <span class="c1"># could cause bloated elog messages if a user makes a dumb error</span>
         <span class="c1"># with a large data set.  that seems preferable to mysterious behavior</span>
         <span class="c1"># could make it a verbose option but for now we will always blunder on</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;sta&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"sta"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"sta"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"sta"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
-                <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Required match key=sta or &quot;</span>
+                <span class="s2">"mseed_channel_matcher"</span><span class="p">,</span>
+                <span class="s2">"Required match key=sta or "</span>
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">&quot;sta are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="o">+</span> <span class="s2">"sta are not defined for this datum"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;chan&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;chan&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;chan&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"chan"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"chan"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"chan"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"chan"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
-                <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Required match key=chan or &quot;</span>
+                <span class="s2">"mseed_channel_matcher"</span><span class="p">,</span>
+                <span class="s2">"Required match key=chan or "</span>
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">&quot;chan are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="o">+</span> <span class="s2">"chan are not defined for this datum"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="c1"># loc has to be handled differently because it is often not defined</span>
-        <span class="c1"># We just don&#39;t add loc to the query if it isn&#39;t defined</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;loc&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+        <span class="c1"># We just don't add loc to the query if it isn't defined</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"loc"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"loc"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"loc"</span><span class="p">]</span>
 
         <span class="c1"># return now if this datum has been marked dead</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">query_is_ok</span><span class="p">:</span>
@@ -846,8 +846,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">querytime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
 
-        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
-        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
 
         <span class="n">matchsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -855,8 +855,8 @@
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
-                <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Multiple channel docs match net:sta:chan:loc:time for this datum - using first one found&quot;</span><span class="p">,</span>
+                <span class="s2">"mseed_channel_matcher"</span><span class="p">,</span>
+                <span class="s2">"Multiple channel docs match net:sta:chan:loc:time for this datum - using first one found"</span><span class="p">,</span>
                 <span class="kc">False</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
             <span class="p">)</span>
@@ -866,22 +866,22 @@
 <div class="viewcode-block" id="mseed_channel_matcher.normalize">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_channel_matcher.normalize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Normalize a datum with fields from the matching channel/site document.</span>
 
 <span class="sd">        :param d: atomic MsPASS data object to normalize.</span>
 <span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
 <span class="sd">        :return: normalized input datum.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;No matching document was found in channel collection for this datum&quot;</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">"No matching document was found in channel collection for this datum"</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                     <span class="n">d</span><span class="p">,</span>
-                    <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
+                    <span class="s2">"mseed_channel_matcher"</span><span class="p">,</span>
                     <span class="n">message</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
@@ -890,7 +890,7 @@
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
-                            <span class="n">mdkey</span> <span class="o">=</span> <span class="s2">&quot;channel_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="s2">"channel_"</span> <span class="o">+</span> <span class="n">key</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
                         <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -898,14 +898,14 @@
                         <span class="c1"># We accumulate error messages to aid user debugging</span>
                         <span class="c1"># but it could create bloated elog collections</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="s2">"No data for key="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
-                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="s2">" in document returned from collection="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
                         <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                             <span class="n">d</span><span class="p">,</span>
-                            <span class="s2">&quot;mseed_channel_matcher&quot;</span><span class="p">,</span>
+                            <span class="s2">"mseed_channel_matcher"</span><span class="p">,</span>
                             <span class="n">message</span><span class="p">,</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
@@ -923,7 +923,7 @@
 <div class="viewcode-block" id="mseed_site_matcher">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_site_matcher">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">mseed_site_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class is used to match derived from seed data to the site collection using</span>
 <span class="sd">    the mseed standard site string tags net, sta, and (optionally) loc.</span>
 <span class="sd">    It can also be used to data saved in wf_TimeSeries or wf_Seismogram where the mseed tags</span>
@@ -939,19 +939,19 @@
 <span class="sd">    the method of this object will normally post an elog message warning of the</span>
 <span class="sd">    potential issue.  Those warnings can be silenced by setting verbose</span>
 <span class="sd">    in the constructor to False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db</span><span class="p">,</span>
-        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;elev&quot;</span><span class="p">],</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span><span class="p">],</span>
         <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">readonly_tag</span><span class="o">=</span><span class="s2">&quot;READONLYERROR_&quot;</span><span class="p">,</span>
+        <span class="n">readonly_tag</span><span class="o">=</span><span class="s2">"READONLYERROR_"</span><span class="p">,</span>
         <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;site&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"site"</span><span class="p">]</span>
         <span class="c1"># assume type errors will be thrown if attributes_to_load is not array like</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -961,31 +961,31 @@
 <div class="viewcode-block" id="mseed_site_matcher.get_document">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_site_matcher.get_document">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fetch the channel/site document matching net, station, location, and time.</span>
 
 <span class="sd">        :param d: atomic MsPASS data object used to build the match query.</span>
 <span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
 <span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
 <span class="sd">        :rtype: dict or None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;mseed_site_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object&quot;</span>
+                <span class="s2">"mseed_site_matcher.get_document:  data received as arg0 is not an atomic MsPASS data object"</span>
             <span class="p">)</span>
         <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;net&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;net&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;net&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"net"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"net"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"net"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
-                <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Required match key=net or &quot;</span>
+                <span class="s2">"mseed_site_matcher"</span><span class="p">,</span>
+                <span class="s2">"Required match key=net or "</span>
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">&quot;net are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="o">+</span> <span class="s2">"net are not defined for this datum"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
@@ -993,28 +993,28 @@
         <span class="c1"># could cause bloated elog messages if a user makes a dumb error</span>
         <span class="c1"># with a large data set.  that seems preferable to mysterious behavior</span>
         <span class="c1"># could make it a verbose option but for now we will always blunder on</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;sta&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;sta&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;sta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;sta&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"sta"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"sta"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"sta"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">query_is_ok</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
-                <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Required match key=sta or &quot;</span>
+                <span class="s2">"mseed_site_matcher"</span><span class="p">,</span>
+                <span class="s2">"Required match key=sta or "</span>
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span>
-                <span class="o">+</span> <span class="s2">&quot;sta are not defined for this datum&quot;</span><span class="p">,</span>
+                <span class="o">+</span> <span class="s2">"sta are not defined for this datum"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="c1"># loc has to be handled differently because it is often not defined</span>
-        <span class="c1"># We just don&#39;t add loc to the query if it isn&#39;t defined</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;loc&quot;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">&quot;loc&quot;</span><span class="p">]</span>
+        <span class="c1"># We just don't add loc to the query if it isn't defined</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"loc"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"loc"</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"loc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">readonly_tag</span> <span class="o">+</span> <span class="s2">"loc"</span><span class="p">]</span>
 
         <span class="c1"># return now if this datum has been marked dead</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">query_is_ok</span><span class="p">:</span>
@@ -1026,8 +1026,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">querytime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
 
-        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;starttime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
-        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="n">querytime</span><span class="p">}</span>
 
         <span class="n">matchsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1035,8 +1035,8 @@
         <span class="k">if</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span>
-                <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Multiple site docs match net:sta:chan:loc:time for this datum - using first one found&quot;</span><span class="p">,</span>
+                <span class="s2">"mseed_site_matcher"</span><span class="p">,</span>
+                <span class="s2">"Multiple site docs match net:sta:chan:loc:time for this datum - using first one found"</span><span class="p">,</span>
                 <span class="kc">False</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1046,24 +1046,24 @@
 <div class="viewcode-block" id="mseed_site_matcher.normalize">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.mseed_site_matcher.normalize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Normalize a datum with fields from the matching channel/site document.</span>
 
 <span class="sd">        :param d: atomic MsPASS data object to normalize.</span>
 <span class="sd">        :param time: optional match time; defaults to ``d.t0``.</span>
 <span class="sd">        :return: normalized input datum.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;No matching document was found in site collection for this datum&quot;</span>
+                    <span class="s2">"No matching document was found in site collection for this datum"</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                     <span class="n">d</span><span class="p">,</span>
-                    <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
+                    <span class="s2">"mseed_site_matcher"</span><span class="p">,</span>
                     <span class="n">message</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
@@ -1072,7 +1072,7 @@
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
-                            <span class="n">mdkey</span> <span class="o">=</span> <span class="s2">&quot;site_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="s2">"site_"</span> <span class="o">+</span> <span class="n">key</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
                         <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -1080,14 +1080,14 @@
                         <span class="c1"># We accumulate error messages to aid user debugging</span>
                         <span class="c1"># but it could create bloated elog collections</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="s2">"No data for key="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
-                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="s2">" in document returned from collection="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
                         <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                             <span class="n">d</span><span class="p">,</span>
-                            <span class="s2">&quot;mseed_site_matcher&quot;</span><span class="p">,</span>
+                            <span class="s2">"mseed_site_matcher"</span><span class="p">,</span>
                             <span class="n">message</span><span class="p">,</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
@@ -1097,7 +1097,7 @@
             <span class="c1"># operation</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;mseed_site_matcher.normalize:  received invalid data type&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"mseed_site_matcher.normalize:  received invalid data type"</span><span class="p">)</span></div>
 </div>
 
 
@@ -1105,20 +1105,20 @@
 <div class="viewcode-block" id="origin_time_source_matcher">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.origin_time_source_matcher">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">origin_time_source_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db</span><span class="p">,</span>
-        <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="s2">"source"</span><span class="p">,</span>
         <span class="n">t0offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">tolerance</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
-        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">],</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"time"</span><span class="p">],</span>
         <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
@@ -1132,7 +1132,7 @@
 <div class="viewcode-block" id="origin_time_source_matcher.get_document">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.origin_time_source_matcher.get_document">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" """</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="c1"># this logic allows setting ensemble metadata using a specific</span>
             <span class="c1"># time but if time is not defined we default to using data start time (t0)</span>
@@ -1141,9 +1141,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">test_time</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;$ge&quot;</span><span class="p">:</span> <span class="n">test_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
-                    <span class="s2">&quot;$le&quot;</span><span class="p">:</span> <span class="n">test_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
+                <span class="s2">"time"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"$ge"</span><span class="p">:</span> <span class="n">test_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
+                    <span class="s2">"$le"</span><span class="p">:</span> <span class="n">test_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">}</span>
 
@@ -1153,8 +1153,8 @@
             <span class="k">elif</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                     <span class="n">d</span><span class="p">,</span>
-                    <span class="s2">&quot;origin_time_source_matcher&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;multiple source documents match the origin time computed from time received - using first found&quot;</span><span class="p">,</span>
+                    <span class="s2">"origin_time_source_matcher"</span><span class="p">,</span>
+                    <span class="s2">"multiple source documents match the origin time computed from time received - using first found"</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
@@ -1166,26 +1166,26 @@
 <div class="viewcode-block" id="origin_time_source_matcher.normalize">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.origin_time_source_matcher.normalize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Normalize a datum with source fields matched by origin time.</span>
 
 <span class="sd">        :param d: MsPASS data object to normalize.</span>
 <span class="sd">        :param time: optional origin time override.</span>
 <span class="sd">        :return: normalized input datum.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;No matching document was found in&quot;</span>
+                    <span class="s2">"No matching document was found in"</span>
                     <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
-                    <span class="o">+</span> <span class="s2">&quot; collection for this datum&quot;</span>
+                    <span class="o">+</span> <span class="s2">" collection for this datum"</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                     <span class="n">d</span><span class="p">,</span>
-                    <span class="s2">&quot;origin_time_source_matcher&quot;</span><span class="p">,</span>
+                    <span class="s2">"origin_time_source_matcher"</span><span class="p">,</span>
                     <span class="n">message</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
@@ -1194,7 +1194,7 @@
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
-                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
                         <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -1202,14 +1202,14 @@
                         <span class="c1"># We accumulate error messages to aid user debugging</span>
                         <span class="c1"># but it could create bloated elog collections</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="s2">"No data for key="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
-                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="s2">" in document returned from collection="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
                         <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                             <span class="n">d</span><span class="p">,</span>
-                            <span class="s2">&quot;origin_time_source_matcher&quot;</span><span class="p">,</span>
+                            <span class="s2">"origin_time_source_matcher"</span><span class="p">,</span>
                             <span class="n">message</span><span class="p">,</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
@@ -1220,7 +1220,7 @@
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;origin_time_source_matcher.normalize:  received invalid data type&quot;</span>
+                <span class="s2">"origin_time_source_matcher.normalize:  received invalid data type"</span>
             <span class="p">)</span></div>
 </div>
 
@@ -1229,7 +1229,7 @@
 <div class="viewcode-block" id="css30_arrival_interval_matcher">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.css30_arrival_interval_matcher">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">css30_arrival_interval_matcher</span><span class="p">(</span><span class="n">NMF</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This matcher is used to match phase picks stored in the database</span>
 <span class="sd">    (default is arrival collection) to waveforms.  The basic algorithm</span>
 <span class="sd">    is an interval match.  That is, an arrival with a time between</span>
@@ -1242,22 +1242,22 @@
 <span class="sd">    The main use of this class is to match a collection of raw data</span>
 <span class="sd">    with arrival time picks made by another source</span>
 <span class="sd">    (e.g. the Array Network Facilty of Earthscope css3.0 arrival picks)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db</span><span class="p">,</span>
         <span class="n">startime_offset</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span>
-        <span class="n">phasename</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
-        <span class="n">phasename_key</span><span class="o">=</span><span class="s2">&quot;phase&quot;</span><span class="p">,</span>
-        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span>
-        <span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evid&quot;</span><span class="p">,</span> <span class="s2">&quot;iphase&quot;</span><span class="p">,</span> <span class="s2">&quot;seaz&quot;</span><span class="p">,</span> <span class="s2">&quot;esaz&quot;</span><span class="p">,</span> <span class="s2">&quot;deltim&quot;</span><span class="p">,</span> <span class="s2">&quot;timeres&quot;</span><span class="p">],</span>
+        <span class="n">phasename</span><span class="o">=</span><span class="s2">"P"</span><span class="p">,</span>
+        <span class="n">phasename_key</span><span class="o">=</span><span class="s2">"phase"</span><span class="p">,</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">"time"</span><span class="p">],</span>
+        <span class="n">load_if_defined</span><span class="o">=</span><span class="p">[</span><span class="s2">"evid"</span><span class="p">,</span> <span class="s2">"iphase"</span><span class="p">,</span> <span class="s2">"seaz"</span><span class="p">,</span> <span class="s2">"esaz"</span><span class="p">,</span> <span class="s2">"deltim"</span><span class="p">,</span> <span class="s2">"timeres"</span><span class="p">],</span>
         <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">arrival_collection_name</span><span class="o">=</span><span class="s2">&quot;arrival&quot;</span><span class="p">,</span>
+        <span class="n">arrival_collection_name</span><span class="o">=</span><span class="s2">"arrival"</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span> <span class="o">=</span> <span class="n">phasename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">phasename_key</span> <span class="o">=</span> <span class="n">phasename_key</span>
@@ -1272,17 +1272,17 @@
 <div class="viewcode-block" id="css30_arrival_interval_matcher.get_document">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.css30_arrival_interval_matcher.get_document">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fetch the database document matching the input datum.</span>
 
 <span class="sd">        :param d: MsPASS data object used to build the match query.</span>
 <span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
 <span class="sd">        :rtype: dict or None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">stime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
         <span class="n">etime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phasename_key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span><span class="p">}</span>
-        <span class="n">query</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$ge&quot;</span><span class="p">:</span> <span class="n">stime</span><span class="p">,</span> <span class="s2">&quot;$le&quot;</span><span class="p">:</span> <span class="n">etime</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$ge"</span><span class="p">:</span> <span class="n">stime</span><span class="p">,</span> <span class="s2">"$le"</span><span class="p">:</span> <span class="n">etime</span><span class="p">}</span>
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -1295,16 +1295,16 @@
             <span class="c1"># for now it is frozen as this constant</span>
             <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
                 <span class="c1"># ignore any docs with the time attribute not set</span>
-                <span class="k">if</span> <span class="s2">&quot;time&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                    <span class="n">dt</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_offset</span>
+                <span class="k">if</span> <span class="s2">"time"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                    <span class="n">dt</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_offset</span>
                     <span class="n">matchlist</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span> <span class="n">doc</span><span class="p">])</span>
             <span class="c1"># handle these special cases</span>
             <span class="n">n_to_test</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matchlist</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n_to_test</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">&quot;css30_arrival_interval_matcher.get_document:  no arrival docs found with phasename set as&quot;</span>
+                    <span class="s2">"css30_arrival_interval_matcher.get_document:  no arrival docs found with phasename set as"</span>
                     <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span>
-                    <span class="o">+</span> <span class="s2">&quot; with a time attribute defined.  This should not happen and indicates a serious database inconsistence.  Aborting&quot;</span><span class="p">,</span>
+                    <span class="o">+</span> <span class="s2">" with a time attribute defined.  This should not happen and indicates a serious database inconsistence.  Aborting"</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="n">n_to_test</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1328,26 +1328,26 @@
 <div class="viewcode-block" id="css30_arrival_interval_matcher.normalize">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.css30_arrival_interval_matcher.normalize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Copy selected fields from the matching database document to a datum.</span>
 
 <span class="sd">        :param d: MsPASS data object to normalize.</span>
 <span class="sd">        :return: normalized input datum.  Failed matches may log errors and</span>
 <span class="sd">            kill the datum depending on matcher configuration.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;No matching document was found in&quot;</span>
+                    <span class="s2">"No matching document was found in"</span>
                     <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">arrival_collection_name</span>
-                    <span class="o">+</span> <span class="s2">&quot; collection for this datum&quot;</span>
+                    <span class="o">+</span> <span class="s2">" collection for this datum"</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                     <span class="n">d</span><span class="p">,</span>
-                    <span class="s2">&quot;css30_arrival_interval_matcher&quot;</span><span class="p">,</span>
+                    <span class="s2">"css30_arrival_interval_matcher"</span><span class="p">,</span>
                     <span class="n">message</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
@@ -1356,7 +1356,7 @@
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
-                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
                         <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -1364,31 +1364,31 @@
                         <span class="c1"># We accumulate error messages to aid user debugging</span>
                         <span class="c1"># but it could create bloated elog collections</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="s2">&quot;No data for key=&quot;</span>
+                            <span class="s2">"No data for key="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
-                            <span class="o">+</span> <span class="s2">&quot; in document returned from collection=&quot;</span>
+                            <span class="o">+</span> <span class="s2">" in document returned from collection="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
                         <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                             <span class="n">d</span><span class="p">,</span>
-                            <span class="s2">&quot;css30_arrival_interval_matcher&quot;</span><span class="p">,</span>
+                            <span class="s2">"css30_arrival_interval_matcher"</span><span class="p">,</span>
                             <span class="n">message</span><span class="p">,</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                         <span class="p">)</span>
-                <span class="c1"># similar for optional but don&#39;t log errors for missing</span>
+                <span class="c1"># similar for optional but don't log errors for missing</span>
                 <span class="c1"># attributes unless verbose is set true</span>
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
-                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
                         <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
                     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                            <span class="s2">&quot;css30_arrival_interval_matcher&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;No data found with optional load key=&quot;</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
+                            <span class="s2">"css30_arrival_interval_matcher"</span><span class="p">,</span>
+                            <span class="s2">"No data found with optional load key="</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span><span class="p">,</span>
                         <span class="p">)</span>
 
@@ -1398,7 +1398,7 @@
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;css30_arrival_interval_matcher.normalize:  received invalid data type&quot;</span>
+                <span class="s2">"css30_arrival_interval_matcher.normalize:  received invalid data type"</span>
             <span class="p">)</span></div>
 </div>
 

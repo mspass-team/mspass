@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Run MsPASS with Docker &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Run MsPASS with Docker &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Getting Started in a Nutshell" href="quick_start.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -587,13 +587,13 @@ second time to confirm shutdown.</p>
 <h2>Other host shells<a class="headerlink" href="#other-host-shells" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">pwd</span></code> form above is for Linux and macOS shells.  In Windows PowerShell,
 run the following command from the project directory:</p>
-<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="n">-p</span> <span class="n">8888</span><span class="p">:</span><span class="n">8888</span> <span class="p">-</span><span class="n">-mount</span> <span class="s2">&quot;src=</span><span class="p">$(</span><span class="nv">$PWD</span><span class="p">.</span><span class="n">Path</span><span class="p">)</span><span class="s2">,target=/home,type=bind&quot;</span> <span class="n">mspass</span><span class="p">/</span><span class="n">mspass</span>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="n">-p</span> <span class="n">8888</span><span class="p">:</span><span class="n">8888</span> <span class="p">-</span><span class="n">-mount</span> <span class="s2">"src=</span><span class="p">$(</span><span class="nv">$PWD</span><span class="p">.</span><span class="n">Path</span><span class="p">)</span><span class="s2">,target=/home,type=bind"</span> <span class="n">mspass</span><span class="p">/</span><span class="n">mspass</span>
 </pre></div>
 </div>
 <p>For any shell, you can replace the current-directory expression with the
 absolute path to an existing project directory.  Quote the full mount value
 when the path contains spaces.  For example:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--mount &quot;src=/absolute/path/to/project,target=/home,type=bind&quot;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--mount "src=/absolute/path/to/project,target=/home,type=bind"
 </pre></div>
 </div>
 </section>
@@ -612,7 +612,7 @@ when the path contains spaces.  For example:</p>
 <p>Python-heavy processing can benefit from multiple single-threaded Dask worker
 processes because Python threads are limited by the Global Interpreter Lock.
 To request four workers with one thread each, use:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>-e<span class="w"> </span><span class="nv">MSPASS_WORKER_ARG</span><span class="o">=</span><span class="s2">&quot;--nworkers 4 --nthreads 1&quot;</span><span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>-e<span class="w"> </span><span class="nv">MSPASS_WORKER_ARG</span><span class="o">=</span><span class="s2">"--nworkers 4 --nthreads 1"</span><span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
 </pre></div>
 </div>
 <p>Choose a worker count that fits the CPUs and memory available to Docker, while

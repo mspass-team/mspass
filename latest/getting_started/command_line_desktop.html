@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Command Line Docker Desktop Operation &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Command Line Docker Desktop Operation &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Running MsPASS on a Desktop Computer" href="mspass_desktop.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -619,7 +619,7 @@ care with commands that alter files.</p>
 for Python’s Global Interpreter Lock.  For those workloads, multiple
 single-threaded worker processes are often preferable.  The image accepts
 Dask worker options through <code class="docutils literal notranslate"><span class="pre">MSPASS_WORKER_ARG</span></code>.  For example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>-e<span class="w"> </span><span class="nv">MSPASS_WORKER_ARG</span><span class="o">=</span><span class="s2">&quot;--nworkers 4 --nthreads 1&quot;</span><span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>-e<span class="w"> </span><span class="nv">MSPASS_WORKER_ARG</span><span class="o">=</span><span class="s2">"--nworkers 4 --nthreads 1"</span><span class="w"> </span>--mount<span class="w"> </span><span class="nv">src</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>,target<span class="o">=</span>/home,type<span class="o">=</span><span class="nb">bind</span><span class="w"> </span>mspass/mspass
 </pre></div>
 </div>
 <p>Choose the worker count to fit the CPU and memory Docker has been assigned;
@@ -645,14 +645,14 @@ repository supplies this standard Dask configuration:</p>
 <span class="linenos"> 3</span><span class="w">  </span><span class="nt">mspass-db</span><span class="p">:</span>
 <span class="linenos"> 4</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
 <span class="linenos"> 5</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos"> 6</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="linenos"> 6</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
 <span class="linenos"> 7</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="linenos"> 8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017:27017</span>
 <span class="linenos"> 9</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
 <span class="linenos">10</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
 <span class="linenos">11</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
 <span class="linenos">12</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="linenos">13</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo &#39;db.runCommand(&quot;ping&quot;).ok&#39; | mongosh localhost:27017/test --quiet</span><span class="w"> </span>
+<span class="linenos">13</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet</span><span class="w"> </span>
 <span class="linenos">14</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
 <span class="linenos">15</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
 <span class="linenos">16</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
@@ -661,7 +661,7 @@ repository supplies this standard Dask configuration:</p>
 <span class="linenos">19</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
 <span class="linenos">20</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
 <span class="linenos">21</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos">22</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="linenos">22</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
 <span class="linenos">23</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="linenos">24</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786:8786</span>
 <span class="linenos">25</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8787:8787</span>
@@ -679,7 +679,7 @@ repository supplies this standard Dask configuration:</p>
 <span class="linenos">37</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span>
 <span class="linenos">38</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
 <span class="linenos">39</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos">40</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="linenos">40</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
 <span class="linenos">41</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
 <span class="linenos">42</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
 <span class="linenos">43</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
@@ -691,7 +691,7 @@ repository supplies this standard Dask configuration:</p>
 <span class="linenos">49</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span>
 <span class="linenos">50</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
 <span class="linenos">51</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos">52</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
+<span class="linenos">52</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
 <span class="linenos">53</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="linenos">54</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888:8888</span>
 <span class="linenos">55</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
@@ -758,8 +758,8 @@ services that read a waveform file must see it at the same container path.  If
 waveforms live on another host filesystem, add the same mount to each service
 that needs them.  For example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;${PWD}/:/home&quot;</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;/data:/mnt&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"/data:/mnt"</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">image</span></code> value selects the container image.  Leave it as

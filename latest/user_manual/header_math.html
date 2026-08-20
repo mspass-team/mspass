@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Header (Metadata) Math &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Header (Metadata) Math &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Cleaning Inconsistent Metadata" href="cleaning_metadata.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -522,7 +522,7 @@ needed to be multiplied by 2 because some custom algorithm had a scaling error.
 We could define an
 operator to correct this problem with the following construct:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.algorithms.edit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mde</span>
-<span class="n">myop</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Multiply</span><span class="p">(</span><span class="s2">&quot;calib&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="n">myop</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Multiply</span><span class="p">(</span><span class="s2">"calib"</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
 <span class="c1"># parallel example with dask - assumes data are in dask bag mydata</span>
 <span class="n">mydata</span> <span class="o">=</span> <span class="n">mydata</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">myop</span><span class="o">.</span><span class="n">apply</span><span class="p">)</span>
 </pre></div>
@@ -684,10 +684,10 @@ The operators run sequentially in iterable order.</p>
 compute the midpoint coordinates from Metadata attributes rx,ry,sx, and sy
 and set them as cmpx, cmpy for x and y coordinates respectively:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.algorithms.edit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mde</span>
-<span class="n">xop1</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Add2</span><span class="p">(</span><span class="s2">&quot;cmpx&quot;</span><span class="p">,</span> <span class="s2">&quot;rx&quot;</span><span class="p">,</span> <span class="s2">&quot;sx&quot;</span><span class="p">)</span>
-<span class="n">xop2</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="s2">&quot;cmpx&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
-<span class="n">yop1</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Add2</span><span class="p">(</span><span class="s2">&quot;cmpy&quot;</span><span class="p">,</span> <span class="s2">&quot;ry&quot;</span><span class="p">,</span> <span class="s2">&quot;sy&quot;</span><span class="p">)</span>
-<span class="n">yop2</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="s2">&quot;cmpy&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="n">xop1</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Add2</span><span class="p">(</span><span class="s2">"cmpx"</span><span class="p">,</span> <span class="s2">"rx"</span><span class="p">,</span> <span class="s2">"sx"</span><span class="p">)</span>
+<span class="n">xop2</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="s2">"cmpx"</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="n">yop1</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Add2</span><span class="p">(</span><span class="s2">"cmpy"</span><span class="p">,</span> <span class="s2">"ry"</span><span class="p">,</span> <span class="s2">"sy"</span><span class="p">)</span>
+<span class="n">yop2</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="s2">"cmpy"</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
 <span class="n">opchain</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">MetadataOperatorChain</span><span class="p">([</span><span class="n">xop1</span><span class="p">,</span><span class="n">xop2</span><span class="p">,</span><span class="n">yop1</span><span class="p">,</span><span class="n">yop2</span><span class="p">])</span>
 </pre></div>
 </div>

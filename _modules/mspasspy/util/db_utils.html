@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.db_utils &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.util.db_utils &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -473,12 +473,12 @@
                 <article class="bd-article">
                   
   <h1>Source code for mspasspy.util.db_utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Database utility functions for parallel processing support.</span>
 
 <span class="sd">This module provides utilities for handling database connections in both</span>
 <span class="sd">serial and parallel (Dask worker) contexts.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkerPlugin</span><span class="p">,</span> <span class="n">get_worker</span>
 
@@ -489,7 +489,7 @@
 <div class="viewcode-block" id="fetch_dbhandle">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.fetch_dbhandle">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Fetch a Database handle from dbname_or_handle.</span>
 
 <span class="sd">    This function provides a unified way to get a Database instance.  In parallel mode</span>
@@ -497,39 +497,39 @@
 <span class="sd">    Database/DBClient objects.  In serial mode, it returns the provided Database instance.</span>
 
 <span class="sd">    :param dbname_or_handle: Either a string (database name) or a Database instance.</span>
-<span class="sd">        If a string is provided, the function assumes it&#39;s being called in a Dask worker</span>
-<span class="sd">        context and will get the DBClient from worker.data[&quot;dbclient&quot;].</span>
+<span class="sd">        If a string is provided, the function assumes it's being called in a Dask worker</span>
+<span class="sd">        context and will get the DBClient from worker.data["dbclient"].</span>
 <span class="sd">    :type dbname_or_handle: str or :class:`mspasspy.db.database.Database`</span>
 <span class="sd">    :return: :class:`mspasspy.db.database.Database` instance</span>
 <span class="sd">    :raises: ValueError if dbname_or_handle is neither a string nor a Database instance,</span>
 <span class="sd">        or if called with a string outside of a Dask worker context.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">worker</span> <span class="o">=</span> <span class="n">get_worker</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;fetch_dbhandle: when called with a string argument, this function must be &quot;</span>
-                <span class="s2">&quot;executed within a Dask worker context so that get_worker() succeeds and a &quot;</span>
-                <span class="s2">&quot;DBClient is available via a worker plugin.&quot;</span>
+                <span class="s2">"fetch_dbhandle: when called with a string argument, this function must be "</span>
+                <span class="s2">"executed within a Dask worker context so that get_worker() succeeds and a "</span>
+                <span class="s2">"DBClient is available via a worker plugin."</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">dbclient</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;dbclient&quot;</span><span class="p">]</span>
+            <span class="n">dbclient</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"dbclient"</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;fetch_dbhandle: Dask worker does not contain a &#39;dbclient&#39; entry in &quot;</span>
-                <span class="s2">&quot;worker.data. Make sure the MongoDBWorker (or an equivalent WorkerPlugin) &quot;</span>
-                <span class="s2">&quot;is registered so that a DBClient is created per worker.&quot;</span>
+                <span class="s2">"fetch_dbhandle: Dask worker does not contain a 'dbclient' entry in "</span>
+                <span class="s2">"worker.data. Make sure the MongoDBWorker (or an equivalent WorkerPlugin) "</span>
+                <span class="s2">"is registered so that a DBClient is created per worker."</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">,</span> <span class="n">Database</span><span class="p">):</span>
         <span class="n">db</span> <span class="o">=</span> <span class="n">dbname_or_handle</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;fetch_dbhandle: illegal type for arg1=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"fetch_dbhandle: illegal type for arg1=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be str defining a db name or a Database object&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be str defining a db name or a Database object"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">db</span></div>
 
@@ -538,7 +538,7 @@
 <div class="viewcode-block" id="MongoDBWorker">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.MongoDBWorker">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MongoDBWorker</span><span class="p">(</span><span class="n">WorkerPlugin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Dask worker plugin to manage MongoDB client per worker.</span>
 
 <span class="sd">    Creates a DBClient instance for each worker and stores it in worker.data.</span>
@@ -547,34 +547,34 @@
 
 <span class="sd">    :param mspass_client: MSPASS :class:`~mspasspy.client.Client` (or any object</span>
 <span class="sd">        with ``get_database_client()`` returning a :class:`~mspasspy.db.client.DBClient`).</span>
-<span class="sd">        The worker uses that client&#39;s ``_mspass_db_host`` for per-worker connections.</span>
+<span class="sd">        The worker uses that client's ``_mspass_db_host`` for per-worker connections.</span>
 <span class="sd">    :param dbclient_key: Key under ``worker.data`` for the created :class:`~mspasspy.db.client.DBClient`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_client</span><span class="p">,</span> <span class="n">dbclient_key</span><span class="o">=</span><span class="s2">&quot;dbclient&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_client</span><span class="p">,</span> <span class="n">dbclient_key</span><span class="o">=</span><span class="s2">"dbclient"</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span> <span class="o">=</span> <span class="n">dbclient_key</span>
         <span class="n">db_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">db_client</span><span class="p">,</span> <span class="s2">&quot;_mspass_db_host&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">db_client</span><span class="p">,</span> <span class="s2">"_mspass_db_host"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;mongodb://localhost:27017/&quot;</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;mongodb://&quot;</span><span class="p">):</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;mongodb://</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s2">"mongodb://localhost:27017/"</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"mongodb://"</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s2">"mongodb://</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">url</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;dbclient_key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span><span class="p">,</span>
-            <span class="s2">&quot;connection_url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span><span class="p">,</span>
+            <span class="s2">"dbclient_key"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span><span class="p">,</span>
+            <span class="s2">"connection_url"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;dbclient_key&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;connection_url&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"dbclient_key"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"connection_url"</span><span class="p">]</span>
 
 <div class="viewcode-block" id="MongoDBWorker.setup">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.MongoDBWorker.setup">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worker</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when worker starts - create DBClient for this worker.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Called when worker starts - create DBClient for this worker."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -585,7 +585,7 @@
 <div class="viewcode-block" id="MongoDBWorker.teardown">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.MongoDBWorker.teardown">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worker</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when worker shuts down - cleanup if needed.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Called when worker shuts down - cleanup if needed."""</span>
         <span class="n">dbclient</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dbclient</span><span class="p">:</span>
             <span class="n">dbclient</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -513,7 +513,7 @@
     <span class="n">_mspasspy_has_pyspark</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">_mspasspy_has_dask</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_mspasspy_has_pyspark</span><span class="p">:</span>
-    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> requires either dask or pyspark module. Please install dask or pyspark&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2"> requires either dask or pyspark module. Please install dask or pyspark"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="vm">__name__</span>
     <span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
@@ -524,8 +524,8 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">read_ensemble_parallel</span><span class="p">(</span>
     <span class="n">query</span><span class="p">,</span>
     <span class="n">dbname_or_handle</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"promiscuous"</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">load_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -534,18 +534,18 @@
     <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Special function used in read_distributed_data to handle ensembles.</span>
 
 <span class="sd">    Ensembles need to be read via a cursor which is not serializable.</span>
 <span class="sd">    Here we query a Database class, which is serializable, and</span>
-<span class="sd">    call it&#39;s read_data method to construct an ensemble that it returns.</span>
+<span class="sd">    call it's read_data method to construct an ensemble that it returns.</span>
 <span class="sd">    Defined as a function instead of using a lambda due largely to the</span>
 <span class="sd">    complexity of the argument list passed to  read_data.</span>
 
 <span class="sd">    Arguments are all passed directly from values set within</span>
 <span class="sd">    read_distributed_data.  See that function for parameter descriptions.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">sort_clause</span><span class="p">:</span>
@@ -577,7 +577,7 @@
 <div class="viewcode-block" id="post2metadata">
 <a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post2metadata">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">post2metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Posts content of key-value pair container doc to Metadata container</span>
 <span class="sd">    of mspass_object.  Operation only requires that doc be iterable</span>
 <span class="sd">    over keys and both doc and mspass_object act like associative</span>
@@ -585,9 +585,9 @@
 <span class="sd">    Metadata container.  Note the contents of doc[k] will overwrite</span>
 <span class="sd">    any existing content defined by mspass_object[k].  It returns the edited</span>
 <span class="sd">    copy of mspass_object to mesh with map operator usage in</span>
-<span class="sd">    read_distributed_data.   Note that Metadata &quot;is a&quot; fundamental component</span>
+<span class="sd">    read_distributed_data.   Note that Metadata "is a" fundamental component</span>
 <span class="sd">    of all atomic data. Ensemble objects contain a special instance of</span>
-<span class="sd">    Metadata we normally refer to as &quot;ensemble metadata&quot;.   When handling</span>
+<span class="sd">    Metadata we normally refer to as "ensemble metadata".   When handling</span>
 <span class="sd">    ensembles the content of doc are pushed to the ensemble metadata and</span>
 <span class="sd">    member attributes are not altered by this function.</span>
 
@@ -596,7 +596,7 @@
 <span class="sd">    a list of Metadata or dict containers held in a conguent bag/rdd</span>
 <span class="sd">    with a set of seismic data objects.   Because of that usage it has</span>
 <span class="sd">    no safeties for efficiency.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
         <span class="n">mspass_object</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">mspass_object</span></div>
@@ -610,13 +610,13 @@
     <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">scratchfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"promiscuous"</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">normalize_ensemble</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">load_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">"dask"</span><span class="p">,</span>
     <span class="n">npartitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">spark_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -626,7 +626,7 @@
     <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parallel data reader for seismic data objects.</span>
 
 <span class="sd">    In MsPASS seismic data objects need to be loaded into a Spark RDD or</span>
@@ -634,12 +634,12 @@
 <span class="sd">    process parallelizing the read operation where it can do so.</span>
 <span class="sd">    In MsPASS all data objects are created by constructors driven by</span>
 <span class="sd">    one or more documents stored in a MongoDB database collection</span>
-<span class="sd">    we will refer to here as a &quot;waveform collection&quot;.  Atomic data</span>
+<span class="sd">    we will refer to here as a "waveform collection".  Atomic data</span>
 <span class="sd">    are built from single documents that may or may not be extended</span>
-<span class="sd">    by &quot;normalization&quot; (option defined by normalize parameter).</span>
+<span class="sd">    by "normalization" (option defined by normalize parameter).</span>
 <span class="sd">    The constructors can get the sample data associated with a</span>
 <span class="sd">    waveform document by a variety of storage methods that</span>
-<span class="sd">    are abstracted to be &quot;under the hood&quot;.  That is relevant to understanding</span>
+<span class="sd">    are abstracted to be "under the hood".  That is relevant to understanding</span>
 <span class="sd">    this function because an absolutely required input is a handle to</span>
 <span class="sd">    the waveform db collection OR an image of it in another format.</span>
 <span class="sd">    Furthermore, the other absolute is that the output is ALWAYS a</span>
@@ -656,7 +656,7 @@
 <span class="sd">    single object.   Second, all database engines, in contrast, can</span>
 <span class="sd">    work linearly through a table (collection in MongoDB) very fast</span>
 <span class="sd">    because they cache blocks of records send from the server to the client.</span>
-<span class="sd">    In MongoDB that means a &quot;cursor&quot; returned by a &quot;find&quot; operation</span>
+<span class="sd">    In MongoDB that means a "cursor" returned by a "find" operation</span>
 <span class="sd">    can be iterated very fast compared to one-by-one queries of the</span>
 <span class="sd">    same data.  Why all that is relevant is that arg0 if this function is</span>
 <span class="sd">    required to be one of three things to work well within these constraints:</span>
@@ -673,7 +673,7 @@
 <span class="sd">           use the `scratchfile` option to buffer the large table into</span>
 <span class="sd">           a scratch file and then construct a dask or spark DataFrame</span>
 <span class="sd">           that are designed as containers that can overflow memory.</span>
-<span class="sd">        2. One of several implementations of a &quot;Dataframe&quot;, that are</span>
+<span class="sd">        2. One of several implementations of a "Dataframe", that are</span>
 <span class="sd">           an image or a substitute for a MongoDB waveform collection.</span>
 <span class="sd">           A Dataframe, for example, is a natural output from any</span>
 <span class="sd">           sql (or, for seismologists, an Antelope) database.   This</span>
@@ -699,8 +699,8 @@
 
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">           [{&quot;source_id&quot; : ObjectId(&#39;64b917ce9aa746564e8ecbfd&#39;)},</span>
-<span class="sd">            {&quot;source_id&quot; : ObjectId(&#39;64b917d69aa746564e8ecbfe&#39;)},</span>
+<span class="sd">           [{"source_id" : ObjectId('64b917ce9aa746564e8ecbfd')},</span>
+<span class="sd">            {"source_id" : ObjectId('64b917d69aa746564e8ecbfe')},</span>
 <span class="sd">            ... ]</span>
 
 <span class="sd">    This function is more-or-less three algorithms that are run for</span>
@@ -751,7 +751,7 @@
 <span class="sd">    Metadata container of each result bag/RDD component.  Note that for</span>
 <span class="sd">    atomic data that means the Metadata container for each</span>
 <span class="sd">    `TimeSeries` or `Seismogram` constructed by the reader while for</span>
-<span class="sd">    ensembles the attributes are posted to the ensemble&#39;s `Metadata` container.</span>
+<span class="sd">    ensembles the attributes are posted to the ensemble's `Metadata` container.</span>
 <span class="sd">    A user supplied function to replace the default must have two arguments</span>
 <span class="sd">    where arg0 is the seismic data to receive the edits defined by</span>
 <span class="sd">    `container_to_merge` while arg1 should contain the comparable component</span>
@@ -775,19 +775,19 @@
 <span class="sd">    A final complexity users need to be aware of is how this reader handles</span>
 <span class="sd">    any errors that happen during construction of all the objects in the</span>
 <span class="sd">    output bag/rdd.  All errors that create invalid data objects produce</span>
-<span class="sd">    what we call &quot;abortions&quot; in the User Manual and docstring for the</span>
+<span class="sd">    what we call "abortions" in the User Manual and docstring for the</span>
 <span class="sd">    :class:`mspasspy.util.Undertaker.Undertaker` class.   Invalid, atomic data</span>
 <span class="sd">    will be the same type as the other bag/rdd components but will have</span>
 <span class="sd">    the following properties that can be used to distinguish them:</span>
 
-<span class="sd">        1.  They will have the Metadata field &quot;is_live&quot; set False.</span>
-<span class="sd">        2.  The data object itself will have the interal attribute &quot;live&quot;</span>
+<span class="sd">        1.  They will have the Metadata field "is_live" set False.</span>
+<span class="sd">        2.  The data object itself will have the interal attribute "live"</span>
 <span class="sd">            set False.</span>
-<span class="sd">        3.  The Metadata field with key &quot;is_abortion&quot; will be defined and set True.</span>
+<span class="sd">        3.  The Metadata field with key "is_abortion" will be defined and set True.</span>
 <span class="sd">        4.  The sample array will be zero length (datum.npts==0)</span>
 
 <span class="sd">    Ensembles are still ensembles but they may contain dead data with</span>
-<span class="sd">    the properties of atomic data noted above EXCEPT that the &quot;is_live&quot;.</span>
+<span class="sd">    the properties of atomic data noted above EXCEPT that the "is_live".</span>
 <span class="sd">    attribute will not be set - that is used only inside this function.</span>
 <span class="sd">    An ensemble return will be marked dead only if all its members are found</span>
 <span class="sd">    to be marked dead.</span>
@@ -803,7 +803,7 @@
 
 <span class="sd">    :param db:  Database handle for loading data.   Required input if</span>
 <span class="sd">      reading from a dataframe or with ensemble reading via list of queries.</span>
-<span class="sd">      Ignored if the &quot;data&quot; parameter is a Database handle.</span>
+<span class="sd">      Ignored if the "data" parameter is a Database handle.</span>
 <span class="sd">    :type db:  :class:`mspasspy.db.Database`.  Can be None (default)</span>
 <span class="sd">      only if the data parameter contains the database handle.  Other uses</span>
 <span class="sd">      require this argument to be set.</span>
@@ -817,7 +817,7 @@
 <span class="sd">      drive by a :class:`mspasspy.db.Database` handle.  For very large</span>
 <span class="sd">      datasets loading the entire set of documents that define the</span>
 <span class="sd">      dataset into memory can be an issue on a system with smaller</span>
-<span class="sd">      &quot;RAM&quot; memory available.  This optional argument makes this function</span>
+<span class="sd">      "RAM" memory available.  This optional argument makes this function</span>
 <span class="sd">      scalable to the largest conceivable seismic data sets.  When defined</span>
 <span class="sd">      the documents retreived from the database are reformatted and pushed to</span>
 <span class="sd">      a scratch file with the name defined by this argument.  The contents</span>
@@ -830,13 +830,13 @@
 <span class="sd">    :type scratchfile:  str</span>
 
 <span class="sd">    :param collection:  waveform collection name for reading.  Default is</span>
-<span class="sd">      &quot;wf_TimeSeries&quot;.</span>
+<span class="sd">      "wf_TimeSeries".</span>
 <span class="sd">    :type collection: string</span>
 
 <span class="sd">    :param mode: reading mode that controls how the function interacts with</span>
 <span class="sd">      the schema definition for the data type.   Must be one of</span>
-<span class="sd">      [&#39;promiscuous&#39;,&#39;cautious&#39;,&#39;pedantic&#39;].   See user&#39;s manual for a</span>
-<span class="sd">      detailed description of what the modes mean.  Default is &#39;promiscuous&#39;</span>
+<span class="sd">      ['promiscuous','cautious','pedantic'].   See user's manual for a</span>
+<span class="sd">      detailed description of what the modes mean.  Default is 'promiscuous'</span>
 <span class="sd">      which turns off all schema checks and loads all attributes defined for</span>
 <span class="sd">      each object read.</span>
 <span class="sd">    :type mode: :class:`str`</span>
@@ -863,11 +863,11 @@
 <span class="sd">      If using this option you must also specify a valid value for</span>
 <span class="sd">      the `container_to_merge` argument.  The reason is that currently</span>
 <span class="sd">      the only efficient way to post any Metadata components to</span>
-<span class="sd">      an ensemble&#39;s Metadata container is via the algorithm used by</span>
+<span class="sd">      an ensemble's Metadata container is via the algorithm used by</span>
 <span class="sd">      if the `container_to_merge` option is used.  This feature was</span>
 <span class="sd">      designed with ids in mind where the ids would link to a collection</span>
 <span class="sd">      that are contain defining properties for what the ensemble is.</span>
-<span class="sd">      For example, if the ensemble is a &quot;common-source gather&quot;</span>
+<span class="sd">      For example, if the ensemble is a "common-source gather"</span>
 <span class="sd">      the `container_to_merge` could be a bag/RDD of ObjectIds defining</span>
 <span class="sd">      the `source_id` attribute.  Then the normalize_ensemble list</span>
 <span class="sd">      could contain an instance of :class:`mspasspy.db.normalize.ObjectIdMatcher`</span>
@@ -880,21 +880,21 @@
 <span class="sd">    :param load_history: boolean (True or False) switch used to enable or</span>
 <span class="sd">      disable object level history mechanism.   When set True each datum</span>
 <span class="sd">      will be tagged with its origin id that defines the leaf nodes of a</span>
-<span class="sd">      history G-tree.  See the User&#39;s manual for additional details of this</span>
+<span class="sd">      history G-tree.  See the User's manual for additional details of this</span>
 <span class="sd">      feature.  Default is False.</span>
 
 <span class="sd">    :param exclude_keys: Sometimes it is helpful to remove one or more</span>
-<span class="sd">      attributes stored in the database from the data&#39;s Metadata (header)</span>
+<span class="sd">      attributes stored in the database from the data's Metadata (header)</span>
 <span class="sd">      so they will not cause problems in downstream processing.</span>
 <span class="sd">    :type exclude_keys: a :class:`list` of :class:`str`</span>
 
 <span class="sd">    :param scheduler: Set the format of the parallel container to define the</span>
-<span class="sd">      dataset.   Must be either &quot;spark&quot; or &quot;dask&quot; or the job will abort</span>
+<span class="sd">      dataset.   Must be either "spark" or "dask" or the job will abort</span>
 <span class="sd">      immediately with a ValueError exception</span>
 <span class="sd">    :type scheduler: :class:`str`</span>
 
 <span class="sd">    :param spark_context: If using spark this argument is required.  Spark</span>
-<span class="sd">      defines the concept of a &quot;context&quot; that is a global control object that</span>
+<span class="sd">      defines the concept of a "context" that is a global control object that</span>
 <span class="sd">      manages schduling.  See online Spark documentation for details on</span>
 <span class="sd">      this concept.</span>
 <span class="sd">    :type spark_context: :class:`pyspark.SparkContext`</span>
@@ -905,7 +905,7 @@
 <span class="sd">      a container_to_merge make sure the number used here matches the partitioning</span>
 <span class="sd">      of container_to_merge.  If specified and container_to_merge</span>
 <span class="sd">      is defined this function will test them for consistency and throw a</span>
-<span class="sd">      ValueError exception if they don&#39;t match.  If not set (i.e. left</span>
+<span class="sd">      ValueError exception if they don't match.  If not set (i.e. left</span>
 <span class="sd">      default of None) that test is not done and the function assumes</span>
 <span class="sd">      container_to_merge also uses default partitioning.</span>
 <span class="sd">    :type npartitions: :class:`int`</span>
@@ -915,7 +915,7 @@
 <span class="sd">      example would be windowing long time blocks of data to shorter time</span>
 <span class="sd">      windows around a particular seismic phase and saving the windowed data.</span>
 <span class="sd">      The windowed data can be difficult to distinguish from the original</span>
-<span class="sd">      with standard queries.  For this reason we make extensive use of &quot;tags&quot;</span>
+<span class="sd">      with standard queries.  For this reason we make extensive use of "tags"</span>
 <span class="sd">      for save and read operations to improve the efficiency and simplify</span>
 <span class="sd">      read operations.   Default turns this off by setting the tag null (None).</span>
 <span class="sd">    :type data_tag: :class:`str`</span>
@@ -931,7 +931,7 @@
 <span class="sd">    :type sort_clause:  if None (default) no sorting is invoked when reading</span>
 <span class="sd">      ensembles.   Other wise should be a python list of tuples</span>
 <span class="sd">      defining a sort order.</span>
-<span class="sd">      e.g. [(&quot;sta&quot;,pymongo.ASCENDING),()&quot;time&quot;,pymongo.ASCENDING)]</span>
+<span class="sd">      e.g. [("sta",pymongo.ASCENDING),()"time",pymongo.ASCENDING)]</span>
 
 <span class="sd">    :param container_to_merge:  bag/RDD containing data packaged with</span>
 <span class="sd">      one item per datum this reader is asked to read.   See above for</span>
@@ -959,20 +959,20 @@
 <span class="sd">    :param aws_access_key_id: A part of the credentials to authenticate the user</span>
 <span class="sd">    :param aws_secret_access_key: A part of the credentials to authenticate the user</span>
 <span class="sd">    :return: container defining the parallel dataset.  A spark `RDD` if scheduler</span>
-<span class="sd">      is &quot;Spark&quot; and a dask &#39;bag&#39; if scheduler is &quot;dask&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">      is "Spark" and a dask 'bag' if scheduler is "dask"</span>
+<span class="sd">    """</span>
     <span class="c1"># This is a base error message that is an initialization for</span>
     <span class="c1"># any throw error.  We first two type checking of arg0</span>
-    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;read_distributed_data:  &quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">scheduler</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span> <span class="s2">&quot;spark&quot;</span><span class="p">]:</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Unsupported value for scheduler=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scheduler</span><span class="p">)</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be either &#39;dask&#39; or &#39;spark&#39;&quot;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">"read_distributed_data:  "</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">scheduler</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"dask"</span><span class="p">,</span> <span class="s2">"spark"</span><span class="p">]:</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Unsupported value for scheduler=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scheduler</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be either 'dask' or 'spark'"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_mspasspy_has_pyspark</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_mspasspy_has_pyspark</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;WARNING(read_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored.&quot;</span>
+            <span class="s2">"WARNING(read_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored."</span>
         <span class="p">)</span>
-        <span class="n">scheduler</span> <span class="o">=</span> <span class="s2">&quot;dask&quot;</span>
+        <span class="n">scheduler</span> <span class="o">=</span> <span class="s2">"dask"</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">ensemble_mode</span> <span class="o">=</span> <span class="kc">True</span>
@@ -980,25 +980,25 @@
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="s2">&quot;arg0 is a list, but component </span><span class="si">{}</span><span class="s2"> has illegal type=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="s2">"arg0 is a list, but component </span><span class="si">{}</span><span class="s2"> has illegal type=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;list must contain only python dict defining queries that define each ensemble to be loaded&quot;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"list must contain only python dict defining queries that define each ensemble to be loaded"</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sort_clause</span><span class="p">:</span>
             <span class="c1"># TODO - conflicting examples of the type of this clause</span>
             <span class="c1"># may have a hidden bug in TimeIntervalReader as it has usage</span>
             <span class="c1"># differnt from this restricteion</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">,</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;sort_clause argument is invalid</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be either a list or a single string&quot;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"sort_clause argument is invalid</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be either a list or a single string"</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sort_clause</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;sort_clause value = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">)</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; is invalid input for MongoDB&quot;</span>
+                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"sort_clause value = "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">)</span>
+                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">" is invalid input for MongoDB"</span>
                         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Database</span><span class="p">):</span>
         <span class="n">ensemble_mode</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1015,16 +1015,16 @@
             <span class="n">db</span> <span class="o">=</span> <span class="n">db</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">db</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type=</span><span class="si">{}</span><span class="s2"> for db argument - required with dataframe input&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal type=</span><span class="si">{}</span><span class="s2"> for db argument - required with dataframe input"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">db</span><span class="p">))</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Usage error. An instance of Database class is required for db argument when input is a dataframe&quot;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Usage error. An instance of Database class is required for db argument when input is a dataframe"</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type=</span><span class="si">{}</span><span class="s2"> for arg0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a Dataframe (pandas, spark, or dask), Database, or a list of query dictionaries&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal type=</span><span class="si">{}</span><span class="s2"> for arg0</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be a Dataframe (pandas, spark, or dask), Database, or a list of query dictionaries"</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normalize</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1032,68 +1032,68 @@
             <span class="k">for</span> <span class="n">nrm</span> <span class="ow">in</span> <span class="n">normalize</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrm</span><span class="p">,</span> <span class="n">BasicMatcher</span><span class="p">):</span>
                     <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
-                        <span class="s2">&quot;Illegal type=</span><span class="si">{}</span><span class="s2"> for component </span><span class="si">{}</span><span class="s2"> of normalize list</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="s2">"Illegal type=</span><span class="si">{}</span><span class="s2"> for component </span><span class="si">{}</span><span class="s2"> of normalize list</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                             <span class="nb">type</span><span class="p">(</span><span class="n">nrm</span><span class="p">),</span> <span class="n">i</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be subclass of BasicMatcher to allow use in normalize function&quot;</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be subclass of BasicMatcher to allow use in normalize function"</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type for normalize argument = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal type for normalize argument = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="nb">type</span><span class="p">(</span><span class="n">normalize</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a python list of implementations of BasicMatcher&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be a python list of implementations of BasicMatcher"</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">container_to_merge</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">container_to_merge</span><span class="p">,</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">RDD</span><span class="p">):</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="s2">&quot;container_to_merge must define a pyspark RDD with scheduler==spark&quot;</span>
+                    <span class="s2">"container_to_merge must define a pyspark RDD with scheduler==spark"</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="n">container_partitions</span> <span class="o">=</span> <span class="n">container_to_merge</span><span class="o">.</span><span class="n">getNumPartitions</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">container_to_merge</span><span class="p">,</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Bag</span><span class="p">):</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="s2">&quot;container_to_merge must define a dask bag with scheduler==dask&quot;</span>
+                    <span class="s2">"container_to_merge must define a dask bag with scheduler==dask"</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="n">container_partitions</span> <span class="o">=</span> <span class="n">container_to_merge</span><span class="o">.</span><span class="n">npartitions</span>
         <span class="k">if</span> <span class="n">npartitions</span><span class="p">:</span>
             <span class="c1"># This error handler only works if npartitions is set in the</span>
-            <span class="c1"># arg list.  Can&#39;t test the data container here as it doesn&#39;t</span>
+            <span class="c1"># arg list.  Can't test the data container here as it doesn't</span>
             <span class="c1"># exist yet and putting it inside the logic below would be awkward</span>
             <span class="c1"># and could slow execution</span>
             <span class="k">if</span> <span class="n">container_partitions</span> <span class="o">!=</span> <span class="n">npartitions</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;container_to_merge number of partitions=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"container_to_merge number of partitions=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">container_partitions</span>
                 <span class="p">)</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="s2">&quot;must match value of npartitions passed to function=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="s2">"must match value of npartitions passed to function=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">npartitions</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">normalize_ensemble</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">container_merge_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;normalize_ensemble option requires specifying a bag/RDD passed via container_to_merge argument</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Received a (default) None value for container_to_merge argument&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"normalize_ensemble option requires specifying a bag/RDD passed via container_to_merge argument</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Received a (default) None value for container_to_merge argument"</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normalize_ensemble</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">nrm</span> <span class="ow">in</span> <span class="n">normalize_ensemble</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrm</span><span class="p">,</span> <span class="n">BasicMatcher</span><span class="p">):</span>
-                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type=</span><span class="si">{}</span><span class="s2"> for component </span><span class="si">{}</span><span class="s2"> of normalize_ensemble list</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal type=</span><span class="si">{}</span><span class="s2"> for component </span><span class="si">{}</span><span class="s2"> of normalize_ensemble list</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="nb">type</span><span class="p">(</span><span class="n">nrm</span><span class="p">),</span> <span class="n">i</span>
                     <span class="p">)</span>
-                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be subclass of BasicMatcher to allow use in normalize function&quot;</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be subclass of BasicMatcher to allow use in normalize function"</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type for normalize_ensemble argument = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal type for normalize_ensemble argument = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="nb">type</span><span class="p">(</span><span class="n">normalize</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a python list of implementations of BasicMatcher&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be a python list of implementations of BasicMatcher"</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="c1"># This has a fundamentally different algorithm for handling</span>
@@ -1107,18 +1107,18 @@
                 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">for</span> <span class="n">nrm</span> <span class="ow">in</span> <span class="n">normalize_ensemble</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrm</span><span class="p">,</span> <span class="n">BasicMatcher</span><span class="p">):</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type=</span><span class="si">{}</span><span class="s2"> for component </span><span class="si">{}</span><span class="s2"> of normalize list</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal type=</span><span class="si">{}</span><span class="s2"> for component </span><span class="si">{}</span><span class="s2"> of normalize list</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                             <span class="nb">type</span><span class="p">(</span><span class="n">nrm</span><span class="p">),</span> <span class="n">i</span>
                         <span class="p">)</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be subclass of BasicMatcher to allow use in normalize function&quot;</span>
+                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be subclass of BasicMatcher to allow use in normalize function"</span>
                         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type for normallze_ensemble argument = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal type for normallze_ensemble argument = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="nb">type</span><span class="p">(</span><span class="n">normalize_ensemble</span><span class="p">)</span>
                 <span class="p">)</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a python list of implementations of BasicMatcher&quot;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be a python list of implementations of BasicMatcher"</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
             <span class="c1"># note this works only because parallelize treats a None as default</span>
             <span class="c1"># and we use None as our default too - could break with version change</span>
             <span class="n">plist</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">numSlices</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
@@ -1167,22 +1167,22 @@
         <span class="c1"># input block used.</span>
         <span class="c1"># TODO:  clean up symbol - plist is an awful name</span>
         <span class="k">if</span> <span class="n">dataframe_input</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
                 <span class="n">plist</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span>
-                    <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">),</span> <span class="n">numSlices</span><span class="o">=</span><span class="n">npartitions</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">),</span> <span class="n">numSlices</span><span class="o">=</span><span class="n">npartitions</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Seems we ahve to convert a pandas df to a dask</span>
-                <span class="c1"># df to have access to the &quot;to_bag&quot; method of dask</span>
+                <span class="c1"># df to have access to the "to_bag" method of dask</span>
                 <span class="c1"># DataFrame.   It may be better to write a small</span>
                 <span class="c1"># converter run with a map operator row by row</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
                     <span class="n">plist</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span>
-                        <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">),</span> <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span>
+                        <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">),</span> <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># data is already a dask DataFrame</span>
-                    <span class="n">plist</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to_bag</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dict&quot;</span><span class="p">)</span>
+                    <span class="n">plist</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to_bag</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">"dict"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># logic above should guarantee data is a Database</span>
             <span class="c1"># object that can be queried and used to generate the bag/rdd</span>
@@ -1192,24 +1192,24 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">fullquery</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
-                <span class="n">fullquery</span><span class="p">[</span><span class="s2">&quot;data_tag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
+                <span class="n">fullquery</span><span class="p">[</span><span class="s2">"data_tag"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">fullquery</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">scratchfile</span><span class="p">:</span>
                 <span class="c1"># here we write the documents all to a scratch file in</span>
                 <span class="c1"># json and immediately read them back to create a bag or RDD</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
                         <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
                     <span class="c1"># the only way I could find to load json data in pyspark</span>
                     <span class="c1"># is to use an intermediate dataframe.   This should</span>
                     <span class="c1"># still parallelize, but will probably be slower</span>
                     <span class="c1"># if there is a more direct solution should be done here.</span>
                     <span class="n">plist</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">)</span>
-                    <span class="c1"># this is wrong above also don&#39;t see how to do partitions</span>
+                    <span class="c1"># this is wrong above also don't see how to do partitions</span>
                     <span class="c1"># this section is broken until I (glp) can get help</span>
-                    <span class="c1"># plist = plist.map(to_dict,&quot;records&quot;)</span>
+                    <span class="c1"># plist = plist.map(to_dict,"records")</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">plist</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
                 <span class="c1"># Intentionally omit error handler here.  Assume</span>
@@ -1221,14 +1221,14 @@
                 <span class="n">doclist</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
                     <span class="n">doclist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
                     <span class="n">plist</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">doclist</span><span class="p">,</span> <span class="n">numSlices</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">plist</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">doclist</span><span class="p">,</span> <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">doclist</span>
 
         <span class="c1"># Earlier logic make list a bag/rdd of docs - above converts dataframe to same</span>
-        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
             <span class="n">plist</span> <span class="o">=</span> <span class="n">plist</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">doc</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
                     <span class="n">doc</span><span class="p">,</span>
@@ -1255,7 +1255,7 @@
     <span class="c1"># all cases create plist.   Run the container_merge_function function</span>
     <span class="c1"># if requested</span>
     <span class="k">if</span> <span class="n">container_to_merge</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
             <span class="n">plist</span> <span class="o">=</span> <span class="n">plist</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">container_to_merge</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">container_merge_function</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="p">)</span>
@@ -1263,7 +1263,7 @@
             <span class="n">plist</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">container_merge_function</span><span class="p">,</span> <span class="n">plist</span><span class="p">,</span> <span class="n">container_to_merge</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">normalize_ensemble</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">nrm</span> <span class="ow">in</span> <span class="n">normalize_ensemble</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
                 <span class="n">plist</span> <span class="o">=</span> <span class="n">plist</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">normalize_function</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nrm</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">plist</span> <span class="o">=</span> <span class="n">plist</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize_function</span><span class="p">,</span> <span class="n">nrm</span><span class="p">)</span>
@@ -1275,26 +1275,26 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_partitioned_save_wfdoc</span><span class="p">(</span>
     <span class="n">partition_iterator</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
     <span class="n">dbname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Internal function used to save the core wf document data for atomic mspass</span>
 <span class="sd">    data objects.</span>
 
 <span class="sd">    This function is intended for internal use only as a component of</span>
 <span class="sd">    the function write_distributed_data.   It uses a bulk write</span>
-<span class="sd">    method (pymongo&#39;s insert_many method) to reduce database</span>
+<span class="sd">    method (pymongo's insert_many method) to reduce database</span>
 <span class="sd">    transaction delays.</span>
 
 <span class="sd">    This function has a strong dependency on a method for handling</span>
 <span class="sd">    dead data within `write_distributed_data`.   That is, each document</span>
 <span class="sd">    it processes is ASSUMED (there are no error handlers since</span>
 <span class="sd">    this is an internal function) to have a boolean value set with the</span>
-<span class="sd">    key &quot;llve&quot;.   When True that document is pushed to MongoDB.  When</span>
+<span class="sd">    key "llve".   When True that document is pushed to MongoDB.  When</span>
 <span class="sd">    False the contents of the document are ignored.  The return of this</span>
 <span class="sd">    function is a list of MongoDB `ObjectId`s of live data inserted</span>
-<span class="sd">    with a None in the list for any datum marked dead (&quot;live&quot;:False).</span>
+<span class="sd">    with a None in the list for any datum marked dead ("live":False).</span>
 <span class="sd">    This causes the size of the return list to be the same as the</span>
 <span class="sd">    input iterator length (normally partition size, but usually</span>
 <span class="sd">    truncated at the last partition).   dask and pyspark handle the</span>
@@ -1317,7 +1317,7 @@
 <span class="sd">      defining the translation of data Metadata to the format needed</span>
 <span class="sd">      by pymong (a python dict).  It could be used as a regular function</span>
 <span class="sd">      with a python list, but normal use with dask map_partition or</span>
-<span class="sd">      pyspark&#39;s mapPartition send the function an iterable that can</span>
+<span class="sd">      pyspark's mapPartition send the function an iterable that can</span>
 <span class="sd">      only be traversed ONCE.   In that situation, the iterator value</span>
 <span class="sd">      is a component of the bag/RDD that is being handled and the entire</span>
 <span class="sd">      range received in a single call is defined by the partition size of</span>
@@ -1333,7 +1333,7 @@
 <span class="sd">    for efficiency so the function would likely abort with ambiguous messages</span>
 <span class="sd">    when used in a parallel workflow.</span>
 
-<span class="sd">    :param collection:  wf collection name. Default &quot;wf_TimeSeries&quot;.</span>
+<span class="sd">    :param collection:  wf collection name. Default "wf_TimeSeries".</span>
 
 <span class="sd">    :param dbname:  database name to save data into.  This parameter is</span>
 <span class="sd">    referenced ONLY if db is set to None.</span>
@@ -1341,9 +1341,9 @@
 
 <span class="sd">    :return:  a python list of ObjectIds of the inserted documents</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># This makes the function more bombproof in the event a database</span>
-    <span class="c1"># handle can&#39;t be serialized - db should normally be defined</span>
+    <span class="c1"># handle can't be serialized - db should normally be defined</span>
     <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Use fetch_dbhandle to obtain a db handle in Dask worker contexts;</span>
         <span class="c1"># in Spark/serial workflows, the db handle should be created externally</span>
@@ -1358,16 +1358,16 @@
     <span class="n">docarray</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">partition_iterator</span><span class="p">:</span>
         <span class="c1"># clear the wfid if it exists or mongo may overwrite</span>
-        <span class="k">if</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"_id"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
         <span class="n">docarray</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;live&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"live"</span><span class="p">]:</span>
             <span class="n">has_bodies</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">has_bodies</span><span class="p">:</span>
         <span class="n">lifelist</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">cleaned_doclist</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docarray</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;live&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"live"</span><span class="p">]:</span>
                 <span class="n">cleaned_doclist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
                 <span class="n">lifelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1389,7 +1389,7 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># this case is much simpler</span>
-        <span class="c1"># note plural ids.  insert_one uses &quot;inserted_id&quot;.</span>
+        <span class="c1"># note plural ids.  insert_one uses "inserted_id".</span>
         <span class="c1"># proper english usage but potentially confusing - beware</span>
         <span class="n">wfids</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">docarray</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_ids</span>
 
@@ -1399,14 +1399,14 @@
 <div class="viewcode-block" id="pyspark_mappartition_interface">
 <a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">pyspark_mappartition_interface</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Interface class required for pyspark mapPartition.</span>
 
-<span class="sd">    This class is a workaround for a limitation of pyspark&#39;s api for</span>
+<span class="sd">    This class is a workaround for a limitation of pyspark's api for</span>
 <span class="sd">    mapPartition that is a legacy of its scala foundation.   mapPartition</span>
 <span class="sd">    only accepts a function name as arg0 and has no provision for</span>
 <span class="sd">    any optional arguments to the function.   An alternative solution</span>
-<span class="sd">    found in web sources was &quot;currying&quot; and it might have been possible</span>
+<span class="sd">    found in web sources was "currying" and it might have been possible</span>
 <span class="sd">    to do this with just a function wrapper with fixed kwarg values</span>
 <span class="sd">    defined with in the `write_distributed_data` function.   In this case,</span>
 <span class="sd">    however, because `write_distributed_data` handles an entire bag/rdd</span>
@@ -1419,7 +1419,7 @@
 <span class="sd">    The method `partioned_save_wfdoc` is just an alias for</span>
 <span class="sd">    the file scope function `_partitioned_save_wfdoc` with the parameters</span>
 <span class="sd">    for that function defined by self content.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1427,7 +1427,7 @@
         <span class="n">collection</span><span class="p">,</span>
         <span class="n">dbname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Constructor - called in write_distributed_data.</span>
 
 <span class="sd">        :param db:  database handle to use for saving wf documents with</span>
@@ -1437,11 +1437,11 @@
 
 <span class="sd">        :collection:  name of MongoDB collection where documents are to be</span>
 <span class="sd">          written.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dbname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;pyspark_mappartion_interface constructor:  invalid parameter combination</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Both db (arg0) and dbname (arg2) values are None.  One or the other must be defined&quot;</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">"pyspark_mappartion_interface constructor:  invalid parameter combination</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Both db (arg0) and dbname (arg2) values are None.  One or the other must be defined"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>
@@ -1452,11 +1452,11 @@
 <div class="viewcode-block" id="pyspark_mappartition_interface.partitioned_save_wfdoc">
 <a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">partitioned_save_wfdoc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method used as a wrapper to pass on to pyspark&#39;s mapPartitions</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Method used as a wrapper to pass on to pyspark's mapPartitions</span>
 <span class="sd">        operator.  iterator is assumed to be the iterator passed to</span>
 <span class="sd">        the function per partition by mapPartitions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">wfidlist</span> <span class="o">=</span> <span class="n">_partitioned_save_wfdoc</span><span class="p">(</span>
             <span class="n">iterator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
         <span class="p">)</span>
@@ -1467,13 +1467,13 @@
 
 <div class="viewcode-block" id="post_error_log">
 <a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post_error_log">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">post_error_log</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">other_elog</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog_key</span><span class="o">=</span><span class="s2">&quot;error_log&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">post_error_log</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">other_elog</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog_key</span><span class="o">=</span><span class="s2">"error_log"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Posts error log data as a subdocument to arg0 datum (symbol d).</span>
 
-<span class="sd">    write_distributed_data has a &quot;post_elog&quot; boolean.  By default</span>
+<span class="sd">    write_distributed_data has a "post_elog" boolean.  By default</span>
 <span class="sd">    elog entries for any atomic seismic datum will be posted</span>
-<span class="sd">    one-at-a-time with insert_one calls to the &quot;elog&quot; collection.</span>
+<span class="sd">    one-at-a-time with insert_one calls to the "elog" collection.</span>
 <span class="sd">    If a workflow expects a large number of error log entries that</span>
 <span class="sd">    high database traffic can be a bottleneck.  This function is</span>
 <span class="sd">    used within `write_distributed_data` to avoid that by posting</span>
@@ -1482,7 +1482,7 @@
 
 <span class="sd">    Note dead data are never handled by this mechanism.  They always</span>
 <span class="sd">    end up in either the abortions or cemetery collections.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">elog</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">elog</span>
@@ -1508,10 +1508,10 @@
     <span class="n">post_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">save_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">post_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">history_key</span><span class="o">=</span><span class="s2">&quot;history_data&quot;</span><span class="p">,</span>
+    <span class="n">history_key</span><span class="o">=</span><span class="s2">"history_data"</span><span class="p">,</span>
     <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Internal function that saves wf documents for all live members of</span>
 <span class="sd">    ensemkble objects.</span>
 
@@ -1535,10 +1535,10 @@
 <span class="sd">    this function.   Default is the fastest mode where post_elog is</span>
 <span class="sd">    set True and save_history is off (False).  When post_elog is set</span>
 <span class="sd">    False, any error log entries will will cause error log data to</span>
-<span class="sd">    be saved to the &quot;elog&quot; collection one document at a time.</span>
+<span class="sd">    be saved to the "elog" collection one document at a time.</span>
 <span class="sd">    Similarly, if save_history is set True and the history feature is</span>
 <span class="sd">    enabled every datum will generate a call to save a document in the</span>
-<span class="sd">    &quot;history&quot; collection.  The idea is one would not do that unless the</span>
+<span class="sd">    "history" collection.  The idea is one would not do that unless the</span>
 <span class="sd">    dataset is fairly small or other steps are a bigger throttle on the</span>
 <span class="sd">    throughput.  For large data sets with history, one should also set</span>
 <span class="sd">    post_history True.  Then the history data will be posted as a</span>
@@ -1552,13 +1552,13 @@
 <span class="sd">    are no safeties to test that assumption.</span>
 <span class="sd">    :param db:  Database handle for all database saves</span>
 <span class="sd">    :param save_schema:  schema object - passed directly to md2doc.  See</span>
-<span class="sd">    that function&#39;s docstring for description.</span>
+<span class="sd">    that function's docstring for description.</span>
 <span class="sd">    :param exclude_keys:  list of metadata keys to discard when translating</span>
 <span class="sd">      metadata to python dict (document).  Sent verbatim to md2doc.</span>
-<span class="sd">    :param mode:  one of &quot;promiscuous&quot;, &quot;cautious&quot;, or &quot;pedantic&quot; used to</span>
+<span class="sd">    :param mode:  one of "promiscuous", "cautious", or "pedantic" used to</span>
 <span class="sd">      define handling of mismatches between schema definitions defined by</span>
 <span class="sd">      the save_schema argument and Metadata.  See Database docstring and</span>
-<span class="sd">      User&#39;s manual for description of this common argument.</span>
+<span class="sd">      User's manual for description of this common argument.</span>
 <span class="sd">    :poram undertaker:  Instance of :class:`mspasspy.util.Undertaker`</span>
 <span class="sd">      to handle dead data (see above)</span>
 <span class="sd">    :param normalizing_collections: see docstring for `write_distributed_data`.</span>
@@ -1572,7 +1572,7 @@
 <span class="sd">    use a data tag string to define the state of processing of that data.</span>
 <span class="sd">    Default is None, but normal use should set it as an appropriate string</span>
 <span class="sd">    defining what this dataset is.  D</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">cremate</span><span class="p">:</span>
         <span class="n">ensemble_data</span> <span class="o">=</span> <span class="n">undertaker</span><span class="o">.</span><span class="n">cremate</span><span class="p">(</span><span class="n">ensemble_data</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1588,7 +1588,7 @@
         <span class="n">wfids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">doclist</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># we don&#39;t have to test for dead data in the loop below above removes</span>
+        <span class="c1"># we don't have to test for dead data in the loop below above removes</span>
         <span class="c1"># them so we just use md2doc.  We do, however, have to handle</span>
         <span class="c1"># md2doc failure signaled with aok False</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ensemble_data</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
@@ -1601,9 +1601,9 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">aok</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
-                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;data_tag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
-                <span class="k">if</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                    <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">"data_tag"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
+                <span class="k">if</span> <span class="s2">"_id"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                    <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
                 <span class="c1"># Handle the error log if it is not empty</span>
                 <span class="c1"># Either post it to the doc or push the entry to the database</span>
                 <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1612,7 +1612,7 @@
                     <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">d</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">elog</span>
                     <span class="n">elog_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;elog_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">"elog_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
                 <span class="k">if</span> <span class="n">save_history</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">post_history</span><span class="p">:</span>
                         <span class="c1"># is_empty is part of ProcessingHistory</span>
@@ -1621,9 +1621,9 @@
                             <span class="n">doc</span><span class="p">[</span><span class="n">history_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">history_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-                        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;history_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_id</span>
+                        <span class="n">doc</span><span class="p">[</span><span class="s2">"history_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_id</span>
                 <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
-                    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;data_tag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="s2">"data_tag"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
                 <span class="n">doclist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">elog</span>
@@ -1635,8 +1635,8 @@
 
         <span class="c1"># weird trick to get waveform collection name - borrowed from</span>
         <span class="c1"># :class:`mspasspy.db.Database` save_data method code</span>
-        <span class="n">wf_collection_name</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">)</span>
-        <span class="c1"># note plural ids.  insert_one uses &quot;inserted_id&quot;.</span>
+        <span class="n">wf_collection_name</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
+        <span class="c1"># note plural ids.  insert_one uses "inserted_id".</span>
         <span class="c1"># proper english usage but potentially confusing - beware</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">wfids</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doclist</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_ids</span>
@@ -1653,15 +1653,15 @@
     <span class="n">mode</span><span class="p">,</span>
     <span class="n">normalizing_collections</span><span class="p">,</span>
     <span class="n">post_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">elog_key</span><span class="o">=</span><span class="s2">&quot;error_log&quot;</span><span class="p">,</span>
+    <span class="n">elog_key</span><span class="o">=</span><span class="s2">"error_log"</span><span class="p">,</span>
     <span class="n">post_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">save_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">history_key</span><span class="o">=</span><span class="s2">&quot;history_data&quot;</span><span class="p">,</span>
+    <span class="n">history_key</span><span class="o">=</span><span class="s2">"history_data"</span><span class="p">,</span>
     <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">undertaker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">cremate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This is an internal function used in a map operator to</span>
 <span class="sd">    extract the Metadata contents of atomic MsPASS seismic</span>
 <span class="sd">    data objects returning an edited version of the contents</span>
@@ -1676,7 +1676,7 @@
 <span class="sd">    If the datum received is marked dead it is handled by the</span>
 <span class="sd">    instance of :class:`mspasspy.util.Undertaker` passed with the</span>
 <span class="sd">    undertaker argument.  If cremate is set True the returned contents</span>
-<span class="sd">    will be minimal.  All dead data will have the attribute &quot;live&quot;</span>
+<span class="sd">    will be minimal.  All dead data will have the attribute "live"</span>
 <span class="sd">    set to a boolean False.  All live data, will have tha value set True.</span>
 
 <span class="sd">    Error log and history data handling are as described in the</span>
@@ -1686,10 +1686,10 @@
 
 <span class="sd">    :return:   python dict translation of Metadata container of input</span>
 <span class="sd">    datum d.   Note the return always has a boolean value associated</span>
-<span class="sd">    with the key &quot;live&quot;.  That value is critical downstream from this</span>
+<span class="sd">    with the key "live".  That value is critical downstream from this</span>
 <span class="sd">    function in the partition-based writer to assure the contents of</span>
 <span class="sd">    dead data are not store in a wf collection.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">undertaker</span><span class="p">:</span>
         <span class="n">stedronsky</span> <span class="o">=</span> <span class="n">undertaker</span>
@@ -1720,17 +1720,17 @@
             <span class="n">d</span> <span class="o">=</span> <span class="n">stedronsky</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="c1"># make sure this is set as it is used in logic below</span>
         <span class="c1"># we use this instead of d to handle case with aok False</span>
-        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;live&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">"live"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># d.kill()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;live&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s2">"live"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">post_elog</span><span class="p">:</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="n">post_error_log</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">other_elog</span><span class="o">=</span><span class="n">elog_md2doc</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">elog_md2doc</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">elog_md2doc</span>  <span class="c1"># does nothing if rhs is empty</span>
                 <span class="n">elog_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;elog_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">"elog_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
         <span class="k">if</span> <span class="n">save_history</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">post_history</span><span class="p">:</span>
                 <span class="c1"># is_empty is part of ProcessingHistory</span>
@@ -1739,9 +1739,9 @@
                     <span class="n">doc</span><span class="p">[</span><span class="n">history_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">history_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-                <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;history_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_id</span>
+                <span class="n">doc</span><span class="p">[</span><span class="s2">"history_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_id</span>
         <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
-            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;data_tag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">"data_tag"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
     <span class="k">return</span> <span class="n">doc</span>
 
 
@@ -1751,24 +1751,24 @@
     <span class="n">data</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">data_are_atomic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
-    <span class="n">storage_mode</span><span class="o">=</span><span class="s2">&quot;gridfs&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"promiscuous"</span><span class="p">,</span>
+    <span class="n">storage_mode</span><span class="o">=</span><span class="s2">"gridfs"</span><span class="p">,</span>
     <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">file_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
     <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">post_elog</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">save_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">post_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">cremate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">normalizing_collections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">],</span>
-    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;write_distributed_data&quot;</span><span class="p">,</span>
-    <span class="n">alg_id</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+    <span class="n">normalizing_collections</span><span class="o">=</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">,</span> <span class="s2">"site"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">],</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">"write_distributed_data"</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="s2">"0"</span><span class="p">,</span>
     <span class="n">dask_client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parallel save function for termination of a processing script.</span>
 
 <span class="sd">    Saving data from a parallel container (i.e. bag/rdd) is a different</span>
@@ -1782,14 +1782,14 @@
 <span class="sd">        1.   Since v2 it uses single function that handles writing the</span>
 <span class="sd">             sample data for a datum.   For atomic data that means a</span>
 <span class="sd">             single array but for ensembles it is the combination of all</span>
-<span class="sd">             arrays in the ensemble &quot;member&quot; containers.   The writing</span>
+<span class="sd">             arrays in the ensemble "member" containers.   The writing</span>
 <span class="sd">             functions are passed through a map operator</span>
 <span class="sd">             so writing is a parallelized per worker.  Note the function</span>
 <span class="sd">             also abstracts how the data are written with different</span>
-<span class="sd">             things done depending on the &quot;storage_mode&quot; attribute</span>
+<span class="sd">             things done depending on the "storage_mode" attribute</span>
 <span class="sd">             that can optionally be defined for each atomic object.</span>
 <span class="sd">        2.   After the sample data are saved we use a MongoDB</span>
-<span class="sd">             &quot;update_many&quot; operator with the &quot;many&quot; defined by the</span>
+<span class="sd">             "update_many" operator with the "many" defined by the</span>
 <span class="sd">             partition size.  That reduces database transaction delays</span>
 <span class="sd">             by 1/object_per_partition.  For ensembles the partitioning</span>
 <span class="sd">             is natural with bulk writes controlled by the number of</span>
@@ -1799,8 +1799,8 @@
 <span class="sd">    though the use of the :class:`mspasspy.util.Undertaker` now</span>
 <span class="sd">    defined within the Database class handle.   The default will</span>
 <span class="sd">    call the `bury` method on all dead data which leaves a document</span>
-<span class="sd">    containing the datum&#39;s Metadata and and error log messages in</span>
-<span class="sd">    a collection called &quot;cemetery&quot;.   If the `cremate` argument is</span>
+<span class="sd">    containing the datum's Metadata and and error log messages in</span>
+<span class="sd">    a collection called "cemetery".   If the `cremate` argument is</span>
 <span class="sd">    set True dead data will be vaporized and no trace of them will</span>
 <span class="sd">    appear in output.</span>
 
@@ -1810,26 +1810,26 @@
 <span class="sd">    be posted as subdocuments in the output collection instead of</span>
 <span class="sd">    the normal (at least as defined by the Database handle) way</span>
 <span class="sd">    these data are saved (In Database the error log is saved to the</span>
-<span class="sd">    &quot;elog&quot; collection and the history data is saved to &quot;history&quot;.)</span>
+<span class="sd">    "elog" collection and the history data is saved to "history".)</span>
 <span class="sd">    Note post_history is ignored unless the related `save_history`</span>
 <span class="sd">    argument is changed from the default False ot True.</span>
 
-<span class="sd">    A peculiarity that is a consequence of python&#39;s &quot;duck typing&quot; is that</span>
+<span class="sd">    A peculiarity that is a consequence of python's "duck typing" is that</span>
 <span class="sd">    the user must give the writer some hints about the type of data objects</span>
 <span class="sd">    it is expected to handle.  Rather than specify a type argument,</span>
 <span class="sd">    the type is inferred from two arguments that are necessary anyway:</span>
 <span class="sd">    (1)  the `collection` argument value, and (2) the boolean</span>
 <span class="sd">    `data_are_atomic`.   The idea is that `collection` is used to</span>
 <span class="sd">    determine of the writer is handling TimeSeries or Seismogram</span>
-<span class="sd">    objects (&quot;wf_TimeSeries&quot; or &quot;wf_Seismogram&quot; values respectively)\</span>
+<span class="sd">    objects ("wf_TimeSeries" or "wf_Seismogram" values respectively)\</span>
 <span class="sd">    and the boolean is used, as the name implies, to infer if the</span>
 <span class="sd">    data are atomic or ensembles.</span>
 
 <span class="sd">    This function should only be used as the terminal step</span>
 <span class="sd">    of a parallel workflow (i.e. a chain of map/reduce operators).</span>
 <span class="sd">    This function will ALWAYS initiate a lazy computation on such a chain of</span>
-<span class="sd">    operators because it calls the &quot;compute&quot; method for dask and the</span>
-<span class="sd">    &quot;collect&quot; method of spark before returning.  It then always returns</span>
+<span class="sd">    operators because it calls the "compute" method for dask and the</span>
+<span class="sd">    "collect" method of spark before returning.  It then always returns</span>
 <span class="sd">    a list of ObjectIds of  live, saved data.   The function is dogmatic</span>
 <span class="sd">    about that because the return can never be a bag/RDD of the the</span>
 <span class="sd">    data.</span>
@@ -1843,23 +1843,23 @@
 
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">       mybag = read_distributed_data(db,collection=&#39;wf_TimeSeries&#39;)</span>
+<span class="sd">       mybag = read_distributed_data(db,collection='wf_TimeSeries')</span>
 <span class="sd">       mybag = mybag.map(detrend)   # example</span>
 <span class="sd">       # intermediate save</span>
-<span class="sd">       mybag = mybag.map(db.save_data,collection=&quot;wf_TimeSeries&quot;)</span>
+<span class="sd">       mybag = mybag.map(db.save_data,collection="wf_TimeSeries")</span>
 <span class="sd">       # more processing - trivial example</span>
-<span class="sd">       mybag = mybag.map(filter,&#39;lowpass&#39;,freq=1.0)</span>
+<span class="sd">       mybag = mybag.map(filter,'lowpass',freq=1.0)</span>
 <span class="sd">       # termination with this function</span>
-<span class="sd">       wfids = write_distributed_data(mybag,db,collection=&#39;wf_TimeSeries&#39;)</span>
+<span class="sd">       wfids = write_distributed_data(mybag,db,collection='wf_TimeSeries')</span>
 
 <span class="sd">    The `storage_mode` argument is a constant that defines how the</span>
-<span class="sd">    SAMPLE DATA are to be stored.  Currently this can be &quot;file&quot; or</span>
-<span class="sd">    &quot;gridfs&quot;, but be aware future evolution may extend the options.</span>
-<span class="sd">    &quot;gridfs&quot; is the default as the only complexity it has is a speed</span>
+<span class="sd">    SAMPLE DATA are to be stored.  Currently this can be "file" or</span>
+<span class="sd">    "gridfs", but be aware future evolution may extend the options.</span>
+<span class="sd">    "gridfs" is the default as the only complexity it has is a speed</span>
 <span class="sd">    throttle by requiring the sample data to move through MongoDB and</span>
 <span class="sd">    the potential to overflow the file system where the database is stored.</span>
-<span class="sd">    (See User&#39;s Manual for more on this topic.).   Most users, however,</span>
-<span class="sd">    likely want to use the &quot;file&quot; option for that parameter.  There are,</span>
+<span class="sd">    (See User's Manual for more on this topic.).   Most users, however,</span>
+<span class="sd">    likely want to use the "file" option for that parameter.  There are,</span>
 <span class="sd">    however, some caveats in that use that users MUST be aware of before</span>
 <span class="sd">    using that option with large data sets.   Since V2 of MsPASS</span>
 <span class="sd">    the file save process was made more robust by allowing a chain of</span>
@@ -1872,12 +1872,12 @@
 <span class="sd">    asked to handle.  That allows each atomic datum to define what the</span>
 <span class="sd">    file destination is.  For ensembles normal behavior is to require the</span>
 <span class="sd">    entire ensemble content to be saved in one file defined by the dir</span>
-<span class="sd">    and dfile values in the ensemble&#39;s Metadata container.</span>
+<span class="sd">    and dfile values in the ensemble's Metadata container.</span>
 <span class="sd">    THE WARNING is that to be robust the file writer will alway default</span>
 <span class="sd">    a value for dir and dfile.  The default dir is the run directory.</span>
 <span class="sd">    The default dfile (if not set) is a unique name created by a</span>
 <span class="sd">    uuid generator.  Care must be taken in file writes to make sure</span>
-<span class="sd">    you don&#39;t create huge numbers of files that overflow directories or</span>
+<span class="sd">    you don't create huge numbers of files that overflow directories or</span>
 <span class="sd">    similar file system errors that are all to easy to do with large</span>
 <span class="sd">    data set saves.  See the User Manual for examples of how to set</span>
 <span class="sd">    output file names for a large data set.</span>
@@ -1890,40 +1890,40 @@
 
 <span class="sd">    :param mode: This parameter defines how attributes defined with</span>
 <span class="sd">        key-value pairs in MongoDB documents are to be handled for writes.</span>
-<span class="sd">        By &quot;to be handled&quot; we mean how strongly to enforce name and type</span>
+<span class="sd">        By "to be handled" we mean how strongly to enforce name and type</span>
 <span class="sd">        specification in the schema for the type of object being constructed.</span>
-<span class="sd">        Options are [&#39;promiscuous&#39;,&#39;cautious&#39;,&#39;pedantic&#39;] with &#39;promiscuous&#39;</span>
-<span class="sd">        being the default.  See the User&#39;s manual for more details on</span>
+<span class="sd">        Options are ['promiscuous','cautious','pedantic'] with 'promiscuous'</span>
+<span class="sd">        being the default.  See the User's manual for more details on</span>
 <span class="sd">        the concepts and how to use this option.</span>
 <span class="sd">    :type mode: :class:`str`</span>
 
-<span class="sd">    :param storage_mode: Must be either &quot;gridfs&quot; or &quot;file.  When set to</span>
-<span class="sd">        &quot;gridfs&quot; the waveform data are stored internally and managed by</span>
-<span class="sd">        MongoDB.  If set to &quot;file&quot; the data will be stored in a file system.</span>
-<span class="sd">        File names are derived from attributes with the tags &quot;dir&quot; and</span>
-<span class="sd">        &quot;dfile&quot; in the standard way.   Any datum for which dir or dfile</span>
-<span class="sd">        aren&#39;t defined will default to the behaviour of the Database</span>
+<span class="sd">    :param storage_mode: Must be either "gridfs" or "file.  When set to</span>
+<span class="sd">        "gridfs" the waveform data are stored internally and managed by</span>
+<span class="sd">        MongoDB.  If set to "file" the data will be stored in a file system.</span>
+<span class="sd">        File names are derived from attributes with the tags "dir" and</span>
+<span class="sd">        "dfile" in the standard way.   Any datum for which dir or dfile</span>
+<span class="sd">        aren't defined will default to the behaviour of the Database</span>
 <span class="sd">        class method `save_data`.  See the docstring for details but the</span>
 <span class="sd">        concept is it will always be bombproof even if not ideal.</span>
 <span class="sd">    :type storage_mode: :class:`str`</span>
 
 <span class="sd">    :param scheduler:  name of parallel scheduler being used by this writer.</span>
 <span class="sd">        MsPASS currently support pyspark and dask.  If arg0 is an RDD</span>
-<span class="sd">        scheduler must be &quot;spark&quot; and arg0 defines dask bag schduler must</span>
-<span class="sd">        be &quot;dask&quot;.   The function will raise a ValueError exception of</span>
+<span class="sd">        scheduler must be "spark" and arg0 defines dask bag schduler must</span>
+<span class="sd">        be "dask".   The function will raise a ValueError exception of</span>
 <span class="sd">        scheduler and the type of arg0 are not consistent or if the</span>
 <span class="sd">        value of scheduler is illegal.  Note with spark the context is</span>
 <span class="sd">        not required because of how this algorithm is structured.</span>
-<span class="sd">    :type scheduler:  string  Must be either &quot;dask&quot; or &quot;spark&quot;.  Default</span>
-<span class="sd">        is None which is is equivalent to the value of &quot;dask&quot;.</span>
+<span class="sd">    :type scheduler:  string  Must be either "dask" or "spark".  Default</span>
+<span class="sd">        is None which is is equivalent to the value of "dask".</span>
 
 <span class="sd">    :param file_format: the format of the file. This can be one of the</span>
 <span class="sd">        `supported formats &lt;https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats&gt;`__</span>
 <span class="sd">        of ObsPy writer. The default the python None which the method</span>
 <span class="sd">        assumes means to store the data in its raw binary form.  The default</span>
 <span class="sd">        should normally be used for efficiency.  Alternate formats are</span>
-<span class="sd">        primarily a simple export mechanism.  See the User&#39;s manual for</span>
-<span class="sd">        more details on data export.  Used only for &quot;file&quot; storage mode.</span>
+<span class="sd">        primarily a simple export mechanism.  See the User's manual for</span>
+<span class="sd">        more details on data export.  Used only for "file" storage mode.</span>
 <span class="sd">    :type file_format: :class:`str`</span>
 
 <span class="sd">    :param overwrite:  If true gridfs data linked to the original</span>
@@ -1939,9 +1939,9 @@
 
 <span class="sd">    :param collectiion:   name of wf collection where the documents</span>
 <span class="sd">        derived from the data are to be saved.  Standard values are</span>
-<span class="sd">        &quot;wf_TimeSeries&quot; and &quot;wf_Seismogram&quot; for which a schema is defined in</span>
+<span class="sd">        "wf_TimeSeries" and "wf_Seismogram" for which a schema is defined in</span>
 <span class="sd">        MsPASS.   Normal use should specify one or the other.   The default is</span>
-<span class="sd">        &quot;wf_TimeSeries&quot;  but normal usage should specify this argument</span>
+<span class="sd">        "wf_TimeSeries"  but normal usage should specify this argument</span>
 <span class="sd">        explicitly for clarity in reuse.</span>
 <span class="sd">    :type collection:  :class:`str`</span>
 
@@ -1958,13 +1958,13 @@
 <span class="sd">        debris.</span>
 <span class="sd">    :type exclude_keys: a :class:`list` of :class:`str`</span>
 
-<span class="sd">    :param data_tag: a user specified &quot;data_tag&quot; key.  See above and</span>
-<span class="sd">        User&#39;s manual for guidance on how the use of this option.</span>
+<span class="sd">    :param data_tag: a user specified "data_tag" key.  See above and</span>
+<span class="sd">        User's manual for guidance on how the use of this option.</span>
 <span class="sd">    :type data_tag: :class:`str`</span>
 
 <span class="sd">    :param post_elog:   boolean controlling how error log messages are</span>
 <span class="sd">        handled.  When False (default) error log messages get posted in</span>
-<span class="sd">        single transactions with MongoDB to the &quot;elog&quot; collection.</span>
+<span class="sd">        single transactions with MongoDB to the "elog" collection.</span>
 <span class="sd">        When set True error log entries will be posted to as subdocuments to</span>
 <span class="sd">        the wf collection entry for each datum.   Setting post_elog True</span>
 <span class="sd">        is most useful if you anticipate a run will generate a large number of</span>
@@ -1981,13 +1981,13 @@
 
 <span class="sd">    :param post_history:  boolean similar to post_elog for handling</span>
 <span class="sd">        object-level history data.  It is, however, only handled if the</span>
-<span class="sd">        related boolean &quot;save_history&quot; is set True. When post_history is</span>
+<span class="sd">        related boolean "save_history" is set True. When post_history is</span>
 <span class="sd">        set True the history data will be saved as a subdocument in the wf</span>
 <span class="sd">        document saved for each live, atomic datum (note for ensembles</span>
 <span class="sd">        that means all live members).   When False each atomic datum</span>
 <span class="sd">        will generate a insert_one transaction with MongoDB and save the</span>
-<span class="sd">        history data in  the &quot;history&quot; collection.  It then sets the</span>
-<span class="sd">        attribute with key &quot;history_id&quot; to the ObjectId of the saved</span>
+<span class="sd">        history data in  the "history" collection.  It then sets the</span>
+<span class="sd">        attribute with key "history_id" to the ObjectId of the saved</span>
 <span class="sd">        document.  The default for this argument is True to avoid</span>
 <span class="sd">        accidentally throttling workflows on large data sets.  The default</span>
 <span class="sd">        for save_history is False so overall default behavior is to drop</span>
@@ -1998,21 +1998,21 @@
 <span class="sd">        method of :class:`mspasspy.util.Undertaker` which leaves only</span>
 <span class="sd">        ashes to nothing in the return.   When False (default) the</span>
 <span class="sd">        `bury` method will be called instead which saves a skeleton</span>
-<span class="sd">        (error log and Metadata content) of the results in the &quot;cemetery&quot;</span>
+<span class="sd">        (error log and Metadata content) of the results in the "cemetery"</span>
 <span class="sd">        collection.</span>
 
 <span class="sd">    :param normalizing_collections:  list of collection names dogmatically treated</span>
 <span class="sd">        as normalizing collection names.  The keywords in the list are used</span>
 <span class="sd">        to always (i.e. for all modes) erase any attribute with a key name</span>
 <span class="sd">        of the form ``collection_attribute`` where ``collection`` is one of the collection</span>
-<span class="sd">        names in this list and attribute is any string.  Attribute names with the &quot;_&quot;</span>
+<span class="sd">        names in this list and attribute is any string.  Attribute names with the "_"</span>
 <span class="sd">        separator are saved unless the collection field matches one one of the</span>
-<span class="sd">        strings (e.g. &quot;channel_vang&quot; will be erased before saving to the</span>
-<span class="sd">        wf collection while &quot;foo_bar&quot; will not be erased.)  This list should</span>
+<span class="sd">        strings (e.g. "channel_vang" will be erased before saving to the</span>
+<span class="sd">        wf collection while "foo_bar" will not be erased.)  This list should</span>
 <span class="sd">        ONLY be changed if a different schema than the default mspass schema</span>
 <span class="sd">        is used and different names are used for normalizing collections.</span>
-<span class="sd">        (e.g. if one added a &quot;shot&quot; collection to the schema the list would need</span>
-<span class="sd">        to be changed to at least add &quot;shot&quot;.)</span>
+<span class="sd">        (e.g. if one added a "shot" collection to the schema the list would need</span>
+<span class="sd">        to be changed to at least add "shot".)</span>
 <span class="sd">    :type normalizing_collections: list of strings defining collection names.</span>
 
 <span class="sd">    :param alg_name:  do not change</span>
@@ -2026,64 +2026,64 @@
 <span class="sd">        uses the default Dask scheduler.</span>
 <span class="sd">    :type dask_client: :class:`dask.distributed.Client` or None</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># We don&#39;t do type check on the data argument assuming dask or</span>
+<span class="sd">    """</span>
+    <span class="c1"># We don't do type check on the data argument assuming dask or</span>
     <span class="c1"># spark will throw errors that make the mistake clear.</span>
-    <span class="c1"># Too awkward to use an isinstance test so for now at least we don&#39;t</span>
+    <span class="c1"># Too awkward to use an isinstance test so for now at least we don't</span>
     <span class="c1"># test the type of data</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">Database</span><span class="p">):</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;write_distributed_data:  required arg1 (db) must be an instance of mspasspy.db.Database</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Type of arg1 received is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">db</span><span class="p">)))</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"write_distributed_data:  required arg1 (db) must be an instance of mspasspy.db.Database</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Type of arg1 received is </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">db</span><span class="p">)))</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">storage_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="s2">&quot;gridfs&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">storage_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"file"</span><span class="p">,</span> <span class="s2">"gridfs"</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;write_distributed_data:  Unsupported storage_mode=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage_mode</span><span class="p">)</span>
+            <span class="s2">"write_distributed_data:  Unsupported storage_mode=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage_mode</span><span class="p">)</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span> <span class="s2">&quot;cautious&quot;</span><span class="p">,</span> <span class="s2">&quot;pedantic&quot;</span><span class="p">]:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;write_distributed_data:  Illegal value of mode=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"promiscuous"</span><span class="p">,</span> <span class="s2">"cautious"</span><span class="p">,</span> <span class="s2">"pedantic"</span><span class="p">]:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"write_distributed_data:  Illegal value of mode=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
         <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="s2">&quot;Must be one one of the following:  promiscuous, cautious, or pedantic&quot;</span>
+            <span class="s2">"Must be one one of the following:  promiscuous, cautious, or pedantic"</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">scheduler</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">scheduler</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span> <span class="s2">&quot;spark&quot;</span><span class="p">]:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;write_distributed_data:  Illegal value of scheduler=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"dask"</span><span class="p">,</span> <span class="s2">"spark"</span><span class="p">]:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"write_distributed_data:  Illegal value of scheduler=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">scheduler</span>
             <span class="p">)</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be either dask or spark&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be either dask or spark"</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_mspasspy_has_pyspark</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_mspasspy_has_pyspark</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;WARNING(write_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored.&quot;</span>
+                <span class="s2">"WARNING(write_distributed_data): pyspark not found, will use dask instead. The scheduler argument is ignored."</span>
             <span class="p">)</span>
-            <span class="n">scheduler</span> <span class="o">=</span> <span class="s2">&quot;dask&quot;</span>
+            <span class="n">scheduler</span> <span class="o">=</span> <span class="s2">"dask"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">scheduler</span> <span class="o">=</span> <span class="s2">&quot;dask&quot;</span>
+        <span class="n">scheduler</span> <span class="o">=</span> <span class="s2">"dask"</span>
     <span class="c1"># This use of the collection name to establish the schema is</span>
     <span class="c1"># a bit fragile as it depends upon the mspass schema naming</span>
     <span class="c1"># convention.  Once tried using take(1) and probing the content of</span>
     <span class="c1"># the container but that has bad memory consequences at least for pyspark</span>
-    <span class="k">if</span> <span class="n">collection</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">collection</span> <span class="o">==</span> <span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">collection</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">collection</span> <span class="o">==</span> <span class="s2">"wf_TimeSeries"</span><span class="p">:</span>
         <span class="n">save_schema</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">metadata_schema</span><span class="o">.</span><span class="n">TimeSeries</span>
-    <span class="k">elif</span> <span class="n">collection</span> <span class="o">==</span> <span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">collection</span> <span class="o">==</span> <span class="s2">"wf_Seismogram"</span><span class="p">:</span>
         <span class="n">save_schema</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">metadata_schema</span><span class="o">.</span><span class="n">Seismogram</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;write_distributed_data:   Illegal value of collection=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"write_distributed_data:   Illegal value of collection=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">collection</span>
         <span class="p">)</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Currently must be either wf_TimeSeries, wf_Seismogram, or default that implies wf_TimeSeries&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Currently must be either wf_TimeSeries, wf_Seismogram, or default that implies wf_TimeSeries"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">!=</span> <span class="s2">&quot;gridfs&quot;</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;write_distributed_data:  overwrite mode is set True with storage_mode=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">!=</span> <span class="s2">"gridfs"</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"write_distributed_data:  overwrite mode is set True with storage_mode=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">storage_mode</span>
             <span class="p">)</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;overwrite is only allowed with gridfs storage_mode&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"overwrite is only allowed with gridfs storage_mode"</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="n">stedronsky</span> <span class="o">=</span> <span class="n">Undertaker</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">&quot;spark&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">data_are_atomic</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">(</span>
@@ -2249,21 +2249,21 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">read_to_dataframe</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">cursor</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"promiscuous"</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">load_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;read_to_dataframe&quot;</span><span class="p">,</span>
-    <span class="n">alg_id</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">"read_to_dataframe"</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="s2">"0"</span><span class="p">,</span>
     <span class="n">define_as_raw</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">retrieve_history_record</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Read the documents defined by a MongoDB cursor into a panda DataFrame.</span>
 
 <span class="sd">    The data stucture called a panda DataFrame is heavily used by</span>
-<span class="sd">    many python user&#39;s.  This is convenience function for users wanting to</span>
+<span class="sd">    many python user's.  This is convenience function for users wanting to</span>
 <span class="sd">    use that api to do pure metadata operations.</span>
 
 <span class="sd">    Be warned this function originated as a prototype where we experimented</span>
@@ -2281,13 +2281,13 @@
 <span class="sd">    :type cursor: :class:`pymongo.cursor.CursorType`</span>
 <span class="sd">    :param mode: reading mode that controls how the function interacts with</span>
 <span class="sd">        the schema definition for the data type.   Must be one of</span>
-<span class="sd">        [&#39;promiscuous&#39;,&#39;cautious&#39;,&#39;pedantic&#39;].   See user&#39;s manual for a</span>
-<span class="sd">        detailed description of what the modes mean.  Default is &#39;promiscuous&#39;</span>
+<span class="sd">        ['promiscuous','cautious','pedantic'].   See user's manual for a</span>
+<span class="sd">        detailed description of what the modes mean.  Default is 'promiscuous'</span>
 <span class="sd">        which turns off all schema checks and loads all attributes defined for</span>
 <span class="sd">        each object read.</span>
 <span class="sd">    :type mode: :class:`str`</span>
 <span class="sd">    :param normalize: list of collections that are to used for data</span>
-<span class="sd">        normalization. (see User&#39;s manual and MongoDB documentation for</span>
+<span class="sd">        normalization. (see User's manual and MongoDB documentation for</span>
 <span class="sd">        details on this concept)  Briefly normalization means common</span>
 <span class="sd">        metadata like source and receiver geometry are defined in separate</span>
 <span class="sd">        smaller collections that are linked through this mechanism</span>
@@ -2296,10 +2296,10 @@
 <span class="sd">    :param load_history: boolean (True or False) switch used to enable or</span>
 <span class="sd">        disable object level history mechanism.   When set True each datum</span>
 <span class="sd">        will be tagged with its origin id that defines the leaf nodes of a</span>
-<span class="sd">        history G-tree.  See the User&#39;s manual for additional details of this</span>
+<span class="sd">        history G-tree.  See the User's manual for additional details of this</span>
 <span class="sd">        feature.  Default is False.</span>
 <span class="sd">    :param exclude_keys: Sometimes it is helpful to remove one or more</span>
-<span class="sd">        attributes stored in the database from the data&#39;s Metadata (header)</span>
+<span class="sd">        attributes stored in the database from the data's Metadata (header)</span>
 <span class="sd">        so they will not cause problems in downstream processing.</span>
 <span class="sd">    :type exclude_keys: a :class:`list` of :class:`str`</span>
 <span class="sd">    :param collection:  Specify an alternate collection name to</span>
@@ -2313,7 +2313,7 @@
 <span class="sd">        example would be windowing long time blocks of data to shorter time</span>
 <span class="sd">        windows around a particular seismic phase and saving the windowed data.</span>
 <span class="sd">        The windowed data can be difficult to distinguish from the original</span>
-<span class="sd">        with standard queries.  For this reason we make extensive use of &quot;tags&quot;</span>
+<span class="sd">        with standard queries.  For this reason we make extensive use of "tags"</span>
 <span class="sd">        for save and read operations to improve the efficiency and simplify</span>
 <span class="sd">        read operations.   Default turns this off by setting the tag null (None).</span>
 <span class="sd">    :type data_tag: :class:`str`</span>
@@ -2325,7 +2325,7 @@
 <span class="sd">    :type define_as_raw: :class:`bool`</span>
 <span class="sd">    :param retrieve_history_record: a boolean control whether we would like to load processing history</span>
 <span class="sd">    :type retrieve_history_record: :class:`bool`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">collection</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">name</span>
     <span class="n">dbschema</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">database_schema</span>
     <span class="n">mdschema</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">metadata_schema</span>
@@ -2350,12 +2350,12 @@
 
     <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;WARNING(read_to_dataframe): &quot;</span><span class="p">,</span>
+            <span class="s2">"WARNING(read_to_dataframe): "</span><span class="p">,</span>
             <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
-            <span class="s2">&quot; errors were handled during dataframe construction&quot;</span><span class="p">,</span>
+            <span class="s2">" errors were handled during dataframe construction"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;All data associated with these errors were dropped.   Error log entries from doc2md follow&quot;</span>
+            <span class="s2">"All data associated with these errors were dropped.   Error log entries from doc2md follow"</span>
         <span class="p">)</span>
         <span class="n">errorlist</span> <span class="o">=</span> <span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">errorlist</span><span class="p">:</span>

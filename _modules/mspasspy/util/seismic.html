@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.seismic &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>mspasspy.util.seismic &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../../../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -489,7 +489,7 @@
 <div class="viewcode-block" id="print_metadata">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.print_metadata">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_metadata</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Prints Metadata stored in the object passed as arg0 (d) as json</span>
 <span class="sd">    format output with indentation defined by the optional</span>
 <span class="sd">    indent argument.  Indent is always on and defaults to 2 characters.</span>
@@ -509,16 +509,16 @@
 <span class="sd">      will be thrown.</span>
 <span class="sd">    :param indent:   indentation argument for json printing</span>
 <span class="sd">    :type indent:  integer (default 2)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">d</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;print_metadata:   arg0 must be a dictionary or a subclass of Metadata</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">"print_metadata:   arg0 must be a dictionary or a subclass of Metadata</span><span class="se">\n</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;type of arg0=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"type of arg0=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">))</span></div>
 
@@ -527,17 +527,17 @@
 <div class="viewcode-block" id="number_live">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.number_live">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">number_live</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Scans an ensemble and returns the number of live members.  If the</span>
 <span class="sd">    ensemble is marked dead it immediately return 0.  Otherwise it loops</span>
 <span class="sd">    through the members countinng the number live.</span>
 <span class="sd">    :param ensemble:  ensemble to be scanned</span>
 <span class="sd">    :type ensemble:  Must be a `TimeSeriesEnsemble` or `SeismogramEnsemble` or</span>
 <span class="sd">    it will throw a TypeError exception.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;number_live:   illegal type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">))</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a TimeSeriesEnsemble or SeismogramEnsemble</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"number_live:   illegal type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be a TimeSeriesEnsemble or SeismogramEnsemble</span><span class="se">\n</span><span class="s2">"</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="mi">0</span>
@@ -552,7 +552,7 @@
 <div class="viewcode-block" id="has_live_data">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.has_live_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">has_live_data</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check if an ensemble has any live data and return True if it does.</span>
 
 <span class="sd">    This function simply scans the member vector of ensemble and returns</span>
@@ -573,10 +573,10 @@
 <span class="sd">    anything but a TimeSeriesEnsemble or SeismogramEnsemble.</span>
 
 <span class="sd">    :param ensemble:   input ensemble to be scanned</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;has_live_data:  arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"has_live_data:  arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Actual type=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">))</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
@@ -588,7 +588,7 @@
 <div class="viewcode-block" id="regularize_sampling">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.regularize_sampling">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">regularize_sampling</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">dt_expected</span><span class="p">,</span> <span class="n">Nsamp</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">abort_on_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This is a utility function that can be used to validate that all the members</span>
 <span class="sd">    of an ensemble have a sample interval that is indistinguishable from a specified</span>
 <span class="sd">    constant (dt_expected)   The test for constant is soft to allow handling</span>
@@ -600,7 +600,7 @@
 <span class="sd">    or equal to dt/2.</span>
 
 <span class="sd">    The function by default will kill members that have mismatched sample</span>
-<span class="sd">    intervals and log an informational message to the datum&#39;s elog container.</span>
+<span class="sd">    intervals and log an informational message to the datum's elog container.</span>
 <span class="sd">    In this mode the entire ensemble can end up marked dead if all the members</span>
 <span class="sd">    are killed (That situation can easily happen if the entire data set has the wrong dt.);</span>
 <span class="sd">    If the argument `abort_on_errors` is set True a ValueError exception will be</span>
@@ -610,7 +610,7 @@
 <span class="sd">    through the MsPASS `resample` function found in mspasspy.algorithms.resample.</span>
 <span class="sd">    That function will guarantee all live data have the same sample interval</span>
 <span class="sd">    and not kill them like this function will.   Use this function for</span>
-<span class="sd">    algorithms that can&#39;t be certain the input data will have been resampled</span>
+<span class="sd">    algorithms that can't be certain the input data will have been resampled</span>
 <span class="sd">    and need to be robust for what might otherwise be considered a user error.</span>
 
 <span class="sd">    :param ensemble:  ensemble container of data to be scanned for irregular</span>
@@ -633,8 +633,8 @@
 <span class="sd">      to hold a message an kills any member datum with a problem.</span>
 <span class="sd">    :type abort_on_error:  boolean</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;regularize_sampling&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">"regularize_sampling"</span>
     <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">ensemble</span>
     <span class="c1"># this formula will flag any ensemble member for which the sample</span>
@@ -647,7 +647,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">dt_expected</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dt_expected</span> <span class="o">-</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">delta_dt_cutoff</span><span class="p">:</span>
                     <span class="n">message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Member </span><span class="si">{}</span><span class="s2"> of input ensemble has different sample rate=</span><span class="si">{}</span><span class="s2"> than expected dt=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Member </span><span class="si">{}</span><span class="s2"> of input ensemble has different sample rate=</span><span class="si">{}</span><span class="s2"> than expected dt=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">dt_expected</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">abort_on_error</span><span class="p">:</span>
@@ -660,8 +660,8 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">abort_on_error</span><span class="p">:</span>
         <span class="n">nlive</span> <span class="o">=</span> <span class="n">number_live</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nlive</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;All members of this ensemble were killed.</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;expected dt may be wrong or you need to run the resample function on this data set&quot;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">"All members of this ensemble were killed.</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"expected dt may be wrong or you need to run the resample function on this data set"</span>
             <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
             <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">ensemble</span></div>
@@ -670,8 +670,8 @@
 
 <div class="viewcode-block" id="ensemble_time_range">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.ensemble_time_range">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ensemble_time_range</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeWindow</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ensemble_time_range</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">"inner"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeWindow</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Scans a Seismic data ensemble returning a measure of the</span>
 <span class="sd">    time span of members.   The metric returned ban be either</span>
 <span class="sd">    smallest time range containing all the data, the range</span>
@@ -686,28 +686,28 @@
 <span class="sd">    :param metric:   measure to use to define the time range.</span>
 <span class="sd">      Accepted values are:</span>
 
-<span class="sd">      - &quot;inner&quot; - (default) return range defined by largest</span>
+<span class="sd">      - "inner" - (default) return range defined by largest</span>
 <span class="sd">        start time to smallest end time.</span>
-<span class="sd">      - &quot;outer&quot; - return range defined by minimum start time and</span>
+<span class="sd">      - "outer" - return range defined by minimum start time and</span>
 <span class="sd">        largest end time (maximum time span of data)</span>
-<span class="sd">      - &quot;median&quot; - return range as the median of the extracted</span>
+<span class="sd">      - "median" - return range as the median of the extracted</span>
 <span class="sd">        vectors of start time and end time values.</span>
-<span class="sd">      - &quot;mean&quot; - return range as arithmetic average of</span>
+<span class="sd">      - "mean" - return range as arithmetic average of</span>
 <span class="sd">        start and end time vectors</span>
 
 <span class="sd">    :return:  `TimeWindow` object with start and end times.  If the</span>
 <span class="sd">      ensemble has all dead member the default constructed TimeWindow</span>
 <span class="sd">      object will be returned which has zero length.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;ensemble_time_range:   illegal type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"ensemble_time_range:   illegal type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a TimeSeriesEnsemble or SeismogramEnsemble</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be a TimeSeriesEnsemble or SeismogramEnsemble</span><span class="se">\n</span><span class="s2">"</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;inner&quot;</span><span class="p">,</span> <span class="s2">&quot;outer&quot;</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">]:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;ensemble_time_range:  illegal value for metric=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be one of:  inner, outer, median, or mean&quot;</span>
+    <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"inner"</span><span class="p">,</span> <span class="s2">"outer"</span><span class="p">,</span> <span class="s2">"median"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">]:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"ensemble_time_range:  illegal value for metric=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be one of:  inner, outer, median, or mean"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="n">stvector</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">etvector</span> <span class="o">=</span> <span class="p">[]</span>
@@ -717,17 +717,17 @@
             <span class="n">etvector</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">())</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">TimeWindow</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;inner&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"inner"</span><span class="p">:</span>
         <span class="n">stime</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span>
         <span class="n">etime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">etvector</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;outer&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"outer"</span><span class="p">:</span>
         <span class="n">stime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span>
         <span class="n">etime</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">etvector</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;median&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"median"</span><span class="p">:</span>
         <span class="n">stime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span>
         <span class="n">etime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">etvector</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
-        <span class="c1"># note numpy&#39;s mean an average are different with average being</span>
+    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">"mean"</span><span class="p">:</span>
+        <span class="c1"># note numpy's mean an average are different with average being</span>
         <span class="c1"># more generic - intentionally use mean which is also consistent with</span>
         <span class="c1"># the keyword used</span>
         <span class="n">stime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span>
@@ -740,7 +740,7 @@
 <div class="viewcode-block" id="sort_ensemble">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.sort_ensemble">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sort_ensemble</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">nullvalue</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop_dead</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Sorts members of an ensemble by a single Metadata key value.</span>
 
 <span class="sd">    For graphical QC one often needs to sort an ensemble by a metadata</span>
@@ -760,13 +760,13 @@
 <span class="sd">        sort is in ascending order.  False returns data sorted in descending order.</span>
 <span class="sd">    :param drop_dead:  when True (default) any ensemble member marked dead will</span>
 <span class="sd">        be not appear in the output.  When False dead data will get an implicit</span>
-<span class="sd">        value defined by &quot;nullvalue&quot;.   Where the dead appear will depend upon</span>
+<span class="sd">        value defined by "nullvalue".   Where the dead appear will depend upon</span>
 <span class="sd">        what that value is relative to the valid values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;sort_ensemble&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">"sort_ensemble"</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Actual type=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">))</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
     <span class="n">vallist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">indexlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
@@ -781,7 +781,7 @@
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">drop_dead</span><span class="p">:</span>
             <span class="n">vallist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nullvalue</span><span class="p">)</span>
             <span class="n">indexlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-    <span class="n">dfdict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">vallist</span><span class="p">,</span> <span class="s2">&quot;member_number&quot;</span><span class="p">:</span> <span class="n">indexlist</span><span class="p">}</span>
+    <span class="n">dfdict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">vallist</span><span class="p">,</span> <span class="s2">"member_number"</span><span class="p">:</span> <span class="n">indexlist</span><span class="p">}</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dfdict</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">dfdict</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
@@ -791,7 +791,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ensout</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">Metadata</span><span class="p">(</span><span class="n">ensemble</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;member_number&quot;</span><span class="p">])</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"member_number"</span><span class="p">])</span>
         <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">ensout</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>

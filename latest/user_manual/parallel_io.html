@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Parallel IO in MsPASS &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Parallel IO in MsPASS &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="I/O in MsPASS" href="io.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -725,11 +725,11 @@ MongoDB’s query language and the abstraction of what an ensemble means
 it is probably best to provide an example to clarify what I mean.
 The following can be used to create a bag of <cite>TimeSeriesEnsemble</cite>
 objects that are a MsPASS version of a “common source/shot gather”:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">srcid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s1">&#39;source_id&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">srcid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s1">'source_id'</span><span class="p">)</span>
 <span class="n">querylist</span><span class="o">=</span><span class="p">[]</span>
 <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcid_list</span><span class="p">:</span>
-  <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;source_id&#39;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+  <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'source_id'</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 <span class="o">...</span> <span class="n">processing</span> <span class="n">code</span> <span class="n">goes</span> <span class="n">here</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -778,7 +778,7 @@ The simplest, but not fastest, approach to writing data is to use the
 Here is a (not recommended) way to terminate a workflow in that way
 for a container of <cite>TimeSeries</cite> objects:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>  <span class="n">Processing</span> <span class="n">workflow</span> <span class="n">above</span> <span class="k">with</span> <span class="nb">map</span><span class="o">/</span><span class="n">reduce</span> <span class="n">operations</span> <span class="o">...</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span><span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;file&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span><span class="n">storage_mode</span><span class="o">=</span><span class="s1">'file'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Although the save operation will operate in parallel it is has two
@@ -831,10 +831,10 @@ immediately before returning.   That means that <cite>write_distributed_data</ci
 always initiates any pending delayed/lazy computations defined
 earlier in the script for the container.
 Here is a typical fragment for atomic data:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">detrend</span><span class="p">)</span>
 <span class="c1"># other processing functions in map operators would typically go here</span>
-<span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 <span class="c1"># wfidslist will be a python list of ObjectIds</span>
 </pre></div>
 </div>
@@ -1026,29 +1026,29 @@ Metadata container.   In either case, the recommended way to set the
 map operator.  Perhaps the easiest way to see this is to give an
 example that is a variant of that above:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_names</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Examples setting dir and dfile from Metadata attributes assumed</span>
 <span class="sd">  to have been set earlier.  Example sets a constant dir value</span>
 <span class="sd">  with file names set by the string representation of source_id.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
-  <span class="nb">dir</span> <span class="o">=</span> <span class="s1">&#39;wf/example_project&#39;</span>   <span class="c1"># sets dir the same for all data</span>
+<span class="sd">  """</span>
+  <span class="nb">dir</span> <span class="o">=</span> <span class="s1">'wf/example_project'</span>   <span class="c1"># sets dir the same for all data</span>
   <span class="c1"># this makes setting dfile always resolve and not throw an exception</span>
   <span class="c1"># elog entry is demontrates good practice in handling such errors.</span>
-  <span class="k">if</span> <span class="s1">&#39;source_id&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-    <span class="n">dfile</span> <span class="o">=</span> <span class="s2">&quot;source_</span><span class="si">{}</span><span class="s2">.dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]))</span>
+  <span class="k">if</span> <span class="s1">'source_id'</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+    <span class="n">dfile</span> <span class="o">=</span> <span class="s2">"source_</span><span class="si">{}</span><span class="s2">.dat"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">'source_id'</span><span class="p">]))</span>
   <span class="k">else</span><span class="p">:</span>
-    <span class="n">dfile</span><span class="o">=</span><span class="s2">&quot;UNDEFINED_source_id_data&quot;</span>
-    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;set_names (WARNING):  source_id value is undefined for this datum</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Data written to default dfile name=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dfile</span><span class="p">)</span>
+    <span class="n">dfile</span><span class="o">=</span><span class="s2">"UNDEFINED_source_id_data"</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">"set_names (WARNING):  source_id value is undefined for this datum</span><span class="se">\n</span><span class="s2">"</span>
+    <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Data written to default dfile name=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dfile</span><span class="p">)</span>
     <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
-  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
-  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">'dir'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">'dfile'</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
   <span class="k">return</span> <span class="n">d</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">detrend</span><span class="p">)</span>
 <span class="c1"># other processing functions in map operators would typically go here</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">set_names</span><span class="p">)</span>
-<span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 <span class="c1"># wfidslist will be a python list of ObjectIds</span>
 </pre></div>
 </div>
@@ -1071,23 +1071,23 @@ with <cite>read_distributed_data</cite> and terminating it with <cite>write_dist
 It also illustrates a couple of useful generic tests to verify
 things went as expected:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumes imports and db defined above</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 <span class="c1"># processing functions in map operators would go here</span>
 <span class="c1">#</span>
-<span class="c1"># note we don&#39;t call computer/collect after write_distributed_data</span>
+<span class="c1"># note we don't call computer/collect after write_distributed_data</span>
 <span class="c1"># it initates the lazy computations</span>
 <span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span>
-            <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
-            <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;example1&#39;</span><span class="p">,</span>
+            <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">,</span>
+            <span class="n">data_tag</span><span class="o">=</span><span class="s1">'example1'</span><span class="p">,</span>
             <span class="p">)</span>
 <span class="c1"># this will give the maximum number of data possible to compare to nwf</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of list returned by write_distributed_data=&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wfidslist</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Size of list returned by write_distributed_data="</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wfidslist</span><span class="p">))</span>
 <span class="c1"># This is the number actually saved</span>
-<span class="n">nwf</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">&#39;data_tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;example1&#39;</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of saved wf documents=&quot;</span><span class="p">,</span><span class="n">nwf</span><span class="p">)</span>
+<span class="n">nwf</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">'data_tag'</span> <span class="p">:</span> <span class="s1">'example1'</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of saved wf documents="</span><span class="p">,</span><span class="n">nwf</span><span class="p">)</span>
 <span class="c1"># this works only if cemetery was empty at the start of processing</span>
 <span class="n">ndead</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cemetery</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of data killed in this run=&quot;</span><span class="p">,</span><span class="n">ndead</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of data killed in this run="</span><span class="p">,</span><span class="n">ndead</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note the reader always reads the data as directed by attributes of
@@ -1110,73 +1110,73 @@ station codes should be defined for each datum.</p></li>
 see in this example.</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Function used to set dir and dfile for example 2.</span>
 
 <span class="sd">  dir is set to a net_sta_chan_loc name (e.g. II_AAK_BHZ_00) and</span>
 <span class="sd">  dfile is set to the year of the start time of each datum.</span>
 <span class="sd">  Used for make so input d is assumed to be a TimeSeries.</span>
 <span class="sd">  Important:  assumes the seed codes are set with the</span>
-<span class="sd">  fixed keys &#39;net&#39;,&#39;sta&#39;,&#39;chan&#39;, and &#39;loc&#39;.   That works in this</span>
+<span class="sd">  fixed keys 'net','sta','chan', and 'loc'.   That works in this</span>
 <span class="sd">  example because example uses miniseed data as an origin.</span>
 <span class="sd">  Edited copy is returned.  Dead data are returned immediately with no change.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">d</span>
-  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;net&#39;</span><span class="p">):</span>
-    <span class="n">net</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">'net'</span><span class="p">):</span>
+    <span class="n">net</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">'net'</span><span class="p">]</span>
   <span class="k">else</span><span class="p">:</span>
-    <span class="n">net</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
-  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;sta&#39;</span><span class="p">):</span>
-    <span class="n">sta</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span>
+    <span class="n">net</span><span class="o">=</span><span class="s1">''</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">'sta'</span><span class="p">):</span>
+    <span class="n">sta</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">'sta'</span><span class="p">]</span>
   <span class="k">else</span><span class="p">:</span>
-    <span class="n">sta</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
-  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">):</span>
-    <span class="n">chan</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span>
+    <span class="n">sta</span><span class="o">=</span><span class="s1">''</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">'chan'</span><span class="p">):</span>
+    <span class="n">chan</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">'chan'</span><span class="p">]</span>
   <span class="k">else</span><span class="p">:</span>
-    <span class="n">chan</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
-  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;loc&#39;</span><span class="p">):</span>
-    <span class="n">loc</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span>
+    <span class="n">chan</span><span class="o">=</span><span class="s1">''</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">'loc'</span><span class="p">):</span>
+    <span class="n">loc</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">'loc'</span><span class="p">]</span>
   <span class="k">else</span><span class="p">:</span>
-    <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="n">loc</span><span class="o">=</span><span class="s1">''</span>
   <span class="c1"># notice that if none of the seed codes are defined the directory</span>
-  <span class="c1"># name is three &quot;_&quot; characters</span>
-  <span class="nb">dir</span> <span class="o">=</span> <span class="n">net</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">sta</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">chan</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">loc</span>
-  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
+  <span class="c1"># name is three "_" characters</span>
+  <span class="nb">dir</span> <span class="o">=</span> <span class="n">net</span><span class="o">+</span><span class="s1">'_'</span><span class="o">+</span><span class="n">sta</span><span class="o">+</span><span class="s1">'_'</span><span class="o">+</span><span class="n">chan</span><span class="o">+</span><span class="s1">'_'</span><span class="o">+</span><span class="n">loc</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">'dir'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
   <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
   <span class="n">year</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span><span class="o">.</span><span class="n">year</span>
-  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">'dfile'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
   <span class="k">return</span> <span class="n">d</span>
 
 <span class="c1"># these are needed to enable spark instead of dask defaults</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pyspark</span>
-<span class="n">sc</span> <span class="o">=</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">SparkContext</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">,</span><span class="s1">&#39;example2&#39;</span><span class="p">)</span>
+<span class="n">sc</span> <span class="o">=</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">SparkContext</span><span class="p">(</span><span class="s1">'local'</span><span class="p">,</span><span class="s1">'example2'</span><span class="p">)</span>
 <span class="c1"># Assume other imports and definition of db is above</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
-          <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_miniseed&#39;</span><span class="p">,</span>
-          <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;spark&#39;</span><span class="p">,</span>
+          <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_miniseed'</span><span class="p">,</span>
+          <span class="n">scheduler</span><span class="o">=</span><span class="s1">'spark'</span><span class="p">,</span>
           <span class="n">spark_context</span><span class="o">=</span><span class="n">sc</span><span class="p">,</span>
           <span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>  <span class="c1"># spark syntax</span>
 <span class="c1"># processing functions in map operators would go here</span>
 <span class="c1">#</span>
-<span class="c1"># note we don&#39;t call computer/collect after write_distributed_data</span>
+<span class="c1"># note we don't call computer/collect after write_distributed_data</span>
 <span class="c1"># it initates the lazy computations</span>
 <span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span>
-            <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
-            <span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;file&#39;</span><span class="p">,</span>
-            <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;spark&#39;</span><span class="p">,</span>
-            <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;example2&#39;</span><span class="p">,</span>
+            <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">,</span>
+            <span class="n">storage_mode</span><span class="o">=</span><span class="s1">'file'</span><span class="p">,</span>
+            <span class="n">scheduler</span><span class="o">=</span><span class="s1">'spark'</span><span class="p">,</span>
+            <span class="n">data_tag</span><span class="o">=</span><span class="s1">'example2'</span><span class="p">,</span>
             <span class="p">)</span>
 <span class="c1"># These are identical to example 1</span>
 <span class="c1"># this will give the maximum number of data possible to compare to nwf</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of list returned by write_distributed_data=&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wfidslist</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Size of list returned by write_distributed_data="</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wfidslist</span><span class="p">))</span>
 <span class="c1"># This is the number actually saved</span>
-<span class="n">nwf</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">&#39;data_tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;example2&#39;</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of saved wf documents=&quot;</span><span class="p">,</span><span class="n">nwf</span><span class="p">)</span>
+<span class="n">nwf</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">'data_tag'</span> <span class="p">:</span> <span class="s1">'example2'</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of saved wf documents="</span><span class="p">,</span><span class="n">nwf</span><span class="p">)</span>
 <span class="c1"># this works only if cemetery was empty at the start of processing</span>
 <span class="n">ndead</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cemetery</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of data killed in this run=&quot;</span><span class="p">,</span><span class="n">ndead</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of data killed in this run="</span><span class="p">,</span><span class="n">ndead</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1222,43 +1222,43 @@ that the writer takes as a signal to write all ensemble data in
 the same file defined by the ensemble <cite>dir</cite> and <cite>dfile</cite>.</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Function used to set dir and dfile for example 3.</span>
 
 <span class="sd">  This example sets dir as a constant and sets the file</span>
 <span class="sd">  name, which is used by ensemble, with the source_id string</span>
 <span class="sd">  and a constant suffix of .dat</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">d</span>
-  <span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;wf_example3&#39;</span>
-  <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.dat&#39;</span>
+  <span class="nb">dir</span><span class="o">=</span><span class="s1">'wf_example3'</span>
+  <span class="n">suffix</span><span class="o">=</span><span class="s1">'.dat'</span>
   <span class="c1"># this example can assume source_id is set. Could not get</span>
   <span class="c1"># here otherwise</span>
-  <span class="n">srcid</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;source_id&#39;</span><span class="p">]</span>
+  <span class="n">srcid</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">'source_id'</span><span class="p">]</span>
   <span class="n">dfile</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">srcid</span><span class="p">)</span>
   <span class="n">dfile</span> <span class="o">+=</span> <span class="n">suffix</span>
-  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span><span class="o">=</span><span class="nb">dir</span>
-  <span class="n">d</span><span class="p">[</span><span class="s1">&#39;dfile&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">dfile</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">'dir'</span><span class="p">]</span><span class="o">=</span><span class="nb">dir</span>
+  <span class="n">d</span><span class="p">[</span><span class="s1">'dfile'</span><span class="p">]</span><span class="o">=</span><span class="n">dfile</span>
   <span class="k">return</span> <span class="n">d</span>
 
 <span class="c1"># Assume other imports and definition of db is above</span>
 <span class="c1"># This loads a source collection normalizer using a cache method</span>
 <span class="c1"># for efficiency.  Note it is used in read_distibuted_data below</span>
 <span class="n">source_matcher</span> <span class="o">=</span> <span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
-                      <span class="s2">&quot;source&quot;</span><span class="p">,</span>
-                      <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+                      <span class="s2">"source"</span><span class="p">,</span>
+                      <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s1">'lat'</span><span class="p">,</span><span class="s1">'lon'</span><span class="p">,</span><span class="s1">'depth'</span><span class="p">,</span><span class="s1">'time'</span><span class="p">,</span><span class="s1">'_id'</span><span class="p">])</span>
 
-<span class="n">srcid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s1">&#39;source_id&#39;</span><span class="p">)</span>
+<span class="n">srcid_list</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s1">'source_id'</span><span class="p">)</span>
 <span class="n">querylist</span><span class="o">=</span><span class="p">[]</span>
 <span class="k">for</span> <span class="n">srcid</span> <span class="ow">in</span> <span class="n">srcid_list</span><span class="p">:</span>
-  <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;source_id&#39;</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
+  <span class="n">querylist</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'source_id'</span> <span class="p">:</span> <span class="n">srcid</span><span class="p">})</span>
 <span class="n">source_bag</span> <span class="o">=</span> <span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">querylist</span><span class="p">)</span>
 <span class="c1"># This is used to normalize each member datum using miniseed</span>
 <span class="c1"># station codes and time</span>
 <span class="n">mseed_matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
-          <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_miniseed&#39;</span><span class="p">,</span>
+          <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_miniseed'</span><span class="p">,</span>
           <span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="n">mseed_matcher</span><span class="p">],</span>
           <span class="n">normalize_ensemble</span><span class="o">=</span><span class="p">[</span><span class="n">source_matcher</span><span class="p">],</span>
           <span class="n">container_to_merge</span><span class="o">=</span><span class="n">source_bag</span><span class="p">,</span>
@@ -1275,23 +1275,23 @@ the same file defined by the ensemble <cite>dir</cite> and <cite>dfile</cite>.</
 
 <span class="c1"># finally set the dir and dfile fields</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">set_dir_dfile</span><span class="p">)</span>
-<span class="c1"># note we don&#39;t call computer/collect after write_distributed_data</span>
+<span class="c1"># note we don't call computer/collect after write_distributed_data</span>
 <span class="c1"># it initates the lazy computations</span>
 <span class="n">wfidslist</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span>
-            <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_Seismogram&#39;</span><span class="p">,</span>
-            <span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;file&#39;</span><span class="p">,</span>
-            <span class="n">scheduler</span><span class="o">=</span><span class="s1">&#39;spark&#39;</span><span class="p">,</span>
-            <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;example3&#39;</span><span class="p">,</span>
+            <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_Seismogram'</span><span class="p">,</span>
+            <span class="n">storage_mode</span><span class="o">=</span><span class="s1">'file'</span><span class="p">,</span>
+            <span class="n">scheduler</span><span class="o">=</span><span class="s1">'spark'</span><span class="p">,</span>
+            <span class="n">data_tag</span><span class="o">=</span><span class="s1">'example3'</span><span class="p">,</span>
             <span class="p">)</span>
 <span class="c1"># These are identical to example 1</span>
 <span class="c1"># this will give the maximum number of data possible to compare to nwf</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of list returned by write_distributed_data=&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wfidslist</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Size of list returned by write_distributed_data="</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wfidslist</span><span class="p">))</span>
 <span class="c1"># This is the number actually saved</span>
-<span class="n">nwf</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">&#39;data_tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;example3&#39;</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of saved wf documents=&quot;</span><span class="p">,</span><span class="n">nwf</span><span class="p">)</span>
+<span class="n">nwf</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s1">'data_tag'</span> <span class="p">:</span> <span class="s1">'example3'</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of saved wf documents="</span><span class="p">,</span><span class="n">nwf</span><span class="p">)</span>
 <span class="c1"># this works only if cemetery was empty at the start of processing</span>
 <span class="n">ndead</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cemetery</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of data killed in this run=&quot;</span><span class="p">,</span><span class="n">ndead</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of data killed in this run="</span><span class="p">,</span><span class="n">ndead</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1316,18 +1316,18 @@ notebooks were each one ends up with the data set saved in a particular,
 often partially processed, state.</p>
 <p>An alternative that can be useful for intermediate saves
 is illustrated in the following example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 <span class="c1"># set of map/reduce operators would go here</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span> <span class="p">:</span> <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span>
                                   <span class="n">d</span><span class="p">,</span>
-                                  <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
-                                  <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;save1&#39;</span><span class="p">,</span>
+                                  <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">,</span>
+                                  <span class="n">data_tag</span><span class="o">=</span><span class="s1">'save1'</span><span class="p">,</span>
                                   <span class="n">return_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                   <span class="p">))</span>
 <span class="c1"># more map/reduce operators</span>
 <span class="n">wfids</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span>
-           <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
-           <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;finalsave&#39;</span><span class="p">,</span>
+           <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">,</span>
+           <span class="n">data_tag</span><span class="o">=</span><span class="s1">'finalsave'</span><span class="p">,</span>
            <span class="p">)</span>
 </pre></div>
 </div>
@@ -1342,20 +1342,20 @@ the only purpose of the intermediate save is as a checkpoint in the
 event something fails later in the workflow and you need to the
 intermediate case because it was expensive to compute.  As noted
 above, it may actually be faster to do the following instead:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 <span class="c1"># set of map/reduce operators would go here</span>
 <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span>
-           <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
-           <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;save1&#39;</span><span class="p">,</span>
+           <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">,</span>
+           <span class="n">data_tag</span><span class="o">=</span><span class="s1">'save1'</span><span class="p">,</span>
            <span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
-           <span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;data_tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;save1&#39;</span><span class="p">},</span>
-           <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+           <span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s1">'data_tag'</span> <span class="p">:</span> <span class="s1">'save1'</span><span class="p">},</span>
+           <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 
 <span class="c1"># more map/reduce operators</span>
 <span class="n">wfids</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">db</span><span class="p">,</span>
-           <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span>
-           <span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;finalsave&#39;</span><span class="p">,</span>
+           <span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">,</span>
+           <span class="n">data_tag</span><span class="o">=</span><span class="s1">'finalsave'</span><span class="p">,</span>
            <span class="p">)</span>
 </pre></div>
 </div>

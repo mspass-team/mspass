@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using NumPy and SciPy with MsPASS &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Using NumPy and SciPy with MsPASS &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Data Object Design Concepts" href="data_object_design_concepts.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -524,13 +524,13 @@ not always.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DoubleVector</span><span class="p">,</span> <span class="n">TimeSeries</span>
 <span class="n">x_numpy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">x_mspass</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type of numpy object=&quot;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">x_numpy</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type of mspass data vector=&quot;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Type of numpy object="</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">x_numpy</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Type of mspass data vector="</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">x_mspass</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>You should get this output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Type of numpy object= &lt;class &#39;numpy.ndarray&#39;&gt;
-Type of mspass data vector= &lt;class &#39;mspasspy.ccore.seismic.DoubleVector&#39;&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Type of numpy object= &lt;class 'numpy.ndarray'&gt;
+Type of mspass data vector= &lt;class 'mspasspy.ccore.seismic.DoubleVector'&gt;
 </pre></div>
 </div>
 <p>The point is that both define two conceptually similar things that are a

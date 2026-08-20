@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Data Editing &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>Data Editing &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Handling Errors" href="handling_errors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -518,16 +518,16 @@ dataset defined by Seismogram objects:</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">measure_bandwidth</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
   <span class="n">d</span> <span class="o">=</span> <span class="n">broadband_snr_QC</span><span class="p">(</span><span class="n">d</span><span class="p">,</span>
       <span class="n">use_measured_arrival_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-      <span class="n">measured_arrival_time_key</span><span class="o">=</span><span class="s2">&quot;Ptime&quot;</span><span class="p">)</span>
-  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;Parrival&quot;</span><span class="p">):</span>
-    <span class="n">d</span><span class="p">[</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Parrival&quot;</span><span class="p">][</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">]</span>
+      <span class="n">measured_arrival_time_key</span><span class="o">=</span><span class="s2">"Ptime"</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"Parrival"</span><span class="p">):</span>
+    <span class="n">d</span><span class="p">[</span><span class="s2">"bandwidth"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"Parrival"</span><span class="p">][</span><span class="s2">"bandwidth"</span><span class="p">]</span>
   <span class="k">return</span> <span class="n">d</span>
 
-<span class="n">editor</span> <span class="o">=</span> <span class="n">MetadataLT</span><span class="p">(</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">,</span><span class="mf">12.0</span><span class="p">)</span>
+<span class="n">editor</span> <span class="o">=</span> <span class="n">MetadataLT</span><span class="p">(</span><span class="s2">"bandwidth"</span><span class="p">,</span><span class="mf">12.0</span><span class="p">)</span>
 <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># Change to a MongoDB query to process data subset</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s2">"wf_Seismogram"</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-  <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_Seismogram"</span><span class="p">)</span>
   <span class="n">d</span> <span class="o">=</span> <span class="n">measure_bandwidth</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
   <span class="n">d</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">kill_if_true</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 </pre></div>
@@ -547,10 +547,10 @@ That method will return a version of <code class="docutils literal notranslate">
 that same script using dask:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
-<span class="n">editor</span> <span class="o">=</span> <span class="n">MetadataLT</span><span class="p">(</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">)</span>
+<span class="n">editor</span> <span class="o">=</span> <span class="n">MetadataLT</span><span class="p">(</span><span class="s2">"bandwidth"</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">)</span>
 <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">seisbag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
-                                <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+                                <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_Seismogram"</span><span class="p">)</span>
 <span class="n">seisbag</span> <span class="o">=</span> <span class="n">seisbag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">measure_bandwidth</span><span class="p">)</span>
 <span class="n">seisbag</span> <span class="o">=</span> <span class="n">seisbag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">editor</span><span class="o">.</span><span class="n">kill_if_true</span><span class="p">)</span>
 </pre></div>
@@ -799,7 +799,7 @@ additional test to an existing <code class="docutils literal notranslate"><span 
 that creates a <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code> associated with the symbol <code class="docutils literal notranslate"><span class="pre">squad</span></code>.  The
 following example creates a <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> test against the Metadata key “mad_snr” and
 adds it to the list of test in <code class="docutils literal notranslate"><span class="pre">squad</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">maddog</span> <span class="o">=</span> <span class="n">MetadataLE</span><span class="p">(</span><span class="s2">&quot;mad_snr&quot;</span><span class="p">,</span><span class="mf">4.0</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">maddog</span> <span class="o">=</span> <span class="n">MetadataLE</span><span class="p">(</span><span class="s2">"mad_snr"</span><span class="p">,</span><span class="mf">4.0</span><span class="p">)</span>
 <span class="n">squad</span> <span class="o">+=</span> <span class="n">maddog</span>
 </pre></div>
 </div>

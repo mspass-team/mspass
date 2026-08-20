@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MsPASS Components &#8212; MsPASS 2.4.3.dev1+g61b06b96 documentation</title>
+    <title>MsPASS Components &#8212; MsPASS 2.4.4.dev1+gf4a0e6ea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ded45b03"></script>
+    <script src="../_static/documentation_options.js?v=cf8713bb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Introduction" href="introduction.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.3.dev1" />
+  <meta name="docsearch:version" content="2.4.4.dev1" />
   </head>
   
   
@@ -553,7 +553,7 @@ with the obspy FDSN web services client.   The stock incantation to create
 one is</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy.clients.fdsn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
 
-<span class="n">webclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;EARTHSCOPE&quot;</span><span class="p">)</span>
+<span class="n">webclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">"EARTHSCOPE"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note it is critical to recognize that clients all assume there is a
@@ -576,7 +576,7 @@ is migrating all the waveform data they manage:</p>
 <span class="n">client</span> <span class="o">=</span> <span class="n">EarthScopeClient</span><span class="p">()</span>
 <span class="n">creds</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">get_aws_credentials</span><span class="p">()</span>
 
-<span class="n">S3_ACCESS_POINT</span> <span class="o">=</span> <span class="s2">&quot;earthscope-mseed-res-na3mtd4fq5kz7pntcyr1uh46use2a--ol-s3&quot;</span>
+<span class="n">S3_ACCESS_POINT</span> <span class="o">=</span> <span class="s2">"earthscope-mseed-res-na3mtd4fq5kz7pntcyr1uh46use2a--ol-s3"</span>
 <span class="n">BUCKET</span> <span class="o">=</span> <span class="n">S3_ACCESS_POINT</span>
 
 <span class="n">session</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span>
@@ -585,10 +585,10 @@ is migrating all the waveform data they manage:</p>
   <span class="n">aws_session_token</span><span class="o">=</span><span class="n">creds</span><span class="o">.</span><span class="n">aws_session_token</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">s3_client</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
-                 <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+                 <span class="s2">"s3"</span><span class="p">,</span>
                  <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span>
-                     <span class="n">request_checksum_calculation</span><span class="o">=</span><span class="s2">&quot;when_required&quot;</span><span class="p">,</span>
-                     <span class="n">response_checksum_validation</span><span class="o">=</span><span class="s2">&quot;when_required&quot;</span><span class="p">,</span>
+                     <span class="n">request_checksum_calculation</span><span class="o">=</span><span class="s2">"when_required"</span><span class="p">,</span>
+                     <span class="n">response_checksum_validation</span><span class="o">=</span><span class="s2">"when_required"</span><span class="p">,</span>
                  <span class="p">),</span>
              <span class="p">)</span>
 </pre></div>
@@ -622,7 +622,7 @@ fetches the database client:</p>
 a reference to a running database client.   The database client itself is
 not always needed so many workflows call the following that uses the
 client under the hood:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydb&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">"mydb"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>which instantiates a handle to particular set of data defined in
@@ -713,7 +713,7 @@ skeleton example illustrates how to handle that situation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_dbhandle</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">myfunction</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">dbname</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Example function illustrating use of fetch_dbhandle.</span>
 
 <span class="sd">  This example would return a TimeSeriesEnsemble of data</span>
@@ -721,11 +721,11 @@ skeleton example illustrates how to handle that situation:</p>
 
 <span class="sd">  Note dbname is a string defining a particular database the server</span>
 <span class="sd">  will need to access.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>
   <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
   <span class="c1"># proper form would trap a null return here - omitted for simplicity</span>
-  <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">)</span>
   <span class="k">return</span> <span class="n">ens</span>
 </pre></div>
 </div>
