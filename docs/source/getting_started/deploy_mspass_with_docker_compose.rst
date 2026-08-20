@@ -65,10 +65,12 @@ other important variables describe the scheduler and connect the services:
   to the cluster.  Each entry has the form ``name/host:port``.
 * ``MSPASS_SHARD_ID`` gives each shard a unique identity and keeps its data
   separate when shards share a mounted filesystem.
-* ``MSPASS_JUPYTER_PWD`` optionally sets the Jupyter password.  If it is
-  unset, Jupyter generates a login token and prints it in the frontend log.
-  An empty value permits access without a password and should be used only in
-  an appropriately protected environment.
+* ``MONGO_INITDB_ROOT_USERNAME`` and ``MONGO_INITDB_ROOT_PASSWORD`` are
+  required by the supplied Compose files.  They initialize MongoDB's root
+  user and authenticate the frontend and database health checks.
+* ``JUPYTER_TOKEN`` optionally sets a nonempty Jupyter login token.  If it is
+  unset or empty, Jupyter generates a new token for every frontend launch and
+  prints the token URL in the frontend log.
 
 Several port variables are also available: ``JUPYTER_PORT`` defaults to
 ``8888``, ``DASK_SCHEDULER_PORT`` to ``8786``, ``SPARK_MASTER_PORT`` to
@@ -88,10 +90,15 @@ The standard configuration is
    :linenos:
    :caption: Standard Docker Compose configuration using Dask
 
-Save the file as ``compose.yaml`` in your project directory, then start it:
+Save the file as ``compose.yaml`` in your project directory.  Set MongoDB
+credentials in the invoking shell, then start it:
 
 .. code-block:: bash
 
+   read -r -p "MongoDB administrator: " MONGO_INITDB_ROOT_USERNAME
+   read -r -s -p "MongoDB password: " MONGO_INITDB_ROOT_PASSWORD
+   echo
+   export MONGO_INITDB_ROOT_USERNAME MONGO_INITDB_ROOT_PASSWORD
    docker compose up -d
 
 Docker downloads the image automatically if it is not already installed.
@@ -115,9 +122,11 @@ log with:
 
    docker compose logs mspass-frontend
 
-Open ``http://127.0.0.1:8888/`` in a browser and enter the password
-``mspass``.  The Dask dashboard is available at
-``http://127.0.0.1:8787/status``.
+Open the token URL printed by ``docker compose logs mspass-frontend``.  To
+choose a token instead, export a nonempty ``JUPYTER_TOKEN`` before starting
+the project.  The Dask dashboard is available at
+``http://127.0.0.1:8787/status``.  All published service ports in the supplied
+files are bound to the host loopback interface.
 
 When finished, stop and remove the containers with:
 
@@ -132,16 +141,17 @@ scripts create ``db/`` for MongoDB data, ``logs/`` for service logs, and
 Common adjustments
 ------------------
 
-The supplied file is intended for local use.  It publishes service ports on
-all host interfaces, uses the known Jupyter password ``mspass``, and does not
-enable MongoDB authentication.  On an untrusted network, choose a private
-Jupyter password and bind published ports to loopback; for example, change
-``8888:8888`` to ``127.0.0.1:8888:8888``.
+The supplied files bind every published service port to ``127.0.0.1``, require
+MongoDB authentication, and use a fresh Jupyter token by default.  Keep the
+MongoDB credentials and any explicit Jupyter token private.  Review firewall
+and authentication requirements separately before changing a binding to a
+non-loopback host address.
 
 Other common changes are:
 
 * Change the host side of a port mapping if a port is already in use.  For
-  example, ``9999:8888`` makes JupyterLab available on host port ``9999``.
+  example, ``127.0.0.1:9999:8888`` makes JupyterLab available on host port
+  ``9999`` without publishing it on other host interfaces.
 * Adjust ``MSPASS_WORKER_ARG`` to change the number of Dask worker processes.
   Do not request more CPU or memory than Docker has available.
 * Add the same bind mount to every service that needs access to waveform data

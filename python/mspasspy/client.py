@@ -154,6 +154,8 @@ class Client:
         # check env variables
         MSPASS_DB_ADDRESS = os.environ.get("MSPASS_DB_ADDRESS")
         MONGODB_PORT = os.environ.get("MONGODB_PORT")
+        MONGO_INITDB_ROOT_USERNAME = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
+        MONGO_INITDB_ROOT_PASSWORD = os.environ.get("MONGO_INITDB_ROOT_PASSWORD")
         MSPASS_SCHEDULER = os.environ.get("MSPASS_SCHEDULER")
         MSPASS_SCHEDULER_ADDRESS = os.environ.get("MSPASS_SCHEDULER_ADDRESS")
         DASK_SCHEDULER_PORT = os.environ.get("DASK_SCHEDULER_PORT")
@@ -172,22 +174,35 @@ class Client:
         # create a database client
         # priority: parameter -> env -> default
         database_host_has_port = False
+        database_client_options = {}
         if database_host:
             database_address = database_host
             # check if database_host contains port number already
             if ":" in database_address:
                 database_host_has_port = True
-
         elif MSPASS_DB_ADDRESS:
             database_address = MSPASS_DB_ADDRESS
         else:
             database_address = "127.0.0.1"
+        if MONGO_INITDB_ROOT_USERNAME and MONGO_INITDB_ROOT_PASSWORD:
+            parsed_database_address = (
+                urlsplit(database_address) if "://" in database_address else None
+            )
+            if (
+                parsed_database_address is None
+                or parsed_database_address.username is None
+            ):
+                database_client_options = {
+                    "username": MONGO_INITDB_ROOT_USERNAME,
+                    "password": MONGO_INITDB_ROOT_PASSWORD,
+                    "authSource": "admin",
+                }
         # add port
         if not database_host_has_port and MONGODB_PORT:
             database_address += ":" + MONGODB_PORT
 
         try:
-            self._db_client = DBClient(database_address)
+            self._db_client = DBClient(database_address, **database_client_options)
             self._db_client.server_info()
         except Exception as err:
             raise MsPASSError(

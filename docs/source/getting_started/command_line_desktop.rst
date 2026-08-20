@@ -192,10 +192,15 @@ repository supplies this standard Dask configuration:
    :caption: Standard compose.yaml file with database, Dask, and frontend services
 
 Save it as ``compose.yaml`` in the project directory, change to that directory,
-and start the services in the background:
+set the required MongoDB administrator credentials, and start the services in
+the background:
 
 .. code-block:: bash
 
+   read -r -p "MongoDB administrator: " MONGO_INITDB_ROOT_USERNAME
+   read -r -s -p "MongoDB password: " MONGO_INITDB_ROOT_PASSWORD
+   echo
+   export MONGO_INITDB_ROOT_USERNAME MONGO_INITDB_ROOT_PASSWORD
    docker compose up -d
 
 Compose reports that it created a project network and started the
@@ -214,9 +219,10 @@ health checks run.  If the frontend does not become ready, inspect its log:
 
    docker compose logs mspass-frontend
 
-Open ``http://127.0.0.1:8888`` and enter the configured password ``mspass``.
-The supplied Compose file sets a password, so its log may not display the
-token-style URL produced by the single-container command.
+Open the token URL printed by ``docker compose logs mspass-frontend``.  The
+supplied file asks Jupyter to generate a fresh token each time the frontend
+starts.  Export a nonempty ``JUPYTER_TOKEN`` before ``docker compose up`` only
+when you need to choose the token explicitly.
 
 A Python script stored as ``myjob.py`` in the project directory can be run in
 the frontend service, which has both database and scheduler addresses:
@@ -335,14 +341,12 @@ sensitive files outside that directory, and use normal host backups.
 Network and credential safety
 -----------------------------
 
-The simple commands on this page and the shipped ``data/yaml/compose.yaml``
-publish their ports on the host interfaces.  The Compose example also uses
-the known Jupyter password ``mspass`` and does not configure MongoDB
-authentication.  Treat these as local or trusted-network examples.  On an
-untrusted network, bind published ports to loopback (for example,
-``127.0.0.1:8888:8888``) and choose a private Jupyter password.  The
-:ref:`Compose deployment guide <deploy_mspass_with_docker_compose>` explains
-those changes.
+The simple ``docker run`` commands on this page publish their ports on all host
+interfaces and should be treated as local or trusted-network examples.  The
+shipped ``data/yaml/compose.yaml`` instead binds every published port to
+``127.0.0.1``, requires MongoDB credentials, and lets Jupyter generate a fresh
+token.  The :ref:`Compose deployment guide <deploy_mspass_with_docker_compose>`
+documents that configuration.
 
 Treat a Jupyter token or password as a credential.  Do not post a token-bearing
 URL in a shared log or expose the service ports through a firewall without an
