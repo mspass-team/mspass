@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.client &#8212; MsPASS 2.4.4.dev7+gb89a038d documentation</title>
+    <title>mspasspy.client &#8212; MsPASS 2.4.4.dev8+g5b7108d2 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=572aa329"></script>
+    <script src="../../_static/documentation_options.js?v=abd9e6fa"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev7" />
+  <meta name="docsearch:version" content="2.4.4.dev8" />
   </head>
   
   
@@ -478,7 +478,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlsplit</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">MongoDBWorker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.global_history.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">GlobalHistoryManager</span>
 
@@ -497,10 +496,16 @@
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span> <span class="k">as</span> <span class="n">DaskClient</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+    <span class="n">DaskClient</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">MongoDBWorker</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_mspasspy_has_dask_distributed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_mspasspy_dask_import_error</span> <span class="o">=</span> <span class="n">err</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">MongoDBWorker</span>
 
     <span class="n">_mspasspy_has_dask_distributed</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">_mspasspy_has_dask_distributed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_mspasspy_dask_import_error</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span>
 
@@ -515,23 +520,67 @@
     <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span> <span class="o">+</span> <span class="s2">"."</span><span class="p">,</span> <span class="s2">"Fatal"</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_address_has_port</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s2">"://"</span> <span class="ow">in</span> <span class="n">address</span><span class="p">:</span>
-        <span class="n">parsed_address</span> <span class="o">=</span> <span class="n">urlsplit</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">parsed_address</span> <span class="o">=</span> <span class="n">urlsplit</span><span class="p">(</span><span class="s2">"//"</span> <span class="o">+</span> <span class="n">address</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_require_dask</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">_mspasspy_has_dask_distributed</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Dask scheduler was requested, but dask.distributed could not be imported"</span>
+    <span class="k">if</span> <span class="n">_mspasspy_dask_import_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">": "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">_mspasspy_dask_import_error</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span> <span class="o">+</span> <span class="s2">"."</span><span class="p">,</span> <span class="s2">"Fatal"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_local_spark_master</span><span class="p">(</span><span class="n">master</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">master</span> <span class="o">==</span> <span class="s2">"local"</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">master</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">master</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"local["</span><span class="p">)</span> <span class="ow">and</span> <span class="n">master</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"]"</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_scheduler_endpoint</span><span class="p">(</span>
+    <span class="n">scheduler_address</span><span class="p">,</span>
+    <span class="n">scheduler_port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">default_port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">default_scheme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">endpoint</span> <span class="o">=</span> <span class="n">scheduler_address</span>
+    <span class="k">if</span> <span class="n">default_scheme</span> <span class="o">==</span> <span class="s2">"spark"</span> <span class="ow">and</span> <span class="n">_is_local_spark_master</span><span class="p">(</span><span class="n">endpoint</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">endpoint</span>
+    <span class="k">if</span> <span class="n">default_scheme</span> <span class="ow">and</span> <span class="s2">"://"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">endpoint</span><span class="p">:</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">default_scheme</span> <span class="o">+</span> <span class="s2">"://"</span> <span class="o">+</span> <span class="n">endpoint</span>
+
+    <span class="n">parse_target</span> <span class="o">=</span> <span class="n">endpoint</span> <span class="k">if</span> <span class="s2">"://"</span> <span class="ow">in</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="s2">"//"</span> <span class="o">+</span> <span class="n">endpoint</span>
+    <span class="n">parsed_address</span> <span class="o">=</span> <span class="n">urlsplit</span><span class="p">(</span><span class="n">parse_target</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">parsed_address</span><span class="o">.</span><span class="n">port</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">embedded_port</span> <span class="o">=</span> <span class="n">parsed_address</span><span class="o">.</span><span class="n">port</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="s2">"Invalid scheduler address: "</span> <span class="o">+</span> <span class="n">scheduler_address</span><span class="p">,</span>
+            <span class="s2">"Fatal"</span><span class="p">,</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+
+    <span class="k">if</span> <span class="n">embedded_port</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">endpoint</span>
+
+    <span class="k">if</span> <span class="n">scheduler_port</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">scheduler_port</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+        <span class="n">scheduler_port</span> <span class="o">=</span> <span class="n">default_port</span>
+    <span class="k">if</span> <span class="n">scheduler_port</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">scheduler_port</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">endpoint</span>
+
+    <span class="n">parsed_address</span> <span class="o">=</span> <span class="n">parsed_address</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span>
+        <span class="n">netloc</span><span class="o">=</span><span class="n">parsed_address</span><span class="o">.</span><span class="n">netloc</span> <span class="o">+</span> <span class="s2">":"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler_port</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">endpoint</span> <span class="o">=</span> <span class="n">parsed_address</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">"://"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scheduler_address</span><span class="p">:</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">"//"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">endpoint</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_build_dask_scheduler_address</span><span class="p">(</span><span class="n">scheduler_address</span><span class="p">,</span> <span class="n">scheduler_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">_address_has_port</span><span class="p">(</span><span class="n">scheduler_address</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">scheduler_address</span>
-    <span class="k">if</span> <span class="n">scheduler_port</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">scheduler_port</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
-        <span class="n">scheduler_port</span> <span class="o">=</span> <span class="s2">"8786"</span>
-    <span class="k">return</span> <span class="n">scheduler_address</span> <span class="o">+</span> <span class="s2">":"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">scheduler_port</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_build_scheduler_endpoint</span><span class="p">(</span>
+        <span class="n">scheduler_address</span><span class="p">,</span>
+        <span class="n">scheduler_port</span><span class="o">=</span><span class="n">scheduler_port</span><span class="p">,</span>
+        <span class="n">default_port</span><span class="o">=</span><span class="s2">"8786"</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="Client">
@@ -608,6 +657,7 @@
                 <span class="s2">"Fatal"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">dask_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_require_dask</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"none"</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                     <span class="s2">"dask_client cannot be used when scheduler is none."</span><span class="p">,</span>
@@ -645,6 +695,10 @@
             <span class="p">)</span>
         <span class="p">):</span>
             <span class="n">_require_pyspark</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_mspasspy_has_dask_distributed</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"dask"</span> <span class="ow">or</span> <span class="p">(</span><span class="n">scheduler</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">MSPASS_SCHEDULER</span> <span class="o">==</span> <span class="s2">"dask"</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">_require_dask</span><span class="p">()</span>
 
         <span class="c1"># create a database client</span>
         <span class="c1"># priority: parameter -&gt; env -&gt; default</span>
@@ -722,81 +776,185 @@
 
         <span class="c1"># scheduler configuration</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
-            <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="n">scheduler_host</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="n">scheduler_host</span>
-                <span class="c1"># add spark:// prefix if not exist</span>
-                <span class="k">if</span> <span class="s2">"spark://"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scheduler_host</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="s2">"spark://"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span>
-                <span class="c1"># check if spark host address contains port number already</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">True</span>
-
+                <span class="n">scheduler_address</span> <span class="o">=</span> <span class="n">scheduler_host</span>
             <span class="k">elif</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span>
-                <span class="c1"># add spark:// prefix if not exist</span>
-                <span class="k">if</span> <span class="s2">"spark://"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="s2">"spark://"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span>
+                <span class="n">scheduler_address</span> <span class="o">=</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="s2">"local"</span>
+                <span class="n">scheduler_address</span> <span class="o">=</span> <span class="kc">None</span>
 
-            <span class="c1"># add port number</span>
-            <span class="c1"># 1. not the default 'local'</span>
-            <span class="c1"># 2. scheduler_host and does not contain port number</span>
-            <span class="c1"># 3. SPARK_MASTER_PORT exists</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="p">(</span><span class="n">scheduler_host</span> <span class="ow">or</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="ow">not</span> <span class="n">scheduler_host_has_port</span>
-                <span class="ow">and</span> <span class="n">SPARK_MASTER_PORT</span>
-            <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">+=</span> <span class="s2">":"</span> <span class="o">+</span> <span class="n">SPARK_MASTER_PORT</span>
+            <span class="n">implicit_local_scheduler</span> <span class="o">=</span> <span class="n">scheduler_address</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">implicit_local_scheduler</span><span class="p">:</span>
+                <span class="n">spark_master_url</span> <span class="o">=</span> <span class="s2">"local"</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">spark_master_url</span> <span class="o">=</span> <span class="n">_build_scheduler_endpoint</span><span class="p">(</span>
+                    <span class="n">scheduler_address</span><span class="p">,</span>
+                    <span class="n">scheduler_port</span><span class="o">=</span><span class="n">SPARK_MASTER_PORT</span><span class="p">,</span>
+                    <span class="n">default_scheme</span><span class="o">=</span><span class="s2">"spark"</span><span class="p">,</span>
+                <span class="p">)</span>
 
             <span class="c1"># sanity check</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">spark</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">appName</span><span class="p">(</span><span class="s2">"mspass"</span><span class="p">)</span>
-                    <span class="o">.</span><span class="n">master</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="p">)</span>
-                    <span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+                <span class="n">spark_context</span><span class="p">,</span> <span class="n">spark_context_owned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_spark_context</span><span class="p">(</span>
+                    <span class="n">spark_master_url</span><span class="p">,</span>
+                    <span class="n">allow_existing_local</span><span class="o">=</span><span class="n">implicit_local_scheduler</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                     <span class="s2">"Runntime error: cannot create a spark configuration with: "</span>
-                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="p">,</span>
+                    <span class="o">+</span> <span class="n">spark_master_url</span><span class="p">,</span>
                     <span class="s2">"Fatal"</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_commit_spark_scheduler</span><span class="p">(</span>
+                <span class="n">spark_context</span><span class="p">,</span>
+                <span class="n">spark_context</span><span class="o">.</span><span class="n">master</span><span class="p">,</span>
+                <span class="n">owned</span><span class="o">=</span><span class="n">spark_context_owned</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">"dask"</span><span class="p">:</span>
             <span class="c1"># if no defind scheduler_host and no MSPASS_SCHEDULER_ADDRESS, use local cluster to create a client</span>
             <span class="k">if</span> <span class="n">dask_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">dask_client</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_register_dask_plugin</span><span class="p">(</span><span class="n">dask_client</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                        <span class="s2">"Runntime error: cannot configure the provided dask client"</span><span class="p">,</span>
+                        <span class="s2">"Fatal"</span><span class="p">,</span>
+                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_commit_dask_scheduler</span><span class="p">(</span><span class="n">dask_client</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">owned</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">scheduler_host</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">DaskClient</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">new_dask_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_dask_client</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                        <span class="s2">"Runntime error: cannot create a local dask client"</span><span class="p">,</span>
+                        <span class="s2">"Fatal"</span><span class="p">,</span>
+                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_commit_dask_scheduler</span><span class="p">(</span><span class="n">new_dask_client</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">owned</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">scheduler_host</span><span class="p">:</span>
                     <span class="n">scheduler_address</span> <span class="o">=</span> <span class="n">scheduler_host</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">scheduler_address</span> <span class="o">=</span> <span class="n">MSPASS_SCHEDULER_ADDRESS</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">=</span> <span class="n">_build_dask_scheduler_address</span><span class="p">(</span>
+                <span class="n">dask_client_address</span> <span class="o">=</span> <span class="n">_build_dask_scheduler_address</span><span class="p">(</span>
                     <span class="n">scheduler_address</span><span class="p">,</span> <span class="n">DASK_SCHEDULER_PORT</span>
                 <span class="p">)</span>
                 <span class="c1"># sanity check</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">DaskClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span><span class="p">)</span>
+                    <span class="n">new_dask_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_dask_client</span><span class="p">(</span><span class="n">dask_client_address</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                         <span class="s2">"Runntime error: cannot create a dask client with: "</span>
-                        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span><span class="p">,</span>
+                        <span class="o">+</span> <span class="n">dask_client_address</span><span class="p">,</span>
                         <span class="s2">"Fatal"</span><span class="p">,</span>
-                    <span class="p">)</span>
+                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_commit_dask_scheduler</span><span class="p">(</span>
+                    <span class="n">new_dask_client</span><span class="p">,</span> <span class="n">dask_client_address</span><span class="p">,</span> <span class="n">owned</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler_disabled</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">"There is no spark or dask installed, this client has no scheduler"</span><span class="p">)</span>
 
-        <span class="c1"># Auto-register MongoDB worker plugin for dask to avoid DB serialization leaks</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">"dask"</span><span class="p">:</span>
-            <span class="n">mongo_plugin</span> <span class="o">=</span> <span class="n">MongoDBWorker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbclient_key</span><span class="o">=</span><span class="s2">"dbclient"</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span><span class="o">.</span><span class="n">register_plugin</span><span class="p">(</span><span class="n">mongo_plugin</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"mongodb_worker"</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_dask_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dask_client</span><span class="p">):</span>
+        <span class="n">mongo_plugin</span> <span class="o">=</span> <span class="n">MongoDBWorker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbclient_key</span><span class="o">=</span><span class="s2">"dbclient"</span><span class="p">)</span>
+        <span class="n">dask_client</span><span class="o">.</span><span class="n">register_plugin</span><span class="p">(</span><span class="n">mongo_plugin</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"mongodb_worker"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_dask_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheduler_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_require_dask</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">scheduler_address</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dask_client</span> <span class="o">=</span> <span class="n">DaskClient</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dask_client</span> <span class="o">=</span> <span class="n">DaskClient</span><span class="p">(</span><span class="n">scheduler_address</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_register_dask_plugin</span><span class="p">(</span><span class="n">dask_client</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">dask_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span>
+        <span class="k">return</span> <span class="n">dask_client</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_spark_context</span><span class="p">(</span><span class="n">spark_master_url</span><span class="p">,</span> <span class="n">allow_existing_local</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">previous_context</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">SparkContext</span><span class="p">,</span> <span class="s2">"_active_spark_context"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">spark</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">appName</span><span class="p">(</span><span class="s2">"mspass"</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">master</span><span class="p">(</span><span class="n">spark_master_url</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">spark_context</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span>
+        <span class="n">reused_context</span> <span class="o">=</span> <span class="n">spark_context</span> <span class="ow">is</span> <span class="n">previous_context</span>
+        <span class="n">compatible_existing_local</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">allow_existing_local</span>
+            <span class="ow">and</span> <span class="n">reused_context</span>
+            <span class="ow">and</span> <span class="n">_is_local_spark_master</span><span class="p">(</span><span class="n">spark_context</span><span class="o">.</span><span class="n">master</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">master</span> <span class="o">!=</span> <span class="n">spark_master_url</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">compatible_existing_local</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">reused_context</span><span class="p">:</span>
+                <span class="n">spark_context</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">"SparkSession.getOrCreate() returned master "</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">spark_context</span><span class="o">.</span><span class="n">master</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">" instead of "</span>
+                <span class="o">+</span> <span class="n">spark_master_url</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">spark_context</span><span class="p">,</span> <span class="ow">not</span> <span class="n">reused_context</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commit_dask_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dask_client</span><span class="p">,</span> <span class="n">scheduler_address</span><span class="p">,</span> <span class="n">owned</span><span class="p">):</span>
+        <span class="n">old_scheduler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_scheduler"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">old_dask_client</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_dask_client"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">old_dask_owned</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_dask_client_owned"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">old_spark_context</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">old_spark_owned</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context_owned"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="s2">"dask"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler_disabled</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">dask_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">=</span> <span class="n">scheduler_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_owned</span> <span class="o">=</span> <span class="n">owned</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">"_spark_context"</span><span class="p">,</span>
+            <span class="s2">"_spark_master_url"</span><span class="p">,</span>
+            <span class="s2">"_spark_context_owned"</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">):</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">old_scheduler</span> <span class="o">==</span> <span class="s2">"dask"</span> <span class="ow">and</span> <span class="n">old_dask_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">old_dask_owned</span><span class="p">:</span>
+            <span class="n">old_dask_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">old_scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span>
+            <span class="ow">and</span> <span class="n">old_spark_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">old_spark_owned</span>
+        <span class="p">):</span>
+            <span class="n">old_spark_context</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commit_spark_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spark_context</span><span class="p">,</span> <span class="n">spark_master_url</span><span class="p">,</span> <span class="n">owned</span><span class="p">):</span>
+        <span class="n">old_scheduler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_scheduler"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">old_dask_client</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_dask_client"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">old_dask_owned</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_dask_client_owned"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">old_spark_context</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">old_spark_owned</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context_owned"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="s2">"spark"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler_disabled</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span> <span class="o">=</span> <span class="n">spark_context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="n">spark_master_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context_owned</span> <span class="o">=</span> <span class="n">owned</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">"_dask_client"</span><span class="p">,</span>
+            <span class="s2">"_dask_client_address"</span><span class="p">,</span>
+            <span class="s2">"_dask_client_owned"</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">):</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">old_scheduler</span> <span class="o">==</span> <span class="s2">"dask"</span> <span class="ow">and</span> <span class="n">old_dask_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">old_dask_owned</span><span class="p">:</span>
+            <span class="n">old_dask_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">old_scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span>
+            <span class="ow">and</span> <span class="n">old_spark_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">old_spark_owned</span>
+        <span class="p">):</span>
+            <span class="n">old_spark_context</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Client.get_database_client">
 <a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database_client">[docs]</a>
@@ -854,6 +1012,45 @@
                 <span class="s2">"There is no spark or dask installed, this client has no scheduler, returned None"</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Client.close_scheduler">
+<a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.close_scheduler">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Detach the active scheduler and release it when owned by this client.</span>
+
+<span class="sd">        A local Dask client or Spark context created by this :class:`Client` is</span>
+<span class="sd">        closed or stopped exactly once.  A Dask client supplied by the caller</span>
+<span class="sd">        and a Spark context reused from the caller are detached but remain</span>
+<span class="sd">        running.  Repeated calls are no-ops.</span>
+
+<span class="sd">        Scheduler state is cleared before an owned resource is released.  If</span>
+<span class="sd">        ``close`` or ``stop`` raises, that exception is propagated and this</span>
+<span class="sd">        client remains detached from the scheduler.</span>
+<span class="sd">        """</span>
+        <span class="n">scheduler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_scheduler"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">dask_client</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_dask_client"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">dask_owned</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_dask_client_owned"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">spark_context</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">spark_owned</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context_owned"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler_disabled</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">"_dask_client"</span><span class="p">,</span>
+            <span class="s2">"_dask_client_address"</span><span class="p">,</span>
+            <span class="s2">"_dask_client_owned"</span><span class="p">,</span>
+            <span class="s2">"_spark_context"</span><span class="p">,</span>
+            <span class="s2">"_spark_master_url"</span><span class="p">,</span>
+            <span class="s2">"_spark_context_owned"</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">):</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"dask"</span> <span class="ow">and</span> <span class="n">dask_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dask_owned</span><span class="p">:</span>
+            <span class="n">dask_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span> <span class="ow">and</span> <span class="n">spark_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">spark_owned</span><span class="p">:</span>
+            <span class="n">spark_context</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Client.set_database_client">
@@ -929,7 +1126,25 @@
 <a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_scheduler">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheduler</span><span class="p">,</span> <span class="n">scheduler_host</span><span class="p">,</span> <span class="n">scheduler_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Set a scheduler by scheduler type, scheduler_host(and scheduler_port)</span>
+<span class="sd">        Replace the scheduler used by this client.</span>
+
+<span class="sd">        The replacement scheduler is constructed and validated before any</span>
+<span class="sd">        scheduler state in this object is changed.  Consequently, a failure to</span>
+<span class="sd">        construct or validate the replacement leaves the current scheduler and</span>
+<span class="sd">        its ownership unchanged.  After a successful commit, a displaced Dask</span>
+<span class="sd">        client or Spark context is closed only when it was created by this</span>
+<span class="sd">        :class:`Client`; a Dask client supplied by the caller is never closed.</span>
+
+<span class="sd">        Cleanup of an owned, displaced scheduler happens after the replacement</span>
+<span class="sd">        is committed.  If its ``close`` or ``stop`` method raises, that exception</span>
+<span class="sd">        is propagated and the replacement remains the active scheduler.  This</span>
+<span class="sd">        distinction lets callers determine the active state with</span>
+<span class="sd">        :meth:`get_scheduler` without mistaking a cleanup failure for a failed</span>
+<span class="sd">        connection.</span>
+
+<span class="sd">        Requesting the currently active Spark master is an idempotent no-op.</span>
+<span class="sd">        Switching an active Spark context to another master is rejected because</span>
+<span class="sd">        ``SparkSession.getOrCreate`` cannot guarantee that transition.</span>
 
 <span class="sd">        :param scheduler: the scheduler type, should be either dask or spark</span>
 <span class="sd">        :type scheduler: :class:`str`</span>
@@ -937,6 +1152,13 @@
 <span class="sd">        :type scheduler_host: :class:`str`</span>
 <span class="sd">        :param scheduler_port: the port of scheduler</span>
 <span class="sd">        :type scheduler_port: :class:`str`</span>
+
+<span class="sd">        :raises MsPASSError: if arguments are invalid, an optional scheduler</span>
+<span class="sd">            dependency is unavailable, the replacement cannot be constructed or</span>
+<span class="sd">            validated, or an active Spark master switch is requested.</span>
+<span class="sd">        :raises Exception: propagates an exception raised while closing or</span>
+<span class="sd">            stopping a displaced Client-owned scheduler after the replacement</span>
+<span class="sd">            has been committed.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">scheduler</span> <span class="o">!=</span> <span class="s2">"dask"</span> <span class="ow">and</span> <span class="n">scheduler</span> <span class="o">!=</span> <span class="s2">"spark"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
@@ -945,96 +1167,68 @@
                 <span class="o">+</span> <span class="s2">" is found."</span><span class="p">,</span>
                 <span class="s2">"Fatal"</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
-            <span class="n">_require_pyspark</span><span class="p">()</span>
-
-        <span class="n">prev_scheduler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">scheduler</span>
-        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
-            <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">False</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="n">scheduler_host</span>
-            <span class="c1"># add spark:// prefix if not exist</span>
-            <span class="k">if</span> <span class="s2">"spark://"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scheduler_host</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">=</span> <span class="s2">"spark://"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span>
-            <span class="c1"># check if spark host address contains port number already</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="n">scheduler_host_has_port</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="c1"># add port</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">scheduler_host_has_port</span> <span class="ow">and</span> <span class="n">scheduler_port</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span> <span class="o">+=</span> <span class="s2">":"</span> <span class="o">+</span> <span class="n">scheduler_port</span>
-
-            <span class="c1"># sanity check</span>
-            <span class="n">prev_spark_context</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">prev_spark_conf</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context"</span><span class="p">):</span>
-                <span class="n">prev_spark_context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span>
-                <span class="n">prev_spark_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span><span class="o">.</span><span class="n">getConf</span><span class="p">()</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span><span class="p">,</span> <span class="n">SparkContext</span>
-                <span class="p">):</span>
-                    <span class="c1"># update the confinguration</span>
-                    <span class="n">spark_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span><span class="o">.</span><span class="n">_conf</span><span class="o">.</span><span class="n">setMaster</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">spark_conf</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">SparkConf</span><span class="p">()</span>
-                        <span class="o">.</span><span class="n">setAppName</span><span class="p">(</span><span class="s2">"mspass"</span><span class="p">)</span>
-                        <span class="o">.</span><span class="n">setMaster</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="c1"># stop the previous spark context</span>
-                <span class="c1"># FIXME if the new context does not start, we shouldn't stop the previous here.</span>
-                <span class="c1"># if prev_spark_context:</span>
-                <span class="c1">#    prev_spark_context.stop()</span>
-                <span class="c1"># create a new spark context -&gt; might cause error so that execute exception code</span>
-                <span class="n">spark</span> <span class="o">=</span> <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="n">spark_conf</span><span class="p">)</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="c1"># restore the spark context by the previous spark configuration</span>
-                <span class="k">if</span> <span class="n">prev_spark_conf</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span> <span class="o">=</span> <span class="n">SparkContext</span><span class="o">.</span><span class="n">getOrCreate</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="n">prev_spark_conf</span><span class="p">)</span>
-                <span class="c1"># restore the scheduler type</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span> <span class="ow">and</span> <span class="n">prev_scheduler</span> <span class="o">==</span> <span class="s2">"dask"</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">prev_scheduler</span>
-                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">"Runntime error: cannot create a spark configuration with: "</span>
-                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_master_url</span><span class="p">,</span>
-                    <span class="s2">"Fatal"</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="c1"># close previous dask client if success</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_dask_client"</span><span class="p">):</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span>
-
-        <span class="k">elif</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"dask"</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span> <span class="o">=</span> <span class="n">_build_dask_scheduler_address</span><span class="p">(</span>
-                <span class="n">scheduler_host</span><span class="p">,</span> <span class="n">scheduler_port</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">scheduler_host</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">"scheduler_host should be a string but "</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">scheduler_host</span><span class="p">))</span>
+                <span class="o">+</span> <span class="s2">" is found."</span><span class="p">,</span>
+                <span class="s2">"Fatal"</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="c1"># sanity check</span>
-            <span class="n">prev_dask_client</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_dask_client"</span><span class="p">):</span>
-                <span class="n">prev_dask_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># create a new dask client</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">DaskClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="c1"># restore the dask client if exists</span>
-                <span class="k">if</span> <span class="n">prev_dask_client</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span> <span class="o">=</span> <span class="n">prev_dask_client</span>
-                <span class="c1"># restore the scheduler type</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">"dask"</span> <span class="ow">and</span> <span class="n">prev_scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">prev_scheduler</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
+            <span class="n">_require_pyspark</span><span class="p">()</span>
+            <span class="n">spark_master_url</span> <span class="o">=</span> <span class="n">_build_scheduler_endpoint</span><span class="p">(</span>
+                <span class="n">scheduler_host</span><span class="p">,</span>
+                <span class="n">scheduler_port</span><span class="o">=</span><span class="n">scheduler_port</span><span class="p">,</span>
+                <span class="n">default_scheme</span><span class="o">=</span><span class="s2">"spark"</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_scheduler"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
+                <span class="n">active_master</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_master_url"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">active_master</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">active_master</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">"master"</span><span class="p">,</span> <span class="kc">None</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">active_master</span> <span class="o">==</span> <span class="n">spark_master_url</span><span class="p">:</span>
+                    <span class="k">return</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">"Runntime error: cannot create a dask client with: "</span>
-                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client_address</span><span class="p">,</span>
+                    <span class="s2">"Runntime error: cannot create a spark configuration with: "</span>
+                    <span class="o">+</span> <span class="n">spark_master_url</span>
+                    <span class="o">+</span> <span class="s2">"; refusing to change active Spark master from "</span>
+                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">active_master</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="s2">" because SparkSession.getOrCreate() cannot guarantee the switch."</span><span class="p">,</span>
                     <span class="s2">"Fatal"</span><span class="p">,</span>
                 <span class="p">)</span>
-            <span class="c1"># remove previous spark context if success setting new dask client</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_spark_context"</span><span class="p">):</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spark_context</span></div>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">spark_context</span><span class="p">,</span> <span class="n">spark_context_owned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_spark_context</span><span class="p">(</span>
+                    <span class="n">spark_master_url</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">"Runntime error: cannot create a spark configuration with: "</span>
+                    <span class="o">+</span> <span class="n">spark_master_url</span><span class="p">,</span>
+                    <span class="s2">"Fatal"</span><span class="p">,</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_commit_spark_scheduler</span><span class="p">(</span>
+                <span class="n">spark_context</span><span class="p">,</span>
+                <span class="n">spark_context</span><span class="o">.</span><span class="n">master</span><span class="p">,</span>
+                <span class="n">owned</span><span class="o">=</span><span class="n">spark_context_owned</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_require_dask</span><span class="p">()</span>
+            <span class="n">dask_client_address</span> <span class="o">=</span> <span class="n">_build_dask_scheduler_address</span><span class="p">(</span>
+                <span class="n">scheduler_host</span><span class="p">,</span> <span class="n">scheduler_port</span>
+            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dask_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_dask_client</span><span class="p">(</span><span class="n">dask_client_address</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="s2">"Runntime error: cannot create a dask client with: "</span>
+                    <span class="o">+</span> <span class="n">dask_client_address</span><span class="p">,</span>
+                    <span class="s2">"Fatal"</span><span class="p">,</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_commit_dask_scheduler</span><span class="p">(</span><span class="n">dask_client</span><span class="p">,</span> <span class="n">dask_client_address</span><span class="p">,</span> <span class="n">owned</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.client &#8212; MsPASS 2.4.4.dev7+gb89a038d documentation</title>
+    <title>mspasspy.client &#8212; MsPASS 2.4.4.dev8+g5b7108d2 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=572aa329"></script>
+    <script src="../_static/documentation_options.js?v=abd9e6fa"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.ccore" href="mspasspy.ccore.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev7" />
+  <meta name="docsearch:version" content="2.4.4.dev8" />
   </head>
   
   
@@ -495,6 +495,19 @@ This is useful for externally managed Dask clusters, including Dask Gateway
 clusters.  The caller owns the external cluster and should keep it alive while
 the MsPASS client is using it.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.client.Client.close_scheduler">
+<span class="sig-name descname"><span class="pre">close_scheduler</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/client.html#Client.close_scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.client.Client.close_scheduler" title="Link to this definition">#</a></dt>
+<dd><p>Detach the active scheduler and release it when owned by this client.</p>
+<p>A local Dask client or Spark context created by this <a class="reference internal" href="#mspasspy.client.Client" title="mspasspy.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> is
+closed or stopped exactly once.  A Dask client supplied by the caller
+and a Spark context reused from the caller are detached but remain
+running.  Repeated calls are no-ops.</p>
+<p>Scheduler state is cleared before an owned resource is released.  If
+<code class="docutils literal notranslate"><span class="pre">close</span></code> or <code class="docutils literal notranslate"><span class="pre">stop</span></code> raises, that exception is propagated and this
+client remains detached from the scheduler.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.client.Client.get_database">
 <span class="sig-name descname"><span class="pre">get_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/client.html#Client.get_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.client.Client.get_database" title="Link to this definition">#</a></dt>
 <dd><p>Get a database by database_name, if database_name is not specified, use the default one</p>
@@ -573,13 +586,38 @@ the MsPASS client is using it.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.client.Client.set_scheduler">
 <span class="sig-name descname"><span class="pre">set_scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scheduler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/client.html#Client.set_scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.client.Client.set_scheduler" title="Link to this definition">#</a></dt>
-<dd><p>Set a scheduler by scheduler type, scheduler_host(and scheduler_port)</p>
+<dd><p>Replace the scheduler used by this client.</p>
+<p>The replacement scheduler is constructed and validated before any
+scheduler state in this object is changed.  Consequently, a failure to
+construct or validate the replacement leaves the current scheduler and
+its ownership unchanged.  After a successful commit, a displaced Dask
+client or Spark context is closed only when it was created by this
+<a class="reference internal" href="#mspasspy.client.Client" title="mspasspy.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a>; a Dask client supplied by the caller is never closed.</p>
+<p>Cleanup of an owned, displaced scheduler happens after the replacement
+is committed.  If its <code class="docutils literal notranslate"><span class="pre">close</span></code> or <code class="docutils literal notranslate"><span class="pre">stop</span></code> method raises, that exception
+is propagated and the replacement remains the active scheduler.  This
+distinction lets callers determine the active state with
+<a class="reference internal" href="#mspasspy.client.Client.get_scheduler" title="mspasspy.client.Client.get_scheduler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_scheduler()</span></code></a> without mistaking a cleanup failure for a failed
+connection.</p>
+<p>Requesting the currently active Spark master is an idempotent no-op.
+Switching an active Spark context to another master is rejected because
+<code class="docutils literal notranslate"><span class="pre">SparkSession.getOrCreate</span></code> cannot guarantee that transition.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>scheduler</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the scheduler type, should be either dask or spark</p></li>
 <li><p><strong>scheduler_host</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the host address of scheduler</p></li>
 <li><p><strong>scheduler_port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the port of scheduler</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.MsPASSError" title="mspasspy.ccore.utility.MsPASSError"><strong>MsPASSError</strong></a> – if arguments are invalid, an optional scheduler
+dependency is unavailable, the replacement cannot be constructed or
+validated, or an active Spark master switch is requested.</p></li>
+<li><p><strong>Exception</strong> – propagates an exception raised while closing or
+stopping a displaced Client-owned scheduler after the replacement
+has been committed.</p></li>
 </ul>
 </dd>
 </dl>
@@ -637,6 +675,7 @@ the MsPASS client is using it.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.client.Client"><code class="docutils literal notranslate"><span class="pre">Client</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.client.Client.close_scheduler"><code class="docutils literal notranslate"><span class="pre">Client.close_scheduler()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.client.Client.get_database"><code class="docutils literal notranslate"><span class="pre">Client.get_database()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.client.Client.get_database_client"><code class="docutils literal notranslate"><span class="pre">Client.get_database_client()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.client.Client.get_global_history_manager"><code class="docutils literal notranslate"><span class="pre">Client.get_global_history_manager()</span></code></a></li>
