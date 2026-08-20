@@ -257,9 +257,10 @@ def load_one_ensemble(
     """
     This function can be used to load a full ensemble indexed in the
     collection import_miniseed_ensemble.  It uses a large memory model
-    that eat up the entire file using obspy's miniseed reader.   It contains
-    some relics of early ideas of potentially having the function
-    utilize the history mechanism.  Those may not work, but were retained.
+    that reads the entire file using obspy's miniseed reader.  When history
+    creation is enabled, each output member is linked by position to the
+    corresponding ``doc['members'][i]['seed_file_id']`` entry.  The complete
+    mapping is validated before any output ensemble is constructed.
 
     :param doc: is one record in the import_miniseed_ensemble collection
     :param create_history:  if true each member of the ensemble will be
