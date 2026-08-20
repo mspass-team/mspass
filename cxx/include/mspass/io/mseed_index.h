@@ -5,7 +5,7 @@
 #include <vector>
 namespace mspass::io {
 
-/*! \brief Index entry describing one contiguous MiniSEED data segment. */
+/*! \brief Index entry describing one MiniSEED data segment. */
 class mseed_index {
 public:
   std::string net; /*!< Network code. */
@@ -14,7 +14,7 @@ public:
   std::string chan; /*!< Channel code. */
   size_t foff; /*!< File offset of the first packet in this segment. */
   size_t nbytes; /*!< Number of bytes in this segment. */
-  size_t npts; /*!< Number of samples represented by this segment. */
+  size_t npts; /*!< Number of regular-grid sample positions spanned. */
   double samprate; /*!< Sample rate in samples per second. */
   double starttime; /*!< Segment start time as epoch seconds. */
   double endtime; /*!< Segment end time as epoch seconds. */
@@ -97,6 +97,11 @@ of interest only if something breaks.
   detects a time tear it is logged in the returned error log as an informational
   log message.   If false only reading errors for things like garbled miniseed
   packets are logged.
+\param sample_rate_tolerance is the relative tolerance used to decide whether
+  packet sample rates belong to the same index entry.  The default, 0.0001,
+  is the tolerance used by libmseed's MS_ISRATETOLERABLE macro.  Rates that
+  are not strictly within this tolerance always start a new index entry
+  because one entry can store only one sample rate.
 \return std::pair whose first element contains a vector of objects
   called mseed_index that contain the basic information defining an index for
   inputfile.  See class description of mseed_index for more details. "second"
@@ -105,7 +110,8 @@ of interest only if something breaks.
 */
 std::pair<std::vector<mseed_index>, mspass::utility::ErrorLogger>
 mseed_file_indexer(const std::string inputfile, const bool segment_timetears,
-                   const bool Verbose);
+                   const bool Verbose,
+                   const double sample_rate_tolerance = 0.0001);
 
 } // namespace mspass::io
 #endif

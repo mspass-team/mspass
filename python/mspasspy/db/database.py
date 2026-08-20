@@ -454,7 +454,7 @@ class Database(pymongo.database.Database):
         alg_id="0",
         define_as_raw=False,
         merge_method=0,
-        merge_fill_value=None,
+        merge_fill_value=0,
         merge_interpolation_samples=0,
         aws_access_key_id=None,
         aws_secret_access_key=None,
@@ -774,10 +774,17 @@ class Database(pymongo.database.Database):
 
         :param merge_fill_value: Fill value for gap processing when obspy's merge
           method is invoked.  (see description for "merge_method" above).
-          The value given here is passed used as the "fill" argument to
-          the obspy merge method.  As with merge_method this argument is
-          relevant only when reading miniseed data.
-        :type merge_fill_value: :class:`int`, :class:`float` or None (default)
+          The value given here is passed as the ``fill_value`` argument to
+          the obspy merge method.  The default is 0.  Use ``"interpolate"``
+          to linearly interpolate between the samples bordering each gap.
+          Explicitly passing None represents missing samples as NaN because
+          an MsPASS TimeSeries cannot retain obspy's NumPy mask.  As with
+          merge_method this argument is relevant only when reading miniseed
+          data.  Any detected gaps are recorded in the returned datum with
+          ``has_gap=True`` and a ``gaps`` list defining the missing-sample
+          time intervals.
+        :type merge_fill_value: :class:`int`, :class:`float`, :class:`str`,
+          or None
 
         :param merge_interpolation_samples: when merge_method is set to
           -1 the obspy merge function requires a value for an
@@ -4273,8 +4280,9 @@ class Database(pymongo.database.Database):
         nbytes=0,
         format=None,
         merge_method=0,
-        merge_fill_value=None,
+        merge_fill_value=0,
         merge_interpolation_samples=0,
+        sample_rate_tolerance=1.0e-4,
     ):
         """
         Private method to provide generic reader of atomic data from a standard
@@ -4302,8 +4310,18 @@ class Database(pymongo.database.Database):
         :param nbytes: number of bytes to be read from the offset. This is only used when ``format`` is given.
         :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats>`__ of ObsPy writer. By default (``None``), the format will be the binary waveform.
         :type format: :class:`str`
-        :param fill_value: Fill value for gaps. Defaults to None. Traces will be converted to NumPy masked arrays if no value is given and gaps are present.
-        :type fill_value: :class:`int`, :class:`float` or None
+        :param merge_fill_value: Fill value for gaps.  Defaults to 0.  The
+          string ``"interpolate"`` requests linear interpolation.  Explicit
+          None values are converted to NaN when the obspy trace is copied to
+          the MsPASS sample vector because that vector cannot retain a mask.
+        :type merge_fill_value: :class:`int`, :class:`float`, :class:`str`,
+          or None
+        :param sample_rate_tolerance: Relative tolerance used to treat small
+          miniSEED record-header sample-rate differences as one regular grid.
+          The default matches libmseed.  Samples are never resampled: only
+          rates within this tolerance are assigned the index grid rate before
+          ObsPy merges gaps.
+        :type sample_rate_tolerance: :class:`float`
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -4384,7 +4402,38 @@ class Database(pymongo.database.Database):
                         # st is a "stream" but it may contains multiple Trace objects gaps
                         # but here we want only one TimeSeries, we merge these Trace objects and fill values for gaps
                         # we post a complaint elog entry to the mspass_object if there are gaps in the stream
+                        gap_metadata = []
                         if len(st) > 1:
+                            if (
+                                not np.isfinite(sample_rate_tolerance)
+                                or sample_rate_tolerance < 0.0
+                            ):
+                                raise ValueError(
+                                    "sample_rate_tolerance must be finite and nonnegative"
+                                )
+                            if format.lower() in ("mseed", "miniseed"):
+                                grid_rate = 1.0 / mspass_object.dt
+                                for trace in st:
+                                    trace_rate = trace.stats.sampling_rate
+                                    if trace_rate == grid_rate or abs(
+                                        trace_rate - grid_rate
+                                    ) < sample_rate_tolerance * abs(trace_rate):
+                                        trace.stats.sampling_rate = grid_rate
+                            for gap in st.get_gaps():
+                                missing_samples = int(gap[7])
+                                if missing_samples <= 0:
+                                    continue
+                                previous_endtime = gap[4].timestamp
+                                next_starttime = gap[5].timestamp
+                                sample_interval = (
+                                    next_starttime - previous_endtime
+                                ) / (missing_samples + 1)
+                                gap_metadata.append(
+                                    {
+                                        "starttime": previous_endtime + sample_interval,
+                                        "endtime": next_starttime - sample_interval,
+                                    }
+                                )
                             message = "WARNING:  gaps detected while reading file {} with format {} using obspy\n".format(
                                 fname, format
                             )
@@ -4468,8 +4517,13 @@ class Database(pymongo.database.Database):
                         tr_data = tr.data.astype(
                             "float64"
                         )  #   Convert the nparray type to double, to match the DoubleVector
+                        if np.ma.isMaskedArray(tr_data):
+                            tr_data = tr_data.filled(np.nan)
                         mspass_object.npts = len(tr_data)
                         mspass_object.data = DoubleVector(tr_data)
+                        if gap_metadata:
+                            mspass_object["has_gap"] = True
+                            mspass_object["gaps"] = gap_metadata
                         # We can't use Trace2TimeSeries because we loose
                         # all but miniseed metadata if we do that.
                         # We do, however, need to compare post errors
@@ -5819,7 +5873,7 @@ class Database(pymongo.database.Database):
 
     #  Methods for handling miniseed data
     @staticmethod
-    def _convert_mseed_index(index_record):
+    def _convert_mseed_index(index_record, sample_rate_tolerance=1.0e-4):
         """
         Helper used to convert C++ struct/class mseed_index to a dict
         to use for saving to mongod.  Note loc is only set if it is not
@@ -5843,6 +5897,7 @@ class Database(pymongo.database.Database):
         o["nbytes"] = index_record.nbytes
         o["npts"] = index_record.npts
         o["endtime"] = index_record.endtime
+        o["sample_rate_tolerance"] = sample_rate_tolerance
         return o
 
     def index_mseed_file(
@@ -5850,11 +5905,12 @@ class Database(pymongo.database.Database):
         dfile,
         dir=None,
         collection="wf_miniseed",
-        segment_time_tears=True,
+        segment_time_tears=False,
         elog_collection="elog",
         return_ids=False,
         normalize_channel=False,
         verbose=False,
+        sample_rate_tolerance=1.0e-4,
     ):
         """
         This is the first stage import function for handling the import of
@@ -5888,16 +5944,19 @@ class Database(pymongo.database.Database):
         function is controlled by the input parameter
         segment_time_tears.  When true a new index entry is created
         any time the start time of a packet differs from that computed
-        from the endtime of the last packet by more than one sample
+        from the endtime of the last packet by more than one-half of the
+        previous sample interval
         AND net:sta:chan:loc are constant.  The default for this
         parameter is false because data with many dropped packets from
-        telemetry are common and can create overwhelming numbers of
-        index entries quickly.  When false the scan only creates a new
-        index record when net, sta, chan, or loc change between successive
-        packets.  Our reader has gap handling functions to handle
-        time tears.  Set segment_time_tears true only when you are
-        confident the data set does not contain a large number of dropped
-        packets.
+        telemetry are common and can create overwhelming numbers of index
+        entries quickly.  When false, time-tag discontinuities alone are
+        ignored and ``npts`` records the full regular time-grid span, including
+        sample positions in gaps.  By default :meth:`read_data` fills those
+        positions with zeros and records the missing-sample intervals in the
+        returned datum's ``has_gap`` and ``gaps`` Metadata.  Callers can instead
+        request linear interpolation with ``merge_fill_value="interpolate"``.
+        The scan still creates a new index record when net, sta, chan, loc, or
+        sampling rate changes beyond ``sample_rate_tolerance``.
 
         Note to parallelize this function put a list of files in a Spark
         RDD or a Dask bag and parallelize the call the this function.
@@ -5927,7 +5986,7 @@ class Database(pymongo.database.Database):
         :param segment_time_tears: boolean controlling handling of data gaps
           defined by constant net, sta, chan, and loc but a discontinuity
           in time tags for successive packets.  See above for a more extensive
-          discussion of how to use this parameter.  Default is True.
+          discussion of how to use this parameter.  Default is False.
         :param elog_collection:  name to write any error logs messages
           from the miniseed reader.  Default is "elog", which is the
           same as for TimeSeries and Seismogram data, but the cross reference
@@ -5962,10 +6021,16 @@ class Database(pymongo.database.Database):
           False.  Set this True if you are using inline normalization
           (normalize_channel set True) and you aren't certain your
           channel collection has no serious inconsistencies.
+        :param sample_rate_tolerance: nonnegative relative tolerance used to
+          decide whether packet sample rates belong to the same index entry.
+          The default, ``1.0e-4``, matches libmseed's sample-rate tolerance.
+          Rates that are not strictly within the tolerance start a new index
+          entry even when ``segment_time_tears`` is False.
         :exception: This function can throw a range of error types for
           a long list of possible io issues.   Callers should use a
           generic handler to avoid aborts in a large job.
         """
+
         dbh = self[collection]
         if dfile is None:
             dfile = self._get_dfile_uuid("mseed")
@@ -5979,14 +6044,16 @@ class Database(pymongo.database.Database):
         odir = str(file_path.parent)
         dfile = file_path.name
         fname = str(file_path)
-        ind, elog = _mseed_file_indexer(fname, segment_time_tears)
+        ind, elog = _mseed_file_indexer(
+            fname, segment_time_tears, False, sample_rate_tolerance
+        )
         if len(elog.get_error_log()) > 0 and "No such file or directory" in str(
             elog.get_error_log()
         ):
             raise FileNotFoundError(str(elog.get_error_log()))
         ids_affected = []
         for i in ind:
-            doc = self._convert_mseed_index(i)
+            doc = self._convert_mseed_index(i, sample_rate_tolerance)
             doc["storage_mode"] = "file"
             doc["format"] = "mseed"
             doc["dir"] = odir
@@ -7328,6 +7395,11 @@ class Database(pymongo.database.Database):
                             merge_method=merge_method,
                             merge_fill_value=merge_fill_value,
                             merge_interpolation_samples=merge_interpolation_samples,
+                            sample_rate_tolerance=(
+                                md["sample_rate_tolerance"]
+                                if md.is_defined("sample_rate_tolerance")
+                                else 1.0e-4
+                            ),
                         )
                 else:
                     message = "Missing required argument nbytes for formatted read"
@@ -7343,6 +7415,11 @@ class Database(pymongo.database.Database):
                     merge_method=merge_method,
                     merge_fill_value=merge_fill_value,
                     merge_interpolation_samples=merge_interpolation_samples,
+                    sample_rate_tolerance=(
+                        md["sample_rate_tolerance"]
+                        if md.is_defined("sample_rate_tolerance")
+                        else 1.0e-4
+                    ),
                 )
         elif storage_mode == "gridfs":
             self._read_data_from_gridfs(mspass_object, md["gridfs_id"])

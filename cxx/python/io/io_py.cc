@@ -56,7 +56,7 @@ PYBIND11_MODULE(io,m){
     .def_readwrite("nbytes",&mseed_index::nbytes,
       "number of bytes of data in this block of data")
     .def_readwrite("npts",&mseed_index::npts,
-      "Computed number of samples from packet headers")
+      "Number of regular-grid sample positions spanned, including gaps")
     .def_readwrite("samprate",&mseed_index::samprate,
       "Data sample rate (sps) for this block of data")
     .def_readwrite("starttime",&mseed_index::starttime,
@@ -70,8 +70,9 @@ PYBIND11_MODULE(io,m){
     "Builds an index for a miniseed file returning std::pair with index and ErrorLogger object",
     py::return_value_policy::copy,
     py::arg("file"),
-    py::arg("segment") = true,
-    py::arg("verbose") = false
+    py::arg("segment") = false,
+    py::arg("verbose") = false,
+    py::arg("sample_rate_tolerance") = 0.0001
     )
   ;
  m.def("_fwrite_to_file",py::overload_cast<mspass::seismic::Seismogram&,
