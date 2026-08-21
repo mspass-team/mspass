@@ -79,18 +79,22 @@ double PowerSpectrum::power(const double f) const {
                       ErrorSeverity::Invalid);
   if (f < this->f0val)
     return 0.0;
-  int filow;
-  filow = static_cast<int>((f - this->f0val) / this->dfval);
-  if (filow < 0)
+  if (spectrum.empty())
     return 0.0;
-  /* Force 0 at Nyquist and above - this allows simple interpolation in else */
-  if (filow >= (spectrum.size() - 1))
+  const size_t last_index = spectrum.size() - 1;
+  const double last_frequency =
+      this->f0val + static_cast<double>(last_index) * this->dfval;
+  if (f > last_frequency)
     return 0.0;
-  else {
-    double slope = (spectrum[filow + 1] - spectrum[filow]) / this->dfval;
-    double flow = this->f0val + ((double)filow) * this->dfval;
-    return spectrum[filow] + slope * (f - flow);
-  }
+  if (f == last_frequency || last_index == 0)
+    return spectrum.back();
+
+  size_t filow = static_cast<size_t>((f - this->f0val) / this->dfval);
+  if (filow >= last_index)
+    filow = last_index - 1;
+  const double slope = (spectrum[filow + 1] - spectrum[filow]) / this->dfval;
+  const double flow = this->f0val + static_cast<double>(filow) * this->dfval;
+  return spectrum[filow] + slope * (f - flow);
 }
 std::vector<double> PowerSpectrum::frequencies() const {
   vector<double> f;

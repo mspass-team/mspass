@@ -289,13 +289,17 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
           "CNRDeconEngine(constructor): number_tapers is outside the "
           "supported positive integer range",
           ErrorSeverity::Fatal);
-    const int ntapers_to_use=static_cast<int>(ntapers);
-    this->noise_engine = MTPowerSpectrumEngine(
-        noise_winlength, tbp, ntapers_to_use, noise_winlength,
-        this->operator_dt);
-    this->signal_engine = MTPowerSpectrumEngine(
-        this->winlength, tbp, ntapers_to_use, this->winlength,
-        this->operator_dt);
+    const int ntapers_to_use = static_cast<int>(ntapers);
+    /* The inverse operator samples its regularizing spectrum through
+     * Nyquist.  Use the operator's even FFT grid so an internally computed
+     * spectrum contains a real Nyquist ordinate rather than requiring
+     * extrapolation from an odd-length transform. */
+    this->noise_engine =
+        MTPowerSpectrumEngine(noise_winlength, tbp, ntapers_to_use,
+                              this->get_size(), this->operator_dt);
+    this->signal_engine =
+        MTPowerSpectrumEngine(this->winlength, tbp, ntapers_to_use,
+                              this->winlength, this->operator_dt);
   } catch (...) {
     throw;
   };
@@ -405,13 +409,13 @@ void CNRDeconEngine::changeparameter(const Metadata &md) {
           "CNRDeconEngine::changeparameter: number_tapers is outside the "
           "supported positive integer range",
           ErrorSeverity::Fatal);
-    const int ntapers_to_use=static_cast<int>(ntapers);
-    this->noise_engine = MTPowerSpectrumEngine(
-        noise_winlength, tbp, ntapers_to_use, noise_winlength,
-        this->operator_dt);
-    this->signal_engine = MTPowerSpectrumEngine(
-        this->winlength, tbp, ntapers_to_use, this->winlength,
-        this->operator_dt);
+    const int ntapers_to_use = static_cast<int>(ntapers);
+    this->noise_engine =
+        MTPowerSpectrumEngine(noise_winlength, tbp, ntapers_to_use,
+                              this->get_size(), this->operator_dt);
+    this->signal_engine =
+        MTPowerSpectrumEngine(this->winlength, tbp, ntapers_to_use,
+                              this->winlength, this->operator_dt);
   } catch (...) {
     throw;
   };
@@ -554,11 +558,9 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const TimeSeries &n) {
     if (n.npts() != noise_engine.taper_length()) {
       /* use this varaint of the construtor too allow the fft size to
        * be automatically changed if necessary.  */
-      this->noise_engine =
-          MTPowerSpectrumEngine(n.npts(), noise_engine.time_bandwidth_product(),
-                                noise_engine.number_tapers());
-      /* with auto fft we also need this to set the df and dt correctly */
-      this->noise_engine.set_df(this->operator_dt);
+      this->noise_engine = MTPowerSpectrumEngine(
+          n.npts(), noise_engine.time_bandwidth_product(),
+          noise_engine.number_tapers(), this->get_size(), this->operator_dt);
     }
     return this->noise_engine.apply(n);
   } catch (...) {
@@ -607,12 +609,9 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram &n) {
     PowerSpectrum avg3c;
     TimeSeries tswork;
     if (n.npts() != noise_engine.taper_length()) {
-      /* this may change fft size and will set dt wrong so we need the
-       * call to set_df afterward to correct that. */
-      noise_engine =
-          MTPowerSpectrumEngine(n.npts(), noise_engine.time_bandwidth_product(),
-                                noise_engine.number_tapers());
-      noise_engine.set_df(this->operator_dt);
+      noise_engine = MTPowerSpectrumEngine(
+          n.npts(), noise_engine.time_bandwidth_product(),
+          noise_engine.number_tapers(), this->get_size(), this->operator_dt);
     }
     for (int k = 0; k < 3; ++k) {
       tswork = TimeSeries(ExtractComponent(n, k), "Invalid");

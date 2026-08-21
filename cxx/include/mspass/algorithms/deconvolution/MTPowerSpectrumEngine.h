@@ -109,15 +109,10 @@ public:
   double dt() const { return operator_dt; };
   /*! \brief Putter equivalent of df.
 
-  The computation of the Rayleigh bin size is complicated a bit by the folding
-  properties of fft algorithms that have to handle odd and even length
-  inputs differently.   This algorithm uses the internally set nfft
-  value to set the frequency bin size for even or odd nfft and the input sample
-  interval.  NOTE POSSIBLE CONFUSION that input is time sample interval
-  NOT the actual frquency bin size.  The reason is that the odd/even issue
-  makes df dependent on if the fft size is even or odd.   We include this
-  method as a convenience as that is an implementation detail for the fft
-  algorithm.
+  This algorithm uses the internally set nfft value and the input sample
+  interval to set the frequency bin size to 1/(nfft*dt) for both odd and even
+  FFT lengths.  NOTE POSSIBLE CONFUSION that input is time sample interval
+  NOT the actual frequency bin size.
 
   Note also this method sets not just df but the internally stored sample
   interval (symbol operator_dt in the source code.)
@@ -137,8 +132,7 @@ public:
       throw mspass::utility::MsPASSError(
           caller + ": engine fft length is not configured",
           mspass::utility::ErrorSeverity::Invalid);
-    const double fny = 1.0 / (2.0 * dt);
-    const double new_deltaf = fny / static_cast<double>(this_nf - 1);
+    const double new_deltaf = 1.0 / (static_cast<double>(this->nfft) * dt);
     if (!std::isfinite(new_deltaf) || new_deltaf <= 0.0)
       throw mspass::utility::MsPASSError(
           caller + ": sample interval produces an invalid frequency spacing",
