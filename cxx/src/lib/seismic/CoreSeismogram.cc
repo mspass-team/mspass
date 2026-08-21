@@ -3,6 +3,7 @@
 #include "mspass/seismic/keywords.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/SphericalCoordinate.h"
+#include "waveform_arithmetic.h"
 #include <boost/any.hpp>
 #include <float.h>
 #include <math.h>
@@ -913,39 +914,17 @@ CoreSeismogram &CoreSeismogram::operator*=(const double scale) {
   return (*this);
 }
 CoreSeismogram &CoreSeismogram::operator+=(const CoreSeismogram &d) {
-  int i, iend, jend;
-  size_t j, i0, j0;
   // Silently do nothing if d or lhs is marked dead
   if (d.dead() || (this->dead()))
     return (*this);
-  // Silently do nothing if d does not overlap with data to contain sum
-  if ((d.endtime() < mt0) || (d.mt0 > (this->endtime())))
-    return (*this);
-  if (d.tref != (this->tref))
-    throw MsPASSError("CoreSeismogram += operator cannot handle data with "
-                      "inconsistent time base\n",
-                      ErrorSeverity::Invalid);
-  /* this defines the range of left and right hand sides to be summed */
-  i = d.sample_number(this->mt0);
-  if (i < 0) {
-    j0 = this->sample_number(d.t0());
-    i0 = 0;
-  } else {
-    j0 = 0;
-    i0 = i;
-  }
-  iend = d.sample_number(this->endtime());
-  jend = this->sample_number(d.endtime());
-  if (iend >= (d.npts())) {
-    iend = d.npts() - 1;
-  }
-  if (jend >= this->npts()) {
-    jend = this->npts() - 1;
-  }
-  for (i = i0, j = j0; i <= iend && j <= jend; ++i, ++j) {
-    this->u(0, j) += d.u(0, i);
-    this->u(1, j) += d.u(1, i);
-    this->u(2, j) += d.u(2, i);
+  const auto overlap =
+      detail::arithmetic_overlap(*this, d, "CoreSeismogram::operator+=");
+  for (std::size_t i = 0; i < overlap.count; ++i) {
+    const std::size_t lhs_index = overlap.lhs_begin + i;
+    const std::size_t rhs_index = overlap.rhs_begin + i;
+    this->u(0, lhs_index) += d.u(0, rhs_index);
+    this->u(1, lhs_index) += d.u(1, rhs_index);
+    this->u(2, lhs_index) += d.u(2, rhs_index);
   }
   return (*this);
 }
@@ -953,42 +932,18 @@ CoreSeismogram &CoreSeismogram::operator+=(const CoreSeismogram &d) {
 except the += in the last loop becomes -=.  Any changes in operator+=
 must have exactly the same change here (other than a message with a
 tag to the function)*/
-CoreSeismogram &CoreSeismogram::operator-=(const CoreSeismogram &data) {
-  int i, iend, jend;
-  size_t j, i0, j0;
-  // Sun's compiler complains about const objects without this.
-  CoreSeismogram &d = const_cast<CoreSeismogram &>(data);
+CoreSeismogram &CoreSeismogram::operator-=(const CoreSeismogram &d) {
   // Silently do nothing if d is marked dead
-  if (!d.mlive)
+  if (d.dead())
     return (*this);
-  // Silently do nothing if d does not overlap with data to contain sum
-  if ((d.endtime() < mt0) || (d.mt0 > (this->endtime())))
-    return (*this);
-  if (d.tref != (this->tref))
-    throw MsPASSError("CoreSeismogram += operator cannot handle data with "
-                      "inconsistent time base\n",
-                      ErrorSeverity::Invalid);
-  /* this defines the range of left and right hand sides to be summed */
-  i = d.sample_number(this->mt0);
-  if (i < 0) {
-    j0 = this->sample_number(d.t0());
-    i0 = 0;
-  } else {
-    j0 = 0;
-    i0 = i;
-  }
-  iend = d.sample_number(this->endtime());
-  jend = this->sample_number(d.endtime());
-  if (iend >= (d.npts())) {
-    iend = d.npts() - 1;
-  }
-  if (jend >= this->npts()) {
-    jend = this->npts() - 1;
-  }
-  for (i = i0, j = j0; i <= iend && j <= jend; ++i, ++j) {
-    this->u(0, j) -= d.u(0, i);
-    this->u(1, j) -= d.u(1, i);
-    this->u(2, j) -= d.u(2, i);
+  const auto overlap =
+      detail::arithmetic_overlap(*this, d, "CoreSeismogram::operator-=");
+  for (std::size_t i = 0; i < overlap.count; ++i) {
+    const std::size_t lhs_index = overlap.lhs_begin + i;
+    const std::size_t rhs_index = overlap.rhs_begin + i;
+    this->u(0, lhs_index) -= d.u(0, rhs_index);
+    this->u(1, lhs_index) -= d.u(1, rhs_index);
+    this->u(2, lhs_index) -= d.u(2, rhs_index);
   }
   return (*this);
 }

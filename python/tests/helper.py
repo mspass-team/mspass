@@ -37,7 +37,7 @@ def get_live_seismogram(ts_size=255, sampling_rate=20.0):
     return seis
 
 
-def get_live_timeseries(ts_size=255, sampling_rate=20.0):
+def get_live_timeseries(ts_size=255, sampling_rate=20.0, start_time=None):
     ts = TimeSeries()
     ts.set_live()
     ts.dt = 1 / sampling_rate
@@ -46,7 +46,9 @@ def get_live_timeseries(ts_size=255, sampling_rate=20.0):
     ts.put("npts", ts_size)
     ts.put("sampling_rate", sampling_rate)
     ts.tref = TimeReferenceType.UTC
-    ts.t0 = datetime.datetime.now().timestamp()
+    if start_time is None:
+        start_time = datetime.datetime.now().timestamp()
+    ts.t0 = start_time
     ts["delta"] = 0.1
     ts["calib"] = 0.1
     ts["site_id"] = bson.objectid.ObjectId()
@@ -90,19 +92,23 @@ def get_live_seismogram_ensemble(n):
     return seis_e
 
 
-def get_live_timeseries_ensemble(n):
+def get_live_timeseries_ensemble(n, start_time=None):
     tse = TimeSeriesEnsemble()
+    if start_time is None:
+        start_time = datetime.datetime.now().timestamp()
     for i in range(n):
-        ts = get_live_timeseries()
+        ts = get_live_timeseries(start_time=start_time)
         tse.member.append(ts)
     tse.set_live()
     return tse
 
 
-def get_live_timeseries_list(n, ts_size=255):
+def get_live_timeseries_list(n, ts_size=255, start_time=None):
     ts_e = []
+    if start_time is None:
+        start_time = datetime.datetime.now().timestamp()
     for i in range(n):
-        ts = get_live_timeseries(ts_size)
+        ts = get_live_timeseries(ts_size, start_time=start_time)
         ts_e.append(ts)
     return ts_e
 

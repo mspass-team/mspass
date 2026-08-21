@@ -1084,8 +1084,10 @@ def beam_align(ensemble, beam, window=None, time_shift_limit=10.0):
         because the value can to sent to a C++ method that it type
         sensitive)
     :return: the input ensemble with its members time shifted in place to align
-        with the time base of beam.  If a window is defined it is used only for
-        correlation and is not applied to the ensemble members.
+        with the time base of beam.  Each shifted start time is placed on the
+        nearest sample of the beam grid without changing any sample values.
+        If a window is defined it is used only for correlation and is not
+        applied to the ensemble members.
 
     """
     # this may not be necessary for internal use but if used
@@ -1126,6 +1128,7 @@ def beam_align(ensemble, beam, window=None, time_shift_limit=10.0):
             # not shifted from UTC times
             # also note a +lag requires a - shift
             ensemble.member[i].shift(timelag)
+            _snap_start_time_to_grid(ensemble.member[i], beam)
     return ensemble
 
 
@@ -1645,6 +1648,7 @@ def align_and_stack(
                 # this method alters the t0 values of the ensemble members
                 # when used plots will tend to be aligned with 0 relative time
                 ensemble.member[i].shift(tshift_mean)
+                _snap_start_time_to_grid(ensemble.member[i], beam)
     for i in range(len(ensemble.member)):
         if ensemble.member[i].live:
             # in this context it0_key should always be defined
@@ -2452,6 +2456,17 @@ def _xcor_shift(ts, beam):
     return lagtime
 
 
+def _snap_start_time_to_grid(datum, reference):
+    """Move ``datum.t0`` to the nearest sample on ``reference``'s grid.
+
+    This is an explicit MCXcor alignment operation:  it changes only the time
+    assigned to sample zero and never changes the sample values, ``dt``, or
+    ``npts``.  General waveform arithmetic remains strict and rejects operands
+    that have not first been placed on a common grid.
+    """
+    datum.t0 = reference.time(reference.sample_number(datum.t0))
+
+
 def _update_xcor_beam(xcorens, beam0, robust_stack_method, wts) -> TimeSeries:
     """
     Internal method used to update the beam signal used for cross correlation
@@ -2503,7 +2518,7 @@ def _update_xcor_beam(xcorens, beam0, robust_stack_method, wts) -> TimeSeries:
                     xcorens.member[i], stime, etime, short_segment_handling="pad"
                 )
                 d *= wt
-                # TimeSeries::operator+= handles time correctly so indexing is not needed here
+                _snap_start_time_to_grid(d, beam)
                 beam += d
                 sumwt += wt
         if sumwt > 0.0:

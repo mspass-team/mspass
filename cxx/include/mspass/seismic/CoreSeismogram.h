@@ -223,8 +223,8 @@ public:
   the ends of the rhs are inside the range of the lhs.
 
   \param d is other signal to add to this.
-  \exception MsPASSError can be thrown if lhs and rhs do not have matching
-  time standards.
+  \exception MsPASSError if lhs and rhs have incompatible time standards,
+  sample intervals, or start-time grids.
   **/
   CoreSeismogram &operator+=(const CoreSeismogram &d);
   /*! Addition operator.
@@ -250,8 +250,8 @@ public:
   the ends of the rhs are inside the range of the lhs.
 
   \param d is other signal to subract from this.
-  \exception MsPASSError can be thrown if lhs and rhs do not have matching
-  time standards.
+  \exception MsPASSError if lhs and rhs have incompatible time standards,
+  sample intervals, or start-time grids.
   **/
   CoreSeismogram &operator-=(const CoreSeismogram &d);
   /*! Subtraction operator.

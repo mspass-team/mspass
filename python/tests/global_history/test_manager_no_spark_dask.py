@@ -2,7 +2,7 @@ from unittest import mock
 import sys
 
 sys.path.append("python/tests")
-from helper import get_live_timeseries
+from helper import get_live_timeseries, get_live_timeseries_list
 
 with mock.patch.dict(sys.modules, {"pyspark": None, "dask": None}):
     from mspasspy.reduce import stack
@@ -39,7 +39,7 @@ with mock.patch.dict(sys.modules, {"pyspark": None, "dask": None}):
             assert test_map_res[i].data == t[i].data + t[i].data
 
     def test_normal_reduce():
-        t = [get_live_timeseries() for i in range(5)]
+        t = get_live_timeseries_list(5)
         s = t[0]
         for i in range(1, 5):
             s += t[i]
