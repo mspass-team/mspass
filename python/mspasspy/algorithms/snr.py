@@ -1,5 +1,5 @@
-import pickle
 import math
+import pickle
 from numbers import Real
 
 import numpy as np
@@ -26,6 +26,14 @@ from mspasspy.util.decorators import mspass_func_wrapper
 # import matplotlib.pyplot as plt
 # from mspasspy.util.seismic import print_metadata
 # import matplotlib.pyplot as plt
+
+
+def _smooth_snr_curve(snrdata, npts):
+    """Return a truncated, renormalized moving average of an SNR curve."""
+    smoother = np.ones(npts)
+    smoothed_sum = np.convolve(snrdata, smoother, mode="same")
+    available_count = np.convolve(np.ones(len(snrdata)), smoother, mode="same")
+    return smoothed_sum / available_count
 
 
 def EstimateBandwidth(
@@ -56,7 +64,9 @@ def EstimateBandwidth(
     by the "f0" argument.  The basic idea is it hunts up and down the
     frequency axis until it detects the band edge.   The "band edge"
     detection is defined as the point where the signal-to-noise ratio
-    first falls below the value defined by the "snr_threshold" argument.
+    first falls below or equals the value defined by the "snr_threshold"
+    argument.  Samples are inside the passband only when their SNR is
+    strictly greater than the threshold.
     The algorithm has two variants of note:
 
     1.  If no point in the snr curve exceeds the valued defined by
@@ -78,7 +88,9 @@ def EstimateBandwidth(
     smoothing width be of the form k*tbp*df where tbp is the time
     bandwidth product, df is the Rayleigh bin size, and k is some
     small multipler (note multitaper spectra a inherently smoothed
-    by 2*tbp*df).
+    by 2*tbp*df).  At either end of the spectrum the moving average uses
+    only available frequency bins and renormalizes their weights; values
+    outside the measured spectrum are not treated as zeros or reflected.
 
     :param S: power spectrum computed from signal time window.
     :type S:  :py:class:`mspasspy.ccore.seismic.PowerSpectrum`
@@ -137,22 +149,56 @@ def EstimateBandwidth(
             )
         )
         raise TypeError(message)
-    # set the ceiling on the high frequency band edge
-    # Default is 80% of Nyquist
-    if f_max:
-        if f_max > S.Nyquist():
-            # silently reset to Nyquist if f_max is illegal
-            high_f_ceiling = 0.8 * S.Nyquist()
-        high_f_ceiling = f_max
+    default_high_f_ceiling = 0.8 * S.Nyquist()
+    if f_max is None:
+        high_f_ceiling = default_high_f_ceiling
     else:
-        high_f_ceiling = 0.8 * S.Nyquist()
+        if (
+            isinstance(f_max, bool)
+            or not isinstance(f_max, Real)
+            or not math.isfinite(f_max)
+            or f_max <= 0.0
+        ):
+            raise ValueError("f_max must be a finite positive number")
+        high_f_ceiling = min(f_max, default_high_f_ceiling)
+    if (
+        isinstance(f0, bool)
+        or not isinstance(f0, Real)
+        or not math.isfinite(f0)
+        or f0 < 0.0
+        or f0 > high_f_ceiling
+    ):
+        raise ValueError("f0 must be finite and in the range [0, high_f_ceiling]")
+    if df_smoother is not None and (
+        isinstance(df_smoother, bool)
+        or not isinstance(df_smoother, Real)
+        or not math.isfinite(df_smoother)
+        or df_smoother <= 0.0
+    ):
+        raise ValueError("df_smoother must be a finite positive number")
+
+    result = BandwidthData()
+    if S.nf() == 0:
+        return result
+    result.f_range = S.frequency(S.nf() - 1) - S.frequency(0)
     # use the S grid to define the snr curve - note N grid can be different
     snrdata = np.zeros(S.nf())
+    noise_nfreq = N.nf()
+    if noise_nfreq > 0:
+        noise_first_frequency = N.frequency(0)
+        noise_terminal_frequency = N.frequency(noise_nfreq - 1)
     for i in range(S.nf()):
         f = S.frequency(i)
+        if (
+            noise_nfreq == 0
+            or f < noise_first_frequency
+            or f > noise_terminal_frequency
+        ):
+            snrdata[i] = 1.0
+            continue
         i_n = N.sample_number(f)
         # conditional needed in case S and N are computed with different sample intervals
-        if i_n < N.nf():
+        if 0 <= i_n < noise_nfreq:
             Nnow = N.spectrum[i_n]
             Snow = S.spectrum[i]
             if Snow <= 0.0:
@@ -170,25 +216,36 @@ def EstimateBandwidth(
             snrdata[i] = 1.0
     # S and N are power, convert to amplitude
     snrdata = np.sqrt(snrdata)
-    if df_smoother:
-        smoother_npts = round(df_smoother / S.df())
-        # silently do nothing if the smoother requested is smaller than df
-        if smoother_npts > 1:
-            smoother = np.ones(smoother_npts) / smoother_npts
-            np.convolve(snrdata, smoother, mode="valid")
-    result = BandwidthData()
-    result.f_range = S.frequency(S.nf() - 1) - S.frequency(0)
+    if df_smoother is not None:
+        smoother_npts = min(len(snrdata), max(1, round(df_smoother / S.df())))
+        snrdata = _smooth_snr_curve(snrdata, smoother_npts)
     # test for no data exceeding tbhreshold - send null result if that is the case
     snrmax = np.max(snrdata)
-    if snrmax < snr_threshold:
+    if snrmax <= snr_threshold:
         result.high_edge_f = 0.0
         result.high_edge_snr = 0.0
         result.low_edge_f = 0.0
         result.low_edge_snr = 0.0
         return result
     # get index of search start
-    i0 = S.sample_number(f0)
-    i_max = S.sample_number(high_f_ceiling)
+    first_frequency = S.frequency(0)
+    terminal_frequency = S.frequency(len(snrdata) - 1)
+    if f0 <= first_frequency:
+        i0 = 0
+    elif f0 >= terminal_frequency:
+        i0 = len(snrdata) - 1
+    else:
+        i0 = S.sample_number(f0)
+    if high_f_ceiling >= terminal_frequency:
+        i_max = len(snrdata) - 1
+    elif high_f_ceiling <= first_frequency:
+        i_max = 0
+    else:
+        i_max = S.sample_number(high_f_ceiling)
+        i_max = min(max(i_max, 0), len(snrdata) - 1)
+        while i_max > 0 and S.frequency(i_max) > high_f_ceiling:
+            i_max -= 1
+    i0 = min(i0, i_max)
     # search upward in f
     i = i0
     while i < i_max:
@@ -208,10 +265,10 @@ def EstimateBandwidth(
         # point above the threshold (there has to be one because of
         # test for max snrdata above)
         i = i0
-        while (
-            snrdata[i] < snr_threshold and i >= 0
-        ):  # i>=0 test not essential but safer
+        while i >= 0 and snrdata[i] <= snr_threshold:
             i -= 1
+        if i < 0:
+            return result
         result.high_edge_f = S.frequency(i)
         result.high_edge_snr = snrdata[i]
         i0 = i
