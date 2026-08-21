@@ -128,33 +128,28 @@ def test_invalid_f0_raises_value_error_instead_of_index_error(f0):
         snr_module.EstimateBandwidth(signal, noise, f0=f0)
 
 
-@pytest.mark.parametrize("width,expected_nwin", [(0.1, 1), (3.0, 3), (100.0, 11)])
-def test_smoothing_replaces_snrdata_with_exact_same_mode_convolution(
-    monkeypatch, width, expected_nwin
-):
-    signal, noise = _signal_and_noise()
-    real_convolve = np.convolve
-    captured = {}
+@pytest.mark.parametrize("npts", [1, 3, 4, 11])
+def test_smoothing_uses_only_available_bins_and_renormalizes(npts):
+    values = np.arange(1.0, 12.0)
+    expected = []
+    left = npts // 2
+    right = (npts - 1) // 2
+    for i in range(len(values)):
+        expected.append(
+            np.mean(values[max(0, i - left) : min(len(values), i + right + 1)])
+        )
 
-    def capture_convolve(values, kernel, mode):
-        captured["values"] = np.array(values, copy=True)
-        captured["kernel"] = np.array(kernel, copy=True)
-        captured["mode"] = mode
-        captured["output"] = real_convolve(values, kernel, mode=mode)
-        return captured["output"]
+    actual = snr_module._smooth_snr_curve(values, npts)
 
-    monkeypatch.setattr(snr_module.np, "convolve", capture_convolve)
+    np.testing.assert_allclose(actual, expected)
 
-    snr_module.EstimateBandwidth(signal, noise, f0=1.0, df_smoother=width)
 
-    expected_input = np.sqrt(np.asarray(signal.spectrum) / np.asarray(noise.spectrum))
-    expected_kernel = np.ones(expected_nwin) / expected_nwin
-    np.testing.assert_array_equal(captured["values"], expected_input)
-    np.testing.assert_array_equal(captured["kernel"], expected_kernel)
-    assert captured["mode"] == "same"
-    np.testing.assert_array_equal(
-        captured["output"],
-        real_convolve(expected_input, expected_kernel, mode="same"),
+@pytest.mark.parametrize("npts", [1, 3, 4, 11])
+def test_smoothing_does_not_depress_a_constant_spectrum_at_edges(npts):
+    values = np.full(11, 2.75)
+
+    np.testing.assert_allclose(
+        snr_module._smooth_snr_curve(values, npts), values, rtol=0.0, atol=0.0
     )
 
 
@@ -162,11 +157,13 @@ def test_convolution_return_value_drives_the_bandwidth_result(monkeypatch):
     signal, noise = _signal_and_noise()
     calls = []
 
-    def replace_with_below_threshold(values, kernel, mode):
-        calls.append((np.array(values), np.array(kernel), mode))
+    def replace_with_below_threshold(values, npts):
+        calls.append((np.array(values), npts))
         return np.zeros_like(values)
 
-    monkeypatch.setattr(snr_module.np, "convolve", replace_with_below_threshold)
+    monkeypatch.setattr(
+        snr_module, "_smooth_snr_curve", replace_with_below_threshold
+    )
 
     result = snr_module.EstimateBandwidth(signal, noise, f0=1.0, df_smoother=3.0)
 
@@ -212,17 +209,29 @@ def test_no_smoothed_value_at_threshold_returns_null_bandwidth():
     assert result.f_range == 10.0
 
 
-def test_value_equal_to_threshold_counts_as_reaching_it():
+def test_value_equal_to_threshold_is_not_inside_the_passband():
     signal = _spectrum([1.0, 1.0, 2.25, 1.0, 1.0])
     noise = _spectrum([1.0] * 5)
 
     result = snr_module.EstimateBandwidth(signal, noise, snr_threshold=1.5, f0=2.0)
 
-    assert result.low_edge_f == 2.0
-    assert result.high_edge_f == 2.0
-    assert result.low_edge_snr == 1.5
-    assert result.high_edge_snr == 1.5
+    assert result.low_edge_f == 0.0
+    assert result.high_edge_f == 0.0
+    assert result.low_edge_snr == 0.0
+    assert result.high_edge_snr == 0.0
     assert result.f_range == 4.0
+
+
+def test_threshold_equality_marks_the_first_outside_band_edge():
+    signal = _spectrum([1.0, 4.0, 2.25, 1.0, 1.0])
+    noise = _spectrum([1.0] * 5)
+
+    result = snr_module.EstimateBandwidth(signal, noise, snr_threshold=1.5, f0=1.0)
+
+    assert result.low_edge_f == 0.0
+    assert result.low_edge_snr == 1.0
+    assert result.high_edge_f == 2.0
+    assert result.high_edge_snr == 1.5
 
 
 def test_searches_do_not_index_below_zero_or_past_a_truncated_spectrum():

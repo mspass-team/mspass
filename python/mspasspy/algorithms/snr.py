@@ -28,6 +28,14 @@ from mspasspy.util.decorators import mspass_func_wrapper
 # import matplotlib.pyplot as plt
 
 
+def _smooth_snr_curve(snrdata, npts):
+    """Return a truncated, renormalized moving average of an SNR curve."""
+    smoother = np.ones(npts)
+    smoothed_sum = np.convolve(snrdata, smoother, mode="same")
+    available_count = np.convolve(np.ones(len(snrdata)), smoother, mode="same")
+    return smoothed_sum / available_count
+
+
 def EstimateBandwidth(
     S,
     N,
@@ -56,7 +64,9 @@ def EstimateBandwidth(
     by the "f0" argument.  The basic idea is it hunts up and down the
     frequency axis until it detects the band edge.   The "band edge"
     detection is defined as the point where the signal-to-noise ratio
-    first falls below the value defined by the "snr_threshold" argument.
+    first falls below or equals the value defined by the "snr_threshold"
+    argument.  Samples are inside the passband only when their SNR is
+    strictly greater than the threshold.
     The algorithm has two variants of note:
 
     1.  If no point in the snr curve exceeds the valued defined by
@@ -78,7 +88,9 @@ def EstimateBandwidth(
     smoothing width be of the form k*tbp*df where tbp is the time
     bandwidth product, df is the Rayleigh bin size, and k is some
     small multipler (note multitaper spectra a inherently smoothed
-    by 2*tbp*df).
+    by 2*tbp*df).  At either end of the spectrum the moving average uses
+    only available frequency bins and renormalizes their weights; values
+    outside the measured spectrum are not treated as zeros or reflected.
 
     :param S: power spectrum computed from signal time window.
     :type S:  :py:class:`mspasspy.ccore.seismic.PowerSpectrum`
@@ -206,11 +218,10 @@ def EstimateBandwidth(
     snrdata = np.sqrt(snrdata)
     if df_smoother is not None:
         smoother_npts = min(len(snrdata), max(1, round(df_smoother / S.df())))
-        smoother = np.ones(smoother_npts) / smoother_npts
-        snrdata = np.convolve(snrdata, smoother, mode="same")
+        snrdata = _smooth_snr_curve(snrdata, smoother_npts)
     # test for no data exceeding tbhreshold - send null result if that is the case
     snrmax = np.max(snrdata)
-    if snrmax < snr_threshold:
+    if snrmax <= snr_threshold:
         result.high_edge_f = 0.0
         result.high_edge_snr = 0.0
         result.low_edge_f = 0.0
@@ -254,7 +265,7 @@ def EstimateBandwidth(
         # point above the threshold (there has to be one because of
         # test for max snrdata above)
         i = i0
-        while i >= 0 and snrdata[i] < snr_threshold:
+        while i >= 0 and snrdata[i] <= snr_threshold:
             i -= 1
         if i < 0:
             return result
