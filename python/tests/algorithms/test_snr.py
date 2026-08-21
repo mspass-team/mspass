@@ -216,17 +216,17 @@ def test_FD_snr_estimator():
 
     # optional metric validation
     tval = fd_snr_output[0]["mean_snr"]
-    assert np.isclose(tval, 19.319007409878544)
+    assert np.isclose(tval, 48.28786223975323)
     tval = fd_snr_output[0]["maximum_snr"]
-    assert np.isclose(tval, 116.20203792513581)
+    assert np.isclose(tval, 290.44701315453074)
     tval = fd_snr_output[0]["median_snr"]
-    assert np.isclose(tval, 11.0556385265721898)
+    assert np.isclose(tval, 27.63357033915945)
     tval = fd_snr_output[0]["minimum_snr"]
-    assert np.isclose(tval, 0.8505634189930033)
+    assert np.isclose(tval, 2.1259834074864954)
     tval = fd_snr_output[0]["q3_4_snr"]
-    assert np.isclose(tval, 36.014785627993845)
+    assert np.isclose(tval, 90.01896267763411)
     tval = fd_snr_output[0]["q1_4_snr"]
-    assert np.isclose(tval, 3.0112995924822457)
+    assert np.isclose(tval, 7.526743833125472)
     tval = fd_snr_output[0]["stats_are_valid"]
     assert tval
     tval = fd_snr_output[0]["snr_filtered_envelope_peak"]

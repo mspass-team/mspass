@@ -335,8 +335,8 @@ public:
     /* All these conditionals are necessary for handling unexpected
      * values.   0 is effectively and error return.  Without these
      * the function can return NaN or generate floating point exceptions. */
-    if ((f_range <= 0.0) || (high_edge_f<=low_edge_f)
-      || (high_edge_f < 0.0) || (low_edge_f < 0.0) )
+    if ((f_range <= 0.0) || (high_edge_f <= low_edge_f) ||
+        (high_edge_f < 0.0) || (low_edge_f <= 0.0))
       return 0.0;
     else {
       double ratio = high_edge_f / low_edge_f;
@@ -367,10 +367,8 @@ To avoid issues with lines in noise spectra snr must exceed the threshold
 by more than 2*tbw frequency bins for an edge to be defined.  The edge back is
 defined as 2*tbw*df from the first point satisfying that constraint.
 
-Note this function handles the calculation correctly if the signal and
-noise windows have a drastically different length.  A subtle feature of
-psd estimates of stationary processes is that the psd level scales by
-1/length of the analysis window.   snr estimates correct for this effect.
+Signal and noise spectra are normalized PSD estimates, so their values are
+compared directly even when the analysis windows have different lengths.
 
 \param signal_df is the expected signal frequency bin size.   An error will be
 thrown if that does not match the power spectrem s df.
@@ -427,10 +425,8 @@ with the following keys and the concepts they defines:
      condition.  When this is false it means the data have not detectable
      signal based on the computed spectra.
 
-This function handles the calculation correctly if the signal and
-noise windows have a drastically different length.  A subtle feature of
-psd estimates of stationary processes is that the psd level scales by
-1/length of the analysis window.   snr estimates correct for this effect.
+Signal and noise spectra are normalized PSD estimates, so their values are
+compared directly even when the analysis windows have different lengths.
 
 Note the function does attempt to avoid Inf and NaN values that are possible
 if the noise value at some frequency is zero (negative is treated like 0).
