@@ -1700,8 +1700,18 @@ _SAMPLE_GRID_TOLERANCE = 1.0e-6
 
 def _validate_sample_grid_compatibility(d, beam):
     dt_scale = max(abs(d.dt), abs(beam.dt))
-    if dt_scale == 0.0 or abs(d.dt - beam.dt) > _SAMPLE_GRID_TOLERANCE * dt_scale:
-        raise ValueError("d and beam sample intervals are incompatible")
+    if d.dt <= 0.0 or beam.dt <= 0.0:
+        raise ValueError(
+            "d and beam sample intervals are incompatible across their sample "
+            "span; resample before comparison"
+        )
+    paired_intervals = max(0, min(d.npts, beam.npts) - 1)
+    accumulated_drift = abs(d.dt - beam.dt) * paired_intervals / dt_scale
+    if accumulated_drift > _SAMPLE_GRID_TOLERANCE:
+        raise ValueError(
+            "d and beam sample intervals are incompatible across their sample "
+            "span; resample before comparison"
+        )
     offset_in_samples = (d.t0 - beam.t0) / dt_scale
     if abs(offset_in_samples - round(offset_in_samples)) > _SAMPLE_GRID_TOLERANCE:
         raise ValueError("d and beam start times are on incompatible sample grids")
@@ -1763,15 +1773,8 @@ def beam_correlation(d, beam, window=None, aligned=True) -> float:
         raise TypeError(message)
     if d.dead() or beam.dead():
         return 0.0
-    vectors = _overlap_vectors(d, beam, window)
-    if vectors is None:
-        return 0.0
-    d_vector, beam_vector = vectors
-    nrm1 = np.linalg.norm(d_vector)
-    nrm2 = np.linalg.norm(beam_vector)
-    if nrm1 <= 0.0 or nrm2 <= 0.0:
-        return 0.0
     if not aligned:
+        _validate_sample_grid_compatibility(d, beam)
         d_for_shift = TimeSeries(d)
         beam_for_shift = TimeSeries(beam)
         if window:
@@ -1785,13 +1788,15 @@ def beam_correlation(d, beam, window=None, aligned=True) -> float:
         timelag = _xcor_shift(d_for_shift, beam_for_shift)
         shifted_d.set_t0(shifted_d.t0 - timelag)
         vectors = _overlap_vectors(shifted_d, beam, window)
-        if vectors is None:
-            return 0.0
-        d_vector, beam_vector = vectors
-        nrm1 = np.linalg.norm(d_vector)
-        nrm2 = np.linalg.norm(beam_vector)
-        if nrm1 <= 0.0 or nrm2 <= 0.0:
-            return 0.0
+    else:
+        vectors = _overlap_vectors(d, beam, window)
+    if vectors is None:
+        return 0.0
+    d_vector, beam_vector = vectors
+    nrm1 = np.linalg.norm(d_vector)
+    nrm2 = np.linalg.norm(beam_vector)
+    if nrm1 <= 0.0 or nrm2 <= 0.0:
+        return 0.0
     return abs(np.dot(d_vector, beam_vector) / (nrm1 * nrm2))
 
 

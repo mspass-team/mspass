@@ -162,6 +162,18 @@ def test_unaligned_correlation_shifts_only_a_copy():
     _assert_unchanged(beam, beam_before)
 
 
+def test_unaligned_correlation_aligns_initially_disjoint_time_ranges():
+    datum = _timeseries([0.0, 1.0, 2.0, 0.0], t0=10.0)
+    beam = _timeseries([1.0, 2.0, 0.0, 0.0], t0=0.0)
+    datum_before = _snapshot(datum)
+    beam_before = _snapshot(beam)
+
+    assert beam_correlation(datum, beam, aligned=False) == pytest.approx(1.0)
+
+    _assert_unchanged(datum, datum_before)
+    _assert_unchanged(beam, beam_before)
+
+
 def test_incident_removal_outer_guard_preserves_dryrun_api_and_inputs():
     datum = _timeseries([1.0, 2.0, 3.0])
     beam = _timeseries([1.0, 2.0, 3.0])
@@ -288,19 +300,19 @@ METRIC_CALLS = [
 
 
 @pytest.mark.parametrize("metric", METRIC_CALLS)
-def test_dt_at_relative_tolerance_is_accepted(metric):
-    dt_at_tolerance = np.nextafter(1.0 / (1.0 - GRID_TOLERANCE), 1.0)
+def test_accumulated_dt_drift_within_grid_tolerance_is_accepted(metric):
+    compatible_dt = 1.0 + 0.4 * GRID_TOLERANCE
     datum = _timeseries([1.0, 2.0, 3.0], dt=1.0)
-    beam = _timeseries([1.0, 2.0, 3.0], dt=dt_at_tolerance)
+    beam = _timeseries([1.0, 2.0, 3.0], dt=compatible_dt)
 
     metric(datum, beam)
 
 
 @pytest.mark.parametrize("metric", METRIC_CALLS)
-def test_dt_beyond_relative_tolerance_raises_before_mutation(metric):
-    dt_beyond_tolerance = np.nextafter(1.0 / (1.0 - GRID_TOLERANCE), np.inf)
+def test_accumulated_dt_drift_beyond_tolerance_raises_before_mutation(metric):
+    incompatible_dt = 1.0 + 0.6 * GRID_TOLERANCE
     datum = _timeseries([1.0, 2.0, 3.0], dt=1.0)
-    beam = _timeseries([1.0, 2.0, 3.0], dt=dt_beyond_tolerance)
+    beam = _timeseries([1.0, 2.0, 3.0], dt=incompatible_dt)
     datum_before = _snapshot(datum)
     beam_before = _snapshot(beam)
 
