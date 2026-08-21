@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev18+g72a71b86 documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev19+g70f40e86 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=b01ee27a"></script>
+    <script src="../_static/documentation_options.js?v=96947cc4"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev18" />
+  <meta name="docsearch:version" content="2.4.4.dev19" />
   </head>
   
   
@@ -5347,7 +5347,9 @@ band data for the section near the search start defined by the
 by the “f0” argument.  The basic idea is it hunts up and down the
 frequency axis until it detects the band edge.   The “band edge”
 detection is defined as the point where the signal-to-noise ratio
-first falls below the value defined by the “snr_threshold” argument.
+first falls below or equals the value defined by the “snr_threshold”
+argument.  Samples are inside the passband only when their SNR is
+strictly greater than the threshold.
 The algorithm has two variants of note:</p>
 <ol class="arabic simple">
 <li><p>If no point in the snr curve exceeds the valued defined by
@@ -5369,7 +5371,9 @@ scale.  In that case if smoothing is desired we recommend the
 smoothing width be of the form k*tbp*df where tbp is the time
 bandwidth product, df is the Rayleigh bin size, and k is some
 small multipler (note multitaper spectra a inherently smoothed
-by 2*tbp*df).</p>
+by 2*tbp*df).  At either end of the spectrum the moving average uses
+only available frequency bins and renormalizes their weights; values
+outside the measured spectrum are not treated as zeros or reflected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

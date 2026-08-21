@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.snr &#8212; MsPASS 2.4.4.dev18+g72a71b86 documentation</title>
+    <title>mspasspy.algorithms.snr &#8212; MsPASS 2.4.4.dev19+g70f40e86 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=b01ee27a"></script>
+    <script src="../../../_static/documentation_options.js?v=96947cc4"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev18" />
+  <meta name="docsearch:version" content="2.4.4.dev19" />
   </head>
   
   
@@ -473,8 +473,8 @@
                 <article class="bd-article">
                   
   <h1>Source code for mspasspy.algorithms.snr</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -501,6 +501,14 @@
 <span class="c1"># import matplotlib.pyplot as plt</span>
 <span class="c1"># from mspasspy.util.seismic import print_metadata</span>
 <span class="c1"># import matplotlib.pyplot as plt</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_smooth_snr_curve</span><span class="p">(</span><span class="n">snrdata</span><span class="p">,</span> <span class="n">npts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return a truncated, renormalized moving average of an SNR curve."""</span>
+    <span class="n">smoother</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+    <span class="n">smoothed_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">snrdata</span><span class="p">,</span> <span class="n">smoother</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"same"</span><span class="p">)</span>
+    <span class="n">available_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)),</span> <span class="n">smoother</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"same"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">smoothed_sum</span> <span class="o">/</span> <span class="n">available_count</span>
 
 
 <div class="viewcode-block" id="EstimateBandwidth">
@@ -533,7 +541,9 @@
 <span class="sd">    by the "f0" argument.  The basic idea is it hunts up and down the</span>
 <span class="sd">    frequency axis until it detects the band edge.   The "band edge"</span>
 <span class="sd">    detection is defined as the point where the signal-to-noise ratio</span>
-<span class="sd">    first falls below the value defined by the "snr_threshold" argument.</span>
+<span class="sd">    first falls below or equals the value defined by the "snr_threshold"</span>
+<span class="sd">    argument.  Samples are inside the passband only when their SNR is</span>
+<span class="sd">    strictly greater than the threshold.</span>
 <span class="sd">    The algorithm has two variants of note:</span>
 
 <span class="sd">    1.  If no point in the snr curve exceeds the valued defined by</span>
@@ -555,7 +565,9 @@
 <span class="sd">    smoothing width be of the form k*tbp*df where tbp is the time</span>
 <span class="sd">    bandwidth product, df is the Rayleigh bin size, and k is some</span>
 <span class="sd">    small multipler (note multitaper spectra a inherently smoothed</span>
-<span class="sd">    by 2*tbp*df).</span>
+<span class="sd">    by 2*tbp*df).  At either end of the spectrum the moving average uses</span>
+<span class="sd">    only available frequency bins and renormalizes their weights; values</span>
+<span class="sd">    outside the measured spectrum are not treated as zeros or reflected.</span>
 
 <span class="sd">    :param S: power spectrum computed from signal time window.</span>
 <span class="sd">    :type S:  :py:class:`mspasspy.ccore.seismic.PowerSpectrum`</span>
@@ -614,22 +626,56 @@
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-    <span class="c1"># set the ceiling on the high frequency band edge</span>
-    <span class="c1"># Default is 80% of Nyquist</span>
-    <span class="k">if</span> <span class="n">f_max</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">f_max</span> <span class="o">&gt;</span> <span class="n">S</span><span class="o">.</span><span class="n">Nyquist</span><span class="p">():</span>
-            <span class="c1"># silently reset to Nyquist if f_max is illegal</span>
-            <span class="n">high_f_ceiling</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">Nyquist</span><span class="p">()</span>
-        <span class="n">high_f_ceiling</span> <span class="o">=</span> <span class="n">f_max</span>
+    <span class="n">default_high_f_ceiling</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">Nyquist</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">f_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">high_f_ceiling</span> <span class="o">=</span> <span class="n">default_high_f_ceiling</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">high_f_ceiling</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">Nyquist</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">f_max</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f_max</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">f_max</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">f_max</span> <span class="o">&lt;=</span> <span class="mf">0.0</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"f_max must be a finite positive number"</span><span class="p">)</span>
+        <span class="n">high_f_ceiling</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">f_max</span><span class="p">,</span> <span class="n">default_high_f_ceiling</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">f0</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">f0</span> <span class="o">&lt;</span> <span class="mf">0.0</span>
+        <span class="ow">or</span> <span class="n">f0</span> <span class="o">&gt;</span> <span class="n">high_f_ceiling</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"f0 must be finite and in the range [0, high_f_ceiling]"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">df_smoother</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">df_smoother</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df_smoother</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">df_smoother</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">df_smoother</span> <span class="o">&lt;=</span> <span class="mf">0.0</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"df_smoother must be a finite positive number"</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">BandwidthData</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">S</span><span class="o">.</span><span class="n">nf</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">f_range</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">nf</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="c1"># use the S grid to define the snr curve - note N grid can be different</span>
     <span class="n">snrdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">nf</span><span class="p">())</span>
+    <span class="n">noise_nfreq</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">nf</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">noise_nfreq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">noise_first_frequency</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">noise_terminal_frequency</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">noise_nfreq</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">nf</span><span class="p">()):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">noise_nfreq</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="ow">or</span> <span class="n">f</span> <span class="o">&lt;</span> <span class="n">noise_first_frequency</span>
+            <span class="ow">or</span> <span class="n">f</span> <span class="o">&gt;</span> <span class="n">noise_terminal_frequency</span>
+        <span class="p">):</span>
+            <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="k">continue</span>
         <span class="n">i_n</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="c1"># conditional needed in case S and N are computed with different sample intervals</span>
-        <span class="k">if</span> <span class="n">i_n</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">.</span><span class="n">nf</span><span class="p">():</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">i_n</span> <span class="o">&lt;</span> <span class="n">noise_nfreq</span><span class="p">:</span>
             <span class="n">Nnow</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">spectrum</span><span class="p">[</span><span class="n">i_n</span><span class="p">]</span>
             <span class="n">Snow</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">spectrum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">Snow</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
@@ -647,25 +693,36 @@
             <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="c1"># S and N are power, convert to amplitude</span>
     <span class="n">snrdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">df_smoother</span><span class="p">:</span>
-        <span class="n">smoother_npts</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">df_smoother</span> <span class="o">/</span> <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">())</span>
-        <span class="c1"># silently do nothing if the smoother requested is smaller than df</span>
-        <span class="k">if</span> <span class="n">smoother_npts</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">smoother</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">smoother_npts</span><span class="p">)</span> <span class="o">/</span> <span class="n">smoother_npts</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">snrdata</span><span class="p">,</span> <span class="n">smoother</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"valid"</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">BandwidthData</span><span class="p">()</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">f_range</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">nf</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">df_smoother</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">smoother_npts</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">df_smoother</span> <span class="o">/</span> <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">())))</span>
+        <span class="n">snrdata</span> <span class="o">=</span> <span class="n">_smooth_snr_curve</span><span class="p">(</span><span class="n">snrdata</span><span class="p">,</span> <span class="n">smoother_npts</span><span class="p">)</span>
     <span class="c1"># test for no data exceeding tbhreshold - send null result if that is the case</span>
     <span class="n">snrmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">snrmax</span> <span class="o">&lt;</span> <span class="n">snr_threshold</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">snrmax</span> <span class="o">&lt;=</span> <span class="n">snr_threshold</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">high_edge_f</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">result</span><span class="o">.</span><span class="n">high_edge_snr</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">result</span><span class="o">.</span><span class="n">low_edge_f</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">result</span><span class="o">.</span><span class="n">low_edge_snr</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">return</span> <span class="n">result</span>
     <span class="c1"># get index of search start</span>
-    <span class="n">i0</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">f0</span><span class="p">)</span>
-    <span class="n">i_max</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">high_f_ceiling</span><span class="p">)</span>
+    <span class="n">first_frequency</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">terminal_frequency</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">f0</span> <span class="o">&lt;=</span> <span class="n">first_frequency</span><span class="p">:</span>
+        <span class="n">i0</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">f0</span> <span class="o">&gt;=</span> <span class="n">terminal_frequency</span><span class="p">:</span>
+        <span class="n">i0</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">i0</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">f0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">high_f_ceiling</span> <span class="o">&gt;=</span> <span class="n">terminal_frequency</span><span class="p">:</span>
+        <span class="n">i_max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">high_f_ceiling</span> <span class="o">&lt;=</span> <span class="n">first_frequency</span><span class="p">:</span>
+        <span class="n">i_max</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">i_max</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">high_f_ceiling</span><span class="p">)</span>
+        <span class="n">i_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">i_max</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">i_max</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">i_max</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">high_f_ceiling</span><span class="p">:</span>
+            <span class="n">i_max</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="n">i0</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">i_max</span><span class="p">)</span>
     <span class="c1"># search upward in f</span>
     <span class="n">i</span> <span class="o">=</span> <span class="n">i0</span>
     <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">i_max</span><span class="p">:</span>
@@ -685,10 +742,10 @@
         <span class="c1"># point above the threshold (there has to be one because of</span>
         <span class="c1"># test for max snrdata above)</span>
         <span class="n">i</span> <span class="o">=</span> <span class="n">i0</span>
-        <span class="k">while</span> <span class="p">(</span>
-            <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">snr_threshold</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span>
-        <span class="p">):</span>  <span class="c1"># i&gt;=0 test not essential but safer</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">snr_threshold</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
         <span class="n">result</span><span class="o">.</span><span class="n">high_edge_f</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">high_edge_snr</span> <span class="o">=</span> <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="n">i0</span> <span class="o">=</span> <span class="n">i</span>
