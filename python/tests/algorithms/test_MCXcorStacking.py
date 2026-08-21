@@ -40,6 +40,7 @@ from mspasspy.algorithms.MCXcorStacking import (
     _set_phases,
     regularize_sampling,
     ensemble_time_range,
+    _snap_start_time_to_grid,
 )
 
 
@@ -389,6 +390,27 @@ def test_align_and_stack():
     assert eo.member[deadguy].dead()
     print_elog(eo)
     validate_lags(eo, lag_in_samples)
+
+
+def test_mcxcor_nearest_grid_alignment_preserves_samples():
+    reference = TimeSeries(8)
+    reference.dt = 0.05
+    reference.t0 = -1.0
+    reference.set_live()
+
+    datum = TimeSeries(6)
+    datum.dt = reference.dt
+    datum.t0 = reference.t0 + 2.49 * reference.dt
+    datum.set_live()
+    datum.data = DoubleVector(np.arange(datum.npts, dtype=float))
+    samples_before = np.array(datum.data, copy=True)
+
+    _snap_start_time_to_grid(datum, reference)
+
+    assert datum.t0 == reference.time(2)
+    assert datum.dt == reference.dt
+    assert datum.npts == len(samples_before)
+    np.testing.assert_array_equal(datum.data, samples_before)
 
 
 def test_align_and_stack_error_handlers():
