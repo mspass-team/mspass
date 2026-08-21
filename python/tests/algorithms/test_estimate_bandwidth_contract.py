@@ -161,9 +161,7 @@ def test_convolution_return_value_drives_the_bandwidth_result(monkeypatch):
         calls.append((np.array(values), npts))
         return np.zeros_like(values)
 
-    monkeypatch.setattr(
-        snr_module, "_smooth_snr_curve", replace_with_below_threshold
-    )
+    monkeypatch.setattr(snr_module, "_smooth_snr_curve", replace_with_below_threshold)
 
     result = snr_module.EstimateBandwidth(signal, noise, f0=1.0, df_smoother=3.0)
 
