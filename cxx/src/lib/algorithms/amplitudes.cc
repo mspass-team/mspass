@@ -93,6 +93,8 @@ double PercAmplitude(const CoreTimeSeries &d, const double perc) {
   sort(amps.begin(), amps.end());
   size_t n = amps.size();
   size_t iperc = static_cast<size_t>(percfrac * static_cast<double>(n));
+  if (iperc >= amps.size())
+    iperc = amps.size() - 1;
   return amps[iperc];
 }
 double PercAmplitude(const CoreSeismogram &d, const double perc) {

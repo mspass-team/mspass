@@ -285,21 +285,6 @@ def scale(
                 if x.live:
                     x.kill()
         return d
-    # this is needed to handle an oddity recommended on this
-    # web site:  http://effbot.org/zone/stupid-exceptions-keyboardinterrupt.htm
-    except (KeyboardInterrupt, SystemExit):
-        raise
-    except Exception:
-        message = "Something threw an unexpected exception\nThat is a bug that needs to be fixed - contact authors"
-        if isinstance(d, Seismogram) or isinstance(d, TimeSeries):
-            d.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
-            d.kill()
-        else:
-            ensemble_error_post(d, alg_name, message, ErrorSeverity.Invalid)
-            for x in d.member:
-                if x.live:
-                    x.kill()
-        return d
 
 
 # not decorated for reasons given in docstring below

@@ -293,20 +293,14 @@ def test_percentile_validation_recovers_and_continues(
     "input_kind", ["atomic", "ensemble_members", "ensemble_section"]
 )
 @pytest.mark.parametrize("waveform_type", ["timeseries", "seismogram"])
-@pytest.mark.parametrize("error_kind", ["mspass", "generic"])
-def test_exceptions_kill_and_return_original_object(
-    input_kind, waveform_type, error_kind
-):
+def test_mspass_errors_kill_and_return_original_object(input_kind, waveform_type):
     data, target_name, scale_kwargs, live_members, dead_members = _input_and_target(
         input_kind, waveform_type=waveform_type
     )
     dead_snapshots = [
         (dict(member), np.asarray(member.data).copy()) for member in dead_members
     ]
-    if error_kind == "mspass":
-        error = MsPASSError("injected scale failure", ErrorSeverity.Complaint)
-    else:
-        error = RuntimeError("injected generic scale failure")
+    error = MsPASSError("injected scale failure", ErrorSeverity.Complaint)
 
     with patch.object(window_module, target_name, side_effect=error):
         result = window_module.scale(data, **scale_kwargs)
@@ -319,16 +313,53 @@ def test_exceptions_kill_and_return_original_object(
         assert len(errors) == 1
         assert errors[0].algorithm == "scale"
         assert errors[0].badness == ErrorSeverity.Invalid
-        if error_kind == "mspass":
-            assert "injected scale failure" in errors[0].message
-        else:
-            assert "unexpected exception" in errors[0].message
+        assert "injected scale failure" in errors[0].message
         assert _defined_amplitude_keys(member) == set()
     for member, (metadata, samples) in zip(dead_members, dead_snapshots):
         assert member.dead()
         assert _error_log(member) == []
         assert dict(member) == metadata
         assert np.array_equal(np.asarray(member.data), samples)
+
+
+@pytest.mark.parametrize(
+    "input_kind", ["atomic", "ensemble_members", "ensemble_section"]
+)
+@pytest.mark.parametrize("waveform_type", ["timeseries", "seismogram"])
+@pytest.mark.parametrize("exception_type", [RuntimeError, TypeError])
+def test_unexpected_exceptions_propagate_without_mutation(
+    input_kind, waveform_type, exception_type
+):
+    data, target_name, scale_kwargs, live_members, dead_members = _input_and_target(
+        input_kind, waveform_type=waveform_type
+    )
+    before = [
+        (dict(member), np.asarray(member.data).copy(), member.live)
+        for member in live_members + dead_members
+    ]
+
+    with patch.object(
+        window_module, target_name, side_effect=exception_type("injected failure")
+    ):
+        with pytest.raises(exception_type, match="injected failure"):
+            window_module.scale(data, **scale_kwargs)
+
+    current_live, current_dead = _current_members(data, input_kind)
+    for member, (metadata, samples, live) in zip(current_live + current_dead, before):
+        assert dict(member) == metadata
+        assert np.array_equal(np.asarray(member.data), samples)
+        assert member.live is live
+        assert _error_log(member) == []
+
+
+def test_timeseries_percentile_preserves_rank_and_caps_terminal_index():
+    median_rank = _atomic()
+    window_module.scale(median_rank, method="perc", level=0.5)
+    assert median_rank["perc_amplitude"] == pytest.approx(3.0)
+
+    terminal_rank = _atomic()
+    window_module.scale(terminal_rank, method="perc", level=1.0)
+    assert terminal_rank["perc_amplitude"] == pytest.approx(4.0)
 
 
 @pytest.mark.parametrize(
