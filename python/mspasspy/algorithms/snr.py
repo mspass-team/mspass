@@ -236,10 +236,8 @@ def _window_invalid(d, win):
     if the range is invalid - somewhat reversed logic is used because of
     the name choice that make the code conditioals clearer.
     """
-    if d.t0 < win.start and d.endtime() > win.end:
-        return False
-    else:
-        return True
+    upper_half_sample_tie = d.t0 + (d.npts - 0.5) * d.dt
+    return not (d.t0 < win.start and win.end < upper_half_sample_tie)
 
 
 def _safe_snr_calculation(s, n):
@@ -655,20 +653,15 @@ def FD_snr_estimator(
     try:
         # First extract the required windows and compute the power spectra
         n = WindowData(data_object, noise_window.start, noise_window.end)
+        if n.dead():
+            if n.elog.size() > 0:
+                my_logger += n.elog
+            return [dict(), my_logger]
         s = WindowData(data_object, signal_window.start, signal_window.end)
-
-        # WARNING:  this handler depends upon an implementation details
-        # that could be a maintenance issue.  The python code has a catch
-        # that kills a datum where windowing fails.   The C++ code throws
-        # an exception when that happens.  The python code posts that error
-        # message to the output which we extract here
-        if n.dead() or s.dead():
-            if n.dead():
-                if n.elog.size() > 0:
-                    my_logger += n.elog
-            if s.dead():
-                if s.elog.size() > 0:
-                    my_logger += s.elog
+        if s.dead():
+            if s.elog.size() > 0:
+                my_logger += s.elog
+            return [dict(), my_logger]
         if noise_spectrum_engine:
             nengine = noise_spectrum_engine
         else:
