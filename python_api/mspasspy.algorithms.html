@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev10+g6271718d documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev13+gdc42979c documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=f46687ce"></script>
+    <script src="../_static/documentation_options.js?v=3a99dfe3"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev10" />
+  <meta name="docsearch:version" content="2.4.4.dev13" />
   </head>
   
   
@@ -5649,7 +5649,7 @@ the key defined by the metadata_output_key argument.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.snr.broadband_snr_QC">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">broadband_snr_QC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">*args,</span> <span class="pre">component=2,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=1.5,</span> <span class="pre">signal_detection_minimum_bandwidth=6.0,</span> <span class="pre">f_low_zero_test=None,</span> <span class="pre">tbp=4.0,</span> <span class="pre">ntapers=6,</span> <span class="pre">f0=1.0,</span> <span class="pre">kill_null_signals=True,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">phase_name='P',</span> <span class="pre">metadata_output_key='Parrival',</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc'],</span> <span class="pre">save_spectra=False,</span> <span class="pre">use_measured_arrival_time=False,</span> <span class="pre">measured_arrival_time_key='Ptime',</span> <span class="pre">taup_model=None,</span> <span class="pre">source_collection='source',</span> <span class="pre">receiver_collection=None,</span> <span class="pre">handles_ensembles=False,</span> <span class="pre">checks_arg0_type=True,</span> <span class="pre">handles_dead_data=True,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#broadband_snr_QC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.broadband_snr_QC" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">broadband_snr_QC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">*args,</span> <span class="pre">component=2,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=1.5,</span> <span class="pre">signal_detection_minimum_bandwidth=6.0,</span> <span class="pre">f_low_zero_test=None,</span> <span class="pre">tbp=4.0,</span> <span class="pre">ntapers=6,</span> <span class="pre">f0=1.0,</span> <span class="pre">kill_null_signals=True,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">phase_name='P',</span> <span class="pre">metadata_output_key='Parrival',</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc'],</span> <span class="pre">save_spectra=False,</span> <span class="pre">use_measured_arrival_time=True,</span> <span class="pre">measured_arrival_time_key='Ptime',</span> <span class="pre">taup_model=None,</span> <span class="pre">source_collection='source',</span> <span class="pre">receiver_collection=None,</span> <span class="pre">handles_ensembles=False,</span> <span class="pre">checks_arg0_type=True,</span> <span class="pre">handles_dead_data=True,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#broadband_snr_QC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.broadband_snr_QC" title="Link to this definition">#</a></dt>
 <dd><p>Compute a series of metrics that can be used for quality control
 filtering of seismic phase data.</p>
 <p>This function is intended as a workhorse to be used for low-level,

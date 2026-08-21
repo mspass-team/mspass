@@ -502,7 +502,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="153" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="217" bodyend="229"/>
-        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="251">apply</references>
+        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="253">apply</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" compoundref="_core_time_series_8cc" startline="165" endline="179">mspass::seismic::CoreTimeSeries::set_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" compoundref="_basic_time_series_8h" startline="151" endline="151">mspass::seismic::BasicTimeSeries::set_live</references>
@@ -547,10 +547,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="176" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="232" bodyend="251"/>
-        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="251">apply</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="176" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="232" bodyend="253"/>
+        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="253">apply</references>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" compoundref="_butterworth_8h" startline="293" endline="297">change_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a10c30a560e4dce8a3bc9fe80409cee80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -592,13 +593,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="199" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="254" bodyend="285"/>
-        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="251">apply</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="199" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="256" bodyend="284"/>
+        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="253">apply</references>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" compoundref="_butterworth_8h" startline="293" endline="297">change_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1acae23f17a07efa21effb10a9da730f33" compoundref="_butterworth_8h" startline="301" endline="301">high_corner</references>
         <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a1b2416893b09cf7edad320a37c521c5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -629,7 +631,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="211" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="300" bodyend="317"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="211" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="299" bodyend="318"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a76dc3f128a5305ca1b04d863ae72b73b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -669,8 +671,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="234" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="319" bodyend="345"/>
-        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="251">apply</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="234" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="320" bodyend="359"/>
+        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="253">apply</references>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" compoundref="_butterworth_8h" startline="293" endline="297">change_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
@@ -716,8 +718,8 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="257" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="349" bodyend="393"/>
-        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="251">apply</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="257" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="363" bodyend="403"/>
+        <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="253">apply</references>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" compoundref="_butterworth_8h" startline="293" endline="297">change_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
@@ -755,7 +757,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="275" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="394" bodyend="409"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="275" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="404" bodyend="419"/>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1a7b54d5d5966a85092d45ebebd0b88498" compoundref="_butterworth_8cc" startline="217" endline="229">impulse_response</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" compoundref="_complex_array_8cc" startline="111" endline="113">mspass::algorithms::deconvolution::ComplexArray::ptr</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
@@ -935,7 +937,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="357" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="414" bodyend="442"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="357" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="424" bodyend="452"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1abc057f5bb2a19e2f1f45c73c0b02ce40" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -971,7 +973,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="359" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="487" bodyend="528"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="359" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="497" bodyend="538"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1ace0ad60d256cb617dad8360363d66c94" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1007,7 +1009,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="360" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="444" bodyend="485"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="360" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="454" bodyend="495"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a0dbc8248a1311367bee4be1d5a48b294" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1037,7 +1039,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="365" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="529" bodyend="548"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="365" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="539" bodyend="558"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a37e3d8d4038cf5cbe9dccb9edc22a9fc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1067,7 +1069,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="367" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="549" bodyend="568"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="367" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="559" bodyend="578"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
