@@ -1,4 +1,7 @@
 import pickle
+import math
+from numbers import Real
+
 import numpy as np
 from bson import ObjectId
 from scipy.signal import hilbert
@@ -1106,7 +1109,7 @@ def broadband_snr_QC(
         "filtered_perc",
     ],
     save_spectra=False,
-    use_measured_arrival_time=False,
+    use_measured_arrival_time=True,
     measured_arrival_time_key="Ptime",
     taup_model=None,
     source_collection="source",
@@ -1253,8 +1256,24 @@ def broadband_snr_QC(
         )
     if data_object.dead():
         return data_object
-    if use_measured_arrival_time:
-        arrival_time = data_object[measured_arrival_time_key]
+    if use_measured_arrival_time is not False:
+        if data_object.is_defined(measured_arrival_time_key):
+            arrival_time = data_object[measured_arrival_time_key]
+        else:
+            arrival_time = None
+        if (
+            isinstance(arrival_time, bool)
+            or not isinstance(arrival_time, Real)
+            or not math.isfinite(arrival_time)
+        ):
+            data_object.elog.log_error(
+                "broadband_snr_QC",
+                "Measured arrival time key={} is missing or does not contain "
+                "a finite numeric value".format(measured_arrival_time_key),
+                ErrorSeverity.Invalid,
+            )
+            data_object.kill()
+            return data_object
     else:
         # This test is essential or python will throw a more obscure,
         # generic exception
