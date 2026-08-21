@@ -74,7 +74,7 @@ MathJax.Hub.Config({
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MsPASS C++ API
-   &#160;<span id="projectnumber">2.4.4.dev13+gdc42979c</span>
+   &#160;<span id="projectnumber">2.4.4.dev15+g399bd885</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -229,8 +229,8 @@ Public Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  335</span>    <span class="comment">/* All these conditionals are necessary for handling unexpected</span></div>
 <div class="line"><span class="lineno">  336</span><span class="comment">     * values.   0 is effectively and error return.  Without these</span></div>
 <div class="line"><span class="lineno">  337</span><span class="comment">     * the function can return NaN or generate floating point exceptions. */</span></div>
-<div class="line"><span class="lineno">  338</span>    <span class="keywordflow">if</span> ((<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">f_range</a> &lt;= 0.0) || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a>&lt;=<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>)</div>
-<div class="line"><span class="lineno">  339</span>      || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> &lt; 0.0) || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a> &lt; 0.0) )</div>
+<div class="line"><span class="lineno">  338</span>    <span class="keywordflow">if</span> ((<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aac9737b8821da97155c7b3cbe6b0411e">f_range</a> &lt;= 0.0) || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> &lt;= <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>) ||</div>
+<div class="line"><span class="lineno">  339</span>        (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> &lt; 0.0) || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a> &lt;= 0.0))</div>
 <div class="line"><span class="lineno">  340</span>      <span class="keywordflow">return</span> 0.0;</div>
 <div class="line"><span class="lineno">  341</span>    <span class="keywordflow">else</span> {</div>
 <div class="line"><span class="lineno">  342</span>      <span class="keywordtype">double</span> ratio = <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> / <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>;</div>
