@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.RFdeconProcessor &#8212; MsPASS 2.4.4.dev15+g399bd885 documentation</title>
+    <title>mspasspy.algorithms.RFdeconProcessor &#8212; MsPASS 2.4.4.dev16+gb3bae320 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=7e85252b"></script>
+    <script src="../../../_static/documentation_options.js?v=32a661a4"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev15" />
+  <meta name="docsearch:version" content="2.4.4.dev16" />
   </head>
   
   
@@ -495,6 +495,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">resources</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DoubleVector</span><span class="p">,</span> <span class="n">PowerSpectrum</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span>
@@ -1988,8 +1990,57 @@
 
 
 
+<span class="n">_SCALAR_NOISE_ALGORITHMS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="p">(</span>
+        <span class="s2">"MultiTaperPowerXcor"</span><span class="p">,</span>
+        <span class="s2">"MultiTaperXcor"</span><span class="p">,</span>
+        <span class="s2">"MultiTaperPowerSpecDiv"</span><span class="p">,</span>
+        <span class="s2">"MultiTaperSpecDiv"</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_scalar_noise_argument</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Normalize external scalar noise before the MsPASS exception wrapper."""</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validated</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">noisedata</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"noisedata"</span><span class="p">)</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"engine"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">RFdeconProcessor</span><span class="p">):</span>
+            <span class="n">uses_scalar_noise</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">uses_noise</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">engine</span><span class="o">.</span><span class="n">is_3c_engine</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">uses_scalar_noise</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"alg"</span><span class="p">,</span> <span class="s2">"LeastSquares"</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_SCALAR_NOISE_ALGORITHMS</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">uses_scalar_noise</span>
+            <span class="ow">and</span> <span class="n">noisedata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">))</span>
+                <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span> <span class="s2">"ndim"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">"noisedata must be a TimeSeries or one-dimensional numeric iterable"</span>
+                <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"noisedata"</span><span class="p">]</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">noisedata</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">OverflowError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">"noisedata must be a TimeSeries or one-dimensional numeric iterable"</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">validated</span>
+
+
 <div class="viewcode-block" id="RFdecon">
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdecon">[docs]</a>
+<span class="nd">@_validate_scalar_noise_argument</span>
 <span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">RFdecon</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span>
@@ -2034,7 +2085,8 @@
 <span class="sd">    use the d, wavelet, and (if required) noise arguments to load</span>
 <span class="sd">    each component separately.  Note d is dogmatically required</span>
 <span class="sd">    to be three component data.  Conventional scalar methods accept</span>
-<span class="sd">    optional wavelet and noisedata as plain numeric vectors.  GID methods</span>
+<span class="sd">    optional wavelet and noisedata as TimeSeries objects or one-dimensional</span>
+<span class="sd">    numeric iterables.  GID methods</span>
 <span class="sd">    accept prepared TimeSeries inputs or one-dimensional numeric vectors;</span>
 <span class="sd">    raw wavelet vectors are converted to TimeSeries using the processor target</span>
 <span class="sd">    sample interval and ``wavelet_t0``.  Omitting ``wavelet_t0`` retains the</span>
@@ -2314,7 +2366,10 @@
             <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">wcomp</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">processor</span><span class="o">.</span><span class="n">uses_noise</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">noisedata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"raw_vector"</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                    <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"TimeSeries"</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"raw_vector"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">ncomp</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>

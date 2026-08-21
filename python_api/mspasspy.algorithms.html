@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev15+g399bd885 documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev16+gb3bae320 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=7e85252b"></script>
+    <script src="../_static/documentation_options.js?v=32a661a4"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev15" />
+  <meta name="docsearch:version" content="2.4.4.dev16" />
   </head>
   
   
@@ -1970,7 +1970,8 @@ adding tapering to one or more of the time series inputs)
 use the d, wavelet, and (if required) noise arguments to load
 each component separately.  Note d is dogmatically required
 to be three component data.  Conventional scalar methods accept
-optional wavelet and noisedata as plain numeric vectors.  GID methods
+optional wavelet and noisedata as TimeSeries objects or one-dimensional
+numeric iterables.  GID methods
 accept prepared TimeSeries inputs or one-dimensional numeric vectors;
 raw wavelet vectors are converted to TimeSeries using the processor target
 sample interval and <code class="docutils literal notranslate"><span class="pre">wavelet_t0</span></code>.  Omitting <code class="docutils literal notranslate"><span class="pre">wavelet_t0</span></code> retains the
