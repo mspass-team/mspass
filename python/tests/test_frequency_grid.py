@@ -1,9 +1,12 @@
 import numpy as np
 import pytest
 
-from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
+from mspasspy.ccore.algorithms.deconvolution import (
+    CNRDeconEngine,
+    MTPowerSpectrumEngine,
+)
 from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, TimeSeries
-from mspasspy.ccore.utility import Metadata
+from mspasspy.ccore.utility import ErrorSeverity, Metadata, MsPASSError, pfread
 
 
 @pytest.mark.parametrize("nfft", [5, 6, 7, 8])
@@ -50,3 +53,42 @@ def test_power_lookup_includes_terminal_stored_bin():
     )
     assert spectrum.power(np.nextafter(terminal, -np.inf)) == pytest.approx(values[-1])
     assert spectrum.power(np.nextafter(terminal, np.inf)) == 0.0
+
+
+def _live_timeseries(npts, dt):
+    data = TimeSeries(npts)
+    data.dt = dt
+    data.t0 = 0.0
+    data.set_live()
+    for i in range(npts):
+        data.data[i] = np.sin(0.17 * i) + 0.25 * np.cos(0.07 * i)
+    return data
+
+
+def test_cnr_internal_noise_spectrum_contains_a_real_nyquist_bin():
+    engine = CNRDeconEngine(pfread("data/pf/CNRDeconEngine.pf"))
+    dt = engine.get_operator_dt()
+    noise = _live_timeseries(801, dt)
+
+    spectrum = engine.compute_noise_spectrum(noise)
+
+    assert spectrum.live
+    assert spectrum.nf() > 1
+    assert spectrum.frequency(spectrum.nf() - 1) == pytest.approx(1.0 / (2.0 * dt))
+    assert spectrum.power(spectrum.frequency(spectrum.nf() - 1)) == pytest.approx(
+        spectrum.spectrum[-1]
+    )
+
+
+def test_cnr_rejects_an_external_odd_grid_without_nyquist():
+    engine = CNRDeconEngine(pfread("data/pf/CNRDeconEngine.pf"))
+    dt = engine.get_operator_dt()
+    noise = _live_timeseries(801, dt)
+    odd_spectrum = MTPowerSpectrumEngine(801, 2.5, 4, 801, dt).apply(noise)
+    assert odd_spectrum.frequency(odd_spectrum.nf() - 1) < 1.0 / (2.0 * dt)
+
+    with pytest.raises(MsPASSError) as caught:
+        engine.initialize_inverse_operator(noise, odd_spectrum)
+
+    assert caught.value.severity == ErrorSeverity.Invalid
+    assert "does not cover operator Nyquist" in str(caught.value)

@@ -76,7 +76,13 @@ public:
   void
   initialize_inverse_operator(const mspass::seismic::TimeSeries &wavelet,
                               const mspass::seismic::TimeSeries &noise_data);
-  /*! Initialize the inverse operator from a signal and precomputed noise spectrum. */
+  /*! Initialize the inverse operator from a signal and precomputed noise
+   * spectrum.
+
+   * The supplied spectrum must contain sampled ordinates through the
+   * operator Nyquist frequency.  A spectrum produced by an odd-length FFT
+   * ends one half-bin below Nyquist and is rejected rather than extrapolated.
+   */
   void initialize_inverse_operator(
       const mspass::seismic::TimeSeries &wavelet,
       const mspass::seismic::PowerSpectrum &noise_spectrum);
@@ -100,7 +106,9 @@ public:
   /*! Compute noise spectrum using internal Multitaper operator.
   Normally used for noise spectrum but can be used for signal.
   Necessary to assure consistent scaling between signal and noise
-  spectrum estimators.  */
+  spectrum estimators.  The internal FFT grid is even and aligned with the
+  inverse operator so the returned spectrum contains a sampled Nyquist
+  ordinate. */
   mspass::seismic::PowerSpectrum
   compute_noise_spectrum(const mspass::seismic::TimeSeries &d2use);
   /*! Compute noise spectrum from three component data.
